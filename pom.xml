@@ -46,7 +46,7 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>10.11</commons.version>
+    <commons.version>10.11.1-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
@@ -1497,7 +1497,7 @@
             <configuration>
               <skip>${xwiki.enforcer.enforce-upper-bounds.skip}</skip>
               <rules>
-                <requireUpperBoundDeps />
+                <requireUpperBoundDeps/>
               </rules>
             </configuration>
           </execution>
@@ -2014,7 +2014,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore />
+                    <ignore/>
                   </action>
                 </pluginExecution>
               </pluginExecutions>
@@ -2120,7 +2120,7 @@
                 <phase>generate-resources</phase>
                 <configuration>
                   <target>
-                    <mkdir dir="${project.build.directory}/apidocs" />
+                    <mkdir dir="${project.build.directory}/apidocs"/>
                   </target>
                 </configuration>
                 <goals>
