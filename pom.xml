@@ -118,7 +118,7 @@
     <xwiki.enforcer.enforce-glassfish-el.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glassfish-el.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
     <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
-    <xwiki.enforcer.enforce-javax.activation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.activation-api.skip>
+    <xwiki.enforcer.enforce-javax.activation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.activation.skip>
     <xwiki.enforcer.enforce-javax.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.mail.skip>
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
@@ -1385,12 +1385,12 @@
           </execution>
           <!-- Check that we're using javax.activation-api and not activation -->
           <execution>
-            <id>enforce-javax.activation-api</id>
+            <id>enforce-javax.activation</id>
             <goals>
               <goal>enforce</goal>
             </goals>
             <configuration>
-              <skip>${xwiki.enforcer.enforce-javax.activation-api.skip}</skip>
+              <skip>${xwiki.enforcer.enforce-javax.activation.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
