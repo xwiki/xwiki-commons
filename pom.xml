@@ -562,11 +562,23 @@
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
         <version>2.3.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.activation</groupId>
+            <artifactId>javax.activation-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
         <version>2.3.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.activation</groupId>
+            <artifactId>javax.activation-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- Json -->
@@ -1130,8 +1142,8 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>javax.activation</groupId>
-        <artifactId>javax.activation-api</artifactId>
+        <groupId>com.sun.activation</groupId>
+        <artifactId>javax.activation</artifactId>
         <version>1.2.0</version>
       </dependency>
       <!-- Diff tools used in commons for diff and blame -->
@@ -1383,10 +1395,11 @@
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
                   <message>
-                    Javax Activation artifact id changed, the current one is javax.activation:javax.activation-api
+                    Javax Activation artifact id changed, the current one is com.sun.activation:javax.activation
                   </message>
                   <excludes>
                     <exclude>javax.activation:activation</exclude>
+                    <exclude>javax.activation:javax.activation-api</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
