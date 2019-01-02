@@ -22,20 +22,24 @@ package org.xwiki.environment.internal;
 import java.io.File;
 import java.net.URL;
 
-import javax.inject.Provider;
-
 import org.apache.commons.io.FileUtils;
-import org.jmock.Expectations;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.xwiki.component.embed.EmbeddableComponentManager;
-import org.xwiki.component.util.ReflectionUtils;
-import org.xwiki.environment.Environment;
-import org.xwiki.test.jmock.JMockRule;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.xwiki.test.LogLevel;
+import org.xwiki.test.junit5.LogCaptureExtension;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.mockito.MockitoComponentManager;
+
+import ch.qos.logback.classic.Level;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link StandardEnvironment}.
@@ -43,28 +47,26 @@ import org.xwiki.test.jmock.JMockRule;
  * @version $Id$
  * @since 3.5M1
  */
+@ComponentTest
 public class StandardEnvironmentTest
 {
     private static final File TMPDIR = new File(System.getProperty("java.io.tmpdir"), "xwiki-temp");
 
-    @Rule
-    public final JMockRule mockery = new JMockRule();
-
+    @InjectMockComponents
     private StandardEnvironment environment;
 
-    @Before
+    @RegisterExtension
+    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO);
+
+    @BeforeEach
     public void setUp() throws Exception
     {
-        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
-        ecm.initialize(getClass().getClassLoader());
-        this.environment = (StandardEnvironment) ecm.getInstance(Environment.class);
-        ReflectionUtils.setFieldValue(this.environment, "isTesting", true);
         if (TMPDIR.exists()) {
             FileUtils.forceDelete(TMPDIR);
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         if (TMPDIR.exists()) {
@@ -73,156 +75,119 @@ public class StandardEnvironmentTest
     }
 
     @Test
-    public void testGetResourceWhenResourceDirNotSet()
+    public void getResourceWhenResourceDirNotSet()
     {
-        Assert.assertNull(this.environment.getResource("doesntexist"));
+        assertNull(this.environment.getResource("doesntexist"));
     }
 
     @Test
-    public void testGetResourceOk()
+    public void getResourceOk()
     {
         // Make sure our resource really exists on the file system...
         // TODO: find a better way...
-        File resourceFile = new File("target/testGetResourceOk");
+        File resourceFile = new File("target/getResourceOk");
         resourceFile.mkdirs();
 
         this.environment.setResourceDirectory(new File("target"));
-        URL resource = this.environment.getResource("testGetResourceOk");
-        Assert.assertNotNull(resource);
+        URL resource = this.environment.getResource("getResourceOk");
+        assertNotNull(resource);
     }
 
     @Test
-    public void testGetResourceWhenResourceDirNotSetButResourceAvailableInDefaultClassLoader()
+    public void getResourceWhenResourceDirNotSetButResourceAvailableInDefaultClassLoader()
     {
         URL resource = this.environment.getResource("test");
-        Assert.assertNotNull(resource);
+        assertNotNull(resource);
     }
 
     @Test
-    public void testGetResourceWhenResourceDirSetButResourceAvailableInDefaultClassLoader()
+    public void getResourceWhenResourceDirSetButResourceAvailableInDefaultClassLoader()
     {
         this.environment.setResourceDirectory(new File("/resource"));
         URL resource = this.environment.getResource("test");
-        Assert.assertNotNull(resource);
+        assertNotNull(resource);
     }
 
     @Test
-    public void testGetPermanentDirectory()
+    public void getPermanentDirectory()
     {
         File permanentDirectory = new File("/permanent");
         this.environment.setPermanentDirectory(permanentDirectory);
-        Assert.assertEquals(permanentDirectory, this.environment.getPermanentDirectory());
-    }
-
-    private void setPersistentDir(final String dirPath)
-    {
-        @SuppressWarnings("unchecked")
-        final Provider<EnvironmentConfiguration> configurationProvider = this.mockery.mock(Provider.class);
-        final EnvironmentConfiguration config = this.mockery.mock(EnvironmentConfiguration.class);
-        this.mockery.checking(new Expectations() {{
-            allowing(configurationProvider).get();
-                will(returnValue(config));
-            allowing(config).getPermanentDirectoryPath();
-                will(returnValue(dirPath));
-        }});
-        ReflectionUtils.setFieldValue(this.environment, "configurationProvider", configurationProvider);
+        assertEquals(permanentDirectory, this.environment.getPermanentDirectory());
     }
 
     @Test
-    public void testGetConfiguredPermanentDirectory()
+    public void getConfiguredPermanentDirectory(MockitoComponentManager componentManager) throws Exception
     {
-        final File persistentDir = new File(System.getProperty("java.io.tmpdir"), "xwiki-test-persistentDir");
-        this.setPersistentDir(persistentDir.getAbsolutePath());
+        File persistentDir =
+            new File(System.getProperty("java.io.tmpdir"), "xwiki-test-persistentDir").getAbsoluteFile();
+        EnvironmentConfiguration configuration = componentManager.getInstance(EnvironmentConfiguration.class);
+        when(configuration.getPermanentDirectoryPath()).thenReturn(persistentDir.getAbsolutePath());
 
-        final Logger logger = this.mockery.mock(Logger.class);
-        this.mockery.checking(new Expectations() {{
-            oneOf(logger).info("Using permanent directory [{}]", persistentDir);
-        }});
-        ReflectionUtils.setFieldValue(this.environment, "logger", logger);
+        assertEquals(persistentDir, this.environment.getPermanentDirectory());
 
-        Assert.assertEquals(persistentDir, this.environment.getPermanentDirectory());
+        assertEquals(1, this.logCapture.size());
+        assertEquals(String.format("Using permanent directory [%s]", persistentDir), this.logCapture.getMessage(0));
     }
 
     @Test
-    public void testGetPermanentDirectoryWhenNotSet()
+    public void getPermanentDirectoryWhenNotSet()
     {
-        // Also verify that we log a warning!
-        final Logger logger = this.mockery.mock(Logger.class);
-        this.mockery.checking(new Expectations() {{
-            oneOf(logger).warn("No permanent directory configured, fallbacking to temporary directory. "
-                + "You should set the \"environment.permanentDirectory\" configuration property in the "
-                + "xwiki.properties file.");
-            oneOf(logger).info("Using permanent directory [{}]", new File(System.getProperty("java.io.tmpdir")));
-        }});
+        assertEquals(new File(System.getProperty("java.io.tmpdir")), this.environment.getPermanentDirectory());
 
-        ReflectionUtils.setFieldValue(this.environment, "logger", logger);
-
-        Assert.assertEquals(new File(System.getProperty("java.io.tmpdir")), this.environment.getPermanentDirectory());
+        assertEquals(2, this.logCapture.size());
+        assertEquals(Level.WARN, this.logCapture.getLogEvent(0).getLevel());
+        assertEquals("No permanent directory configured, fallbacking to temporary directory. You should set the "
+                + "\"environment.permanentDirectory\" configuration property in the xwiki.properties file.",
+            this.logCapture.getMessage(0));
+        assertEquals(Level.INFO, this.logCapture.getLogEvent(1).getLevel());
+        assertEquals(String.format("Using permanent directory [%s]",
+            new File(System.getProperty("java.io.tmpdir"))), this.logCapture.getMessage(1));
     }
 
     @Test
-    public void testGetTemporaryDirectory()
+    public void getTemporaryDirectory()
     {
         File tmpDir = new File("tmpdir");
         this.environment.setTemporaryDirectory(tmpDir);
-        Assert.assertEquals(tmpDir, this.environment.getTemporaryDirectory());
+        assertEquals(tmpDir, this.environment.getTemporaryDirectory());
     }
 
     @Test
-    public void testGetTemporaryDirectoryWhenNotSet()
+    public void getTemporaryDirectoryWhenNotSet()
     {
-        Assert.assertEquals(TMPDIR, this.environment.getTemporaryDirectory());
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testGetTemporaryDirectoryWhenNotADirectory() throws Exception
-    {
-        FileUtils.write(TMPDIR, "test");
-
-        final Logger logger = this.mockery.mock(Logger.class);
-        this.mockery.checking(new Expectations() {{
-            oneOf(logger).error("Configured {} directory [{}] is {}.", "temporary",
-                TMPDIR.getAbsolutePath(),
-                "not a directory");
-        }});
-        ReflectionUtils.setFieldValue(this.environment, "logger", logger);
-
-        this.environment.getTemporaryDirectory();
+        assertEquals(TMPDIR, this.environment.getTemporaryDirectory());
     }
 
     @Test
-    public void testGetTemporaryDirectoryFailOver() throws Exception
+    public void getTemporaryDirectoryWhenNotADirectory() throws Exception
+    {
+        FileUtils.write(TMPDIR, "test", "UTF-8");
+
+        Throwable exception = assertThrows(RuntimeException.class, () -> {
+            this.environment.getTemporaryDirectory();
+        });
+        assertEquals("Could not find a writable temporary directory. Check the server logs for more information.",
+            exception.getMessage());
+
+        assertEquals(1, this.logCapture.size());
+        assertEquals(String.format("Configured temporary directory [%s] is not a directory.",
+            TMPDIR.getAbsolutePath()), this.logCapture.getMessage(0));
+    }
+
+    @Test
+    public void getTemporaryDirectoryFailOver(MockitoComponentManager componentManager) throws Exception
     {
         FileUtils.forceMkdir(TMPDIR);
-        final File txtFile = new File(TMPDIR, "test.txt");
-        FileUtils.write(txtFile, "test");
+        File txtFile = new File(TMPDIR, "test.txt");
+        FileUtils.write(txtFile, "test", "UTF-8");
 
-        final Provider<EnvironmentConfiguration> prov = new Provider<EnvironmentConfiguration>()
-        {
-            @Override
-            public EnvironmentConfiguration get()
-            {
-                return new EnvironmentConfiguration()
-                {
-                    @Override
-                    public String getPermanentDirectoryPath()
-                    {
-                        return txtFile.getAbsolutePath();
-                    }
-                };
-            }
-        };
-        ReflectionUtils.setFieldValue(this.environment, "configurationProvider", prov);
+        EnvironmentConfiguration configuration = componentManager.getInstance(EnvironmentConfiguration.class);
+        when(configuration.getPermanentDirectoryPath()).thenReturn(txtFile.getAbsolutePath());
 
-        final Logger logger = this.mockery.mock(Logger.class);
-        this.mockery.checking(new Expectations() {{
-            allowing(logger).error(with(any(String.class)), with(any(Object[].class)));
-        }});
-        ReflectionUtils.setFieldValue(this.environment, "logger", logger);
-
-        Assert.assertEquals(TMPDIR, this.environment.getTemporaryDirectory());
+        assertEquals(TMPDIR, this.environment.getTemporaryDirectory());
 
         // Check that the directory was cleared.
-        Assert.assertEquals(0, TMPDIR.listFiles().length);
+        assertEquals(0, TMPDIR.listFiles().length);
     }
 }

@@ -94,14 +94,24 @@
     -->
 
     <module name="ClassFanOutComplexity">
+      <!--
+          1) Default excludes (taken from https://github.com/checkstyle/checkstyle/blob/master/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java)
+          2) Non XWiki excludes
+          3) XWiki excludes
+      -->
       <property name="excludedClasses" value="boolean, byte, char, double, float, int, long, short, void,
         Boolean, Byte, Character, Double, Float, Integer, Long, Short, Void,
         Object, Class, String, StringBuffer, StringBuilder,
         ArrayIndexOutOfBoundsException, Exception, RuntimeException, IllegalArgumentException, IllegalStateException, IndexOutOfBoundsException, NullPointerException, Throwable, SecurityException, UnsupportedOperationException,
-        List, ArrayList, Deque, Queue, LinkedList, Set, HashSet, SortedSet, TreeSet, Map, HashMap, SortedMap, TreeMap, Collections, Collection, Arrays,
-        ConcurrentHashMap, ConcurrentLinkedDeque, ConcurrentLinkedQueue, DelayQueue, FutureTask, LinkedBlockinDeque, LinkedBlockinQueue, Phaser, PriorityBlockingQueue, RejectedExecutionException, SynchronousQueue,
-        Logger, LoggerFactory, StringUtils, IOUtils,
-        Inject, Named, Component, Role, Singleton, Unstable, Override, Deprecated, SafeVarargs, SuppressWarnings"/>
+        List, ArrayList, Deque, Queue, LinkedList, Set, HashSet, SortedSet, TreeSet, Map, HashMap, SortedMap, TreeMap,
+        Override, Deprecated, SafeVarargs, SuppressWarnings, FunctionalInterface,
+
+        IOException, Collections, Collection, Arrays, ConcurrentHashMap, ConcurrentLinkedDeque, ConcurrentLinkedQueue, DelayQueue, FutureTask, LinkedBlockinDeque, LinkedBlockinQueue, Phaser,
+        PriorityBlockingQueue, RejectedExecutionException, SynchronousQueue, Logger, LoggerFactory, StringUtils, FieldUtils, IOUtils, StringWriter, StringReader, ExceptionUtils,
+        Inject, Provider, Named, Singleton, NavigableSet, Type,
+
+        ComponentInstantiationStrategy, Unstable"/>
+      <property name="excludedPackages" value="org.apache.maven.plugins.annotations, javax.annotation.concurrent, org.xwiki.component.annotation"/>
     </module>
 
     <module name="ClassTypeParameterName"/>
@@ -173,7 +183,12 @@
 
     <!--module name="IllegalTokenText"/-->
 
-    <module name="IllegalType"/>
+    <module name="IllegalType">
+      <!-- Disable CLASS_DEF introduced in Checkstyle 8.15 -->
+      <!-- TODO: discuss if we want to enable it or not -->
+      <property name="tokens"
+        value="ANNOTATION_FIELD_DEF, INTERFACE_DEF, METHOD_CALL, METHOD_DEF, METHOD_REF, PARAMETER_DEF, VARIABLE_DEF"/>
+    </module>
 
     <!--module name="ImportControl"/-->
 

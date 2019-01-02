@@ -21,15 +21,13 @@ package org.xwiki.job.internal;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
 
 import javax.inject.Provider;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.job.DefaultJobStatus;
@@ -41,10 +39,10 @@ import org.xwiki.job.test.SerializableStandaloneComponent;
 import org.xwiki.job.test.StandaloneComponent;
 import org.xwiki.logging.marker.TranslationMarker;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -175,7 +173,7 @@ public class JobStatusSerializerTest
         }
     }
 
-    @Before
+    @BeforeEach
     public void before() throws ParserConfigurationException
     {
         this.serializer = new JobStatusSerializer();
@@ -230,7 +228,8 @@ public class JobStatusSerializerTest
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
-        status.getLog().error("error message", new TestException("exception message", new Exception("cause"), "custom"));
+        status.getLog().error("error message",
+            new TestException("exception message", new Exception("cause"), "custom"));
 
         status = writeread(status);
 
@@ -238,7 +237,7 @@ public class JobStatusSerializerTest
         assertEquals("error message", status.getLog().peek().getMessage());
         assertEquals("exception message", status.getLog().peek().getThrowable().getMessage());
         assertEquals("cause", status.getLog().peek().getThrowable().getCause().getMessage());
-        assertNull("exception message", ((TestException)status.getLog().peek().getThrowable()).getCustom());
+        assertNull(((TestException) status.getLog().peek().getThrowable()).getCustom(), "exception message");
     }
 
     @Test

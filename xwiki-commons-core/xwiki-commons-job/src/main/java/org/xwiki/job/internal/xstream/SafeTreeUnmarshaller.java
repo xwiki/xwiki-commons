@@ -19,15 +19,12 @@
  */
 package org.xwiki.job.internal.xstream;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.ConverterLookup;
 import com.thoughtworks.xstream.core.ReferenceByXPathUnmarshaller;
-import com.thoughtworks.xstream.core.TreeUnmarshaller;
-import com.thoughtworks.xstream.core.util.FastStack;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.mapper.Mapper;
 
@@ -63,16 +60,6 @@ public class SafeTreeUnmarshaller extends ReferenceByXPathUnmarshaller
         try {
             return super.convert(parent, type, converter);
         } catch (Throwable e) {
-            FastStack types;
-            try {
-                types = (FastStack) FieldUtils.getDeclaredField(TreeUnmarshaller.class, "types", true).get(this);
-                types.popSilently();
-            } catch (Exception e1) {
-                // Should never happen
-                LOGGER.debug("Failed to access private field com.thoughtworks.xstream.core.TreeUnmarshaller#types",
-                    type, e1);
-            }
-
             LOGGER.debug("Got unknown exception when converting object of type [{}]", type, e);
         }
 

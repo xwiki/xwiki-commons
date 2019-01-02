@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons</artifactId>
-    <version>10.9-SNAPSHOT</version>
+    <version>11.0-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-tools</artifactId>
   <name>XWiki Commons - Tools - Parent POM</name>
@@ -34,20 +34,19 @@
   <properties>
     <!-- Don't run backward-compatibility checks in tools modules since we don't consider them public API -->
     <xwiki.revapi.skip>true</xwiki.revapi.skip>
-    <!-- Set the version of Maven used at build time for Maven plugins dependencies -->
-    <maven.dependencies.version>${maven.runtime.version}</maven.dependencies.version>
   </properties>
   <modules>
     <!-- Sorted Alphabetically -->
+    <module>xwiki-commons-tool-archiver</module>
     <module>xwiki-commons-tool-enforcers</module>
     <module>xwiki-commons-tool-extension-plugin</module>
     <module>xwiki-commons-tool-license-resources</module>
+    <module>xwiki-commons-tool-remote-resource-plugin</module>
     <module>xwiki-commons-tool-spoon</module>
     <module>xwiki-commons-tool-test</module>
     <module>xwiki-commons-tool-verification-resources</module>
-    <module>xwiki-commons-tool-xar</module>
     <module>xwiki-commons-tool-webjar-handlers</module>
-    <module>xwiki-commons-tool-remote-resource-plugin</module>
+    <module>xwiki-commons-tool-xar</module>
   </modules>
   <build>
     <pluginManagement>

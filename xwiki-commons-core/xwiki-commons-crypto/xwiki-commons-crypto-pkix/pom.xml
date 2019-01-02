@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-crypto</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>10.9-SNAPSHOT</version>
+    <version>11.0-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-crypto-pkix</artifactId>
   <packaging>jar</packaging>
@@ -32,7 +32,7 @@
   <description>Provides X.509 certificates management</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.76</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>71</xwiki.pitest.mutationThreshold>
+    <xwiki.pitest.mutationThreshold>82</xwiki.pitest.mutationThreshold>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Cryptographic Services for Authentication</xwiki.extension.name>
     <!-- Working with cryptography requires a lot of classes, relax the coupling requirements -->
@@ -58,4 +58,13 @@
       <artifactId>javax.mail</artifactId>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <!-- Add test source root for executing DSpot-generated tests -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>

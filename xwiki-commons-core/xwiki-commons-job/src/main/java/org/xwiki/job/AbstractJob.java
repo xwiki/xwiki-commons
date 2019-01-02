@@ -19,7 +19,9 @@
  */
 package org.xwiki.job;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -27,14 +29,17 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextManager;
+import org.xwiki.context.concurrent.ContextStoreManager;
 import org.xwiki.job.event.JobFinishedEvent;
 import org.xwiki.job.event.JobFinishingEvent;
 import org.xwiki.job.event.JobStartedEvent;
@@ -88,6 +93,9 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
     @Inject
     protected LoggerManager loggerManager;
 
+    @Inject
+    protected ContextStoreManager contextStore;
+
     /**
      * Used to store the results of the jobs execution.
      */
@@ -135,7 +143,7 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
      * Used to get the Execution Context.
      */
     @Inject
-    private Provider<Execution> executionProvider;
+    private Execution jobExecution;
 
     /**
      * Used to create a new Execution Context from scratch.
@@ -166,11 +174,14 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
     public void run()
     {
         if (this.initExecutionContext) {
-            Execution execution = this.executionProvider.get();
+            ExecutionContext previousContext = null;
+
+            // Get context to restore
+            Map<String, Serializable> storedContext = getRequest().getContext();
 
             // Initialize a new context only if there is not already one
             ExecutionContext context;
-            if (execution.getContext() == null) {
+            if (storedContext != null || this.jobExecution.getContext() == null) {
                 // Create a clean Execution Context
                 context = new ExecutionContext();
             } else {
@@ -179,17 +190,36 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
 
             try {
                 if (context != null) {
+                    // Remember previous context
+                    previousContext = this.jobExecution.getContext();
+
                     try {
                         this.executionContextManagerProvider.get().initialize(context);
                     } catch (ExecutionContextException e) {
                         throw new RuntimeException("Failed to initialize Job [" + this + "] execution context", e);
+                    }
+
+                    // Restore stored context
+                    if (MapUtils.isNotEmpty(storedContext)) {
+                        try {
+                            this.contextStore.restore(storedContext);
+                        } catch (ComponentLookupException e) {
+                            throw new RuntimeException("Failed to restore context requested for the job [" + this + "]",
+                                e);
+                        }
                     }
                 }
 
                 runInContext();
             } finally {
                 if (context != null) {
-                    execution.removeContext();
+                    // Get rid of job context
+                    this.jobExecution.removeContext();
+
+                    // Restore previous context
+                    if (previousContext != null) {
+                        this.jobExecution.setContext(previousContext);
+                    }
                 }
             }
         } else {

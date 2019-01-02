@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-crypto</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>10.9-SNAPSHOT</version>
+    <version>11.0-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-crypto-common</artifactId>
   <packaging>jar</packaging>
@@ -32,7 +32,7 @@
   <description>API common to all crypto modules</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.62</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>38</xwiki.pitest.mutationThreshold>
+    <xwiki.pitest.mutationThreshold>69</xwiki.pitest.mutationThreshold>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Cryptographic Services Common API</xwiki.extension.name>
     <!-- Cryptography requires complex expressions, allow a few such expressions -->
@@ -44,4 +44,13 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <!-- Add test source root for executing DSpot-generated tests -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>

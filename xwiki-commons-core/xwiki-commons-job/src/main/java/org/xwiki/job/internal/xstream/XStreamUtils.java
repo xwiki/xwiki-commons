@@ -19,6 +19,9 @@
  */
 package org.xwiki.job.internal.xstream;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,8 +48,8 @@ public final class XStreamUtils
      * Some famous unserializable classes. Fields with this classes are supposed to be made <code>transient</code> in
      * placed that may end up serialized but never too careful...
      */
-    private final static List<Class<?>> UNSERIALIZABLE_CLASSES =
-        Arrays.<Class<?>>asList(Logger.class, Provider.class, ComponentManager.class);
+    private static final List<Class<?>> UNSERIALIZABLE_CLASSES = Arrays.<Class<?>>asList(Logger.class, Provider.class,
+        ComponentManager.class, OutputStream.class, InputStream.class);
 
     private XStreamUtils()
     {
@@ -65,34 +68,52 @@ public final class XStreamUtils
 
     /**
      * @param item the item to serialize
-     * @return true of the item is serializable
+     * @return true if the item is serializable
      */
     public static boolean isSerializable(Object item)
     {
-        if (item != null) {
-            Serializable serializable = item.getClass().getAnnotation(Serializable.class);
-            if (serializable != null) {
-                return serializable.value();
-            } else {
-                if (item instanceof java.io.Serializable) {
-                    return true;
-                }
-            }
+        return item == null || isSerializable(item.getClass());
+    }
 
-            if (!item.getClass().isAnnotationPresent(Component.class)) {
-                for (Class<?> clazz : UNSERIALIZABLE_CLASSES) {
-                    if (clazz.isInstance(item)) {
-                        return false;
-                    }
-                }
+    /**
+     * @param field the field to serialize
+     * @return true if the field is serializable
+     * @since 10.10RC1
+     */
+    public static boolean isSerializable(Field field)
+    {
+        return isSerializable(field.getType());
+    }
 
+    /**
+     * @param itemClass the class of the object to serialize
+     * @return true of the class describe serializable object
+     * @since 10.10RC1
+     */
+    public static boolean isSerializable(Class<?> itemClass)
+    {
+        Serializable serializable = itemClass.getAnnotation(Serializable.class);
+        if (serializable != null) {
+            return serializable.value();
+        } else {
+            if (java.io.Serializable.class.isAssignableFrom(itemClass)) {
                 return true;
             }
-        } else {
-            return true;
         }
 
-        return false;
+        // We don't serialize components by default since it does not make sense most of the time
+        if (itemClass.isAnnotationPresent(Component.class)) {
+            return false;
+        }
+
+        // Filter some well known unserializable classes
+        for (Class<?> clazz : UNSERIALIZABLE_CLASSES) {
+            if (clazz.isAssignableFrom(itemClass)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static void serializeField(String name, Class<?> defaultType, Object value, HierarchicalStreamWriter writer,

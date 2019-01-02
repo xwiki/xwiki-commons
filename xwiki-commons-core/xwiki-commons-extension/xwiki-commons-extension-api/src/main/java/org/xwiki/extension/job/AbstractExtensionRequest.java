@@ -29,7 +29,6 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionRewriter;
 import org.xwiki.job.AbstractRequest;
 import org.xwiki.job.Request;
-import org.xwiki.stability.Unstable;
 
 /**
  * Base class for extension manipulation related {@link Request} implementations.
@@ -172,13 +171,12 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
 
     /**
      * Allow modifying manipulated {@link Extension}s on the fly (change allowed namespaces, dependencies, etc.).
-     * 
+     *
      * @param rewriter the filter
      * @since 8.4.2
      * @since 9.0RC1
      */
     @Transient
-    @Unstable
     public void setRewriter(ExtensionRewriter rewriter)
     {
         setProperty(PROPERTY_REWRITER, rewriter);

@@ -22,6 +22,7 @@ package org.xwiki.job;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.xwiki.job.event.status.JobStatus;
 
@@ -42,6 +43,12 @@ public interface Request extends Serializable
      * @see #isInteractive()
      */
     String PROPERTY_INTERACTIVE = "interactive";
+
+    /**
+     * @see #getContext()
+     * @since 10.10RC1
+     */
+    String PROPERTY_CONTEXT = "context";
 
     /**
      * @return list based identifier used to access the job. If none is provided the job will not be accessible by id
@@ -111,5 +118,23 @@ public interface Request extends Serializable
     default Boolean isStatusLogIsolated()
     {
         return null;
+    }
+
+    /**
+     * @return the context to restore in the job thread
+     * @since 10.10RC1
+     */
+    default Map<String, Serializable> getContext()
+    {
+        return null;
+    }
+
+    /**
+     * @param context the context to restore in the job thread.
+     * @since 10.10RC1
+     */
+    default void setContext(Map<String, Serializable> context)
+    {
+
     }
 }

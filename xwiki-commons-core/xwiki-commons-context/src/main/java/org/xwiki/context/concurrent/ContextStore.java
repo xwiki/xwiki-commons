@@ -17,35 +17,42 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.tool.xar;
+package org.xwiki.context.concurrent;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
 
-import org.apache.maven.it.util.ResourceExtractor;
-import org.codehaus.plexus.util.FileUtils;
+import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
- * Workaround bugs in {@link ResourceExtractor}.
+ * Save and restore contextual data.
  * 
  * @version $Id$
- * @since 5.0M2
+ * @since 10.10RC1
  */
-public class FixedResourceExtractor extends ResourceExtractor
+@Role
+@Unstable
+public interface ContextStore
 {
     /**
-     * Proper version of {@link ResourceExtractor}.
+     * @return the names of the context entries supported by the {@link ContextStore}
      */
-    public static File simpleExtractResources(Class cl, String resourcePath) throws IOException
-    {
-        String tempDirPath = System.getProperty("maven.test.tmpdir", System.getProperty("java.io.tmpdir"));
-        File tempDir = new File(tempDirPath);
+    Collection<String> getSupportedEntries();
 
-        File testDir = new File(tempDir, resourcePath);
+    /**
+     * Save only the passed context entries in the map.
+     * 
+     * @param contextStore the stored context data
+     * @param entries the list of context entries to take into account
+     */
+    void save(Map<String, Serializable> contextStore, Collection<String> entries);
 
-        FileUtils.deleteDirectory(testDir);
-
-        testDir = ResourceExtractor.extractResourcePath(cl, resourcePath, tempDir, true);
-        return testDir;
-    }
+    /**
+     * Inject in the current context data found in the passed map.
+     * 
+     * @param contextStore the stored context data
+     */
+    void restore(Map<String, Serializable> contextStore);
 }

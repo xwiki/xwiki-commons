@@ -40,14 +40,6 @@ public class XWikiDocumentTest
         assertEquals(reference, xdocument.getReference());
     }
 
-    private void assertReference(String reference, String xml) throws DocumentException
-    {
-        XWikiDocument xdocument = new XWikiDocument();
-        xdocument.fromXML(xml);
-
-        assertEquals(reference, xdocument.getReference());
-    }
-
     // Tests
 
     @Test

@@ -24,7 +24,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>10.9-SNAPSHOT</version>
+  <version>11.0-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -46,23 +46,24 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>10.9-SNAPSHOT</commons.version>
+    <commons.version>11.0-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
-    <xwiki.compatibility.previous.version>10.7</xwiki.compatibility.previous.version>
+    <xwiki.compatibility.previous.version>10.11</xwiki.compatibility.previous.version>
 
     <!-- Java -->
     <java.version>1.8</java.version>
 
     <!-- Jackson -->
-    <jackson.version>2.9.7</jackson.version>
+    <jackson.version>2.9.8</jackson.version>
 
     <!-- ASM -->
-    <asm.version>6.2.1</asm.version>
+    <asm.version>7.0</asm.version>
 
-    <!-- Selenium -->
-    <selenium.version>2.44.0</selenium.version>
+    <!-- Guava -->
+    <!-- FIXME: Can't upgrade to Guava 21 because Solr 6.3.0 use a method that have been deleted in Guava 21... -->
+    <guava.version>20.0</guava.version>
 
     <!-- SLF4J -->
     <slf4j.version>1.7.25</slf4j.version>
@@ -72,9 +73,9 @@
 
     <!-- JUnit -->
     <junit.version>4.12</junit.version>
-    <junit5.version>5.3.1</junit5.version>
-    <junit.platform.version>1.3.1</junit.platform.version>
-    <junit.vintage.version>5.3.1</junit.vintage.version>
+    <junit5.version>5.3.2</junit5.version>
+    <junit.platform.version>1.3.2</junit.platform.version>
+    <junit.vintage.version>5.3.2</junit.vintage.version>
 
     <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
          are executed with surefire or failsafe) -->
@@ -82,23 +83,29 @@
 
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
-    <mockito.version>2.22.0</mockito.version>
+    <mockito.version>2.23.4</mockito.version>
+
+    <!-- Byte Buddy -->
+    <bytebuddy.version>1.9.6</bytebuddy.version>
 
     <!-- AspectJ -->
-    <aspectj.version>1.9.1</aspectj.version>
+    <aspectj.version>1.9.2</aspectj.version>
 
     <!-- Clover & Jacoco -->
     <clover.version>4.3.1</clover.version>
     <jacoco.version>0.8.2</jacoco.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>8.13</checkstyle.version>
+    <checkstyle.version>8.16</checkstyle.version>
 
     <!-- Spoon -->
-    <spoon.version>7.0.0</spoon.version>
+    <spoon.version>7.2.0</spoon.version>
 
     <!-- Groovy -->
-    <groovy.version>2.5.2</groovy.version>
+    <groovy.version>2.5.5</groovy.version>
+
+    <!-- Ivy -->
+    <ivy.version>2.4.0</ivy.version>
 
     <!-- By default Checkstyle, Backward compatibility check, Enforcer, License plugins, etc are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
@@ -111,6 +118,8 @@
     <xwiki.enforcer.enforce-glassfish-el.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glassfish-el.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
     <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
+    <xwiki.enforcer.enforce-javax.activation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.activation.skip>
+    <xwiki.enforcer.enforce-javax.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.mail.skip>
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
     <xwiki.enforcer.enforce-velocity-engine-core.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-velocity-engine-core.skip>
@@ -122,6 +131,10 @@
          commits. Thus the idea is that the CI will set this as a system property to run it using a scheduler. It can
          also be execute locally by running "mvn install -Pquality -Dxwiki.pitest.skip=false" -->
     <xwiki.pitest.skip>true</xwiki.pitest.skip>
+    <!-- Default Pitest timeout factor. Increasing the value will increase the duration of a build
+         but might change the mutation score: some mutation might take longer than the timeout to be killed
+         on some machines. See: https://github.com/STAMP-project/pitest-descartes/issues/62 -->
+    <xwiki.pitest.timeoutFactor>1.25</xwiki.pitest.timeoutFactor>
 
     <!-- Enable by default auto release on Jira -->
     <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
@@ -160,22 +173,24 @@
          for ITs -->
     <sonar.jacoco.itReportPath>${xwiki.jacoco.itDestFile}</sonar.jacoco.itReportPath>
 
-    <!-- Version of Maven used at runtime (by Extension Manager mostly) -->
-    <maven.runtime.version>3.5.4</maven.runtime.version>
-    <!-- Version of Maven used by the plugins  -->
+    <!-- Version of Maven used during the build (the one used as dependency when building and during Maven plugins
+         executions)  -->
     <maven.build.version>3.5.4</maven.build.version>
-    <!-- Minimum version required -->
+    <!-- Minimum version of the actual Maven binary required to build -->
     <maven.minimum.version>3.5.0</maven.minimum.version>
-    <!--
-      The version of Maven used when declaring dependencies.
-      Use runtime version by default, overwrite it to change to build version (usually for Maven plugins)
-    -->
-    <maven.dependencies.version>${maven.runtime.version}</maven.dependencies.version>
+    <!-- The current Maven version declared in the dependency management (so that it can be change for the distribution
+         for example) -->
+    <maven.version>${maven.build.version}</maven.version>
+    <maven.resolver.build.version>1.1.1</maven.resolver.build.version>
+    <maven.resolver.version>${maven.resolver.build.version}</maven.resolver.version>
 
     <!-- The version of Maven Enforcer plugin -->
     <maven-enforcer.version>1.4.1</maven-enforcer.version>
     <!-- The version of Maven used by enforcer plugin -->
     <maven.maven-enforcer.version>2.2.1</maven.maven-enforcer.version>
+
+    <!-- The version of the Maven Plugin Tools -->
+    <maven.plugin.tools.version>3.6.0</maven.plugin.tools.version>
 
     <!-- The recommended version of known extensions to use -->
     <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]</xwiki.extension.recommendedVersions.commons>
@@ -188,6 +203,10 @@
     <xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure>true</xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure>
     <xwiki.nexus.skipLocalStaging>false</xwiki.nexus.skipLocalStaging>
     <xwiki.nexus.skipStaging>false</xwiki.nexus.skipStaging>
+
+    <!-- Control Maven output directory -->
+    <maven.build.dir>${project.basedir}/target</maven.build.dir>
+
   </properties>
   <prerequisites>
     <maven>${maven.minimum.version}</maven>
@@ -221,7 +240,7 @@
     <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki/xwiki-commons.git</developerConnection>
     <url>https://github.com/xwiki/xwiki-commons/tree/master/</url>
-    <tag>HEAD</tag>
+    <tag>stable-10.11.x</tag>
   </scm>
   <mailingLists>
     <mailingList>
@@ -303,7 +322,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-text</artifactId>
-        <version>1.5</version>
+        <version>1.6</version>
       </dependency>
       <!-- Apache HttpComponents -->
       <dependency>
@@ -367,7 +386,7 @@
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
-        <version>1.3.3</version>
+        <version>1.4</version>
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId>
@@ -402,7 +421,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-configuration2</artifactId>
-        <version>2.3</version>
+        <version>2.4</version>
          <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
          <exclusions>
            <exclusion>
@@ -438,7 +457,7 @@
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
-        <version>1.4.10</version>
+        <version>1.4.11.1</version>
       </dependency>
       <!-- Note: The DOM4J project has been dead for several years and we've decided to not use it in any new code and
            over time to refactor existing code to use JDOM or other XML techniques (such as STaX). When all code has
@@ -447,7 +466,9 @@
       <dependency>
         <groupId>org.dom4j</groupId>
         <artifactId>dom4j</artifactId>
-        <version>2.1.1</version>
+        <!-- Note: We cannot upgrade to 2.1.1 since it has an important regression, see
+             https://github.com/dom4j/dom4j/issues/51 -->
+        <version>2.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.jdom</groupId>
@@ -493,7 +514,8 @@
         <artifactId>xml-apis</artifactId>
         <version>1.4.01</version>
       </dependency>
-      <!-- Used by several projects (HTMLCleaner, Formula renderer, etc.) directly or indirectly to do XPath and XSLT transformations -->
+      <!-- Used by several projects (HTMLCleaner, Formula renderer, etc.) directly or indirectly to do XPath and XSLT
+           transformations -->
       <dependency>
         <groupId>xalan</groupId>
         <artifactId>xalan</artifactId>
@@ -512,7 +534,7 @@
       <dependency>
         <groupId>com.fasterxml.woodstox</groupId>
         <artifactId>woodstox-core</artifactId>
-        <version>5.1.0</version>
+        <version>5.2.0</version>
       </dependency>
       <dependency>
         <groupId>jaxen</groupId>
@@ -540,17 +562,24 @@
       <dependency>
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
-        <version>2.3.0</version>
+        <version>2.3.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.activation</groupId>
+            <artifactId>javax.activation-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
-        <version>2.3.0.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish.jaxb</groupId>
-        <artifactId>jaxb-core</artifactId>
-        <version>2.3.0.1</version>
+        <version>2.3.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.activation</groupId>
+            <artifactId>javax.activation-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- Json -->
@@ -716,16 +745,15 @@
       </dependency>
 
       <!-- Used by reflections and other projects in commons, platform and rendering -->
-      <!-- FIXME: Can't upgrade to Guava 21 because Solr 6.3.0 use a method that have been deleted in Guava 21... -->
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>20.0</version>
+        <version>${guava.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava-testlib</artifactId>
-        <version>20.0</version>
+        <version>${guava.version}</version>
       </dependency>
 
       <!-- Groovy engine. Used in both commons and platform -->
@@ -826,7 +854,7 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.1</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -851,12 +879,12 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-archiver</artifactId>
-        <version>3.6.0</version>
+        <version>4.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-classworlds</artifactId>
-        <version>2.5.2</version>
+        <version>2.6.0</version>
       </dependency>
       <dependency>
         <groupId>org.sonatype.plexus</groupId>
@@ -880,17 +908,17 @@
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-artifact</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-core</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
         <exclusions>
           <!-- Remove exclusion when https://jira.xwiki.org/browse/XCOMMONS-1155 is fixed -->
           <exclusion>
@@ -902,42 +930,42 @@
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-plugin-api</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-compat</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-settings</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-settings-builder</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-repository-metadata</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model-builder</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-resolver-provider</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.plugin-tools</groupId>
         <artifactId>maven-plugin-annotations</artifactId>
-        <version>3.5.2</version>
+        <version>${maven.plugin.tools.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -945,6 +973,37 @@
         <artifactId>maven-shared-utils</artifactId>
         <version>3.2.1</version>
       </dependency>
+      <!-- Maven Resolver -->
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-api</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-util</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-impl</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-connector-basic</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-transport-http</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-transport-file</artifactId>
+        <version>${maven.resolver.version}</version>
+    </dependency>
 
       <!-- Everybody tests -->
       <dependency>
@@ -1021,29 +1080,21 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-junit-jupiter</artifactId>
+        <version>${mockito.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.objenesis</groupId>
         <artifactId>objenesis</artifactId>
         <version>2.6</version>
       </dependency>
-
       <dependency>
-        <groupId>org.seleniumhq.selenium</groupId>
-        <artifactId>selenium-java</artifactId>
-        <version>${selenium.version}</version>
-        <exclusions>
-          <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-          <!-- It has a dependency on testng which we need to exclude to prevent
-               Maven Surefire plugin to think we're executing TestNG tests. -->
-          <exclusion>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy</artifactId>
+        <version>${bytebuddy.version}</version>
       </dependency>
+
       <!-- Several modules depend on the servlet API -->
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -1083,11 +1134,18 @@
         <groupId>com.sun.mail</groupId>
         <artifactId>javax.mail</artifactId>
         <version>1.6.1</version>
+        <exclusions>
+          <exclusion>
+            <!-- Artifact id changed -->
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
-        <groupId>javax.activation</groupId>
-        <artifactId>activation</artifactId>
-        <version>1.1.1</version>
+        <groupId>com.sun.activation</groupId>
+        <artifactId>javax.activation</artifactId>
+        <version>1.2.0</version>
       </dependency>
       <!-- Diff tools used in commons for diff and blame -->
       <dependency>
@@ -1160,7 +1218,6 @@
         <artifactId>asm-util</artifactId>
         <version>${asm.version}</version>
       </dependency>
-
       <!-- ANTLR -->
       <dependency>
         <groupId>org.antlr</groupId>
@@ -1176,6 +1233,7 @@
   </dependencyManagement>
   <build>
     <defaultGoal>install</defaultGoal>
+    <directory>${maven.build.dir}</directory>
     <plugins>
       <!-- Ensure that we lock down all plugin versions -->
       <plugin>
@@ -1237,10 +1295,11 @@
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
-                  <message>XWiki uses "org.glassfish.jaxb" version of the JAXB implementation. Don't use the "com.sun.xml.bind" one</message>
+                  <message>XWiki uses org.glassfish.jaxb:jaxb-runtime instead</message>
                   <excludes>
                     <exclude>com.sun.xml.bind:jaxb-impl</exclude>
                     <exclude>com.sun.xml.bind:jaxb-core</exclude>
+                    <exclude>org.glassfish.jaxb:jaxb-core</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
@@ -1330,6 +1389,50 @@
               </rules>
             </configuration>
           </execution>
+          <!-- Check that we're using javax.activation-api and not activation -->
+          <execution>
+            <id>enforce-javax.activation</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-javax.activation.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    Javax Activation artifact id changed, the current one is com.sun.activation:javax.activation
+                  </message>
+                  <excludes>
+                    <exclude>javax.activation:activation</exclude>
+                    <exclude>javax.activation:javax.activation-api</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using com.sun.mail:javax.mail and the various older ids -->
+          <execution>
+            <id>enforce-javax.mail</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-javax.mail.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    Javax Mail artifact id changed, the current one is com.sun.mail:javax.mail
+                  </message>
+                  <excludes>
+                    <exclude>javax.mail:mail</exclude>
+                    <exclude>javax.mail:mailapi</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
           <!-- Check that we're using right Bouncy Castle ids -->
           <execution>
             <id>enforce-bouncycastle-ids</id>
@@ -1401,7 +1504,8 @@
               </rules>
             </configuration>
           </execution>
-          <!-- Check that we don't trigger a dependency containing stuff already included the minimum Java SE version supported by XWiki -->
+          <!-- Check that we don't trigger a dependency containing stuff already included the minimum Java SE version
+               supported by XWiki -->
           <execution>
             <id>enforce-javase-dependencies</id>
             <goals>
@@ -1453,9 +1557,6 @@
                  conflict between checkstyle and clover. Namely the clovered code doesn't pass our
                  checkstyle rules -->
             <skip>${xwiki.checkstyle.skip}</skip>
-
-            <!-- Workaround for https://github.com/m2e-code-quality/m2e-code-quality/issues/117 -->
-            <sourceDirectories>${project.compileSourceRoots}</sourceDirectories>
           </configuration>
           <!-- We redeclare the version of checkstyle to control which version we use. We do that since we also write
                custom checkstyle checks and we need to keep in sync the checkstyle version used to compile those
@@ -1492,7 +1593,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-remote-resources-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.5</version>
+          <version>1.6.0</version>
         </plugin>
         <plugin>
           <!-- Since 2.0-beta-9 maven-release-plugin uses remote tagging by default. Remote tagging implies that SCM
@@ -1534,7 +1635,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-plugin-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.5</version>
+          <version>${maven.plugin.tools.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1598,24 +1699,6 @@
               </property>
             </systemProperties>
           </configuration>
-          <dependencies>
-            <!-- Allow running both JUnit4 and JUnit5 tests -->
-            <dependency>
-              <groupId>org.junit.platform</groupId>
-              <artifactId>junit-platform-surefire-provider</artifactId>
-              <version>${junit.platform.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.junit.jupiter</groupId>
-              <artifactId>junit-jupiter-engine</artifactId>
-              <version>${junit5.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.junit.vintage</groupId>
-              <artifactId>junit-vintage-engine</artifactId>
-              <version>${junit.vintage.version}</version>
-            </dependency>
-          </dependencies>
           <executions>
             <execution>
               <id>functional-tests</id>
@@ -1636,7 +1719,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.1.0</version>
+          <version>3.1.1</version>
           <configuration>
             <archive>
               <manifest>
@@ -1772,7 +1855,7 @@
             <dependency>
               <groupId>org.revapi</groupId>
               <artifactId>revapi-java</artifactId>
-              <version>0.18.1</version>
+              <version>0.18.2</version>
             </dependency>
           </dependencies>
           <executions>
@@ -1802,7 +1885,7 @@
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>4.0.0</version>
+          <version>4.1.0</version>
         </plugin>
         <plugin>
           <groupId>org.openclover</groupId>
@@ -1851,7 +1934,8 @@
             <maxmemory>1024m</maxmemory>
           </configuration>
         </plugin>
-        <!-- We don't use site plugin but we org.apache.maven.plugins.enforcer.RequirePluginVersions enforcer rule complain if we don't define it -->
+        <!-- We don't use site plugin but we org.apache.maven.plugins.enforcer.RequirePluginVersions enforcer rule
+             complain if we don't define it -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
@@ -1976,6 +2060,11 @@
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.pitest</groupId>
+          <artifactId>pitest-maven</artifactId>
+          <version>1.4.0</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -2202,7 +2291,6 @@
           <plugin>
             <groupId>org.pitest</groupId>
             <artifactId>pitest-maven</artifactId>
-            <version>1.4.0</version>
             <executions>
               <execution>
                 <id>pitest-check</id>
@@ -2216,6 +2304,7 @@
               <failWhenNoMutations>false</failWhenNoMutations>
               <mutationThreshold>${xwiki.pitest.mutationThreshold}</mutationThreshold>
               <mutationEngine>descartes</mutationEngine>
+              <timeoutFactor>${xwiki.pitest.timeoutFactor}</timeoutFactor>
               <threads>4</threads>
               <outputFormats>
                 <value>HTML</value>
@@ -2317,8 +2406,8 @@
       <artifactId>maven-project-info-reports-plugin</artifactId>
       <version>2.4</version>
       <configuration>
-                  <!-- Since contacting the Maven Repositories can take a very long time, tell the plugin not to display
-                       the repository locations of the dependencies in the report. -->
+        <!-- Since contacting the Maven Repositories can take a very long time, tell the plugin not to display
+             the repository locations of the dependencies in the report. -->
         <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
       </configuration>
       <reportSets>

@@ -21,8 +21,6 @@ package org.xwiki.extension;
 
 import java.io.Serializable;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Interface used to allow external service modify manipulated extensions (change allowed namespaces, dependencies,
  * etc.).
@@ -31,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @since 8.4.2
  * @since 9.0RC1
  */
-@Unstable
 public interface ExtensionRewriter extends Serializable
 {
     /**

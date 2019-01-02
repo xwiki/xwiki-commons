@@ -19,11 +19,15 @@
  */
 package org.xwiki.job.internal.xstream;
 
-import org.junit.Test;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.junit.jupiter.api.Test;
 import org.xwiki.logging.LogLevel;
 
 import static org.junit.Assert.assertFalse;
-
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -34,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 public class XStreamUtilsTest
 {
     @Test
-    public void testRecursiveObject()
+    public void isSafeType()
     {
         assertTrue(XStreamUtils.isSafeType(null));
         assertTrue(XStreamUtils.isSafeType("string"));
@@ -43,5 +47,14 @@ public class XStreamUtilsTest
         assertTrue(XStreamUtils.isSafeType(LogLevel.ERROR));
 
         assertFalse(XStreamUtils.isSafeType(getClass()));
+    }
+
+    @Test
+    public void isSerializable()
+    {
+        assertFalse(XStreamUtils.isSerializable(ByteArrayOutputStream.class));
+        assertFalse(XStreamUtils.isSerializable(OutputStream.class));
+        assertFalse(XStreamUtils.isSerializable(ByteArrayInputStream.class));
+        assertFalse(XStreamUtils.isSerializable(InputStream.class));
     }
 }

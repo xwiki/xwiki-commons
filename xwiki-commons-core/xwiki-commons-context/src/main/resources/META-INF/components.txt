@@ -1,2 +1,3 @@
 org.xwiki.context.internal.DefaultExecution
 org.xwiki.context.internal.DefaultExecutionContextManager
+org.xwiki.context.internal.concurrent.DefaultContextStoreManager

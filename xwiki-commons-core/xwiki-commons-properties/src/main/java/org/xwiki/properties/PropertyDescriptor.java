@@ -93,4 +93,28 @@ public interface PropertyDescriptor
      * @since 4.2M1
      */
     Field getField();
+
+    /**
+     * @return indicates if the property is deprecated.
+     * @since 10.10RC1
+     */
+    default boolean isDeprecated() {
+        return false;
+    }
+
+    /**
+     * @return indicates if the property is advanced.
+     * @since 10.10RC1
+     */
+    default boolean isAdvanced() {
+        return false;
+    }
+
+    /**
+     * @return the hierarchy of groups.
+     * @since 10.11RC1
+     */
+    default PropertyGroupDescriptor getGroupDescriptor() {
+        return new PropertyGroupDescriptor(null);
+    }
 }

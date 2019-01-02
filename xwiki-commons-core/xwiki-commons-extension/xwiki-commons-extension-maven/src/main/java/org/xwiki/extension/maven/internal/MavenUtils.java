@@ -116,7 +116,7 @@ public class MavenUtils
      * @param classifier the classifier
      * @param version the version
      * @return the extension identifier
-     * @since 10.9RC1
+     * @since 10.9
      * @since 10.8.1
      */
     public static ExtensionId toExtensionId(String groupId, String artifactId, String classifier, String version)
@@ -132,7 +132,7 @@ public class MavenUtils
      * @param classifier the classifier
      * @param version the version
      * @return the extension identifier
-     * @since 10.9RC1
+     * @since 10.9
      * @since 10.8.1
      */
     public static ExtensionId toExtensionId(String groupId, String artifactId, String classifier, Version version)

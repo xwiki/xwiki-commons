@@ -28,7 +28,7 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Marks a field as needed to be injected with components and mock components.
+ * Marks a field as needed to be injected with the Component Manager used by the test.
  *
  * @version $Id$
  * @since 10.4RC1

@@ -23,6 +23,7 @@ import com.thoughtworks.xstream.MarshallingStrategy;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.DataHolder;
+import com.thoughtworks.xstream.core.JVM;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 
 /**
@@ -41,8 +42,7 @@ public class SafeXStream extends XStream
      */
     public SafeXStream()
     {
-        // Overwrite default reflection converter to skip unserializable types
-        registerConverter(new SafeReflectionConverter(this), PRIORITY_VERY_LOW);
+        super(new SafeReflectionProvider(JVM.newReflectionProvider()));
 
         // Cleaner array serialization
         registerConverter(new SafeArrayConverter(this));
