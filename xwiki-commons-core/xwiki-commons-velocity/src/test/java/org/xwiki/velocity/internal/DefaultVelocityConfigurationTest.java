@@ -22,7 +22,7 @@ package org.xwiki.velocity.internal;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.velocity.tools.generic.ListTool;
+import org.apache.velocity.tools.generic.NumberTool;
 import org.apache.velocity.util.introspection.DeprecatedCheckUberspector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,8 +59,8 @@ public class DefaultVelocityConfigurationTest
     @Test
     public void getToolsReturnsDefaultTools()
     {
-        // Verify for example that the List tool is present.
-        assertEquals(ListTool.class.getName(), this.configuration.getTools().get("listtool"));
+        // Verify for example that the number tool is present.
+        assertEquals(NumberTool.class.getName(), this.configuration.getTools().get("listtool"));
     }
 
     @Test

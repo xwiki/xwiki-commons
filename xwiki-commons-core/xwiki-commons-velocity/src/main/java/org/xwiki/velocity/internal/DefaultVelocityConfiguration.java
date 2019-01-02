@@ -26,10 +26,8 @@ import javax.inject.Singleton;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.tools.generic.ListTool;
 import org.apache.velocity.tools.generic.MathTool;
 import org.apache.velocity.tools.generic.NumberTool;
-import org.apache.velocity.tools.generic.SortTool;
 import org.apache.velocity.util.introspection.DeprecatedCheckUberspector;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -83,11 +81,9 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
     public void initialize() throws InitializationException
     {
         // Default Velocity tools.
-        this.defaultTools.setProperty("listtool", ListTool.class.getName());
         this.defaultTools.setProperty("numbertool", NumberTool.class.getName());
         this.defaultTools.setProperty("datetool", ComparisonDateTool.class.getName());
         this.defaultTools.setProperty("mathtool", MathTool.class.getName());
-        this.defaultTools.setProperty("sorttool", SortTool.class.getName());
         this.defaultTools.setProperty("escapetool", EscapeTool.class.getName());
         this.defaultTools.setProperty("regextool", RegexTool.class.getName());
         this.defaultTools.setProperty("collectionstool", CollectionsTool.class.getName());

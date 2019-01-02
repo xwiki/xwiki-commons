@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.Properties;
 
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.tools.generic.ListTool;
+import org.apache.velocity.tools.generic.NumberTool;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.test.junit5.mockito.AfterMockComponent;
@@ -64,7 +64,7 @@ public class DefaultVelocityContextFactoryTest
     public void afterMockComponent()
     {
         Properties properties = new Properties();
-        properties.put("listtool", ListTool.class.getName());
+        properties.put("numbertool", NumberTool.class.getName());
         when(this.configuration.getTools()).thenReturn(properties);
     }
     
@@ -89,8 +89,8 @@ public class DefaultVelocityContextFactoryTest
         verify(this.componentManager, times(2)).getInstanceList(VelocityContextInitializer.class);
 
         assertNotSame(context1, context2);
-        assertNotNull(context1.get("listtool"));
-        assertSame(context2.get("listtool"), context1.get("listtool"));
+        assertNotNull(context1.get("numbertool"));
+        assertSame(context2.get("numbertool"), context1.get("numbertool"));
         assertNull(context2.get("param"));
     }
 }

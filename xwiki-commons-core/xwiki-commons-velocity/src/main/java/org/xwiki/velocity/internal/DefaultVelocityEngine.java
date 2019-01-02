@@ -48,7 +48,6 @@ import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.XWikiVelocityException;
-import org.xwiki.velocity.internal.directive.SetVariableDirective;
 import org.xwiki.velocity.internal.directive.TryCatchDirective;
 
 /**
@@ -188,7 +187,6 @@ public class DefaultVelocityEngine implements VelocityEngine
 
         // Set up directives
         runtime.loadDirective(TryCatchDirective.class.getName());
-        runtime.loadDirective(SetVariableDirective.class.getName());
 
         try {
             runtime.init();

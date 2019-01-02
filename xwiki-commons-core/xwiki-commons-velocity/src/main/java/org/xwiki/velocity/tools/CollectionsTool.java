@@ -40,6 +40,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.velocity.tools.generic.CollectionTool;
 
 /**
  * Velocity Tool allowing to create various type of collections.
@@ -47,7 +48,7 @@ import org.apache.commons.collections4.CollectionUtils;
  * @version $Id$
  * @since 4.0M1
  */
-public class CollectionsTool
+public class CollectionsTool extends CollectionTool
 {
     /**
      * Create and return a new {@link ArrayList}, an unbounded list with constant access time and good performance for
