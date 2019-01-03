@@ -32,9 +32,9 @@
   <packaging>pom</packaging>
   <properties>
     <!-- By default legacy dependencies are forbidden -->
-    <xwiki.enforcer.no-legacy-dependencies.skip>false</xwiki.enforcer.no-legacy-dependencies.skip>
+    <xwiki.enforcer.no-legacy-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.no-legacy-dependencies.skip>
     <!-- By default we perform checks on the POM content -->
-    <xwiki.enforcer.valid-poms.skip>false</xwiki.enforcer.valid-poms.skip>
+    <xwiki.enforcer.valid-poms.skip>${xwiki.enforcer.skip}</xwiki.enforcer.valid-poms.skip>
     <!-- By default don't skip Spoon checks -->
     <xwiki.spoon.skip>false</xwiki.spoon.skip>
   </properties>
