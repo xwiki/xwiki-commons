@@ -197,7 +197,7 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
         // Find all files in the resources dir
         File resourcesDir = getResourcesDirectory();
 
-        Collection<File> files = new ArrayList<File>();
+        Collection<File> files = new ArrayList<>();
         if (resourcesDir.exists()) {
             PlexusIoFileResourceCollection collection = new PlexusIoFileResourceCollection();
             collection.setBaseDir(resourcesDir);
@@ -321,10 +321,8 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     protected boolean isTitlesMatching(String documentReference, String title)
     {
         for (Map.Entry<Pattern, Pattern> entry : this.titlePatterns.entrySet()) {
-            if (entry.getKey().matcher(documentReference).matches()) {
-                if (!entry.getValue().matcher(title).matches()) {
-                    return false;
-                }
+            if (entry.getKey().matcher(documentReference).matches() && !entry.getValue().matcher(title).matches()) {
+                return false;
             }
         }
         return true;

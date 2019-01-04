@@ -284,7 +284,7 @@ abstract class AbstractXARMojo extends AbstractMojo
      * @throws InvalidDependencyVersionException error
      */
     protected Set<Artifact> resolveArtifactDependencies(Artifact artifact) throws ArtifactResolutionException,
-        ArtifactNotFoundException, ProjectBuildingException, InvalidDependencyVersionException
+        ArtifactNotFoundException, ProjectBuildingException
     {
         Artifact pomArtifact =
             this.factory.createArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), "",
@@ -348,7 +348,6 @@ abstract class AbstractXARMojo extends AbstractMojo
     {
         String resourcesLocation =
             (this.project.getBasedir().getAbsolutePath() + "/src/main/resources").replace("/", File.separator);
-        File resourcesDir = new File(resourcesLocation);
-        return resourcesDir;
+        return new File(resourcesLocation);
     }
 }

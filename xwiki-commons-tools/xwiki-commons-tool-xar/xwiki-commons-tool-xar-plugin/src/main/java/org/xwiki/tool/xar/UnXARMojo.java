@@ -108,7 +108,7 @@ public class UnXARMojo extends AbstractXARMojo
      * @throws ArchiverException error when unzip package.O
      * @throws MojoExecutionException error when unzip package.
      */
-    private void performUnArchive() throws ArchiverException, MojoExecutionException
+    private void performUnArchive() throws MojoExecutionException
     {
         Artifact artifact = findArtifact();
 

@@ -75,7 +75,7 @@ public class XARMojo extends AbstractXARMojo
     @Override
     public void execute() throws MojoExecutionException
     {
-        if (this.project.getResources().size() < 1) {
+        if (this.project.getResources().isEmpty()) {
             getLog().warn("No XAR created as no resources were found");
             return;
         }
@@ -242,13 +242,11 @@ public class XARMojo extends AbstractXARMojo
             Set<Artifact> artifacts = this.project.getArtifacts();
             if (artifacts != null) {
                 for (Artifact artifact : artifacts) {
-                    if (!artifact.isOptional()) {
-                        if ("xar".equals(artifact.getType())) {
-                            String id = String.format("%s:%s", artifact.getGroupId(), artifact.getArtifactId());
-                            if (id.equals(transformation.getArtifact())) {
-                                unpackXARToOutputDirectory(artifact, new String[] { transformation.getFile() },
-                                    new String[] {});
-                            }
+                    if (!artifact.isOptional() && "xar".equals(artifact.getType())) {
+                        String id = String.format("%s:%s", artifact.getGroupId(), artifact.getArtifactId());
+                        if (id.equals(transformation.getArtifact())) {
+                            unpackXARToOutputDirectory(artifact, new String[] { transformation.getFile() },
+                                new String[] {});
                         }
                     }
                 }
@@ -266,10 +264,8 @@ public class XARMojo extends AbstractXARMojo
         Set<Artifact> artifacts = this.project.getArtifacts();
         if (artifacts != null) {
             for (Artifact artifact : artifacts) {
-                if (!artifact.isOptional()) {
-                    if ("xar".equals(artifact.getType())) {
-                        unpackXARToOutputDirectory(artifact, getIncludes(), getExcludes());
-                    }
+                if (!artifact.isOptional() && "xar".equals(artifact.getType())) {
+                    unpackXARToOutputDirectory(artifact, getIncludes(), getExcludes());
                 }
             }
         }
@@ -381,11 +377,8 @@ public class XARMojo extends AbstractXARMojo
 
                 // Add configured properties
                 XAREntry cfgEntry = getEntryMap().get(reference);
-                if (cfgEntry != null) {
-                    // Entry type
-                    if (cfgEntry.getType() != null) {
-                        element.addAttribute("type", cfgEntry.getType());
-                    }
+                if (cfgEntry != null && cfgEntry.getType() != null) {
+                    element.addAttribute("type", cfgEntry.getType());
                 }
 
                 filesElement.add(element);
@@ -504,7 +497,7 @@ public class XARMojo extends AbstractXARMojo
 
         // Next, we scan the hole directory and subdirectories for documents.
 
-        Queue<File> fileQueue = new LinkedList<File>();
+        Queue<File> fileQueue = new LinkedList<>();
         addContentsToQueue(fileQueue, sourceDir);
         while (!fileQueue.isEmpty() && !documentNames.isEmpty()) {
             File currentFile = fileQueue.poll();
@@ -517,8 +510,8 @@ public class XARMojo extends AbstractXARMojo
                     //
                     // Note: DO NOT USE String.split since it requires a regexp. Under Windows XP, the FileSeparator is
                     // '\' when not escaped is a special character of the regexp
-                    // String archivedFilePath =
-                    // currentFile.getAbsolutePath().split(sourceDir.getAbsolutePath() + File.separator)[1];
+                    //   String archivedFilePath =
+                    //   currentFile.getAbsolutePath().split(sourceDir.getAbsolutePath() + File.separator)[1];
                     String archivedFilePath = currentFile.getAbsolutePath()
                         .substring((sourceDir.getAbsolutePath() + File.separator).length());
                     archivedFilePath = archivedFilePath.replace(File.separatorChar, '/');

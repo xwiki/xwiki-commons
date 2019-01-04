@@ -89,8 +89,7 @@ public class XWikiXMLWriter extends XMLWriter
         if (this.useFormat && node.getText().trim().length() == 0) {
             // Check if parent node contains non text nodes
             boolean containsNonTextNode = false;
-            for (Object object : node.getParent().content()) {
-                Node objectNode = (Node) object;
+            for (Node objectNode : node.getParent().content()) {
                 if (objectNode.getNodeType() != Node.TEXT_NODE) {
                     containsNonTextNode = true;
                     break;
