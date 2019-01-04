@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -93,10 +94,36 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p>&quot;&amp;</p>", "<p>\"&</p>");
         assertHTML("<p><img src=\"http://host.com/a.gif?a=foo&amp;b=bar\" /></p>",
             "<img src=\"http://host.com/a.gif?a=foo&b=bar\" />");
+        assertHTML("<p><img src=\"http://host.com/a.gif?a=foo&amp;b=bar\" /></p>",
+            "<img src=\"http://host.com/a.gif?a=foo&amp;b=bar\" />");
         assertHTML("<p>\n</p>", "<p>&#xA;</p>");
 
         // Verify that double quotes are escaped in attribute values
         assertHTML("<p value=\"script:&quot;&quot;\"></p>", "<p value='script:\"\"'");
+    }
+
+    @Test
+    public void transformedDOMContent()
+    {
+        String htmlInput = "<img src=\"http://host.com/a.gif?a=foo&b=bar\" />";
+        Document document = this.cleaner.clean(new StringReader(htmlInput));
+
+        String textContent =
+            document.getElementsByTagName("img").item(0).getAttributes().getNamedItem("src").getTextContent();
+        assertEquals("http://host.com/a.gif?a=foo&b=bar", textContent);
+
+        htmlInput = "<img src=\"http://host.com/a.gif?a=foo&amp;b=bar\" />";
+        document = this.cleaner.clean(new StringReader(htmlInput));
+
+        textContent =
+            document.getElementsByTagName("img").item(0).getAttributes().getNamedItem("src").getTextContent();
+        assertEquals("http://host.com/a.gif?a=foo&amp;b=bar", textContent);
+
+        htmlInput = "<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff\">content</div>";
+        document = this.cleaner.clean(new StringReader(htmlInput));
+        textContent =
+            document.getElementsByTagName("div").item(0).getAttributes().getNamedItem("foo").getTextContent();
+        assertEquals("aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff", textContent);
     }
 
     @Test
