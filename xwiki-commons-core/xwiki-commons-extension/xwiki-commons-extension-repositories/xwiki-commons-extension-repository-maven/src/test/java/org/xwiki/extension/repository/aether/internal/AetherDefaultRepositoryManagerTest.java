@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -159,9 +160,16 @@ public class AetherDefaultRepositoryManagerTest
 
         Assert.assertEquals(repositories, extension.getRepositories());
 
-        ExtensionDependency dependency = extension.getDependencies().iterator().next();
+        Iterator<ExtensionDependency> dependencyIterator = extension.getDependencies().iterator();
+
+        ExtensionDependency dependency = dependencyIterator.next();
         Assert.assertEquals(this.dependencyExtensionId.getId(), dependency.getId());
         Assert.assertEquals(this.dependencyExtensionId.getVersionConstraint(), dependency.getVersionConstraint());
+        Assert.assertEquals(repositories, dependency.getRepositories());
+
+        dependency = dependencyIterator.next();
+        Assert.assertEquals("legacygroupid:legacyartifactid", dependency.getId());
+        Assert.assertEquals("legacyversion", dependency.getVersionConstraint().getValue());
         Assert.assertEquals(repositories, dependency.getRepositories());
 
         // check that a new resolve of an already resolved extension provide the proper repository
