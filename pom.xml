@@ -1884,10 +1884,10 @@
           <version>2.5.1</version>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
+          <groupId>org.sonarsource.scanner.maven</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.3.0.603</version>
+          <version>3.5.0.1254</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
