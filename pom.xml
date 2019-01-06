@@ -157,6 +157,9 @@
 
     <!-- Sonar/Jacoco integration. Note that these properties need to be defined outside the "coverage" profile
          because we want to be to able to execute mvn sonar:sonar without passing a profile -->
+    <!-- Config to push to Sonarcloud.io -->
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.organization>xwiki</sonar.organization>
     <!-- Tells Sonar to use jacoco for coverage results -->
     <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
     <!-- The system property xwiki.jacoco.itDestFile needs to be passed on the command line.
