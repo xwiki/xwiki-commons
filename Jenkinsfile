@@ -62,8 +62,9 @@ stage ('Commons Builds') {
         xwikiBuild('Quality') {
           xvnc = false
           mavenOpts = globalMavenOpts
-          goals = 'clean install jacoco:report'
+          goals = 'clean install jacoco:report sonar:sonar'
           profiles = 'quality,legacy'
+          sonar = true
         }
       }
     },
