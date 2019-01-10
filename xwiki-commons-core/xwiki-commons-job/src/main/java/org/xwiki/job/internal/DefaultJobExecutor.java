@@ -140,6 +140,13 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
         }
 
         @Override
+        protected void beforeExecute(Thread t, Runnable r)
+        {
+            // Set a custom thread name corresponding to the job to make debugging easier
+            Thread.currentThread().setName(r.toString());
+        }
+
+        @Override
         protected void afterExecute(Runnable r, Throwable t)
         {
             Job job = (Job) r;
@@ -153,6 +160,9 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
                     }
                 }
             }
+
+            // Reset thread name since it's not used anymore
+            Thread.currentThread().setName("Unused job pool thread");
         }
     }
 
