@@ -402,4 +402,10 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
         initialize(request);
         run();
     }
+
+    @Override
+    public String toString()
+    {
+        return super.toString() + " (" + getRequest().getId() + ")";
+    }
 }
