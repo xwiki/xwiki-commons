@@ -43,6 +43,12 @@ import org.w3c.dom.Element;
  * http://htmlcleaner.sourceforge.net/license.php). Our goal is to remove this class completely if we can get SF's HTML
  * Cleaner to support the usage of a dedicated builder.
  *
+ * Here's the reason why we want to be able to give a dedicated builder:
+ * Note that creating the DocumentBuilder is not super fast but it's specifically more about the DocumentBuilderFactory
+ * creation mainly because it's blocking all the threads which are doing stuff implying loading a class from the
+ * classloader making it an important lock contention. I modified its behavior (and other similar tasks) after noticing
+ * that there was often a bunch of threads waiting for this kind of lock.
+ *
  * @version $Id$
  * @since 1.8.2
  */
