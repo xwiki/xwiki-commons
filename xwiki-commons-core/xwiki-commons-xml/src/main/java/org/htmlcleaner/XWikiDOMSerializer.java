@@ -20,17 +20,11 @@
 package org.htmlcleaner;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
-import org.w3c.dom.Comment;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
@@ -49,11 +43,16 @@ import org.w3c.dom.Element;
  * classloader making it an important lock contention. I modified its behavior (and other similar tasks) after noticing
  * that there was often a bunch of threads waiting for this kind of lock.
  *
+ * Note: Even though in a public package this code is not meant to be a public API. We've had to put in under the {@code
+ * org.htmlcleaner} package because we use the following package protected API: TagNode#getNamespaceURIOnPath(String).
+ *
  * @version $Id$
  * @since 1.8.2
  */
 public class XWikiDOMSerializer extends DomSerializer
 {
+    private static final String HTML_QUALIFIED_NAME = "html";
+
     /**
      * @param props the HTML Cleaner properties set by the user to control the HTML cleaning.
      */
@@ -82,7 +81,7 @@ public class XWikiDOMSerializer extends DomSerializer
         // Note that we may want to fix incorrect DOCTYPEs in future; there are some fairly
         // common patterns for errors with the older HTML4 doctypes.
         //
-        if (rootNode.getDocType() != null){
+        if (rootNode.getDocType() != null) {
             String qualifiedName = rootNode.getDocType().getPart1();
             String publicId = rootNode.getDocType().getPublicId();
             String systemId = rootNode.getDocType().getSystemId();
@@ -90,14 +89,19 @@ public class XWikiDOMSerializer extends DomSerializer
             //
             // If there is no qualified name, set it to html. See bug #153.
             //
-            if (qualifiedName == null) qualifiedName = "html";
+            if (qualifiedName == null) {
+                qualifiedName = HTML_QUALIFIED_NAME;
+            }
 
             DocumentType documentType = impl.createDocumentType(qualifiedName, publicId, systemId);
 
             //
-            // While the qualified name is "HTML" for some DocTypes, we want the actual document root name to be "html". See bug #116
+            // While the qualified name is "HTML" for some DocTypes, we want the actual document root name to be "html".
+            // See bug #116
             //
-            if (qualifiedName.equals("HTML")) qualifiedName = "html";
+            if (qualifiedName.equals("HTML")) {
+                qualifiedName = HTML_QUALIFIED_NAME;
+            }
             document = impl.createDocument(rootNode.getNamespaceURIOnPath(""), qualifiedName, documentType);
         } else {
             document = builder.newDocument();
@@ -108,7 +112,7 @@ public class XWikiDOMSerializer extends DomSerializer
         //
         // Turn off error checking if we're allowing invalid attribute names, or if we've chosen to turn it off
         //
-        if (props.isAllowInvalidAttributeNames() || strictErrorChecking == false){
+        if (props.isAllowInvalidAttributeNames() || !strictErrorChecking) {
             document.setStrictErrorChecking(false);
         }
 
@@ -126,11 +130,11 @@ public class XWikiDOMSerializer extends DomSerializer
             //
             // Fix any invalid attribute names
             //
-            if (!props.isAllowInvalidAttributeNames()){
+            if (!props.isAllowInvalidAttributeNames()) {
                 attrName = Utils.sanitizeXmlAttributeName(attrName, props.getInvalidXmlAttributeNamePrefix());
             }
 
-            if (attrName != null && (Utils.isValidXmlIdentifier(attrName) || props.isAllowInvalidAttributeNames())){
+            if (attrName != null && (Utils.isValidXmlIdentifier(attrName) || props.isAllowInvalidAttributeNames())) {
 
                 if (escapeXml) {
                     attrValue = Utils.escapeXml(attrValue, props, true);
@@ -164,7 +168,7 @@ public class XWikiDOMSerializer extends DomSerializer
     {
         Document document = createDocument(documentBuilder, rootNode);
 
-        createSubnodes(document, (Element)document.getDocumentElement(), rootNode.getAllChildren());
+        createSubnodes(document, document.getDocumentElement(), rootNode.getAllChildren());
 
         return document;
     }
