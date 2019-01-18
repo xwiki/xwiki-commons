@@ -114,11 +114,12 @@
     <xwiki.enforcer.enforce-plugins.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-plugins.skip>
     <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
     <xwiki.enforcer.enforce-glasshfish-jaxb.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glasshfish-jaxb.skip>
+    <xwiki.enforcer.enforce-jakarta.xml.bind-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.xml.bind-api.skip>
     <xwiki.enforcer.enforce-open-json.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-open-json.skip>
     <xwiki.enforcer.enforce-glassfish-el.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glassfish-el.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
     <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
-    <xwiki.enforcer.enforce-javax.activation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.activation.skip>
+    <xwiki.enforcer.enforce-jakarta.activation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.activation-api.skip>
     <xwiki.enforcer.enforce-javax.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.mail.skip>
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
@@ -562,26 +563,14 @@
       </dependency>
       <!-- JAXB -->
       <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
         <version>2.3.2</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.activation</groupId>
-            <artifactId>javax.activation-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
         <version>2.3.2</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.activation</groupId>
-            <artifactId>javax.activation-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <!-- Json -->
@@ -1145,9 +1134,9 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>com.sun.activation</groupId>
-        <artifactId>javax.activation</artifactId>
-        <version>1.2.0</version>
+        <groupId>jakarta.activation</groupId>
+        <artifactId>jakarta.activation-api</artifactId>
+        <version>1.2.1</version>
       </dependency>
       <!-- Diff tools used in commons for diff and blame -->
       <dependency>
@@ -1302,6 +1291,25 @@
               </rules>
             </configuration>
           </execution>
+          <!-- Check that we're using the right JAXB API artifacts -->
+          <execution>
+            <id>enforce-jakarta.xml.bind-api</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jakarta.xml.bind-api.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>XWiki uses jakarta.xml.bind:jakarta.xml.bind-api instead</message>
+                  <excludes>
+                    <exclude>javax.xml.bind:jaxb-api</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
           <!-- Check that we're using Open JSON and not JSON-Java -->
           <execution>
             <id>enforce-open-json</id>
@@ -1386,23 +1394,24 @@
               </rules>
             </configuration>
           </execution>
-          <!-- Check that we're using javax.activation-api and not activation -->
+          <!-- The current id is jakarta.activation-api -->
           <execution>
-            <id>enforce-javax.activation</id>
+            <id>enforce-jakarta.activation-api</id>
             <goals>
               <goal>enforce</goal>
             </goals>
             <configuration>
-              <skip>${xwiki.enforcer.enforce-javax.activation.skip}</skip>
+              <skip>${xwiki.enforcer.enforce-jakarta.activation-api.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
                   <message>
-                    Javax Activation artifact id changed, the current one is com.sun.activation:javax.activation
+                    Javax Activation artifact id changed, the current one is jakarta.activation:jakarta.activation-api
                   </message>
                   <excludes>
                     <exclude>javax.activation:activation</exclude>
                     <exclude>javax.activation:javax.activation-api</exclude>
+                    <exclude>com.sun.activation:javax.activation</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
