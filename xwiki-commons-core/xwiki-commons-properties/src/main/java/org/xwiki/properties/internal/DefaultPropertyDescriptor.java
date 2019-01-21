@@ -97,6 +97,11 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
      */
     private PropertyGroupDescriptor groupDescriptor;
 
+    /**
+     * @see #getDisplayType()
+     */
+    private Type displayType;
+
     @Override
     public String getId()
     {
@@ -303,5 +308,21 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     public void setGroupDescriptor(PropertyGroupDescriptor groupDescriptor)
     {
         this.groupDescriptor = groupDescriptor;
+    }
+
+    @Override
+    public Type getDisplayType()
+    {
+        return this.displayType;
+    }
+
+    /**
+     * @param displayType the type used when displaying the property.
+     * @see #getDisplayType()
+     * @since 11.0
+     */
+    public void setDisplayType(Type displayType)
+    {
+        this.displayType = displayType;
     }
 }

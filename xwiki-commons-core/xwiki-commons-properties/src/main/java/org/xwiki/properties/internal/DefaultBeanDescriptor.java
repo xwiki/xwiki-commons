@@ -40,6 +40,7 @@ import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.PropertyGroupDescriptor;
 import org.xwiki.properties.annotation.PropertyAdvanced;
 import org.xwiki.properties.annotation.PropertyDescription;
+import org.xwiki.properties.annotation.PropertyDisplayType;
 import org.xwiki.properties.annotation.PropertyFeature;
 import org.xwiki.properties.annotation.PropertyGroup;
 import org.xwiki.properties.annotation.PropertyHidden;
@@ -155,6 +156,17 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                 }
                 desc.setPropertyType(propertyType);
 
+                // set parameter display type
+                PropertyDisplayType displayTypeAnnotation =
+                        extractPropertyAnnotation(writeMethod, readMethod, PropertyDisplayType.class);
+                Type displayType;
+                if (displayTypeAnnotation != null) {
+                    displayType = displayTypeAnnotation.value();
+                } else {
+                    displayType = desc.getPropertyType();
+                }
+                desc.setDisplayType(displayType);
+
                 // get parameter display name
                 PropertyName parameterName = extractPropertyAnnotation(writeMethod, readMethod, PropertyName.class);
 
@@ -176,7 +188,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                 annotations.put(PropertyGroup.class,
                         extractPropertyAnnotation(writeMethod, readMethod, PropertyGroup.class));
                 annotations.put(PropertyFeature.class,
-                                extractPropertyAnnotation(writeMethod, readMethod, PropertyFeature.class));
+                        extractPropertyAnnotation(writeMethod, readMethod, PropertyFeature.class));
 
                 setCommonProperties(desc, annotations);
 
@@ -221,6 +233,16 @@ public class DefaultBeanDescriptor implements BeanDescriptor
 
             // set parameter type
             desc.setPropertyType(field.getGenericType());
+
+            // set parameter display type
+            PropertyDisplayType displayTypeAnnotation = field.getAnnotation(PropertyDisplayType.class);
+            Type displayType;
+            if (displayTypeAnnotation != null) {
+                displayType = displayTypeAnnotation.value();
+            } else {
+                displayType = desc.getPropertyType();
+            }
+            desc.setDisplayType(displayType);
 
             // get parameter name
             PropertyName parameterName = field.getAnnotation(PropertyName.class);
