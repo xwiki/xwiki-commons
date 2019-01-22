@@ -221,6 +221,10 @@ public class DefaultObservationManager implements ObservationManager
     @Override
     public void removeListener(String listenerName)
     {
+        // this might happen in some tests
+        if (this.listenersByEvent == null) {
+            initializeListeners();
+        }
         synchronized (this.listenersByEvent) {
             getListenersByName().remove(listenerName);
             for (Map.Entry<Class<? extends Event>, Map<String, RegisteredListener>> entry : this.listenersByEvent
