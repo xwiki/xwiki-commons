@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * Use this annotation to specify the class type of a property.
  *
  * @version $Id$
- * @since 11.0RC1
+ * @since 11.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.FIELD })
@@ -37,7 +37,7 @@ import java.lang.annotation.Target;
 public @interface PropertyDisplayType
 {
     /**
-     * @return the class type.
+     * @return the class type (hierarchy).
      */
-    Class value();
+    Class[] value();
 }

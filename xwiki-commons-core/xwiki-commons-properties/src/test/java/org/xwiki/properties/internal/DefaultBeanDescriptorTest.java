@@ -25,6 +25,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.test.TestBean;
 import org.xwiki.properties.test.TestBeanError;
@@ -92,7 +93,8 @@ public class DefaultBeanDescriptorTest
         assertEquals("feature2", advancedDescriptor.getGroupDescriptor().getFeature());
 
         PropertyDescriptor displayTypeDescriptor = this.beanDescriptor.getProperty("displayTypeParameter");
-        assertEquals(Boolean.class, displayTypeDescriptor.getDisplayType());
+        assertEquals(new DefaultParameterizedType(null, List.class, Boolean.class),
+                displayTypeDescriptor.getDisplayType());
     }
 
     @Test

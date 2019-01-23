@@ -34,8 +34,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.properties.BeanDescriptor;
 import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.PropertyGroupDescriptor;
@@ -288,8 +290,14 @@ public class DefaultBeanDescriptor implements BeanDescriptor
 
         PropertyDisplayType displayTypeAnnotation = (PropertyDisplayType) annotations.get(PropertyDisplayType.class);
         Type displayType;
-        if (displayTypeAnnotation != null) {
-            displayType = displayTypeAnnotation.value();
+        if (displayTypeAnnotation != null && displayTypeAnnotation.value().length > 0) {
+            Class[] types = displayTypeAnnotation.value().clone();
+            ArrayUtils.reverse(types);
+            displayType = types[0];
+
+            for (int i = 1; i < types.length; i++) {
+                displayType = new DefaultParameterizedType(null, types[i], displayType);
+            }
         } else {
             displayType = desc.getPropertyType();
         }

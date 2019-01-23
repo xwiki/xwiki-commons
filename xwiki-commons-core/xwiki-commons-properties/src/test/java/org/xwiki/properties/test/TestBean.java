@@ -180,7 +180,7 @@ public class TestBean
         this.advancedParameter = advancedParameter;
     }
 
-    @PropertyDisplayType(Boolean.class)
+    @PropertyDisplayType({List.class, Boolean.class})
     public String getDisplayTypeParameter()
     {
         return displayTypeParameter;
