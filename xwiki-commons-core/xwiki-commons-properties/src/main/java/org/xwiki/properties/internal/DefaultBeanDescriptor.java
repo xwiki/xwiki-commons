@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -60,6 +61,10 @@ public class DefaultBeanDescriptor implements BeanDescriptor
      * The logger to use to log.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultBeanDescriptor.class);
+
+    private static final List<Class<? extends Annotation>> COMMON_ANNOTATION_CLASSES = Arrays.asList(
+            PropertyMandatory.class, Deprecated.class, PropertyAdvanced.class, PropertyGroup.class,
+            PropertyFeature.class, PropertyDisplayType.class);
 
     /**
      * @see #getBeanClass()
@@ -156,17 +161,6 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                 }
                 desc.setPropertyType(propertyType);
 
-                // set parameter display type
-                PropertyDisplayType displayTypeAnnotation =
-                        extractPropertyAnnotation(writeMethod, readMethod, PropertyDisplayType.class);
-                Type displayType;
-                if (displayTypeAnnotation != null) {
-                    displayType = displayTypeAnnotation.value();
-                } else {
-                    displayType = desc.getPropertyType();
-                }
-                desc.setDisplayType(displayType);
-
                 // get parameter display name
                 PropertyName parameterName = extractPropertyAnnotation(writeMethod, readMethod, PropertyName.class);
 
@@ -180,15 +174,9 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                         .getShortDescription());
 
                 Map<Class, Annotation> annotations = new HashMap<>();
-                annotations.put(PropertyMandatory.class,
-                        extractPropertyAnnotation(writeMethod, readMethod, PropertyMandatory.class));
-                annotations.put(Deprecated.class, extractPropertyAnnotation(writeMethod, readMethod, Deprecated.class));
-                annotations.put(PropertyAdvanced.class,
-                        extractPropertyAnnotation(writeMethod, readMethod, PropertyAdvanced.class));
-                annotations.put(PropertyGroup.class,
-                        extractPropertyAnnotation(writeMethod, readMethod, PropertyGroup.class));
-                annotations.put(PropertyFeature.class,
-                        extractPropertyAnnotation(writeMethod, readMethod, PropertyFeature.class));
+                COMMON_ANNOTATION_CLASSES.forEach(aClass ->
+                        annotations.put(aClass, extractPropertyAnnotation(writeMethod, readMethod, aClass))
+                );
 
                 setCommonProperties(desc, annotations);
 
@@ -234,16 +222,6 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             // set parameter type
             desc.setPropertyType(field.getGenericType());
 
-            // set parameter display type
-            PropertyDisplayType displayTypeAnnotation = field.getAnnotation(PropertyDisplayType.class);
-            Type displayType;
-            if (displayTypeAnnotation != null) {
-                displayType = displayTypeAnnotation.value();
-            } else {
-                displayType = desc.getPropertyType();
-            }
-            desc.setDisplayType(displayType);
-
             // get parameter name
             PropertyName parameterName = field.getAnnotation(PropertyName.class);
 
@@ -255,11 +233,9 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             desc.setDescription(parameterDescription != null ? parameterDescription.value() : desc.getId());
 
             Map<Class, Annotation> annotations = new HashMap<>();
-            annotations.put(PropertyMandatory.class, field.getAnnotation(PropertyMandatory.class));
-            annotations.put(Deprecated.class, field.getAnnotation(Deprecated.class));
-            annotations.put(PropertyAdvanced.class, field.getAnnotation(PropertyAdvanced.class));
-            annotations.put(PropertyGroup.class, field.getAnnotation(PropertyGroup.class));
-            annotations.put(PropertyFeature.class, field.getAnnotation(PropertyFeature.class));
+            COMMON_ANNOTATION_CLASSES.forEach(aClass ->
+                    annotations.put(aClass, field.getAnnotation(aClass))
+            );
 
             setCommonProperties(desc, annotations);
 
@@ -308,6 +284,16 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             }
             group.setFeature(parameterFeature.value());
         }
+
+
+        PropertyDisplayType displayTypeAnnotation = (PropertyDisplayType) annotations.get(PropertyDisplayType.class);
+        Type displayType;
+        if (displayTypeAnnotation != null) {
+            displayType = displayTypeAnnotation.value();
+        } else {
+            displayType = desc.getPropertyType();
+        }
+        desc.setDisplayType(displayType);
     }
 
     /**

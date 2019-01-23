@@ -90,6 +90,9 @@ public class DefaultBeanDescriptorTest
         assertEquals("test1", advancedDescriptor.getGroupDescriptor().getGroup().get(0));
         assertEquals("test2", advancedDescriptor.getGroupDescriptor().getGroup().get(1));
         assertEquals("feature2", advancedDescriptor.getGroupDescriptor().getFeature());
+
+        PropertyDescriptor displayTypeDescriptor = this.beanDescriptor.getProperty("displayTypeParameter");
+        assertEquals(Boolean.class, displayTypeDescriptor.getDisplayType());
     }
 
     @Test
