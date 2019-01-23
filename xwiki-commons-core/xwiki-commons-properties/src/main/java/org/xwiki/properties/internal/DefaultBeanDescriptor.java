@@ -291,12 +291,11 @@ public class DefaultBeanDescriptor implements BeanDescriptor
         PropertyDisplayType displayTypeAnnotation = (PropertyDisplayType) annotations.get(PropertyDisplayType.class);
         Type displayType;
         if (displayTypeAnnotation != null && displayTypeAnnotation.value().length > 0) {
-            Class[] types = displayTypeAnnotation.value().clone();
-            ArrayUtils.reverse(types);
-            displayType = types[0];
-
-            for (int i = 1; i < types.length; i++) {
-                displayType = new DefaultParameterizedType(null, types[i], displayType);
+            Class[] types = displayTypeAnnotation.value();
+            if (types.length > 1) {
+                displayType = new DefaultParameterizedType(null, types[0], ArrayUtils.remove(types, 0));
+            } else {
+                displayType = types[0];
             }
         } else {
             displayType = desc.getPropertyType();

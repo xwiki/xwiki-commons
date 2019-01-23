@@ -27,6 +27,8 @@ import java.lang.annotation.Target;
 
 /**
  * Use this annotation to specify the class type of a property.
+ * <p> You can for instance specify the generic type Map&lt;String, Long&gt; using the following value:
+ * {Map.class, String.class, Long.class}
  *
  * @version $Id$
  * @since 11.0
@@ -37,7 +39,7 @@ import java.lang.annotation.Target;
 public @interface PropertyDisplayType
 {
     /**
-     * @return the class type (hierarchy).
+     * @return the class type followed by its parameter types.
      */
     Class[] value();
 }

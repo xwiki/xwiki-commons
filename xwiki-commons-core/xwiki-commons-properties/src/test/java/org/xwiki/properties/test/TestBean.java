@@ -21,6 +21,7 @@ package org.xwiki.properties.test;
 
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.xwiki.properties.annotation.PropertyAdvanced;
 import org.xwiki.properties.annotation.PropertyDescription;
 import org.xwiki.properties.annotation.PropertyDisplayType;
@@ -56,6 +57,8 @@ public class TestBean
     private String advancedParameter;
 
     private String displayTypeParameter;
+
+    private String displayTypeParameter2;
 
     @PropertyName("Public Field")
     @PropertyDescription("a public field")
@@ -180,7 +183,7 @@ public class TestBean
         this.advancedParameter = advancedParameter;
     }
 
-    @PropertyDisplayType({List.class, Boolean.class})
+    @PropertyDisplayType({Triple.class, Boolean.class, String.class, Long.class})
     public String getDisplayTypeParameter()
     {
         return displayTypeParameter;
@@ -189,5 +192,16 @@ public class TestBean
     public void setDisplayTypeParameter(String displayTypeParameter)
     {
         this.displayTypeParameter = displayTypeParameter;
+    }
+
+    @PropertyDisplayType(Boolean.class)
+    public String getDisplayTypeParameter2()
+    {
+        return displayTypeParameter2;
+    }
+
+    public void setDisplayTypeParameter2(String displayTypeParameter2)
+    {
+        this.displayTypeParameter2 = displayTypeParameter2;
     }
 }
