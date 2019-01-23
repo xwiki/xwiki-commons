@@ -193,6 +193,9 @@ public class DefaultObservationManager implements ObservationManager
         // Register the listener by name. If already registered, override it.
         listeners.put(eventListener.getName(), eventListener);
 
+        // when lot of threads are involved there might be a concurrent access when inserting a new listener
+        // this needs to be managed with a lock to avoid an event to be "lost", e.g. not consumed by the appropriate
+        // listener
         synchronized (this.listenersByEvent) {
             // For each event defined for this listener, add it to the Event Map.
             for (Event event : eventListener.getEvents()) {
@@ -215,20 +218,17 @@ public class DefaultObservationManager implements ObservationManager
                 }
             }
         }
-
     }
 
     @Override
     public void removeListener(String listenerName)
     {
-        synchronized (this.listenersByEvent) {
-            getListenersByName().remove(listenerName);
-            for (Map.Entry<Class<? extends Event>, Map<String, RegisteredListener>> entry : this.listenersByEvent
-                .entrySet()) {
-                entry.getValue().remove(listenerName);
-                if (entry.getValue().isEmpty()) {
-                    this.listenersByEvent.remove(entry.getKey());
-                }
+        getListenersByName().remove(listenerName);
+        for (Map.Entry<Class<? extends Event>, Map<String, RegisteredListener>> entry : this.listenersByEvent
+            .entrySet()) {
+            entry.getValue().remove(listenerName);
+            if (entry.getValue().isEmpty()) {
+                this.listenersByEvent.remove(entry.getKey());
             }
         }
     }
