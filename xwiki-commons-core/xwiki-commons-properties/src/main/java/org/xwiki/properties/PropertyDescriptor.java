@@ -23,6 +23,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * Describe a property in a bean.
  *
@@ -98,6 +100,7 @@ public interface PropertyDescriptor
      * @return indicates if the property is deprecated.
      * @since 10.10RC1
      */
+    @Unstable
     default boolean isDeprecated() {
         return false;
     }
@@ -106,6 +109,7 @@ public interface PropertyDescriptor
      * @return indicates if the property is advanced.
      * @since 10.10RC1
      */
+    @Unstable
     default boolean isAdvanced() {
         return false;
     }
@@ -114,6 +118,7 @@ public interface PropertyDescriptor
      * @return the hierarchy of groups.
      * @since 10.11RC1
      */
+    @Unstable
     default PropertyGroupDescriptor getGroupDescriptor() {
         return new PropertyGroupDescriptor(null);
     }
