@@ -110,6 +110,7 @@
     <!-- By default Checkstyle, Backward compatibility check, Enforcer, License plugins, etc are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.revapi.skip>false</xwiki.revapi.skip>
+    <xwiki.jacoco.skip>false</xwiki.jacoco.skip>
     <xwiki.enforcer.skip>false</xwiki.enforcer.skip>
     <xwiki.enforcer.enforce-plugins.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-plugins.skip>
     <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
@@ -1942,6 +1943,7 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>${jacoco.version}</version>
           <configuration>
+            <skip>${xwiki.jacoco.skip}</skip>
             <excludes>
               <!-- Don't run Jacoco on com/steadystate/css/parser/SACParserCSS21TokenManager since it generates an
                    error, see
