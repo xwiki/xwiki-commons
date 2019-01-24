@@ -122,4 +122,14 @@ public interface PropertyDescriptor
     default PropertyGroupDescriptor getGroupDescriptor() {
         return new PropertyGroupDescriptor(null);
     }
+
+    /**
+     * @return the type used when displaying the property.
+     * @since 11.0
+     */
+    @Unstable
+    default Type getDisplayType()
+    {
+        return getPropertyType();
+    }
 }

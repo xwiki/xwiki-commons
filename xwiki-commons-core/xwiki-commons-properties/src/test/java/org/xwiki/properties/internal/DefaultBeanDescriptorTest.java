@@ -22,9 +22,11 @@ package org.xwiki.properties.internal;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.test.TestBean;
 import org.xwiki.properties.test.TestBeanError;
@@ -90,6 +92,13 @@ public class DefaultBeanDescriptorTest
         assertEquals("test1", advancedDescriptor.getGroupDescriptor().getGroup().get(0));
         assertEquals("test2", advancedDescriptor.getGroupDescriptor().getGroup().get(1));
         assertEquals("feature2", advancedDescriptor.getGroupDescriptor().getFeature());
+
+        PropertyDescriptor displayTypeDescriptor = this.beanDescriptor.getProperty("displayTypeParameter");
+        assertEquals(new DefaultParameterizedType(null, Triple.class, Boolean.class, String.class, Long.class),
+                displayTypeDescriptor.getDisplayType());
+
+        PropertyDescriptor displayTypeDescriptor2 = this.beanDescriptor.getProperty("displayTypeParameter2");
+        assertEquals(Boolean.class, displayTypeDescriptor2.getDisplayType());
     }
 
     @Test

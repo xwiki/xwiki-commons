@@ -31,15 +31,19 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.properties.BeanDescriptor;
 import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.PropertyGroupDescriptor;
 import org.xwiki.properties.annotation.PropertyAdvanced;
 import org.xwiki.properties.annotation.PropertyDescription;
+import org.xwiki.properties.annotation.PropertyDisplayType;
 import org.xwiki.properties.annotation.PropertyFeature;
 import org.xwiki.properties.annotation.PropertyGroup;
 import org.xwiki.properties.annotation.PropertyHidden;
@@ -59,6 +63,10 @@ public class DefaultBeanDescriptor implements BeanDescriptor
      * The logger to use to log.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultBeanDescriptor.class);
+
+    private static final List<Class<? extends Annotation>> COMMON_ANNOTATION_CLASSES = Arrays.asList(
+            PropertyMandatory.class, Deprecated.class, PropertyAdvanced.class, PropertyGroup.class,
+            PropertyFeature.class, PropertyDisplayType.class);
 
     /**
      * @see #getBeanClass()
@@ -168,15 +176,9 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                         .getShortDescription());
 
                 Map<Class, Annotation> annotations = new HashMap<>();
-                annotations.put(PropertyMandatory.class,
-                        extractPropertyAnnotation(writeMethod, readMethod, PropertyMandatory.class));
-                annotations.put(Deprecated.class, extractPropertyAnnotation(writeMethod, readMethod, Deprecated.class));
-                annotations.put(PropertyAdvanced.class,
-                        extractPropertyAnnotation(writeMethod, readMethod, PropertyAdvanced.class));
-                annotations.put(PropertyGroup.class,
-                        extractPropertyAnnotation(writeMethod, readMethod, PropertyGroup.class));
-                annotations.put(PropertyFeature.class,
-                                extractPropertyAnnotation(writeMethod, readMethod, PropertyFeature.class));
+                COMMON_ANNOTATION_CLASSES.forEach(aClass ->
+                        annotations.put(aClass, extractPropertyAnnotation(writeMethod, readMethod, aClass))
+                );
 
                 setCommonProperties(desc, annotations);
 
@@ -233,11 +235,9 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             desc.setDescription(parameterDescription != null ? parameterDescription.value() : desc.getId());
 
             Map<Class, Annotation> annotations = new HashMap<>();
-            annotations.put(PropertyMandatory.class, field.getAnnotation(PropertyMandatory.class));
-            annotations.put(Deprecated.class, field.getAnnotation(Deprecated.class));
-            annotations.put(PropertyAdvanced.class, field.getAnnotation(PropertyAdvanced.class));
-            annotations.put(PropertyGroup.class, field.getAnnotation(PropertyGroup.class));
-            annotations.put(PropertyFeature.class, field.getAnnotation(PropertyFeature.class));
+            COMMON_ANNOTATION_CLASSES.forEach(aClass ->
+                    annotations.put(aClass, field.getAnnotation(aClass))
+            );
 
             setCommonProperties(desc, annotations);
 
@@ -286,6 +286,21 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             }
             group.setFeature(parameterFeature.value());
         }
+
+
+        PropertyDisplayType displayTypeAnnotation = (PropertyDisplayType) annotations.get(PropertyDisplayType.class);
+        Type displayType;
+        if (displayTypeAnnotation != null && displayTypeAnnotation.value().length > 0) {
+            Class[] types = displayTypeAnnotation.value();
+            if (types.length > 1) {
+                displayType = new DefaultParameterizedType(null, types[0], ArrayUtils.remove(types, 0));
+            } else {
+                displayType = types[0];
+            }
+        } else {
+            displayType = desc.getPropertyType();
+        }
+        desc.setDisplayType(displayType);
     }
 
     /**
