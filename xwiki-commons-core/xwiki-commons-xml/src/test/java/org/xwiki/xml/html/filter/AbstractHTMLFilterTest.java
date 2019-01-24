@@ -44,6 +44,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+/**
+ * Unit tests for {@link AbstractHTMLFilter}.
+ *
+ * @version $Id$
+ */
 @ComponentTest
 @ComponentList({
     LinkFilter.class,
