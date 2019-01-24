@@ -32,8 +32,8 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - XML</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.59</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>63</xwiki.pitest.mutationThreshold>
+    <xwiki.jacoco.instructionRatio>0.6</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>65</xwiki.pitest.mutationThreshold>
     <!-- There's a utility class with lots of features, allow it to have many dependencies;
          There's a SAX event listener, which requires complex code -->
     <checkstyle.suppressions.location>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
