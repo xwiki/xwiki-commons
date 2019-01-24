@@ -23,6 +23,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * Describe a property in a bean.
  *
@@ -122,6 +124,7 @@ public interface PropertyDescriptor
      * @return the type used when displaying the property.
      * @since 11.0
      */
+    @Unstable
     default Type getDisplayType()
     {
         return getPropertyType();
