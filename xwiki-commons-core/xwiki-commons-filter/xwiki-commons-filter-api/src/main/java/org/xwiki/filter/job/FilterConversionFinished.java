@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.xwiki.job.Request;
 import org.xwiki.job.event.JobFinishedEvent;
-import org.xwiki.observation.event.BeginFoldEvent;
+import org.xwiki.observation.event.EndFoldEvent;
 
 /**
  * Extends {@link JobFinishedEvent} to fold events produced during conversion.
@@ -32,7 +32,7 @@ import org.xwiki.observation.event.BeginFoldEvent;
  * @version $Id$
  * @since 8.2RC1
  */
-public class FilterConversionFinished extends JobFinishedEvent implements BeginFoldEvent
+public class FilterConversionFinished extends JobFinishedEvent implements EndFoldEvent
 {
     /**
      * @param jobId the event related job id
