@@ -39,10 +39,26 @@ stage ('Commons Builds') {
           profiles = 'legacy,integration-tests'
           properties = '-Dxwiki.checkstyle.skip=true -Dxwiki.surefire.captureconsole.skip=true -Dxwiki.revapi.skip=true'
         }
-      }
 
-      // If the "main" build has succeeded then trigger the rendering pipeline
-      build job: "../xwiki-rendering/${env.BRANCH_NAME}", wait: false
+        // If the "main" build has succeeded then trigger the rendering pipeline.
+        // Note: we don't wait for the other builds to have finished since we want rendering to be triggered ASAP and
+        // the Commons artifacts will be available for Rendering modules to build fine.
+        build job: "../xwiki-rendering/${env.BRANCH_NAME}", wait: false
+
+        // Note: we need to run this build after the "main" one since it requires that the artifacts have been built
+        // and are available from the Maven Remote repository (or locally). When we upgrade the Commons version, it
+        // would fail to execute the first time otherwise.
+
+        // Build with checkstyle. Make sure "mvn checkstyle:check" passes so that we don't cause false positive on
+        // Checkstyle side. This is for the Checkstyle project itself so that they can verify that when they bring
+        // changes to Checkstyle, there's no regression to the XWiki build.
+        xwikiBuild('Checkstyle') {
+          xvnc = false
+          mavenOpts = globalMavenOpts
+          goals = 'clean test-compile checkstyle:check@default'
+          profiles = 'legacy'
+        }
+      }
     },
     'testrelease': {
       node {
@@ -67,26 +83,8 @@ stage ('Commons Builds') {
           sonar = true
         }
       }
-    },
-    'checkstyle': {
-      node {
-        // Build with checkstyle. Make sure "mvn checkstyle:check" passes so that we don't cause false positive on
-        // Checkstyle side. This is for the Checkstyle project itself so that they can verify that when they bring
-        // changes to Checkstyle, there's no regression to the XWiki build.
-        xwikiBuild('Checkstyle') {
-          xvnc = false
-          mavenOpts = globalMavenOpts
-          goals = 'clean test-compile checkstyle:check@default'
-          profiles = 'legacy'
-        }
-      }
     }
   )
-
-  // If the job is successful, trigger the rendering job
-  if (currentBuild.result == 'SUCCESS') {
-    build job: "../xwiki-rendering/${env.BRANCH_NAME}", wait: false
-  }
 }
 
 
