@@ -2058,6 +2058,33 @@
           <artifactId>pitest-maven</artifactId>
           <version>1.4.0</version>
         </plugin>
+        <!-- In order to make it simple to execute Dspot on XWiki with: mvn dspot:amplify-unit-tests -->
+        <plugin>
+          <groupId>eu.stamp-project</groupId>
+          <artifactId>dspot-maven</artifactId>
+          <version>1.2.1</version>
+          <configuration>
+            <clean>true</clean>
+            <descartes>true</descartes>
+            <verbose>true</verbose>
+            <withComment>true</withComment>
+            <generateNewTestClass>true</generateNewTestClass>
+            <pathToProperties>./dspot.properties</pathToProperties>
+            <amplifiers>
+              <!--amplifier>StringLiteralAmplifier</amplifier-->
+              <!--amplifier>NumberLiteralAmplifier</amplifier-->
+              <!--amplifier>CharLiteralAmplifier</amplifier-->
+              <!--amplifier>BooleanLiteralAmplifier</amplifier-->
+              <!--amplifier>AllLiteralAmplifiers</amplifier-->
+              <!--amplifier>MethodAdd</amplifier-->
+              <!--amplifier>MethodRemove</amplifier-->
+              <!--amplifier>MethodGeneratorAmplifier</amplifier-->
+              <!--amplifier>ReturnValueAmplifier</amplifier-->
+              <!--amplifier>ReplacementAmplifier</amplifier-->
+              <!--amplifier>NullifierAmplifier</amplifier-->
+            </amplifiers>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
