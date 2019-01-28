@@ -1034,6 +1034,11 @@
         <version>${junit.platform.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-platform-suite-api</artifactId>
+        <version>${junit5.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.junit.vintage</groupId>
         <artifactId>junit-vintage-engine</artifactId>
         <version>${junit.vintage.version}</version>
