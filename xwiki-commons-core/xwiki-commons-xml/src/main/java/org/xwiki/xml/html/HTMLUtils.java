@@ -73,7 +73,7 @@ public final class HTMLUtils
         /**
          * Regex to recognize a XML Entity.
          */
-        private static final Pattern ENTITY = Pattern.compile("&[a-zA-Z]+;|&#[0-9a-zA-Z]+;");
+        private static final Pattern ENTITY = Pattern.compile("&[a-zA-Z0-9]+;|&#[0-9a-zA-Z]+;");
 
         /**
          * Ampersand character.
