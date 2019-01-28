@@ -402,6 +402,8 @@ public class DefaultHTMLCleanerTest
     public void verifyEntitiesAreNotBroken()
     {
         assertHTML("<p>&Eacute;</p>", "&Eacute;");
+        assertHTML("<p>&frac14;</p>", "&frac14;");
+        assertHTML("<p>&amp;f!rac14;</p>", "&f!rac14;");
     }
 
     /**
