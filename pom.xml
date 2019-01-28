@@ -2071,6 +2071,7 @@
             <generateNewTestClass>true</generateNewTestClass>
             <pathToProperties>./dspot.properties</pathToProperties>
             <amplifiers>
+              <!-- Uncomment the amplifier to use or pass them on the command line using -Damplifiers=... -->
               <!--amplifier>StringLiteralAmplifier</amplifier-->
               <!--amplifier>NumberLiteralAmplifier</amplifier-->
               <!--amplifier>CharLiteralAmplifier</amplifier-->
