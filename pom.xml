@@ -93,7 +93,7 @@
 
     <!-- Clover & Jacoco -->
     <clover.version>4.3.1</clover.version>
-    <jacoco.version>0.8.2</jacoco.version>
+    <jacoco.version>0.8.3</jacoco.version>
 
     <!-- Checkstyle -->
     <checkstyle.version>8.16</checkstyle.version>
