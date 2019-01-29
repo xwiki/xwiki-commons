@@ -188,6 +188,9 @@
     <maven.resolver.build.version>1.1.1</maven.resolver.build.version>
     <maven.resolver.version>${maven.resolver.build.version}</maven.resolver.version>
 
+    <!-- Plexus -->
+    <plexus-containers.version>2.0.0</plexus-containers.version>
+
     <!-- The version of Maven Enforcer plugin -->
     <maven-enforcer.version>1.4.1</maven-enforcer.version>
     <!-- The version of Maven used by enforcer plugin -->
@@ -850,18 +853,18 @@
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-container-default</artifactId>
+        <version>${plexus-containers.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-component-annotations</artifactId>
-        <version>1.7.1</version>
+        <version>${plexus-containers.version}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-interpolation</artifactId>
         <version>1.25</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-container-default</artifactId>
-        <version>1.7.1</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
