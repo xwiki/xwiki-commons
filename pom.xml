@@ -845,7 +845,8 @@
         <version>3.3.2.Final</version>
       </dependency>
 
-      <!-- Triggerd by several Maven related projects (Doxia, Maven, Aether) as transitive dependency -->
+      <!-- Triggered by several Maven related projects (Doxia, Maven, Aether) as transitive dependency. We need
+           these explicit versions to help Maven decide which version to use. -->
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
