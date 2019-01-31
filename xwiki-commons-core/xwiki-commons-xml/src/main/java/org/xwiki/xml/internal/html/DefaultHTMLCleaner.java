@@ -221,6 +221,9 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         // TODO: handle HTML5 correctly (see: https://jira.xwiki.org/browse/XCOMMONS-901)
         defaultProperties.setHtmlVersion(4);
 
+        // Don't trim spaces in attribute values
+        defaultProperties.setTrimAttributeValues(false);
+
         return defaultProperties;
     }
 

@@ -406,6 +406,15 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p>&amp;f!rac14;</p>", "&f!rac14;");
     }
 
+    @Test
+    public void verifyFormValuesAreNotTrimmed()
+    {
+        assertHTML("<p><input type=\"hidden\" value=\"foo\" /></p>", "<input type=\"hidden\" value=\"foo\" />");
+        assertHTML("<p><input type=\"hidden\" value=\"foo bar\" /></p>", "<input type=\"hidden\" value=\"foo bar\" />");
+        assertHTML("<p><input type=\"hidden\" value=\"  fff\" /></p>", "<input type=\"hidden\" value=\"  fff\" />");
+        assertHTML("<p><input class=\"  fff\" type=\"hidden\" /></p>", "<input type=\"hidden\" class=\"  fff\" />");
+    }
+
     /**
      * @see <a href="https://jira.xwiki.org/browse/XCOMMONS-1293">XCOMMONS-1293</a>
      */
