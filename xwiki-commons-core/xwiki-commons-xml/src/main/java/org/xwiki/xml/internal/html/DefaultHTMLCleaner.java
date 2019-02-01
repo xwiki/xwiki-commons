@@ -222,6 +222,9 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         defaultProperties.setHtmlVersion(4);
 
         // Don't trim spaces in attribute values
+        // We don't want input such as: <input type="hidden" value="  foo" />
+        // to be modified for: value="foo"
+        // if such case happen, the value should remain the same.
         defaultProperties.setTrimAttributeValues(false);
 
         return defaultProperties;
