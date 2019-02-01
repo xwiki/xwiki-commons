@@ -34,7 +34,8 @@ import org.htmlcleaner.CleanerTransformations;
 import org.htmlcleaner.DoctypeToken;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
-import org.htmlcleaner.TagTransformation;
+import org.htmlcleaner.TrimAttributeCleanerTransformations;
+import org.htmlcleaner.TrimAttributeTagTransformation;
 import org.htmlcleaner.XWikiDOMSerializer;
 import org.w3c.dom.Document;
 import org.xwiki.component.annotation.Component;
@@ -221,10 +222,8 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         // TODO: handle HTML5 correctly (see: https://jira.xwiki.org/browse/XCOMMONS-901)
         defaultProperties.setHtmlVersion(4);
 
-        // Don't trim spaces in attribute values
-        // We don't want input such as: <input type="hidden" value="  foo" />
-        // to be modified for: value="foo"
-        // if such case happen, the value should remain the same.
+        // We don't trim any attribute value by default, so we can keep the leading space in input value attributes.
+        // But we use a specific TrimAttributeCleanerTransformation in order to trim the space for any other attribute.
         defaultProperties.setTrimAttributeValues(false);
 
         return defaultProperties;
@@ -237,34 +236,35 @@ public class DefaultHTMLCleaner implements HTMLCleaner
      */
     private CleanerTransformations getDefaultCleanerTransformations(HTMLCleanerConfiguration configuration)
     {
-        CleanerTransformations defaultTransformations = new CleanerTransformations();
+        CleanerTransformations defaultTransformations = new TrimAttributeCleanerTransformations();
 
-        TagTransformation tt = new TagTransformation(HTMLConstants.TAG_B, HTMLConstants.TAG_STRONG, false);
+        TrimAttributeTagTransformation tt = new TrimAttributeTagTransformation(HTMLConstants.TAG_B,
+            HTMLConstants.TAG_STRONG, false);
         defaultTransformations.addTransformation(tt);
 
-        tt = new TagTransformation(HTMLConstants.TAG_I, HTMLConstants.TAG_EM, false);
+        tt = new TrimAttributeTagTransformation(HTMLConstants.TAG_I, HTMLConstants.TAG_EM, false);
         defaultTransformations.addTransformation(tt);
 
-        tt = new TagTransformation(HTMLConstants.TAG_U, HTMLConstants.TAG_INS, false);
+        tt = new TrimAttributeTagTransformation(HTMLConstants.TAG_U, HTMLConstants.TAG_INS, false);
         defaultTransformations.addTransformation(tt);
 
-        tt = new TagTransformation(HTMLConstants.TAG_S, HTMLConstants.TAG_DEL, false);
+        tt = new TrimAttributeTagTransformation(HTMLConstants.TAG_S, HTMLConstants.TAG_DEL, false);
         defaultTransformations.addTransformation(tt);
 
-        tt = new TagTransformation(HTMLConstants.TAG_STRIKE, HTMLConstants.TAG_DEL, false);
+        tt = new TrimAttributeTagTransformation(HTMLConstants.TAG_STRIKE, HTMLConstants.TAG_DEL, false);
         defaultTransformations.addTransformation(tt);
 
-        tt = new TagTransformation(HTMLConstants.TAG_CENTER, HTMLConstants.TAG_P, false);
+        tt = new TrimAttributeTagTransformation(HTMLConstants.TAG_CENTER, HTMLConstants.TAG_P, false);
         tt.addAttributeTransformation(HTMLConstants.ATTRIBUTE_STYLE, "text-align:center");
         defaultTransformations.addTransformation(tt);
 
         String restricted = configuration.getParameters().get(HTMLCleanerConfiguration.RESTRICTED);
         if ("true".equalsIgnoreCase(restricted)) {
 
-            tt = new TagTransformation(HTMLConstants.TAG_SCRIPT, HTMLConstants.TAG_PRE, false);
+            tt = new TrimAttributeTagTransformation(HTMLConstants.TAG_SCRIPT, HTMLConstants.TAG_PRE, false);
             defaultTransformations.addTransformation(tt);
 
-            tt = new TagTransformation(HTMLConstants.TAG_STYLE, HTMLConstants.TAG_PRE, false);
+            tt = new TrimAttributeTagTransformation(HTMLConstants.TAG_STYLE, HTMLConstants.TAG_PRE, false);
             defaultTransformations.addTransformation(tt);
         }
 

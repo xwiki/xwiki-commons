@@ -409,10 +409,12 @@ public class DefaultHTMLCleanerTest
     @Test
     public void verifyFormValuesAreNotTrimmed()
     {
+        assertHTML("<p><input type=\"hidden\" value=\"  fff\" /></p>", "<input type=\"hidden\" value=\"  fff\" />");
         assertHTML("<p><input type=\"hidden\" value=\"foo\" /></p>", "<input type=\"hidden\" value=\"foo\" />");
         assertHTML("<p><input type=\"hidden\" value=\"foo bar\" /></p>", "<input type=\"hidden\" value=\"foo bar\" />");
-        assertHTML("<p><input type=\"hidden\" value=\"  fff\" /></p>", "<input type=\"hidden\" value=\"  fff\" />");
-        assertHTML("<p><input class=\"  fff\" type=\"hidden\" /></p>", "<input type=\"hidden\" class=\"  fff\" />");
+        assertHTML("<p><input class=\"fff\" type=\"hidden\" /></p>", "<input type=\"hidden\" class=\"  fff\" />");
+        assertHTML("<p><input class=\"foo bar\" type=\"hidden\" value=\" foo bar  \" /></p>",
+            "<input type=\"hidden   \" value=\" foo bar  \" class=\" foo bar  \"/>");
     }
 
     /**
