@@ -221,7 +221,9 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         // TODO: handle HTML5 correctly (see: https://jira.xwiki.org/browse/XCOMMONS-901)
         defaultProperties.setHtmlVersion(4);
 
-        // Don't trim spaces in attribute values
+        // We trim values by default for all attributes but the input value attribute.
+        // The only way to currently do that is to switch off this flag, and to create a dedicated TagTransformation.
+        // See TrimAttributeCleanerTransformation for more information.
         defaultProperties.setTrimAttributeValues(false);
 
         return defaultProperties;
@@ -234,9 +236,11 @@ public class DefaultHTMLCleaner implements HTMLCleaner
      */
     private CleanerTransformations getDefaultCleanerTransformations(HTMLCleanerConfiguration configuration)
     {
-        CleanerTransformations defaultTransformations = new CleanerTransformations();
+        CleanerTransformations defaultTransformations = new TrimAttributeCleanerTransformations();
 
-        TagTransformation tt = new TagTransformation(HTMLConstants.TAG_B, HTMLConstants.TAG_STRONG, false);
+        // note that we do not care here to use a TrimAttributeTagTransformation, since the attributes are not preserved
+        TagTransformation tt = new TagTransformation(HTMLConstants.TAG_B,
+            HTMLConstants.TAG_STRONG, false);
         defaultTransformations.addTransformation(tt);
 
         tt = new TagTransformation(HTMLConstants.TAG_I, HTMLConstants.TAG_EM, false);

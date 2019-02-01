@@ -407,12 +407,16 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void verifyFormValuesAreNotTrimmed()
+    public void verifyLeadingSpacesAreKeptOnlyInInputValue()
     {
+        assertHTML("<p><input type=\"hidden\" value=\"  fff\" /></p>", "<input type=\"hidden\" value=\"  fff\" />");
         assertHTML("<p><input type=\"hidden\" value=\"foo\" /></p>", "<input type=\"hidden\" value=\"foo\" />");
         assertHTML("<p><input type=\"hidden\" value=\"foo bar\" /></p>", "<input type=\"hidden\" value=\"foo bar\" />");
-        assertHTML("<p><input type=\"hidden\" value=\"  fff\" /></p>", "<input type=\"hidden\" value=\"  fff\" />");
-        assertHTML("<p><input class=\"  fff\" type=\"hidden\" /></p>", "<input type=\"hidden\" class=\"  fff\" />");
+        assertHTML("<p><input class=\"fff\" type=\"hidden\" /></p>", "<input type=\"hidden\" class=\"  fff\" />");
+        assertHTML("<p><input class=\"foo bar\" type=\"hidden\" value=\" foo bar  \" /></p>",
+            "<input type=\"hidden   \" value=\" foo bar  \" class=\" foo bar  \"/>");
+        assertHTML("<div class=\"foo bar\" title=\"foo bar\"></div>",
+            "<div title=\" foo bar  \" class=\" foo bar  \"/>");
     }
 
     /**
