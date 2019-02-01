@@ -27,7 +27,11 @@ import org.xwiki.stability.Unstable;
 /**
  * This class allows to transform all tags attribute to trim their value from leading space, except for input value.
  * It applies the original tag transformations, and then iterates over the attributes to remove the leading spaces.
- * This class aims at being deleted once HtmlCleaner offers a way to have a better control over trimAttribute flag.
+ * This class aims at being deleted once HtmlCleaner offers a way to have a better control over trimAttribute flag,
+ * see: https://sourceforge.net/p/htmlcleaner/bugs/213/.
+ *
+ * Note: Even though in a public package this code is not meant to be a public API. We've had to put in under the {@code
+ * org.htmlcleaner} package because we use the following package protected API: TagTransformation#getSourceTag().
  *
  * @version $Id$
  * @since 11.1RC1
@@ -36,14 +40,13 @@ import org.xwiki.stability.Unstable;
 public class TrimAttributeTagTransformation extends TagTransformation
 {
     /**
-     * Create a {@link TagTransformation} from source tag to target tag specifying whether
-     * source tag attributes are preserved.
+     * Create a {@link TagTransformation} from source tag to target tag. This kind of transformation always preserve
+     * the attributes.
      * @param sourceTag Name of the tag to be transformed.
      * @param destTag Name of tag to which source tag is to be transformed.
-     * @param preserveSourceAttributes Tells whether source tag attributes are preserved in transformation.
      */
-    public TrimAttributeTagTransformation(String sourceTag, String destTag, boolean preserveSourceAttributes) {
-        super(sourceTag, destTag, preserveSourceAttributes);
+    public TrimAttributeTagTransformation(String sourceTag, String destTag) {
+        super(sourceTag, destTag);
     }
 
     @Override

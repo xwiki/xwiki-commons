@@ -17,13 +17,17 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.htmlcleaner;
+package org.xwiki.xml.internal.html;
 
+import org.htmlcleaner.CleanerTransformations;
+import org.htmlcleaner.TagTransformation;
+import org.htmlcleaner.TrimAttributeTagTransformation;
 import org.xwiki.stability.Unstable;
 
 /**
  * This class allows to create on the fly a new tag transformation to trim leading space.
  * See {@link TrimAttributeTagTransformation} for more information.
+ * Note that this class aims at being removed once https://sourceforge.net/p/htmlcleaner/bugs/213/ is fixed.
  *
  * @version $Id$
  * @since 11.1RC1
@@ -33,14 +37,14 @@ public class TrimAttributeCleanerTransformations extends CleanerTransformations
 {
     @Override
     public TagTransformation getTransformation(String tagName) {
-        TagTransformation transfo = super.getTransformation(tagName);
-        if (transfo == null) {
+        TagTransformation transformation = super.getTransformation(tagName);
+        if (transformation == null) {
 
             // we only create the transformation if it doesn't exist yet
             // and we keep it to avoid creating multiple objects for the same tag over and over.
-            transfo = new TrimAttributeTagTransformation(tagName, tagName, true);
-            this.addTransformation(transfo);
+            transformation = new TrimAttributeTagTransformation(tagName, tagName);
+            this.addTransformation(transformation);
         }
-        return transfo;
+        return transformation;
     }
 }
