@@ -123,6 +123,7 @@
     <xwiki.enforcer.enforce-jakarta.activation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.activation-api.skip>
     <xwiki.enforcer.enforce-javax.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.mail.skip>
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
+    <xwiki.enforcer.enforce-jsr305.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jsr305.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
     <xwiki.enforcer.enforce-java.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-java.skip>
@@ -1188,6 +1189,12 @@
         <artifactId>javax.annotation-api</artifactId>
         <version>1.3.2</version>
       </dependency>
+      <!-- JSR 305 -->
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <version>3.0.2</version>
+      </dependency>
       <!-- ASM -->
       <dependency>
         <groupId>org.ow2.asm</groupId>
@@ -1518,6 +1525,25 @@
                     <exclude>stax:stax</exclude>
                     <exclude>javax.xml.stream:stax-api</exclude>
                     <exclude>stax:stax-api</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we use the right version of the JSR305 API -->
+          <execution>
+            <id>enforce-jsr305</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jsr305.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>Use com.google.code.findbugs:jsr305 instead</message>
+                  <excludes>
+                    <exclude>com.google.code.findbugs:annotations</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
