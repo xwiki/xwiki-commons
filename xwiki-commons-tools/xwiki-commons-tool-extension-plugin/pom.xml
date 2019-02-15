@@ -124,40 +124,6 @@
   </build>
   <profiles>
     <profile>
-      <id>integration-tests</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-invoker-plugin</artifactId>
-            <configuration>
-              <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-              <settingsFile>src/it/settings.xml</settingsFile>
-              <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-              <postBuildHookScript>verify</postBuildHookScript>
-              <goals>
-                <goal>clean</goal>
-                <goal>package</goal>
-              </goals>
-              <showErrors>true</showErrors>
-              <!-- Don't display debug logs by default because it takes more time and one test asserts that there's no
-                   extra debug log displayed since we don't want that when we execute this plugin on projects -->
-              <debug>false</debug>
-            </configuration>
-            <executions>
-              <execution>
-                <id>integration-test</id>
-                <goals>
-                  <goal>install</goal>
-                  <goal>run</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
       <id>clover</id>
       <build>
         <plugins>
