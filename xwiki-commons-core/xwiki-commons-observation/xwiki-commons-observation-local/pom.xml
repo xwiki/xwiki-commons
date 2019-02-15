@@ -32,8 +32,6 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Observation - Local</description>
   <properties>
-    <!-- TODO: fix this and remove this property so that the check is not skipped -->
-    <xwiki.surefire.captureconsole.skip>true</xwiki.surefire.captureconsole.skip>
     <xwiki.jacoco.instructionRatio>0.88</xwiki.jacoco.instructionRatio>
     <xwiki.pitest.mutationThreshold>0</xwiki.pitest.mutationThreshold>
   </properties>

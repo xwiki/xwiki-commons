@@ -29,7 +29,7 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
 /**
- * Captures any content sent to stdout/stderr by JUnit4 tests and report a failure if the content is not empty.
+ * Captures any content sent to stdout/stderr by the unit tests and report a failure if the content is not empty.
  *
  * @version $Id$
  * @since 7.0M1
@@ -48,7 +48,7 @@ public class CaptureConsoleRunListener extends RunListener
     private boolean isInErrorAlready;
 
     @Override
-    public void testFailure(Failure failure)
+    public void testFailure(Failure failure) throws Exception
     {
         // There was a failure, skip the check at the end since Junit will stop already!
         this.isInErrorAlready = true;
@@ -62,7 +62,7 @@ public class CaptureConsoleRunListener extends RunListener
     }
 
     @Override
-    public void testRunStarted(Description description)
+    public void testRunStarted(Description description) throws Exception
     {
         if (SKIP) {
             return;
@@ -80,7 +80,7 @@ public class CaptureConsoleRunListener extends RunListener
     }
 
     @Override
-    public void testRunFinished(Result result)
+    public void testRunFinished(Result result) throws Exception
     {
         if (SKIP) {
             return;
