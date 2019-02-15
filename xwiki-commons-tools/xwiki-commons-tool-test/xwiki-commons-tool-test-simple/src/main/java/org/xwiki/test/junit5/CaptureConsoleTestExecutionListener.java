@@ -17,27 +17,33 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.test;
+package org.xwiki.test.junit5;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 import org.apache.commons.io.output.TeeOutputStream;
-import org.junit.runner.Description;
-import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
-import org.junit.runner.notification.RunListener;
+import org.jboss.shrinkwrap.resolver.api.maven.ConfigurableMavenResolverSystem;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.jboss.shrinkwrap.resolver.api.maven.pom.ParsedPomFile;
+import org.jboss.shrinkwrap.resolver.impl.maven.MavenWorkingSessionContainer;
+import org.junit.platform.engine.TestExecutionResult;
+import org.junit.platform.launcher.TestExecutionListener;
+import org.junit.platform.launcher.TestIdentifier;
 
 /**
- * Captures any content sent to stdout/stderr by JUnit4 tests and report a failure if the content is not empty.
+ * Captures any content sent to stdout/stderr by JUnit5 unit tests and report a failure if the content is not empty.
  *
  * @version $Id$
- * @since 7.0M1
+ * @since 11.1RC1
  */
-public class CaptureConsoleRunListener extends RunListener
+public class CaptureConsoleTestExecutionListener implements TestExecutionListener
 {
-    private static final boolean SKIP =
-        Boolean.parseBoolean(System.getProperty("xwiki.surefire.captureconsole.skip", "false"));
+    private static final String FALSE = "false";
+
+    private static final String CAPTURECONSOLESKIP_PROPERTY = "xwiki.surefire.captureconsole.skip";
+
+    private static final boolean SKIP = Boolean.parseBoolean(System.getProperty(CAPTURECONSOLESKIP_PROPERTY, FALSE));
 
     private PrintStream savedOut;
 
@@ -45,26 +51,12 @@ public class CaptureConsoleRunListener extends RunListener
 
     private ByteArrayOutputStream collectingContentStream;
 
-    private boolean isInErrorAlready;
+    private Boolean skip;
 
     @Override
-    public void testFailure(Failure failure)
+    public void executionStarted(TestIdentifier testIdentifier)
     {
-        // There was a failure, skip the check at the end since Junit will stop already!
-        this.isInErrorAlready = true;
-    }
-
-    @Override
-    public void testAssumptionFailure(Failure failure)
-    {
-        // There was a failure, skip the check at the end since Junit will stop already!
-        this.isInErrorAlready = true;
-    }
-
-    @Override
-    public void testRunStarted(Description description)
-    {
-        if (SKIP) {
+        if (shouldSkip()) {
             return;
         }
 
@@ -80,9 +72,9 @@ public class CaptureConsoleRunListener extends RunListener
     }
 
     @Override
-    public void testRunFinished(Result result)
+    public void executionFinished(TestIdentifier testIdentifier, TestExecutionResult testExecutionResult)
     {
-        if (SKIP) {
+        if (shouldSkip()) {
             return;
         }
 
@@ -95,9 +87,32 @@ public class CaptureConsoleRunListener extends RunListener
         // If there is stdout or stderr content then fail the test, unless there was already some error, in which
         // case we let junit fail in a classical way and we don't interfere...
         String outputContent = this.collectingContentStream.toString();
-        if (!outputContent.isEmpty() && !this.isInErrorAlready) {
+        if (!outputContent.isEmpty() && testExecutionResult.getStatus().equals(TestExecutionResult.Status.SUCCESSFUL)) {
             throw new AssertionError("There should be no content output to the console by the test! Instead we got ["
                 + outputContent + "]");
         }
+    }
+
+    /**
+     * @return true if the check should be skipper or false otherwise. The {@code xwiki.surefire.captureconsole.skip}
+     *         System property is checked first and if it doesn't exist, the Maven property of the same name is read
+     *         from the current {@code pom.xml}
+     */
+    private boolean shouldSkip()
+    {
+        if (SKIP) {
+            return true;
+        }
+
+        if (this.skip == null) {
+            ConfigurableMavenResolverSystem system = Maven.configureResolver().workOffline();
+            system.loadPomFromFile("pom.xml");
+            // Hack around a bit to get to the internal Maven Model object
+            ParsedPomFile parsedPom =
+                ((MavenWorkingSessionContainer) system).getMavenWorkingSession().getParsedPomFile();
+            this.skip = Boolean.valueOf(parsedPom.getProperties().getProperty(CAPTURECONSOLESKIP_PROPERTY, FALSE));
+        }
+
+        return this.skip;
     }
 }
