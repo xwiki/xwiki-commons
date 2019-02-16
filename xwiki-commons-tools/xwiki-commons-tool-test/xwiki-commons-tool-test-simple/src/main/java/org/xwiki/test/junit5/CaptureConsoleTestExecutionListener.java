@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -31,6 +32,8 @@ import org.apache.commons.io.output.TeeOutputStream;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Captures any content sent to stdout/stderr by JUnit5 unit tests and report a failure if the content is not empty.
@@ -40,6 +43,8 @@ import org.junit.platform.launcher.TestIdentifier;
  */
 public class CaptureConsoleTestExecutionListener implements TestExecutionListener
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CaptureConsoleTestExecutionListener.class);
+
     private static final String FALSE = "false";
 
     private static final String CAPTURECONSOLESKIP_PROPERTY = "xwiki.surefire.captureconsole.skip";
@@ -92,8 +97,8 @@ public class CaptureConsoleTestExecutionListener implements TestExecutionListene
         // case we let junit fail in a classical way and we don't interfere...
         String outputContent = this.collectingContentStream.toString();
         if (!outputContent.isEmpty() && testExecutionResult.getStatus().equals(TestExecutionResult.Status.SUCCESSFUL)) {
-            throw new AssertionError("There should be no content output to the console by the test! Instead we got ["
-                + outputContent + "]");
+            throw new AssertionError(String.format("There should be no content output to the console by the test! "
+                + "Instead we got [%s]", outputContent));
         }
     }
 
@@ -109,26 +114,41 @@ public class CaptureConsoleTestExecutionListener implements TestExecutionListene
         }
 
         if (this.skip == null) {
-            // Low tech (doesn't bring any additional dependencies that could cause conflicts with tests) and fast.
-            // Note: doesn't support inheritance: the skip property needs to be set to false in each pom.xml wanting
-            // to skip it!
-            this.skip = false;
-            try {
-                if (contains(XMLSKIP_VALUE).isPresent()) {
-                    this.skip = true;
-                }
-            } catch (IOException e) {
-                throw new RuntimeException("Error reading pom.xml file", e);
-            }
+            this.skip = pomContains();
         }
 
         return this.skip;
     }
 
-    private Optional<String> contains(String value) throws IOException
+    private boolean pomContains()
     {
-        try (Stream<String> lines = Files.lines(Paths.get("pom.xml"))) {
+        boolean skipCapture = false;
+        // Low tech (doesn't bring any additional dependencies that could cause conflicts with tests) and fast.
+        // Note: doesn't support inheritance: the skip property needs to be set to false in each pom.xml wanting
+        // to skip it!
+        if (Files.exists(getPOMPath())) {
+            try {
+                if (pomContains(XMLSKIP_VALUE).isPresent()) {
+                    skipCapture = true;
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(String.format("Error reading [%s] file", getPOMPath()), e);
+            }
+        } else {
+            LOGGER.warn("No [{}] file in current directory [{}]", getPOMPath(), Paths.get("").toAbsolutePath());
+        }
+        return skipCapture;
+    }
+
+    private Optional<String> pomContains(String value) throws IOException
+    {
+        try (Stream<String> lines = Files.lines(getPOMPath())) {
             return lines.filter(line -> line.contains(value)).findFirst();
         }
+    }
+
+    private Path getPOMPath()
+    {
+        return Paths.get("pom.xml");
     }
 }
