@@ -20,13 +20,14 @@
 package org.xwiki.test.junit5;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.output.TeeOutputStream;
-import org.jboss.shrinkwrap.resolver.api.maven.ConfigurableMavenResolverSystem;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.jboss.shrinkwrap.resolver.api.maven.pom.ParsedPomFile;
-import org.jboss.shrinkwrap.resolver.impl.maven.MavenWorkingSessionContainer;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
@@ -42,6 +43,9 @@ public class CaptureConsoleTestExecutionListener implements TestExecutionListene
     private static final String FALSE = "false";
 
     private static final String CAPTURECONSOLESKIP_PROPERTY = "xwiki.surefire.captureconsole.skip";
+
+    private static final String XMLSKIP_VALUE = String.format("<%s>true</%s>", CAPTURECONSOLESKIP_PROPERTY,
+        CAPTURECONSOLESKIP_PROPERTY);
 
     private static final boolean SKIP = Boolean.parseBoolean(System.getProperty(CAPTURECONSOLESKIP_PROPERTY, FALSE));
 
@@ -105,14 +109,26 @@ public class CaptureConsoleTestExecutionListener implements TestExecutionListene
         }
 
         if (this.skip == null) {
-            ConfigurableMavenResolverSystem system = Maven.configureResolver().workOffline();
-            system.loadPomFromFile("pom.xml");
-            // Hack around a bit to get to the internal Maven Model object
-            ParsedPomFile parsedPom =
-                ((MavenWorkingSessionContainer) system).getMavenWorkingSession().getParsedPomFile();
-            this.skip = Boolean.valueOf(parsedPom.getProperties().getProperty(CAPTURECONSOLESKIP_PROPERTY, FALSE));
+            // Low tech (doesn't bring any additional dependencies that could cause conflicts with tests) and fast.
+            // Note: doesn't support inheritance: the skip property needs to be set to false in each pom.xml wanting
+            // to skip it!
+            this.skip = false;
+            try {
+                if (contains(XMLSKIP_VALUE).isPresent()) {
+                    this.skip = true;
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Error reading pom.xml file", e);
+            }
         }
 
         return this.skip;
+    }
+
+    private Optional<String> contains(String value) throws IOException
+    {
+        try (Stream<String> lines = Files.lines(Paths.get("pom.xml"))) {
+            return lines.filter(line -> line.contains(value)).findFirst();
+        }
     }
 }
