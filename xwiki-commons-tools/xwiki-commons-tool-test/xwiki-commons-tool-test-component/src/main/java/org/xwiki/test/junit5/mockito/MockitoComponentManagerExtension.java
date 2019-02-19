@@ -103,20 +103,26 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         // Make sure tests don't leak one on another
         removeComponentManager(context);
 
-        // We initialize the CM in 3 steps:
-        // - First we create an instance of it
-        // - Then we create mocks for all @MockComponent annotations
-        // - Then we initialize the CM.
-        // This allows the test to have methods annotated with @BeforeComponent which can configure mocks defined
-        // with @MockComponent annotations, so that when @InjectMockComponents component are injected, if they
-        // implement Initializable, the test can have prepared any component setup so that the call to initialize()
-        // will work fine.
+        // We initialize the CM in 4 steps:
+        // - We create an empty instance of it
+        // - We create mocks for all @MockComponent annotations.
+        // - We initialize the CM. This handles in the following order:
+        //   - @BeforeComponent
+        //   - @ComponentList and @AllComponents
+        //   - @AfterComponent
+        // - We inject @InjectMockComponents fields
+        //
+        // Note: We handle @MockComponent before @InjectMockComponents to allow the test to have methods annotated with
+        // @BeforeComponent which can configure mocks defined with @MockComponent annotations, so that when
+        // @InjectMockComponents component are injected, if they implement Initializable, the test can have prepared
+        // any component setup so that the call to initialize() will work fine.
+        //
+        // Note: We initialize the CM after handling @MockComponent so that it's possible use mocks injected with
+        // @MockComponent inside @BeforeComponent and @AfterComponent methods.
+
         MockitoComponentManager mcm = loadComponentManager(context);
-        boolean initializeCM = mcm == null;
-        if (initializeCM) {
-            mcm = new MockitoComponentManager();
-            saveComponentManager(context, mcm);
-        }
+        mcm = new MockitoComponentManager();
+        saveComponentManager(context, mcm);
 
         // Inject the Mockito Component Manager in all fields annotated with @InjectComponentManager
         for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
@@ -140,9 +146,7 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
             }
         }
 
-        if (initializeCM) {
-            initializeMockitoComponentManager(testInstance, mcm, context);
-        }
+        initializeMockitoComponentManager(testInstance, mcm, context);
 
         // Create & register a component instance of all fields annotated with @InjectMockComponents with all its
         // @Inject-annotated fields injected with mocks or real implementations.
