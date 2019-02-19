@@ -149,9 +149,8 @@ public class ComponentAnnotationLoader
         try {
             // 2) For each component class name found, load its class and use introspection to find the necessary
             // annotations required to create a Component Descriptor.
-            Map<RoleHint<?>, ComponentDescriptor<?>> descriptorMap =
-                new HashMap<RoleHint<?>, ComponentDescriptor<?>>();
-            Map<RoleHint<?>, Integer> priorityMap = new HashMap<RoleHint<?>, Integer>();
+            Map<RoleHint<?>, ComponentDescriptor<?>> descriptorMap = new HashMap<>();
+            Map<RoleHint<?>, Integer> priorityMap = new HashMap<>();
 
             for (ComponentDeclaration componentDeclaration : componentDeclarations) {
                 Class<?> componentClass;
@@ -265,7 +264,7 @@ public class ComponentAnnotationLoader
 
     public List<ComponentDescriptor> getComponentsDescriptors(Class<?> componentClass)
     {
-        List<ComponentDescriptor> descriptors = new ArrayList<ComponentDescriptor>();
+        List<ComponentDescriptor> descriptors = new ArrayList<>();
 
         // Look for ComponentRole annotations and register one component per ComponentRole found
         for (Type componentRoleType : findComponentRoleTypes(componentClass)) {
@@ -283,7 +282,7 @@ public class ComponentAnnotationLoader
     public Set<Type> findComponentRoleTypes(Class<?> componentClass, Type[] parameters)
     {
         // Note: We use a Set to ensure that we don't register duplicate roles.
-        Set<Type> types = new LinkedHashSet<Type>();
+        Set<Type> types = new LinkedHashSet<>();
 
         Component component = componentClass.getAnnotation(Component.class);
 
@@ -391,7 +390,7 @@ public class ComponentAnnotationLoader
     public Set<Class<?>> findComponentRoleClasses(Class<?> componentClass)
     {
         // Note: We use a Set to ensure that we don't register duplicate roles.
-        Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
+        Set<Class<?>> classes = new LinkedHashSet<>();
 
         Component component = componentClass.getAnnotation(Component.class);
         if (component != null && component.roles().length > 0) {
@@ -438,7 +437,7 @@ public class ComponentAnnotationLoader
     private List<ComponentDeclaration> getDeclaredComponents(ClassLoader classLoader, String location)
         throws IOException
     {
-        List<ComponentDeclaration> annotatedClassNames = new ArrayList<ComponentDeclaration>();
+        List<ComponentDeclaration> annotatedClassNames = new ArrayList<>();
         Enumeration<URL> urls = classLoader.getResources(location);
         while (urls.hasMoreElements()) {
             URL url = urls.nextElement();
@@ -468,7 +467,7 @@ public class ComponentAnnotationLoader
      */
     public List<ComponentDeclaration> getDeclaredComponents(InputStream componentListStream) throws IOException
     {
-        List<ComponentDeclaration> annotatedClassNames = new ArrayList<ComponentDeclaration>();
+        List<ComponentDeclaration> annotatedClassNames = new ArrayList<>();
 
         // Read all components definition from the URL
         // Always force UTF-8 as the encoding, since these files are read from the official jars, and those are
@@ -525,7 +524,7 @@ public class ComponentAnnotationLoader
         // override files is now deprecated.
         if (componentOverrideDeclarations != null) {
             if (componentDeclarations == null) {
-                componentDeclarations = new ArrayList<ComponentDeclaration>();
+                componentDeclarations = new ArrayList<>();
             }
             for (ComponentDeclaration componentOverrideDeclaration : componentOverrideDeclarations) {
                 componentDeclarations.add(new ComponentDeclaration(componentOverrideDeclaration
