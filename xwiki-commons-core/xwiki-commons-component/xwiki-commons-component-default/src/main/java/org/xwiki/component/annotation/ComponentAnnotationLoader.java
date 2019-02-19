@@ -29,6 +29,7 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -48,6 +49,7 @@ import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.stability.Unstable;
 
 /**
  * Dynamically loads all components defined using Annotations and declared in META-INF/components.txt files.
@@ -137,6 +139,71 @@ public class ComponentAnnotationLoader
     }
 
     /**
+     * Find all component descriptors out of component declarations.
+     *
+     * @param classLoader the classloader used to load the component declaration implementation class.
+     * @param componentDeclarations the list of component declarations for which you want to build the component
+     * descriptor.
+     * @return a collection of component descriptors corresponding to the given component declarations.
+     * @since 11.1
+     */
+    private Collection<ComponentDescriptor<?>> getComponentsDescriptors(ClassLoader classLoader,
+        List<ComponentDeclaration> componentDeclarations)
+    {
+        // For each component class name found, load its class and use introspection to find the necessary
+        // annotations required to create a Component Descriptor.
+        Map<RoleHint<?>, ComponentDescriptor<?>> descriptorMap = new HashMap<>();
+        Map<RoleHint<?>, Integer> priorityMap = new HashMap<>();
+
+        for (ComponentDeclaration componentDeclaration : componentDeclarations) {
+            Class<?> componentClass;
+            try {
+                componentClass = classLoader.loadClass(componentDeclaration.getImplementationClassName());
+            } catch (Exception e) {
+                throw new RuntimeException(
+                    String.format("Failed to load component class [%s] for annotation parsing",
+                        componentDeclaration.getImplementationClassName()), e);
+            }
+
+            // Look for ComponentRole annotations and register one component per ComponentRole found
+            for (Type componentRoleType : findComponentRoleTypes(componentClass)) {
+                for (ComponentDescriptor<?> componentDescriptor : this.factory.createComponentDescriptors(
+                    componentClass, componentRoleType)) {
+                    // If there's already a existing role/hint in the list of descriptors then decide which one
+                    // to keep by looking at their priorities. Highest priority wins (i.e. lowest integer value).
+                    RoleHint<?> roleHint =
+                        new RoleHint(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint());
+
+                    addComponent(descriptorMap, priorityMap, roleHint, componentDescriptor, componentDeclaration,
+                        true);
+                }
+            }
+        }
+
+        return descriptorMap.values();
+    }
+
+    /**
+     * @param manager the component manager to use to dynamically register components
+     * @param componentDescriptors the descriptors of components to register
+     * @since 11.1
+     */
+    @Unstable
+    public void register(ComponentManager manager, Collection<ComponentDescriptor<?>> componentDescriptors)
+    {
+        try {
+            // Activate all component descriptors
+            for (ComponentDescriptor<?> descriptor : componentDescriptors) {
+                manager.registerComponent(descriptor);
+            }
+        } catch (Exception e) {
+            // Make sure we make the calling code fail in order to fail fast and prevent the application to start
+            // if something is amiss.
+            throw new RuntimeException("Failed to dynamically load components with annotations", e);
+        }
+    }
+
+    /**
      * @param manager the component manager to use to dynamically register components
      * @param classLoader the classloader to use to look for the Component list declaration file (
      *            {@code META-INF/components.txt})
@@ -146,46 +213,8 @@ public class ComponentAnnotationLoader
     public void register(ComponentManager manager, ClassLoader classLoader,
         List<ComponentDeclaration> componentDeclarations)
     {
-        try {
-            // 2) For each component class name found, load its class and use introspection to find the necessary
-            // annotations required to create a Component Descriptor.
-            Map<RoleHint<?>, ComponentDescriptor<?>> descriptorMap = new HashMap<>();
-            Map<RoleHint<?>, Integer> priorityMap = new HashMap<>();
 
-            for (ComponentDeclaration componentDeclaration : componentDeclarations) {
-                Class<?> componentClass;
-                try {
-                    componentClass = classLoader.loadClass(componentDeclaration.getImplementationClassName());
-                } catch (Exception e) {
-                    throw new RuntimeException(
-                        String.format("Failed to load component class [%s] for annotation parsing",
-                            componentDeclaration.getImplementationClassName()), e);
-                }
-
-                // Look for ComponentRole annotations and register one component per ComponentRole found
-                for (Type componentRoleType : findComponentRoleTypes(componentClass)) {
-                    for (ComponentDescriptor<?> componentDescriptor : this.factory.createComponentDescriptors(
-                        componentClass, componentRoleType)) {
-                        // If there's already a existing role/hint in the list of descriptors then decide which one
-                        // to keep by looking at their priorities. Highest priority wins (i.e. lowest integer value).
-                        RoleHint<?> roleHint =
-                            new RoleHint(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint());
-
-                        addComponent(descriptorMap, priorityMap, roleHint, componentDescriptor, componentDeclaration,
-                            true);
-                    }
-                }
-            }
-
-            // 3) Activate all component descriptors
-            for (ComponentDescriptor<?> descriptor : descriptorMap.values()) {
-                manager.registerComponent(descriptor);
-            }
-        } catch (Exception e) {
-            // Make sure we make the calling code fail in order to fail fast and prevent the application to start
-            // if something is amiss.
-            throw new RuntimeException("Failed to dynamically load components with annotations", e);
-        }
+        register(manager, getComponentsDescriptors(classLoader, componentDeclarations));
     }
 
     private void addComponent(Map<RoleHint<?>, ComponentDescriptor<?>> descriptorMap,
