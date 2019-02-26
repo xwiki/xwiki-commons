@@ -22,13 +22,17 @@ package org.xwiki.component.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.descriptor.ComponentRole;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -195,5 +199,34 @@ public class ReflectionUtilsTest
 
         assertEquals(TestInterfaceSimple.class, ReflectionUtils.resolveType(TestInterfaceSimple.class,
             new DefaultParameterizedType(ReflectionUtilsTest.class, TestClass4.class, String.class)));
+    }
+
+    @Test
+    public void serializeType()
+    {
+        Type type = new DefaultParameterizedType(null, Void.class);
+        assertEquals("java.lang.Void", ReflectionUtils.serializeType(type));
+
+        type = new DefaultParameterizedType(Collections.class, List.class);
+        assertEquals("java.util.Collections.java.util.List", ReflectionUtils.serializeType(type));
+
+        type = new DefaultParameterizedType(Collections.class, List.class, String.class);
+        assertEquals("java.util.Collections.java.util.List<java.lang.String>", ReflectionUtils.serializeType(type));
+
+        type = new DefaultParameterizedType(null, Map.class, Integer.class, String.class);
+        assertEquals("java.util.Map<java.lang.Integer, java.lang.String>", ReflectionUtils.serializeType(type));
+
+        type = new DefaultParameterizedType(null, Map.class, Integer.class,
+            new DefaultParameterizedType(null, List.class, String.class));
+        assertEquals("java.util.Map<java.lang.Integer, java.util.List<java.lang.String>>",
+            ReflectionUtils.serializeType(type));
+
+        type = String.class;
+        assertEquals("java.lang.String", ReflectionUtils.serializeType(type));
+
+        Map<String, List<Integer>> stringListMap = new HashMap<>();
+        assertEquals("java.util.HashMap", ReflectionUtils.serializeType(stringListMap.getClass()));
+
+        assertNull(ReflectionUtils.serializeType(null));
     }
 }

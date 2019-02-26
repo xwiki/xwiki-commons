@@ -108,49 +108,6 @@ public class DefaultParameterizedType implements ParameterizedType
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder();
-        if (this.ownerType != null) {
-            if (this.ownerType instanceof Class) {
-                sb.append(((Class<?>) this.ownerType).getName());
-            } else {
-                sb.append(this.ownerType.toString());
-            }
-
-            sb.append('.');
-
-            if (this.ownerType instanceof ParameterizedType) {
-                // Find simple name of nested type by removing the
-                // shared prefix with owner.
-                sb.append(this.rawType.getName().replace(
-                    ((Class<?>) ((ParameterizedType) this.ownerType).getRawType()).getName() + '$', ""));
-            } else {
-                sb.append(this.rawType.getName());
-            }
-        } else {
-            sb.append(this.rawType.getName());
-        }
-
-        if (this.actualTypeArguments != null && this.actualTypeArguments.length > 0) {
-            sb.append("< ");
-
-            boolean first = true;
-            for (Type type : this.actualTypeArguments) {
-                if (!first) {
-                    sb.append(", ");
-                }
-
-                if (type instanceof Class) {
-                    sb.append(((Class<?>) type).getName());
-                } else {
-                    sb.append(type.toString());
-                }
-
-                first = false;
-            }
-
-            sb.append(" >");
-        }
-
-        return sb.toString();
+        return ReflectionUtils.serializeType(this);
     }
 }
