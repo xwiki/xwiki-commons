@@ -53,10 +53,4 @@ public class TypeConverter extends AbstractConverter<Type>
 
         return result;
     }
-
-    @Override
-    protected String convertToString(Type type)
-    {
-        return ReflectionUtils.serializeType(type);
-    }
 }
