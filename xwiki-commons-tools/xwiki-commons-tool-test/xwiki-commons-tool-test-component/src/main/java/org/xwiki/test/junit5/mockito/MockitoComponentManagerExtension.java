@@ -273,4 +273,3 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         return context.getRoot().getStore(NAMESPACE);
     }
 }
-

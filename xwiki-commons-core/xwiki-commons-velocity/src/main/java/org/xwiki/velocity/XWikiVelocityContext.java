@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * and $velocityHasNext).
  * 
  * @version $Id$
- * @since 10.6RC1
+ * @since 11.2RC1
  */
 public class XWikiVelocityContext extends VelocityContext
 {

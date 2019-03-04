@@ -27,7 +27,7 @@ import org.xwiki.component.annotation.Role;
  * Inject default velocity tools.
  * 
  * @version $Id$
- * @since 11.0RC1
+ * @since 11.2RC1
  */
 @Role
 public interface DefaultToolsInitializer

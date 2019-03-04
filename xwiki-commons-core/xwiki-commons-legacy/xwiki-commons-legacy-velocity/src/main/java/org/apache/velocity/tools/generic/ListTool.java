@@ -60,7 +60,7 @@ import org.apache.velocity.tools.config.DefaultKey;
  * It may be used in any scope (request, session, or application).
  * </p>
  * 
- * <p>XWiki: copy/pasted from Velocity 2 to maintain retro compatibility</p>
+ * <p>XWiki: copy/pasted from Velocity 1.7 to maintain retro compatibility</p>
  *
  * @author <a href="mailto:shinobu@ieee.org">Shinobu Kawai</a>
  * @version $Id$

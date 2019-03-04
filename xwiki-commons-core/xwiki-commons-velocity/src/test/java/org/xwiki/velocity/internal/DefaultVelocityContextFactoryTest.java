@@ -61,7 +61,7 @@ public class DefaultVelocityContextFactoryTest
     private DefaultVelocityContextFactory factory;
 
     @AfterComponent
-    public void afterMockComponent()
+    public void afterComponent()
     {
         Properties properties = new Properties();
         properties.put("numbertool", NumberTool.class.getName());

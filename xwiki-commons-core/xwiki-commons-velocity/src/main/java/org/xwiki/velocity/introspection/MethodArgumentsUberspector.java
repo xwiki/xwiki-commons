@@ -48,12 +48,11 @@ import org.xwiki.properties.ConverterManager;
  * // if obj has someMethod(SomeEnum) and not someMethod(String)}
  * </pre>
  * <p>
- * Note that Velocity 2.0 introduced support for this use case but unfortunately {@link ConversionHandler} is limited to
- * Class and not does not Type (meaning we would loose support for generics).
  *
  * @since 4.1M2
  * @version $Id$
  */
+// TODO: Implement TypeConversionHandler instead
 public class MethodArgumentsUberspector extends AbstractChainableUberspector implements RuntimeServicesAware
 {
     /**
