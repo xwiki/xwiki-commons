@@ -42,18 +42,17 @@ import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 
 /**
- * Extends the Maven Remote Resources plugin to fix memory issue found in it,
- * see <a href="https://jira.xwiki.org/browse/XCOMMONS-1421">XCOMMONS-1421</a>.
+ * Extends the Maven Remote Resources plugin to fix memory issue found in it, see
+ * <a href="https://jira.xwiki.org/browse/XCOMMONS-1421">XCOMMONS-1421</a>.
  * <p>
- * To be removed when <a href="https://issues.apache.org/jira/browse/MRRESOURCES-106">MRRESOURCES-106</a> is fixed
- * on the Maven side.
+ * To be removed when <a href="https://issues.apache.org/jira/browse/MRRESOURCES-106">MRRESOURCES-106</a> is fixed on
+ * the Maven side.
  *
  * @version $Id$
  * @since 9.11.5
  * @since 10.5RC1
  */
-@Mojo(name = "process", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true, requiresProject = true,
-    requiresDependencyResolution = ResolutionScope.RUNTIME)
+@Mojo(name = "process", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true, requiresProject = true, requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
 {
     /**
@@ -94,7 +93,7 @@ public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
     /**
      * List of Remote Repositories used by the resolver.
      */
-    @Parameter( defaultValue = "${project.remoteArtifactRepositories}", readonly = true, required = true )
+    @Parameter(defaultValue = "${project.remoteArtifactRepositories}", readonly = true, required = true)
     private List<ArtifactRepository> remoteArtifactRepositories;
 
     @Override
@@ -129,9 +128,10 @@ public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
                     dependencyProject = this.mavenProjectBuilderThis.buildFromRepository(artifact,
                         this.remoteArtifactRepositories, this.localRepositoryThis);
                 } catch (InvalidProjectModelException e) {
-                    getLog().warn(String.format("Invalid project model for artifact [%s:%s:%s]. It will be ignored by "
-                        + "the remote resources Mojo.", artifact.getGroupId(), artifact.getArtifactId(),
-                        artifact.getVersion()));
+                    getLog().warn(String.format(
+                        "Invalid project model for artifact [%s:%s:%s]. It will be ignored by "
+                            + "the remote resources Mojo.",
+                        artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion()));
                     continue;
                 }
 
