@@ -22,6 +22,7 @@ package org.xwiki.velocity.internal;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.tools.generic.NumberTool;
 import org.apache.velocity.util.introspection.DeprecatedCheckUberspector;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,7 +61,7 @@ public class DefaultVelocityConfigurationTest
     public void getToolsReturnsDefaultTools()
     {
         // Verify for example that the number tool is present.
-        assertEquals(NumberTool.class.getName(), this.configuration.getTools().get("listtool"));
+        assertEquals(NumberTool.class.getName(), this.configuration.getTools().get("numbertool"));
     }
 
     @Test
@@ -72,19 +73,15 @@ public class DefaultVelocityConfigurationTest
                 DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','),
             this.configuration.getProperties().getProperty("runtime.introspector.uberspect"));
 
-        // Verify that null values are allowed by default
-        assertEquals(Boolean.TRUE.toString(),
-            this.configuration.getProperties().getProperty("directive.set.null.allowed"));
-
         // Verify that Macros are isolated by default
         assertEquals(Boolean.TRUE.toString(),
-            this.configuration.getProperties().getProperty("velocimacro.permissions.allow.inline.local.scope"));
+            this.configuration.getProperties().getProperty(RuntimeConstants.VM_PERM_INLINE_LOCAL));
 
         // Verify that we use Velocity 1.x Space Gobbling
-        assertEquals("bc", this.configuration.getProperties().getProperty("space.gobbling"));
+        assertEquals("bc", this.configuration.getProperties().getProperty(RuntimeConstants.SPACE_GOBBLING));
 
         // Verify that empty string #if evaluate to true
         assertEquals(Boolean.FALSE.toString(),
-            this.configuration.getProperties().getProperty("directive.if.emptycheck"));
+            this.configuration.getProperties().getProperty(RuntimeConstants.CHECK_EMPTY_OBJECTS));
     }
 }

@@ -124,7 +124,12 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         // Merge default properties and properties defined in the configuration
         Properties props = new Properties();
         props.putAll(this.defaultProperties);
-        props.putAll(this.configuration.getProperty(PREFIX + "properties", Properties.class));
+
+        Properties configuredProperties = this.configuration.getProperty(PREFIX + "properties", Properties.class);
+        if (configuredProperties != null) {
+            props.putAll(configuredProperties);
+        }
+
         return props;
     }
 
@@ -134,7 +139,12 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         // Merge default tools and tools defined in the configuration
         Properties props = new Properties();
         props.putAll(this.defaultTools);
-        props.putAll(this.configuration.getProperty(PREFIX + "tools", Properties.class));
+
+        Properties configuredTools = this.configuration.getProperty(PREFIX + "tools", Properties.class);
+        if (configuredTools != null) {
+            props.putAll(configuredTools);
+        }
+
         return props;
     }
 }

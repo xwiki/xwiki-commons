@@ -25,25 +25,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.context.Context;
-import org.apache.velocity.util.introspection.DeprecatedCheckUberspector;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.test.LogLevel;
+import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
-import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.XWikiVelocityContext;
 import org.xwiki.velocity.XWikiVelocityException;
-import org.xwiki.velocity.introspection.SecureUberspector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -52,6 +49,7 @@ import static org.mockito.Mockito.when;
  * Unit tests for {@link DefaultVelocityEngine}.
  */
 @ComponentTest
+@ComponentList(DefaultVelocityConfiguration.class)
 public class DefaultVelocityEngineTest
 {
     @RegisterExtension
@@ -60,25 +58,26 @@ public class DefaultVelocityEngineTest
     @MockComponent
     private ComponentManager componentManager;
 
-    @MockComponent
-    private VelocityConfiguration configuration;
-
     @InjectMockComponents
     private DefaultVelocityEngine engine;
 
     @MockComponent
     private Execution execution;
 
+    @MockComponent
+    private ConfigurationSource configurationSource;
+
     @BeforeEach
     void setUp() throws Exception
     {
-        Properties properties = new Properties();
+/*        Properties properties = new Properties();
         properties.put("runtime.introspector.uberspect",
             SecureUberspector.class.getName() + "," + DeprecatedCheckUberspector.class.getName());
         properties.put("directive.set.null.allowed", Boolean.TRUE.toString());
         properties.put("velocimacro.permissions.allow.inline.local.scope", Boolean.TRUE.toString());
+        properties.put(RuntimeConstants.VM_PRESERVE_ARGUMENTS_LITERALS, Boolean.TRUE.toString());
 
-        when(configuration.getProperties()).thenReturn(properties);
+        when(configuration.getProperties()).thenReturn(properties);*/
 
         when(execution.getContext()).thenReturn(new ExecutionContext());
     }
@@ -294,50 +293,28 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void test MacroReturn() throws Exception
+    public void testMacroReturn() throws Exception
     {
-        // TODO
-        
         this.engine.initialize(new Properties());
 
-        assertEvaluate("42$return", "#macro (testMacro $toto $return $titi)#setVariable('$return' 42)#end"
-            + "#testMacro($aa, $returned, 'jj')$returned$return", "mytemplate");
-
-        assertEvaluate("42$return", "#macro (testMacro $return $titi)#setVariable('$return' 42)#end"
-            + "#testMacro($returned, 'jj')$returned$return", "mytemplate");
-
-        assertEvaluate("42$return",
-            "#macro (testMacro $return)#setVariable('$return' 42)#end" + "#testMacro($returned)$returned$return",
-            "mytemplate");
-
-        assertEvaluate("42$return",
-            "#macro (testMacro $return)#setVariable('return' 42)#end" + "#testMacro($returned)$returned$return",
-            "mytemplate");
-
-        assertEvaluate("42",
-            "#macro (testTopMacro $topreturn)#testSubMacro($subreturned)#setVariable('$topreturn' $subreturned)#end"
-                + "#macro (testSubMacro $subreturn)#setVariable('$subreturn' 42)#end"
-                + "#testTopMacro($topreturned)$topreturned",
-            "mytemplate");
+        assertEvaluate("$caller", "#macro (testMacro $called)$called#end#testMacro($caller)", "mytemplate");
     }
 
     @Test
-    @Disabled
     public void testSetSharpString() throws Exception
     {
         this.engine.initialize(new Properties());
 
-        assertEvaluate("#", "#set($var = \"#\")", "mytemplate");
-        assertEvaluate("test#", "#set($var = \"test#\")", "mytemplate");
+        assertEvaluate("#", "#set($var = \"#\")$var", "mytemplate");
+        assertEvaluate("test#", "#set($var = \"test#\")$var", "mytemplate");
     }
 
     @Test
-    @Disabled
     public void testSetDollarString() throws Exception
     {
         this.engine.initialize(new Properties());
 
-        assertEvaluate("$", "#set($var = \"$\")", "mytemplate");
-        assertEvaluate("test$", "#set($var = \"test$\")", "mytemplate");
+        assertEvaluate("$", "#set($var = \"$\")$var", "mytemplate");
+        assertEvaluate("test$", "#set($var = \"test$\")$var", "mytemplate");
     }
 }
