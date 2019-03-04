@@ -617,6 +617,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         modelRequest.setModelResolver(new ProjectModelResolver(session, null, this.repositorySystem,
             this.remoteRepositoryManager, repositories, RepositoryMerging.POM_DOMINANT, null));
         modelRequest.setPomFile(pomFile);
+        modelRequest.setActiveProfileIds(Arrays.asList("legacy"));
 
         return this.modelBuilder.build(modelRequest).getEffectiveModel();
     }

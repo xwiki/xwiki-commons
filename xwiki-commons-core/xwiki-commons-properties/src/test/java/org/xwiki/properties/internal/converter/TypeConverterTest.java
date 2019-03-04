@@ -57,7 +57,7 @@ public class TypeConverterTest extends AbstractComponentTestCase
         Type genericsType = new DefaultParameterizedType(null, ComponentRole.class, String.class);
         Assert
             .assertEquals(genericsType, this.converterManager.convert(Type.class,
-                "org.xwiki.component.descriptor.ComponentRole< java.lang.String >"));
+                "org.xwiki.component.descriptor.ComponentRole<java.lang.String>"));
     }
 
     @Test
@@ -68,7 +68,7 @@ public class TypeConverterTest extends AbstractComponentTestCase
             this.converterManager.convert(String.class, simpleType));
 
         Type genericsType = new DefaultParameterizedType(null, ComponentRole.class, String.class);
-        Assert.assertEquals("org.xwiki.component.descriptor.ComponentRole< java.lang.String >",
+        Assert.assertEquals("org.xwiki.component.descriptor.ComponentRole<java.lang.String>",
             this.converterManager.convert(String.class, genericsType));
     }
 }

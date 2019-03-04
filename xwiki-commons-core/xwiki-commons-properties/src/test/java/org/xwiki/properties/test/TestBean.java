@@ -21,8 +21,10 @@ package org.xwiki.properties.test;
 
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.xwiki.properties.annotation.PropertyAdvanced;
 import org.xwiki.properties.annotation.PropertyDescription;
+import org.xwiki.properties.annotation.PropertyDisplayType;
 import org.xwiki.properties.annotation.PropertyFeature;
 import org.xwiki.properties.annotation.PropertyGroup;
 import org.xwiki.properties.annotation.PropertyHidden;
@@ -53,6 +55,10 @@ public class TestBean
     private String deprecatedParameter;
 
     private String advancedParameter;
+
+    private String displayTypeParameter;
+
+    private String displayTypeParameter2;
 
     @PropertyName("Public Field")
     @PropertyDescription("a public field")
@@ -175,5 +181,27 @@ public class TestBean
     public void setAdvancedParameter(String advancedParameter)
     {
         this.advancedParameter = advancedParameter;
+    }
+
+    @PropertyDisplayType({Triple.class, Boolean.class, String.class, Long.class})
+    public String getDisplayTypeParameter()
+    {
+        return displayTypeParameter;
+    }
+
+    public void setDisplayTypeParameter(String displayTypeParameter)
+    {
+        this.displayTypeParameter = displayTypeParameter;
+    }
+
+    @PropertyDisplayType(Boolean.class)
+    public String getDisplayTypeParameter2()
+    {
+        return displayTypeParameter2;
+    }
+
+    public void setDisplayTypeParameter2(String displayTypeParameter2)
+    {
+        this.displayTypeParameter2 = displayTypeParameter2;
     }
 }

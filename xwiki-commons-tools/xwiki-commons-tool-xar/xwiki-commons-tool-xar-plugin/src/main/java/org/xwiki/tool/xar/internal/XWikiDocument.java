@@ -223,7 +223,7 @@ public class XWikiDocument
         this.attachmentDatePresent = rootElement.selectSingleNode("//attachment/date") != null;
 
         // Does this document contain a XWiki.TranslationDocumentClass xobject?
-        if (rootElement.selectNodes("//object/className[text() = 'XWiki.TranslationDocumentClass']").size() > 0) {
+        if (!rootElement.selectNodes("//object/className[text() = 'XWiki.TranslationDocumentClass']").isEmpty()) {
             this.containsTranslations = true;
             // Record the visibility
             for (Node node : rootElement
@@ -252,7 +252,7 @@ public class XWikiDocument
             // to a wiki page.
             if (name == null && space == null) {
                 throw new DocumentException(
-                    String.format("Content doesn't point to valid wiki page XML", domdoc.getName()));
+                    String.format("Content doesn't point to valid wiki page XML [%s]", domdoc.getName()));
             }
 
             result = space == null ? name : escapeSpaceOrPageName(space) + '.' + escapeSpaceOrPageName(name);
@@ -306,17 +306,17 @@ public class XWikiDocument
     public static List<Map<String, String>> readAttachmentData(Element rootElement) throws DocumentException
     {
         List<Map<String, String>> data = new ArrayList<>();
-        for (Object attachmentNode : rootElement.elements("attachment")) {
+        for (Element attachmentNode : rootElement.elements("attachment")) {
             Map<String, String> map = new HashMap<>();
-            String authorValue = readElement((Element) attachmentNode, AUTHOR_TAG);
+            String authorValue = readElement(attachmentNode, AUTHOR_TAG);
             if (authorValue != null) {
                 map.put(AUTHOR_TAG, authorValue);
             }
-            String mimetypeValue = readElement((Element) attachmentNode, MIMETYPE_TAG);
+            String mimetypeValue = readElement(attachmentNode, MIMETYPE_TAG);
             if (mimetypeValue != null) {
                 map.put(MIMETYPE_TAG, mimetypeValue);
             }
-            String filenameValue = readElement((Element) attachmentNode, FILENAME_TAG);
+            String filenameValue = readElement(attachmentNode, FILENAME_TAG);
             if (filenameValue != null) {
                 map.put(FILENAME_TAG, filenameValue);
             }

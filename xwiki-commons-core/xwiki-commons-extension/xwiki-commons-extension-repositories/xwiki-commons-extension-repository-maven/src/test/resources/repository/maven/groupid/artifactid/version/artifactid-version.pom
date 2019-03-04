@@ -70,4 +70,17 @@
       <type>type</type>
     </dependency>
   </dependencies>
+  <profiles>
+    <profile>
+      <id>legacy</id>
+      <dependencies>
+        <dependency>
+          <groupId>legacygroupid</groupId>
+          <artifactId>legacyartifactid</artifactId>
+          <version>legacyversion</version>
+          <type>type</type>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>

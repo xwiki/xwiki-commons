@@ -193,23 +193,28 @@ public class DefaultObservationManager implements ObservationManager
         // Register the listener by name. If already registered, override it.
         listeners.put(eventListener.getName(), eventListener);
 
-        // For each event defined for this listener, add it to the Event Map.
-        for (Event event : eventListener.getEvents()) {
-            // Check if this is a new Event type not already registered
-            Map<String, RegisteredListener> eventListeners = this.listenersByEvent.get(event.getClass());
-            if (eventListeners == null) {
-                // No listener registered for this event yet. Create a map to store listeners for this event.
-                eventListeners = new ConcurrentHashMap<String, RegisteredListener>();
-                this.listenersByEvent.put(event.getClass(), eventListeners);
-                // There is no RegisteredListener yet, create one
-                eventListeners.put(eventListener.getName(), new RegisteredListener(eventListener, event));
-            } else {
-                // Add an event to existing RegisteredListener object
-                RegisteredListener registeredListener = eventListeners.get(eventListener.getName());
-                if (registeredListener == null) {
+        // when lot of threads are involved there might be a concurrent access when inserting a new listener
+        // this needs to be managed with a lock to avoid an event to be "lost", e.g. not consumed by the appropriate
+        // listener
+        synchronized (this.listenersByEvent) {
+            // For each event defined for this listener, add it to the Event Map.
+            for (Event event : eventListener.getEvents()) {
+                // Check if this is a new Event type not already registered
+                Map<String, RegisteredListener> eventListeners = this.listenersByEvent.get(event.getClass());
+                if (eventListeners == null) {
+                    // No listener registered for this event yet. Create a map to store listeners for this event.
+                    eventListeners = new ConcurrentHashMap<String, RegisteredListener>();
+                    this.listenersByEvent.put(event.getClass(), eventListeners);
+                    // There is no RegisteredListener yet, create one
                     eventListeners.put(eventListener.getName(), new RegisteredListener(eventListener, event));
                 } else {
-                    registeredListener.addEvent(event);
+                    // Add an event to existing RegisteredListener object
+                    RegisteredListener registeredListener = eventListeners.get(eventListener.getName());
+                    if (registeredListener == null) {
+                        eventListeners.put(eventListener.getName(), new RegisteredListener(eventListener, event));
+                    } else {
+                        registeredListener.addEvent(event);
+                    }
                 }
             }
         }

@@ -185,26 +185,26 @@ public class DefaultHTMLCleanerTest
     @Test
     public void scriptAndCData()
     {
-        assertHTML("<script type=\"text/javascript\">//<![CDATA[\n\nalert(\"Hello World\")\n\n//]]></script>",
+        assertHTML("<script type=\"text/javascript\">/*<![CDATA[*/\nalert(\"Hello World\")\n/*]]>*/</script>",
             "<script type=\"text/javascript\"><![CDATA[\nalert(\"Hello World\")\n]]></script>");
 
-        assertHTML("<script type=\"text/javascript\">//<![CDATA[\n\nalert(\"Hello World\")\n\n//]]></script>",
+        assertHTML("<script type=\"text/javascript\">/*<![CDATA[*/\nalert(\"Hello World\")\n/*]]>*/</script>",
             "<script type=\"text/javascript\">//<![CDATA[\nalert(\"Hello World\")\n//]]></script>");
 
-        assertHTML("<script type=\"text/javascript\">//<![CDATA[\n\nalert(\"Hello World\")\n\n//]]></script>",
+        assertHTML("<script type=\"text/javascript\">/*<![CDATA[*/\nalert(\"Hello World\")\n/*]]>*/</script>",
             "<script type=\"text/javascript\">/*<![CDATA[*/\nalert(\"Hello World\")\n/*]]>*/</script>");
 
-        assertHTML("<script type=\"text/javascript\">//<![CDATA[\n\n\n" + "function escapeForXML(origtext) {\n"
+        assertHTML("<script type=\"text/javascript\">/*<![CDATA[*/\n\n" + "function escapeForXML(origtext) {\n"
             + "   return origtext.replace(/\\&/g,'&'+'amp;').replace(/</g,'&'+'lt;')\n"
-            + "       .replace(/>/g,'&'+'gt;').replace(/\'/g,'&'+'apos;').replace(/\"/g,'&'+'quot;');" + "}\n\n\n//]]>"
+            + "       .replace(/>/g,'&'+'gt;').replace(/\'/g,'&'+'apos;').replace(/\"/g,'&'+'quot;');" + "}\n\n/*]]>*/"
             + "</script>", "<script type=\"text/javascript\">\n" + "/*<![CDATA[*/\n"
             + "function escapeForXML(origtext) {\n"
             + "   return origtext.replace(/\\&/g,'&'+'amp;').replace(/</g,'&'+'lt;')\n"
             + "       .replace(/>/g,'&'+'gt;').replace(/\'/g,'&'+'apos;').replace(/\"/g,'&'+'quot;');" + "}\n"
             + "/*]]>*/\n" + "</script>");
 
-        assertHTML("<script>//<![CDATA[\n<>\n//]]></script>", "<script>&lt;&gt;</script>");
-        assertHTML("<script>//<![CDATA[\n<>\n//]]></script>", "<script><></script>");
+        assertHTML("<script>/*<![CDATA[*/\n&lt;&gt;\n/*]]>*/</script>", "<script>&lt;&gt;</script>");
+        assertHTML("<script>/*<![CDATA[*/\n<>\n/*]]>*/</script>", "<script><></script>");
 
         // Verify that CDATA not inside SCRIPT or STYLE elements are considered comments in HTML and thus stripped
         // when cleaned.
@@ -224,11 +224,11 @@ public class DefaultHTMLCleanerTest
         assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>",
             "<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>");
 
-        assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/a>span { color: blue;}\n/*]]>*/</style>",
+        assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na&gt;span { color: blue;}\n/*]]>*/</style>",
             "<style type=\"text/css\">a&gt;span { color: blue;}</style>");
 
-        assertHTMLWithHeadContent("<style>/*<![CDATA[*/<>\n/*]]>*/</style>", "<style>&lt;&gt;</style>");
-        assertHTMLWithHeadContent("<style>/*<![CDATA[*/<>\n/*]]>*/</style>", "<style><></style>");
+        assertHTMLWithHeadContent("<style>/*<![CDATA[*/\n&lt;&gt;\n/*]]>*/</style>", "<style>&lt;&gt;</style>");
+        assertHTMLWithHeadContent("<style>/*<![CDATA[*/\n<>\n/*]]>*/</style>", "<style><></style>");
     }
 
     /**
@@ -402,6 +402,21 @@ public class DefaultHTMLCleanerTest
     public void verifyEntitiesAreNotBroken()
     {
         assertHTML("<p>&Eacute;</p>", "&Eacute;");
+        assertHTML("<p>&frac14;</p>", "&frac14;");
+        assertHTML("<p>&amp;f!rac14;</p>", "&f!rac14;");
+    }
+
+    @Test
+    public void verifyLeadingSpacesAreKeptOnlyInInputValue()
+    {
+        assertHTML("<p><input type=\"hidden\" value=\"  fff\" /></p>", "<input type=\"hidden\" value=\"  fff\" />");
+        assertHTML("<p><input type=\"hidden\" value=\"foo\" /></p>", "<input type=\"hidden\" value=\"foo\" />");
+        assertHTML("<p><input type=\"hidden\" value=\"foo bar\" /></p>", "<input type=\"hidden\" value=\"foo bar\" />");
+        assertHTML("<p><input class=\"fff\" type=\"hidden\" /></p>", "<input type=\"hidden\" class=\"  fff\" />");
+        assertHTML("<p><input class=\"foo bar\" type=\"hidden\" value=\" foo bar  \" /></p>",
+            "<input type=\"hidden   \" value=\" foo bar  \" class=\" foo bar  \"/>");
+        assertHTML("<div class=\"foo bar\" title=\"foo bar\"></div>",
+            "<div title=\" foo bar  \" class=\" foo bar  \"/>");
     }
 
     /**

@@ -46,7 +46,7 @@ public class ComponentRegistrator
     /**
      * Used to register components from their annotations.
      */
-    private ComponentAnnotationLoader loader = new ComponentAnnotationLoader();
+    private ComponentAnnotationLoader loader = new TestComponentAnnotationLoader();
 
     /**
      * Registers a component (using the default role hint).

@@ -137,6 +137,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     public String toString()
     {
         ToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder.append(super.toString());
         builder.append("implementation", getImplementation() == null ? null : getImplementation().getName());
         builder.append("instantiation", getInstantiationStrategy());
         return builder.toString();

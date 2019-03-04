@@ -133,4 +133,19 @@ public class DefaultComponentDescriptorTest
 
         assertNotEquals(cd6, cd9);
     }
+
+    @Test
+    public void testToString()
+    {
+        DefaultComponentDescriptor cd = new DefaultComponentDescriptor();
+        cd.setImplementation(ImplRole.class);
+        cd.setRoleType(Role.class);
+        cd.setRoleHint("hint");
+        DefaultComponentDependency dep = new DefaultComponentDependency();
+        dep.setName("name2");
+        dep.setRoleType(String.class);
+        cd.addComponentDependency(dep);
+
+        assertEquals("role = [interface org.xwiki.component.descriptor.DefaultComponentDescriptorTest$Role], hint = [hint]], implementation = [org.xwiki.component.descriptor.DefaultComponentDescriptorTest$ImplRole], instantiation = [SINGLETON]", cd.toString());
+    }
 }

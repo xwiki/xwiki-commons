@@ -32,4 +32,8 @@
   <suppress checks="ClassFanOutComplexity" files="SAXEventWriter.java" />
   <suppress checks="CyclomaticComplexity" files="SAXEventWriter.java" />
   <suppress checks="AnonInnerLength" files="SAXEventWriter.java" />
+
+  <!-- XWikiDomSerializer copied from DomSerializer -->
+  <suppress checks="CyclomaticComplexity" files="XWikiDOMSerializer" />
+  <suppress checks="NPathComplexity" files="XWikiDOMSerializer" />
 </suppressions>

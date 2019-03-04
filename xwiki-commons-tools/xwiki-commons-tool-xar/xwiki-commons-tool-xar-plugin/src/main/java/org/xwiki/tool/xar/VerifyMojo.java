@@ -101,7 +101,7 @@ public class VerifyMojo extends AbstractVerifyMojo
         for (File file : xmlFiles) {
             String parentName = file.getParentFile().getName();
             XWikiDocument xdoc = getDocFromXML(file);
-            List<String> errors = new ArrayList<String>();
+            List<String> errors = new ArrayList<>();
 
             // Verification 1: Verify Encoding is UTF8
             if (!xdoc.getEncoding().equals("UTF-8")) {

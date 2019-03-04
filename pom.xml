@@ -24,7 +24,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>11.0-SNAPSHOT</version>
+  <version>11.2-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -46,11 +46,11 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>11.0-SNAPSHOT</commons.version>
+    <commons.version>11.2-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
-    <xwiki.compatibility.previous.version>10.11</xwiki.compatibility.previous.version>
+    <xwiki.compatibility.previous.version>11.1</xwiki.compatibility.previous.version>
 
     <!-- Java -->
     <java.version>1.8</java.version>
@@ -73,9 +73,9 @@
 
     <!-- JUnit -->
     <junit.version>4.12</junit.version>
-    <junit5.version>5.3.2</junit5.version>
-    <junit.platform.version>1.3.2</junit.platform.version>
-    <junit.vintage.version>5.3.2</junit.vintage.version>
+    <junit5.version>5.4.0</junit5.version>
+    <junit.platform.version>1.4.0</junit.platform.version>
+    <junit.vintage.version>${junit5.version}</junit.vintage.version>
 
     <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
          are executed with surefire or failsafe) -->
@@ -83,26 +83,26 @@
 
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
-    <mockito.version>2.23.4</mockito.version>
+    <mockito.version>2.24.0</mockito.version>
 
     <!-- Byte Buddy -->
-    <bytebuddy.version>1.9.6</bytebuddy.version>
+    <bytebuddy.version>1.9.10</bytebuddy.version>
 
     <!-- AspectJ -->
     <aspectj.version>1.9.2</aspectj.version>
 
     <!-- Clover & Jacoco -->
     <clover.version>4.3.1</clover.version>
-    <jacoco.version>0.8.2</jacoco.version>
+    <jacoco.version>0.8.3</jacoco.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>8.16</checkstyle.version>
+    <checkstyle.version>8.17</checkstyle.version>
 
     <!-- Spoon -->
-    <spoon.version>7.2.0</spoon.version>
+    <spoon.version>7.3.0</spoon.version>
 
     <!-- Groovy -->
-    <groovy.version>2.5.5</groovy.version>
+    <groovy.version>2.5.6</groovy.version>
 
     <!-- Ivy -->
     <ivy.version>2.4.0</ivy.version>
@@ -110,17 +110,20 @@
     <!-- By default Checkstyle, Backward compatibility check, Enforcer, License plugins, etc are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.revapi.skip>false</xwiki.revapi.skip>
+    <xwiki.jacoco.skip>false</xwiki.jacoco.skip>
     <xwiki.enforcer.skip>false</xwiki.enforcer.skip>
     <xwiki.enforcer.enforce-plugins.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-plugins.skip>
     <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
     <xwiki.enforcer.enforce-glasshfish-jaxb.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glasshfish-jaxb.skip>
+    <xwiki.enforcer.enforce-jakarta.xml.bind-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.xml.bind-api.skip>
     <xwiki.enforcer.enforce-open-json.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-open-json.skip>
     <xwiki.enforcer.enforce-glassfish-el.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glassfish-el.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
     <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
-    <xwiki.enforcer.enforce-javax.activation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.activation.skip>
+    <xwiki.enforcer.enforce-jakarta.activation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.activation-api.skip>
     <xwiki.enforcer.enforce-javax.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.mail.skip>
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
+    <xwiki.enforcer.enforce-jsr305.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jsr305.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
     <xwiki.enforcer.enforce-velocity-engine-core.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-velocity-engine-core.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
@@ -158,6 +161,9 @@
 
     <!-- Sonar/Jacoco integration. Note that these properties need to be defined outside the "coverage" profile
          because we want to be to able to execute mvn sonar:sonar without passing a profile -->
+    <!-- Config to push to Sonarcloud.io -->
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.organization>xwiki</sonar.organization>
     <!-- Tells Sonar to use jacoco for coverage results -->
     <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
     <!-- The system property xwiki.jacoco.itDestFile needs to be passed on the command line.
@@ -183,6 +189,9 @@
     <maven.version>${maven.build.version}</maven.version>
     <maven.resolver.build.version>1.1.1</maven.resolver.build.version>
     <maven.resolver.version>${maven.resolver.build.version}</maven.resolver.version>
+
+    <!-- Plexus -->
+    <plexus-containers.version>2.0.0</plexus-containers.version>
 
     <!-- The version of Maven Enforcer plugin -->
     <maven-enforcer.version>1.4.1</maven-enforcer.version>
@@ -292,7 +301,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-collections4</artifactId>
-        <version>4.2</version>
+        <version>4.3</version>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
@@ -328,7 +337,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.5.6</version>
+        <version>4.5.7</version>
         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
         <exclusions>
           <exclusion>
@@ -340,17 +349,17 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
-        <version>4.5.6</version>
+        <version>4.5.7</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>4.4.10</version>
+        <version>4.4.11</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore-nio</artifactId>
-        <version>4.4.10</version>
+        <version>4.4.11</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -391,7 +400,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.11</version>
+        <version>1.12</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
@@ -560,26 +569,14 @@
       </dependency>
       <!-- JAXB -->
       <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
-        <version>2.3.1</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.activation</groupId>
-            <artifactId>javax.activation-api</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>2.3.2</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
-        <version>2.3.1</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.activation</groupId>
-            <artifactId>javax.activation-api</artifactId>
-          </exclusion>
-        </exclusions>
+        <version>2.3.2</version>
       </dependency>
 
       <!-- Json -->
@@ -724,17 +721,17 @@
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-jdk15on</artifactId>
-        <version>1.60</version>
+        <version>1.61</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcpkix-jdk15on</artifactId>
-        <version>1.60</version>
+        <version>1.61</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcmail-jdk15on</artifactId>
-        <version>1.60</version>
+        <version>1.61</version>
       </dependency>
 
       <!-- Various project are using it to scan the classpath -->
@@ -850,7 +847,15 @@
         <version>3.3.2.Final</version>
       </dependency>
 
-      <!-- Triggerd by several Maven related projects (Doxia, Maven, Aether) as transitive dependency -->
+      <!-- Javassist -->
+      <dependency>
+        <groupId>org.javassist</groupId>
+        <artifactId>javassist</artifactId>
+        <version>3.24.1-GA</version>
+      </dependency>
+
+      <!-- Triggered by several Maven related projects (Doxia, Maven, Aether) as transitive dependency. We need
+           these explicit versions to help Maven decide which version to use. -->
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
@@ -858,18 +863,18 @@
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-container-default</artifactId>
+        <version>${plexus-containers.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-component-annotations</artifactId>
-        <version>1.7.1</version>
+        <version>${plexus-containers.version}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-interpolation</artifactId>
         <version>1.25</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-container-default</artifactId>
-        <version>1.7.1</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -879,7 +884,7 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-archiver</artifactId>
-        <version>4.0.0</version>
+        <version>4.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -1023,12 +1028,7 @@
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-api</artifactId>
-        <version>${junit5.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-engine</artifactId>
+        <artifactId>junit-jupiter</artifactId>
         <version>${junit5.version}</version>
       </dependency>
       <dependency>
@@ -1040,6 +1040,11 @@
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-engine</artifactId>
         <version>${junit.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-platform-suite-api</artifactId>
+        <version>${junit5.version}</version>
       </dependency>
       <dependency>
         <groupId>org.junit.vintage</groupId>
@@ -1143,9 +1148,9 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>com.sun.activation</groupId>
-        <artifactId>javax.activation</artifactId>
-        <version>1.2.0</version>
+        <groupId>jakarta.activation</groupId>
+        <artifactId>jakarta.activation-api</artifactId>
+        <version>1.2.1</version>
       </dependency>
       <!-- Diff tools used in commons for diff and blame -->
       <dependency>
@@ -1177,6 +1182,12 @@
         <groupId>javax.annotation</groupId>
         <artifactId>javax.annotation-api</artifactId>
         <version>1.3.2</version>
+      </dependency>
+      <!-- JSR 305 -->
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <version>3.0.2</version>
       </dependency>
       <!-- ASM -->
       <dependency>
@@ -1291,6 +1302,25 @@
               </rules>
             </configuration>
           </execution>
+          <!-- Check that we're using the right JAXB API artifacts -->
+          <execution>
+            <id>enforce-jakarta.xml.bind-api</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jakarta.xml.bind-api.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>XWiki uses jakarta.xml.bind:jakarta.xml.bind-api instead</message>
+                  <excludes>
+                    <exclude>javax.xml.bind:jaxb-api</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
           <!-- Check that we're using Open JSON and not JSON-Java -->
           <execution>
             <id>enforce-open-json</id>
@@ -1375,23 +1405,24 @@
               </rules>
             </configuration>
           </execution>
-          <!-- Check that we're using javax.activation-api and not activation -->
+          <!-- The current id is jakarta.activation-api -->
           <execution>
-            <id>enforce-javax.activation</id>
+            <id>enforce-jakarta.activation-api</id>
             <goals>
               <goal>enforce</goal>
             </goals>
             <configuration>
-              <skip>${xwiki.enforcer.enforce-javax.activation.skip}</skip>
+              <skip>${xwiki.enforcer.enforce-jakarta.activation-api.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
                   <message>
-                    Javax Activation artifact id changed, the current one is com.sun.activation:javax.activation
+                    Javax Activation artifact id changed, the current one is jakarta.activation:jakarta.activation-api
                   </message>
                   <excludes>
                     <exclude>javax.activation:activation</exclude>
                     <exclude>javax.activation:javax.activation-api</exclude>
+                    <exclude>com.sun.activation:javax.activation</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
@@ -1510,6 +1541,25 @@
                     <exclude>stax:stax</exclude>
                     <exclude>javax.xml.stream:stax-api</exclude>
                     <exclude>stax:stax-api</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we use the right version of the JSR305 API -->
+          <execution>
+            <id>enforce-jsr305</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jsr305.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>Use com.google.code.findbugs:jsr305 instead</message>
+                  <excludes>
+                    <exclude>com.google.code.findbugs:annotations</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
@@ -1725,7 +1775,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.1.0</version>
+          <version>3.1.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1785,7 +1835,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-invoker-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.1.0</version>
+          <version>3.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -1898,10 +1948,10 @@
           <version>2.5.1</version>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
+          <groupId>org.sonarsource.scanner.maven</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.3.0.603</version>
+          <version>3.5.0.1254</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1944,6 +1994,7 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>${jacoco.version}</version>
           <configuration>
+            <skip>${xwiki.jacoco.skip}</skip>
             <excludes>
               <!-- Don't run Jacoco on com/steadystate/css/parser/SACParserCSS21TokenManager since it generates an
                    error, see
@@ -2052,6 +2103,34 @@
           <groupId>org.pitest</groupId>
           <artifactId>pitest-maven</artifactId>
           <version>1.4.0</version>
+        </plugin>
+        <!-- In order to make it simple to execute Dspot on XWiki with: mvn dspot:amplify-unit-tests -->
+        <plugin>
+          <groupId>eu.stamp-project</groupId>
+          <artifactId>dspot-maven</artifactId>
+          <version>1.2.3</version>
+          <configuration>
+            <clean>true</clean>
+            <descartes>true</descartes>
+            <verbose>true</verbose>
+            <withComment>true</withComment>
+            <generateNewTestClass>true</generateNewTestClass>
+            <pathToProperties>./dspot.properties</pathToProperties>
+            <amplifiers>
+              <!-- Uncomment the amplifier to use or pass them on the command line using -Damplifiers=... -->
+              <!--amplifier>StringLiteralAmplifier</amplifier-->
+              <!--amplifier>NumberLiteralAmplifier</amplifier-->
+              <!--amplifier>CharLiteralAmplifier</amplifier-->
+              <!--amplifier>BooleanLiteralAmplifier</amplifier-->
+              <!--amplifier>AllLiteralAmplifiers</amplifier-->
+              <!--amplifier>MethodAdd</amplifier-->
+              <!--amplifier>MethodRemove</amplifier-->
+              <!--amplifier>MethodGeneratorAmplifier</amplifier-->
+              <!--amplifier>ReturnValueAmplifier</amplifier-->
+              <!--amplifier>ReplacementAmplifier</amplifier-->
+              <!--amplifier>NullifierAmplifier</amplifier-->
+            </amplifiers>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>

@@ -36,6 +36,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * Various Reflection utilities.
  *
@@ -44,6 +46,10 @@ import java.util.Map;
  */
 public final class ReflectionUtils
 {
+    private static final String OPEN_GENERIC = "<";
+
+    private static final String CLOSE_GENERIC = ">";
+
     /**
      * Utility class.
      */
@@ -488,14 +494,13 @@ public final class ReflectionUtils
     public static Type unserializeType(String serializedType, ClassLoader classLoader) throws ClassNotFoundException
     {
         String sType = serializedType.replaceAll(" ", "");
-        String inferior = "<";
         Type type = null;
 
         // A real parser could be used here but it would probably be overkill.
-        if (sType.contains(inferior)) {
+        if (sType.contains(OPEN_GENERIC)) {
             // Parameterized type
-            int firstInferior = sType.indexOf(inferior);
-            int lastSuperior = sType.lastIndexOf(">");
+            int firstInferior = sType.indexOf(OPEN_GENERIC);
+            int lastSuperior = sType.lastIndexOf(CLOSE_GENERIC);
             String rawType = sType.substring(0, firstInferior);
             String sArguments = sType.substring(firstInferior + 1, lastSuperior);
             List<Type> argumentTypes = new ArrayList<Type>();
@@ -585,5 +590,78 @@ public final class ReflectionUtils
         }
 
         return types;
+    }
+
+    private static String getTypeName(Type type)
+    {
+        if (type instanceof Class) {
+            return ((Class) type).getName();
+        } else {
+            return type.getTypeName();
+        }
+    }
+
+    /**
+     * Serialize a type in a String using a standard definition.
+     * @param type the type to serialize.
+     * @return a string representing this type.
+     * @since 11.2RC1
+     */
+    @Unstable
+    public static String serializeType(Type type)
+    {
+        if (type == null) {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) type;
+
+            String rawTypeName = getTypeName(parameterizedType.getRawType());
+
+            if (parameterizedType.getOwnerType() != null) {
+                if (parameterizedType.getOwnerType() instanceof Class) {
+                    sb.append(((Class<?>) parameterizedType.getOwnerType()).getName());
+                } else {
+                    sb.append(parameterizedType.getOwnerType().toString());
+                }
+
+                sb.append('.');
+
+
+                if (parameterizedType.getOwnerType() instanceof ParameterizedType) {
+                    // Find simple name of nested type by removing the
+                    // shared prefix with owner.
+                    sb.append(rawTypeName.replace(
+                        ((Class<?>) ((ParameterizedType) parameterizedType.getOwnerType()).getRawType())
+                            .getName() + '$', ""));
+                } else {
+                    sb.append(rawTypeName);
+                }
+            } else {
+                sb.append(rawTypeName);
+            }
+
+            if (parameterizedType.getActualTypeArguments() != null
+                && parameterizedType.getActualTypeArguments().length > 0) {
+                sb.append(OPEN_GENERIC);
+
+                boolean first = true;
+                for (Type typeArgument : parameterizedType.getActualTypeArguments()) {
+                    if (!first) {
+                        sb.append(", ");
+                    }
+                    sb.append(getTypeName(typeArgument));
+                    first = false;
+                }
+
+                sb.append(CLOSE_GENERIC);
+            }
+        } else {
+            sb.append(getTypeName(type));
+        }
+
+        return sb.toString();
     }
 }

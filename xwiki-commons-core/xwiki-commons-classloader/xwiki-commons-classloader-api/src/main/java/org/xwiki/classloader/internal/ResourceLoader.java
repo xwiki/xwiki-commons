@@ -90,7 +90,7 @@ public class ResourceLoader
 
     private URLStreamHandler jarHandler;
 
-    private Map<String, JarInfo> url2jarInfo = new HashMap<String, JarInfo>();
+    private Map<String, JarInfo> url2jarInfo = new HashMap<>();
 
     /**
      * Constructs new ResourceLoader with specified JAR file handler which can implement custom JAR caching policy.
@@ -114,7 +114,7 @@ public class ResourceLoader
      */
     public ResourceHandle getResource(URL source, String name)
     {
-        return getResource(source, name, new HashSet<URL>(), null);
+        return getResource(source, name, new HashSet<>(), null);
     }
 
     /**
@@ -130,7 +130,7 @@ public class ResourceLoader
      */
     public ResourceHandle getResource(URL[] sources, String name)
     {
-        Set<URL> visited = new HashSet<URL>();
+        Set<URL> visited = new HashSet<>();
         for (URL source : sources) {
             ResourceHandle h = getResource(source, name, visited, null);
             if (h != null) {
@@ -155,7 +155,7 @@ public class ResourceLoader
      */
     public Enumeration<ResourceHandle> getResources(URL source, String name)
     {
-        return new ResourceEnumeration<ResourceHandle>(new URL[] { source }, name, false);
+        return new ResourceEnumeration<>(new URL[] { source }, name, false);
     }
 
     /**
@@ -173,7 +173,7 @@ public class ResourceLoader
      */
     public Enumeration<ResourceHandle> getResources(URL[] sources, String name)
     {
-        return new ResourceEnumeration<ResourceHandle>(sources.clone(), name, false);
+        return new ResourceEnumeration<>(sources.clone(), name, false);
     }
 
     private ResourceHandle getResource(final URL source, String name, Set<URL> visitedJars, Set<URL> skip)
@@ -266,7 +266,7 @@ public class ResourceLoader
      */
     public URL findResource(URL source, String name)
     {
-        return findResource(source, name, new HashSet<URL>(), null);
+        return findResource(source, name, new HashSet<>(), null);
     }
 
     /**
@@ -282,7 +282,7 @@ public class ResourceLoader
      */
     public URL findResource(URL[] sources, String name)
     {
-        Set<URL> visited = new HashSet<URL>();
+        Set<URL> visited = new HashSet<>();
         for (URL source : sources) {
             URL url = findResource(source, name, visited, null);
             if (url != null) {
@@ -307,7 +307,7 @@ public class ResourceLoader
      */
     public Enumeration<URL> findResources(URL source, String name)
     {
-        return new ResourceEnumeration<URL>(new URL[] { source }, name, true);
+        return new ResourceEnumeration<>(new URL[] { source }, name, true);
     }
 
     /**
@@ -325,7 +325,7 @@ public class ResourceLoader
      */
     public Enumeration<URL> findResources(URL[] sources, String name)
     {
-        return new ResourceEnumeration<URL>(sources.clone(), name, true);
+        return new ResourceEnumeration<>(sources.clone(), name, true);
     }
 
     private URL findResource(final URL source, String name, Set<URL> visitedJars, Set<URL> skip)
@@ -484,7 +484,7 @@ public class ResourceLoader
             }
             if (this.index != null) {
                 // verification - previously declared content must remain there
-                Set<String> violating = new HashSet<String>(Arrays.asList(this.index));
+                Set<String> violating = new HashSet<>(Arrays.asList(this.index));
                 violating.removeAll(newIndex);
                 if (!violating.isEmpty()) {
                     throw new RuntimeException("Invalid JAR index: "
@@ -545,7 +545,7 @@ public class ResourceLoader
                 // conservatively check if index is accurate, that is, does not
                 // contain entries which are not in the JAR file
                 if (this.index != null) {
-                    Set<String> indices = new HashSet<String>(Arrays.asList(this.index));
+                    Set<String> indices = new HashSet<>(Arrays.asList(this.index));
                     Enumeration<JarEntry> entries = jar.entries();
                     while (entries.hasMoreElements()) {
                         JarEntry entry = entries.nextElement();
@@ -595,20 +595,20 @@ public class ResourceLoader
 
     private static Map<String, URL[]> package2url(Map<URL, List<String>> indexes)
     {
-        Map<String, List<URL>> prefix2url = new HashMap<String, List<URL>>();
+        Map<String, List<URL>> prefix2url = new HashMap<>();
         for (Map.Entry<URL, List<String>> entry : indexes.entrySet()) {
             URL url = entry.getKey();
             for (String prefix : entry.getValue()) {
                 List<URL> prefixList = prefix2url.get(prefix);
                 if (prefixList == null) {
-                    prefixList = new ArrayList<URL>();
+                    prefixList = new ArrayList<>();
                     prefix2url.put(prefix, prefixList);
                 }
                 prefixList.add(url);
             }
         }
 
-        Map<String, URL[]> result = new HashMap<String, URL[]>(prefix2url.size());
+        Map<String, URL[]> result = new HashMap<>(prefix2url.size());
 
         // replace lists with arrays
         for (Map.Entry<String, List<URL>> entry : prefix2url.entrySet()) {
@@ -716,7 +716,7 @@ public class ResourceLoader
         InputStream is = jar.getInputStream(entry);
         BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
-        Map<URL, List<String>> result = new LinkedHashMap<URL, List<String>>();
+        Map<URL, List<String>> result = new LinkedHashMap<>();
 
         String line;
 
@@ -735,7 +735,7 @@ public class ResourceLoader
             }
 
             currentURL = new URL(cxt, line);
-            currentList = new ArrayList<String>();
+            currentList = new ArrayList<>();
             result.put(currentURL, currentList);
 
             while (true) {
@@ -763,7 +763,7 @@ public class ResourceLoader
             return new URL[0];
         }
         StringTokenizer tokenizer = new StringTokenizer(cp);
-        List<URL> cpList = new ArrayList<URL>();
+        List<URL> cpList = new ArrayList<>();
         URI sourceURI = URI.create(source.toString());
         while (tokenizer.hasMoreTokens()) {
             String token = tokenizer.nextToken();
@@ -798,7 +798,7 @@ public class ResourceLoader
 
         T next;
 
-        Set<URL> previousURLs = new HashSet<URL>();
+        Set<URL> previousURLs = new HashSet<>();
 
         ResourceEnumeration(URL[] urls, String name, boolean findOnly)
         {
@@ -822,7 +822,6 @@ public class ResourceLoader
             if (this.next == null) {
                 throw new NoSuchElementException();
             }
-            ;
 
             T nextElement = this.next;
             this.next = null;
@@ -838,7 +837,7 @@ public class ResourceLoader
             }
             while (this.idx < this.urls.length) {
                 if (this.findOnly) {
-                    URL url = findResource(this.urls[this.idx], this.name, new HashSet<URL>(), this.previousURLs);
+                    URL url = findResource(this.urls[this.idx], this.name, new HashSet<>(), this.previousURLs);
                     if (url != null) {
                         this.previousURLs.add(url);
                         this.next = (T) url;
@@ -846,7 +845,7 @@ public class ResourceLoader
                     }
                 } else {
                     ResourceHandle h =
-                        getResource(this.urls[this.idx], this.name, new HashSet<URL>(), this.previousURLs);
+                        getResource(this.urls[this.idx], this.name, new HashSet<>(), this.previousURLs);
                     if (h != null) {
                         this.previousURLs.add(h.getURL());
                         this.next = (T) h;
