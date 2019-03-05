@@ -95,7 +95,7 @@ public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
      * List of Remote Repositories used by the resolver.
      */
     @Parameter(defaultValue = "${project.remoteArtifactRepositories}", readonly = true, required = true)
-    private List<ArtifactRepository> remoteArtifactRepositories;
+    private List<ArtifactRepository> remoteArtifactRepositoriesThis;
 
     @Override
     protected List<MavenProject> getProjects() throws MojoExecutionException
@@ -127,7 +127,7 @@ public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
                 MavenProject dependencyProject = null;
                 try {
                     dependencyProject = this.mavenProjectBuilderThis.buildFromRepository(artifact,
-                        this.remoteArtifactRepositories, this.localRepositoryThis);
+                        this.remoteArtifactRepositoriesThis, this.localRepositoryThis);
                 } catch (InvalidProjectModelException e) {
                     getLog().warn(String.format(
                         "Invalid project model for artifact [%s:%s:%s]. It will be ignored by "
