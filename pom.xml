@@ -59,7 +59,7 @@
     <jackson.version>2.9.8</jackson.version>
 
     <!-- ASM -->
-    <asm.version>7.0</asm.version>
+    <asm.version>7.1</asm.version>
 
     <!-- Guava -->
     <!-- FIXME: Can't upgrade to Guava 21 because Solr 6.3.0 use a method that have been deleted in Guava 21... -->
