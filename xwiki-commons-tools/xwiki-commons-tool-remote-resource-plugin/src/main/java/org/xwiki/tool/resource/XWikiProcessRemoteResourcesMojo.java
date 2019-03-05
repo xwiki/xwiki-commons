@@ -52,7 +52,8 @@ import org.apache.maven.project.ProjectBuildingException;
  * @since 9.11.5
  * @since 10.5RC1
  */
-@Mojo(name = "process", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true, requiresProject = true, requiresDependencyResolution = ResolutionScope.RUNTIME)
+@Mojo(name = "process", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true, requiresProject = true,
+    requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
 {
     /**
