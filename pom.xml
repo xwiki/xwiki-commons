@@ -996,7 +996,12 @@
         <groupId>org.apache.maven.resolver</groupId>
         <artifactId>maven-resolver-transport-file</artifactId>
         <version>${maven.resolver.version}</version>
-    </dependency>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-spi</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
 
       <!-- Everybody tests -->
       <dependency>
