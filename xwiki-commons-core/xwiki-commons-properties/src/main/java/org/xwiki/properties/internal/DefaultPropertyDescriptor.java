@@ -211,7 +211,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     }
 
     /**
-     * @see org.xwiki.properties.PropertyDescriptor#getFied().
+     * @see org.xwiki.properties.PropertyDescriptor#getFied()
      * @param field the {@link Field}.
      */
     public void setField(Field field)
@@ -233,7 +233,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     }
 
     /**
-     * @see org.xwiki.properties.PropertyDescriptor#getReadMethod().
+     * @see org.xwiki.properties.PropertyDescriptor#getReadMethod()
      * @param readMethod the read {@link Method}.
      */
     public void setReadMethod(Method readMethod)
@@ -248,7 +248,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     }
 
     /**
-     * @see org.xwiki.properties.PropertyDescriptor#getWriteMethod().
+     * @see org.xwiki.properties.PropertyDescriptor#getWriteMethod()
      * @param writeMethod the write {@link Method}.
      */
     public void setWriteMethod(Method writeMethod)
