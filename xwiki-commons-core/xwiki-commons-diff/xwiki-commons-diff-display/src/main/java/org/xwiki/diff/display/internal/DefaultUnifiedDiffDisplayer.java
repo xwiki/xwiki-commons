@@ -45,10 +45,9 @@ import org.xwiki.diff.display.UnifiedDiffElement.Type;
  * unified diff consists in a sequence of blocks, each having elements marked as either added or removed, padded with
  * unmodified elements that put changes in context.
  * <p>
- * NOTE: This class was greatly inspired by the <a href="http
- * ://cvsgrab.cvs.sourceforge.net/viewvc/cvsgrab/cvsgrab/src/java/org/apache/commons/jrcs/diff/print/UnifiedPrint
- * .java">{@code UnifiedPrint}</a> class written by <a href="mailto:ludovicc@users.sourceforge.net">Ludovic Claude</a>
- * for the <a href="http://cvsgrab.sourceforge.net/">CVSGrab</a> project under the Apache Software License version 1.1.
+ * NOTE: This class was greatly inspired by the {@code UnifiedPrint} class written by
+ * <a href="mailto:ludovicc@users.sourceforge.net">Ludovic Claude</a> for the
+ * <a href="http://cvsgrab.sourceforge.net/">CVSGrab</a> project under the Apache Software License version 1.1.
  *
  * @version $Id$
  * @since 4.1RC1
