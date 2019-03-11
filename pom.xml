@@ -59,7 +59,7 @@
     <jackson.version>2.9.8</jackson.version>
 
     <!-- ASM -->
-    <asm.version>7.0</asm.version>
+    <asm.version>7.1</asm.version>
 
     <!-- Guava -->
     <!-- FIXME: Can't upgrade to Guava 21 because Solr 6.3.0 use a method that have been deleted in Guava 21... -->
@@ -83,7 +83,7 @@
 
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
-    <mockito.version>2.24.0</mockito.version>
+    <mockito.version>2.25.0</mockito.version>
 
     <!-- Byte Buddy -->
     <bytebuddy.version>1.9.10</bytebuddy.version>
@@ -96,7 +96,7 @@
     <jacoco.version>0.8.3</jacoco.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>8.17</checkstyle.version>
+    <checkstyle.version>8.18</checkstyle.version>
 
     <!-- Spoon -->
     <spoon.version>7.3.0</spoon.version>
@@ -686,21 +686,10 @@
         <artifactId>jackson-datatype-guava</artifactId>
         <version>${jackson.version}</version>
       </dependency>
-      <!-- Old Jackson -->
-      <dependency>
-        <groupId>org.codehaus.jackson</groupId>
-        <artifactId>jackson-mapper-asl</artifactId>
-        <version>1.9.13</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.jackson</groupId>
-        <artifactId>jackson-core-asl</artifactId>
-        <version>1.9.13</version>
-      </dependency>
       <dependency>
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
-        <version>1.23</version>
+        <version>1.24</version>
       </dependency>
 
       <!-- JAX-RS -->
@@ -1008,7 +997,12 @@
         <groupId>org.apache.maven.resolver</groupId>
         <artifactId>maven-resolver-transport-file</artifactId>
         <version>${maven.resolver.version}</version>
-    </dependency>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-spi</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
 
       <!-- Everybody tests -->
       <dependency>
@@ -1963,10 +1957,10 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.0.1</version>
+          <version>3.1.0</version>
           <configuration>
             <!-- Always exclude the internal package since it's not user-public -->
-            <excludePackageNames>*.internal.*</excludePackageNames>
+            <excludePackageNames>*.internal, *.internal.*</excludePackageNames>
             <!-- Make sure javadoc has enough memory -->
             <maxmemory>1024m</maxmemory>
           </configuration>

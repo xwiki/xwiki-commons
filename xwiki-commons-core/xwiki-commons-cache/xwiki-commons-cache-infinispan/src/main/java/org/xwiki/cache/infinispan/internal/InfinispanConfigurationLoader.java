@@ -24,6 +24,7 @@ import org.infinispan.commons.configuration.Builder;
 import org.infinispan.commons.configuration.ConfigurationUtils;
 import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
+import org.infinispan.configuration.cache.ExpirationConfigurationBuilder;
 import org.infinispan.configuration.cache.PersistenceConfiguration;
 import org.infinispan.configuration.cache.PersistenceConfigurationBuilder;
 import org.infinispan.configuration.cache.SingleFileStoreConfiguration;
@@ -46,7 +47,8 @@ import org.xwiki.environment.Environment;
 public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoader
 {
     /**
-     * The name of the field containing the wakeup interval used for expiration to set in the {@link EvictionConfig}.
+     * The name of the field containing the wakeup interval used for expiration to set in the
+     * {@link ExpirationConfigurationBuilder}.
      */
     public static final String CONFX_EXPIRATION_WAKEUPINTERVAL = "infinispan.expiration.wakeupinterval";
 
