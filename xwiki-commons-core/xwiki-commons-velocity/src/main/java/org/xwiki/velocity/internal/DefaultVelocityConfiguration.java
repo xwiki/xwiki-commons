@@ -94,7 +94,6 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty("niotool", NIOTool.class.getName());
 
         // Default Velocity properties
-        this.defaultProperties.setProperty(RuntimeConstants.VM_MESSAGES_ON, Boolean.FALSE.toString());
         this.defaultProperties.setProperty(RuntimeConstants.VM_MAX_DEPTH, "100");
         this.defaultProperties.setProperty(RuntimeConstants.RESOURCE_MANAGER_LOGWHENFOUND, Boolean.FALSE.toString());
         this.defaultProperties.setProperty(RuntimeConstants.VM_PERM_INLINE_LOCAL, Boolean.TRUE.toString());
@@ -105,7 +104,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         // [Retro compatibility] Use Velocity 1.x Space Gobbling
         this.defaultProperties.setProperty(RuntimeConstants.SPACE_GOBBLING, "bc");
         // [Retro compatibility] Allow "-" in variables names
-        this.defaultProperties.setProperty(RuntimeConstants.PARSER_DASH_ALLOWED, Boolean.TRUE.toString());
+        this.defaultProperties.setProperty(RuntimeConstants.PARSER_HYPHEN_ALLOWED, Boolean.TRUE.toString());
         // [Retro compatibility] Keep original variable name when passing null parameter
         this.defaultProperties.setProperty(RuntimeConstants.VM_PRESERVE_ARGUMENTS_LITERALS, Boolean.TRUE.toString());
 
