@@ -32,7 +32,6 @@
   <description>Provides passwords encryption and validation</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.65</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>81</xwiki.pitest.mutationThreshold>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Cryptographic Services for Password Encryption</xwiki.extension.name>
   </properties>

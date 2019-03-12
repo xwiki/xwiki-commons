@@ -32,7 +32,6 @@
   <description>Provides X.509 certificates management</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.76</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>82</xwiki.pitest.mutationThreshold>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Cryptographic Services for Authentication</xwiki.extension.name>
     <!-- Working with cryptography requires a lot of classes, relax the coupling requirements -->
