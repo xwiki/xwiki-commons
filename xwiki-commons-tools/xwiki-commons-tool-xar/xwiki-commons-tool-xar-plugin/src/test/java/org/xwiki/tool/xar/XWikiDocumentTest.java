@@ -20,10 +20,10 @@
 package org.xwiki.tool.xar;
 
 import org.dom4j.DocumentException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.tool.xar.internal.XWikiDocument;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Validate {@link XWikiDocument}.
