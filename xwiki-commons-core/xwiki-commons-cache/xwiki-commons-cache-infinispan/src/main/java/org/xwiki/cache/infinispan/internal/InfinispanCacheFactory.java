@@ -142,15 +142,22 @@ public class InfinispanCacheFactory implements CacheFactory, Initializable, Disp
     @Override
     public <T> org.xwiki.cache.Cache<T> newCache(CacheConfiguration configuration) throws CacheException
     {
-        InfinispanConfigurationLoader loader = new InfinispanConfigurationLoader(configuration, this.environment);
-
         String cacheName = configuration.getConfigurationId();
+
+        // If a cache already exist with that name throw an error to avoid bad surprises
+        if (cacheName != null && this.cacheManager.cacheExists(cacheName)) {
+            throw new CacheException("Cache with name [" + cacheName + "] already exist");
+        }
+
+        InfinispanConfigurationLoader loader = new InfinispanConfigurationLoader(configuration, this.environment);
 
         // Set custom configuration
 
+        Configuration namedConfiguration =
+            cacheName != null ? this.cacheManager.getCacheConfiguration(cacheName) : null;
+
         Configuration modifiedConfiguration =
-            loader.customize(this.cacheManager.getDefaultCacheConfiguration(),
-                cacheName != null ? this.cacheManager.getCacheConfiguration(cacheName) : null);
+            loader.customize(this.cacheManager.getDefaultCacheConfiguration(), namedConfiguration);
 
         if (cacheName == null) {
             // Infinispan require a name for the cache
@@ -158,12 +165,14 @@ public class InfinispanCacheFactory implements CacheFactory, Initializable, Disp
             loader.getCacheConfiguration().setConfigurationId(cacheName);
         }
 
+        // Configure cache
         if (modifiedConfiguration != null) {
-            this.cacheManager.defineConfiguration(cacheName, modifiedConfiguration);
+            // Existing cache configuration must be unregistered before registering a new one
+            this.cacheManager.undefineConfiguration(cacheName);
         }
+        this.cacheManager.defineConfiguration(cacheName, modifiedConfiguration);
 
-        // create cache
-
-        return new InfinispanCache<T>(this.cacheManager, loader.getCacheConfiguration());
+        // Create cache
+        return new InfinispanCache<>(this.cacheManager, loader.getCacheConfiguration());
     }
 }

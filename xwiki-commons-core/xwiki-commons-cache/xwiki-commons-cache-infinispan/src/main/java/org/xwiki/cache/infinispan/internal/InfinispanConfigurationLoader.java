@@ -20,8 +20,6 @@
 package org.xwiki.cache.infinispan.internal;
 
 import org.apache.commons.lang3.StringUtils;
-import org.infinispan.commons.configuration.Builder;
-import org.infinispan.commons.configuration.ConfigurationUtils;
 import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.cache.ExpirationConfigurationBuilder;
@@ -67,32 +65,75 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
     }
 
     /**
-     * @param builder the current builder
-     * @param isconfiguration the configuration to customize
-     * @return the new builder based on provided configuration if the current one is null
+     * Customize the eviction configuration.
+     * 
+     * @param buil the configuration builder
+     * @param configuration the configuration
+     * @return the configuration builder
      */
-    private ConfigurationBuilder builder(ConfigurationBuilder builder, Configuration isconfiguration)
+    private void customizeEviction(ConfigurationBuilder builder)
     {
-        if (builder != null) {
-            return builder;
+        EntryEvictionConfiguration eec =
+            (EntryEvictionConfiguration) getCacheConfiguration().get(EntryEvictionConfiguration.CONFIGURATIONID);
+
+        if (eec != null && eec.getAlgorithm() == EntryEvictionConfiguration.Algorithm.LRU) {
+            ////////////////////
+            // Eviction
+            // Max entries
+            customizeEvictionMaxEntries(builder, eec);
+
+            ////////////////////
+            // Expiration
+            // Wakeup interval
+            customizeExpirationWakeUpInterval(builder, eec);
+
+            // Max idle
+            customizeExpirationMaxIdle(builder, eec);
+
+            // Lifespan
+            customizeExpirationLifespan(builder, eec);
+        }
+    }
+
+    private void customizeEvictionMaxEntries(ConfigurationBuilder builder, EntryEvictionConfiguration eec)
+    {
+        Object maxEntries = eec.get(LRUEvictionConfiguration.MAXENTRIES_ID);
+        if (maxEntries instanceof Number) {
+            builder.memory().evictionStrategy(EvictionStrategy.REMOVE);
+            builder.memory().evictionType(EvictionType.COUNT).size(((Number) maxEntries).longValue());
         }
 
-        ConfigurationBuilder newBuilder = new ConfigurationBuilder();
+    }
 
-        if (isconfiguration != null) {
-            newBuilder.read(isconfiguration);
+    private void customizeExpirationWakeUpInterval(ConfigurationBuilder builder, EntryEvictionConfiguration eec)
+    {
+        if (eec.get(CONFX_EXPIRATION_WAKEUPINTERVAL) instanceof Number) {
+            builder.expiration().wakeUpInterval(((Number) eec.get(CONFX_EXPIRATION_WAKEUPINTERVAL)).longValue());
         }
+    }
 
-        return newBuilder;
+    private void customizeExpirationMaxIdle(ConfigurationBuilder builder, EntryEvictionConfiguration eec)
+    {
+        if (eec.getTimeToLive() > 0) {
+            builder.expiration().maxIdle(eec.getTimeToLive() * 1000L);
+        }
+    }
+
+    private void customizeExpirationLifespan(ConfigurationBuilder builder, EntryEvictionConfiguration eec)
+    {
+        if (eec.containsKey(LRUEvictionConfiguration.LIFESPAN_ID)) {
+            long lifespan = (int) eec.get(LRUEvictionConfiguration.LIFESPAN_ID) * 1000L;
+            builder.expiration().lifespan(lifespan);
+        }
     }
 
     /**
-     * @param isconfiguration the configuration to check
+     * @param configuration the configuration to check
      * @return true if one of the loader is an incomplete {@link FileCacheStoreConfiguration}
      */
-    private boolean containsIncompleteFileLoader(Configuration isconfiguration)
+    private boolean containsIncompleteFileLoader(Configuration configuration)
     {
-        PersistenceConfiguration persistenceConfiguration = isconfiguration.persistence();
+        PersistenceConfiguration persistenceConfiguration = configuration.persistence();
 
         for (StoreConfiguration storeConfiguration : persistenceConfiguration.stores()) {
             if (storeConfiguration instanceof SingleFileStoreConfiguration) {
@@ -112,148 +153,25 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
     }
 
     /**
-     * Customize the eviction configuration.
-     * 
-     * @param currentBuilder the configuration builder
-     * @param configuration the configuration
-     * @return the configuration builder
-     */
-    private ConfigurationBuilder customizeEviction(ConfigurationBuilder currentBuilder, Configuration configuration)
-    {
-        ConfigurationBuilder builder = currentBuilder;
-
-        EntryEvictionConfiguration eec =
-            (EntryEvictionConfiguration) getCacheConfiguration().get(EntryEvictionConfiguration.CONFIGURATIONID);
-
-        if (eec != null && eec.getAlgorithm() == EntryEvictionConfiguration.Algorithm.LRU) {
-            ////////////////////
-            // Eviction
-            // Max entries
-            builder = customizeEvictionMaxEntries(builder, configuration, eec);
-
-            ////////////////////
-            // Expiration
-            // Wakeup interval
-            builder = customizeExpirationWakeUpInterval(builder, configuration, eec);
-
-            // Max idle
-            builder = customizeExpirationMaxIdle(builder, configuration, eec);
-
-            // Lifespan
-            builder = customizeExpirationLifespan(builder, configuration, eec);
-        }
-
-        return builder;
-    }
-
-    private ConfigurationBuilder customizeEvictionMaxEntries(ConfigurationBuilder currentBuilder,
-        Configuration configuration, EntryEvictionConfiguration eec)
-    {
-        ConfigurationBuilder builder = currentBuilder;
-
-        if (eec.containsKey(LRUEvictionConfiguration.MAXENTRIES_ID)) {
-            int maxEntries = ((Number) eec.get(LRUEvictionConfiguration.MAXENTRIES_ID)).intValue();
-            if (configuration.eviction() == null || configuration.eviction().strategy() != EvictionStrategy.LRU
-                || configuration.eviction().maxEntries() != maxEntries) {
-                builder = builder(builder, null);
-                builder.eviction().strategy(EvictionStrategy.LRU);
-                builder.eviction().type(EvictionType.COUNT).size(maxEntries);
-            }
-        }
-
-        return builder;
-    }
-
-    private ConfigurationBuilder customizeExpirationWakeUpInterval(ConfigurationBuilder currentBuilder,
-        Configuration configuration, EntryEvictionConfiguration eec)
-    {
-        ConfigurationBuilder builder = currentBuilder;
-
-        if (eec.get(CONFX_EXPIRATION_WAKEUPINTERVAL) instanceof Number) {
-            builder = builder(builder, null);
-            builder.expiration().wakeUpInterval(((Number) eec.get(CONFX_EXPIRATION_WAKEUPINTERVAL)).longValue());
-        }
-
-        return builder;
-    }
-
-    private ConfigurationBuilder customizeExpirationMaxIdle(ConfigurationBuilder currentBuilder,
-        Configuration configuration, EntryEvictionConfiguration eec)
-    {
-        ConfigurationBuilder builder = currentBuilder;
-
-        if (eec.getTimeToLive() > 0) {
-            long maxIdle = eec.getTimeToLive() * 1000L;
-            if (configuration.expiration() == null || configuration.expiration().maxIdle() != maxIdle) {
-                builder = builder(builder, null);
-                builder.expiration().maxIdle(eec.getTimeToLive() * 1000L);
-            }
-        }
-
-        return builder;
-    }
-
-    private ConfigurationBuilder customizeExpirationLifespan(ConfigurationBuilder currentBuilder,
-        Configuration configuration, EntryEvictionConfiguration eec)
-    {
-        ConfigurationBuilder builder = currentBuilder;
-
-        if (eec.containsKey(LRUEvictionConfiguration.LIFESPAN_ID)) {
-            long lifespan = (Integer) eec.get(LRUEvictionConfiguration.LIFESPAN_ID) * 1000L;
-            if (configuration.expiration() == null || configuration.expiration().lifespan() != lifespan) {
-                builder = builder(builder, null);
-                builder.expiration().lifespan(lifespan);
-            }
-        }
-
-        return builder;
-    }
-
-    /**
      * Add missing location for filesystem based cache.
      * 
      * @param currentBuilder the configuration builder
      * @param configuration the configuration
      * @return the configuration builder
      */
-    private ConfigurationBuilder completeFilesystem(ConfigurationBuilder currentBuilder, Configuration configuration)
+    private void completeFilesystem(ConfigurationBuilder builder, Configuration configuration)
     {
-        ConfigurationBuilder builder = currentBuilder;
+        PersistenceConfigurationBuilder persistence = builder.persistence();
 
         if (containsIncompleteFileLoader(configuration)) {
-            builder = builder(builder, configuration);
+            for (StoreConfigurationBuilder<?, ?> store : persistence.stores()) {
+                if (store instanceof SingleFileStoreConfigurationBuilder) {
+                    SingleFileStoreConfigurationBuilder singleFileStore = (SingleFileStoreConfigurationBuilder) store;
 
-            PersistenceConfigurationBuilder persistence = builder.persistence();
-
-            persistence.clearStores();
-
-            for (StoreConfiguration storeConfiguration : configuration.persistence().stores()) {
-                if (storeConfiguration instanceof SingleFileStoreConfiguration) {
-                    SingleFileStoreConfiguration singleFileStoreConfiguration =
-                        (SingleFileStoreConfiguration) storeConfiguration;
-
-                    String location = singleFileStoreConfiguration.location();
-
-                    // "Infinispan-SingleFileStore" is the default location...
-                    if (StringUtils.isBlank(location) || location.equals(DEFAULT_SINGLEFILESTORE_LOCATION)) {
-                        SingleFileStoreConfigurationBuilder singleFileStoreConfigurationBuilder =
-                            persistence.addSingleFileStore();
-                        singleFileStoreConfigurationBuilder.read(singleFileStoreConfiguration);
-                        singleFileStoreConfigurationBuilder.location(createTempDir());
-                    }
-                } else {
-                    // Copy the loader as it is
-                    Class<? extends StoreConfigurationBuilder<?, ?>> storeBuilderClass =
-                        (Class<? extends StoreConfigurationBuilder<?, ?>>) ConfigurationUtils
-                            .<StoreConfiguration>builderFor(storeConfiguration);
-                    Builder<StoreConfiguration> storeBuilder =
-                        (Builder<StoreConfiguration>) persistence.addStore(storeBuilderClass);
-                    storeBuilder.read(storeConfiguration);
+                    singleFileStore.location(createTempDir());
                 }
             }
         }
-
-        return builder;
     }
 
     /**
@@ -267,18 +185,28 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
     {
         // Set custom configuration
 
-        ConfigurationBuilder builder = null;
+        ConfigurationBuilder builder = new ConfigurationBuilder();
 
-        if (namedConfiguration == null) {
-            builder = customizeEviction(builder, defaultConfiguration);
+        // Named configuration have priority
+        if (namedConfiguration != null) {
+            read(builder, namedConfiguration);
+        } else {
+            // Add default configuration
+            if (defaultConfiguration != null) {
+                read(builder, defaultConfiguration);
+            }
+
+            customizeEviction(builder);
         }
+
+        return builder.build();
+    }
+
+    private void read(ConfigurationBuilder builder, Configuration configuration)
+    {
+        builder.read(configuration);
 
         // Make sure filesystem based caches have a proper location
-
-        if (namedConfiguration != null) {
-            builder = completeFilesystem(builder, namedConfiguration);
-        }
-
-        return builder != null ? builder.build() : null;
+        completeFilesystem(builder, configuration);        
     }
 }
