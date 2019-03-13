@@ -167,7 +167,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
         // Initialize cache
         LRUCacheConfiguration cacheConfiguration =
-            new LRUCacheConfiguration("xwiki.groupservice.usergroups", this.configuration.getJobStatusCacheSize());
+            new LRUCacheConfiguration("job.status", this.configuration.getJobStatusCacheSize());
         try {
             this.cache = this.cacheManager.createNewCache(cacheConfiguration);
         } catch (CacheException e) {
