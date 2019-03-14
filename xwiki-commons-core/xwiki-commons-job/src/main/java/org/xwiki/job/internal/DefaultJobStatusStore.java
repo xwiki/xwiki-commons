@@ -374,8 +374,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             }
 
             // Only store Serializable job status on file system
-            if (status.isSerialized() && status.getClass().isAnnotationPresent(Serializable.class)
-                || status instanceof java.io.Serializable) {
+            if (isSerializable(status)) {
                 if (async) {
                     this.executorService.execute(new JobStatusSerializerRunnable(status));
                 } else {
@@ -383,6 +382,20 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
                 }
             }
         }
+    }
+
+    private boolean isSerializable(JobStatus status)
+    {
+        if (!status.isSerialized()) {
+            return false;
+        }
+
+        Serializable serializable = status.getClass().getAnnotation(Serializable.class);
+        if (serializable != null) {
+            return serializable.value();
+        }
+
+        return status instanceof java.io.Serializable;
     }
 
     @Override
