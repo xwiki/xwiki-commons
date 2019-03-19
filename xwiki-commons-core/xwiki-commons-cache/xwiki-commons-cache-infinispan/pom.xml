@@ -50,7 +50,7 @@
     <dependency>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-core</artifactId>
-      <version>9.4.9.Final</version>
+      <version>9.4.10.Final</version>
       <exclusions>
         <!-- Use javax.transaction:javax.transaction-api instead to not have duplicate JARs in generated WARs -->
         <exclusion>
