@@ -1949,7 +1949,7 @@
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>4.1.0</version>
+          <version>4.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.openclover</groupId>
