@@ -25,6 +25,8 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -33,6 +35,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -54,7 +58,7 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
 /**
  * Gather all resources in a XAR file (which is actually a ZIP file). Also generates a XAR descriptor if none is
  * provided.
- * 
+ *
  * @version $Id$
  */
 @Mojo(name = "xar", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
@@ -89,7 +93,7 @@ public class XARMojo extends AbstractXARMojo
 
     /**
      * Create the XAR by zipping the resource files.
-     * 
+     *
      * @throws Exception if the zipping failed for some reason
      */
     private void performArchive() throws Exception
@@ -187,14 +191,14 @@ public class XARMojo extends AbstractXARMojo
                     node.setText(value.replace("$1", currentValue));
                 } else if (transformation.getAction() != null) {
                     // Parse xml value
-                    Document xmlDocument;
-                    Element xmlElement;
+                    Document xmlDocument = null;
+                    Element xmlElement = null;
+                    File content = null;
                     if (transformation.getXml() != null) {
                         xmlDocument = reader.read(transformation.getXml());
                         xmlElement = xmlDocument.getRootElement();
-                    } else {
-                        xmlDocument = null;
-                        xmlElement = null;
+                    } else if (transformation.getContent() != null) {
+                        content = transformation.getContent();
                     }
 
                     // Apply action
@@ -212,6 +216,22 @@ public class XARMojo extends AbstractXARMojo
                             } else {
                                 List<Element> siblings = parent.elements();
                                 siblings.set(parent.indexOf(node), xmlElement);
+                            }
+                            break;
+
+                        case INSERT_ATTACHMENT_CONTENT:
+                            if(content != null) {
+                                node.selectSingleNode("filesize").setText(Long.toString(content.length(),10));
+                                node.selectSingleNode("content").setText( "\r\n" +
+                                    new String(
+                                        Base64.getMimeEncoder().encode(FileUtils.readFileToByteArray(content)),
+                                        StandardCharsets.ISO_8859_1) + "\r\n");
+                            }
+                            break;
+
+                        case INSERT_TEXT:
+                            if( content != null) {
+                                node.setText(FileUtils.readFileToString(content, "utf-8"));
                             }
                             break;
 
@@ -256,7 +276,7 @@ public class XARMojo extends AbstractXARMojo
 
     /**
      * Unpack XAR dependencies before pack then into it.
-     * 
+     *
      * @throws MojoExecutionException error when unpack dependencies.
      */
     private void unpackDependentXARs() throws MojoExecutionException
@@ -273,7 +293,7 @@ public class XARMojo extends AbstractXARMojo
 
     /**
      * Create and add package configuration file to the package.
-     * 
+     *
      * @param packageFile the package when to add configuration file.
      * @param files the files in the package.
      * @throws Exception error when writing the configuration file.
@@ -293,7 +313,7 @@ public class XARMojo extends AbstractXARMojo
 
     /**
      * Generate a DOM4J Document containing the generated XML.
-     * 
+     *
      * @param files the list of files that we want to include in the generated package XML file.
      * @return the DOM4J Document containing the generated XML
      */
@@ -318,7 +338,7 @@ public class XARMojo extends AbstractXARMojo
     /**
      * Add all the XML elements under the &lt;info&gt; element (name, description, license, author, version and whether
      * it's a backup pack or not).
-     * 
+     *
      * @param infoElement the info element to which to add to
      */
     private void addInfoElements(Element infoElement)
@@ -359,7 +379,7 @@ public class XARMojo extends AbstractXARMojo
 
     /**
      * Add all the XML elements under the &lt;files&gt; element (the list of files present in the XAR).
-     * 
+     *
      * @param files the list of files that we want to include in the generated package XML file.
      * @param filesElement the files element to which to add to
      */
@@ -388,7 +408,7 @@ public class XARMojo extends AbstractXARMojo
 
     /**
      * Gets the list of entry from a 'package.xml'-like document.
-     * 
+     *
      * @param file the XML document to parse
      * @return the Map of entries contained in the XML document (ordered in the same order as the file)
      * @throws Exception if the XML document is invalid or it contains no document list or it doesn't exist
@@ -403,7 +423,7 @@ public class XARMojo extends AbstractXARMojo
 
     /**
      * Gets the list of entry from a 'package.xml'-like document.
-     * 
+     *
      * @param stream the XML document to parse
      * @return the Map of entries contained in the XML document (ordered in the same order as the file)
      * @throws Exception if the XML document is invalid or it contains no document list or it doesn't exist
@@ -440,7 +460,7 @@ public class XARMojo extends AbstractXARMojo
 
     /**
      * Gets the list of document names from a 'package.xml'-like document.
-     * 
+     *
      * @param file the XML document to parse
      * @return the list of document names contained in the XML document
      * @throws Exception if the XML document is invalid or it contains no document list or it doesn't exist
@@ -458,7 +478,7 @@ public class XARMojo extends AbstractXARMojo
     /**
      * Adds the files from a specific directory to an archive. It also builds a package.xml file based on that content
      * which is also added to the archive.
-     * 
+     *
      * @param archiver the archive in which the files will be added
      * @param sourceDir the directory whose contents will be added to the archive
      * @throws Exception if the files cannot be added to the archive
@@ -478,7 +498,7 @@ public class XARMojo extends AbstractXARMojo
     /**
      * Adds files from a specific directory to an archive. It uses an existing package.xml to filter the files to be
      * added.
-     * 
+     *
      * @param archiver the archive in which the files will be added
      * @param sourceDir the directory whose contents will be added to the archive
      * @param packageXml the corresponding package.xml file
@@ -536,7 +556,7 @@ public class XARMojo extends AbstractXARMojo
 
     /**
      * Adds the contents of a specific directory to a queue of files.
-     * 
+     *
      * @param fileQueue the queue of files
      * @param sourceDir the directory to be scanned
      */

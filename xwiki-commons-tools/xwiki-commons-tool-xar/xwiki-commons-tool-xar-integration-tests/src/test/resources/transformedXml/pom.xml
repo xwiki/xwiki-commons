@@ -45,6 +45,19 @@
               <xpath>/xwikidoc/object/property/title</xpath>
               <value>My Blog ($1)</value>
             </transformation>
+
+            <transformation>
+              <file>Blog/WebHome.xml</file>
+              <xpath>/xwikidoc/content</xpath>
+              <action>INSERT_TEXT</action>
+              <content>src/main/resources/Blog/WebHome.vm</content>
+            </transformation>
+
+            <transformation>
+              <file>Blog/WebHome.xml</file>
+              <action>INSERT_ATTACHMENT_CONTENT</action>
+              <content>src/main/resources/Blog/BlogBackground.png</content>
+            </transformation>
           </transformations>
         </configuration>
       </plugin>
