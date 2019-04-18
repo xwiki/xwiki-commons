@@ -838,6 +838,12 @@
         <artifactId>jboss-logging</artifactId>
         <version>3.4.0.Final</version>
       </dependency>
+      <!-- Make sure everyone use the same version of JBoss Marshalling -->
+      <dependency>
+        <groupId>org.jboss.marshalling</groupId>
+        <artifactId>jboss-marshalling</artifactId>
+        <version>2.0.7.Final</version>
+      </dependency>
 
       <!-- Javassist -->
       <dependency>
