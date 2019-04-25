@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<extension>
+  <id>rwithrdependencyfeature</id>
+  <version>version</version>
+  <type>test</type>
+  <dependencies>
+    <dependency>
+      <id>rsimple-feature</id>
+      <version>version</version>
+    </dependency>
+  </dependencies>
+</extension>
