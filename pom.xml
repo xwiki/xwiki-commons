@@ -587,6 +587,12 @@
         <artifactId>icu4j</artifactId>
         <version>64.2</version>
       </dependency>
+      <!-- Saxon -->
+      <dependency>
+        <groupId>net.sf.saxon</groupId>
+        <artifactId>Saxon-HE</artifactId>
+        <version>9.9.1-2</version>
+      </dependency>
 
       <!-- Json -->
       <dependency>
