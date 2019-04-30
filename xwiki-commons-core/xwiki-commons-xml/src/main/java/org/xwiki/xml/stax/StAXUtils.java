@@ -19,6 +19,7 @@
  */
 package org.xwiki.xml.stax;
 
+import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
@@ -31,6 +32,10 @@ import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stax.StAXResult;
 import javax.xml.transform.stax.StAXSource;
 
+import com.ctc.wstx.stax.WstxEventFactory;
+import com.ctc.wstx.stax.WstxInputFactory;
+import com.ctc.wstx.stax.WstxOutputFactory;
+
 import javanet.staxutils.XMLEventStreamWriter;
 import javanet.staxutils.XMLStreamEventReader;
 
@@ -42,9 +47,17 @@ import javanet.staxutils.XMLStreamEventReader;
  */
 public final class StAXUtils
 {
-    private static final XMLInputFactory XML_INPUT_FACTORY = XMLInputFactory.newInstance();
+    /**
+     * Force using Woodstox implementation which is thread safe.
+     */
+    private static final XMLInputFactory XML_INPUT_FACTORY = new WstxInputFactory();
 
-    private static final XMLOutputFactory XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
+    /**
+     * Force using Woodstox implementation which is thread safe.
+     */
+    private static final XMLOutputFactory XML_OUTPUT_FACTORY = new WstxOutputFactory();
+
+    private static final XMLEventFactory XML_EVENT_FACTORY = new WstxEventFactory();
 
     /**
      * Utility class.
@@ -149,17 +162,18 @@ public final class StAXUtils
 
         if (result instanceof SAXResult) {
             // SAXResult is not supported by the standard XMLOutputFactory
-            xmlStreamWriter = new XMLEventStreamWriter(new SAXEventWriter(((SAXResult) result).getHandler()));
+            xmlStreamWriter =
+                new XMLEventStreamWriter(new SAXEventWriter(((SAXResult) result).getHandler()), XML_EVENT_FACTORY);
         } else if (result instanceof StAXResult) {
             // XMLEventWriter is not supported as result of XMLOutputFactory#createXMLStreamWriter
             StAXResult staxResult = (StAXResult) result;
             if (staxResult.getXMLStreamWriter() != null) {
                 xmlStreamWriter = staxResult.getXMLStreamWriter();
             } else {
-                xmlStreamWriter = new XMLEventStreamWriter(staxResult.getXMLEventWriter());
+                xmlStreamWriter = new XMLEventStreamWriter(staxResult.getXMLEventWriter(), XML_EVENT_FACTORY);
             }
         } else {
-            xmlStreamWriter = XML_OUTPUT_FACTORY.createXMLStreamWriter(result);
+            xmlStreamWriter = factory.createXMLStreamWriter(result);
         }
 
         return xmlStreamWriter;
