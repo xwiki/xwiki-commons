@@ -25,7 +25,7 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -224,14 +224,13 @@ public class XARMojo extends AbstractXARMojo
                                 node.selectSingleNode("filesize").setText(Long.toString(content.length(),10));
                                 node.selectSingleNode("content").setText( "\r\n" +
                                     new String(
-                                        Base64.getMimeEncoder().encode(FileUtils.readFileToByteArray(content)),
-                                        StandardCharsets.ISO_8859_1) + "\r\n");
+                                        Base64.getMimeEncoder().encode(FileUtils.readFileToByteArray(content))) + "\r\n");
                             }
                             break;
 
                         case INSERT_TEXT:
                             if( content != null) {
-                                node.setText(FileUtils.readFileToString(content, "utf-8"));
+                                node.setText(FileUtils.readFileToString(content, Charset.forName(transformation.getCharset())));
                             }
                             break;
 

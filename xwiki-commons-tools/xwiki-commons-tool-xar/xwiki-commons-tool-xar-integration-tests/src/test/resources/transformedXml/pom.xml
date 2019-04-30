@@ -50,6 +50,7 @@
               <file>Blog/WebHome.xml</file>
               <xpath>/xwikidoc/content</xpath>
               <action>INSERT_TEXT</action>
+              <charset>UTF-8</charset>
               <content>src/main/resources/Blog/WebHome.vm</content>
             </transformation>
 
