@@ -102,7 +102,7 @@
         </configuration>
       </plugin>
       <plugin>
-        <!-- See commons-tools parent pom for why we need to explicitly configure checkstyle -->
+        <!-- Exclude some classes from checkstyle till we fix the violations -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <executions>

@@ -31,60 +31,51 @@
   <name>XWiki Commons - Tools - Tools POM</name>
   <packaging>pom</packaging>
   <description>XWiki Commons - Tools - Tools POM</description>
-  <dependencies>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-tool-verification-resources</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-  </dependencies>
   <build>
-    <pluginManagement>
-      <plugins>
-        <!-- Note: We duplicate the configuration located in xwiki-commons-pom since commons tools use xwiki-commons
-             as their parent pom and not xwiki-commons-pom. This is to avoid a circular dependency since
-             xwiki-commons-pom uses the xwiki-commons-tool-validation-resources artifact.
+    <plugins>
+      <!-- Note: We duplicate the configuration located in xwiki-commons-pom since commons tools use xwiki-commons
+           as their parent pom and not xwiki-commons-pom. This is to avoid a circular dependency since
+           xwiki-commons-pom uses the xwiki-commons-tool-validation-resources artifact.
 
-             It also means each tool module wanting to execute checkstyle will need to explicitly add it.
-        -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-checkstyle-plugin</artifactId>
-          <dependencies>
-            <dependency>
-              <groupId>org.xwiki.commons</groupId>
-              <artifactId>xwiki-commons-tool-verification-resources</artifactId>
-              <version>${project.version}</version>
-            </dependency>
-          </dependencies>
-          <configuration>
-            <propertyExpansion>
-              currentVersion=${project.version}
-            </propertyExpansion>
-            <!-- Used by the "blocker" execution id and the "default-cli" one
-                (i.e. when executing "mvn checkstyle:check") -->
-            <configLocation>checkstyle-blocker.xml</configLocation>
-          </configuration>
-          <executions>
-            <execution>
-              <id>default</id>
-              <goals>
-                <goal>check</goal>
-              </goals>
-              <configuration>
-                <configLocation>checkstyle.xml</configLocation>
-              </configuration>
-            </execution>
-            <execution>
-              <!-- Checks that should never be excluded from executing in maven projects -->
-              <id>blocker</id>
-              <goals>
-                <goal>check</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </pluginManagement>
+           It also means each tool module wanting to execute checkstyle will need to explicitly add it.
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.xwiki.commons</groupId>
+            <artifactId>xwiki-commons-tool-verification-resources</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <propertyExpansion>
+            currentVersion=${project.version}
+          </propertyExpansion>
+          <!-- Used by the "blocker" execution id and the "default-cli" one
+              (i.e. when executing "mvn checkstyle:check") -->
+          <configLocation>checkstyle-blocker.xml</configLocation>
+        </configuration>
+        <executions>
+          <execution>
+            <id>default</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <configLocation>checkstyle.xml</configLocation>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- Checks that should never be excluded from executing in maven projects -->
+            <id>blocker</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 </project>

@@ -37,13 +37,4 @@
     <module>xwiki-commons-tool-test-component</module>
     <module>xwiki-commons-tool-test-simple</module>
   </modules>
-  <build>
-    <plugins>
-      <plugin>
-        <!-- See commons-tools parent pom for why we need to explicitly configure checkstyle -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 </project>

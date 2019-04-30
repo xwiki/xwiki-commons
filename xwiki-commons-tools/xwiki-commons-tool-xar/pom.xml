@@ -52,11 +52,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <!-- See commons-tools parent pom for why we need to explicitly configure checkstyle -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-      </plugin>
     </plugins>
   </build>
   <profiles>
