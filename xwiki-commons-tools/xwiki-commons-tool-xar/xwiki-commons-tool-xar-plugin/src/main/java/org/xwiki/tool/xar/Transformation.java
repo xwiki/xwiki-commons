@@ -55,13 +55,13 @@ public class Transformation
 
         /**
          * Add content of the text file as child-text of the found node.
-         * @since 11.3RC1
+         * @since 11.4RC1
          */
         INSERT_TEXT,
 
         /**
          * Add content of the binary base64-encoded as child of the found node.
-         * @since 11.3RC1
+         * @since 11.4RC1
          */
         INSERT_ATTACHMENT_CONTENT,
 
@@ -195,7 +195,7 @@ public class Transformation
     /**
      * @return the file containing the text to insert (action INSERT_TEXT)
      *         or the blob to insert (action INSERT_FILE_BASE64).
-     * @since 11.3RC1
+     * @since 11.4RC1
      */
     public File getContent()
     {
@@ -204,7 +204,7 @@ public class Transformation
 
     /**
      * @param content the file containing the text or blob to insert
-     * @since 11.3RC1
+     * @since 11.4RC1
      */
     public void setContent(File content)
     {
@@ -214,7 +214,7 @@ public class Transformation
     /**
      * @return the charset used to read the file containing the text to insert
      *         (for action INSERT_TEXT only, optional, default value UTF-8)
-     * @since 11.3RC1
+     * @since 11.4RC1
      */
     public String getCharset()
     {
@@ -224,7 +224,7 @@ public class Transformation
     /**
      * @param charset the charset used to read the file containing the text to insert
      *         (for action INSERT_TEXT only, optional, default value UTF-8)
-     * @since 11.3RC1
+     * @since 11.4RC1
      */
     public void setCharset(String charset)
     {
