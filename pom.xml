@@ -24,7 +24,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>11.3-SNAPSHOT</version>
+  <version>11.4-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -46,11 +46,11 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>11.3-SNAPSHOT</commons.version>
+    <commons.version>11.4-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
-    <xwiki.compatibility.previous.version>11.2</xwiki.compatibility.previous.version>
+    <xwiki.compatibility.previous.version>11.3</xwiki.compatibility.previous.version>
 
     <!-- Java -->
     <java.version>1.8</java.version>
@@ -96,7 +96,7 @@
     <jacoco.version>0.8.3</jacoco.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>8.19</checkstyle.version>
+    <checkstyle.version>8.20</checkstyle.version>
 
     <!-- Spoon -->
     <spoon.version>7.3.0</spoon.version>
@@ -288,7 +288,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.8.1</version>
+        <version>3.9</version>
       </dependency>
       <!-- We don't use Commons Lang 2.x ourselves (we use Commons Lang 3.x) but some of our transitive dependencies
            require Commons Lang. The issue is that Maven uses a "closest-to-root" strategy to resolve dependency
@@ -551,7 +551,7 @@
       <dependency>
         <groupId>jaxen</groupId>
         <artifactId>jaxen</artifactId>
-        <version>1.1.6</version>
+        <version>1.2.0</version>
       </dependency>
       <dependency>
         <groupId>org.simpleframework</groupId>
@@ -580,6 +580,18 @@
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
         <version>2.3.2</version>
+      </dependency>
+      <!-- ICU -->
+      <dependency>
+        <groupId>com.ibm.icu</groupId>
+        <artifactId>icu4j</artifactId>
+        <version>64.2</version>
+      </dependency>
+      <!-- Saxon -->
+      <dependency>
+        <groupId>net.sf.saxon</groupId>
+        <artifactId>Saxon-HE</artifactId>
+        <version>9.9.1-2</version>
       </dependency>
 
       <!-- Json -->
@@ -838,12 +850,18 @@
         <artifactId>jboss-logging</artifactId>
         <version>3.4.0.Final</version>
       </dependency>
+      <!-- Make sure everyone use the same version of JBoss Marshalling -->
+      <dependency>
+        <groupId>org.jboss.marshalling</groupId>
+        <artifactId>jboss-marshalling</artifactId>
+        <version>2.0.7.Final</version>
+      </dependency>
 
       <!-- Javassist -->
       <dependency>
         <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
-        <version>3.24.1-GA</version>
+        <version>3.25.0-GA</version>
       </dependency>
 
       <!-- Triggered by several Maven related projects (Doxia, Maven, Aether) as transitive dependency. We need

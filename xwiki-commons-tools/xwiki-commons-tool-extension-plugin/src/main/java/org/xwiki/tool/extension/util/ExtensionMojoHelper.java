@@ -5,8 +5,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -15,10 +17,11 @@ import javax.inject.Singleton;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.model.Dependency;
+import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -29,6 +32,15 @@ import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.project.ProjectBuildingResult;
 import org.codehaus.plexus.PlexusContainer;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.ArtifactTypeRegistry;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.collection.CollectResult;
+import org.eclipse.aether.collection.DependencyCollectionException;
+import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.graph.DependencyNode;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -116,6 +128,8 @@ public class ExtensionMojoHelper implements AutoCloseable
 
     private ProjectBuilder projectBuilder;
 
+    private RepositorySystem repositorySystem;
+
     // Maven components
 
     private List<ExtensionOverride> extensionOverrides;
@@ -191,6 +205,7 @@ public class ExtensionMojoHelper implements AutoCloseable
     private void initializeComponents() throws Exception
     {
         this.projectBuilder = this.plexusContainer.lookup(ProjectBuilder.class);
+        this.repositorySystem = this.plexusContainer.lookup(RepositorySystem.class);
 
         this.extensionRepository =
             new MavenBuildExtensionRepository(session, localRepository, plexusContainer, this.componentManager);
@@ -339,7 +354,7 @@ public class ExtensionMojoHelper implements AutoCloseable
     {
         InstallRequest installRequest = new InstallRequest();
 
-        for (Dependency dependency : project.getDependencies()) {
+        for (org.apache.maven.model.Dependency dependency : project.getDependencies()) {
             // TODO: Add support for version range or ExtensionDependency in InstallRequest
             installRequest.addExtension(
                 new ExtensionId(dependency.getGroupId() + ':' + dependency.getArtifactId(), dependency.getVersion()));
@@ -526,5 +541,65 @@ public class ExtensionMojoHelper implements AutoCloseable
     public MavenBuildConfigurationSource getMavenBuildConfigurationSource()
     {
         return (MavenBuildConfigurationSource) this.configurationSource;
+    }
+
+    public Set<Artifact> collectMavenArtifacts(List<ExtensionArtifact> input) throws MojoExecutionException
+    {
+        if (input != null) {
+            CollectRequest request = new CollectRequest();
+
+            request.setRepositories(this.project.getRemoteProjectRepositories());
+
+            RepositorySystemSession repositorySession = this.session.getRepositorySession();
+            ArtifactTypeRegistry typeRegistry = repositorySession.getArtifactTypeRegistry();
+
+            DependencyManagement dependencyManagement = this.project.getDependencyManagement();
+            if (dependencyManagement != null) {
+                for (org.apache.maven.model.Dependency dependency : dependencyManagement.getDependencies()) {
+                    request.addManagedDependency(RepositoryUtils.toDependency(dependency, typeRegistry));
+                }
+            }
+
+            for (ExtensionArtifact extensionArtifact : input) {
+                request.addDependency(new Dependency(new DefaultArtifact(extensionArtifact.getGroupId(),
+                    extensionArtifact.getArtifactId(), extensionArtifact.getType(), extensionArtifact.getVersion()),
+                    null));
+            }
+
+            CollectResult collectResult;
+            try {
+                collectResult = this.repositorySystem.collectDependencies(repositorySession, request);
+            } catch (DependencyCollectionException e) {
+                throw new MojoExecutionException("Failed to resolve artifacts", e);
+            }
+
+            if (!collectResult.getExceptions().isEmpty()) {
+                throw new MojoExecutionException(String.format("Failed to resolve artifacts [%s]", input),
+                    collectResult.getExceptions().get(0));
+            }
+
+            Set<Artifact> artifacts = new HashSet<>();
+
+            addNodes(collectResult.getRoot().getChildren(), artifacts);
+
+            return artifacts;
+        }
+
+        return null;
+    }
+
+    private void addNode(DependencyNode node, Collection<Artifact> artifacts)
+    {
+        // TODO: find out why we end up with "system" scope dependency (seems to be specific to jdk.tools:jdk.tools)
+        if (!node.getDependency().getScope().equals("system")) {
+            artifacts.add(RepositoryUtils.toArtifact(node.getArtifact()));
+
+            addNodes(node.getChildren(), artifacts);
+        }
+    }
+
+    private void addNodes(List<DependencyNode> nodes, Collection<Artifact> artifacts)
+    {
+        nodes.forEach(c -> addNode(c, artifacts));
     }
 }

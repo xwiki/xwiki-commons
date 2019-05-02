@@ -243,6 +243,14 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     {
         String id = node.getAction().getExtension().getId().getId();
 
+        addExtensionNode(id, node);
+
+        node.getAction().getExtension().getExtensionFeatures().stream()
+            .forEach(feature -> addExtensionNode(feature.getId(), node));
+    }
+
+    private void addExtensionNode(String id, ModifableExtensionPlanNode node)
+    {
         Map<String, ModifableExtensionPlanNode> extensionsById = this.extensionsNodeCache.get(id);
 
         if (extensionsById == null) {

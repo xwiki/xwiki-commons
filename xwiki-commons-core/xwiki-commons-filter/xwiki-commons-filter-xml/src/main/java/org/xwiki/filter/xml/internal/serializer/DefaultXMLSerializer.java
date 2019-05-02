@@ -47,6 +47,7 @@ import org.xwiki.properties.ConverterManager;
 import org.xwiki.xml.stax.StAXUtils;
 
 import com.ctc.wstx.api.WstxOutputProperties;
+import com.ctc.wstx.stax.WstxOutputFactory;
 
 /**
  * Proxy called as an event filter to produce SAX events.
@@ -56,7 +57,10 @@ import com.ctc.wstx.api.WstxOutputProperties;
  */
 public class DefaultXMLSerializer implements InvocationHandler, Closeable
 {
-    private static final XMLOutputFactory XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
+    /**
+     * Force using Woodstox implementation which is thread safe.
+     */
+    private static final XMLOutputFactory XML_OUTPUT_FACTORY = new WstxOutputFactory();
 
     static {
         // Allow producing XML with several root elements (there is no constraint on events to have a single root

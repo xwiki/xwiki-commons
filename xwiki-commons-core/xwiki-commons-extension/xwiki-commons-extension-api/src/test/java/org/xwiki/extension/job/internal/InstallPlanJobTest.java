@@ -19,6 +19,7 @@
  */
 package org.xwiki.extension.job.internal;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import org.junit.Assert;
@@ -335,6 +336,49 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         Assert.assertEquals(0, action.getPreviousExtensions().size());
         Assert.assertNull(action.getNamespace());
         Assert.assertEquals(0, node.getChildren().size());
+    }
+
+    @Test
+    public void testInstallWithTwoDependenciesFeaturesInTheSameRequest() throws Throwable
+    {
+        ExtensionPlan plan = installPlan(
+            Arrays.asList(TestResources.REMOTE_WITHRDEPENDENCY_ID, TestResources.REMOTE_WITHRDEPENDENCYFEATURE_ID));
+
+        Assert.assertEquals(2, plan.getTree().size());
+
+        Iterator<ExtensionPlanNode> it = plan.getTree().iterator();
+
+        ExtensionPlanNode node = it.next();
+        ExtensionPlanAction action = node.getAction();
+        Assert.assertEquals(TestResources.REMOTE_WITHRDEPENDENCY_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertNull(action.getNamespace());
+        Assert.assertEquals(1, node.getChildren().size());
+
+        ExtensionPlanNode childnode = node.getChildren().iterator().next();
+        action = childnode.getAction();
+        Assert.assertEquals(TestResources.REMOTE_SIMPLE_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertNull(action.getNamespace());
+        Assert.assertEquals(0, childnode.getChildren().size());
+
+        node = it.next();
+        action = node.getAction();
+        Assert.assertEquals(TestResources.REMOTE_WITHRDEPENDENCYFEATURE_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertNull(action.getNamespace());
+        Assert.assertEquals(1, node.getChildren().size());
+
+        childnode = node.getChildren().iterator().next();
+        action = childnode.getAction();
+        Assert.assertEquals(TestResources.REMOTE_SIMPLE_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertNull(action.getNamespace());
+        Assert.assertEquals(0, childnode.getChildren().size());
     }
 
     // Errors

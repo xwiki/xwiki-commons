@@ -24,8 +24,9 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-tools</artifactId>
-    <version>11.3-SNAPSHOT</version>
+    <artifactId>xwiki-commons-tool-pom</artifactId>
+    <version>11.4-SNAPSHOT</version>
+    <relativePath>../xwiki-commons-tool-pom</relativePath>
   </parent>
   <artifactId>xwiki-commons-tool-remote-resource-plugin</artifactId>
   <name>XWiki Commons - Tools - Remote Resource Plugin</name>
@@ -44,13 +45,4 @@
       <artifactId>maven-plugin-annotations</artifactId>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <!-- See commons-tools parent pom for why we need to explicitly configure checkstyle -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 </project>
