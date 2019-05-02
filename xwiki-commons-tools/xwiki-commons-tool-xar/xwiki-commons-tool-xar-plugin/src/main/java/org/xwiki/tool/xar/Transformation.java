@@ -20,6 +20,7 @@
 package org.xwiki.tool.xar;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Hold Transformation configuration as specified by the user in its pom.xml.
@@ -31,7 +32,7 @@ public class Transformation
 {
     /**
      * The action to apply.
-     * 
+     *
      * @version $Id$
      * @since 9.5RC1
      */
@@ -50,7 +51,20 @@ public class Transformation
         /**
          * Add passed XML as child of the found node.
          */
-        INSERT_CHILD
+        INSERT_CHILD,
+
+        /**
+         * Add content of the text file as child-text of the found node.
+         * @since 11.4RC1
+         */
+        INSERT_TEXT,
+
+        /**
+         * Add content of the binary base64-encoded as child of the found node.
+         * @since 11.4RC1
+         */
+        INSERT_ATTACHMENT_CONTENT,
+
     }
 
     private Action action = Action.REPLACE;
@@ -64,6 +78,10 @@ public class Transformation
     private String file;
 
     private String artifact;
+
+    private File content;
+
+    private String charset = StandardCharsets.UTF_8.name();
 
     /**
      * @return the action to apply
@@ -122,7 +140,12 @@ public class Transformation
      */
     public String getXpath()
     {
-        return this.xpath;
+        if (action == Action.INSERT_ATTACHMENT_CONTENT) {
+            return "/xwikidoc/attachment[filename/text()='"
+                    + content.getName().replaceAll("'", "\\'") + "']";
+        } else {
+            return this.xpath;
+        }
     }
 
     /**
@@ -166,5 +189,45 @@ public class Transformation
     public void setXml(File xml)
     {
         this.xml = xml;
+    }
+
+
+    /**
+     * @return the file containing the text to insert (action INSERT_TEXT)
+     *         or the blob to insert (action INSERT_FILE_BASE64).
+     * @since 11.4RC1
+     */
+    public File getContent()
+    {
+        return content;
+    }
+
+    /**
+     * @param content the file containing the text or blob to insert
+     * @since 11.4RC1
+     */
+    public void setContent(File content)
+    {
+        this.content = content;
+    }
+
+    /**
+     * @return the charset used to read the file containing the text to insert
+     *         (for action INSERT_TEXT only, optional, default value UTF-8)
+     * @since 11.4RC1
+     */
+    public String getCharset()
+    {
+        return charset;
+    }
+
+    /**
+     * @param charset the charset used to read the file containing the text to insert
+     *         (for action INSERT_TEXT only, optional, default value UTF-8)
+     * @since 11.4RC1
+     */
+    public void setCharset(String charset)
+    {
+        this.charset = charset;
     }
 }

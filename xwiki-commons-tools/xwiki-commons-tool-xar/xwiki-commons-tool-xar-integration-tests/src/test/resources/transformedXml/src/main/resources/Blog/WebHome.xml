@@ -22,6 +22,15 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
   <hidden>false</hidden>
+  <attachment>
+      <filename>BlogBackground.png</filename>
+      <author>xwiki:XWiki.Admin</author>
+      <version>1.1</version>
+      <comment/>
+      <date>1446322995000</date>
+      <filesize>7168</filesize>
+      <content></content>
+  </attachment>
   <object>
     <class>
       <name>Blog.BlogClass</name>

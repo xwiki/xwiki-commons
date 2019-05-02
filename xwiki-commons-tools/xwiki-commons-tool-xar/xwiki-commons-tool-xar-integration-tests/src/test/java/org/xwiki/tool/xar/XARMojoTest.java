@@ -28,15 +28,20 @@ import java.util.Map;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
+import org.dom4j.Document;
+import org.dom4j.Node;
+import org.dom4j.io.SAXReader;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.xwiki.tool.xar.internal.XWikiDocument;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -182,12 +187,40 @@ public class XARMojoTest extends AbstractMojoTest
     }
 
     @Test
-    @Ignore("Could not make it work, for some reason the plugin configuration is not taken into account!")
     public void transformXML() throws Exception
     {
         Verifier verifier = createVerifier("/transformedXml");
         verifier.executeGoals(Arrays.asList("clean", "package"));
         verifier.verifyErrorFreeLog();
+
+        File tempDir = new File(verifier.getBasedir(), "target/temp");
+        tempDir.mkdirs();
+
+        // Extract the generated XAR so that we verify its content easily
+        File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
+        ZipUnArchiver unarchiver = new ZipUnArchiver(xarFile);
+        unarchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_ERROR, "xar"));
+        unarchiver.setDestDirectory(tempDir);
+        unarchiver.extract();
+
+        // check that the transformations have taken place
+        Document document = new SAXReader().read(new File(tempDir, "Blog/WebHome.xml"));
+        FileUtils.copyFile(new File(tempDir, "Blog/WebHome.xml"), new File("/tmp/WebHome.xml"));
+        assertEquals("Transformation of itemsPerPage did not happen?",
+                "100",
+                document.selectSingleNode("/xwikidoc/object/property/itemsPerPage").getText() );
+        assertEquals("Transformation of title did not happen?",
+                "My Blog (The Wiki Blog)",
+                document.selectSingleNode("/xwikidoc/object/property/title").getText());
+
+        assertEquals("Insertion of content did not happen?",
+                "This page will gather my blog.",
+                document.selectSingleNode("/xwikidoc/content").getText().trim());
+
+        assertTrue("Insertion of attachment did not happen?",
+                document.selectSingleNode("/xwikidoc/attachment/content")!=null);
+
+
     }
 
     @Test
