@@ -79,7 +79,7 @@
 
     <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
          are executed with surefire or failsafe) -->
-    <surefire.version>2.22.0</surefire.version>
+    <surefire.version>2.22.2</surefire.version>
 
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
