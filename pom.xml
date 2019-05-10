@@ -838,12 +838,19 @@
         <artifactId>jcl-over-slf4j</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
-      <!-- External libraries using Log4J will delegate to SLF4J -->
+      <!-- External libraries using Log4J 1.x will delegate to SLF4J -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>log4j-over-slf4j</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
+      <!-- External libraries using Log4J 2.x will delegate to SLF4J -->
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-to-slf4j</artifactId>
+        <version>2.11.2</version>
+      </dependency>
+
 
       <!-- Make sure everyone use the same version of JBoss Logging -->
       <dependency>
@@ -1319,11 +1326,15 @@
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
-                  <message>XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.</message>
+                  <message>XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J 1.x/2.x.</message>
                   <excludes>
                     <exclude>commons-logging:commons-logging</exclude>
                     <exclude>commons-logging:commons-logging-api</exclude>
                     <exclude>log4j:log4j</exclude>
+                    <exclude>org.apache.logging.log4j:log4j-core</exclude>
+                    <!-- Also forbid this artifact since it conflicts with the Log4j 2.x to SLF4J one, see
+                         https://logging.apache.org/log4j/2.x/log4j-to-slf4j/index.html -->
+                    <exclude>org.apache.logging.log4j:log4j-slf4j-impl</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
