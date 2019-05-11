@@ -83,19 +83,33 @@ public class CaptureConsoleTestExecutionListenerTest
                 .build();
             Launcher launcher = LauncherFactory.create();
             SummaryGeneratingListener summaryListener = new SummaryGeneratingListener();
-            launcher.execute(request, new CaptureConsoleTestExecutionListener(), summaryListener);
+            CaptureConsoleTestExecutionListener captureListener = new CaptureConsoleTestExecutionListener();
+            launcher.execute(request, captureListener, summaryListener);
 
             TestExecutionSummary summary = summaryListener.getSummary();
+            assertResult(summary, captureListener);
+        } finally {
+            System.setOut(savedOut);
+        }
+    }
+
+
+    private void assertResult(TestExecutionSummary summary, CaptureConsoleTestExecutionListener captureListener)
+    {
+        // Since it's possible to skip the capture listener in the build by passing some system property (as it's done
+        // for example on our CI, we also need to take this into account in this test since when the capture listener
+        // is off, we won't get an failures! :)
+        if (captureListener.shouldSkip()) {
+            assertEquals(0, summary.getFailures().size());
+        } else {
             assertEquals(1, summary.getFailures().size());
             assertTrue(summary.getFailures().get(0).getException().getMessage().matches(
                 "There should be no content output to the console by the test! Instead we got \\[.* \\[main\\] "
                     + "INFO  o\\.x\\.t\\.j\\.CaptureConsoleTestExecutionListenerTest\\$SampleTestCase - In beforeAll\n"
                     + ".* \\[main\\] INFO  o\\.x\\.t\\.j\\.CaptureConsoleTestExecutionListenerTest\\$SampleTestCase - "
-                        + "In outputToConsole\n"
+                    + "In outputToConsole\n"
                     + "\\]"
             ));
-        } finally {
-            System.setOut(savedOut);
         }
     }
 }

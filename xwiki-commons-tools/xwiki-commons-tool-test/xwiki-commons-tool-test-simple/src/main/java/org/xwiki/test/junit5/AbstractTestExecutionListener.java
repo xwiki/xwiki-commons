@@ -96,7 +96,7 @@ public abstract class AbstractTestExecutionListener implements TestExecutionList
      * @return true if the check should be skipped or false otherwise. The defined System property is checked first and
      * if it doesn't exist, the Maven property of the same name is read from the current {@code pom.xml}
      */
-    private boolean shouldSkip()
+    boolean shouldSkip()
     {
         if (this.skip == null) {
             String value = getPropertyValue(getSkipSystemPropertyKey());
