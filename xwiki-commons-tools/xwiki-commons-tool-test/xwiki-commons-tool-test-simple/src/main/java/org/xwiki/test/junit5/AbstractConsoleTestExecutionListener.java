@@ -79,7 +79,7 @@ public abstract class AbstractConsoleTestExecutionListener extends AbstractTestE
                 // which case we let junit fail in a classical way and we don't interfere...
                 if (testExecutionResult.getStatus().equals(TestExecutionResult.Status.SUCCESSFUL)) {
                     String outputContent = this.collectingContentStream.toString();
-                    validateOutputForTest(outputContent);
+                    validateOutputForTest(outputContent, testIdentifier);
                 }
             }
         }
@@ -87,6 +87,7 @@ public abstract class AbstractConsoleTestExecutionListener extends AbstractTestE
 
     /**
      * @param outputContent the content to validate. Should throw a {@link AssertionError} in case of validation failure
+     * @param  testIdentifier the identifier object for the test being validated
      */
-    protected abstract void validateOutputForTest(String outputContent);
+    protected abstract void validateOutputForTest(String outputContent, TestIdentifier testIdentifier);
 }

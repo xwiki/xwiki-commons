@@ -19,6 +19,8 @@
  */
 package org.xwiki.test.junit5;
 
+import org.junit.platform.launcher.TestIdentifier;
+
 /**
  * Captures any content sent to stdout/stderr by JUnit5 unit tests and report a failure if the content is not empty.
  *
@@ -36,7 +38,7 @@ public class CaptureConsoleTestExecutionListener extends AbstractConsoleTestExec
     }
 
     @Override
-    protected void validateOutputForTest(String outputContent)
+    protected void validateOutputForTest(String outputContent, TestIdentifier testIdentifier)
     {
         if (!outputContent.isEmpty()) {
             throw new AssertionError(String.format("There should be no content output to the console by the test! "
