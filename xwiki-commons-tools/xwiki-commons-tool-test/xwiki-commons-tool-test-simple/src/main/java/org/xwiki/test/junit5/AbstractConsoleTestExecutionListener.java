@@ -73,6 +73,9 @@ public abstract class AbstractConsoleTestExecutionListener extends AbstractTestE
 
             // Put back stderr
             System.setOut(this.savedErr);
+
+            String outputContent = this.collectingContentStream.toString();
+            validateOutputForTest(outputContent, testIdentifier);
         } else {
             if (testIdentifier.isTest()) {
                 // If there is stdout or stderr content then fail the test, unless there was already some error, in

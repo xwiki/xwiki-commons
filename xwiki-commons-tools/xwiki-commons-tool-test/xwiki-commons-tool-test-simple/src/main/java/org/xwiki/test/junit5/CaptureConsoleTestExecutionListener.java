@@ -40,7 +40,7 @@ public class CaptureConsoleTestExecutionListener extends AbstractConsoleTestExec
     @Override
     protected void validateOutputForTest(String outputContent, TestIdentifier testIdentifier)
     {
-        if (!outputContent.isEmpty()) {
+        if (!outputContent.isEmpty() && testIdentifier.isTest()) {
             throw new AssertionError(String.format("There should be no content output to the console by the test! "
                 + "Instead we got [%s]", outputContent));
         }
