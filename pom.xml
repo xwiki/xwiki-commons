@@ -478,8 +478,6 @@
       <dependency>
         <groupId>org.dom4j</groupId>
         <artifactId>dom4j</artifactId>
-        <!-- Note: We cannot upgrade to 2.1.1 since it has an important regression, see
-             https://github.com/dom4j/dom4j/issues/51 -->
         <version>2.1.1</version>
       </dependency>
       <dependency>
