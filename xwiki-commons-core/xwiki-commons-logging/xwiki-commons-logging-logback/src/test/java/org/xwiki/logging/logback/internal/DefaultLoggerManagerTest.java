@@ -40,6 +40,10 @@ import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.read.ListAppender;
 import ch.qos.logback.core.spi.FilterReply;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -200,13 +204,14 @@ public class DefaultLoggerManagerTest
     @Test
     public void testGetSetLoggerLevel()
     {
-        Assert.assertNull(this.loggerManager.getLoggerLevel(getClass().getName()));
+        assertNull(this.loggerManager.getLoggerLevel(getClass().getName()));
 
         LogQueue queue = new LogQueue();
 
         this.loggerManager.pushLogListener(new LogQueueListener("loglistenerid", queue));
 
         this.loggerManager.setLoggerLevel(getClass().getName(), LogLevel.WARN);
+        assertSame(LogLevel.WARN, this.loggerManager.getLoggerLevel(getClass().getName()));
 
         this.logger.debug("[test] debug message 1");
         // Provide information when the Assert fails
@@ -214,18 +219,22 @@ public class DefaultLoggerManagerTest
             Assert.fail("Should have contained no message but got [" + queue.peek().getFormattedMessage()
                 + "] instead (last message, there might be more)");
         }
-        Assert.assertEquals(0, queue.size());
+        assertEquals(0, queue.size());
 
         this.loggerManager.setLoggerLevel(getClass().getName(), LogLevel.DEBUG);
+        assertSame(LogLevel.DEBUG, this.loggerManager.getLoggerLevel(getClass().getName()));
 
         this.logger.debug("[test] debug message 2");
-        Assert.assertEquals(1, queue.size());
+        assertEquals(1, queue.size());
+
+        this.loggerManager.setLoggerLevel(getClass().getName(), null);
+        assertNull(this.loggerManager.getLoggerLevel(getClass().getName()));
     }
 
     @Test
     public void testGetLoggers()
     {
-        this.loggerManager.getLoggers();
+        assertNotNull(this.loggerManager.getLoggers());
     }
 
     @Test
