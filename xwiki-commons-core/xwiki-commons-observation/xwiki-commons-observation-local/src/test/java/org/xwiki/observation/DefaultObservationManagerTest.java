@@ -24,6 +24,9 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.xwiki.component.descriptor.ComponentDescriptor;
+import org.xwiki.component.descriptor.DefaultComponentDescriptor;
+import org.xwiki.component.event.ComponentDescriptorAddedEvent;
 import org.xwiki.observation.event.ActionExecutionEvent;
 import org.xwiki.observation.event.AllEvent;
 import org.xwiki.observation.event.Event;
@@ -32,7 +35,9 @@ import org.xwiki.test.LogLevel;
 import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,12 +48,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link ObservationManager}.
+ * Unit tests for {@link DefaultObservationManager}.
  *
  * @version $Id$
  */
 @ComponentTest
-public class ObservationManagerTest
+public class DefaultObservationManagerTest
 {
     @InjectMockComponents
     private DefaultObservationManager manager;
@@ -240,5 +245,44 @@ public class ObservationManagerTest
         this.manager.notify(eventMatcher2, "some source", "some data");
         verify(listener).onEvent(eventMatcher1, "some source", "some data");
         verify(listener).onEvent(eventMatcher2, "some source", "some data");
+    }
+
+    @Test
+    public void onComponentEventWhenRuntimeExceptionInListenerGetName(MockitoComponentManager componentManager)
+        throws Exception
+    {
+        ComponentDescriptorAddedEvent cdae = new ComponentDescriptorAddedEvent(EventListener.class,
+            "onComponentEventWhenRuntimeExceptionInListener");
+
+        // Important: initialize listener cache first so that we can reach the call to onComponentEvent().
+        this.manager.notify((Object) -> false, componentManager, null);
+
+        EventListener eventListener = componentManager.registerMockComponent(EventListener.class,
+            "onComponentEventWhenRuntimeExceptionInListener");
+        when(eventListener.getName()).thenThrow(new RuntimeException("error"));
+        DefaultComponentDescriptor<EventListener> cd = new DefaultComponentDescriptor<>();
+        cd.setImplementation(EventListener.class);
+        cd.setRoleType(EventListener.class);
+
+        this.manager.notify(cdae, componentManager, cd);
+
+        assertEquals("Failed to notify some event listeners about component [role = "
+            + "[interface org.xwiki.observation.EventListener], hint = [default]], implementation = "
+            + "[org.xwiki.observation.EventListener], instantiation = [SINGLETON]] being added or removed. Root cause: "
+            + "[RuntimeException: error]", logCapture.getMessage(0));
+    }
+
+    @Test
+    public void addListenerWhenRuntimeExceptionInListenerGetName(MockitoComponentManager componentManager)
+        throws Exception
+    {
+        EventListener eventListener = componentManager.registerMockComponent(EventListener.class,
+            "onComponentEventWhenRuntimeExceptionInListener");
+        when(eventListener.getName()).thenThrow(new RuntimeException("error"));
+
+        this.manager.notify((Object) -> false, componentManager, null);
+
+        assertEquals("Failed to add listener. Root cause: [RuntimeException: error]", logCapture.getMessage(0));
+
     }
 }
