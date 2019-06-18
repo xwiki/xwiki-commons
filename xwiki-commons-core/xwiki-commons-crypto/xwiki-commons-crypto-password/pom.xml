@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-crypto</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>11.5-rc-1</version>
+    <version>11.5-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-crypto-password</artifactId>
   <packaging>jar</packaging>
