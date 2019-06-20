@@ -3,11 +3,13 @@ package org.xwiki.tool.extension.util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -17,6 +19,7 @@ import javax.inject.Singleton;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -496,6 +499,17 @@ public class ExtensionMojoHelper implements AutoCloseable
                             Collection<String> features = ExtensionUtils.importPropertyStringList(featuresString, true);
                             extension.setExtensionFeatures(
                                 ExtensionIdConverter.toExtensionIdList(features, extension.getId().getVersion()));
+                        }
+                        // Override properties
+                        String propertiesString = extensionOverride.get(Extension.FIELD_PROPERTIES);
+                        if (propertiesString != null) {
+                            Properties properties = new Properties();
+                            try {
+                                properties.load(new StringReader(propertiesString));
+                            } catch (IOException e) {
+                                // Does not make sense with a StringReader
+                            }
+                            properties.forEach((key, value) -> extension.putProperty((String) key, value));
                         }
                     }
                 }
