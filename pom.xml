@@ -2187,7 +2187,7 @@
         <plugin>
           <groupId>org.pitest</groupId>
           <artifactId>pitest-maven</artifactId>
-          <version>1.4.8</version>
+          <version>1.4.9</version>
         </plugin>
         <!-- In order to make it simple to execute Dspot on XWiki with: mvn dspot:amplify-unit-tests -->
         <plugin>
