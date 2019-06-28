@@ -28,7 +28,9 @@ import org.xwiki.observation.event.filter.EventFilter;
 import org.xwiki.observation.event.filter.FixedNameEventFilter;
 
 /**
- * A generic Event implementation to extend for all Events that want to support {@link EventFilter}s.
+ * An helper to extend for all Events associated to a single {@link String} value.
+ * <p>
+ * If the event value is not a {@link String} extending this class should be avoided.
  *
  * @version $Id$
  * @since 2.4M2
