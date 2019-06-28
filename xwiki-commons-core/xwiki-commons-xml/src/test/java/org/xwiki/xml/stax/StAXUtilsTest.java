@@ -95,11 +95,13 @@ public class StAXUtilsTest
 
         XMLStreamWriter writer = StAXUtils.getXMLStreamWriter(new SAXResult(th));
 
+        writer.writeStartDocument();
         writer.writeStartElement("element");
         writer.writeAttribute("attribute", "value");
         writer.writeCharacters("characters");
         writer.writeCData("cdata");
         writer.writeEndElement();
+        writer.writeEndDocument();
 
         assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<element attribute=\"value\">"
             + "characters" + "<![CDATA[cdata]]>" + "</element>", output.getBuffer().toString());

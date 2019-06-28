@@ -19,6 +19,7 @@
  */
 package org.xwiki.extension.test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -165,9 +166,19 @@ public abstract class AbstractExtensionHandlerTest
         return installPlan(extensionId, true);
     }
 
+    protected ExtensionPlan installPlan(Collection<ExtensionId> extensionIds) throws Throwable
+    {
+        return installPlan(extensionIds, true);
+    }
+
     protected ExtensionPlan installPlan(ExtensionId extensionId, boolean rootModifications) throws Throwable
     {
         return installPlan(extensionId, (String[]) null, rootModifications);
+    }
+
+    protected ExtensionPlan installPlan(Collection<ExtensionId> extensionIds, boolean rootModifications) throws Throwable
+    {
+        return installPlan(extensionIds, (String[]) null, rootModifications);
     }
 
     protected ExtensionPlan installPlan(ExtensionId extensionId, String[] namespaces) throws Throwable
@@ -179,6 +190,12 @@ public abstract class AbstractExtensionHandlerTest
         throws Throwable
     {
         return installPlan(extensionId, namespaces, rootModifications, LogLevel.WARN);
+    }
+
+    protected ExtensionPlan installPlan(Collection<ExtensionId> extensionIds, String[] namespaces, boolean rootModifications)
+        throws Throwable
+    {
+        return installPlan(extensionIds, namespaces, rootModifications, LogLevel.WARN);
     }
 
     protected ExtensionPlan installPlan(ExtensionId extensionId, String namespace) throws Throwable
@@ -202,7 +219,13 @@ public abstract class AbstractExtensionHandlerTest
     protected ExtensionPlan installPlan(ExtensionId extensionId, String[] namespaces, boolean rootModifications,
         LogLevel failFrom) throws Throwable
     {
-        InstallRequest installRequest = createInstallRequest(extensionId, namespaces, rootModifications);
+        return installPlan(Arrays.asList(extensionId), namespaces, rootModifications, failFrom);
+    }
+
+    protected ExtensionPlan installPlan(Collection<ExtensionId> extensionIds, String[] namespaces, boolean rootModifications,
+        LogLevel failFrom) throws Throwable
+    {
+        InstallRequest installRequest = createInstallRequest(extensionIds, namespaces, rootModifications);
 
         return installPlan(installRequest, failFrom);
     }
@@ -241,8 +264,19 @@ public abstract class AbstractExtensionHandlerTest
     protected InstallRequest createInstallRequest(ExtensionId extensionId, String[] namespaces,
         boolean rootModifications)
     {
+        return createInstallRequest(Arrays.asList(extensionId), namespaces, rootModifications);
+    }
+
+    protected InstallRequest createInstallRequest(Collection<ExtensionId> extensionIds)
+    {
+        return createInstallRequest(extensionIds);
+    }
+
+    protected InstallRequest createInstallRequest(Collection<ExtensionId> extensionIds, String[] namespaces,
+        boolean rootModifications)
+    {
         InstallRequest installRequest = new InstallRequest();
-        installRequest.addExtension(extensionId);
+        extensionIds.stream().forEach(id -> installRequest.addExtension(id));
         if (namespaces != null) {
             for (String namespace : namespaces) {
                 installRequest.addNamespace(namespace);

@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-crypto</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>11.2-SNAPSHOT</version>
+    <version>11.6-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-crypto-signer</artifactId>
   <packaging>jar</packaging>
@@ -32,7 +32,6 @@
   <description>Provides integrity using signature</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.71</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>75</xwiki.pitest.mutationThreshold>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Cryptographic Services for Integrity</xwiki.extension.name>
   </properties>

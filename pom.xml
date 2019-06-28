@@ -24,7 +24,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>11.2-SNAPSHOT</version>
+  <version>11.6-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -46,17 +46,17 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>11.2-SNAPSHOT</commons.version>
+    <commons.version>11.6-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
-    <xwiki.compatibility.previous.version>11.1</xwiki.compatibility.previous.version>
+    <xwiki.compatibility.previous.version>11.5</xwiki.compatibility.previous.version>
 
     <!-- Java -->
     <java.version>1.8</java.version>
 
     <!-- Jackson -->
-    <jackson.version>2.9.8</jackson.version>
+    <jackson.version>2.9.9</jackson.version>
 
     <!-- ASM -->
     <asm.version>7.1</asm.version>
@@ -73,36 +73,36 @@
 
     <!-- JUnit -->
     <junit.version>4.12</junit.version>
-    <junit5.version>5.4.0</junit5.version>
-    <junit.platform.version>1.4.0</junit.platform.version>
+    <junit5.version>5.4.2</junit5.version>
+    <junit.platform.version>1.4.2</junit.platform.version>
     <junit.vintage.version>${junit5.version}</junit.vintage.version>
 
     <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
          are executed with surefire or failsafe) -->
-    <surefire.version>2.22.0</surefire.version>
+    <surefire.version>2.22.2</surefire.version>
 
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
-    <mockito.version>2.25.0</mockito.version>
+    <mockito.version>2.28.2</mockito.version>
 
     <!-- Byte Buddy -->
-    <bytebuddy.version>1.9.10</bytebuddy.version>
+    <bytebuddy.version>1.9.13</bytebuddy.version>
 
     <!-- AspectJ -->
-    <aspectj.version>1.9.2</aspectj.version>
+    <aspectj.version>1.9.4</aspectj.version>
 
     <!-- Clover & Jacoco -->
     <clover.version>4.3.1</clover.version>
-    <jacoco.version>0.8.3</jacoco.version>
+    <jacoco.version>0.8.4</jacoco.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>8.18</checkstyle.version>
+    <checkstyle.version>8.22</checkstyle.version>
 
     <!-- Spoon -->
-    <spoon.version>7.3.0</spoon.version>
+    <spoon.version>7.4.0</spoon.version>
 
     <!-- Groovy -->
-    <groovy.version>2.5.6</groovy.version>
+    <groovy.version>2.5.7</groovy.version>
 
     <!-- Ivy -->
     <ivy.version>2.4.0</ivy.version>
@@ -124,6 +124,8 @@
     <xwiki.enforcer.enforce-javax.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.mail.skip>
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
     <xwiki.enforcer.enforce-jsr305.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jsr305.skip>
+    <xwiki.enforcer.enforce-jta.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jta.skip>
+    <xwiki.enforcer.enforce-jboss-marshalling-osgi.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jboss-marshalling-osgi.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
     <xwiki.enforcer.enforce-velocity-engine-core.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-velocity-engine-core.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
@@ -200,6 +202,9 @@
 
     <!-- The version of the Maven Plugin Tools -->
     <maven.plugin.tools.version>3.6.0</maven.plugin.tools.version>
+
+    <!-- The version of the Maven Remote Resource plugin -->
+    <maven-remote-resources-plugin.version>1.6.0</maven-remote-resources-plugin.version>
 
     <!-- The recommended version of known extensions to use -->
     <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]</xwiki.extension.recommendedVersions.commons>
@@ -285,7 +290,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.8.1</version>
+        <version>3.9</version>
       </dependency>
       <!-- We don't use Commons Lang 2.x ourselves (we use Commons Lang 3.x) but some of our transitive dependencies
            require Commons Lang. The issue is that Maven uses a "closest-to-root" strategy to resolve dependency
@@ -337,7 +342,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.5.7</version>
+        <version>4.5.9</version>
         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
         <exclusions>
           <exclusion>
@@ -349,7 +354,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
-        <version>4.5.7</version>
+        <version>4.5.9</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -382,8 +387,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-dbcp2</artifactId>
-        <!-- DBCP2 requires JDBC 4.1 starting with 2.4.0 and JDBC 4.2 with 2.5.0 -->
-        <version>2.3.0</version>
+        <version>2.6.0</version>
         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
         <exclusions>
           <exclusion>
@@ -430,7 +434,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-configuration2</artifactId>
-        <version>2.4</version>
+        <version>2.5</version>
          <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
          <exclusions>
            <exclusion>
@@ -475,9 +479,7 @@
       <dependency>
         <groupId>org.dom4j</groupId>
         <artifactId>dom4j</artifactId>
-        <!-- Note: We cannot upgrade to 2.1.1 since it has an important regression, see
-             https://github.com/dom4j/dom4j/issues/51 -->
-        <version>2.1.0</version>
+        <version>2.1.1</version>
       </dependency>
       <dependency>
         <groupId>org.jdom</groupId>
@@ -538,7 +540,7 @@
       <dependency>
         <groupId>org.codehaus.woodstox</groupId>
         <artifactId>stax2-api</artifactId>
-        <version>4.1</version>
+        <version>4.2</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.woodstox</groupId>
@@ -548,7 +550,7 @@
       <dependency>
         <groupId>jaxen</groupId>
         <artifactId>jaxen</artifactId>
-        <version>1.1.6</version>
+        <version>1.2.0</version>
       </dependency>
       <dependency>
         <groupId>org.simpleframework</groupId>
@@ -577,6 +579,18 @@
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
         <version>2.3.2</version>
+      </dependency>
+      <!-- ICU -->
+      <dependency>
+        <groupId>com.ibm.icu</groupId>
+        <artifactId>icu4j</artifactId>
+        <version>64.2</version>
+      </dependency>
+      <!-- Saxon -->
+      <dependency>
+        <groupId>net.sf.saxon</groupId>
+        <artifactId>Saxon-HE</artifactId>
+        <version>9.9.1-3</version>
       </dependency>
 
       <!-- Json -->
@@ -702,25 +716,25 @@
       <!-- JTA -->
       <dependency>
         <groupId>javax.transaction</groupId>
-        <artifactId>jta</artifactId>
-        <version>1.1</version>
+        <artifactId>javax.transaction-api</artifactId>
+        <version>1.2</version>
       </dependency>
 
       <!-- Bouncy Castle -->
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-jdk15on</artifactId>
-        <version>1.61</version>
+        <version>1.62</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcpkix-jdk15on</artifactId>
-        <version>1.61</version>
+        <version>1.62</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcmail-jdk15on</artifactId>
-        <version>1.61</version>
+        <version>1.62</version>
       </dependency>
 
       <!-- Various project are using it to scan the classpath -->
@@ -822,25 +836,43 @@
         <artifactId>jcl-over-slf4j</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
-      <!-- External libraries using Log4J will delegate to SLF4J -->
+      <!-- External libraries using Log4J 1.x will delegate to SLF4J -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>log4j-over-slf4j</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
+      <!-- External libraries using Log4J 2.x will delegate to SLF4J -->
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>2.11.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-to-slf4j</artifactId>
+        <version>2.11.2</version>
+      </dependency>
+
 
       <!-- Make sure everyone use the same version of JBoss Logging -->
       <dependency>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging</artifactId>
-        <version>3.3.2.Final</version>
+        <version>3.4.0.Final</version>
+      </dependency>
+      <!-- Make sure everyone use the same version of JBoss Marshalling -->
+      <dependency>
+        <groupId>org.jboss.marshalling</groupId>
+        <artifactId>jboss-marshalling-osgi</artifactId>
+        <version>2.0.7.Final</version>
       </dependency>
 
       <!-- Javassist -->
       <dependency>
         <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
-        <version>3.24.1-GA</version>
+        <version>3.25.0-GA</version>
       </dependency>
 
       <!-- Triggered by several Maven related projects (Doxia, Maven, Aether) as transitive dependency. We need
@@ -848,7 +880,7 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
-        <version>3.1.1</version>
+        <version>3.2.0</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -863,12 +895,17 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-interpolation</artifactId>
-        <version>1.25</version>
+        <version>1.26</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-interactivity-api</artifactId>
-        <version>1.0-alpha-6 </version>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-interactivity-jline</artifactId>
+        <version>1.0</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -1113,7 +1150,7 @@
       <dependency>
         <groupId>net.sourceforge.cssparser</groupId>
         <artifactId>cssparser</artifactId>
-        <version>0.9.26</version>
+        <version>0.9.27</version>
       </dependency>
       <!-- Bean validation -->
       <dependency>
@@ -1220,6 +1257,29 @@
         <artifactId>antlr</artifactId>
         <version>2.7.7</version>
       </dependency>
+      <!-- Used on remote observation and also by JBossCache/Infinispan (even if it does not really use it) -->
+      <dependency>
+        <groupId>org.jgroups</groupId>
+        <artifactId>jgroups</artifactId>
+        <version>4.0.20.Final</version>
+      </dependency>
+      <!-- Used by Solr and Infinispan -->
+      <dependency>
+        <groupId>com.github.ben-manes.caffeine</groupId>
+        <artifactId>caffeine</artifactId>
+        <version>2.7.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.errorprone</groupId>
+        <artifactId>error_prone_annotations</artifactId>
+        <version>2.3.3</version>
+      </dependency>
+      <!-- The maven remote resource plugin is also used as dependency -->
+      <dependency>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-remote-resources-plugin</artifactId>
+          <version>${maven-remote-resources-plugin.version}</version>
+        </dependency>
     </dependencies>
   </dependencyManagement>
   <build>
@@ -1265,11 +1325,17 @@
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
-                  <message>XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.</message>
+                  <message>XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J 1.x/2.x.</message>
                   <excludes>
                     <exclude>commons-logging:commons-logging</exclude>
                     <exclude>commons-logging:commons-logging-api</exclude>
                     <exclude>log4j:log4j</exclude>
+                    <exclude>org.apache.logging.log4j:log4j-core</exclude>
+                    <!-- Also forbid this artifact since it conflicts with the Log4j 2.x to SLF4J one, see
+                         https://logging.apache.org/log4j/2.x/log4j-to-slf4j/index.html -->
+                    <exclude>org.apache.logging.log4j:log4j-slf4j-impl</exclude>
+                    <!-- Also forbid the use of the Log4j 1.x to Log4j 2.x bridge -->
+                    <exclude>org.apache.logging.log4j:log4j-1.2-api</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
@@ -1559,6 +1625,45 @@
               </rules>
             </configuration>
           </execution>
+          <!-- Check that we use the right version of the JTA -->
+          <execution>
+            <id>enforce-jta</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jta.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>Use javax.transaction:javax.transaction-api instead</message>
+                  <excludes>
+                    <exclude>javax.transaction:jta</exclude>
+                    <exclude>org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we use the right version of the JBoss Marshalling -->
+          <execution>
+            <id>enforce-jboss-marshalling-osgi</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jboss-marshalling-osgi.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>Use org.jboss.marshalling:jboss-marshalling-osgi instead</message>
+                  <excludes>
+                    <exclude>org.jboss.marshalling:jboss-marshalling</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
           <!-- Check dependency versions compatibility -->
           <execution>
             <id>enforce-upper-bounds</id>
@@ -1624,7 +1729,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-remote-resources-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.6.0</version>
+          <version>${maven-remote-resources-plugin.version}</version>
         </plugin>
         <plugin>
           <!-- Since 2.0-beta-9 maven-release-plugin uses remote tagging by default. Remote tagging implies that SCM
@@ -1660,7 +1765,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.0.1</version>
+          <version>3.1.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1678,7 +1783,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.8.0</version>
+          <version>3.8.1</version>
           <configuration>
             <source>${java.version}</source>
             <target>${java.version}</target>
@@ -1750,7 +1855,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.1.1</version>
+          <version>3.1.2</version>
           <configuration>
             <archive>
               <manifest>
@@ -1781,7 +1886,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.2.2</version>
+          <version>3.2.3</version>
           <configuration>
             <!-- Add some useful information about the extension in the manifest file. -->
             <archive>
@@ -1874,19 +1979,19 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.4</version>
+          <version>3.0.0</version>
         </plugin>
         <!-- Used for checking backward compatibility (binary and source) -->
         <plugin>
           <groupId>org.revapi</groupId>
           <artifactId>revapi-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.10.5</version>
+          <version>0.11.1</version>
           <dependencies>
             <dependency>
               <groupId>org.revapi</groupId>
               <artifactId>revapi-java</artifactId>
-              <version>0.18.2</version>
+              <version>0.19.1</version>
             </dependency>
           </dependencies>
           <executions>
@@ -1910,13 +2015,13 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-archetype-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.0.1</version>
+          <version>3.1.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>4.1.0</version>
+          <version>4.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.openclover</groupId>
@@ -1945,7 +2050,7 @@
           <groupId>org.sonarsource.scanner.maven</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.5.0.1254</version>
+          <version>3.6.0.1398</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -2096,13 +2201,13 @@
         <plugin>
           <groupId>org.pitest</groupId>
           <artifactId>pitest-maven</artifactId>
-          <version>1.4.0</version>
+          <version>1.4.9</version>
         </plugin>
         <!-- In order to make it simple to execute Dspot on XWiki with: mvn dspot:amplify-unit-tests -->
         <plugin>
           <groupId>eu.stamp-project</groupId>
           <artifactId>dspot-maven</artifactId>
-          <version>1.2.3</version>
+          <version>2.1.0</version>
           <configuration>
             <clean>true</clean>
             <descartes>true</descartes>
@@ -2406,7 +2511,7 @@
               <dependency>
                 <groupId>eu.stamp-project</groupId>
                 <artifactId>descartes</artifactId>
-                <version>1.2.4</version>
+                <version>1.2.5</version>
               </dependency>
             </dependencies>
           </plugin>

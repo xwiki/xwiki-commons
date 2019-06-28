@@ -96,7 +96,7 @@ public interface Request extends Serializable
     boolean containsProperty(String key);
 
     /**
-     * @return true of the job should log informations about what is going on
+     * @return true if the job should log informations about what is going on
      * @since 5.4RC1
      */
     boolean isVerbose();

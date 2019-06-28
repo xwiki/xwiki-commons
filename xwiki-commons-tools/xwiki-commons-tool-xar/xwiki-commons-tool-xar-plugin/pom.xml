@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-tool-xar</artifactId>
-    <version>11.2-SNAPSHOT</version>
+    <version>11.6-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
   <name>XWiki Commons - Tools - XAR Tools - XAR Plugin</name>
@@ -49,14 +49,6 @@
       <artifactId>jaxen</artifactId>
       <groupId>jaxen</groupId>
       <scope>runtime</scope>
-    </dependency>
-    <!-- This dependency is drawn by XOM which draws it from Jaxen. However, Jaxen 1.1.4 draws XOM 1.0 which draws
-         ICU4J 2.6 which has the problem (see https://jira.xwiki.org/browse/XCOMMONS-354). The problem is fixed in
-         ICU4J 2.8+ and we've chosen to use the latest version of ICU4J available. -->
-    <dependency>
-      <groupId>com.ibm.icu</groupId>
-      <artifactId>icu4j</artifactId>
-      <version>50.1.1</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -102,8 +94,12 @@
     </dependency>
     <!-- Test dependencies -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
     </dependency>
   </dependencies>
   <build>

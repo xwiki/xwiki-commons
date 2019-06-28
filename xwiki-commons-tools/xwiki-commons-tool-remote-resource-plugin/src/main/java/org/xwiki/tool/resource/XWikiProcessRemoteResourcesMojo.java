@@ -29,7 +29,6 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Organization;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.resources.remote.ProcessRemoteResourcesMojo;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -98,7 +97,7 @@ public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
     private List<ArtifactRepository> remoteArtifactRepositoriesThis;
 
     @Override
-    protected List<MavenProject> getProjects() throws MojoExecutionException
+    protected List<MavenProject> getProjects()
     {
         switch (this.projectsData) {
             case FULL:
@@ -114,7 +113,7 @@ public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
         return Collections.emptyList();
     }
 
-    private List<MavenProject> getLicenses() throws MojoExecutionException
+    private List<MavenProject> getLicenses()
     {
         Set<Artifact> artifacts = this.projectThis.getArtifacts();
 
@@ -153,7 +152,7 @@ public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
 
                 licenses.add(miniProject);
             } catch (ProjectBuildingException e) {
-                throw new MojoExecutionException(e.getMessage(), e);
+                throw new IllegalStateException(e.getMessage(), e);
             }
         }
 

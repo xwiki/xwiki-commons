@@ -19,7 +19,17 @@
  */
 package org.xwiki.cache.infinispan;
 
+import java.io.File;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.infinispan.Cache;
+import org.infinispan.configuration.cache.SingleFileStoreConfiguration;
+import org.infinispan.configuration.cache.StoreConfiguration;
 import org.junit.Test;
+import org.xwiki.cache.config.CacheConfiguration;
+import org.xwiki.cache.config.LRUCacheConfiguration;
 import org.xwiki.cache.infinispan.internal.InfinispanCacheFactory;
 import org.xwiki.cache.internal.DefaultCacheFactory;
 import org.xwiki.cache.internal.DefaultCacheManager;
@@ -28,7 +38,8 @@ import org.xwiki.cache.test.AbstractTestCache;
 import org.xwiki.environment.Environment;
 import org.xwiki.test.annotation.ComponentList;
 
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 /**
  * Verify that defining an Infinispan config file is taken into account.
@@ -36,28 +47,78 @@ import static org.mockito.Mockito.verify;
  * @version $Id$
  * @since 3.4M1
  */
-@ComponentList({
-    InfinispanCacheFactory.class,
-    DefaultCacheManager.class,
-    DefaultCacheFactory.class,
-    DefaultCacheManagerConfiguration.class
-})
+@ComponentList({ InfinispanCacheFactory.class, DefaultCacheManager.class, DefaultCacheFactory.class,
+    DefaultCacheManagerConfiguration.class })
 public class InfinispanConfigTest extends AbstractTestCache
 {
+    private Environment environment;
+
     public InfinispanConfigTest()
     {
         super("infinispan");
     }
 
-    @Test
-    public void testConfig() throws Exception
+    @Override
+    public void before() throws Exception
     {
-        // We register a mock Container to verify that getCacheFactory() below will call
-        // Environment#getResourceAsStream() which will mean that the configuration file is read.
-        final Environment environment = this.componentManager.registerMockComponent(Environment.class);
+        this.environment = this.componentManager.registerMockComponent(Environment.class);
 
-        getCacheFactory();
+        File testDirectory = new File("target/test-" + new Date().getTime()).getAbsoluteFile();
 
-        verify(environment).getResourceAsStream("/WEB-INF/cache/infinispan/config.xml");
+        File temporaryDirectory = new File(testDirectory, "temporary");
+        File permanentDirectory = new File(testDirectory, "permanent");
+
+        when(this.environment.getTemporaryDirectory()).thenReturn(temporaryDirectory);
+        when(this.environment.getPermanentDirectory()).thenReturn(permanentDirectory);
+
+        when(this.environment.getResourceAsStream("/WEB-INF/cache/infinispan/config.xml"))
+            .thenReturn(getClass().getResourceAsStream("/infinispan/test-config.xml"));
+
+        super.before();
+    }
+
+    private org.infinispan.Cache<String, String> createCache(CacheConfiguration configuration) throws Exception
+    {
+        org.xwiki.cache.Cache<String> cache = getCacheFactory().newCache(configuration);
+
+        return (Cache<String, String>) FieldUtils.readField(cache, "cache", true);
+    }
+
+    @Test
+    public void testUnnamedCache() throws Exception
+    {
+        CacheConfiguration configuration = new CacheConfiguration("noname");
+
+        Cache<String, String> cache = createCache(configuration);
+
+        assertEquals("noname", cache.getName());
+    }
+
+    @Test
+    public void testFileCacheNoPath() throws Exception
+    {
+        CacheConfiguration configuration = new LRUCacheConfiguration("file-cache-nopath", 42);
+
+        Cache<String, String> cache = createCache(configuration);
+
+        List<StoreConfiguration> stores = cache.getCacheConfiguration().persistence().stores();
+        assertEquals(1, stores.size());
+
+        String location = ((SingleFileStoreConfiguration) stores.get(0)).location();
+        assertEquals(this.environment.getTemporaryDirectory().toString() + "/cache", location);
+    }
+
+    @Test
+    public void testFileCachePath() throws Exception
+    {
+        CacheConfiguration configuration = new LRUCacheConfiguration("file-cache-path", 42);
+
+        Cache<String, String> cache = createCache(configuration);
+
+        List<StoreConfiguration> stores = cache.getCacheConfiguration().persistence().stores();
+        assertEquals(1, stores.size());
+
+        String location = ((SingleFileStoreConfiguration) stores.get(0)).location();
+        assertEquals(System.getProperty("java.io.tmpdir"), location);
     }
 }

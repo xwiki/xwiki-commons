@@ -24,8 +24,9 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-tools</artifactId>
-    <version>11.2-SNAPSHOT</version>
+    <artifactId>xwiki-commons-tool-pom</artifactId>
+    <version>11.6-SNAPSHOT</version>
+    <relativePath>../xwiki-commons-tool-pom</relativePath>
   </parent>
   <artifactId>xwiki-commons-tool-spoon</artifactId>
   <name>XWiki Commons - Tools - Spoon Processor</name>
@@ -33,7 +34,6 @@
   <description>Custom processor to use with spoon</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.0</xwiki.jacoco.instructionRatio>
-
     <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>true</xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
   </properties>
   <dependencies>
@@ -44,13 +44,4 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <!-- See commons-tools parent pom for why we need to explicitly configure checkstyle -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 </project>

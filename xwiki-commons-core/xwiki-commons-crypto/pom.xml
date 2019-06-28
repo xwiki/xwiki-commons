@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-core</artifactId>
-    <version>11.2-SNAPSHOT</version>
+    <version>11.6-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-crypto</artifactId>
   <packaging>pom</packaging>
@@ -69,4 +69,28 @@
     <module>xwiki-commons-crypto-signer</module>
     <module>xwiki-commons-crypto-store</module>
   </modules>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <!-- Exclude Crypto tests from PIT/Descartes since 1) those tests are special (if they don't have enough entropy
+             they execute slowyl which can let to timeouts and break mutation scores and 2) they are very slow to execute
+             and thus take even more time with mutations... -->
+        <plugin>
+          <groupId>org.pitest</groupId>
+          <artifactId>pitest-maven</artifactId>
+          <executions>
+            <execution>
+              <id>pitest-check</id>
+              <goals>
+                <goal>mutationCoverage</goal>
+              </goals>
+              <configuration>
+                <skip>true</skip>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>

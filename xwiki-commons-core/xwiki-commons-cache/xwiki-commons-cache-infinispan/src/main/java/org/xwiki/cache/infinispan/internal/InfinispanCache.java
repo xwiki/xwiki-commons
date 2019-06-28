@@ -58,7 +58,7 @@ public class InfinispanCache<T> extends AbstractCache<T>
     /**
      * The state of the node before modification.
      */
-    private ConcurrentMap<String, T> preEventData = new ConcurrentHashMap<String, T>();
+    private ConcurrentMap<String, T> preEventData = new ConcurrentHashMap<>();
 
     /**
      * The Infinispan cache manager.
@@ -74,7 +74,7 @@ public class InfinispanCache<T> extends AbstractCache<T>
         super(configuration);
 
         this.cacheManager = cacheManager;
-        this.cache = cacheManager.<String, T>getCache(configuration.getConfigurationId());
+        this.cache = cacheManager.getCache(configuration.getConfigurationId());
 
         this.cache.addListener(this);
     }
@@ -112,7 +112,7 @@ public class InfinispanCache<T> extends AbstractCache<T>
     {
         super.dispose();
 
-        this.cacheManager.removeCache(this.cache.getName());
+        this.cacheManager.administration().removeCache(this.cache.getName());
     }
 
     // ////////////////////////////////////////////////////////////////
@@ -153,8 +153,7 @@ public class InfinispanCache<T> extends AbstractCache<T>
     @CacheEntryRemoved
     public void nodeRemoved(CacheEntryRemovedEvent<String, T> event)
     {
-        // TODO: remove != null when https://issues.jboss.org/browse/ISPN-9491 is fixed
-        if (!event.isPre() && event.getOldValue() != null) {
+        if (!event.isPre()) {
             cacheEntryRemoved(event.getKey(), event.getOldValue());
         }
     }
@@ -201,7 +200,7 @@ public class InfinispanCache<T> extends AbstractCache<T>
     private void cacheEntryInserted(String key, T value)
     {
         InfinispanCacheEntryEvent<T> event =
-            new InfinispanCacheEntryEvent<T>(new InfinispanCacheEntry<T>(this, key, value));
+            new InfinispanCacheEntryEvent<>(new InfinispanCacheEntry<T>(this, key, value));
 
         T previousValue = this.preEventData.get(key);
 
@@ -225,7 +224,7 @@ public class InfinispanCache<T> extends AbstractCache<T>
     private void cacheEntryRemoved(String key, T value)
     {
         InfinispanCacheEntryEvent<T> event =
-            new InfinispanCacheEntryEvent<T>(new InfinispanCacheEntry<T>(this, key, value));
+            new InfinispanCacheEntryEvent<>(new InfinispanCacheEntry<T>(this, key, value));
 
         sendEntryRemovedEvent(event);
     }

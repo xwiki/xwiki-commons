@@ -33,12 +33,8 @@ import org.xwiki.test.annotation.ComponentList;
  *
  * @version $Id$
  */
-@ComponentList({
-    InfinispanCacheFactory.class,
-    DefaultCacheManager.class,
-    DefaultCacheFactory.class,
-    DefaultCacheManagerConfiguration.class
-})
+@ComponentList({ InfinispanCacheFactory.class, DefaultCacheManager.class, DefaultCacheFactory.class,
+    DefaultCacheManagerConfiguration.class })
 public class InfinispanCacheTest extends AbstractEvictionGenericTestCache
 {
     public InfinispanCacheTest()

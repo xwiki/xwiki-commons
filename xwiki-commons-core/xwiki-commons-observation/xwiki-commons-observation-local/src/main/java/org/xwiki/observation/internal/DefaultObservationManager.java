@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.descriptor.ComponentDescriptor;
@@ -175,6 +176,16 @@ public class DefaultObservationManager implements ObservationManager
     @Override
     public void addListener(EventListener eventListener)
     {
+        try {
+            addListenerInernal(eventListener);
+        } catch (Exception e) {
+            // Protect against bad listeners which have their getName() methods throw some runtime exception.
+            this.logger.warn("Failed to add listener. Root cause: [{}]", ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+
+    private void addListenerInernal(EventListener eventListener)
+    {
         Map<String, EventListener> listeners = getListenersByName();
 
         // Remove previous listener if any
@@ -203,7 +214,7 @@ public class DefaultObservationManager implements ObservationManager
                 Map<String, RegisteredListener> eventListeners = this.listenersByEvent.get(event.getClass());
                 if (eventListeners == null) {
                     // No listener registered for this event yet. Create a map to store listeners for this event.
-                    eventListeners = new ConcurrentHashMap<String, RegisteredListener>();
+                    eventListeners = new ConcurrentHashMap<>();
                     this.listenersByEvent.put(event.getClass(), eventListeners);
                     // There is no RegisteredListener yet, create one
                     eventListeners.put(eventListener.getName(), new RegisteredListener(eventListener, event));
@@ -337,16 +348,24 @@ public class DefaultObservationManager implements ObservationManager
     private void onComponentEvent(ComponentDescriptorEvent componentEvent, ComponentManager componentManager,
         ComponentDescriptor<EventListener> descriptor)
     {
-        if (componentEvent.getRoleType() == EventListener.class) {
-            if (componentEvent instanceof ComponentDescriptorAddedEvent) {
-                onEventListenerComponentAdded((ComponentDescriptorAddedEvent) componentEvent, componentManager,
-                    descriptor);
-            } else if (componentEvent instanceof ComponentDescriptorRemovedEvent) {
-                onEventListenerComponentRemoved((ComponentDescriptorRemovedEvent) componentEvent, componentManager,
-                    descriptor);
-            } else {
-                this.logger.warn("Ignoring unknown Component event [{}]", componentEvent.getClass().getName());
+        try {
+            if (componentEvent.getRoleType() == EventListener.class) {
+                if (componentEvent instanceof ComponentDescriptorAddedEvent) {
+                    onEventListenerComponentAdded((ComponentDescriptorAddedEvent) componentEvent, componentManager,
+                        descriptor);
+                } else if (componentEvent instanceof ComponentDescriptorRemovedEvent) {
+                    onEventListenerComponentRemoved((ComponentDescriptorRemovedEvent) componentEvent, componentManager,
+                        descriptor);
+                } else {
+                    this.logger.warn("Ignoring unknown Component event [{}]", componentEvent.getClass().getName());
+                }
             }
+        } catch (Exception e) {
+            // Protect against bad listeners which have their getName() or getEvents() methods throw some runtime
+            // exception. For example we don't want to fail so that Component registration or unregistration won't fail
+            // in this case.
+            this.logger.warn("Failed to notify some event listeners about component [{}] being added or removed. "
+                + "Root cause: [{}]", descriptor, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 

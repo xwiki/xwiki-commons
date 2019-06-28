@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-crypto</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>11.2-SNAPSHOT</version>
+    <version>11.6-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-crypto-cipher</artifactId>
   <packaging>jar</packaging>
@@ -32,7 +32,6 @@
   <description>Provides confidentiality throught encryption</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.70</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>36</xwiki.pitest.mutationThreshold>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Cryptographic Services for Confidentiality</xwiki.extension.name>
   </properties>
