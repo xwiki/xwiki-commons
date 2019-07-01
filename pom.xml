@@ -1695,7 +1695,7 @@
         <plugin>
           <groupId>fr.inria.gforge.spoon</groupId>
           <artifactId>spoon-maven-plugin</artifactId>
-          <version>3.1</version>
+          <version>3.2</version>
           <dependencies>
             <dependency>
               <groupId>fr.inria.gforge.spoon</groupId>
