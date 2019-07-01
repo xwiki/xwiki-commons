@@ -63,7 +63,7 @@
 
     <!-- Guava -->
     <!-- FIXME: Can't upgrade to Guava 21 because Solr 6.3.0 use a method that have been deleted in Guava 21... -->
-    <guava.version>20.0</guava.version>
+    <guava.version>28.0-jre</guava.version>
 
     <!-- SLF4J -->
     <slf4j.version>1.7.26</slf4j.version>
