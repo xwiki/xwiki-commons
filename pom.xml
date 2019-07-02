@@ -55,6 +55,10 @@
     <!-- Java -->
     <java.version>1.8</java.version>
 
+    <!-- Jakarta modules -->
+    <jakarta.mail.version>1.6.3</jakarta.mail.version>
+    <jakarta.activation.version>1.2.1</jakarta.activation.version>
+
     <!-- Jackson -->
     <jackson.version>2.9.9</jackson.version>
 
@@ -120,8 +124,8 @@
     <xwiki.enforcer.enforce-glassfish-el.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glassfish-el.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
     <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
-    <xwiki.enforcer.enforce-jakarta.activation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.activation-api.skip>
-    <xwiki.enforcer.enforce-javax.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.mail.skip>
+    <xwiki.enforcer.enforce-jakarta.activation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.activation.skip>
+    <xwiki.enforcer.enforce-jakarta.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.mail.skip>
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
     <xwiki.enforcer.enforce-jsr305.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jsr305.skip>
     <xwiki.enforcer.enforce-jta.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jta.skip>
@@ -1164,23 +1168,27 @@
         <scope>runtime</scope>
       </dependency>
       <!-- Mail -->
-      <!-- Note that javamail.providers service seems broken in javax.mail 1.6.2 -->
       <dependency>
-        <groupId>com.sun.mail</groupId>
-        <artifactId>javax.mail</artifactId>
-        <version>1.6.1</version>
-        <exclusions>
-          <exclusion>
-            <!-- Artifact id changed -->
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>jakarta.mail</groupId>
+        <artifactId>jakarta.mail-api</artifactId>
+        <version>${jakarta.mail.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jakarta.activation</groupId>
         <artifactId>jakarta.activation-api</artifactId>
-        <version>1.2.1</version>
+        <version>${jakarta.activation.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+      <groupId>com.sun.activation</groupId>
+        <artifactId>jakarta.activation</artifactId>
+        <version>${jakarta.activation.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>jakarta.mail</artifactId>
+        <version>${jakarta.mail.version}</version>
       </dependency>
       <!-- Diff tools used in commons for diff and blame -->
       <dependency>
@@ -1478,14 +1486,14 @@
               </rules>
             </configuration>
           </execution>
-          <!-- The current id is jakarta.activation-api -->
+          <!-- Check that we are using the latest version of Jakarta Activation -->
           <execution>
             <id>enforce-jakarta.activation-api</id>
             <goals>
               <goal>enforce</goal>
             </goals>
             <configuration>
-              <skip>${xwiki.enforcer.enforce-jakarta.activation-api.skip}</skip>
+              <skip>${xwiki.enforcer.enforce-jakarta.activation.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
@@ -1493,31 +1501,71 @@
                     Javax Activation artifact id changed, the current one is jakarta.activation:jakarta.activation-api
                   </message>
                   <excludes>
-                    <exclude>javax.activation:activation</exclude>
                     <exclude>javax.activation:javax.activation-api</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enforce-jakarta.activation</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jakarta.activation.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    Javax Activation artifact id changed, the current one is com.sun.mail:jakarta.activation
+                  </message>
+                  <excludes>
+                    <exclude>javax.activation:activation</exclude>
                     <exclude>com.sun.activation:javax.activation</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
             </configuration>
           </execution>
-          <!-- Check that we're using com.sun.mail:javax.mail and the various older ids -->
+          <!-- Check that we're using latest version of Jakarta Mail -->
           <execution>
-            <id>enforce-javax.mail</id>
+            <id>enforce-jakarta.mail-api</id>
             <goals>
               <goal>enforce</goal>
             </goals>
             <configuration>
-              <skip>${xwiki.enforcer.enforce-javax.mail.skip}</skip>
+              <skip>${xwiki.enforcer.enforce-jakarta.mail.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
                   <message>
-                    Javax Mail artifact id changed, the current one is com.sun.mail:javax.mail
+                    Javax Mail artifact id changed, the current one is jakarta.mail:jakarta.mail-api
+                  </message>
+                  <excludes>
+                    <exclude>javax.mail:mailapi</exclude>
+                    <exclude>com.sun.mail:javax.mail-api</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enforce-jakarta.mail</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jakarta.mail.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    Javax Mail artifact id changed, the current one is com.sun.mail:jakarta.mail
                   </message>
                   <excludes>
                     <exclude>javax.mail:mail</exclude>
-                    <exclude>javax.mail:mailapi</exclude>
+                    <exclude>com.sun.mail:javax.mail</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
