@@ -1362,7 +1362,26 @@
               </rules>
             </configuration>
           </execution>
-          <!-- Check that we're using the right JAXB implementation artifacts -->
+          <!-- Check that we're using the right JAXB artifacts -->
+          <execution>
+            <id>enforce-jakarta.xml.bind-api</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jaxb.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>XWiki uses jakarta.xml.bind:jakarta.xml.bind-api instead</message>
+                  <excludes>
+                    <exclude>javax.xml.bind:jaxb-api</exclude>
+                    <exclude>org.jboss.spec.javax.xml.bind:jboss-jaxb-api_2.3_spec</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
           <execution>
             <id>enforce-glasshfish-jaxb</id>
             <goals>
@@ -1378,25 +1397,6 @@
                     <exclude>com.sun.xml.bind:jaxb-impl</exclude>
                     <exclude>com.sun.xml.bind:jaxb-core</exclude>
                     <exclude>org.glassfish.jaxb:jaxb-core</exclude>
-                  </excludes>
-                </bannedDependencies>
-              </rules>
-            </configuration>
-          </execution>
-          <!-- Check that we're using the right JAXB API artifacts -->
-          <execution>
-            <id>enforce-jakarta.xml.bind-api</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <skip>${xwiki.enforcer.enforce-jakarta.xml.bind-api.skip}</skip>
-              <rules>
-                <bannedDependencies>
-                  <searchTransitive>true</searchTransitive>
-                  <message>XWiki uses jakarta.xml.bind:jakarta.xml.bind-api instead</message>
-                  <excludes>
-                    <exclude>javax.xml.bind:jaxb-api</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
