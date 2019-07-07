@@ -44,5 +44,6 @@
     <module>xwiki-commons-diff-api</module>
     <module>xwiki-commons-diff-display</module>
     <module>xwiki-commons-diff-script</module>
+    <module>xwiki-commons-diff-xml</module>
   </modules>
 </project>

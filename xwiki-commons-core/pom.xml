@@ -156,6 +156,11 @@
             {
               "revapi": {
                 "ignore" : [
+                  {
+                    "code": "java.method.removed",
+                    "old": "method org.xwiki.script.service.ScriptService org.xwiki.diff.script.DiffScriptService::getDisplay()",
+                    "justification": "Not an API breakage (we replaced it with a generic get() method that can also be used to access $services.diff.display)"
+                  }
                   // Add more ignores below...
                 ]
               }

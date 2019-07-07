@@ -1,0 +1,29 @@
+##--------------------
+## left
+##--------------------
+<form>
+  <select>
+    <option>one two three</option>
+  </select>
+</form>
+##--------------------
+## right
+##--------------------
+<form>
+  <select>
+    <option>one xyz three</option>
+  </select>
+</form>
+##--------------------
+## expected-marker
+##--------------------
+<form data-xwiki-html-diff-block="deleted">
+  <select>
+    <option data-xwiki-html-diff="deleted">one two three</option>
+  </select>
+</form>
+<form data-xwiki-html-diff-block="inserted">
+  <select>
+    <option data-xwiki-html-diff="inserted">one xyz three</option>
+  </select>
+</form>

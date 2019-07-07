@@ -1,0 +1,35 @@
+##--------------------
+## left
+##--------------------
+<ul>
+<li>one</li>
+<li>two</li>
+<li>three</li>
+</ul>
+##--------------------
+## right
+##--------------------
+<ul>
+<li>one</li>
+<li>two</li>
+<li>two.5</li>
+<li>three</li>
+</ul>
+##--------------------
+## expected-marker
+##--------------------
+<ul>
+<li>one</li>
+<li>two</li>
+<li data-xwiki-html-diff-block="inserted">two.5</li>
+<li>three</li>
+</ul>
+##--------------------
+## expected-pruner
+##--------------------
+<ul>
+<li data-xwiki-html-diff-hidden="true">one</li>
+<li data-xwiki-html-diff-hidden="true">two</li>
+<li data-xwiki-html-diff-block="inserted">two.5</li>
+<li data-xwiki-html-diff-hidden="true">three</li>
+</ul>

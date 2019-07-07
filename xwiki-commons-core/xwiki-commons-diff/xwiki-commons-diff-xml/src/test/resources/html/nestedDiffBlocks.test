@@ -1,0 +1,31 @@
+##--------------------
+## left
+##--------------------
+<div>
+  <p>abc</p>
+</div>
+<div>
+  <p>123</p>
+</div>
+##--------------------
+## right
+##--------------------
+<div class="foo">
+  <p>xyz</p>
+</div>
+<div>
+  <p>456</p>
+</div>
+##--------------------
+## expected-marker
+##--------------------
+<div data-xwiki-html-diff-block="deleted">
+  <p><span data-xwiki-html-diff="deleted">abc</span></p>
+</div>
+<div class="foo" data-xwiki-html-diff-block="inserted">
+  <p><span data-xwiki-html-diff="inserted">xyz</span></p>
+</div>
+<div>
+  <p data-xwiki-html-diff-block="deleted"><span data-xwiki-html-diff="deleted">123</span></p>
+<p data-xwiki-html-diff-block="inserted"><span data-xwiki-html-diff="inserted">456</span></p>
+</div>

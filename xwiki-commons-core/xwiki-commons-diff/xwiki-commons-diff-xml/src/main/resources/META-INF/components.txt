@@ -1,0 +1,3 @@
+org.xwiki.diff.xml.internal.DefaultXMLDiff
+org.xwiki.diff.xml.internal.HTMLDiffMarker
+org.xwiki.diff.xml.internal.HTMLDiffPruner
