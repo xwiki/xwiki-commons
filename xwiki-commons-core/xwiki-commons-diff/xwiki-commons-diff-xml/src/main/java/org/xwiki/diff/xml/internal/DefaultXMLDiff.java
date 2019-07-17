@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -248,14 +249,31 @@ public class DefaultXMLDiff implements XMLDiff
 
     protected boolean areVerySimilar(Node left, Node right)
     {
-        // TODO: Maybe add a configuration option to choose between strict and loose comparison.
-        //
-        // The following is faster but leads to sub-optimal change scripts.
-        // return areSimilar(left, right) && (left == null || Objects.equals(left.getNodeValue(),
-        // right.getNodeValue()));
-        //
-        // The following is slower but leads to better change scripts.
-        return left != null && left.isEqualNode(right);
+        // TODO: Make the difference threshold configurable.
+        return areSimilar(left, right)
+            && (left == null || getDiffPercentage(left.getTextContent(), right.getTextContent()) < .6);
+    }
+
+    private double getDiffPercentage(String left, String right)
+    {
+        if (Objects.equals(left, right)) {
+            return 0;
+        } else if (left == null || right == null) {
+            return 1;
+        }
+
+        // Note that the max length can't be zero because left and right are different.
+        int maxLength = Math.max(left.length(), right.length());
+        try {
+            Patch<Character> patch = new DefaultPatch<>(
+                DiffUtils.diff(XMLDiffUtils.toCharacterList(left), XMLDiffUtils.toCharacterList(right)));
+            int levenshteinDistance = patch.stream()
+                .map(delta -> Math.max(delta.getPrevious().size(), delta.getNext().size())).reduce(0, Integer::sum);
+            return (double) levenshteinDistance / maxLength;
+        } catch (DiffException e) {
+            // This shouldn't happen. Let's assume the strings are completely different.
+            return 1;
+        }
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
