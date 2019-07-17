@@ -49,7 +49,7 @@ public class HTMLDiffMarker extends AbstractXMLDiffMarker
 
     private static final List<String> ACCEPTED_ATTRIBUTES = Arrays.asList("align", "background", "bgcolor", "border",
         "cite", "class", "color", "cols", "colspan", "controls", "coords", "data", "dir", "disabled", "height",
-        "hidden", "high", "href", "icon", "label", "low", "multiple", "placeholder", "rows", "rowspan", "shape", "size",
+        "hidden", "high", "icon", "label", "low", "multiple", "placeholder", "rows", "rowspan", "shape", "size",
         "src", "start", "style", "summary", "type", "value", "width", "wrap");
 
     private static final List<String> BLOCK_ELEMENTS_WE_CAN_DUPLICATE =
