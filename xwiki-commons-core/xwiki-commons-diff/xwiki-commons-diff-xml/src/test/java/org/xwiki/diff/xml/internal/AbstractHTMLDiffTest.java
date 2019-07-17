@@ -22,6 +22,7 @@ package org.xwiki.diff.xml.internal;
 import java.io.File;
 import java.io.FileReader;
 import java.io.StringReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +31,14 @@ import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.w3c.dom.Document;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSInput;
 import org.xwiki.test.mockito.MockitoComponentManager;
+import org.xwiki.xml.XMLUtils;
 import org.xwiki.xml.html.HTMLCleaner;
+import org.xwiki.xml.html.HTMLCleanerConfiguration;
+import org.xwiki.xml.html.HTMLUtils;
 
 /**
  * Base class for integration tests in this module.
@@ -42,10 +49,16 @@ public abstract class AbstractHTMLDiffTest
 {
     private HTMLCleaner htmlCleaner;
 
+    /**
+     * Helper object for manipulating DOM Level 3 Load and Save APIs.
+     **/
+    private DOMImplementationLS lsImpl;
+
     @BeforeEach
     public void configure(MockitoComponentManager componentManager) throws Exception
     {
         this.htmlCleaner = componentManager.getInstance(HTMLCleaner.class);
+        this.lsImpl = (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS 3.0");
     }
 
     public static Stream<File> getTestFiles() throws Exception
@@ -81,7 +94,26 @@ public abstract class AbstractHTMLDiffTest
 
     protected Document parseHTML(String html)
     {
-        return this.htmlCleaner.clean(new StringReader(xhtmlFragment(html)));
+        return parseXML(cleanHTML(html));
+    }
+
+    protected String cleanHTML(String html)
+    {
+        HTMLCleanerConfiguration config = this.htmlCleaner.getDefaultConfiguration();
+        // We need to parse the clean HTML as XML later and we don't want to resolve the entity references from the DTD.
+        config.setParameters(Collections.singletonMap(HTMLCleanerConfiguration.USE_CHARACTER_REFERENCES, "true"));
+        Document htmlDoc = this.htmlCleaner.clean(new StringReader(xhtmlFragment(html)), config);
+        // We serialize and parse again the HTML as XML because the HTML Cleaner doesn't handle entity and character
+        // references very well: they all end up as plain text (they are included in the value returned by
+        // Node#getNodeValue()).
+        return HTMLUtils.toString(htmlDoc);
+    }
+
+    protected Document parseXML(String xml)
+    {
+        LSInput input = this.lsImpl.createLSInput();
+        input.setStringData(xml);
+        return XMLUtils.parse(input);
     }
 
     /**
