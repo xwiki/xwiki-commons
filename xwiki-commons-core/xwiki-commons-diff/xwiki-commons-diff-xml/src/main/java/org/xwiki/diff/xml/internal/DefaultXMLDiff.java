@@ -156,7 +156,6 @@ public class DefaultXMLDiff implements XMLDiff
 
         // First compute the difference between the direct children.
         Patch<Node> patch = new DefaultPatch<>(DiffUtils.diff(left, right, this::areVerySimilar));
-        addPatch(patch, patches, config);
 
         // Then compute the difference inside the child elements that are very similar (for all the descendants).
         Set<Node> leftModified = patch.stream().map(Delta::getPrevious).map(Chunk::getElements).flatMap(List::stream)
@@ -168,9 +167,14 @@ public class DefaultXMLDiff implements XMLDiff
         List<Node> rightVerySimilar = new ArrayList<>(right);
         rightVerySimilar.removeAll(rightModified);
         assert leftVerySimilar.size() == rightVerySimilar.size();
+        // We add the patches for the very similar nodes first because they don't change the node index at this level.
         for (int i = 0; i < leftVerySimilar.size(); i++) {
             patches.putAll(diff(leftVerySimilar.get(i), rightVerySimilar.get(i), config));
         }
+
+        // This patch can change the index of the child nodes at this level (by adding and removing child nodes) so we
+        // add it at the end, in order for it to be applied after the child nodes have been modified.
+        addPatch(patch, patches, config);
 
         return patches;
     }
@@ -290,8 +294,6 @@ public class DefaultXMLDiff implements XMLDiff
     private void addPatch(Patch<Node> patch, Map<Node, Patch<?>> patches, XMLDiffConfiguration config)
         throws DiffException
     {
-        patches.put(null, patch);
-
         // Compute the lower level difference for nodes that are similar (within a change delta).
         List<Delta<Node>> deltasToRemove = new ArrayList<>();
         for (Delta<Node> delta : patch) {
@@ -307,8 +309,10 @@ public class DefaultXMLDiff implements XMLDiff
         }
 
         patch.removeAll(deltasToRemove);
-        if (patch.isEmpty()) {
-            patches.remove(null);
+        if (!patch.isEmpty()) {
+            // This patch can change the index of the child nodes (by adding and removing child nodes) so we add it at
+            // the end, in order for it to be applied after the child nodes have been modified.
+            patches.put(null, patch);
         }
     }
 }

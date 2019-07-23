@@ -24,10 +24,15 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.diff.xml.XMLDiffMarker;
 
@@ -49,8 +54,8 @@ public class HTMLDiffMarker extends AbstractXMLDiffMarker
 
     private static final List<String> ACCEPTED_ATTRIBUTES = Arrays.asList("align", "background", "bgcolor", "border",
         "cite", "class", "color", "cols", "colspan", "controls", "coords", "data", "dir", "disabled", "height",
-        "hidden", "high", "icon", "label", "low", "multiple", "placeholder", "rows", "rowspan", "shape", "size",
-        "src", "start", "style", "summary", "type", "value", "width", "wrap");
+        "hidden", "high", "icon", "label", "low", "multiple", "placeholder", "rows", "rowspan", "shape", "size", "src",
+        "start", "style", "summary", "type", "value", "width", "wrap");
 
     private static final List<String> BLOCK_ELEMENTS_WE_CAN_DUPLICATE =
         Arrays.asList("audio", "video", "figure", "figcaption", "ol", "ul", "li", "dl", "dd", "dt", "table", "tr",
@@ -149,14 +154,15 @@ public class HTMLDiffMarker extends AbstractXMLDiffMarker
             return elementRight.getAttributeNode(left.getNodeName());
         } else if (left.getNodeType() == Node.ELEMENT_NODE && isMarkedAsDiffBlock((Element) left)) {
             Element diffBlockLeft = (Element) left;
-            // Even if the next sibling is a change block we don't know for sure that it the right node that corresponds
-            // to the given left node. So we must indicate somehow this association. We do this using custom user data.
+            // We don't look for the next sibling because the right block is inserted as the next sibling after all the
+            // patches have been applied (otherwise we change the index of the child nodes and this can invalidate
+            // patches). We store the reference to the right block using custom user data on the left block.
             Element diffBlockRight = (Element) diffBlockLeft.getUserData(RIGHT_BLOCK);
             if (diffBlockRight == null) {
                 diffBlockRight = (Element) diffBlockLeft.cloneNode(true);
-                diffBlockLeft.getParentNode().insertBefore(diffBlockRight, diffBlockLeft.getNextSibling());
                 markElementModified(diffBlockLeft, DIFF_BLOCK_ATTRIBUTE, true);
                 markElementModified(diffBlockRight, DIFF_BLOCK_ATTRIBUTE, false);
+                // We don't add the right block to the document yet. We only save its reference. See #cleanUp(Node).
                 diffBlockLeft.setUserData(RIGHT_BLOCK, diffBlockRight, null);
             }
             return diffBlockRight;
@@ -170,5 +176,35 @@ public class HTMLDiffMarker extends AbstractXMLDiffMarker
         }
 
         return null;
+    }
+
+    @Override
+    protected void cleanUp(Node node)
+    {
+        // Insert the right blocks at the end so that we don't change the index of the child nodes while patches are
+        // being applied.
+        insertRightBlocks(node);
+
+        super.cleanUp(node);
+    }
+
+    private void insertRightBlocks(Node node)
+    {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        String expression = "//*[@" + DIFF_BLOCK_ATTRIBUTE + " = '" + DELETED + "']";
+        try {
+            XMLDiffUtils.asList((NodeList) xpath.compile(expression).evaluate(node, XPathConstants.NODESET)).stream()
+                .forEach(this::insertRightBlock);
+        } catch (XPathExpressionException e) {
+            // This shouldn't happen.
+        }
+    }
+
+    private void insertRightBlock(Node leftBlock)
+    {
+        Element rightBlock = (Element) leftBlock.getUserData(RIGHT_BLOCK);
+        if (rightBlock != null) {
+            leftBlock.getParentNode().insertBefore(rightBlock, leftBlock.getNextSibling());
+        }
     }
 }

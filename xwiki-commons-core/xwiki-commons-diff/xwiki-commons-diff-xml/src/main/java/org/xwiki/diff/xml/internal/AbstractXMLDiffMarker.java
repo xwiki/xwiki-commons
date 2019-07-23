@@ -82,7 +82,7 @@ public abstract class AbstractXMLDiffMarker implements XMLDiffMarker
         // Apply in-line changes.
         applyPatches(patches);
 
-        removeTextWrappers(left);
+        cleanUp(left);
 
         return !patches.isEmpty();
     }
@@ -466,6 +466,11 @@ public abstract class AbstractXMLDiffMarker implements XMLDiffMarker
     protected abstract void markElementModified(Element element, boolean deleted);
 
     protected abstract Node getOrCreateRightNode(Node left);
+
+    protected void cleanUp(Node node)
+    {
+        removeTextWrappers(node);
+    }
 
     private void removeTextWrappers(Node node)
     {

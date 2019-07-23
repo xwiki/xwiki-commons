@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -146,6 +147,23 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
     private static URL getExtensionURL(LocalExtension localExtension) throws MalformedURLException
     {
         return new File(localExtension.getFile().getAbsolutePath()).toURI().toURL();
+    }
+
+    @Override
+    public void upgrade(Collection<InstalledExtension> previousInstalledExtensions, LocalExtension newLocalExtension,
+        String namespace, Request request) throws InstallException
+    {
+        // Uninstall previous version(s)
+        for (InstalledExtension previousExtension : previousInstalledExtensions) {
+            try {
+                uninstall(previousExtension, namespace, request);
+            } catch (UninstallException e) {
+                throw new InstallException("Failed to uninstall previous extension [" + previousExtension + "]", e);
+            }
+        }
+
+        // Most of the time loading the class of the new version won't work until the classloader is recreated
+        // which will be done by JarExtensionJobFinishingListener
     }
 
     @Override
