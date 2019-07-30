@@ -39,7 +39,7 @@
 
   <repositories>
     <repository>
-      <url>${{repositories.unknownmaven}}</url>
+      <url>${{extension.repository.mavenunknown}}</url>
     </repository>
   </repositories>
 </project>
