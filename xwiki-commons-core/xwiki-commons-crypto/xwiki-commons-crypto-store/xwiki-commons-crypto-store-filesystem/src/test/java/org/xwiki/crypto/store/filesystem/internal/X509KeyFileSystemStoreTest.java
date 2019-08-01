@@ -25,10 +25,9 @@ import java.io.File;
 import java.math.BigInteger;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.AsymmetricKeyFactory;
 import org.xwiki.crypto.BinaryStringEncoder;
 import org.xwiki.crypto.params.cipher.asymmetric.PrivateKeyParameters;
@@ -40,14 +39,16 @@ import org.xwiki.crypto.pkix.params.x509certificate.DistinguishedName;
 import org.xwiki.crypto.pkix.params.x509certificate.X509CertifiedPublicKey;
 import org.xwiki.crypto.pkix.params.x509certificate.extension.X509Extensions;
 import org.xwiki.crypto.store.FileStoreReference;
-import org.xwiki.crypto.store.KeyStore;
 import org.xwiki.crypto.store.StoreReference;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -57,25 +58,39 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  * @since 6.1M2
  */
+@ComponentTest
 public class X509KeyFileSystemStoreTest
 {
     private static final byte[] PASSWORD = "password".getBytes();
+
     private static final byte[] PRIVATEKEY = "privatekey".getBytes();
+
     private static final String ENCODED_PRIVATEKEY = "encoded_privatekey";
+
     private static final byte[] ENCRYPTED_PRIVATEKEY = "encrypted_privatekey".getBytes();
+
     private static final String ENCODED_ENCRYPTED_PRIVATEKEY = "encoded_encrypted_privatekey";
+
     private static final byte[] CERTIFICATE = "certificate".getBytes();
+
     private static final String ENCODED_CERTIFICATE = "encoded_certificate";
+
     private static final byte[] SUBJECT_KEYID = "subjectKeyId".getBytes();
+
     private static final String ENCODED_SUBJECTKEYID = "encoded_subjectKeyId";
+
     private static final String HEXENCODED_SUBJECTKEYID = "hex_encoded_subjectKeyId";
+
     private static final String SUBJECT = "CN=Subject";
+
     private static final String ISSUER = "CN=Issuer";
+
     private static final BigInteger SERIAL = new BigInteger("1234567890");
 
     private static final File TEST_DIR = new File("target/tmp");
 
     private static final File FILE = new File(TEST_DIR, "my.key");
+
     private static final File DIRECTORY = new File(TEST_DIR, "keystore");
 
     private static final File CERT_FILE = new File(DIRECTORY, HEXENCODED_SUBJECTKEYID + ".cert");
@@ -83,38 +98,51 @@ public class X509KeyFileSystemStoreTest
     private static final File KEY_FILE = new File(DIRECTORY, HEXENCODED_SUBJECTKEYID + ".key");
 
     private static final StoreReference SINGLE_STORE_REF = new FileStoreReference(FILE);
+
     private static final StoreReference MULTI_STORE_REF = new FileStoreReference(DIRECTORY, true);
 
     private static final String BEGIN_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\n";
+
     private static final String BEGIN_ENCRYPTED_PRIVATE_KEY = "-----BEGIN ENCRYPTED PRIVATE KEY-----\n";
+
     private static final String BEGIN_CERTIFICATE = "-----BEGIN CERTIFICATE-----\n";
+
     private static final String END_PRIVATE_KEY = "-----END PRIVATE KEY-----\n";
+
     private static final String END_ENCRYPTED_PRIVATE_KEY = "-----END ENCRYPTED PRIVATE KEY-----\n";
+
     private static final String END_CERTIFICATE = "-----END CERTIFICATE-----\n";
+
     private static final String NEWLINE = "\n";
 
     private static final String KEY_FILE_CONTENT = BEGIN_PRIVATE_KEY + ENCODED_PRIVATEKEY + NEWLINE + END_PRIVATE_KEY;
+
     private static final String ENCRYTEDKEY_FILE_CONTENT = BEGIN_ENCRYPTED_PRIVATE_KEY + ENCODED_ENCRYPTED_PRIVATEKEY
         + NEWLINE + END_ENCRYPTED_PRIVATE_KEY;
+
     private static final String CERTIFICATE_FILE_CONTENT = BEGIN_CERTIFICATE + ENCODED_CERTIFICATE + NEWLINE
         + END_CERTIFICATE;
+
     private static final String FILE_CONTENT = KEY_FILE_CONTENT + CERTIFICATE_FILE_CONTENT;
+
     private static final String ENCRYPTED_FILE_CONTENT = ENCRYTEDKEY_FILE_CONTENT + CERTIFICATE_FILE_CONTENT;
 
-    @Rule
-    public MockitoComponentMockingRule<KeyStore> mocker =
-        new MockitoComponentMockingRule<KeyStore>(X509KeyFileSystemStore.class);
+    @InjectMockComponents
+    public X509KeyFileSystemStore store;
 
-    private KeyStore store;
+    @InjectComponentManager
+    public MockitoComponentManager componentManager;
 
     PrivateKeyParameters privateKey;
+
     X509CertifiedPublicKey certificate;
+
     CertifiedKeyPair keyPair;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
-        BinaryStringEncoder base64Encoder = mocker.getInstance(BinaryStringEncoder.class, "Base64");
+        BinaryStringEncoder base64Encoder = this.componentManager.getInstance(BinaryStringEncoder.class, "Base64");
         when(base64Encoder.encode(PRIVATEKEY, 64)).thenReturn(ENCODED_PRIVATEKEY);
         when(base64Encoder.decode(ENCODED_PRIVATEKEY)).thenReturn(PRIVATEKEY);
         when(base64Encoder.encode(ENCRYPTED_PRIVATEKEY, 64)).thenReturn(ENCODED_ENCRYPTED_PRIVATEKEY);
@@ -124,16 +152,17 @@ public class X509KeyFileSystemStoreTest
         when(base64Encoder.encode(SUBJECT_KEYID)).thenReturn(ENCODED_SUBJECTKEYID);
         when(base64Encoder.decode(ENCODED_SUBJECTKEYID)).thenReturn(SUBJECT_KEYID);
 
-        BinaryStringEncoder hexEncoder = mocker.getInstance(BinaryStringEncoder.class, "Hex");
+        BinaryStringEncoder hexEncoder = this.componentManager.getInstance(BinaryStringEncoder.class, "Hex");
         when(hexEncoder.encode(SUBJECT_KEYID)).thenReturn(HEXENCODED_SUBJECTKEYID);
 
         privateKey = mock(PrivateKeyParameters.class);
         when(privateKey.getEncoded()).thenReturn(PRIVATEKEY);
 
-        AsymmetricKeyFactory keyFactory = mocker.getInstance(AsymmetricKeyFactory.class);
+        AsymmetricKeyFactory keyFactory = this.componentManager.getInstance(AsymmetricKeyFactory.class);
         when(keyFactory.fromPKCS8(PRIVATEKEY)).thenReturn(privateKey);
 
-        PrivateKeyPasswordBasedEncryptor encryptor = mocker.getInstance(PrivateKeyPasswordBasedEncryptor.class);
+        PrivateKeyPasswordBasedEncryptor encryptor =
+            this.componentManager.getInstance(PrivateKeyPasswordBasedEncryptor.class);
         when(encryptor.encrypt(PASSWORD, privateKey)).thenReturn(ENCRYPTED_PRIVATEKEY);
         when(encryptor.decrypt(PASSWORD, ENCRYPTED_PRIVATEKEY)).thenReturn(privateKey);
 
@@ -143,7 +172,7 @@ public class X509KeyFileSystemStoreTest
         when(certificate.getSubject()).thenReturn(new DistinguishedName(SUBJECT));
         when(certificate.getEncoded()).thenReturn(CERTIFICATE);
 
-        CertificateFactory certificateFactory = mocker.getInstance(CertificateFactory.class, "X509");
+        CertificateFactory certificateFactory = this.componentManager.getInstance(CertificateFactory.class, "X509");
         when(certificateFactory.decode(CERTIFICATE)).thenReturn(certificate);
 
         X509Extensions extensions = mock(X509Extensions.class);
@@ -153,19 +182,18 @@ public class X509KeyFileSystemStoreTest
 
         keyPair = new CertifiedKeyPair(privateKey, certificate);
 
-        store = mocker.getComponentUnderTest();
-
         FileUtils.deleteDirectory(TEST_DIR);
         TEST_DIR.mkdirs();
     }
 
-    @After
-    public void deleteTestFiles() throws Exception {
+    @AfterEach
+    public void deleteTestFiles() throws Exception
+    {
         FileUtils.deleteDirectory(TEST_DIR);
     }
 
     @Test
-    public void testStoringPrivateKeyToFile() throws Exception
+    public void storePrivateKeyToFile() throws Exception
     {
         store.store(SINGLE_STORE_REF, keyPair);
 
@@ -173,7 +201,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void testStoringPrivateKeyToDirectory() throws Exception
+    public void storePrivateKeyToDirectory() throws Exception
     {
         store.store(MULTI_STORE_REF, keyPair);
 
@@ -184,7 +212,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void testStoringEncryptedPrivateKeyToFile() throws Exception
+    public void storeEncryptedPrivateKeyToFile() throws Exception
     {
         store.store(SINGLE_STORE_REF, keyPair, PASSWORD);
 
@@ -192,7 +220,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void testStoringEncryptedPrivateKeyToDirectory() throws Exception
+    public void storeEncryptedPrivateKeyToDirectory() throws Exception
     {
         store.store(MULTI_STORE_REF, keyPair, PASSWORD);
 
@@ -203,7 +231,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void testRetrievePrivateKeyFromFile() throws Exception
+    public void retrievePrivateKeyFromFile() throws Exception
     {
         FileUtils.writeStringToFile(FILE, FILE_CONTENT);
 
@@ -214,7 +242,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void testRetrieveEncryptedPrivateKeyFromFile() throws Exception
+    public void retrieveEncryptedPrivateKeyFromFile() throws Exception
     {
         FileUtils.writeStringToFile(FILE, ENCRYPTED_FILE_CONTENT);
 
@@ -225,7 +253,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void testRetrievePrivateKeyFromDirectory() throws Exception
+    public void retrievePrivateKeyFromDirectory() throws Exception
     {
         DIRECTORY.mkdirs();
         FileUtils.writeStringToFile(KEY_FILE, KEY_FILE_CONTENT);
@@ -238,7 +266,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void testRetrieveEncryptedPrivateKeyFromDirectory() throws Exception
+    public void retrieveEncryptedPrivateKeyFromDirectory() throws Exception
     {
         DIRECTORY.mkdirs();
         FileUtils.writeStringToFile(KEY_FILE, ENCRYTEDKEY_FILE_CONTENT);
@@ -251,7 +279,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void testRetrieveMissingPrivateKeyFromFile() throws Exception
+    public void retrieveMissingPrivateKeyFromFile() throws Exception
     {
         FileUtils.writeStringToFile(FILE, CERTIFICATE_FILE_CONTENT);
 
@@ -260,7 +288,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void testRetrieveMissingCertificateFromFile() throws Exception
+    public void retrieveMissingCertificateFromFile() throws Exception
     {
         FileUtils.writeStringToFile(FILE, KEY_FILE_CONTENT);
 
@@ -269,7 +297,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void testRetrieveMissingPrivateKeyFromDirectory() throws Exception
+    public void retrieveMissingPrivateKeyFromDirectory() throws Exception
     {
         DIRECTORY.mkdirs();
         FileUtils.writeStringToFile(CERT_FILE, CERTIFICATE_FILE_CONTENT);
@@ -279,7 +307,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void testRetrieveMissingCertificateFromDirectory() throws Exception
+    public void retrieveMissingCertificateFromDirectory() throws Exception
     {
         DIRECTORY.mkdirs();
         FileUtils.writeStringToFile(KEY_FILE, KEY_FILE_CONTENT);
@@ -291,7 +319,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void testStoringPrivateKeyToDirectoryWithoutSubjectID() throws Exception
+    public void storePrivateKeyToDirectoryWithoutSubjectID() throws Exception
     {
         when(certificate.getExtensions()).thenReturn(null);
         when(certificate.getSubjectKeyIdentifier()).thenReturn(null);
@@ -303,5 +331,4 @@ public class X509KeyFileSystemStoreTest
         assertThat(FileUtils.readFileToString(new File(DIRECTORY, SERIAL + ", " + ISSUER + ".cert")),
             equalTo(CERTIFICATE_FILE_CONTENT));
     }
-
 }
