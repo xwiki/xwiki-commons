@@ -19,6 +19,7 @@
  */
 package org.xwiki.extension.test;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
@@ -105,18 +106,27 @@ public class MockitoRepositoryUtils extends RepositoryUtils
         // maven repositories
 
         if (getMavenRepository().exists()) {
-            repositoryManager.addRepository(
-                new DefaultExtensionRepositoryDescriptor(MAVENREPOSITORY_ID, "maven", getMavenRepository().toURI()));
+            repositoryManager.addRepository(newLocalMavenRepository(MAVENREPOSITORY_ID, getMavenRepository().toURI()));
         }
 
         if (getMaven2Repository().exists()) {
-            repositoryManager.addRepository(
-                new DefaultExtensionRepositoryDescriptor(MAVEN2REPOSITORY_ID, "maven", getMaven2Repository().toURI()));
+            repositoryManager
+                .addRepository(newLocalMavenRepository(MAVEN2REPOSITORY_ID, getMaven2Repository().toURI()));
         }
 
         // init
 
         this.componentManager.<ExtensionInitializer>getInstance(ExtensionInitializer.class);
+    }
+
+    private DefaultExtensionRepositoryDescriptor newLocalMavenRepository(String id, URI uri)
+    {
+        DefaultExtensionRepositoryDescriptor descriptor = new DefaultExtensionRepositoryDescriptor(id, "maven", uri);
+
+        // Disable checksum validation
+        descriptor.putProperty("checksumPolicy", "ignore");
+
+        return descriptor;
     }
 
     public MockitoComponentManager getComponentManager()
