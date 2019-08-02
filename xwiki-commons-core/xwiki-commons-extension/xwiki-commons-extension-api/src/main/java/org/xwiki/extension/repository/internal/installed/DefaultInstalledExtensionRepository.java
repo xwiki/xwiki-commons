@@ -233,7 +233,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
             if (dependencies || !DefaultInstalledExtension.isDependency(localExtension, null)) {
                 try {
                     validateExtension(localExtension, null, Collections.emptyMap());
-                } catch (InvalidExtensionException e) {
+                } catch (InvalidExtensionException | StackOverflowError e) {
                     if (this.logger.isDebugEnabled()) {
                         this.logger.warn("Invalid extension [{}]", localExtension.getId(), e);
                     } else {
@@ -249,7 +249,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
                 if (dependencies || !DefaultInstalledExtension.isDependency(localExtension, namespace)) {
                     try {
                         validateExtension(localExtension, namespace, Collections.emptyMap());
-                    } catch (InvalidExtensionException e) {
+                    } catch (InvalidExtensionException | StackOverflowError e) {
                         if (this.logger.isDebugEnabled()) {
                             this.logger.warn("Invalid extension [{}] on namespace [{}]", localExtension.getId(),
                                 namespace, e);
@@ -317,7 +317,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
                         throw new InvalidExtensionException(
                             String.format("Extension dependency [%s] is invalid", installedExtension.getId()));
                     }
-                } catch (InvalidExtensionException e) {
+                } catch (InvalidExtensionException | StackOverflowError e) {
                     if (this.localInstalledExtensionsCache != null) {
                         addInstalledExtension(dependencyExtension, namespace, false);
                     }
