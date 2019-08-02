@@ -322,7 +322,13 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
                         addInstalledExtension(dependencyExtension, namespace, false);
                     }
 
-                    throw e;
+                    if (e instanceof InvalidExtensionException) {
+                        throw e;
+                    }
+
+                    throw new InvalidExtensionException(String.format(
+                        "Unknown problem when validating installed extension dependency [%s] on namespace [%s]",
+                        dependency, namespace), e);
                 }
             }
         }
@@ -371,11 +377,17 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
                 dependency = ExtensionUtils.getDependency(dependency, managedDependencies, localExtension);
 
                 validateDependency(dependency, namespace, ExtensionUtils.append(managedDependencies, localExtension));
-            } catch (InvalidExtensionException e) {
+            } catch (InvalidExtensionException | StackOverflowError e) {
                 if (!dependency.isOptional()) {
                     // Continue to make sure all extensions are validated in the right order
                     if (dependencyException == null) {
-                        dependencyException = e;
+                        if (e instanceof InvalidExtensionException) {
+                            dependencyException = (InvalidExtensionException) e;
+                        } else {
+                            dependencyException = new InvalidExtensionException(String.format(
+                                "Unknown problem when validating installed extension dependency [%s] on namespace [%s]",
+                                dependency, namespace), e);
+                        }
                     }
                 }
             }
