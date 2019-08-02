@@ -25,6 +25,7 @@ import java.io.File;
 import java.math.BigInteger;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.AsymmetricKeyFactory;
@@ -87,21 +88,6 @@ public class X509KeyFileSystemStoreTest
 
     private static final BigInteger SERIAL = new BigInteger("1234567890");
 
-    @XWikiTempDir
-    private static File TEST_DIR;
-
-    private static final File FILE = new File(TEST_DIR, "my.key");
-
-    private static final File DIRECTORY = new File(TEST_DIR, "keystore");
-
-    private static final File CERT_FILE = new File(DIRECTORY, HEXENCODED_SUBJECTKEYID + ".cert");
-
-    private static final File KEY_FILE = new File(DIRECTORY, HEXENCODED_SUBJECTKEYID + ".key");
-
-    private static final StoreReference SINGLE_STORE_REF = new FileStoreReference(FILE);
-
-    private static final StoreReference MULTI_STORE_REF = new FileStoreReference(DIRECTORY, true);
-
     private static final String BEGIN_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\n";
 
     private static final String BEGIN_ENCRYPTED_PRIVATE_KEY = "-----BEGIN ENCRYPTED PRIVATE KEY-----\n";
@@ -128,6 +114,21 @@ public class X509KeyFileSystemStoreTest
 
     private static final String ENCRYPTED_FILE_CONTENT = ENCRYTEDKEY_FILE_CONTENT + CERTIFICATE_FILE_CONTENT;
 
+    @XWikiTempDir
+    private static File TEST_DIR;
+
+    private static File FILE;
+
+    private static File DIRECTORY;
+
+    private static File CERT_FILE;
+
+    private static File KEY_FILE;
+
+    private static StoreReference SINGLE_STORE_REF;
+
+    private static StoreReference MULTI_STORE_REF;
+
     @InjectMockComponents
     public X509KeyFileSystemStore store;
 
@@ -139,6 +140,17 @@ public class X509KeyFileSystemStoreTest
     X509CertifiedPublicKey certificate;
 
     CertifiedKeyPair keyPair;
+
+    @BeforeAll
+    public static void staticSetup()
+    {
+        FILE = new File(TEST_DIR, "my.key");
+        DIRECTORY = new File(TEST_DIR, "keystore");
+        CERT_FILE = new File(DIRECTORY, HEXENCODED_SUBJECTKEYID + ".cert");
+        KEY_FILE = new File(DIRECTORY, HEXENCODED_SUBJECTKEYID + ".key");
+        SINGLE_STORE_REF = new FileStoreReference(FILE);
+        MULTI_STORE_REF = new FileStoreReference(DIRECTORY, true);
+    }
 
     @BeforeEach
     public void setUp() throws Exception
