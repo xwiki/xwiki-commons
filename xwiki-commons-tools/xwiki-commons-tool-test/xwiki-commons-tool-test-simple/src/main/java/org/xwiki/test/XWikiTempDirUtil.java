@@ -17,23 +17,31 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.test.junit5;
+package org.xwiki.test;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.io.File;
+import java.util.Date;
 
 /**
- * Annotation to indicate that a temporary directory should be injected, see {@link XWikiTempDirExtension}.
+ * Utility method to create a unique temporary directory located under Maven's {@code target} directory.
  *
  * @version $Id$
  * @since 11.7RC1
  */
-@Target({ ElementType.FIELD, ElementType.PARAMETER })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface XWikiTempDir
+public final class XWikiTempDirUtil
 {
+    private XWikiTempDirUtil()
+    {
+        // Utility classes should not have a public or default constructor.
+    }
+
+    /**
+     * @return the unique temporary directory created underMaven's {@code target} directory.
+     */
+    public static File createTemporaryDirectory()
+    {
+        File tmpDir = new File("target/test-" + new Date().getTime()).getAbsoluteFile();
+        tmpDir.mkdirs();
+        return tmpDir;
+    }
 }

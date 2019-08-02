@@ -22,7 +22,6 @@ package org.xwiki.test.junit5;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Date;
 
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -31,6 +30,7 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.test.XWikiTempDirUtil;
 
 /**
  * Allows injecting a temporary directory created inside the Maven target directory, in a similar way as it's done by
@@ -65,13 +65,12 @@ public class XWikiTempDirExtension implements BeforeAllCallback, BeforeEachCallb
                 boolean isAccessible = field.isAccessible();
                 try {
                     field.setAccessible(true);
-                    field.set(null, createTemporaryDirectory());
+                    field.set(null, XWikiTempDirUtil.createTemporaryDirectory());
                 } finally {
                     field.setAccessible(isAccessible);
                 }
             }
         }
-
     }
 
     @Override
@@ -83,7 +82,8 @@ public class XWikiTempDirExtension implements BeforeAllCallback, BeforeEachCallb
             if (field.isAnnotationPresent(XWikiTempDir.class) && !Modifier.isStatic(field.getModifiers())
                 && File.class.isAssignableFrom(field.getType()))
             {
-                ReflectionUtils.setFieldValue(testInstance, field.getName(), createTemporaryDirectory());
+                ReflectionUtils.setFieldValue(testInstance, field.getName(),
+                    XWikiTempDirUtil.createTemporaryDirectory());
             }
         }
     }
@@ -100,14 +100,6 @@ public class XWikiTempDirExtension implements BeforeAllCallback, BeforeEachCallb
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
         throws ParameterResolutionException
     {
-        return createTemporaryDirectory();
-    }
-
-
-    private File createTemporaryDirectory()
-    {
-        File tmpDir = new File("target/test-" + new Date().getTime()).getAbsoluteFile();
-        tmpDir.mkdirs();
-        return tmpDir;
+        return XWikiTempDirUtil.createTemporaryDirectory();
     }
 }
