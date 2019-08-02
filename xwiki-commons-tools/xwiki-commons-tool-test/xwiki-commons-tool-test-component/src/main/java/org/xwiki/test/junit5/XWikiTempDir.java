@@ -17,33 +17,23 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.test.junit5.mockito;
+package org.xwiki.test.junit5;
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.xwiki.test.junit5.XWikiTempDirExtension;
-
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 /**
- * Marks a test as being a Component Test.
+ * Annotation to indicate that a temporary directory should be injected, see {@link XWikiTempDirExtension}.
  *
  * @version $Id$
- * @since 10.3RC1
+ * @since 11.7RC1
  */
+@Target({ ElementType.FIELD, ElementType.PARAMETER })
+@Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Retention(RUNTIME)
-@Target({ TYPE, METHOD, ANNOTATION_TYPE })
-@ExtendWith(XWikiTempDirExtension.class)
-@ExtendWith(MockitoComponentManagerExtension.class)
-@Inherited
-public @interface ComponentTest
+public @interface XWikiTempDir
 {
 }

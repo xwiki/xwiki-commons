@@ -25,7 +25,6 @@ import java.io.File;
 import java.math.BigInteger;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.AsymmetricKeyFactory;
@@ -40,6 +39,7 @@ import org.xwiki.crypto.pkix.params.x509certificate.X509CertifiedPublicKey;
 import org.xwiki.crypto.pkix.params.x509certificate.extension.X509Extensions;
 import org.xwiki.crypto.store.FileStoreReference;
 import org.xwiki.crypto.store.StoreReference;
+import org.xwiki.test.junit5.XWikiTempDir;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectComponentManager;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
@@ -87,7 +87,8 @@ public class X509KeyFileSystemStoreTest
 
     private static final BigInteger SERIAL = new BigInteger("1234567890");
 
-    private static final File TEST_DIR = new File("target/tmp");
+    @XWikiTempDir
+    private static File TEST_DIR;
 
     private static final File FILE = new File(TEST_DIR, "my.key");
 
@@ -181,15 +182,6 @@ public class X509KeyFileSystemStoreTest
         when(certificate.getSubjectKeyIdentifier()).thenReturn(SUBJECT_KEYID);
 
         keyPair = new CertifiedKeyPair(privateKey, certificate);
-
-        FileUtils.deleteDirectory(TEST_DIR);
-        TEST_DIR.mkdirs();
-    }
-
-    @AfterEach
-    public void deleteTestFiles() throws Exception
-    {
-        FileUtils.deleteDirectory(TEST_DIR);
     }
 
     @Test
