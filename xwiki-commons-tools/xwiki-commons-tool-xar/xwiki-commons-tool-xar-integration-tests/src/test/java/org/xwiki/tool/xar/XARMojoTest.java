@@ -35,16 +35,15 @@ import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.dom4j.Document;
-import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.tool.xar.internal.XWikiDocument;
 
 import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Integration tests for the XAR Mojo.
@@ -59,12 +58,9 @@ public class XARMojoTest extends AbstractMojoTest
     {
         Verifier verifier = createVerifier("/invalidPackageFile");
 
-        try {
+        assertThrows(Exception.class, () -> {
             verifier.executeGoals(Arrays.asList("clean", "package"));
-            fail("Should have raised an exception since the provided package.xml is invalid.");
-        } catch (Exception expected) {
-            // Expected
-        }
+        });
 
         verifier.verifyTextInLog("[ERROR] The existing [package.xml] is invalid.");
     }
@@ -111,8 +107,8 @@ public class XARMojoTest extends AbstractMojoTest
                 }
             }
 
-            assertEquals("The newly created xar archive doesn't contain the required documents", documentNames.size(),
-                countEntries);
+            assertEquals(documentNames.size(), countEntries,
+                "The newly created xar archive doesn't contain the required documents");
         }
     }
 
@@ -126,7 +122,7 @@ public class XARMojoTest extends AbstractMojoTest
         File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
 
         try (ZipFile zip = new ZipFile(xarFile)) {
-            assertNotNull("Package.xml file not found in zip!", zip.getEntry(XARMojo.PACKAGE_XML));
+            assertNotNull(zip.getEntry(XARMojo.PACKAGE_XML), "Package.xml file not found in zip!");
 
             File tempDir = new File(verifier.getBasedir(), "target/temp");
             tempDir.mkdirs();
@@ -155,8 +151,8 @@ public class XARMojoTest extends AbstractMojoTest
                     }
                 }
             }
-            assertEquals("The newly created xar archive doesn't contain the required documents", documentNames.size(),
-                countEntries);
+            assertEquals(documentNames.size(), countEntries,
+                "The newly created xar archive doesn't contain the required documents");
         }
     }
 
@@ -180,10 +176,10 @@ public class XARMojoTest extends AbstractMojoTest
         File classesDir = new File(verifier.getBasedir(), "target/classes");
         Collection<String> documentNames = XARMojo.getDocumentNamesFromXML(new File(classesDir, "package.xml"));
 
-        assertEquals("The newly created xar archive doesn't contain the required documents", 1, documentNames.size());
+        assertEquals(1, documentNames.size(), "The newly created xar archive doesn't contain the required documents");
 
-        assertEquals("Page reference not properly serialized in the package.xml", "1.2.page",
-            documentNames.iterator().next());
+        assertEquals("1.2.page", documentNames.iterator().next(),
+            "Page reference not properly serialized in the package.xml");
     }
 
     @Test
@@ -206,21 +202,15 @@ public class XARMojoTest extends AbstractMojoTest
         // check that the transformations have taken place
         Document document = new SAXReader().read(new File(tempDir, "Blog/WebHome.xml"));
         FileUtils.copyFile(new File(tempDir, "Blog/WebHome.xml"), new File("/tmp/WebHome.xml"));
-        assertEquals("Transformation of itemsPerPage did not happen?",
-                "100",
-                document.selectSingleNode("/xwikidoc/object/property/itemsPerPage").getText() );
-        assertEquals("Transformation of title did not happen?",
-                "My Blog (The Wiki Blog)",
-                document.selectSingleNode("/xwikidoc/object/property/title").getText());
-
-        assertEquals("Insertion of content did not happen?",
-                "This page will gather my blog.",
-                document.selectSingleNode("/xwikidoc/content").getText().trim());
+        assertEquals("100", document.selectSingleNode("/xwikidoc/object/property/itemsPerPage").getText(),
+            "Transformation of itemsPerPage did not happen?");
+        assertEquals("My Blog (The Wiki Blog)", document.selectSingleNode("/xwikidoc/object/property/title").getText(),
+            "Transformation of title did not happen?");
+        assertEquals("This page will gather my blog.", document.selectSingleNode("/xwikidoc/content").getText().trim(),
+            "Insertion of content did not happen?");
 
         assertTrue("Insertion of attachment did not happen?",
-                document.selectSingleNode("/xwikidoc/attachment/content")!=null);
-
-
+            document.selectSingleNode("/xwikidoc/attachment/content") != null);
     }
 
     @Test
@@ -243,24 +233,24 @@ public class XARMojoTest extends AbstractMojoTest
         File classesDir = new File(verifier.getBasedir(), "target/classes");
         Map<String, XAREntry> entries = XARMojo.getXarEntriesMapFromXML(new File(classesDir, "package.xml"));
 
-        assertEquals("The newly created xar archive doesn't contain the required documents", 3, entries.size());
+        assertEquals(3, entries.size(), "The newly created xar archive doesn't contain the required documents");
 
-        assertEquals("Not the right type", "home", entries.get("Type.home").getType());
-        assertEquals("Not the right type", "configuration", entries.get("Type.configuration").getType());
-        assertEquals("Not the right type", "custom", entries.get("Type.custom").getType());
+        assertEquals("home", entries.get("Type.home").getType(), "Not the right type");
+        assertEquals("configuration", entries.get("Type.configuration").getType(), "Not the right type");
+        assertEquals("custom", entries.get("Type.custom").getType(), "Not the right type");
     }
 
     @Test
     public void invalidXml() throws Exception
     {
         Verifier verifier = createVerifier("/invalidXml");
-        try {
+
+        assertThrows(VerificationException.class, () -> {
             verifier.executeGoals(Arrays.asList("clean", "package"));
-            fail("Should have failed with an exception here!");
-        } catch (VerificationException expected) {
-            verifier.verifyTextInLog("Error while creating XAR file");
-            verifier.verifyTextInLog("Content doesn't point to valid wiki page XML");
-            verifier.verifyTextInLog("Failed to parse");
-        }
+        });
+
+        verifier.verifyTextInLog("Error while creating XAR file");
+        verifier.verifyTextInLog("Content doesn't point to valid wiki page XML");
+        verifier.verifyTextInLog("Failed to parse");
     }
 }

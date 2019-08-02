@@ -24,10 +24,10 @@ import java.util.Arrays;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.hamcrest.CoreMatchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration tests for the Verify Mojo.
@@ -177,16 +177,14 @@ public class VerifyMojoTest extends AbstractMojoTest
             "There are errors in the XAR XML files!");
     }
 
-    private void verifyExecution(Verifier verifier, String... messages) throws Exception
+    private void verifyExecution(Verifier verifier, String... messages)
     {
-        try {
+        Throwable exception = assertThrows(VerificationException.class, () -> {
             verifier.executeGoal("install");
             verifier.verifyErrorFreeLog();
-            fail("An error should have been thrown in the build");
-        } catch (VerificationException expected) {
-            for (String message : messages) {
-                assertThat(expected.getMessage(), CoreMatchers.containsString(message));
-            }
+        });
+        for (String message : messages) {
+            assertThat(exception.getMessage(), CoreMatchers.containsString(message));
         }
     }
 
@@ -235,11 +233,9 @@ public class VerifyMojoTest extends AbstractMojoTest
     public void invalidXml() throws Exception
     {
         Verifier verifier = createVerifier("/invalidContent");
-        try {
+        assertThrows(VerificationException.class, () -> {
             verifier.executeGoals(Arrays.asList("clean", "package"));
-            fail("Should have failed with an exception here!");
-        } catch (VerificationException expected) {
-            verifier.verifyTextInLog("Unexpected non-text content found in element [content]");
-        }
+        });
+        verifier.verifyTextInLog("Unexpected non-text content found in element [content]");
     }
 }

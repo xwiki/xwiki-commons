@@ -24,10 +24,10 @@ import java.io.File;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration tests for the Format Mojo.
@@ -76,12 +76,9 @@ public class FormatMojoTest extends AbstractMojoTest
         assertEquals(expected, content);
 
         // Verify that not included pages are not formatted
-        try {
+        assertThrows(VerificationException.class, () -> {
             verifier.verifyTextInLog("Formatting [Pretty");
-            fail("Exception should have been thrown here");
-        } catch (VerificationException expectedException) {
-            // Passed!
-        }
+        });
     }
 
     @Test
