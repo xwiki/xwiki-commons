@@ -174,28 +174,8 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
         } else {
             // Initialize dependencies
             for (ExtensionDependency dependency : installedExtension.getDependencies()) {
-                if (!this.coreExtensionRepository.exists(dependency.getId())) {
-                    InstalledExtension dependencyExtension =
-                        this.installedExtensionRepository.getInstalledExtension(dependency.getId(), namespace);
-
-                    if (dependencyExtension == installedExtension) {
-                        throw new ExtensionException(String.format(
-                            "Extension [] has itself as dependency ([])."
-                                + " It usually mean an extension is installed along with one of it's features.",
-                            installedExtension, dependency));
-                    }
-
-                    try {
-                        initializeExtensionInNamespace(dependencyExtension, namespace, initializedExtensions);
-                    } catch (Exception e) {
-                        if (dependency.isOptional()) {
-                            this.logger.warn("Failed to initialize dependency [{}]: {}", dependency,
-                                ExceptionUtils.getRootCauseMessage(e));
-                        } else {
-                            throw new ExtensionException("Failed to initialize dependency [" + dependency + "]", e);
-                        }
-                    }
-                }
+                initializeExtensionDependencyInNamespace(installedExtension, dependency, namespace,
+                    initializedExtensions);
             }
 
             // Initialize the extension
@@ -203,6 +183,39 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
 
             // Cache the extension to not initialize several times
             initializedExtensionsInNamespace.add(installedExtension);
+        }
+    }
+
+    private void initializeExtensionDependencyInNamespace(InstalledExtension installedExtension,
+        ExtensionDependency dependency, String namespace, Map<String, Set<InstalledExtension>> initializedExtensions)
+        throws ExtensionException
+    {
+        if (!this.coreExtensionRepository.exists(dependency.getId())) {
+            InstalledExtension dependencyExtension =
+                this.installedExtensionRepository.getInstalledExtension(dependency.getId(), namespace);
+
+            if (dependencyExtension != null) {
+                if (dependencyExtension == installedExtension) {
+                    throw new ExtensionException(String.format(
+                        "Extension [] has itself as dependency ([])."
+                            + " It usually mean an extension is installed along with one of it's features.",
+                        installedExtension, dependency));
+                }
+
+                try {
+                    initializeExtensionInNamespace(dependencyExtension, namespace, initializedExtensions);
+                } catch (Exception e) {
+                    if (dependency.isOptional()) {
+                        this.logger.warn("Failed to initialize dependency [{}]: {}", dependency,
+                            ExceptionUtils.getRootCauseMessage(e));
+                    } else {
+                        throw new ExtensionException("Failed to initialize dependency [" + dependency + "]", e);
+                    }
+                }
+            } else if (!dependency.isOptional()) {
+                throw new ExtensionException("Mandatory dependency [" + dependency + "] of extension ["
+                    + installedExtension.getId() + "] is not installed");
+            }
         }
     }
 }
