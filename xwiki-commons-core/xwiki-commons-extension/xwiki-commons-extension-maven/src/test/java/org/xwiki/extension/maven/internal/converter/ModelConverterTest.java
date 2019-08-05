@@ -94,6 +94,91 @@ public class ModelConverterTest
         dependency.setGroupId("dgroupid");
         dependency.setArtifactId("dartifactId");
         dependency.setVersion("1.0");
+        dependency.setOptional(false);
+        model.addDependency(dependency);
+
+        Extension extension = this.mocker.getComponentUnderTest().convert(Extension.class, model);
+
+        assertEquals(model.getGroupId() + ':' + model.getArtifactId(), extension.getId().getId());
+        assertEquals(model.getVersion(), extension.getId().getVersion().getValue());
+        assertEquals(ListUtils.union(Arrays.asList(new ExtensionId("feature1", "1.0")), INJECTED_FEATURES),
+            new ArrayList<>(extension.getExtensionFeatures()));
+        assertEquals("category", extension.getCategory());
+        assertNull(extension.getProperty(Extension.IKEYPREFIX + Extension.FIELD_CATEGORY));
+        assertEquals(Arrays.asList("namespace1", "namespace2", "{root}", "namespace3", "namespace4"),
+            new ArrayList<>(extension.getAllowedNamespaces()));
+        assertNull(extension.getProperty(Extension.IKEYPREFIX + Extension.FIELD_NAMESPACES));
+        assertEquals(
+            Arrays.asList(new DefaultExtensionRepositoryDescriptor("repository-id", "maven", new URI("http://url"))),
+            extension.getRepositories());
+        assertEquals(1, extension.getDependencies().size());
+    }
+
+    @Test
+    public void testConvertFromExtensionWithIncludedOptionalDependencies()
+        throws SecurityException, ComponentLookupException, URISyntaxException
+    {
+        Model model = new Model();
+
+        model.setGroupId("groupid");
+        model.setArtifactId("artifactid");
+        model.setVersion("version");
+        model.addProperty(Extension.IKEYPREFIX + Extension.FIELD_CATEGORY, "category");
+        model.addProperty(Extension.IKEYPREFIX + Extension.FIELD_NAMESPACES,
+            "namespace1, namespace2,\r\n\t {root}, \"namespace3\", 'namespace4'");
+        model.addProperty(Extension.IKEYPREFIX + Extension.FIELD_FEATURES, "feature1/1.0");
+        model.addProperty(Extension.IKEYPREFIX + "optionalIncluded", "true");
+        Repository repository = new Repository();
+        repository.setId("repository-id");
+        repository.setUrl("http://url");
+        model.addRepository(repository);
+        Dependency dependency = new Dependency();
+        dependency.setGroupId("dgroupid");
+        dependency.setArtifactId("dartifactId");
+        dependency.setVersion("1.0");
+        dependency.setOptional(true);
+        model.addDependency(dependency);
+
+        Extension extension = this.mocker.getComponentUnderTest().convert(Extension.class, model);
+
+        assertEquals(model.getGroupId() + ':' + model.getArtifactId(), extension.getId().getId());
+        assertEquals(model.getVersion(), extension.getId().getVersion().getValue());
+        assertEquals(ListUtils.union(Arrays.asList(new ExtensionId("feature1", "1.0")), INJECTED_FEATURES),
+            new ArrayList<>(extension.getExtensionFeatures()));
+        assertEquals("category", extension.getCategory());
+        assertNull(extension.getProperty(Extension.IKEYPREFIX + Extension.FIELD_CATEGORY));
+        assertEquals(Arrays.asList("namespace1", "namespace2", "{root}", "namespace3", "namespace4"),
+            new ArrayList<>(extension.getAllowedNamespaces()));
+        assertNull(extension.getProperty(Extension.IKEYPREFIX + Extension.FIELD_NAMESPACES));
+        assertEquals(
+            Arrays.asList(new DefaultExtensionRepositoryDescriptor("repository-id", "maven", new URI("http://url"))),
+            extension.getRepositories());
+        assertEquals(1, extension.getDependencies().size());
+        ExtensionDependency extensionDependency = extension.getDependencies().iterator().next();
+        assertTrue(extensionDependency.isOptional());
+    }
+
+    @Test
+    public void testConvertFromXWikiExtensionWithOptionalDependencies()
+        throws SecurityException, ComponentLookupException, URISyntaxException
+    {
+        Model model = new Model();
+
+        model.setGroupId("org.xwiki");
+        model.setArtifactId("artifactid");
+        model.setVersion("version");
+        model.addProperty(Extension.IKEYPREFIX + Extension.FIELD_CATEGORY, "category");
+        model.addProperty(Extension.IKEYPREFIX + Extension.FIELD_NAMESPACES,
+            "namespace1, namespace2,\r\n\t {root}, \"namespace3\", 'namespace4'");
+        model.addProperty(Extension.IKEYPREFIX + Extension.FIELD_FEATURES, "feature1/1.0");
+        Repository repository = new Repository();
+        repository.setId("repository-id");
+        repository.setUrl("http://url");
+        model.addRepository(repository);
+        Dependency dependency = new Dependency();
+        dependency.setGroupId("dgroupid");
+        dependency.setArtifactId("dartifactId");
+        dependency.setVersion("1.0");
         dependency.setOptional(true);
         model.addDependency(dependency);
 
