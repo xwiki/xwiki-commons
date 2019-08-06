@@ -341,6 +341,12 @@ public class DefaultDiffManagerTest
 
         Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals("ddddcc", toString(result.getMerged()));
+
+        result = this.mocker.getComponentUnderTest()
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"), null);
+
+        Assert.assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertEquals("ddddcc azzd", toString(result.getMerged()));
     }
 
     @Test
