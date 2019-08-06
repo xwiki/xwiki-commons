@@ -59,6 +59,16 @@ public class ReplayJob extends AbstractJob<ReplayRequest, ReplayJobStatus> imple
      */
     private JobGroupPath groupPath;
 
+    /**
+     * The default constructor.
+     */
+    public ReplayJob()
+    {
+        // We don't need an execution context in this job and more importantly we want to make sure sub jobs use their
+        // own context (children job reuse parent job context by default)
+        this.initExecutionContext = false;
+    }
+
     @Override
     public String getType()
     {
