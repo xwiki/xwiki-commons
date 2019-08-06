@@ -308,7 +308,9 @@ public class DefaultDiffManager implements DiffManager
 
         // After common ancestor
         if (deltaCurrent != null) {
-            merged.addAll(deltaCurrent.getNext().getElements());
+            if (deltaCurrent.getType() == Type.INSERT) {
+                merged.addAll(deltaCurrent.getNext().getElements());
+            }
 
             if (deltaNext != null && !deltaCurrent.equals(deltaNext)) {
                 merged.addAll(deltaNext.getNext().getElements());
