@@ -59,13 +59,13 @@ public class DefaultDiffManager implements DiffManager
         if (previous == null || previous.isEmpty()) {
             patch = new DefaultPatch<E>();
             if (next != null && !next.isEmpty()) {
-                patch.add(new InsertDelta<E>(new DefaultChunk<E>(0, Collections.<E>emptyList()), new DefaultChunk<E>(
-                    0, next)));
+                patch.add(new InsertDelta<E>(new DefaultChunk<E>(0, Collections.<E>emptyList()),
+                    new DefaultChunk<E>(0, next)));
             }
         } else if (next == null || next.isEmpty()) {
             patch = new DefaultPatch<E>();
-            patch.add(new DeleteDelta<E>(new DefaultChunk<E>(0, previous), new DefaultChunk<E>(0, Collections
-                .<E>emptyList())));
+            patch.add(new DeleteDelta<E>(new DefaultChunk<E>(0, previous),
+                new DefaultChunk<E>(0, Collections.<E>emptyList())));
         } else {
             patch = new DefaultPatch<E>(DiffUtils.diff(previous, next));
         }
@@ -146,7 +146,7 @@ public class DefaultDiffManager implements DiffManager
     }
 
     private <E> List<E> fallback(List<E> commonAncestor, List<E> next, List<E> current,
-            MergeConfiguration<E> configuration)
+        MergeConfiguration<E> configuration)
     {
         Version fallbackVersion;
         if (configuration != null) {
@@ -166,7 +166,7 @@ public class DefaultDiffManager implements DiffManager
     }
 
     private <E> int fallback(List<E> commonAncestor, Delta<E> deltaNext, Delta<E> deltaCurrent, List<E> merged,
-            int currentIndex, MergeConfiguration<E> configuration)
+        int currentIndex, MergeConfiguration<E> configuration)
     {
         int newIndex = currentIndex;
 
@@ -398,7 +398,8 @@ public class DefaultDiffManager implements DiffManager
      * @param patchCurrent patch to the current version
      * @return either or not the user has changed everything
      */
-    private <E> boolean isFullyModified(List commonAncestor, Patch<E> patchCurrent) {
+    private <E> boolean isFullyModified(List commonAncestor, Patch<E> patchCurrent)
+    {
         return patchCurrent.size() == 1 && commonAncestor.size() == patchCurrent.get(0).getPrevious().size();
     }
 }
