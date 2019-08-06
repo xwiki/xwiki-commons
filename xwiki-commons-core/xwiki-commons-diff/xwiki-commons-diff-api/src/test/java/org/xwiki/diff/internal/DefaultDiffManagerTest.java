@@ -319,7 +319,7 @@ public class DefaultDiffManagerTest
             .merge(toCharacters("abcd"), toCharacters("yycd"), toCharacters("azzd"), null);
 
         Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals("yycd", toString(result.getMerged()));
+        Assert.assertEquals("azzd", toString(result.getMerged()));
 
         // Current and new in conflict at different indices
         result = this.mocker.getComponentUnderTest()
@@ -340,13 +340,13 @@ public class DefaultDiffManagerTest
             .merge(toCharacters("aabbcc"), toCharacters("ddddcc"), toCharacters("arrbcc"), null);
 
         Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals("ddddcc", toString(result.getMerged()));
+        Assert.assertEquals("arrbcc", toString(result.getMerged()));
 
         result = this.mocker.getComponentUnderTest()
             .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"), null);
 
         Assert.assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals("ddddcc azzd", toString(result.getMerged()));
+        Assert.assertEquals("arrbcc yycd", toString(result.getMerged()));
     }
 
     @Test

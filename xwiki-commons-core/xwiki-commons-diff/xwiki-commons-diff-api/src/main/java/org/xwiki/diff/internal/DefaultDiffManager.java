@@ -179,6 +179,9 @@ public class DefaultDiffManager implements DiffManager
 
         switch (fallbackVersion) {
             case NEXT:
+                for (; newIndex < deltaNext.getPrevious().getIndex(); ++newIndex) {
+                    merged.add(commonAncestor.get(newIndex));
+                }
                 newIndex = apply(deltaNext, merged, currentIndex);
                 break;
             case PREVIOUS:
@@ -191,6 +194,9 @@ public class DefaultDiffManager implements DiffManager
                 break;
             default:
                 // CURRENT is the default
+                for (; newIndex < deltaCurrent.getPrevious().getIndex(); ++newIndex) {
+                    merged.add(commonAncestor.get(newIndex));
+                }
                 newIndex = apply(deltaCurrent, merged, currentIndex);
                 break;
         }
@@ -272,32 +278,38 @@ public class DefaultDiffManager implements DiffManager
 
                     deltaNext = nextElement(patchNext);
                 } else {
-                    index = apply(deltaCurrent, merged, index);
-                    if (deltaCurrent.getType() == Type.INSERT) {
-                        merged.add(commonAncestor.get(index));
-                    }
-
                     if (deltaNext != null
                         && deltaNext.getPrevious().getIndex() <= deltaCurrent.getPrevious().getLastIndex()) {
                         // Conflict
                         logConflict(mergeResult, deltaCurrent, deltaNext);
+
+                        index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
+
                         deltaNext = nextElement(patchNext);
+                    } else {
+                        index = apply(deltaCurrent, merged, index);
+                        if (deltaCurrent.getType() == Type.INSERT) {
+                            merged.add(commonAncestor.get(index));
+                        }
                     }
                 }
 
                 deltaCurrent = nextElement(patchCurrent);
             } else if (isPreviousIndex(deltaNext, index)) {
                 // Modification in next
-                index = apply(deltaNext, merged, index);
-                if (deltaNext.getType() == Type.INSERT) {
-                    merged.add(commonAncestor.get(index));
-                }
-
                 if (deltaCurrent != null
                     && deltaCurrent.getPrevious().getIndex() <= deltaNext.getPrevious().getLastIndex()) {
                     // Conflict
                     logConflict(mergeResult, deltaCurrent, deltaNext);
+
+                    index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
+
                     deltaCurrent = nextElement(patchCurrent);
+                } else {
+                    index = apply(deltaNext, merged, index);
+                    if (deltaNext.getType() == Type.INSERT) {
+                        merged.add(commonAncestor.get(index));
+                    }
                 }
 
                 deltaNext = nextElement(patchNext);
