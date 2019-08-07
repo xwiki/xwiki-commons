@@ -160,13 +160,6 @@
                     "code": "java.method.removed",
                     "old": "method org.xwiki.script.service.ScriptService org.xwiki.diff.script.DiffScriptService::getDisplay()",
                     "justification": "Not an API breakage (we replaced it with a generic get() method that can also be used to access $services.diff.display)"
-                  },
-                  {
-                    "code": "java.annotation.added",
-                    "old": "interface org.xwiki.cache.CacheFactory",
-                    "new": "interface org.xwiki.cache.CacheFactory",
-                    "annotation": "@org.xwiki.component.annotation.DisposePriority(10000)",
-                    "justification": "Not an API breakage: we added an annotation that is only used at runtime."
                   }
                   // Add more ignores below...
                 ]

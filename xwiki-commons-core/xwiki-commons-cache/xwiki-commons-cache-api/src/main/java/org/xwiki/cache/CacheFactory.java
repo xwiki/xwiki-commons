@@ -20,7 +20,6 @@
 package org.xwiki.cache;
 
 import org.xwiki.cache.config.CacheConfiguration;
-import org.xwiki.component.annotation.DisposePriority;
 import org.xwiki.component.annotation.Role;
 
 /**
@@ -30,8 +29,6 @@ import org.xwiki.component.annotation.Role;
  * @version $Id$
  */
 @Role
-// Make sure the cache factories are disposed at the end in case some components needs it for their own dispose
-@DisposePriority(10000)
 public interface CacheFactory
 {
     /**
