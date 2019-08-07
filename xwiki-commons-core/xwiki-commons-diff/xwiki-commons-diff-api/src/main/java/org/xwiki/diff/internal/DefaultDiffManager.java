@@ -181,24 +181,15 @@ public class DefaultDiffManager implements DiffManager
                 newIndex = apply(deltaNext, merged, currentIndex);
                 break;
             case PREVIOUS:
-                int stopIndex;
-                // in case of deletion, we need to get back all that has been deleted
-                if (deltaNext.getType() == Type.DELETE) {
-                    stopIndex = deltaNext.getPrevious().getLastIndex() + 1;
-                } else {
-                    stopIndex = deltaNext.getPrevious().getIndex();
-                }
+                int stopIndex =
+                    Math.max(deltaCurrent.getPrevious().getLastIndex(), deltaNext.getPrevious().getLastIndex()) + 1;
                 for (; newIndex < stopIndex; ++newIndex) {
                     merged.add(commonAncestor.get(newIndex));
                 }
-                if (deltaCurrent.getType() == Type.DELETE) {
-                    stopIndex = deltaCurrent.getPrevious().getLastIndex() + 1;
-                } else {
-                    stopIndex = deltaCurrent.getPrevious().getIndex();
-                }
-                for (; newIndex < stopIndex; ++newIndex) {
-                    merged.add(commonAncestor.get(newIndex));
-                }
+
+                // each time this fallback is called, the loop increment back the index
+                // so we have to decrement it to be sure we are at the right position.
+                newIndex--;
                 break;
             default:
                 // CURRENT is the default
@@ -311,7 +302,6 @@ public class DefaultDiffManager implements DiffManager
                     logConflict(mergeResult, deltaCurrent, deltaNext);
 
                     index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
-
                     deltaCurrent = nextElement(patchCurrent);
                 } else {
                     index = apply(deltaNext, merged, index);
