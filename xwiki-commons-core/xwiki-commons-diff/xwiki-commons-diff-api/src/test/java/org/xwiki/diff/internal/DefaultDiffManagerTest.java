@@ -308,6 +308,7 @@ public class DefaultDiffManagerTest
     public void mergeCharOnConflicts() throws Exception
     {
         MergeResult<Character> result;
+        MergeConfiguration<Character> mergeConfiguration;
 
         // Current and new at the same place
         result =
@@ -323,6 +324,21 @@ public class DefaultDiffManagerTest
         assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
         assertEquals("azzd", toString(result.getMerged()));
 
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("yycd"), toCharacters("azzd"), mergeConfiguration);
+
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals("abcd", toString(result.getMerged()));
+
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("yycd"), toCharacters("azzd"), mergeConfiguration);
+
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals("yycd", toString(result.getMerged()));
+
         // Current and new in conflict at different indices
         result = this.diffManager
             .merge(toCharacters("abcd"), toCharacters("azzd"), toCharacters("yycd"), null);
@@ -336,6 +352,14 @@ public class DefaultDiffManagerTest
 
         assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
         assertEquals("ddddcc", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("arrbcc"), toCharacters("ddddcc"), mergeConfiguration);
+
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals("aabbcc", toString(result.getMerged()));
 
         // current overlapping new
         result = this.diffManager
