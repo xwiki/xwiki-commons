@@ -102,16 +102,13 @@ public class DefaultDiffManager implements DiffManager
 
         // Check current version
 
-        if (current.isEmpty()) {
+        if (current.isEmpty() && (commonAncestor.isEmpty() || next.isEmpty())) {
             // Empty current version
             if (commonAncestor.isEmpty()) {
                 mergeResult.setMerged(next);
             } else if (next.isEmpty()) {
                 // The new modification was already applied
                 mergeResult.getLog().warn("The modification was already applied");
-            } else {
-                // The current version has been replaced by an empty string
-                mergeResult.getLog().error("The current value is empty");
             }
         } else {
             // Get diff between common ancestor and current version
@@ -127,15 +124,14 @@ public class DefaultDiffManager implements DiffManager
 
             if (patchCurrent.isEmpty()) {
                 mergeResult.setMerged(next);
-            } else if (isFullyModified(commonAncestor, patchCurrent)) {
-                // If current is completely modified compared to the common ancestor we assume any change in next is
-                // a conflict
+            } else if (!current.equals(next) && (isFullyModified(commonAncestor, patchCurrent)
+                || isFullyModified(commonAncestor, patchNext))) {
+                // If current or next  is completely modified compared to the common ancestor we assume
+                // any change in next or current is a conflict
                 // ... except if the current content is identical to the next one!
-                if (!current.equals(next)) {
-                    Delta<E> deltaNext = nextElement(patchNext);
-                    Delta<E> deltaCurrent = nextElement(patchCurrent);
-                    logConflict(mergeResult, deltaCurrent, deltaNext);
-                }
+                Delta<E> deltaNext = nextElement(patchNext);
+                Delta<E> deltaCurrent = nextElement(patchCurrent);
+                logConflict(mergeResult, deltaCurrent, deltaNext);
                 mergeResult.setMerged(fallback(commonAncestor, next, current, configuration));
             } else {
                 merge(mergeResult, commonAncestor, patchNext, patchCurrent, configuration);
@@ -185,10 +181,22 @@ public class DefaultDiffManager implements DiffManager
                 newIndex = apply(deltaNext, merged, currentIndex);
                 break;
             case PREVIOUS:
-                for (; newIndex < deltaNext.getPrevious().getIndex(); ++newIndex) {
+                int stopIndex;
+                // in case of deletion, we need to get back all that has been deleted
+                if (deltaNext.getType() == Type.DELETE) {
+                    stopIndex = deltaNext.getPrevious().getLastIndex() + 1;
+                } else {
+                    stopIndex = deltaNext.getPrevious().getIndex();
+                }
+                for (; newIndex < stopIndex; ++newIndex) {
                     merged.add(commonAncestor.get(newIndex));
                 }
-                for (; newIndex < deltaCurrent.getPrevious().getIndex(); ++newIndex) {
+                if (deltaCurrent.getType() == Type.DELETE) {
+                    stopIndex = deltaCurrent.getPrevious().getLastIndex() + 1;
+                } else {
+                    stopIndex = deltaCurrent.getPrevious().getIndex();
+                }
+                for (; newIndex < stopIndex; ++newIndex) {
                     merged.add(commonAncestor.get(newIndex));
                 }
                 break;
