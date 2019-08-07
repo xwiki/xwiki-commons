@@ -157,11 +157,6 @@
               "revapi": {
                 "ignore" : [
                   {
-                    "code": "java.annotation.added",
-                    "old": "interface org.xwiki.cache.CacheFactory",
-                    "new": "interface org.xwiki.cache.CacheFactory",
-                    "annotation": "@org.xwiki.component.annotation.DisposePriority(10000)",
-                    "justification": "Not an API breakage: we added an annotation that is only used at runtime."
                   }
                   // Add more ignores below...
                 ]
