@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.xwiki.diff.Delta.Type;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
+import org.xwiki.diff.MergeConfiguration;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -370,14 +371,96 @@ public class DefaultDiffManagerTest
         result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
                 Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
                 Arrays.asList("New content", "That is completely different"), null);
-
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
         Assert.assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
+
+        MergeConfiguration<String> mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
+            Arrays.asList("New content", "That is completely different"), mergeConfiguration);
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
+        Assert.assertEquals(Arrays.asList("Line 1", "Line 2", "Line 3"), result.getMerged());
+
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
+            Arrays.asList("New content", "That is completely different"), mergeConfiguration);
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
+        Assert.assertEquals(Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), result.getMerged());
 
         // Test 2: All content has been deleted between previous and current
         result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
                 Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
                 Collections.emptyList(), null);
-
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
         Assert.assertEquals(Collections.emptyList(), result.getMerged());
+
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
+            Collections.emptyList(), mergeConfiguration);
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
+        Assert.assertEquals(Arrays.asList("Line 1", "Line 2", "Line 3"), result.getMerged());
+
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
+            Collections.emptyList(), mergeConfiguration);
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
+        Assert.assertEquals(Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), result.getMerged());
+
+        // Test 3: All content has been deleted between previous and next
+        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Collections.emptyList(),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), null);
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
+        Assert.assertEquals(Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), result.getMerged());
+
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Collections.emptyList(),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), mergeConfiguration);
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
+        Assert.assertEquals(Arrays.asList("Line 1", "Line 2", "Line 3"), result.getMerged());
+
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Collections.emptyList(),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), mergeConfiguration);
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
+        Assert.assertEquals(Collections.emptyList(), result.getMerged());
+
+        // Test 4: All content has changed between previous and current, and current and next are identical
+        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("New content", "That is completely different"),
+            Arrays.asList("New content", "That is completely different"), null);
+        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
+
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("New content", "That is completely different"),
+            Arrays.asList("New content", "That is completely different"), mergeConfiguration);
+        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
     }
 }
