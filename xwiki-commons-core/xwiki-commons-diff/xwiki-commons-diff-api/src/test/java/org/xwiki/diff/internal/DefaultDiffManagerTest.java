@@ -25,22 +25,23 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.diff.Delta.Type;
-import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
 import org.xwiki.diff.MergeConfiguration;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.logging.LogLevel;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@ComponentTest
 public class DefaultDiffManagerTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<DiffManager> mocker = new MockitoComponentMockingRule<DiffManager>(
-        DefaultDiffManager.class);
+    @InjectMockComponents
+    private DefaultDiffManager diffManager;
 
     /**
      * @param str the single line text
@@ -71,396 +72,396 @@ public class DefaultDiffManagerTest
     // Tests
 
     @Test
-    public void testDiffStringList() throws Exception
+    public void diffStringList() throws Exception
     {
         // Null
 
-        DiffResult<String> result = this.mocker.getComponentUnderTest().diff(null, null, null);
+        DiffResult<String> result = this.diffManager.diff(null, null, null);
 
-        Assert.assertTrue(result.getPatch().isEmpty());
+        assertTrue(result.getPatch().isEmpty());
 
         // Empty
 
-        result = this.mocker.getComponentUnderTest().diff(Collections.<String>emptyList(),
+        result = this.diffManager.diff(Collections.<String>emptyList(),
             Collections.<String>emptyList(), null);
 
-        Assert.assertTrue(result.getPatch().isEmpty());
+        assertTrue(result.getPatch().isEmpty());
 
         // Equals
 
-        result = this.mocker.getComponentUnderTest().diff(Arrays.asList("equals"), Arrays.asList("equals"), null);
+        result = this.diffManager.diff(Arrays.asList("equals"), Arrays.asList("equals"), null);
 
-        Assert.assertTrue(result.getPatch().isEmpty());
+        assertTrue(result.getPatch().isEmpty());
 
         // Previous empty
 
-        result = this.mocker.getComponentUnderTest().diff(Collections.<String>emptyList(), Arrays.asList("next"), null);
+        result = this.diffManager.diff(Collections.<String>emptyList(), Arrays.asList("next"), null);
 
-        Assert.assertEquals(1, result.getPatch().size());
-        Assert.assertEquals(Type.INSERT, result.getPatch().get(0).getType());
-        Assert.assertEquals(Arrays.asList("next"), result.getPatch().get(0).getNext().getElements());
-        Assert.assertEquals(0, result.getPatch().get(0).getNext().getIndex());
+        assertEquals(1, result.getPatch().size());
+        assertEquals(Type.INSERT, result.getPatch().get(0).getType());
+        assertEquals(Arrays.asList("next"), result.getPatch().get(0).getNext().getElements());
+        assertEquals(0, result.getPatch().get(0).getNext().getIndex());
 
         // Next empty
 
         result =
-            this.mocker.getComponentUnderTest().diff(Arrays.asList("previous"), Collections.<String>emptyList(), null);
+            this.diffManager.diff(Arrays.asList("previous"), Collections.<String>emptyList(), null);
 
-        Assert.assertEquals(1, result.getPatch().size());
-        Assert.assertEquals(Type.DELETE, result.getPatch().get(0).getType());
-        Assert.assertEquals(Arrays.asList("previous"), result.getPatch().get(0).getPrevious().getElements());
-        Assert.assertEquals(0, result.getPatch().get(0).getPrevious().getIndex());
+        assertEquals(1, result.getPatch().size());
+        assertEquals(Type.DELETE, result.getPatch().get(0).getType());
+        assertEquals(Arrays.asList("previous"), result.getPatch().get(0).getPrevious().getElements());
+        assertEquals(0, result.getPatch().get(0).getPrevious().getIndex());
     }
 
     @Test
-    public void testDiffCharList() throws Exception
+    public void diffCharList() throws Exception
     {
         // Equals
 
         DiffResult<Character> result =
-            this.mocker.getComponentUnderTest().diff(Arrays.asList('a'), Arrays.asList('a'), null);
+            this.diffManager.diff(Arrays.asList('a'), Arrays.asList('a'), null);
 
-        Assert.assertTrue(result.getPatch().isEmpty());
+        assertTrue(result.getPatch().isEmpty());
 
         // Changed
 
-        result = this.mocker.getComponentUnderTest().diff(Arrays.asList('a'), Arrays.asList('b'), null);
+        result = this.diffManager.diff(Arrays.asList('a'), Arrays.asList('b'), null);
 
-        Assert.assertEquals(1, result.getPatch().size());
-        Assert.assertEquals(Type.CHANGE, result.getPatch().get(0).getType());
+        assertEquals(1, result.getPatch().size());
+        assertEquals(Type.CHANGE, result.getPatch().get(0).getType());
     }
 
     @Test
-    public void testMergeStringList() throws Exception
+    public void mergeStringList() throws Exception
     {
         MergeResult<String> result;
 
         // Only new
 
-        result = this.mocker.getComponentUnderTest().merge(
+        result = this.diffManager.merge(
             Arrays.asList("some content"), Arrays.asList("some new content"), Arrays.asList("some content"), null);
 
-        Assert.assertEquals(Arrays.asList("some new content"), result.getMerged());
+        assertEquals(Arrays.asList("some new content"), result.getMerged());
 
         // Only current
 
-        result = this.mocker.getComponentUnderTest().merge(
+        result = this.diffManager.merge(
             Arrays.asList("some content"), Arrays.asList("some content"), Arrays.asList("some current content"), null);
 
-        Assert.assertEquals(Arrays.asList("some current content"), result.getMerged());
+        assertEquals(Arrays.asList("some current content"), result.getMerged());
 
         // New after
 
-        result = this.mocker.getComponentUnderTest().merge(
+        result = this.diffManager.merge(
             Arrays.asList("some content"), Arrays.asList("some content", "after"), Arrays.asList("some content"), null);
 
-        Assert.assertEquals(Arrays.asList("some content", "after"), result.getMerged());
+        assertEquals(Arrays.asList("some content", "after"), result.getMerged());
 
         // Before and after
 
-        result = this.mocker.getComponentUnderTest().merge(Arrays.asList("some content"),
+        result = this.diffManager.merge(Arrays.asList("some content"),
             Arrays.asList("before", "some content"), Arrays.asList("some content", "after"), null);
 
-        Assert.assertEquals(Arrays.asList("before", "some content", "after"), result.getMerged());
+        assertEquals(Arrays.asList("before", "some content", "after"), result.getMerged());
 
         // After and before
 
-        result = this.mocker.getComponentUnderTest().merge(Arrays.asList("some content"),
+        result = this.diffManager.merge(Arrays.asList("some content"),
             Arrays.asList("some content", "after"), Arrays.asList("before", "some content"), null);
 
-        Assert.assertEquals(Arrays.asList("before", "some content", "after"), result.getMerged());
+        assertEquals(Arrays.asList("before", "some content", "after"), result.getMerged());
 
         // Same current and next
 
-        result = this.mocker.getComponentUnderTest().merge(Arrays.asList("some content"),
+        result = this.diffManager.merge(Arrays.asList("some content"),
             Arrays.asList("some new content"), Arrays.asList("some new content"), null);
 
-        Assert.assertEquals(Arrays.asList("some new content"), result.getMerged());
+        assertEquals(Arrays.asList("some new content"), result.getMerged());
 
     }
 
     @Test
-    public void testMergeCharList() throws Exception
+    public void mergeCharList() throws Exception
     {
         MergeResult<Character> result;
 
         // New empty
 
-        result = this.mocker.getComponentUnderTest()
+        result = this.diffManager
             .merge(toCharacters("a"), toCharacters(""), toCharacters("b"), null);
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("b"), result.getMerged());
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("b"), result.getMerged());
 
         // New before
 
-        result = this.mocker.getComponentUnderTest()
+        result = this.diffManager
             .merge(toCharacters("bc"), toCharacters("abc"), toCharacters("bc"), null);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abc"), result.getMerged());
 
         // New after
 
-        result = this.mocker.getComponentUnderTest()
+        result = this.diffManager
             .merge(toCharacters("ab"), toCharacters("abc"), toCharacters("ab"), null);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abc"), result.getMerged());
 
         // New middle
 
-        result = this.mocker.getComponentUnderTest()
+        result = this.diffManager
             .merge(toCharacters("ac"), toCharacters("abc"), toCharacters("ac"), null);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abc"), result.getMerged());
 
         // Before and after
 
         result =
-            this.mocker.getComponentUnderTest().merge(toCharacters("b"), toCharacters("ab"), toCharacters("bc"), null);
+            this.diffManager.merge(toCharacters("b"), toCharacters("ab"), toCharacters("bc"), null);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abc"), result.getMerged());
 
         // After and before
 
         result =
-            this.mocker.getComponentUnderTest().merge(toCharacters("b"), toCharacters("bc"), toCharacters("ab"), null);
+            this.diffManager.merge(toCharacters("b"), toCharacters("bc"), toCharacters("ab"), null);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abc"), result.getMerged());
 
         // Insert current and next
 
-        result = this.mocker.getComponentUnderTest()
+        result = this.diffManager
             .merge(toCharacters("abc"), toCharacters("aibc"), toCharacters("abcj"), null);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("aibcj"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("aibcj"), result.getMerged());
 
-        result = this.mocker.getComponentUnderTest()
+        result = this.diffManager
             .merge(toCharacters("abc"), toCharacters("abcj"), toCharacters("aibc"), null);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("aibcj"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("aibcj"), result.getMerged());
 
-        result = this.mocker.getComponentUnderTest()
+        result = this.diffManager
             .merge(toCharacters("abc"), toCharacters("ajbc"), toCharacters("aibc"), null);
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("ajibc"), result.getMerged());
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("ajibc"), result.getMerged());
 
-        result = this.mocker.getComponentUnderTest()
+        result = this.diffManager
             .merge(toCharacters("ab"), toCharacters("aijb"), toCharacters("aib"), null);
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("aijb"), result.getMerged());
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("aijb"), result.getMerged());
 
-        result = this.mocker.getComponentUnderTest()
+        result = this.diffManager
             .merge(toCharacters("ab"), toCharacters("ajb"), toCharacters("aijb"), null);
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("aijb"), result.getMerged());
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("aijb"), result.getMerged());
 
         result =
-            this.mocker.getComponentUnderTest().merge(toCharacters("d"), toCharacters("ab d"), toCharacters("abc d"), null);
+            this.diffManager.merge(toCharacters("d"), toCharacters("ab d"), toCharacters("abc d"), null);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc d"), result.getMerged());
-
-        result =
-            this.mocker.getComponentUnderTest().merge(toCharacters("d"), toCharacters("abc d"), toCharacters("ab d"), null);
-
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc d"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abc d"), result.getMerged());
 
         result =
-            this.mocker.getComponentUnderTest().merge(toCharacters("d"), toCharacters("bcd"), toCharacters("abcd"), null);
+            this.diffManager.merge(toCharacters("d"), toCharacters("abc d"), toCharacters("ab d"), null);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abcd"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abc d"), result.getMerged());
 
         result =
-            this.mocker.getComponentUnderTest().merge(toCharacters("d"), toCharacters("abcd"), toCharacters("bcd"), null);
+            this.diffManager.merge(toCharacters("d"), toCharacters("bcd"), toCharacters("abcd"), null);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abcd"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abcd"), result.getMerged());
+
+        result =
+            this.diffManager.merge(toCharacters("d"), toCharacters("abcd"), toCharacters("bcd"), null);
+
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abcd"), result.getMerged());
 
         // Misc
 
-        result = this.mocker.getComponentUnderTest().merge(toCharacters("Alice Macro"),
+        result = this.diffManager.merge(toCharacters("Alice Macro"),
             toCharacters("Alice Wiki Macro (upgraded)"), toCharacters("Alice Extension"), null);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("Alice Wiki Extension (upgraded)"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("Alice Wiki Extension (upgraded)"), result.getMerged());
 
-        result = this.mocker.getComponentUnderTest()
+        result = this.diffManager
             .merge(toCharacters("$a(b)"), toCharacters("$c(d)e"), toCharacters("$c(d)e"), null);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals("$c(d)e", toString(result.getMerged()));
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals("$c(d)e", toString(result.getMerged()));
     }
 
     @Test
-    public void testMergeCharOnConflicts() throws Exception
+    public void mergeCharOnConflicts() throws Exception
     {
         MergeResult<Character> result;
 
         // Current and new at the same place
         result =
-            this.mocker.getComponentUnderTest().merge(toCharacters("a"), toCharacters("b"), toCharacters("c"), null);
+            this.diffManager.merge(toCharacters("a"), toCharacters("b"), toCharacters("c"), null);
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("c"), result.getMerged());
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("c"), result.getMerged());
 
         // Current and new in conflict at different indices
-        result = this.mocker.getComponentUnderTest()
+        result = this.diffManager
             .merge(toCharacters("abcd"), toCharacters("yycd"), toCharacters("azzd"), null);
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals("azzd", toString(result.getMerged()));
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals("azzd", toString(result.getMerged()));
 
         // Current and new in conflict at different indices
-        result = this.mocker.getComponentUnderTest()
+        result = this.diffManager
             .merge(toCharacters("abcd"), toCharacters("azzd"), toCharacters("yycd"), null);
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals("yycd", toString(result.getMerged()));
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals("yycd", toString(result.getMerged()));
 
         // New overlapping current
-        result = this.mocker.getComponentUnderTest()
+        result = this.diffManager
             .merge(toCharacters("aabbcc"), toCharacters("arrbcc"), toCharacters("ddddcc"), null);
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals("ddddcc", toString(result.getMerged()));
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals("ddddcc", toString(result.getMerged()));
 
         // current overlapping new
-        result = this.mocker.getComponentUnderTest()
+        result = this.diffManager
             .merge(toCharacters("aabbcc"), toCharacters("ddddcc"), toCharacters("arrbcc"), null);
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals("arrbcc", toString(result.getMerged()));
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals("arrbcc", toString(result.getMerged()));
 
-        result = this.mocker.getComponentUnderTest()
+        result = this.diffManager
             .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"), null);
 
-        Assert.assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals("arrbcc yycd", toString(result.getMerged()));
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals("arrbcc yycd", toString(result.getMerged()));
     }
 
     @Test
-    public void testMergeWithEmptyNew() throws Exception
+    public void mergeWithEmptyNew() throws Exception
     {
         MergeResult<Character> result;
 
         result =
-            this.mocker.getComponentUnderTest().merge(toCharacters("a"), toCharacters(""), toCharacters("b"), null);
+            this.diffManager.merge(toCharacters("a"), toCharacters(""), toCharacters("b"), null);
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("b"), result.getMerged());
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("b"), result.getMerged());
     }
 
     @Test
-    public void testMergeWhenUserHasChangedAllContent() throws Exception
+    public void mergeWhenUserHasChangedAllContent() throws Exception
     {
         MergeResult<String> result;
 
         // Test 1: All content has changed between previous and current
-        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
                 Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
                 Arrays.asList("New content", "That is completely different"), null);
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
             .contains("Conflict between"));
-        Assert.assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
+        assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
 
         MergeConfiguration<String> mergeConfiguration = new MergeConfiguration<>();
         mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
-        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
             Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
             Arrays.asList("New content", "That is completely different"), mergeConfiguration);
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
             .contains("Conflict between"));
-        Assert.assertEquals(Arrays.asList("Line 1", "Line 2", "Line 3"), result.getMerged());
+        assertEquals(Arrays.asList("Line 1", "Line 2", "Line 3"), result.getMerged());
 
         mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
-        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
             Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
             Arrays.asList("New content", "That is completely different"), mergeConfiguration);
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
             .contains("Conflict between"));
-        Assert.assertEquals(Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), result.getMerged());
+        assertEquals(Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), result.getMerged());
 
         // Test 2: All content has been deleted between previous and current
-        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
                 Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
                 Collections.emptyList(), null);
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
             .contains("Conflict between"));
-        Assert.assertEquals(Collections.emptyList(), result.getMerged());
+        assertEquals(Collections.emptyList(), result.getMerged());
 
         mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
-        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
             Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
             Collections.emptyList(), mergeConfiguration);
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
             .contains("Conflict between"));
-        Assert.assertEquals(Arrays.asList("Line 1", "Line 2", "Line 3"), result.getMerged());
+        assertEquals(Arrays.asList("Line 1", "Line 2", "Line 3"), result.getMerged());
 
         mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
-        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
             Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
             Collections.emptyList(), mergeConfiguration);
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
             .contains("Conflict between"));
-        Assert.assertEquals(Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), result.getMerged());
+        assertEquals(Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), result.getMerged());
 
         // Test 3: All content has been deleted between previous and next
-        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
             Collections.emptyList(),
             Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), null);
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
             .contains("Conflict between"));
-        Assert.assertEquals(Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), result.getMerged());
+        assertEquals(Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), result.getMerged());
 
         mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
-        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
             Collections.emptyList(),
             Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), mergeConfiguration);
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
             .contains("Conflict between"));
-        Assert.assertEquals(Arrays.asList("Line 1", "Line 2", "Line 3"), result.getMerged());
+        assertEquals(Arrays.asList("Line 1", "Line 2", "Line 3"), result.getMerged());
 
         mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
-        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
             Collections.emptyList(),
             Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), mergeConfiguration);
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
             .contains("Conflict between"));
-        Assert.assertEquals(Collections.emptyList(), result.getMerged());
+        assertEquals(Collections.emptyList(), result.getMerged());
 
         // Test 4: All content has changed between previous and current, and current and next are identical
-        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
             Arrays.asList("New content", "That is completely different"),
             Arrays.asList("New content", "That is completely different"), null);
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
 
         mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
-        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
             Arrays.asList("New content", "That is completely different"),
             Arrays.asList("New content", "That is completely different"), mergeConfiguration);
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
     }
 }
