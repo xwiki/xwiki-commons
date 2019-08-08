@@ -156,8 +156,6 @@
             {
               "revapi": {
                 "ignore" : [
-                  {
-                  }
                   // Add more ignores below...
                 ]
               }
