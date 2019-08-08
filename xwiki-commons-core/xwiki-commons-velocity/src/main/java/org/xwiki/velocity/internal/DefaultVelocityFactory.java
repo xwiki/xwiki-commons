@@ -93,7 +93,7 @@ public class DefaultVelocityFactory implements VelocityFactory
         // Register a JMX MBean for providing information about the created Velocity Engine (template namespaces,
         // macros, etc).
         JMXVelocityEngineMBean mbean = new JMXVelocityEngine(engine);
-        this.jmxRegistration.registerMBean(mbean, MBEANNAME_PREFIX + key);
+        this.jmxRegistration.registerMBean(mbean, MBEANNAME_PREFIX + toValidName(key));
 
         return engine;
     }
@@ -101,8 +101,17 @@ public class DefaultVelocityFactory implements VelocityFactory
     @Override
     public VelocityEngine removeVelocityEngine(String key)
     {
-        this.jmxRegistration.unregisterMBean(MBEANNAME_PREFIX + key);
+        VelocityEngine engine = this.velocityEngines.remove(key);
 
-        return this.velocityEngines.remove(key);
+        if (engine != null) {
+            this.jmxRegistration.unregisterMBean(MBEANNAME_PREFIX + toValidName(key));
+        }
+
+        return engine;
+    }
+
+    private String toValidName(String name)
+    {
+        return name.replaceAll("[,=:\\'\\\"]", "_");
     }
 }
