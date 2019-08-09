@@ -321,41 +321,6 @@ public class DefaultDiffManagerTest
 
         assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
         assertEquals("$c(d)e", toString(result.getMerged()));
-
-//        result = this.diffManager
-//            .merge(toCharacters("abce"), toCharacters("abde"), toCharacters("abcde"), null);
-//        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-//        assertEquals("abde", toString(result.getMerged()));
-//
-//        MergeResult<String> resultStr = this.diffManager
-//            .merge(Arrays.asList(
-//                "Once upon a time",
-//                "a wolf",
-//                "started to walk",
-//                "in the forest"
-//                ),
-//                Arrays.asList(
-//                "Once upon a time",
-//                    "a wolf",
-//                    "dressed in black",
-//                    "in the forest"
-//                ),
-//                Arrays.asList(
-//                    "Once upon a time",
-//                    "a wolf",
-//                    "started to walk",
-//                    "dressed in black",
-//                    "in the forest"
-//                ), null);
-//        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-//        assertEquals(
-//            Arrays.asList("Once upon a time", "a wolf", "dressed in black", "in the forest"),
-//            resultStr.getMerged());
-//
-//        result = this.diffManager
-//            .merge(toCharacters("abcefhik"), toCharacters("abdefgijk"), toCharacters("abcdehijk"), null);
-//        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-//        assertEquals("abdegijk", toString(result.getMerged()));
     }
 
     @Test
@@ -635,6 +600,51 @@ public class DefaultDiffManagerTest
         assertEquals(conflict, result.getConflicts().get(0));
         assertEquals(conflict1, result.getConflicts().get(1));
         assertEquals("ddddcc azzd", toString(result.getMerged()));
+
+        // Another multiple conflicts
+        conflict = createConflict(2,
+            Type.INSERT, 3, 3, Collections.emptyList(), Arrays.asList('d'),
+            Type.CHANGE, 2, 2, Arrays.asList('c'), Arrays.asList('d'));
+        conflict1 = createConflict(4,
+            Type.DELETE, 4, 5, Arrays.asList('f'), Collections.emptyList(),
+            Type.CHANGE, 5, 5, Arrays.asList('h'), Arrays.asList('g'));
+        mergeConfiguration = null;
+        result = this.diffManager
+            .merge(toCharacters("abcefhik"), toCharacters("abdefgijk"), toCharacters("abcdehijk"), mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(2, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(conflict1, result.getConflicts().get(1));
+        assertEquals("abcdehijk", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        result = this.diffManager
+            .merge(toCharacters("abcefhik"), toCharacters("abdefgijk"), toCharacters("abcdehijk"), mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(2, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(conflict1, result.getConflicts().get(1));
+        assertEquals("abcdehijk", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("abcefhik"), toCharacters("abdefgijk"), toCharacters("abcdehijk"), mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(2, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(conflict1, result.getConflicts().get(1));
+        assertEquals("abcefhijk", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("abcefhik"), toCharacters("abdefgijk"), toCharacters("abcdehijk"), mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(2, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(conflict1, result.getConflicts().get(1));
+        assertEquals("abdefgijk", toString(result.getMerged()));
     }
 
     @Test
@@ -1284,6 +1294,33 @@ public class DefaultDiffManagerTest
         assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
         assertEquals(0, result.getConflicts().size());
         assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
+
+        mergeConfiguration = null;
+        MergeResult<String> resultStr = this.diffManager
+            .merge(
+                Arrays.asList(
+                    "Once upon a time",
+                    "a wolf",
+                    "started to walk",
+                    "in the forest"
+                ),
+                Arrays.asList(
+                    "Once upon a time",
+                    "a wolf",
+                    "dressed in black",
+                    "in the forest"
+                ),
+                Arrays.asList(
+                    "Once upon a time",
+                    "a wolf",
+                    "started to walk",
+                    "dressed in black",
+                    "in the forest"
+                ), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(
+            Arrays.asList("Once upon a time", "a wolf", "started to walk", "dressed in black", "in the forest"),
+            resultStr.getMerged());
     }
 
     private <E> Delta<E> createDelta(Type type, Chunk<E> previous, Chunk<E> next)

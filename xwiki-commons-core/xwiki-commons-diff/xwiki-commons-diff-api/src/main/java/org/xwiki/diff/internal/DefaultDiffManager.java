@@ -357,7 +357,7 @@ public class DefaultDiffManager implements DiffManager
                     deltaNext = nextElement(patchNext, index);
                 } else {
                     if (deltaNext != null
-                        && deltaNext.getPrevious().getIndex() <= deltaCurrent.getPrevious().getLastIndex()) {
+                        && deltaCurrent.getPrevious().isOverlappingWith(deltaNext.getPrevious())) {
                         int newIndex = applyDecision(conflictDecisions, commonAncestor, deltaNext, deltaCurrent,
                             merged, index);
                         if (newIndex == Integer.MIN_VALUE) {
@@ -380,7 +380,7 @@ public class DefaultDiffManager implements DiffManager
             } else if (isPreviousIndex(deltaNext, index)) {
                 // Modification in next
                 if (deltaCurrent != null
-                    && deltaCurrent.getPrevious().getIndex() <= deltaNext.getPrevious().getLastIndex()) {
+                    && deltaCurrent.getPrevious().isOverlappingWith(deltaNext.getPrevious())) {
                     int newIndex = applyDecision(conflictDecisions, commonAncestor, deltaNext, deltaCurrent,
                         merged, index);
                     if (newIndex == Integer.MIN_VALUE) {
