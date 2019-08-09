@@ -275,7 +275,7 @@ public class DefaultDiffManager implements DiffManager
                         index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
                     }
 
-                    deltaNext = nextElement(patchNext);
+                    deltaNext = nextElement(patchNext, index);
                 } else {
                     if (deltaNext != null
                         && deltaNext.getPrevious().getIndex() <= deltaCurrent.getPrevious().getLastIndex()) {
@@ -284,7 +284,7 @@ public class DefaultDiffManager implements DiffManager
 
                         index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
 
-                        deltaNext = nextElement(patchNext);
+                        deltaNext = nextElement(patchNext, index);
                     } else {
                         index = apply(deltaCurrent, merged, index);
                         if (deltaCurrent.getType() == Type.INSERT) {
@@ -293,7 +293,7 @@ public class DefaultDiffManager implements DiffManager
                     }
                 }
 
-                deltaCurrent = nextElement(patchCurrent);
+                deltaCurrent = nextElement(patchCurrent, index);
             } else if (isPreviousIndex(deltaNext, index)) {
                 // Modification in next
                 if (deltaCurrent != null
@@ -302,7 +302,7 @@ public class DefaultDiffManager implements DiffManager
                     logConflict(mergeResult, deltaCurrent, deltaNext);
 
                     index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
-                    deltaCurrent = nextElement(patchCurrent);
+                    deltaCurrent = nextElement(patchCurrent, index);
                 } else {
                     index = apply(deltaNext, merged, index);
                     if (deltaNext.getType() == Type.INSERT) {
@@ -310,7 +310,7 @@ public class DefaultDiffManager implements DiffManager
                     }
                 }
 
-                deltaNext = nextElement(patchNext);
+                deltaNext = nextElement(patchNext, index);
             } else {
                 merged.add(commonAncestor.get(index));
             }
@@ -393,6 +393,24 @@ public class DefaultDiffManager implements DiffManager
     private <E> E nextElement(List<E> list)
     {
         return list != null && !list.isEmpty() ? list.remove(0) : null;
+    }
+
+    /**
+     * Get the next element in the list and removed it from the list.
+     * If the element last index is before the current index, then it can be ignored:
+     * we already skipped this index, because of a fallback for example.
+     * @param list the list of delta elements
+     * @param index the current index
+     * @param <E> the elements to be merged
+     * @return a new delta that has been removed from the list or null if the list is now empty.
+     */
+    private <E> Delta<E> nextElement(List<Delta<E>> list, int index)
+    {
+        Delta<E> result = null;
+        do {
+            result = nextElement(list);
+        } while (result != null && result.getPrevious().getLastIndex() <= index);
+        return result;
     }
 
     private <E> boolean isPreviousIndex(Delta<E> delta, int index)

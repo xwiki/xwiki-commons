@@ -31,6 +31,7 @@ import org.xwiki.diff.DiffResult;
 import org.xwiki.diff.MergeConfiguration;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.logging.LogLevel;
+import org.xwiki.logging.event.LogEvent;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
@@ -368,11 +369,31 @@ public class DefaultDiffManagerTest
         assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
         assertEquals("arrbcc", toString(result.getMerged()));
 
+        mergeConfiguration = null;
         result = this.diffManager
-            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"), null);
-
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
         assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        List<LogEvent> logConflicts = new ArrayList<>(result.getLog().getLogs(LogLevel.ERROR));
         assertEquals("arrbcc yycd", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(logConflicts, result.getLog().getLogs(LogLevel.ERROR));
+        assertEquals("aabbcc abcd", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(logConflicts, result.getLog().getLogs(LogLevel.ERROR));
+        assertEquals("ddddcc azzd", toString(result.getMerged()));
     }
 
     @Test
