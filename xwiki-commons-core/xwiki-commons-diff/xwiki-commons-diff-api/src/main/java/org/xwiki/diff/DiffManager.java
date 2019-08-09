@@ -45,6 +45,23 @@ public interface DiffManager
 
     /**
      * Execute a 3-way merge on provided versions.
+     * If a conflict is detected during the merge, no error is triggered and the returned {@link MergeResult} object
+     * always has a result (see {@link MergeResult#getMerged()}): the conflict is automatically fixed with a fallback
+     * defined by the {@link MergeConfiguration}.
+     *
+     * If the {@link MergeConfiguration} instance contains some {@link ConflictDecision}
+     * (see {@link MergeConfiguration#setConflictDecisionList(List)}), then those decisions are taken into account
+     * to solve the conflict. The decision linked to the conflict is retrieved and applied, unless the decision state
+     * is still {@link org.xwiki.diff.ConflictDecision.DecisionType#UNDECIDED}. When a decision is used to solve a
+     * conflict, the conflict is not recorded in the {@link MergeResult}.
+     *
+     * If the decision is {@link org.xwiki.diff.ConflictDecision.DecisionType#UNDECIDED}, or if no decision is available
+     * for this conflict, then the fallback version defined in the {@link MergeConfiguration}
+     * (see {@link MergeConfiguration#setFallbackOnConflict(MergeConfiguration.Version)}) is used to fix the conflict,
+     * but in that case the conflict is recorded in the returned {@link MergeResult}.
+     *
+     * Finally the configuration parameter accepts a null value: in that case, the fallback version is always the
+     * current version.
      *
      * @param <E> the type of compared elements
      * @param commonAncestor the common ancestor of the two versions of the content to compare
