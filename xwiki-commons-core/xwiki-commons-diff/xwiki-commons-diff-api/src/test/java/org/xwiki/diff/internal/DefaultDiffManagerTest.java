@@ -1081,9 +1081,6 @@ public class DefaultDiffManagerTest
         assertEquals(conflict1, result.getConflicts().get(0));
         assertEquals("ddddcc yycd", toString(result.getMerged()));
 
-        // TODO:
-        // custom / current, current / custom
-
         conflictDecision.setCustom(toCharacters("bla"));
         conflictDecision1.setType(ConflictDecision.DecisionType.UNDECIDED);
         result = this.diffManager
@@ -1104,7 +1101,7 @@ public class DefaultDiffManagerTest
         assertEquals(conflict, result.getConflicts().get(0));
         assertEquals("arrbcc food", toString(result.getMerged()));
 
-        conflictDecision.setCustom(Collections.emptyList());
+        conflictDecision.setType(ConflictDecision.DecisionType.CUSTOM);
         conflictDecision1.setType(ConflictDecision.DecisionType.NEXT);
         result = this.diffManager
             .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),

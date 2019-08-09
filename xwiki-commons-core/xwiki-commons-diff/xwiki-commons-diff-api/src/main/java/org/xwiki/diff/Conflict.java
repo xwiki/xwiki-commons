@@ -25,7 +25,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Represent a conflict that happened during a merge operation.
- * For more information, see {@link DiffManager#merge(List, List, List, MergeConfiguration, List)}.
+ * For more information, see {@link DiffManager#merge(List, List, List, MergeConfiguration)}.
  * @param <E> the type of element used in the merge operation.
  * @version $Id$
  * @since 11.7RC1
