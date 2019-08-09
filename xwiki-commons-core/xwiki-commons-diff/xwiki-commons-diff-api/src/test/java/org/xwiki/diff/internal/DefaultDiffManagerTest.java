@@ -394,6 +394,33 @@ public class DefaultDiffManagerTest
         assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
         assertEquals(logConflicts, result.getLog().getLogs(LogLevel.ERROR));
         assertEquals("ddddcc azzd", toString(result.getMerged()));
+
+        // Another multiple conflicts
+        mergeConfiguration = null;
+        result = this.diffManager
+            .merge(toCharacters("abcefhik"), toCharacters("abdefgijk"), toCharacters("abcdehijk"), mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals("abcdehijk", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        result = this.diffManager
+            .merge(toCharacters("abcefhik"), toCharacters("abdefgijk"), toCharacters("abcdehijk"), mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals("abcdehijk", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("abcefhik"), toCharacters("abdefgijk"), toCharacters("abcdehijk"), mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals("abcefhijk", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("abcefhik"), toCharacters("abdefgijk"), toCharacters("abcdehijk"), mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals("abdefgijk", toString(result.getMerged()));
     }
 
     @Test
@@ -508,5 +535,32 @@ public class DefaultDiffManagerTest
             Arrays.asList("New content", "That is completely different"), mergeConfiguration);
         assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
         assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
+
+        mergeConfiguration = null;
+        MergeResult<String> resultStr = this.diffManager
+            .merge(
+                Arrays.asList(
+                    "Once upon a time",
+                    "a wolf",
+                    "started to walk",
+                    "in the forest"
+                ),
+                Arrays.asList(
+                    "Once upon a time",
+                    "a wolf",
+                    "dressed in black",
+                    "in the forest"
+                ),
+                Arrays.asList(
+                    "Once upon a time",
+                    "a wolf",
+                    "started to walk",
+                    "dressed in black",
+                    "in the forest"
+                ), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(
+            Arrays.asList("Once upon a time", "a wolf", "started to walk", "dressed in black", "in the forest"),
+            resultStr.getMerged());
     }
 }

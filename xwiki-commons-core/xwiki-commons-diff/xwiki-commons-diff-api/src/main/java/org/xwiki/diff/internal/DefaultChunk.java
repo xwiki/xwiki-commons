@@ -107,6 +107,16 @@ public class DefaultChunk<E> implements Chunk<E>
     }
 
     @Override
+    public boolean isOverlappingWith(Chunk<E> otherChunk)
+    {
+        if (getIndex() <= otherChunk.getIndex()) {
+            return getLastIndex() + 1 >= otherChunk.getIndex();
+        } else {
+            return getIndex() <= otherChunk.getLastIndex() + 1;
+        }
+    }
+
+    @Override
     public int hashCode()
     {
         HashCodeBuilder builder = new HashCodeBuilder();

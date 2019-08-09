@@ -278,12 +278,11 @@ public class DefaultDiffManager implements DiffManager
                     deltaNext = nextElement(patchNext, index);
                 } else {
                     if (deltaNext != null
-                        && deltaNext.getPrevious().getIndex() <= deltaCurrent.getPrevious().getLastIndex()) {
+                        && deltaCurrent.getPrevious().isOverlappingWith(deltaNext.getPrevious())) {
                         // Conflict
                         logConflict(mergeResult, deltaCurrent, deltaNext);
 
                         index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
-
                         deltaNext = nextElement(patchNext, index);
                     } else {
                         index = apply(deltaCurrent, merged, index);
@@ -297,7 +296,7 @@ public class DefaultDiffManager implements DiffManager
             } else if (isPreviousIndex(deltaNext, index)) {
                 // Modification in next
                 if (deltaCurrent != null
-                    && deltaCurrent.getPrevious().getIndex() <= deltaNext.getPrevious().getLastIndex()) {
+                    && deltaCurrent.getPrevious().isOverlappingWith(deltaNext.getPrevious())) {
                     // Conflict
                     logConflict(mergeResult, deltaCurrent, deltaNext);
 
