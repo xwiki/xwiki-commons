@@ -19,50 +19,32 @@
  */
 package org.xwiki.diff;
 
-import java.util.Collections;
 import java.util.List;
 
-import org.xwiki.logging.LogQueue;
 import org.xwiki.stability.Unstable;
 
 /**
- * @param <E> the type of compared elements
+ * Represent a conflict that happened during a merge operation.
+ * For more information, see {@link DiffManager#merge(List, List, List, MergeConfiguration, List)}.
+ * @param <E> the type of element used in the merge operation.
  * @version $Id$
+ * @since 11.7RC1
  */
-public interface MergeResult<E>
+@Unstable
+public interface Conflict<E>
 {
     /**
-     * @return the common ancestor
+     * @return the index where the conflict happened during the merge.
      */
-    List<E> getCommonAncestor();
+    int getIndex();
 
     /**
-     * @return the new version
+     * @return the {@link Delta} of the current version of the merge.
      */
-    List<E> getNext();
+    Delta<E> getDeltaCurrent();
 
     /**
-     * @return the current version
+     * @return the {@link Delta} of the next version of the merge.
      */
-    List<E> getCurrent();
-
-    /**
-     * @return the log of what append during the merge execution
-     */
-    LogQueue getLog();
-
-    /**
-     * @return the result of the 3 ways merge
-     */
-    List<E> getMerged();
-
-    /**
-     * @return the list of conflicts obtained during the merge
-     * @since 11.7RC1
-     */
-    @Unstable
-    default List<Conflict> getConflicts()
-    {
-        return Collections.emptyList();
-    }
+    Delta<E> getDeltaNext();
 }

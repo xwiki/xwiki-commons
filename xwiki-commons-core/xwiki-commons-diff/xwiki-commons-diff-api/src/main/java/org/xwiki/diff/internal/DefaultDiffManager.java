@@ -26,6 +26,7 @@ import java.util.List;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.diff.ConflictDecision;
 import org.xwiki.diff.Delta;
 import org.xwiki.diff.Delta.Type;
 import org.xwiki.diff.DiffConfiguration;
@@ -116,12 +117,13 @@ public class DefaultDiffManager implements DiffManager
             try {
                 diffCurrentResult = diff(commonAncestor, current, null);
             } catch (DiffException e) {
-                throw new MergeException("Faile to diff between common ancestor and current version", e);
+                throw new MergeException("Fail to diff between common ancestor and current version", e);
             }
             mergeResult.getLog().addAll(diffCurrentResult.getLog());
 
             Patch<E> patchCurrent = diffCurrentResult.getPatch();
 
+            mergeResult.setMerged(new ArrayList<>());
             if (patchCurrent.isEmpty()) {
                 mergeResult.setMerged(next);
             } else if (!current.equals(next) && (isFullyModified(commonAncestor, patchCurrent)
@@ -131,14 +133,72 @@ public class DefaultDiffManager implements DiffManager
                 // ... except if the current content is identical to the next one!
                 Delta<E> deltaNext = nextElement(patchNext);
                 Delta<E> deltaCurrent = nextElement(patchCurrent);
-                logConflict(mergeResult, deltaCurrent, deltaNext);
-                mergeResult.setMerged(fallback(commonAncestor, next, current, configuration));
+                List<ConflictDecision<E>> conflictDecisionList =
+                    (configuration != null) ? configuration.getConflictDecisionList() : Collections.emptyList();
+                int newIndex = applyDecision(conflictDecisionList, mergeResult.getMerged(), 0);
+                if (newIndex == Integer.MIN_VALUE) {
+                    logConflict(mergeResult, deltaCurrent, deltaNext, 0);
+                    mergeResult.setMerged(fallback(commonAncestor, next, current, configuration));
+                }
             } else {
                 merge(mergeResult, commonAncestor, patchNext, patchCurrent, configuration);
             }
         }
 
         return mergeResult;
+    }
+
+    private <E> ConflictDecision<E> findDecision(List<ConflictDecision<E>> decisions, int currentIndex)
+    {
+        ConflictDecision<E> result = null;
+        if (decisions != null && !decisions.isEmpty()) {
+            for (ConflictDecision<E> decision : decisions) {
+                if (decision.getConflict().getIndex() == currentIndex) {
+                    result = decision;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    private <E> int applyDecision(List<ConflictDecision<E>> decisions, List<E> merged, int currentIndex)
+    {
+        ConflictDecision<E> conflictDecision = findDecision(decisions, currentIndex);
+        if (conflictDecision == null || conflictDecision.getType() == ConflictDecision.DecisionType.UNDECIDED) {
+            return Integer.MIN_VALUE;
+        } else {
+            merged.addAll(conflictDecision.getChunk().getElements());
+            return merged.size();
+        }
+    }
+
+    private <E> int applyDecision(List<ConflictDecision<E>> decisions, List<E> commonAncestor, Delta<E> deltaNext,
+        Delta<E> deltaCurrent, List<E> merged, int currentIndex)
+    {
+        ConflictDecision<E> conflictDecision = findDecision(decisions, currentIndex);
+        if (conflictDecision == null || conflictDecision.getType() == ConflictDecision.DecisionType.UNDECIDED) {
+            return Integer.MIN_VALUE;
+        } else {
+            switch (conflictDecision.getType()) {
+                case PREVIOUS:
+                    return fallback(commonAncestor, deltaNext, deltaCurrent, merged, currentIndex, Version.PREVIOUS);
+
+                case NEXT:
+                    return fallback(commonAncestor, deltaNext, deltaCurrent, merged, currentIndex, Version.NEXT);
+
+                case CURRENT:
+                    return fallback(commonAncestor, deltaNext, deltaCurrent, merged, currentIndex, Version.CURRENT);
+
+                case CUSTOM:
+                    merged.addAll(conflictDecision.getChunk().getElements());
+                    return Math.max(deltaCurrent.getPrevious().getLastIndex(), deltaNext.getPrevious().getLastIndex());
+
+                default:
+                    // should never occur
+                    throw new IllegalArgumentException();
+            }
+        }
     }
 
     private <E> List<E> fallback(List<E> commonAncestor, List<E> next, List<E> current,
@@ -164,14 +224,19 @@ public class DefaultDiffManager implements DiffManager
     private <E> int fallback(List<E> commonAncestor, Delta<E> deltaNext, Delta<E> deltaCurrent, List<E> merged,
         int currentIndex, MergeConfiguration<E> configuration)
     {
-        int newIndex = currentIndex;
-
         Version fallbackVersion;
         if (configuration != null) {
             fallbackVersion = configuration.getFallbackOnConflict();
         } else {
             fallbackVersion = Version.CURRENT;
         }
+        return fallback(commonAncestor, deltaNext, deltaCurrent, merged, currentIndex, fallbackVersion);
+    }
+
+    private <E> int fallback(List<E> commonAncestor, Delta<E> deltaNext, Delta<E> deltaCurrent, List<E> merged,
+        int currentIndex, Version fallbackVersion)
+    {
+        int newIndex = currentIndex;
 
         switch (fallbackVersion) {
             case NEXT:
@@ -213,8 +278,11 @@ public class DefaultDiffManager implements DiffManager
      * @throws MergeException failed to merge
      */
     private <E> void merge(DefaultMergeResult<E> mergeResult, List<E> commonAncestor, Patch<E> patchNext,
-        Patch<E> patchCurrent, MergeConfiguration<E> configuration) throws MergeException
+        Patch<E> patchCurrent, MergeConfiguration<E> configuration)
+        throws MergeException
     {
+        List<ConflictDecision<E>> conflictDecisions =
+            (configuration != null) ? configuration.getConflictDecisionList() : Collections.emptyList();
         // Merge the two diffs
         List<E> merged = new ArrayList<E>();
 
@@ -256,11 +324,17 @@ public class DefaultDiffManager implements DiffManager
                         }
                     } else if (deltaCurrent.getType() == Type.INSERT) {
                         if (deltaNext.getType() == Type.INSERT) {
-                            // Conflict
-                            logConflict(mergeResult, deltaCurrent, deltaNext);
-
-                            merged.addAll(or(deltaNext.getNext().getElements(), deltaCurrent.getNext().getElements()));
-                            merged.add(commonAncestor.get(index));
+                            int newIndex = applyDecision(conflictDecisions, commonAncestor, deltaNext, deltaCurrent,
+                                merged, index);
+                            if (newIndex == Integer.MIN_VALUE) {
+                                // Conflict
+                                logConflict(mergeResult, deltaCurrent, deltaNext, index);
+                                merged.addAll(or(deltaNext.getNext().getElements(),
+                                    deltaCurrent.getNext().getElements()));
+                                merged.add(commonAncestor.get(index));
+                            } else {
+                                index = newIndex;
+                            }
                         } else {
                             index = apply(deltaCurrent, merged, index);
                             index = apply(deltaNext, merged, index);
@@ -269,21 +343,30 @@ public class DefaultDiffManager implements DiffManager
                         index = apply(deltaNext, merged, index);
                         index = apply(deltaCurrent, merged, index);
                     } else {
-                        // Conflict
-                        logConflict(mergeResult, deltaCurrent, deltaNext);
-
-                        index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
+                        int newIndex = applyDecision(conflictDecisions, commonAncestor, deltaNext, deltaCurrent,
+                            merged, index);
+                        if (newIndex == Integer.MIN_VALUE) {
+                            // Conflict
+                            logConflict(mergeResult, deltaCurrent, deltaNext, index);
+                            index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
+                        } else {
+                            index = newIndex;
+                        }
                     }
 
                     deltaNext = nextElement(patchNext, index);
                 } else {
                     if (deltaNext != null
                         && deltaNext.getPrevious().getIndex() <= deltaCurrent.getPrevious().getLastIndex()) {
-                        // Conflict
-                        logConflict(mergeResult, deltaCurrent, deltaNext);
-
-                        index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
-
+                        int newIndex = applyDecision(conflictDecisions, commonAncestor, deltaNext, deltaCurrent,
+                            merged, index);
+                        if (newIndex == Integer.MIN_VALUE) {
+                            // Conflict
+                            logConflict(mergeResult, deltaCurrent, deltaNext, index);
+                            index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
+                        } else {
+                            index = newIndex;
+                        }
                         deltaNext = nextElement(patchNext, index);
                     } else {
                         index = apply(deltaCurrent, merged, index);
@@ -298,10 +381,15 @@ public class DefaultDiffManager implements DiffManager
                 // Modification in next
                 if (deltaCurrent != null
                     && deltaCurrent.getPrevious().getIndex() <= deltaNext.getPrevious().getLastIndex()) {
-                    // Conflict
-                    logConflict(mergeResult, deltaCurrent, deltaNext);
-
-                    index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
+                    int newIndex = applyDecision(conflictDecisions, commonAncestor, deltaNext, deltaCurrent,
+                        merged, index);
+                    if (newIndex == Integer.MIN_VALUE) {
+                        // Conflict
+                        logConflict(mergeResult, deltaCurrent, deltaNext, index);
+                        index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
+                    } else {
+                        index = newIndex;
+                    }
                     deltaCurrent = nextElement(patchCurrent, index);
                 } else {
                     index = apply(deltaNext, merged, index);
@@ -363,9 +451,11 @@ public class DefaultDiffManager implements DiffManager
         return result;
     }
 
-    private <E> void logConflict(DefaultMergeResult<E> mergeResult, Delta<E> deltaCurrent, Delta<E> deltaNext)
+    private <E> void logConflict(DefaultMergeResult<E> mergeResult, Delta<E> deltaCurrent, Delta<E> deltaNext,
+        int index)
     {
         mergeResult.getLog().error("Conflict between [{}] and [{}]", deltaCurrent, deltaNext);
+        mergeResult.addConflict(new DefaultConflict<E>(index, deltaCurrent, deltaNext));
     }
 
     private <E> int apply(Delta<E> delta, List<E> merged, int currentIndex)

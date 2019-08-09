@@ -19,7 +19,11 @@
  */
 package org.xwiki.diff;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import org.xwiki.stability.Unstable;
 
 /**
  * Setup merge behavior.
@@ -35,6 +39,40 @@ public class MergeConfiguration<E> extends HashMap<String, Object>
     public static final String KEY_FALLBACKONCONFLICT = "fallbackonconflict";
 
     private static final long serialVersionUID = 1L;
+
+    private List<ConflictDecision<E>> conflictDecisionList;
+
+    /**
+     * Create a merge configuration with the given list of decisions and a fallback to current version by default.
+     * @param conflictDecisions the decisions to be taken in case of conflict.
+     * @since 11.7RC1
+     */
+    @Unstable
+    public MergeConfiguration(List<ConflictDecision<E>> conflictDecisions)
+    {
+        this(Version.CURRENT, conflictDecisions);
+    }
+
+    /**
+     * Crate a merge configuration with the given fallback version and the given conflict decisions to be taken.
+     * @param version the fallback version.
+     * @param conflictDecisions the decisions to be taken in case of conflict.
+     * @since 11.7RC1
+     */
+    @Unstable
+    public MergeConfiguration(Version version, List<ConflictDecision<E>> conflictDecisions)
+    {
+        setFallbackOnConflict(version);
+        setConflictDecisionList(conflictDecisions);
+    }
+
+    /**
+     * Create a default merge configuration without any decisions and with a fallback on current version by default.
+     */
+    public MergeConfiguration()
+    {
+        this(new ArrayList<>());
+    }
 
     /**
      * One of the merged versions.
@@ -74,5 +112,27 @@ public class MergeConfiguration<E> extends HashMap<String, Object>
     {
         // Default is Version.NEXT
         return containsKey(KEY_FALLBACKONCONFLICT) ? (Version) get(KEY_FALLBACKONCONFLICT) : Version.CURRENT;
+    }
+
+    /**
+     * @return the list of decisions to be taken in case of conflicts.
+     * @since 11.7RC1
+     */
+    @Unstable
+    public List<ConflictDecision<E>> getConflictDecisionList()
+    {
+        return conflictDecisionList;
+    }
+
+    /**
+     * Set the list of conflict decision to be taken.
+     * This list of decision is consumed in {@link DiffManager#merge(List, List, List, MergeConfiguration)}.
+     * @param conflictDecisionList the new conflict decision list.
+     * @since 11.7RC1
+     */
+    @Unstable
+    public void setConflictDecisionList(List<ConflictDecision<E>> conflictDecisionList)
+    {
+        this.conflictDecisionList = new ArrayList<>(conflictDecisionList);
     }
 }

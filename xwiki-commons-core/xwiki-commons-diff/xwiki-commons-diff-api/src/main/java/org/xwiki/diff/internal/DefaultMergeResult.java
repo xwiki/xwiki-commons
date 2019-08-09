@@ -19,8 +19,10 @@
  */
 package org.xwiki.diff.internal;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.xwiki.diff.Conflict;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.logging.LogQueue;
 
@@ -53,6 +55,11 @@ public class DefaultMergeResult<E> implements MergeResult<E>
     private List<E> merged;
 
     /**
+     * @see #getConflicts()
+     */
+    private List<Conflict> conflicts;
+
+    /**
      * @see #getLog()
      */
     private LogQueue log = new LogQueue();
@@ -70,6 +77,7 @@ public class DefaultMergeResult<E> implements MergeResult<E>
 
         // Default to current
         this.merged = current;
+        this.conflicts = new ArrayList<>();
     }
 
     @Override
@@ -100,6 +108,22 @@ public class DefaultMergeResult<E> implements MergeResult<E>
     public List<E> getMerged()
     {
         return this.merged;
+    }
+
+    @Override
+    public List<Conflict> getConflicts()
+    {
+        return this.conflicts;
+    }
+
+    /**
+     * Record a new conflict.
+     * @param conflict the conflict to be recorded.
+     * @since 11.7RC1
+     */
+    public void addConflict(Conflict conflict)
+    {
+        this.conflicts.add(conflict);
     }
 
     /**
