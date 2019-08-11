@@ -49,6 +49,13 @@
     <property name="message" value="No @author tag allowed"/>
   </module>
 
+  <module name="LineLength">
+    <property name="fileExtensions" value="java"/>
+    <!-- @(\w+\.)+\w+::\w+\( stands for JSNI method calls: @my.package.MyClass::myMethod() -->
+    <property name="ignorePattern" value="(@version|@see|@link|^import|@(\w+\.)+\w+::\w+\()"/>
+    <property name="max" value="120"/>
+  </module>
+
   <!-- We cannot use this rule as it fails on our license headers, considering them as copy-pastes!
   <module name="StrictDuplicateCode"/>
   -->
@@ -223,12 +230,6 @@
     <module name="LeftCurly">
       <property name="option" value="nl"/>
       <property name="tokens" value="CLASS_DEF,INTERFACE_DEF"/>
-    </module>
-
-    <module name="LineLength">
-      <!-- @(\w+\.)+\w+::\w+\( stands for JSNI method calls: @my.package.MyClass::myMethod() -->
-      <property name="ignorePattern" value="(@version|@see|@link|^import|@(\w+\.)+\w+::\w+\()"/>
-      <property name="max" value="120"/>
     </module>
 
     <module name="LocalFinalVariableName"/>
