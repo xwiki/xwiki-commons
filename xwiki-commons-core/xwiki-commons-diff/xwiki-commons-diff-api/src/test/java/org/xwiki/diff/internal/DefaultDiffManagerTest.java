@@ -1318,6 +1318,26 @@ public class DefaultDiffManagerTest
         assertEquals(
             Arrays.asList("Once upon a time", "a wolf", "started to walk", "dressed in black", "in the forest"),
             resultStr.getMerged());
+
+        // Test 6: We change everything but our first changes are the same at the beginning of current and next:
+        // it still must led to a conflict, since we don't know if we should have "Another line" or not.
+        // Now the conflict created is questionable: should it be a change conflict or an insert/delete conflict?
+        mergeConfiguration = null;
+        conflict = createConflict(0,
+            Type.CHANGE, 0, 0, Arrays.asList("A first edit from a tab."),
+            Arrays.asList("A second edit from another tab.", "Another line"),
+            Type.CHANGE, 0, 0, Arrays.asList("A first edit from a tab."),
+            Arrays.asList("A second edit from another tab."));
+        result = this.diffManager.merge(
+            Arrays.asList("A first edit from a tab."),
+            Arrays.asList("A second edit from another tab."),
+            Arrays.asList("A second edit from another tab.", "Another line"),
+            mergeConfiguration);
+
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(Arrays.asList("A second edit from another tab.", "Another line"), result.getMerged());
     }
 
     private <E> Delta<E> createDelta(Type type, Chunk<E> previous, Chunk<E> next)
