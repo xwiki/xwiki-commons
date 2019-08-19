@@ -19,7 +19,8 @@
  */
 package org.xwiki.job.internal;
 
-import java.util.Stack;
+import java.util.Deque;
+import java.util.LinkedList;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -55,15 +56,15 @@ public class DefaultJobContext implements JobContext
      * @param create if true create the stack if it does not exists
      * @return the stack containing the current jobs
      */
-    private Stack<Job> getJobstack(boolean create)
+    private Deque<Job> getJobstack(boolean create)
     {
         ExecutionContext context = this.execution.getContext();
 
         if (context != null) {
-            Stack<Job> stack = (Stack<Job>) context.getProperty(KEY_CURRENTJOB);
+            Deque<Job> stack = (Deque<Job>) context.getProperty(KEY_CURRENTJOB);
 
             if (stack == null && create) {
-                stack = new Stack<Job>();
+                stack = new LinkedList<>();
                 context.setProperty(KEY_CURRENTJOB, stack);
             }
 
@@ -76,7 +77,7 @@ public class DefaultJobContext implements JobContext
     @Override
     public Job getCurrentJob()
     {
-        Stack<Job> stack = getJobstack(false);
+        Deque<Job> stack = getJobstack(false);
 
         return stack == null || stack.isEmpty() ? null : stack.peek();
     }
@@ -84,12 +85,20 @@ public class DefaultJobContext implements JobContext
     @Override
     public void pushCurrentJob(Job job)
     {
-        getJobstack(true).push(job);
+        Deque<Job> stack = getJobstack(true);
+
+        if (stack != null) {
+            stack.push(job);
+        }
     }
 
     @Override
     public void popCurrentJob()
     {
-        getJobstack(true).pop();
+        Deque<Job> stack = getJobstack(false);
+
+        if (stack != null) {
+            stack.pop();
+        }
     }
 }
