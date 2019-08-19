@@ -42,6 +42,8 @@ import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -82,6 +84,9 @@ public class ReplayJobTest
         ReplayRequest request = new ReplayRequest();
         request.setRecords(Arrays.asList(installRecord, uninstallRecord));
 
+        assertNull(installRequest.isStatusLogIsolated());
+        assertNull(uninstallRequest.isStatusLogIsolated());
+
         this.replayJob.initialize(request);
         this.replayJob.run();
 
@@ -95,6 +100,10 @@ public class ReplayJobTest
 
         // Make sure the replay job does not need and does not initialize any ExecutionContext
         verifyZeroInteractions(this.execution);
+
+        // Make sure the replay job force the job request to not be isolated so that their log end up in replay job log
+        assertFalse(installRequest.isStatusLogIsolated());
+        assertFalse(uninstallRequest.isStatusLogIsolated());
     }
 
     @Test
