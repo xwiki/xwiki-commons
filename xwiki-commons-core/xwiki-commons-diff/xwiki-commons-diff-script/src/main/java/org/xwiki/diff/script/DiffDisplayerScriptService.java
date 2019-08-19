@@ -27,6 +27,7 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
+import org.xwiki.diff.Conflict;
 import org.xwiki.diff.DiffException;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
@@ -120,6 +121,31 @@ public class DiffDisplayerScriptService implements ScriptService
         try {
             return this.inlineDiffDisplayer
                 .display(this.diffManager.diff(this.charSplitter.split(previous), this.charSplitter.split(next), null));
+        } catch (DiffException e) {
+            setError(e);
+            return null;
+        }
+    }
+
+    /**
+     * Builds an unified diff between two versions of a text. The unified diff provides information about both
+     * line-level and character-level changes (the later only when a line is modified).
+     *
+     * @param previous the previous version
+     * @param next the next version
+     * @return the list of extended diff blocks
+     */
+    public List<UnifiedDiffBlock<String, Character>> unified(String previous, String next,
+        List<Conflict<String>> conflicts)
+    {
+        setError(null);
+
+        try {
+            DiffResult<String> diffResult =
+                this.diffManager.diff(this.lineSplitter.split(previous), this.lineSplitter.split(next), null);
+            UnifiedDiffConfiguration<String, Character> config = this.unifiedDiffDisplayer.getDefaultConfiguration();
+            config.setSplitter(this.charSplitter);
+            return this.unifiedDiffDisplayer.display(diffResult, config, conflicts);
         } catch (DiffException e) {
             setError(e);
             return null;
