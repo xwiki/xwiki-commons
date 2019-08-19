@@ -57,7 +57,7 @@ public class DefaultMergeResult<E> implements MergeResult<E>
     /**
      * @see #getConflicts()
      */
-    private List<Conflict> conflicts;
+    private List<Conflict<E>> conflicts;
 
     /**
      * @see #getLog()
@@ -111,7 +111,7 @@ public class DefaultMergeResult<E> implements MergeResult<E>
     }
 
     @Override
-    public List<Conflict> getConflicts()
+    public List<Conflict<E>> getConflicts()
     {
         return this.conflicts;
     }

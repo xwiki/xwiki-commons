@@ -61,7 +61,7 @@ public interface MergeResult<E>
      * @since 11.7RC1
      */
     @Unstable
-    default List<Conflict> getConflicts()
+    default List<Conflict<E>> getConflicts()
     {
         return Collections.emptyList();
     }
