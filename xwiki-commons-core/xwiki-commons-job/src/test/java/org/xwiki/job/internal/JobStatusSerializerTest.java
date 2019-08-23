@@ -475,5 +475,6 @@ public class JobStatusSerializerTest
         assertNotNull(status.getProgress());
         assertEquals(0.0d, status.getProgress().getOffset(), 0.1d);
         assertEquals(0.0d, status.getProgress().getCurrentLevelOffset(), 0.1d);
+        assertEquals("Progress with name [{}]", status.getProgress().getRootStep().getMessage().getMessage());
     }
 }
