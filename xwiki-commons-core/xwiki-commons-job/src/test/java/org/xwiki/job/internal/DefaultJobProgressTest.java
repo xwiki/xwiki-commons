@@ -23,11 +23,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.job.event.status.EndStepProgressEvent;
-import org.xwiki.job.event.status.PopLevelProgressEvent;
-import org.xwiki.job.event.status.PushLevelProgressEvent;
-import org.xwiki.job.event.status.StartStepProgressEvent;
-import org.xwiki.job.event.status.StepProgressEvent;
+import org.xwiki.job.event.status.*;
+import org.xwiki.logging.Message;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.internal.DefaultObservationManager;
 import org.xwiki.test.LogLevel;
@@ -37,6 +34,8 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectComponentManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 @ComponentTest
 @ComponentList(DefaultObservationManager.class)
@@ -424,5 +423,17 @@ public class DefaultJobProgressTest
         assertEquals(2, this.progress.getRootStep().getChildren().get(0).getChildren().size());
         assertEquals(0, this.progress.getRootStep().getChildren().get(1).getChildren().size());
         assertEquals(0, this.progress.getRootStep().getChildren().get(2).getChildren().size());
+    }
+
+    @Test
+    public void addStepWhenFinished()
+    {
+        DefaultJobProgressStep step = this.progress.getCurrentStep();
+        step.finish();
+
+        Throwable exception = assertThrows(UnsupportedOperationException.class, () -> {
+            step.addStep(mock(Message.class), mock(Object.class));
+        });
+        assertEquals("Step is closed", exception.getMessage());
     }
 }
