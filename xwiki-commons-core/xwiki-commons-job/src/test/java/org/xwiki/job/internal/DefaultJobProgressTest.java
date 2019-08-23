@@ -19,10 +19,10 @@
  */
 package org.xwiki.job.internal;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.job.event.status.EndStepProgressEvent;
 import org.xwiki.job.event.status.PopLevelProgressEvent;
 import org.xwiki.job.event.status.PushLevelProgressEvent;
@@ -30,122 +30,125 @@ import org.xwiki.job.event.status.StartStepProgressEvent;
 import org.xwiki.job.event.status.StepProgressEvent;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.internal.DefaultObservationManager;
-import org.xwiki.test.AllLogRule;
+import org.xwiki.test.LogLevel;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentManagerRule;
+import org.xwiki.test.junit5.LogCaptureExtension;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ComponentTest
 @ComponentList(DefaultObservationManager.class)
 public class DefaultJobProgressTest
 {
-    @Rule
-    public MockitoComponentManagerRule mocker = new MockitoComponentManagerRule();
+    @InjectComponentManager
+    private ComponentManager componentManager;
 
-    @Rule
-    public AllLogRule log = new AllLogRule();
+    @RegisterExtension
+    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
     private ObservationManager observation;
 
     private DefaultJobProgress progress;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception
     {
-        this.observation = mocker.getInstance(ObservationManager.class);
+        this.observation = this.componentManager.getInstance(ObservationManager.class);
         this.progress = new DefaultJobProgress();
         this.observation.addListener(this.progress);
     }
 
     @Test
-    public void testProgressSteps()
+    public void progressSteps()
     {
-        Assert.assertEquals(0, Double.compare(0D, this.progress.getOffset()));
-        Assert.assertEquals(0, Double.compare(0D, this.progress.getCurrentLevelOffset()));
+        assertEquals(0, Double.compare(0D, this.progress.getOffset()));
+        assertEquals(0, Double.compare(0D, this.progress.getCurrentLevelOffset()));
 
         this.observation.notify(new PushLevelProgressEvent(4), null, null);
 
         this.observation.notify(new StartStepProgressEvent(), null, null);
 
-        Assert.assertEquals(0D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0D, this.progress.getOffset(), 0D);
+        assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
 
         this.observation.notify(new StartStepProgressEvent(), null, null);
 
-        Assert.assertEquals(0.25D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0.25D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0.25D, this.progress.getOffset(), 0D);
+        assertEquals(0.25D, this.progress.getCurrentLevelOffset(), 0D);
 
         this.observation.notify(new PushLevelProgressEvent(2), null, null);
 
         this.observation.notify(new StartStepProgressEvent(), null, null);
 
-        Assert.assertEquals(0.25D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0.0D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0.25D, this.progress.getOffset(), 0D);
+        assertEquals(0.0D, this.progress.getCurrentLevelOffset(), 0D);
 
         this.observation.notify(new StartStepProgressEvent(), null, null);
 
-        Assert.assertEquals(0.375D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0.5D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0.375D, this.progress.getOffset(), 0D);
+        assertEquals(0.5D, this.progress.getCurrentLevelOffset(), 0D);
 
         this.observation.notify(new PopLevelProgressEvent(), null, null);
 
-        Assert.assertEquals(0.5D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0.5D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0.5D, this.progress.getOffset(), 0D);
+        assertEquals(0.5D, this.progress.getCurrentLevelOffset(), 0D);
     }
 
     @Test
-    public void testStepProgressEvent()
+    public void stepProgressEvent()
     {
-        Assert.assertEquals(0, Double.compare(0D, this.progress.getOffset()));
-        Assert.assertEquals(0, Double.compare(0D, this.progress.getCurrentLevelOffset()));
+        assertEquals(0, Double.compare(0D, this.progress.getOffset()));
+        assertEquals(0, Double.compare(0D, this.progress.getCurrentLevelOffset()));
 
         this.observation.notify(new PushLevelProgressEvent(4), null, null);
 
-        Assert.assertEquals(0D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0D, this.progress.getOffset(), 0D);
+        assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
 
         this.observation.notify(new StepProgressEvent(), null, null);
 
-        Assert.assertEquals(0.25D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0.25D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0.25D, this.progress.getOffset(), 0D);
+        assertEquals(0.25D, this.progress.getCurrentLevelOffset(), 0D);
 
         this.observation.notify(new PushLevelProgressEvent(2), null, null);
 
-        Assert.assertEquals(0.25D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0.0D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0.25D, this.progress.getOffset(), 0D);
+        assertEquals(0.0D, this.progress.getCurrentLevelOffset(), 0D);
 
         this.observation.notify(new StepProgressEvent(), null, null);
 
-        Assert.assertEquals(0.375D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0.5D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0.375D, this.progress.getOffset(), 0D);
+        assertEquals(0.5D, this.progress.getCurrentLevelOffset(), 0D);
 
         this.observation.notify(new PopLevelProgressEvent(), null, null);
 
-        Assert.assertEquals(0.5D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0.5D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0.5D, this.progress.getOffset(), 0D);
+        assertEquals(0.5D, this.progress.getCurrentLevelOffset(), 0D);
     }
 
     /**
      * Tests that the offset is 1 when the progress is done.
      */
     @Test
-    public void testProgressDone()
+    public void progressDone()
     {
-        Assert.assertEquals(0D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0D, this.progress.getOffset(), 0D);
+        assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
 
         this.observation.notify(new PushLevelProgressEvent(1), null, null);
         this.observation.notify(new PopLevelProgressEvent(), null, null);
 
-        Assert.assertEquals(1D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(1D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(1D, this.progress.getOffset(), 0D);
+        assertEquals(1D, this.progress.getCurrentLevelOffset(), 0D);
     }
 
     @Test
-    public void testPopDontMoveToNextStep()
+    public void popDontMoveToNextStep()
     {
-        Assert.assertEquals(0D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0D, this.progress.getOffset(), 0D);
+        assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
 
         this.observation.notify(new PushLevelProgressEvent(2), null, null);
 
@@ -153,29 +156,29 @@ public class DefaultJobProgressTest
         this.observation.notify(new StepProgressEvent(), null, null);
         this.observation.notify(new PopLevelProgressEvent(), null, null);
 
-        Assert.assertEquals(.5D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(.5D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(.5D, this.progress.getOffset(), 0D);
+        assertEquals(.5D, this.progress.getCurrentLevelOffset(), 0D);
 
         this.observation.notify(new StepProgressEvent(), null, null);
 
-        Assert.assertEquals(.5D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(.5D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(.5D, this.progress.getOffset(), 0D);
+        assertEquals(.5D, this.progress.getCurrentLevelOffset(), 0D);
 
         this.observation.notify(new StepProgressEvent(), null, null);
 
-        Assert.assertEquals(1D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(1D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(1D, this.progress.getOffset(), 0D);
+        assertEquals(1D, this.progress.getCurrentLevelOffset(), 0D);
 
         this.observation.notify(new PopLevelProgressEvent(), null, null);
 
-        Assert.assertEquals(1D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(1D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(1D, this.progress.getOffset(), 0D);
+        assertEquals(1D, this.progress.getCurrentLevelOffset(), 0D);
     }
 
     // Bulletproofing
 
     @Test
-    public void testMoveToNextStepInRoot()
+    public void moveToNextStepInRoot()
     {
         assertEquals(0, this.progress.getRootStep().getChildren().size());
 
@@ -189,7 +192,7 @@ public class DefaultJobProgressTest
     }
 
     @Test
-    public void testMoreStepsThanExpected()
+    public void moreStepsThanExpected()
     {
         // Expect 1 step
         this.observation.notify(new PushLevelProgressEvent(1), null, null);
@@ -197,31 +200,31 @@ public class DefaultJobProgressTest
         // First step
         this.observation.notify(new StartStepProgressEvent(), null, null);
 
-        Assert.assertEquals(0D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0D, this.progress.getOffset(), 0D);
+        assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
         assertEquals(1, this.progress.getRootStep().getChildren().size());
 
         // Second step
         this.observation.notify(new StartStepProgressEvent(), null, null);
 
-        Assert.assertEquals(1D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(1D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(1D, this.progress.getOffset(), 0D);
+        assertEquals(1D, this.progress.getCurrentLevelOffset(), 0D);
         assertEquals(2, this.progress.getRootStep().getChildren().size());
 
         // Third step
         this.observation.notify(new StartStepProgressEvent(), null, null);
 
-        Assert.assertEquals(1D, this.progress.getOffset(), 0D);
+        assertEquals(1D, this.progress.getOffset(), 0D);
         assertEquals(3, this.progress.getRootStep().getChildren().size());
 
         this.observation.notify(new PopLevelProgressEvent(), null, null);
 
-        Assert.assertEquals(1D, this.progress.getOffset(), 0D);
+        assertEquals(1D, this.progress.getOffset(), 0D);
         assertEquals(3, this.progress.getRootStep().getChildren().size());
     }
 
     @Test
-    public void testUnknownNumberOfSteps()
+    public void unknownNumberOfSteps()
     {
         // Unknown number of steps
         this.observation.notify(new PushLevelProgressEvent(), null, null);
@@ -229,15 +232,15 @@ public class DefaultJobProgressTest
         // First step
         this.observation.notify(new StartStepProgressEvent(), null, null);
 
-        Assert.assertEquals(0D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0D, this.progress.getOffset(), 0D);
+        assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
         assertEquals(1, this.progress.getRootStep().getChildren().size());
 
         // Second step
         this.observation.notify(new StartStepProgressEvent(), null, null);
 
-        Assert.assertEquals(0.5D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0.5D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0.5D, this.progress.getOffset(), 0D);
+        assertEquals(0.5D, this.progress.getCurrentLevelOffset(), 0D);
         assertEquals(2, this.progress.getRootStep().getChildren().size());
 
         // Third step
@@ -248,18 +251,18 @@ public class DefaultJobProgressTest
         // Fourth step
         this.observation.notify(new StartStepProgressEvent(), null, null);
 
-        Assert.assertEquals(0.75D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0.75D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0.75D, this.progress.getOffset(), 0D);
+        assertEquals(0.75D, this.progress.getCurrentLevelOffset(), 0D);
         assertEquals(4, this.progress.getRootStep().getChildren().size());
 
         this.observation.notify(new PopLevelProgressEvent(), null, null);
 
-        Assert.assertEquals(1D, this.progress.getOffset(), 0D);
+        assertEquals(1D, this.progress.getOffset(), 0D);
         assertEquals(4, this.progress.getRootStep().getChildren().size());
     }
 
     @Test
-    public void testPushLevelOnClosedStep()
+    public void pushLevelOnClosedStep()
     {
         this.observation.notify(new PushLevelProgressEvent(2), null, null);
 
@@ -279,26 +282,26 @@ public class DefaultJobProgressTest
     }
 
     @Test
-    public void testPopLevelOnWrongSource()
+    public void popLevelOnWrongSource()
     {
-        Assert.assertEquals(0D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0D, this.progress.getOffset(), 0D);
+        assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
 
         this.observation.notify(new PushLevelProgressEvent(1), "source1", null);
         this.observation.notify(new PopLevelProgressEvent(), "source2", null);
 
         assertEquals("Could not find any matching step level for source [source2]. Ignoring PopLevelProgressEvent.",
-            this.log.getMessage(0));
+            logCapture.getMessage(0));
 
-        Assert.assertEquals(0D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0D, this.progress.getOffset(), 0D);
+        assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
     }
 
     @Test
-    public void testPopLevelOnParentLevelSource()
+    public void popLevelOnParentLevelSource()
     {
-        Assert.assertEquals(0D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0D, this.progress.getOffset(), 0D);
+        assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
 
         Object source1 = "source1";
         Object source11 = "source11";
@@ -310,29 +313,29 @@ public class DefaultJobProgressTest
         // First step in source11 level
         this.observation.notify(new StartStepProgressEvent(), null, null);
 
-        Assert.assertEquals(0D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0D, this.progress.getOffset(), 0D);
+        assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
 
         // Second step in source11 level
         this.observation.notify(new StartStepProgressEvent(), null, null);
 
-        Assert.assertEquals(0.25D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0.5D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0.25D, this.progress.getOffset(), 0D);
+        assertEquals(0.5D, this.progress.getCurrentLevelOffset(), 0D);
 
         // "Forget" to pop source11 level
 
         // Automatically close all levels until it matches source1
         this.observation.notify(new PopLevelProgressEvent(), source1, null);
 
-        Assert.assertEquals(1D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(1D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(1D, this.progress.getOffset(), 0D);
+        assertEquals(1D, this.progress.getCurrentLevelOffset(), 0D);
     }
 
     @Test
-    public void testEndStepOnParentStepSource()
+    public void endStepOnParentStepSource()
     {
-        Assert.assertEquals(0D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0D, this.progress.getOffset(), 0D);
+        assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
 
         Object source1 = "source1";
         Object source11 = "source11";
@@ -352,26 +355,26 @@ public class DefaultJobProgressTest
         // First step in source11 level
         this.observation.notify(new StartStepProgressEvent(), null, null);
 
-        Assert.assertEquals(0D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0D, this.progress.getOffset(), 0D);
+        assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
 
         // Second step in source11 level
         this.observation.notify(new StartStepProgressEvent(), null, null);
 
-        Assert.assertEquals(0.25D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(0.5D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(0.25D, this.progress.getOffset(), 0D);
+        assertEquals(0.5D, this.progress.getCurrentLevelOffset(), 0D);
 
         // "Forget" to pop source11 level
 
         // Automatically close all levels until it matches source1
         this.observation.notify(new EndStepProgressEvent(), source1, null);
 
-        Assert.assertEquals(1D, this.progress.getOffset(), 0D);
-        Assert.assertEquals(1D, this.progress.getCurrentLevelOffset(), 0D);
+        assertEquals(1D, this.progress.getOffset(), 0D);
+        assertEquals(1D, this.progress.getCurrentLevelOffset(), 0D);
     }
 
     @Test
-    public void testStartStepFromDifferentSource()
+    public void startStepFromDifferentSource()
     {
         Object source1 = "source1";
         Object source11 = "source11";
