@@ -41,9 +41,7 @@ import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link DefaultJobStatusStore}.
@@ -64,6 +62,9 @@ public class DefaultJobStatusStoreTest
 
     @MockComponent
     private CacheManager cacheManager;
+
+    @MockComponent
+    private JobStatusSerializer serializer;
 
     @BeforeComponent
     public void before() throws Exception
@@ -155,7 +156,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void storeJobStatus()
+    public void storeJobStatusWhenSerializable()
     {
         List<String> id = Arrays.asList("newstatus");
 
@@ -166,5 +167,9 @@ public class DefaultJobStatusStoreTest
         this.store.store(jobStatus);
 
         assertSame(jobStatus, this.store.getJobStatus(id));
+
+        // Verify that the status has been serialized, indirectly verifying that isSerializable() has been called and
+        // returned true.
+        assertTrue(new File("target/test/jobs/status/newstatus/status.xml").exists());
     }
 }
