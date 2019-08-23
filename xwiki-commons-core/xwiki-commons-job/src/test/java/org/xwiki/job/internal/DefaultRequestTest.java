@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.xwiki.job.DefaultRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DefaultRequestTest
 {
@@ -38,9 +39,10 @@ public class DefaultRequestTest
 
         DefaultRequest request2 = new DefaultRequest(request);
 
-        assertEquals(request.getId(), request2.getId());
-        assertEquals(request.<String>getProperty("property"), request2.<String>getProperty("property"));
-        assertEquals(request.isRemote(), request2.isRemote());
-        assertEquals(request.isInteractive(), request2.isInteractive());
+        assertEquals(1, request2.getId().size());
+        assertEquals("id", request2.getId().get(0));
+        assertEquals("value", request2.<String>getProperty("property"));
+        assertTrue(request2.isRemote());
+        assertTrue(request2.isInteractive());
     }
 }
