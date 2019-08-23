@@ -191,7 +191,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserialize() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         writeRead(status);
     }
@@ -199,7 +199,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogMessage() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message");
 
@@ -212,7 +212,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogMarker() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error(new TranslationMarker("translation.key"), "error message");
 
@@ -226,7 +226,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithException() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message",
             new TestException("exception message", new Exception("cause"), "custom"));
@@ -243,7 +243,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithArguments() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", "arg1", "arg2");
 
@@ -258,7 +258,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithNullArguments() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", "arg1", null, "arg3");
 
@@ -274,7 +274,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithComponentArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new DefaultJobStatusStore());
 
@@ -288,7 +288,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithStandaloneComponentArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new StandaloneComponent());
 
@@ -302,7 +302,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithSerializableStandaloneComponentArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableStandaloneComponent());
 
@@ -316,7 +316,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithCrossReference() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("message", new SerializableCrossReferenceObject());
 
@@ -331,7 +331,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithComponentField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableObjectTest(new DefaultJobStatusStore()));
 
@@ -344,7 +344,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithStandaloneComponentField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableObjectTest(new StandaloneComponent()));
 
@@ -357,7 +357,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithLoggerField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableObjectTest(mock(Logger.class)));
 
@@ -370,7 +370,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithProviderField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableObjectTest(mock(Provider.class)));
 
@@ -383,7 +383,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithComponentManagerField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableObjectTest(mock(ComponentManager.class)));
 
@@ -396,7 +396,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithSerializableProviderField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableObjectTest(new SerializableProvider()));
 
@@ -411,7 +411,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithSerializableImplementationProviderField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableObjectTest(new SerializableImplementationProvider()));
 
@@ -426,7 +426,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithCustomObjectArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new CustomSerializableObject("value"));
 
@@ -440,7 +440,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithSerializableCustomObjectArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableCustomObject("value"));
 
@@ -454,7 +454,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeWhenLogWithNotSerializableCustomObjectArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new NotSerializableCustomObject("value"));
 
@@ -468,7 +468,7 @@ public class JobStatusSerializerTest
     @Test
     public void serializeUnserializeProgress() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status = writeRead(status);
 
