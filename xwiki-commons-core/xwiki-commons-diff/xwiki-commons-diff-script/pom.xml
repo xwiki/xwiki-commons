@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-diff</artifactId>
-    <version>11.6-SNAPSHOT</version>
+    <version>11.8-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-diff-script</artifactId>
   <name>XWiki Commons - Diff Script API</name>
@@ -43,6 +43,11 @@
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-diff-display</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-diff-xml</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

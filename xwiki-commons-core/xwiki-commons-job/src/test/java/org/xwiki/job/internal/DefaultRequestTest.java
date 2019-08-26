@@ -19,9 +19,11 @@
  */
 package org.xwiki.job.internal;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.job.DefaultRequest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DefaultRequestTest
 {
@@ -37,9 +39,10 @@ public class DefaultRequestTest
 
         DefaultRequest request2 = new DefaultRequest(request);
 
-        Assert.assertEquals(request.getId(), request2.getId());
-        Assert.assertEquals(request.<String>getProperty("property"), request2.<String>getProperty("property"));
-        Assert.assertEquals(request.isRemote(), request2.isRemote());
-        Assert.assertEquals(request.isInteractive(), request2.isInteractive());
+        assertEquals(1, request2.getId().size());
+        assertEquals("id", request2.getId().get(0));
+        assertEquals("value", request2.<String>getProperty("property"));
+        assertTrue(request2.isRemote());
+        assertTrue(request2.isInteractive());
     }
 }

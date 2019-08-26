@@ -24,51 +24,43 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.blame.AnnotatedContent;
 import org.xwiki.blame.AnnotatedElement;
-import org.xwiki.blame.BlameManager;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.jmock.Expectations.same;
 import static org.junit.Assert.assertThat;
 
+@ComponentTest
 public class DefaultBlameManagerTest
 {
     /**
      * Small class simulating revision metadata;
      */
-    class Revision {
+    class Revision
+    {
         private final String rev;
+
         Revision(String rev)
         {
             this.rev = rev;
         }
+
         public String toString()
         {
             return rev;
         }
     }
 
-
-    @Rule
-    public final MockitoComponentMockingRule<BlameManager> mocker = new MockitoComponentMockingRule<BlameManager>(
-        DefaultBlameManager.class);
-
-    BlameManager blameManager;
-
-    @Before
-    public void configure() throws Exception
-    {
-        blameManager = this.mocker.getComponentUnderTest();
-    }
+    @InjectMockComponents
+    private DefaultBlameManager blameManager;
 
     @Test
-    public void testBlameNullRevision() throws Exception
+    public void blameNullRevision()
     {
         assertThat(blameManager.blame(null, null, null), nullValue());
         assertThat(blameManager.blame(null, null, Collections.<String>emptyList()), nullValue());
@@ -76,7 +68,7 @@ public class DefaultBlameManagerTest
     }
 
     @Test
-    public void testBlame() throws Exception
+    public void blame()
     {
         Revision rev1 = new Revision("rev1");
         Revision rev2 = new Revision("rev2");
@@ -142,5 +134,4 @@ public class DefaultBlameManagerTest
         assertThat(annotatedElement.getElement(), is("the lazy dog"));
         assertThat(annotatedElement.getRevision(), same(rev3));
     }
-
 }

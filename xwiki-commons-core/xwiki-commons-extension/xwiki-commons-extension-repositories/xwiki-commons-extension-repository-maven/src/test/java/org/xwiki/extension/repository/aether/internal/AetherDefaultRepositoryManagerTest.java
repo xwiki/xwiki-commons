@@ -57,6 +57,7 @@ import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.annotation.AllComponents;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @AllComponents
 public class AetherDefaultRepositoryManagerTest
@@ -401,11 +402,15 @@ public class AetherDefaultRepositoryManagerTest
     @Test
     public void testResolveDependencyFromUnknownRepository() throws ResolveException, IOException
     {
+        assertThrows(ResolveException.class,
+            () -> this.repositoryManager.resolve(new ExtensionId("ugroupid:uartifactid", "version")));
+
         // Make sure to put a proper repository in the pom
-        File pomFile =
-            new File(this.repositoryUtil.getMavenRepository(), "eugroupid/euartifactid/version/euartifactid-version.pom");
+        File pomFile = new File(this.repositoryUtil.getMavenRepository(),
+            "eugroupid/euartifactid/version/euartifactid-version.pom");
         String pom = FileUtils.readFileToString(pomFile, StandardCharsets.UTF_8);
-        pom.replace("${{repository.mavenunknown}}", this.repositoryUtil.getMavenUnknownRepository().toURI().toString());
+        pom = pom.replace("${{extension.repository.mavenunknown}}",
+            this.repositoryUtil.getMavenUnknownRepository().toURI().toString());
         FileUtils.write(pomFile, pom, StandardCharsets.UTF_8);
 
         Extension extension = this.repositoryManager.resolve(new ExtensionId("eugroupid:euartifactid", "version"));
@@ -413,6 +418,9 @@ public class AetherDefaultRepositoryManagerTest
         ExtensionDependency extensionDependency = extension.getDependencies().iterator().next();
 
         Extension dependency = this.repositoryManager.resolve(extensionDependency);
+
+        assertEquals("ugroupid:uartifactid", dependency.getId().getId());
+        assertEquals("version", dependency.getId().getVersion().getValue());
 
         assertEquals(extensionDependency.getId(), dependency.getId().getId());
     }

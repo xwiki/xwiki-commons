@@ -25,21 +25,46 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.xwiki.diff.Chunk;
+import org.xwiki.diff.Conflict;
+import org.xwiki.diff.ConflictDecision;
+import org.xwiki.diff.Delta;
 import org.xwiki.diff.Delta.Type;
-import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
+import org.xwiki.diff.MergeConfiguration;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.logging.LogLevel;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.logging.event.LogEvent;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@ComponentTest
 public class DefaultDiffManagerTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<DiffManager> mocker = new MockitoComponentMockingRule<DiffManager>(
-        DefaultDiffManager.class);
+    @InjectMockComponents
+    private DefaultDiffManager diffManager;
+
+    // We want to execute some tests with all the possible fallback configurations.
+    public static MergeConfiguration[] createConfigurations() {
+        MergeConfiguration defaultConfig = new MergeConfiguration();
+        MergeConfiguration previousConfig = new MergeConfiguration();
+        previousConfig.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        MergeConfiguration nextConfig = new MergeConfiguration();
+        nextConfig.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        MergeConfiguration currentConfig = new MergeConfiguration();
+        currentConfig.setFallbackOnConflict(MergeConfiguration.Version.CURRENT);
+
+        // Default is currently current, but I find it safer to keep both the default and the explicit current config
+        // in case we change that in the future. Null value should be also fallback to the default config.
+        return new MergeConfiguration[] { null, defaultConfig, previousConfig, nextConfig, currentConfig };
+    }
 
     /**
      * @param str the single line text
@@ -70,308 +95,1360 @@ public class DefaultDiffManagerTest
     // Tests
 
     @Test
-    public void testDiffStringList() throws Exception
+    public void diffStringList() throws Exception
     {
         // Null
 
-        DiffResult<String> result = this.mocker.getComponentUnderTest().diff(null, null, null);
+        DiffResult<String> result = this.diffManager.diff(null, null, null);
 
-        Assert.assertTrue(result.getPatch().isEmpty());
+        assertTrue(result.getPatch().isEmpty());
 
         // Empty
 
-        result = this.mocker.getComponentUnderTest().diff(Collections.<String>emptyList(),
+        result = this.diffManager.diff(Collections.<String>emptyList(),
             Collections.<String>emptyList(), null);
 
-        Assert.assertTrue(result.getPatch().isEmpty());
+        assertTrue(result.getPatch().isEmpty());
 
         // Equals
 
-        result = this.mocker.getComponentUnderTest().diff(Arrays.asList("equals"), Arrays.asList("equals"), null);
+        result = this.diffManager.diff(Arrays.asList("equals"), Arrays.asList("equals"), null);
 
-        Assert.assertTrue(result.getPatch().isEmpty());
+        assertTrue(result.getPatch().isEmpty());
 
         // Previous empty
+        result = this.diffManager.diff(Collections.<String>emptyList(), Arrays.asList("next"), null);
 
-        result = this.mocker.getComponentUnderTest().diff(Collections.<String>emptyList(), Arrays.asList("next"), null);
-
-        Assert.assertEquals(1, result.getPatch().size());
-        Assert.assertEquals(Type.INSERT, result.getPatch().get(0).getType());
-        Assert.assertEquals(Arrays.asList("next"), result.getPatch().get(0).getNext().getElements());
-        Assert.assertEquals(0, result.getPatch().get(0).getNext().getIndex());
+        assertEquals(1, result.getPatch().size());
+        assertEquals(Type.INSERT, result.getPatch().get(0).getType());
+        assertEquals(Arrays.asList("next"), result.getPatch().get(0).getNext().getElements());
+        assertEquals(0, result.getPatch().get(0).getNext().getIndex());
 
         // Next empty
 
         result =
-            this.mocker.getComponentUnderTest().diff(Arrays.asList("previous"), Collections.<String>emptyList(), null);
+            this.diffManager.diff(Arrays.asList("previous"), Collections.<String>emptyList(), null);
 
-        Assert.assertEquals(1, result.getPatch().size());
-        Assert.assertEquals(Type.DELETE, result.getPatch().get(0).getType());
-        Assert.assertEquals(Arrays.asList("previous"), result.getPatch().get(0).getPrevious().getElements());
-        Assert.assertEquals(0, result.getPatch().get(0).getPrevious().getIndex());
+        assertEquals(1, result.getPatch().size());
+        assertEquals(Type.DELETE, result.getPatch().get(0).getType());
+        assertEquals(Arrays.asList("previous"), result.getPatch().get(0).getPrevious().getElements());
+        assertEquals(0, result.getPatch().get(0).getPrevious().getIndex());
     }
 
     @Test
-    public void testDiffCharList() throws Exception
+    public void diffCharList() throws Exception
     {
         // Equals
 
         DiffResult<Character> result =
-            this.mocker.getComponentUnderTest().diff(Arrays.asList('a'), Arrays.asList('a'), null);
+            this.diffManager.diff(Arrays.asList('a'), Arrays.asList('a'), null);
 
-        Assert.assertTrue(result.getPatch().isEmpty());
+        assertTrue(result.getPatch().isEmpty());
 
         // Changed
 
-        result = this.mocker.getComponentUnderTest().diff(Arrays.asList('a'), Arrays.asList('b'), null);
+        result = this.diffManager.diff(Arrays.asList('a'), Arrays.asList('b'), null);
 
-        Assert.assertEquals(1, result.getPatch().size());
-        Assert.assertEquals(Type.CHANGE, result.getPatch().get(0).getType());
+        assertEquals(1, result.getPatch().size());
+        assertEquals(Type.CHANGE, result.getPatch().get(0).getType());
     }
 
-    @Test
-    public void testMergeStringList() throws Exception
+    @ParameterizedTest
+    @MethodSource("createConfigurations")
+    public void mergeStringList(MergeConfiguration<String> mergeConfiguration) throws Exception
     {
         MergeResult<String> result;
 
         // Only new
 
-        result = this.mocker.getComponentUnderTest().merge(
-            Arrays.asList("some content"), Arrays.asList("some new content"), Arrays.asList("some content"), null);
-
-        Assert.assertEquals(Arrays.asList("some new content"), result.getMerged());
+        result = this.diffManager.merge(
+            Arrays.asList("some content"), Arrays.asList("some new content"), Arrays.asList("some content"),
+            mergeConfiguration);
+        assertTrue(result.getConflicts().isEmpty());
+        assertEquals(Arrays.asList("some new content"), result.getMerged());
 
         // Only current
 
-        result = this.mocker.getComponentUnderTest().merge(
-            Arrays.asList("some content"), Arrays.asList("some content"), Arrays.asList("some current content"), null);
-
-        Assert.assertEquals(Arrays.asList("some current content"), result.getMerged());
+        result = this.diffManager.merge(
+            Arrays.asList("some content"), Arrays.asList("some content"), Arrays.asList("some current content"),
+            mergeConfiguration);
+        assertTrue(result.getConflicts().isEmpty());
+        assertEquals(Arrays.asList("some current content"), result.getMerged());
 
         // New after
 
-        result = this.mocker.getComponentUnderTest().merge(
-            Arrays.asList("some content"), Arrays.asList("some content", "after"), Arrays.asList("some content"), null);
-
-        Assert.assertEquals(Arrays.asList("some content", "after"), result.getMerged());
+        result = this.diffManager.merge(
+            Arrays.asList("some content"), Arrays.asList("some content", "after"), Arrays.asList("some content"),
+            mergeConfiguration);
+        assertTrue(result.getConflicts().isEmpty());
+        assertEquals(Arrays.asList("some content", "after"), result.getMerged());
 
         // Before and after
 
-        result = this.mocker.getComponentUnderTest().merge(Arrays.asList("some content"),
-            Arrays.asList("before", "some content"), Arrays.asList("some content", "after"), null);
-
-        Assert.assertEquals(Arrays.asList("before", "some content", "after"), result.getMerged());
+        result = this.diffManager.merge(Arrays.asList("some content"),
+            Arrays.asList("before", "some content"), Arrays.asList("some content", "after"), mergeConfiguration);
+        assertTrue(result.getConflicts().isEmpty());
+        assertEquals(Arrays.asList("before", "some content", "after"), result.getMerged());
 
         // After and before
 
-        result = this.mocker.getComponentUnderTest().merge(Arrays.asList("some content"),
-            Arrays.asList("some content", "after"), Arrays.asList("before", "some content"), null);
-
-        Assert.assertEquals(Arrays.asList("before", "some content", "after"), result.getMerged());
+        result = this.diffManager.merge(Arrays.asList("some content"),
+            Arrays.asList("some content", "after"), Arrays.asList("before", "some content"), mergeConfiguration);
+        assertTrue(result.getConflicts().isEmpty());
+        assertEquals(Arrays.asList("before", "some content", "after"), result.getMerged());
 
         // Same current and next
 
-        result = this.mocker.getComponentUnderTest().merge(Arrays.asList("some content"),
-            Arrays.asList("some new content"), Arrays.asList("some new content"), null);
-
-        Assert.assertEquals(Arrays.asList("some new content"), result.getMerged());
+        result = this.diffManager.merge(Arrays.asList("some content"),
+            Arrays.asList("some new content"), Arrays.asList("some new content"), mergeConfiguration);
+        assertTrue(result.getConflicts().isEmpty());
+        assertEquals(Arrays.asList("some new content"), result.getMerged());
 
     }
 
-    @Test
-    public void testMergeCharList() throws Exception
+    @ParameterizedTest
+    @MethodSource("createConfigurations")
+    public void mergeCharListNoConflict(MergeConfiguration<Character> mergeConfiguration) throws Exception
     {
         MergeResult<Character> result;
 
-        // New empty
-
-        result = this.mocker.getComponentUnderTest()
-            .merge(toCharacters("a"), toCharacters(""), toCharacters("b"), null);
-
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("b"), result.getMerged());
-
         // New before
 
-        result = this.mocker.getComponentUnderTest()
-            .merge(toCharacters("bc"), toCharacters("abc"), toCharacters("bc"), null);
+        result = this.diffManager
+            .merge(toCharacters("bc"), toCharacters("abc"), toCharacters("bc"), mergeConfiguration);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abc"), result.getMerged());
 
         // New after
 
-        result = this.mocker.getComponentUnderTest()
-            .merge(toCharacters("ab"), toCharacters("abc"), toCharacters("ab"), null);
+        result = this.diffManager
+            .merge(toCharacters("ab"), toCharacters("abc"), toCharacters("ab"), mergeConfiguration);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abc"), result.getMerged());
 
         // New middle
 
-        result = this.mocker.getComponentUnderTest()
-            .merge(toCharacters("ac"), toCharacters("abc"), toCharacters("ac"), null);
+        result = this.diffManager
+            .merge(toCharacters("ac"), toCharacters("abc"), toCharacters("ac"), mergeConfiguration);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abc"), result.getMerged());
 
         // Before and after
 
         result =
-            this.mocker.getComponentUnderTest().merge(toCharacters("b"), toCharacters("ab"), toCharacters("bc"), null);
+            this.diffManager.merge(toCharacters("b"), toCharacters("ab"), toCharacters("bc"), mergeConfiguration);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abc"), result.getMerged());
 
         // After and before
 
         result =
-            this.mocker.getComponentUnderTest().merge(toCharacters("b"), toCharacters("bc"), toCharacters("ab"), null);
+            this.diffManager.merge(toCharacters("b"), toCharacters("bc"), toCharacters("ab"), mergeConfiguration);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abc"), result.getMerged());
 
         // Insert current and next
 
-        result = this.mocker.getComponentUnderTest()
-            .merge(toCharacters("abc"), toCharacters("aibc"), toCharacters("abcj"), null);
+        result = this.diffManager
+            .merge(toCharacters("abc"), toCharacters("aibc"), toCharacters("abcj"), mergeConfiguration);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("aibcj"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("aibcj"), result.getMerged());
 
-        result = this.mocker.getComponentUnderTest()
-            .merge(toCharacters("abc"), toCharacters("abcj"), toCharacters("aibc"), null);
+        result = this.diffManager
+            .merge(toCharacters("abc"), toCharacters("abcj"), toCharacters("aibc"), mergeConfiguration);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("aibcj"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("aibcj"), result.getMerged());
 
-        result = this.mocker.getComponentUnderTest()
-            .merge(toCharacters("abc"), toCharacters("ajbc"), toCharacters("aibc"), null);
+        result = this.diffManager
+            .merge(toCharacters("abc"), toCharacters("ajbc"), toCharacters("aibc"), mergeConfiguration);
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("ajibc"), result.getMerged());
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("ajibc"), result.getMerged());
 
-        result = this.mocker.getComponentUnderTest()
-            .merge(toCharacters("ab"), toCharacters("aijb"), toCharacters("aib"), null);
+        result = this.diffManager
+            .merge(toCharacters("ab"), toCharacters("aijb"), toCharacters("aib"), mergeConfiguration);
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("aijb"), result.getMerged());
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("aijb"), result.getMerged());
 
-        result = this.mocker.getComponentUnderTest()
-            .merge(toCharacters("ab"), toCharacters("ajb"), toCharacters("aijb"), null);
+        result = this.diffManager
+            .merge(toCharacters("ab"), toCharacters("ajb"), toCharacters("aijb"), mergeConfiguration);
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("aijb"), result.getMerged());
-
-        result =
-            this.mocker.getComponentUnderTest().merge(toCharacters("d"), toCharacters("ab d"), toCharacters("abc d"), null);
-
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc d"), result.getMerged());
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("aijb"), result.getMerged());
 
         result =
-            this.mocker.getComponentUnderTest().merge(toCharacters("d"), toCharacters("abc d"), toCharacters("ab d"), null);
+            this.diffManager.merge(toCharacters("d"), toCharacters("ab d"), toCharacters("abc d"), mergeConfiguration);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc d"), result.getMerged());
-
-        result =
-            this.mocker.getComponentUnderTest().merge(toCharacters("d"), toCharacters("bcd"), toCharacters("abcd"), null);
-
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abcd"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abc d"), result.getMerged());
 
         result =
-            this.mocker.getComponentUnderTest().merge(toCharacters("d"), toCharacters("abcd"), toCharacters("bcd"), null);
+            this.diffManager.merge(toCharacters("d"), toCharacters("abc d"), toCharacters("ab d"), mergeConfiguration);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abcd"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abc d"), result.getMerged());
+
+        result =
+            this.diffManager.merge(toCharacters("d"), toCharacters("bcd"), toCharacters("abcd"), mergeConfiguration);
+
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abcd"), result.getMerged());
+
+        result =
+            this.diffManager.merge(toCharacters("d"), toCharacters("abcd"), toCharacters("bcd"), mergeConfiguration);
+
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("abcd"), result.getMerged());
 
         // Misc
 
-        result = this.mocker.getComponentUnderTest().merge(toCharacters("Alice Macro"),
-            toCharacters("Alice Wiki Macro (upgraded)"), toCharacters("Alice Extension"), null);
+        result = this.diffManager.merge(toCharacters("Alice Macro"),
+            toCharacters("Alice Wiki Macro (upgraded)"), toCharacters("Alice Extension"), mergeConfiguration);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("Alice Wiki Extension (upgraded)"), result.getMerged());
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("Alice Wiki Extension (upgraded)"), result.getMerged());
 
-        result = this.mocker.getComponentUnderTest()
-            .merge(toCharacters("$a(b)"), toCharacters("$c(d)e"), toCharacters("$c(d)e"), null);
+        result = this.diffManager
+            .merge(toCharacters("$a(b)"), toCharacters("$c(d)e"), toCharacters("$c(d)e"), mergeConfiguration);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals("$c(d)e", toString(result.getMerged()));
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals("$c(d)e", toString(result.getMerged()));
     }
 
     @Test
-    public void testMergeCharOnConflicts() throws Exception
+    public void mergeCharOnConflicts() throws Exception
     {
         MergeResult<Character> result;
+        Conflict<Character> conflict;
+        MergeConfiguration<Character> mergeConfiguration;
+
+        List<Character> emptyList = Collections.emptyList();
+        List<Character> onlyA = toCharacters("a");
+        List<Character> onlyB = toCharacters("b");
+        List<Character> onlyC = toCharacters("c");
+
+        // New empty
+        mergeConfiguration = null;
+        result = this.diffManager.merge(onlyA, emptyList, onlyB, mergeConfiguration);
+        conflict = createConflict(0,
+            Type.CHANGE, 0, 0, onlyA, onlyB,
+            Type.DELETE, 0, 0, onlyA, emptyList);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(onlyB, result.getMerged());
+
+        mergeConfiguration = new MergeConfiguration<>();
+        result = this.diffManager.merge(onlyA, emptyList, onlyB, mergeConfiguration);
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(onlyB, result.getMerged());
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager.merge(onlyA, emptyList, onlyB, mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(onlyA, result.getMerged());
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = this.diffManager.merge(onlyA, emptyList, onlyB, mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(emptyList, result.getMerged());
 
         // Current and new at the same place
-        result =
-            this.mocker.getComponentUnderTest().merge(toCharacters("a"), toCharacters("b"), toCharacters("c"), null);
+        mergeConfiguration = null;
+        result = this.diffManager.merge(onlyA, onlyB, onlyC, mergeConfiguration);
+        conflict = createConflict(0, 'a', 'c', 'b');
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(onlyC, result.getMerged());
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("c"), result.getMerged());
+        mergeConfiguration = new MergeConfiguration<>();
+        result = this.diffManager.merge(onlyA, onlyB, onlyC, mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(onlyC, result.getMerged());
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager.merge(onlyA, onlyB, onlyC, mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(onlyA, result.getMerged());
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = this.diffManager.merge(onlyA, onlyB, onlyC, mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(onlyB, result.getMerged());
 
         // Current and new in conflict at different indices
-        result = this.mocker.getComponentUnderTest()
-            .merge(toCharacters("abcd"), toCharacters("yycd"), toCharacters("azzd"), null);
+        mergeConfiguration = null;
+        conflict = createConflict(0,
+            Type.CHANGE, 1, 1, Arrays.asList('b', 'c'), Arrays.asList('z', 'z'),
+            Type.CHANGE, 0, 0, Arrays.asList('a', 'b'), Arrays.asList('y', 'y'));
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("yycd"), toCharacters("azzd"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("azzd", toString(result.getMerged()));
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals("yycd", toString(result.getMerged()));
+        mergeConfiguration = new MergeConfiguration<>();
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("yycd"), toCharacters("azzd"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("azzd", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("yycd"), toCharacters("azzd"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("abcd", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("yycd"), toCharacters("azzd"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("yycd", toString(result.getMerged()));
 
         // Current and new in conflict at different indices
-        result = this.mocker.getComponentUnderTest()
-            .merge(toCharacters("abcd"), toCharacters("azzd"), toCharacters("yycd"), null);
+        conflict = createConflict(0,
+            Type.CHANGE, 0, 0, Arrays.asList('a', 'b'), Arrays.asList('y', 'y'),
+            Type.CHANGE, 1, 1, Arrays.asList('b', 'c'), Arrays.asList('z', 'z'));
+        mergeConfiguration = null;
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("azzd"), toCharacters("yycd"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("yycd", toString(result.getMerged()));
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals("yycd", toString(result.getMerged()));
+        mergeConfiguration = new MergeConfiguration<>();
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("azzd"), toCharacters("yycd"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("yycd", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("azzd"), toCharacters("yycd"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("abcd", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("azzd"), toCharacters("yycd"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("azzd", toString(result.getMerged()));
 
         // New overlapping current
-        result = this.mocker.getComponentUnderTest()
-            .merge(toCharacters("aabbcc"), toCharacters("arrbcc"), toCharacters("ddddcc"), null);
+        conflict = createConflict(0,
+            Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('d', 'd', 'd', 'd'),
+            Type.CHANGE, 1, 1, Arrays.asList('a'), Arrays.asList('r', 'r'));
+        mergeConfiguration = null;
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("arrbcc"), toCharacters("ddddcc"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("ddddcc", toString(result.getMerged()));
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals("ddddcc", toString(result.getMerged()));
+        mergeConfiguration = new MergeConfiguration<>();
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("arrbcc"), toCharacters("ddddcc"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("ddddcc", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("arrbcc"), toCharacters("ddddcc"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("aabbcc", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("arrbcc"), toCharacters("ddddcc"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("arrbcc", toString(result.getMerged()));
 
         // current overlapping new
-        result = this.mocker.getComponentUnderTest()
-            .merge(toCharacters("aabbcc"), toCharacters("ddddcc"), toCharacters("arrbcc"), null);
+        conflict = createConflict(0,
+            Type.CHANGE, 1, 1, Arrays.asList('a'), Arrays.asList('r', 'r'),
+            Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('d', 'd', 'd', 'd'));
+        mergeConfiguration = null;
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("ddddcc"), toCharacters("arrbcc"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("arrbcc", toString(result.getMerged()));
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals("ddddcc", toString(result.getMerged()));
+        mergeConfiguration = new MergeConfiguration<>();
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("ddddcc"), toCharacters("arrbcc"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("arrbcc", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("ddddcc"), toCharacters("arrbcc"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("aabbcc", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("ddddcc"), toCharacters("arrbcc"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("ddddcc", toString(result.getMerged()));
+
+        // Multiple conflicts
+        conflict = createConflict(0,
+            Type.CHANGE, 1, 1, Arrays.asList('a'), Arrays.asList('r', 'r'),
+            Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('d', 'd', 'd', 'd'));
+        Conflict<Character> conflict1 = createConflict(7,
+            Type.CHANGE, 7, 7, Arrays.asList('a', 'b'), Arrays.asList('y','y'),
+            Type.CHANGE, 8, 8, Arrays.asList('b', 'c'), Arrays.asList('z', 'z'));
+        mergeConfiguration = null;
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        List<LogEvent> logConflicts = new ArrayList<>(result.getLog().getLogs(LogLevel.ERROR));
+        assertEquals(2, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(conflict1, result.getConflicts().get(1));
+        assertEquals("arrbcc yycd", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(logConflicts, result.getLog().getLogs(LogLevel.ERROR));
+        assertEquals(2, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(conflict1, result.getConflicts().get(1));
+        assertEquals("arrbcc yycd", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(logConflicts, result.getLog().getLogs(LogLevel.ERROR));
+        assertEquals(2, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(conflict1, result.getConflicts().get(1));
+        assertEquals("aabbcc abcd", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(logConflicts, result.getLog().getLogs(LogLevel.ERROR));
+        assertEquals(2, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(conflict1, result.getConflicts().get(1));
+        assertEquals("ddddcc azzd", toString(result.getMerged()));
+
+        // Another multiple conflicts
+        conflict = createConflict(2,
+            Type.INSERT, 3, 3, Collections.emptyList(), Arrays.asList('d'),
+            Type.CHANGE, 2, 2, Arrays.asList('c'), Arrays.asList('d'));
+        conflict1 = createConflict(4,
+            Type.DELETE, 4, 5, Arrays.asList('f'), Collections.emptyList(),
+            Type.CHANGE, 5, 5, Arrays.asList('h'), Arrays.asList('g'));
+        mergeConfiguration = null;
+        result = this.diffManager
+            .merge(toCharacters("abcefhik"), toCharacters("abdefgijk"), toCharacters("abcdehijk"), mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(2, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(conflict1, result.getConflicts().get(1));
+        assertEquals("abcdehijk", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        result = this.diffManager
+            .merge(toCharacters("abcefhik"), toCharacters("abdefgijk"), toCharacters("abcdehijk"), mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(2, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(conflict1, result.getConflicts().get(1));
+        assertEquals("abcdehijk", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("abcefhik"), toCharacters("abdefgijk"), toCharacters("abcdehijk"), mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(2, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(conflict1, result.getConflicts().get(1));
+        assertEquals("abcefhijk", toString(result.getMerged()));
+
+        mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("abcefhik"), toCharacters("abdefgijk"), toCharacters("abcdehijk"), mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(2, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(conflict1, result.getConflicts().get(1));
+        assertEquals("abdefgijk", toString(result.getMerged()));
     }
 
     @Test
-    public void testMergeWithEmptyNew() throws Exception
+    public void applyDecisionsOnMergeCharConflicts() throws Exception
+    {
+        MergeResult<Character> result;
+        MergeConfiguration<Character> mergeConfiguration;
+        Conflict<Character> conflict;
+        ConflictDecision<Character> conflictDecision;
+        List<ConflictDecision<Character>> allConflictDecisions;
+
+        List<Character> emptyList = Collections.emptyList();
+        List<Character> onlyA = toCharacters("a");
+        List<Character> onlyB = toCharacters("b");
+        List<Character> onlyC = toCharacters("c");
+
+        // New empty
+        conflict = createConflict(0,
+            Type.CHANGE, 0, 0, onlyA, onlyB,
+            Type.DELETE, 0, 0, onlyA, emptyList);
+        conflictDecision = new DefaultConflictDecision<>(conflict);
+        conflictDecision.setType(ConflictDecision.DecisionType.UNDECIDED);
+        allConflictDecisions = Collections.singletonList(conflictDecision);
+        mergeConfiguration = new MergeConfiguration<>(allConflictDecisions);
+        result = this.diffManager.merge(onlyA, emptyList, onlyB, mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(onlyB, result.getMerged());
+
+        conflictDecision.setType(ConflictDecision.DecisionType.CURRENT);
+        result = this.diffManager.merge(onlyA, emptyList, onlyB, mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals(onlyB, result.getMerged());
+
+        conflictDecision.setType(ConflictDecision.DecisionType.PREVIOUS);
+        result = this.diffManager.merge(onlyA, emptyList, onlyB, mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals(onlyA, result.getMerged());
+
+        conflictDecision.setType(ConflictDecision.DecisionType.NEXT);
+        result = this.diffManager.merge(onlyA, emptyList, onlyB, mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals(emptyList, result.getMerged());
+
+        conflictDecision.setCustom(Arrays.asList('x', 'y'));
+        result = this.diffManager.merge(onlyA, emptyList, onlyB, mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals(Arrays.asList('x', 'y'), result.getMerged());
+
+        // Current and new at the same place
+        conflict = createConflict(0, 'a', 'c', 'b');
+        conflictDecision = new DefaultConflictDecision<>(conflict);
+        allConflictDecisions = Collections.singletonList(conflictDecision);
+        mergeConfiguration = new MergeConfiguration<>(allConflictDecisions);
+        conflictDecision.setType(ConflictDecision.DecisionType.UNDECIDED);
+        result = this.diffManager.merge(onlyA, onlyB, onlyC, mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(onlyC, result.getMerged());
+
+        conflictDecision.setType(ConflictDecision.DecisionType.CURRENT);
+        result = this.diffManager.merge(onlyA, onlyB, onlyC, mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals(onlyC, result.getMerged());
+
+        conflictDecision.setType(ConflictDecision.DecisionType.PREVIOUS);
+        result = this.diffManager.merge(onlyA, onlyB, onlyC, mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals(onlyA, result.getMerged());
+
+        conflictDecision.setType(ConflictDecision.DecisionType.NEXT);
+        result = this.diffManager.merge(onlyA, onlyB, onlyC, mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals(onlyB, result.getMerged());
+
+        conflictDecision.setCustom(Collections.emptyList());
+        result = this.diffManager.merge(onlyA, onlyB, onlyC, mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals(Collections.emptyList(), result.getMerged());
+
+        // Current and new in conflict at different indices
+        conflict = createConflict(0,
+            Type.CHANGE, 1, 1, Arrays.asList('b', 'c'), Arrays.asList('z', 'z'),
+            Type.CHANGE, 0, 0, Arrays.asList('a', 'b'), Arrays.asList('y', 'y'));
+        conflictDecision = new DefaultConflictDecision<>(conflict);
+        allConflictDecisions = Collections.singletonList(conflictDecision);
+        mergeConfiguration = new MergeConfiguration<>(allConflictDecisions);
+        conflictDecision.setType(ConflictDecision.DecisionType.UNDECIDED);
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("yycd"), toCharacters("azzd"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("azzd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.CURRENT);
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("yycd"), toCharacters("azzd"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("azzd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("yycd"), toCharacters("azzd"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("abcd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("yycd"), toCharacters("azzd"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("yycd", toString(result.getMerged()));
+
+        conflictDecision.setCustom(toCharacters("Something else"));
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("yycd"), toCharacters("azzd"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("Something elsed", toString(result.getMerged()));
+
+        // Current and new in conflict at different indices
+        conflict = createConflict(0,
+            Type.CHANGE, 0, 0, Arrays.asList('a', 'b'), Arrays.asList('y', 'y'),
+            Type.CHANGE, 1, 1, Arrays.asList('b', 'c'), Arrays.asList('z', 'z'));
+        conflictDecision = new DefaultConflictDecision<>(conflict);
+        allConflictDecisions = Collections.singletonList(conflictDecision);
+        mergeConfiguration = new MergeConfiguration<>(allConflictDecisions);
+        conflictDecision.setType(ConflictDecision.DecisionType.UNDECIDED);
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("azzd"), toCharacters("yycd"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("yycd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.CURRENT);
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("azzd"), toCharacters("yycd"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("yycd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("azzd"), toCharacters("yycd"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("abcd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("azzd"), toCharacters("yycd"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("azzd", toString(result.getMerged()));
+
+        conflictDecision.setCustom(Collections.singletonList('x'));
+        result = this.diffManager
+            .merge(toCharacters("abcd"), toCharacters("azzd"), toCharacters("yycd"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("xd", toString(result.getMerged()));
+
+        // New overlapping current
+        conflict = createConflict(0,
+            Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('d', 'd', 'd', 'd'),
+            Type.CHANGE, 1, 1, Arrays.asList('a'), Arrays.asList('r', 'r'));
+        conflictDecision = new DefaultConflictDecision<>(conflict);
+        allConflictDecisions = Collections.singletonList(conflictDecision);
+        mergeConfiguration = new MergeConfiguration<>(allConflictDecisions);
+        conflictDecision.setType(ConflictDecision.DecisionType.UNDECIDED);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("arrbcc"), toCharacters("ddddcc"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("ddddcc", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.CURRENT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("arrbcc"), toCharacters("ddddcc"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("ddddcc", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("arrbcc"), toCharacters("ddddcc"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("aabbcc", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("arrbcc"), toCharacters("ddddcc"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("arrbcc", toString(result.getMerged()));
+
+        conflictDecision.setCustom(toCharacters("anything"));
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("arrbcc"), toCharacters("ddddcc"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("anythingcc", toString(result.getMerged()));
+
+        // current overlapping new
+        conflict = createConflict(0,
+            Type.CHANGE, 1, 1, Arrays.asList('a'), Arrays.asList('r', 'r'),
+            Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('d', 'd', 'd', 'd'));
+        conflictDecision = new DefaultConflictDecision<>(conflict);
+        allConflictDecisions = Collections.singletonList(conflictDecision);
+        mergeConfiguration = new MergeConfiguration<>(allConflictDecisions);
+        conflictDecision.setType(ConflictDecision.DecisionType.UNDECIDED);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("ddddcc"), toCharacters("arrbcc"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("arrbcc", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.CURRENT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("ddddcc"), toCharacters("arrbcc"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("arrbcc", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("ddddcc"), toCharacters("arrbcc"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("aabbcc", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("ddddcc"), toCharacters("arrbcc"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("ddddcc", toString(result.getMerged()));
+
+        conflictDecision.setCustom(Collections.emptyList());
+        result = this.diffManager
+            .merge(toCharacters("aabbcc"), toCharacters("ddddcc"), toCharacters("arrbcc"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("cc", toString(result.getMerged()));
+
+        // Multiple conflicts
+        conflict = createConflict(0,
+            Type.CHANGE, 1, 1, Arrays.asList('a'), Arrays.asList('r', 'r'),
+            Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('d', 'd', 'd', 'd'));
+        Conflict<Character> conflict1 = createConflict(7,
+            Type.CHANGE, 7, 7, Arrays.asList('a', 'b'), Arrays.asList('y','y'),
+            Type.CHANGE, 8, 8, Arrays.asList('b', 'c'), Arrays.asList('z', 'z'));
+        allConflictDecisions = new ArrayList<>();
+        conflictDecision = new DefaultConflictDecision<>(conflict);
+        allConflictDecisions.add(conflictDecision);
+        ConflictDecision<Character> conflictDecision1 = new DefaultConflictDecision<>(conflict1);
+        allConflictDecisions.add(conflictDecision1);
+        conflictDecision.setType(ConflictDecision.DecisionType.UNDECIDED);
+        conflictDecision1.setType(ConflictDecision.DecisionType.UNDECIDED);
+        mergeConfiguration = new MergeConfiguration<>(allConflictDecisions);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(2, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(2, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(conflict1, result.getConflicts().get(1));
+        assertEquals("arrbcc yycd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.CURRENT);
+        conflictDecision1.setType(ConflictDecision.DecisionType.CURRENT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("arrbcc yycd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.PREVIOUS);
+        conflictDecision1.setType(ConflictDecision.DecisionType.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("aabbcc abcd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.NEXT);
+        conflictDecision1.setType(ConflictDecision.DecisionType.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("ddddcc azzd", toString(result.getMerged()));
+
+        conflictDecision.setCustom(toCharacters("A first change"));
+        conflictDecision1.setCustom(toCharacters("and another one"));
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("A first changecc and another oned", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.CURRENT);
+        conflictDecision1.setType(ConflictDecision.DecisionType.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("arrbcc azzd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.NEXT);
+        conflictDecision1.setType(ConflictDecision.DecisionType.CURRENT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("ddddcc yycd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.CURRENT);
+        conflictDecision1.setType(ConflictDecision.DecisionType.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("arrbcc abcd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.PREVIOUS);
+        conflictDecision1.setType(ConflictDecision.DecisionType.CURRENT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("aabbcc yycd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.NEXT);
+        conflictDecision1.setType(ConflictDecision.DecisionType.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("ddddcc abcd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.PREVIOUS);
+        conflictDecision1.setType(ConflictDecision.DecisionType.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("aabbcc azzd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.UNDECIDED);
+        conflictDecision1.setType(ConflictDecision.DecisionType.CURRENT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("arrbcc yycd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.CURRENT);
+        conflictDecision1.setType(ConflictDecision.DecisionType.UNDECIDED);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict1, result.getConflicts().get(0));
+        assertEquals("arrbcc yycd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.UNDECIDED);
+        conflictDecision1.setType(ConflictDecision.DecisionType.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("arrbcc abcd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.PREVIOUS);
+        conflictDecision1.setType(ConflictDecision.DecisionType.UNDECIDED);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict1, result.getConflicts().get(0));
+        assertEquals("aabbcc yycd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.UNDECIDED);
+        conflictDecision1.setType(ConflictDecision.DecisionType.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("arrbcc azzd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.NEXT);
+        conflictDecision1.setType(ConflictDecision.DecisionType.UNDECIDED);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict1, result.getConflicts().get(0));
+        assertEquals("ddddcc yycd", toString(result.getMerged()));
+
+        conflictDecision.setCustom(toCharacters("bla"));
+        conflictDecision1.setType(ConflictDecision.DecisionType.UNDECIDED);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict1, result.getConflicts().get(0));
+        assertEquals("blacc yycd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.UNDECIDED);
+        conflictDecision1.setCustom(toCharacters("foo"));
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals("arrbcc food", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.CUSTOM);
+        conflictDecision1.setType(ConflictDecision.DecisionType.NEXT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("cc azzd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.NEXT);
+        conflictDecision1.setCustom(toCharacters("foobar"));
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("ddddcc foobard", toString(result.getMerged()));
+
+        conflictDecision.setCustom(toCharacters("Something like that"));
+        conflictDecision1.setType(ConflictDecision.DecisionType.PREVIOUS);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("Something like thatcc abcd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.PREVIOUS);
+        conflictDecision1.setCustom(toCharacters("dddddd"));
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("aabbcc ddddddd", toString(result.getMerged()));
+
+        conflictDecision.setCustom(toCharacters("abc"));
+        conflictDecision1.setType(ConflictDecision.DecisionType.CURRENT);
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("abccc yycd", toString(result.getMerged()));
+
+        conflictDecision.setType(ConflictDecision.DecisionType.CURRENT);
+        conflictDecision1.setCustom(toCharacters("azzd"));
+        result = this.diffManager
+            .merge(toCharacters("aabbcc abcd"), toCharacters("ddddcc azzd"), toCharacters("arrbcc yycd"),
+                mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals("arrbcc azzdd", toString(result.getMerged()));
+    }
+
+    @Test
+    public void mergeWithEmptyNew() throws Exception
     {
         MergeResult<Character> result;
 
         result =
-            this.mocker.getComponentUnderTest().merge(toCharacters("a"), toCharacters(""), toCharacters("b"), null);
+            this.diffManager.merge(toCharacters("a"), toCharacters(""), toCharacters("b"), null);
 
-        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("b"), result.getMerged());
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(toCharacters("b"), result.getMerged());
     }
 
     @Test
-    public void testMergeWhenUserHasChangedAllContent() throws Exception
+    public void mergeWhenUserHasChangedAllContent() throws Exception
     {
         MergeResult<String> result;
 
         // Test 1: All content has changed between previous and current
-        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
                 Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
                 Arrays.asList("New content", "That is completely different"), null);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
+        assertEquals(1, result.getConflicts().size());
 
-        Assert.assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
+        Conflict<String> conflict = createConflict(0,
+            Type.CHANGE, 0, 0, Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("New content", "That is completely different"),
+            Type.CHANGE, 1, 1, Arrays.asList("Line 2"), Arrays.asList("Line 2 modified"));
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
+
+        MergeConfiguration<String> mergeConfiguration = new MergeConfiguration<>();
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
+            Arrays.asList("New content", "That is completely different"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(Arrays.asList("Line 1", "Line 2", "Line 3"), result.getMerged());
+
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
+            Arrays.asList("New content", "That is completely different"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), result.getMerged());
 
         // Test 2: All content has been deleted between previous and current
-        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
                 Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
                 Collections.emptyList(), null);
+        conflict = createConflict(0,
+            Type.DELETE, 0, 0, Arrays.asList("Line 1", "Line 2", "Line 3"), Collections.emptyList(),
+            Type.CHANGE, 1, 1, Arrays.asList("Line 2"), Arrays.asList("Line 2 modified"));
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(Collections.emptyList(), result.getMerged());
 
-        Assert.assertEquals(Collections.emptyList(), result.getMerged());
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
+            Collections.emptyList(), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(Arrays.asList("Line 1", "Line 2", "Line 3"), result.getMerged());
+
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
+            Collections.emptyList(), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), result.getMerged());
+
+        // Test 3: All content has been deleted between previous and next
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Collections.emptyList(),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), null);
+        conflict = createConflict(0,
+            Type.CHANGE, 1, 1, Arrays.asList("Line 2"), Arrays.asList("Line 2 modified"),
+            Type.DELETE, 0, 0, Arrays.asList("Line 1", "Line 2", "Line 3"), Collections.emptyList());
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), result.getMerged());
+
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Collections.emptyList(),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(Arrays.asList("Line 1", "Line 2", "Line 3"), result.getMerged());
+
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.NEXT);
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Collections.emptyList(),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
+            .contains("Conflict between"));
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(Collections.emptyList(), result.getMerged());
+
+        // Test 4: All content has changed between previous and current, and current and next are identical
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("New content", "That is completely different"),
+            Arrays.asList("New content", "That is completely different"), null);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
+
+        mergeConfiguration.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
+        result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("New content", "That is completely different"),
+            Arrays.asList("New content", "That is completely different"), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(0, result.getConflicts().size());
+        assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
+
+        mergeConfiguration = null;
+        MergeResult<String> resultStr = this.diffManager
+            .merge(
+                Arrays.asList(
+                    "Once upon a time",
+                    "a wolf",
+                    "started to walk",
+                    "in the forest"
+                ),
+                Arrays.asList(
+                    "Once upon a time",
+                    "a wolf",
+                    "dressed in black",
+                    "in the forest"
+                ),
+                Arrays.asList(
+                    "Once upon a time",
+                    "a wolf",
+                    "started to walk",
+                    "dressed in black",
+                    "in the forest"
+                ), mergeConfiguration);
+        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(
+            Arrays.asList("Once upon a time", "a wolf", "started to walk", "dressed in black", "in the forest"),
+            resultStr.getMerged());
+
+        // Test 6: We change everything but our first changes are the same at the beginning of current and next:
+        // it still must led to a conflict, since we don't know if we should have "Another line" or not.
+        // Now the conflict created is questionable: should it be a change conflict or an insert/delete conflict?
+        mergeConfiguration = null;
+        conflict = createConflict(0,
+            Type.CHANGE, 0, 0, Arrays.asList("A first edit from a tab."),
+            Arrays.asList("A second edit from another tab.", "Another line"),
+            Type.CHANGE, 0, 0, Arrays.asList("A first edit from a tab."),
+            Arrays.asList("A second edit from another tab."));
+        result = this.diffManager.merge(
+            Arrays.asList("A first edit from a tab."),
+            Arrays.asList("A second edit from another tab."),
+            Arrays.asList("A second edit from another tab.", "Another line"),
+            mergeConfiguration);
+
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(Arrays.asList("A second edit from another tab.", "Another line"), result.getMerged());
+    }
+
+    private <E> Delta<E> createDelta(Type type, Chunk<E> previous, Chunk<E> next)
+    {
+        switch (type) {
+            case CHANGE:
+                return new ChangeDelta<E>(previous, next);
+
+            case INSERT:
+                return new InsertDelta<E>(previous, next);
+
+            case DELETE:
+                return new DeleteDelta<E>(previous, next);
+
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    private <E> Conflict<E> createConflict(int conflictIndex,
+        Type currentType, int previousCurrentIndex, int currentIndex, List<E> previousCurrent, List<E> nextCurrent,
+        Type nextType, int previousNextIndex, int nextIndex, List<E> previousNext, List<E> nextNext)
+    {
+        DefaultChunk<E> previousCurrentChunk = new DefaultChunk<>(previousCurrentIndex, previousCurrent);
+        DefaultChunk<E> currentChunk = new DefaultChunk<>(currentIndex, nextCurrent);
+
+        DefaultChunk<E> previousNextChunk = new DefaultChunk<>(previousNextIndex, previousNext);
+        DefaultChunk<E> nextChunk = new DefaultChunk<>(nextIndex, nextNext);
+
+        Delta<E> currentDelta;
+        return new DefaultConflict<>(conflictIndex,
+            createDelta(currentType, previousCurrentChunk, currentChunk),
+            createDelta(nextType, previousNextChunk, nextChunk));
+    }
+
+    private <E> Conflict<E> createConflict(int index, E previous, E current, E next)
+    {
+        return createConflict(index,
+            Type.CHANGE, index, index, Collections.singletonList(previous), Collections.singletonList(current),
+            Type.CHANGE, index, index, Collections.singletonList(previous), Collections.singletonList(next));
+    }
+
+    @Test
+    public void applyDecisionsOnLinesConflicts() throws Exception
+    {
+        MergeResult<String> result;
+        MergeConfiguration<String> mergeConfiguration;
+
+        // Test 1: All content has changed between previous and current
+        result = diffManager.merge(
+            Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 another change", "Line 3"), null);
+
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+
+        Conflict<String> conflict = createConflict(1, "Line 2", "Line 2 another change", "Line 2 modified");
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(Arrays.asList("Line 1", "Line 2 another change", "Line 3"), result.getMerged());
+
+        ConflictDecision<String> conflictDecision = new DefaultConflictDecision<>(conflict);
+        conflictDecision.setType(ConflictDecision.DecisionType.PREVIOUS);
+
+        List<ConflictDecision<String>> conflictDecisionList = new ArrayList<>();
+        conflictDecisionList.add(conflictDecision);
+        mergeConfiguration = new MergeConfiguration<>(conflictDecisionList);
+        result = diffManager.merge(
+            Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 another change", "Line 3"), mergeConfiguration);
+        assertTrue(result.getConflicts().isEmpty());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).isEmpty());
+        assertEquals(Arrays.asList("Line 1", "Line 2", "Line 3"), result.getMerged());
+
+        conflictDecision.setType(ConflictDecision.DecisionType.NEXT);
+        result = diffManager.merge(
+            Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 another change", "Line 3"), mergeConfiguration);
+        assertTrue(result.getConflicts().isEmpty());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).isEmpty());
+        assertEquals(Arrays.asList("Line 1", "Line 2 modified", "Line 3"), result.getMerged());
+
+        conflictDecision.setType(ConflictDecision.DecisionType.CURRENT);
+        result = diffManager.merge(
+            Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 another change", "Line 3"), mergeConfiguration);
+        assertTrue(result.getConflicts().isEmpty());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).isEmpty());
+        assertEquals(Arrays.asList("Line 1", "Line 2 another change", "Line 3"), result.getMerged());
+
+        conflictDecision.setType(ConflictDecision.DecisionType.UNDECIDED);
+        result = diffManager.merge(
+            Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 another change", "Line 3"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(Arrays.asList("Line 1", "Line 2 another change", "Line 3"), result.getMerged());
+
+        conflictDecision.setCustom(Arrays.asList("Another complete custom change", "and a line"));
+        result = diffManager.merge(
+            Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 another change", "Line 3"), mergeConfiguration);
+        assertTrue(result.getConflicts().isEmpty());
+        assertTrue(result.getLog().getLogs(LogLevel.ERROR).isEmpty());
+        assertEquals(Arrays.asList("Line 1", "Another complete custom change", "and a line", "Line 3"),
+            result.getMerged());
     }
 }

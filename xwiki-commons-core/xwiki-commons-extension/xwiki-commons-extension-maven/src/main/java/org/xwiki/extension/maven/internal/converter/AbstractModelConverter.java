@@ -22,13 +22,15 @@ package org.xwiki.extension.maven.internal.converter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Dependency;
@@ -38,7 +40,6 @@ import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.Scm;
-import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
@@ -67,6 +68,10 @@ import org.xwiki.properties.converter.AbstractConverter;
  */
 public class AbstractModelConverter<T> extends AbstractConverter<T>
 {
+    private static final String PROP_OPTIONAL_INCLUDED = "optionalIncluded";
+
+    private static final Set<String> XWIKI_GROUPS = new HashSet<>(Arrays.asList("org.xwiki", "com.xwiki"));
+
     @Inject
     private ExtensionLicenseManager licenseManager;
 
@@ -76,14 +81,32 @@ public class AbstractModelConverter<T> extends AbstractConverter<T>
     @Inject
     private List<ExtensionFeaturesInjector> featureInjectors;
 
-    protected DefaultMavenExtension convertToExtension(Model model, String groupId, String artifactId, String classifier,
-        String type, String versionString)
+    protected boolean isOptionalIncluded(Properties properties, String groupId)
+    {
+        String included = getProperty(properties, PROP_OPTIONAL_INCLUDED, true);
+
+        if (included != null) {
+            return Boolean.TRUE.toString().equalsIgnoreCase(included);
+        }
+
+        for (String prefix : XWIKI_GROUPS) {
+            if (groupId.startsWith(prefix)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected DefaultMavenExtension convertToExtension(Model model, String groupId, String artifactId,
+        String classifier, String type, String versionString)
     {
         Version version = this.factory.getVersion(versionString);
 
         Properties properties = (Properties) model.getProperties().clone();
 
-        DefaultMavenExtension extension = new DefaultMavenExtension(null, groupId, artifactId, classifier, version, type);
+        DefaultMavenExtension extension =
+            new DefaultMavenExtension(null, groupId, artifactId, classifier, version, type);
 
         extension.setName(getPropertyString(properties, Extension.FIELD_NAME, true, model.getName()));
         extension.setSummary(getPropertyString(properties, Extension.FIELD_SUMMARY, true, model.getDescription()));
@@ -182,9 +205,10 @@ public class AbstractModelConverter<T> extends AbstractConverter<T>
         extension.setRepositories(repositories);
 
         // dependencies
+        boolean optionalIncluded = isOptionalIncluded(properties, groupId);
         for (Dependency mavenDependency : model.getDependencies()) {
-            if (mavenDependency.getScope() == null || mavenDependency.getScope().equals("compile")
-                || mavenDependency.getScope().equals("runtime")) {
+            if ((!mavenDependency.isOptional() || optionalIncluded) && (mavenDependency.getScope() == null
+                || mavenDependency.getScope().equals("compile") || mavenDependency.getScope().equals("runtime"))) {
                 ExtensionDependency extensionDependency = toExtensionDependency(mavenDependency, model, repositories);
 
                 extension.addDependency(extensionDependency);

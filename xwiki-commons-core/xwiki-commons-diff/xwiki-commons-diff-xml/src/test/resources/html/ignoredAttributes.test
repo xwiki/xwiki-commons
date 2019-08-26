@@ -1,0 +1,30 @@
+##--------------------
+## left
+##--------------------
+<ul>
+  <li width="10">one</li>
+  <li foo="bar">two</li>
+</ul>
+##--------------------
+## right
+##--------------------
+<ul>
+  <li width="23">one</li>
+  <li foo="abc">two</li>
+</ul>
+##--------------------
+## expected-marker
+##--------------------
+<ul>
+  <li data-xwiki-html-diff-block="deleted" width="10">one</li>
+<li data-xwiki-html-diff-block="inserted" width="23">one</li>
+  <li foo="bar">two</li>
+</ul>
+##--------------------
+## expected-pruner
+##--------------------
+<ul>
+  <li data-xwiki-html-diff-block="deleted" width="10">one</li>
+<li data-xwiki-html-diff-block="inserted" width="23">one</li>
+  <li data-xwiki-html-diff-hidden="true" foo="bar">two</li>
+</ul>

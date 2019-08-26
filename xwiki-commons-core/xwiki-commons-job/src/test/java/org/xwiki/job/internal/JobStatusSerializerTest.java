@@ -179,7 +179,7 @@ public class JobStatusSerializerTest
         this.serializer = new JobStatusSerializer();
     }
 
-    private JobStatus writeread(JobStatus status) throws IOException
+    private JobStatus writeRead(JobStatus status) throws IOException
     {
         this.serializer.write(status, this.testFile);
 
@@ -189,34 +189,34 @@ public class JobStatusSerializerTest
     // Tests
 
     @Test
-    public void test() throws IOException
+    public void serializeUnserialize() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
-        writeread(status);
+        writeRead(status);
     }
 
     @Test
-    public void testLogMessage() throws IOException
+    public void serializeUnserializeWhenLogMessage() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message");
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
     }
 
     @Test
-    public void testLogMarker() throws IOException
+    public void serializeUnserializeWhenLogMarker() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error(new TranslationMarker("translation.key"), "error message");
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
@@ -224,14 +224,14 @@ public class JobStatusSerializerTest
     }
 
     @Test
-    public void testLogWithException() throws IOException
+    public void serializeUnserializeWhenLogWithException() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message",
             new TestException("exception message", new Exception("cause"), "custom"));
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
@@ -241,13 +241,13 @@ public class JobStatusSerializerTest
     }
 
     @Test
-    public void testLogWithArguments() throws IOException
+    public void serializeUnserializeWhenLogWithArguments() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", "arg1", "arg2");
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
@@ -256,13 +256,13 @@ public class JobStatusSerializerTest
     }
 
     @Test
-    public void testLogWithNullArguments() throws IOException
+    public void serializeUnserializeWhenLogWithNullArguments() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", "arg1", null, "arg3");
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
@@ -272,13 +272,13 @@ public class JobStatusSerializerTest
     }
 
     @Test
-    public void testLogWithComponentArgument() throws IOException
+    public void serializeUnserializeWhenLogWithComponentArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new DefaultJobStatusStore());
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
@@ -286,13 +286,13 @@ public class JobStatusSerializerTest
     }
 
     @Test
-    public void testLogWithStandaloneComponentArgument() throws IOException
+    public void serializeUnserializeWhenLogWithStandaloneComponentArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new StandaloneComponent());
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
@@ -300,13 +300,13 @@ public class JobStatusSerializerTest
     }
 
     @Test
-    public void testLogWithSerializableStandaloneComponentArgument() throws IOException
+    public void serializeUnserializeWhenLogWithSerializableStandaloneComponentArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableStandaloneComponent());
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
@@ -314,13 +314,13 @@ public class JobStatusSerializerTest
     }
 
     @Test
-    public void testLogWithCrossReference() throws IOException
+    public void serializeUnserializeWhenLogWithCrossReference() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("message", new SerializableCrossReferenceObject());
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         SerializableCrossReferenceObject obj =
@@ -329,78 +329,78 @@ public class JobStatusSerializerTest
     }
 
     @Test
-    public void testLogWithComponentField() throws IOException
+    public void serializeUnserializeWhenLogWithComponentField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableObjectTest(new DefaultJobStatusStore()));
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertNull(((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
     }
 
     @Test
-    public void testLogWithStandaloneComponentField() throws IOException
+    public void serializeUnserializeWhenLogWithStandaloneComponentField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableObjectTest(new StandaloneComponent()));
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertNull(((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
     }
 
     @Test
-    public void testLogWithLoggerField() throws IOException
+    public void serializeUnserializeWhenLogWithLoggerField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableObjectTest(mock(Logger.class)));
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertNull(((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
     }
 
     @Test
-    public void testLogWithProviderField() throws IOException
+    public void serializeUnserializeWhenLogWithProviderField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableObjectTest(mock(Provider.class)));
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertNull(((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
     }
 
     @Test
-    public void testLogWithComponentManagerField() throws IOException
+    public void serializeUnserializeWhenLogWithComponentManagerField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableObjectTest(mock(ComponentManager.class)));
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertNull(((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
     }
 
     @Test
-    public void testLogWithSerializableProviderField() throws IOException
+    public void serializeUnserializeWhenLogWithSerializableProviderField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableObjectTest(new SerializableProvider()));
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
@@ -409,13 +409,13 @@ public class JobStatusSerializerTest
     }
 
     @Test
-    public void testLogWithSerializableImplementationProviderField() throws IOException
+    public void serializeUnserializeWhenLogWithSerializableImplementationProviderField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableObjectTest(new SerializableImplementationProvider()));
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
@@ -424,13 +424,13 @@ public class JobStatusSerializerTest
     }
 
     @Test
-    public void testLogWithCustomObjectArgument() throws IOException
+    public void serializeUnserializeWhenLogWithCustomObjectArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new CustomSerializableObject("value"));
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
@@ -438,13 +438,13 @@ public class JobStatusSerializerTest
     }
 
     @Test
-    public void testLogWithSerializableCustomObjectArgument() throws IOException
+    public void serializeUnserializeWhenLogWithSerializableCustomObjectArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableCustomObject("value"));
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
@@ -452,13 +452,13 @@ public class JobStatusSerializerTest
     }
 
     @Test
-    public void testLogWithNotSerializableCustomObjectArgument() throws IOException
+    public void serializeUnserializeWhenLogWithNotSerializableCustomObjectArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new NotSerializableCustomObject("value"));
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
@@ -466,14 +466,15 @@ public class JobStatusSerializerTest
     }
 
     @Test
-    public void testProgress() throws IOException
+    public void serializeUnserializeProgress() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
-        status = writeread(status);
+        status = writeRead(status);
 
         assertNotNull(status.getProgress());
         assertEquals(0.0d, status.getProgress().getOffset(), 0.1d);
         assertEquals(0.0d, status.getProgress().getCurrentLevelOffset(), 0.1d);
+        assertEquals("Progress with name [{}]", status.getProgress().getRootStep().getMessage().getMessage());
     }
 }

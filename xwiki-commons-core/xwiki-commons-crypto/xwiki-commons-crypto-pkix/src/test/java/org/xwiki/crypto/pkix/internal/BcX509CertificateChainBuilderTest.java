@@ -25,16 +25,14 @@ import java.util.Collection;
 
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.util.CollectionStore;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.AbstractPKIXTest;
 import org.xwiki.crypto.BinaryStringEncoder;
 import org.xwiki.crypto.internal.asymmetric.keyfactory.BcDSAKeyFactory;
 import org.xwiki.crypto.internal.asymmetric.keyfactory.BcRSAKeyFactory;
 import org.xwiki.crypto.internal.digest.factory.BcSHA1DigestFactory;
 import org.xwiki.crypto.internal.encoder.Base64BinaryStringEncoder;
-import org.xwiki.crypto.pkix.CertificateChainBuilder;
 import org.xwiki.crypto.pkix.CertificateFactory;
 import org.xwiki.crypto.pkix.CertificateProvider;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
@@ -42,31 +40,41 @@ import org.xwiki.crypto.signer.internal.factory.BcDSAwithSHA1SignerFactory;
 import org.xwiki.crypto.signer.internal.factory.BcSHA1withRsaSignerFactory;
 import org.xwiki.crypto.signer.internal.factory.DefaultSignerFactory;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
 
-@ComponentList({Base64BinaryStringEncoder.class, BcRSAKeyFactory.class, BcDSAKeyFactory.class,
+@ComponentTest
+@ComponentList({ Base64BinaryStringEncoder.class, BcRSAKeyFactory.class, BcDSAKeyFactory.class,
     BcSHA1DigestFactory.class, BcSHA1withRsaSignerFactory.class, BcDSAwithSHA1SignerFactory.class,
-    DefaultSignerFactory.class, BcStoreX509CertificateProvider.class, BcX509CertificateFactory.class})
+    DefaultSignerFactory.class, BcStoreX509CertificateProvider.class, BcX509CertificateFactory.class })
 public class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<CertificateChainBuilder> mocker =
-        new MockitoComponentMockingRule<CertificateChainBuilder>(BcX509CertificateChainBuilder.class);
+    @InjectMockComponents
+    private BcX509CertificateChainBuilder builder;
 
-    private CertificateChainBuilder builder;
+    @InjectComponentManager
+    private MockitoComponentManager componentManager;
+
     private CertifiedPublicKey v1CaCert;
+
     private CertifiedPublicKey v1Cert;
+
     private CertifiedPublicKey v3CaCert;
+
     private CertifiedPublicKey v3InterCaCert;
+
     private CertifiedPublicKey v3Cert;
 
-    public void setupTest(MockitoComponentMockingRule<CertificateChainBuilder> mocker) throws Exception
+    @BeforeEach
+    public void setupTest() throws Exception
     {
-        BinaryStringEncoder base64encoder = mocker.getInstance(BinaryStringEncoder.class, "Base64");
-        CertificateFactory certFactory = mocker.getInstance(CertificateFactory.class, "X509");
+        BinaryStringEncoder base64encoder = componentManager.getInstance(BinaryStringEncoder.class, "Base64");
+        CertificateFactory certFactory = componentManager.getInstance(CertificateFactory.class, "X509");
         v1CaCert = certFactory.decode(base64encoder.decode(V1_CA_CERT));
         v1Cert = certFactory.decode(base64encoder.decode(V1_CERT));
         v3CaCert = certFactory.decode(base64encoder.decode(V3_CA_CERT));
@@ -74,22 +82,15 @@ public class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
         v3Cert = certFactory.decode(base64encoder.decode(V3_CERT));
     }
 
-    @Before
-    public void configure() throws Exception
-    {
-        builder = mocker.getComponentUnderTest();
-        setupTest(mocker);
-    }
-
     @Test
-    public void testValidV3CertificatePath() throws Exception
+    public void validV3CertificatePath() throws Exception
     {
-        Collection<X509CertificateHolder> certs = new ArrayList<X509CertificateHolder>();
+        Collection<X509CertificateHolder> certs = new ArrayList<>();
         certs.add(BcUtils.getX509CertificateHolder(v3CaCert));
         certs.add(BcUtils.getX509CertificateHolder(v3InterCaCert));
 
         CollectionStore store = new CollectionStore(certs);
-        CertificateProvider provider = mocker.getInstance(CertificateProvider.class, "BCStoreX509");
+        CertificateProvider provider = componentManager.getInstance(CertificateProvider.class, "BCStoreX509");
         ((BcStoreX509CertificateProvider) provider).setStore(store);
 
         Collection<CertifiedPublicKey> chain = builder.build(v3Cert, provider);
@@ -98,13 +99,13 @@ public class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
     }
 
     @Test
-    public void testIncompleteV3CertificatePath() throws Exception
+    public void incompleteV3CertificatePath() throws Exception
     {
-        Collection<X509CertificateHolder> certs = new ArrayList<X509CertificateHolder>();
+        Collection<X509CertificateHolder> certs = new ArrayList<>();
         certs.add(BcUtils.getX509CertificateHolder(v3InterCaCert));
 
         CollectionStore store = new CollectionStore(certs);
-        CertificateProvider provider = mocker.getInstance(CertificateProvider.class, "BCStoreX509");
+        CertificateProvider provider = componentManager.getInstance(CertificateProvider.class, "BCStoreX509");
         ((BcStoreX509CertificateProvider) provider).setStore(store);
 
         Collection<CertifiedPublicKey> chain = builder.build(v3Cert, provider);
@@ -113,13 +114,13 @@ public class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
     }
 
     @Test
-    public void testBrokenV3CertificatePath() throws Exception
+    public void brokenV3CertificatePath() throws Exception
     {
-        Collection<X509CertificateHolder> certs = new ArrayList<X509CertificateHolder>();
+        Collection<X509CertificateHolder> certs = new ArrayList<>();
         certs.add(BcUtils.getX509CertificateHolder(v3CaCert));
 
         CollectionStore store = new CollectionStore(certs);
-        CertificateProvider provider = mocker.getInstance(CertificateProvider.class, "BCStoreX509");
+        CertificateProvider provider = componentManager.getInstance(CertificateProvider.class, "BCStoreX509");
         ((BcStoreX509CertificateProvider) provider).setStore(store);
 
         Collection<CertifiedPublicKey> chain = builder.build(v3Cert, provider);
@@ -128,13 +129,13 @@ public class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
     }
 
     @Test
-    public void testValidV1CertificatePath() throws Exception
+    public void validV1CertificatePath() throws Exception
     {
-        Collection<X509CertificateHolder> certs = new ArrayList<X509CertificateHolder>();
+        Collection<X509CertificateHolder> certs = new ArrayList<>();
         certs.add(BcUtils.getX509CertificateHolder(v1CaCert));
 
         CollectionStore store = new CollectionStore(certs);
-        CertificateProvider provider = mocker.getInstance(CertificateProvider.class, "BCStoreX509");
+        CertificateProvider provider = componentManager.getInstance(CertificateProvider.class, "BCStoreX509");
         ((BcStoreX509CertificateProvider) provider).setStore(store);
 
         Collection<CertifiedPublicKey> chain = builder.build(v1Cert, provider);
@@ -143,13 +144,12 @@ public class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
     }
 
     @Test
-    public void testIncompleteV1CertificatePath() throws Exception
+    public void incompleteV1CertificatePath() throws Exception
     {
-        CertificateProvider provider = mocker.getInstance(CertificateProvider.class, "BCStoreX509");
+        CertificateProvider provider = componentManager.getInstance(CertificateProvider.class, "BCStoreX509");
 
         Collection<CertifiedPublicKey> chain = builder.build(v1Cert, provider);
 
         assertThat(chain, contains(v1Cert));
     }
-
 }

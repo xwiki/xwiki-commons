@@ -138,6 +138,6 @@ public abstract class AbstractDelta<E> implements Delta<E>
     @Override
     public String toString()
     {
-        return "[-" + getPrevious() + " +" + getNext() + "]";
+        return getType().name() + "[-" + getPrevious() + " +" + getNext() + "]";
     }
 }

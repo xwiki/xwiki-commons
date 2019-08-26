@@ -1,0 +1,13 @@
+##--------------------
+## left
+##--------------------
+<p>one two four</p>
+##--------------------
+## right
+##--------------------
+<p>one four</p>
+##--------------------
+## expected-marker
+##--------------------
+<p data-xwiki-html-diff-block="deleted">one <span data-xwiki-html-diff="deleted">two </span>four</p>
+<p data-xwiki-html-diff-block="inserted">one four</p>

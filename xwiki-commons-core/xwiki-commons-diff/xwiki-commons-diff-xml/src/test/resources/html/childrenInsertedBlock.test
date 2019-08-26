@@ -1,0 +1,23 @@
+##--------------------
+## left
+##--------------------
+<p>two</p>
+<p>three</p>
+##--------------------
+## right
+##--------------------
+<h1>one</h1>
+<p>two</p>
+<p>three</p>
+##--------------------
+## expected-marker
+##--------------------
+<h1 data-xwiki-html-diff-block="inserted">one</h1>
+<p>two</p>
+<p>three</p>
+##--------------------
+## expected-pruner
+##--------------------
+<h1 data-xwiki-html-diff-block="inserted">one</h1>
+<p data-xwiki-html-diff-hidden="true">two</p>
+<p data-xwiki-html-diff-hidden="true">three</p>

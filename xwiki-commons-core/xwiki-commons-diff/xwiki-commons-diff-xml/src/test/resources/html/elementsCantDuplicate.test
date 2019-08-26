@@ -1,0 +1,54 @@
+##--------------------
+## left
+##--------------------
+<table>
+  <tr>
+    <th>One</th><th>Two</th>
+  </tr>
+  <tr>
+    <td>123</td><td>456</td>
+  </tr>
+</table>
+##--------------------
+## right
+##--------------------
+<table>
+  <tr>
+    <th>One</th><th>Two</th>
+  </tr>
+  <tr>
+    <td>123</td><td>789</td>
+  </tr>
+</table>
+##--------------------
+## expected-marker
+##--------------------
+<table>
+  <tbody>
+<tr>
+    <th>One</th><th>Two</th>
+  </tr>
+  <tr data-xwiki-html-diff-block="deleted">
+    <td>123</td><td><span data-xwiki-html-diff="deleted">456</span></td>
+  </tr>
+<tr data-xwiki-html-diff-block="inserted">
+    <td>123</td><td><span data-xwiki-html-diff="inserted">789</span></td>
+  </tr>
+</tbody>
+</table>
+##--------------------
+## expected-pruner
+##--------------------
+<table>
+  <tbody>
+<tr data-xwiki-html-diff-hidden="true">
+    <th>One</th><th>Two</th>
+  </tr>
+  <tr data-xwiki-html-diff-block="deleted">
+    <td>123</td><td><span data-xwiki-html-diff="deleted">456</span></td>
+  </tr>
+<tr data-xwiki-html-diff-block="inserted">
+    <td>123</td><td><span data-xwiki-html-diff="inserted">789</span></td>
+  </tr>
+</tbody>
+</table>

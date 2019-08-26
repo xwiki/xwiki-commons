@@ -109,6 +109,7 @@ public class RepositoryUtils
         System.setProperty("extension.repository.maven", getMavenRepository().getAbsolutePath());
         System.setProperty("extension.repository.maven2", getMaven2Repository().getAbsolutePath());
         System.setProperty("extension.repository.remote", getRemoteRepository().getAbsolutePath());
+        System.setProperty("extension.repository.mavenunknown", getRemoteRepository().getAbsolutePath());
     }
 
     public File getPermanentDirectory()
@@ -178,7 +179,7 @@ public class RepositoryUtils
         copyResourceFolder(getLocalRepository(), "repository.local");
         copyResourceFolder(getMavenRepository(), "repository.maven");
         copyResourceFolder(getMaven2Repository(), "repository.maven2");
-        copyResourceFolder(getMaven2Repository(), "repository.mavenunknown");
+        copyResourceFolder(getMavenUnknownRepository(), "repository.mavenunknown");
 
         // generated extensions
 

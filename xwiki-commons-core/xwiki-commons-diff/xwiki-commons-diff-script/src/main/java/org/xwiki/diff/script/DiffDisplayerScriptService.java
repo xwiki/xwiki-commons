@@ -27,6 +27,7 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
+import org.xwiki.diff.Conflict;
 import org.xwiki.diff.DiffException;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
@@ -37,6 +38,7 @@ import org.xwiki.diff.display.UnifiedDiffBlock;
 import org.xwiki.diff.display.UnifiedDiffConfiguration;
 import org.xwiki.diff.display.UnifiedDiffDisplayer;
 import org.xwiki.script.service.ScriptService;
+import org.xwiki.stability.Unstable;
 
 /**
  * Provide script oriented APIs to display diff.
@@ -132,9 +134,13 @@ public class DiffDisplayerScriptService implements ScriptService
      *
      * @param previous the previous version
      * @param next the next version
+     * @param conflicts the {@link Conflict} to take into consideration for the display.
      * @return the list of extended diff blocks
+     * @since 11.7RC1
      */
-    public List<UnifiedDiffBlock<String, Character>> unified(String previous, String next)
+    @Unstable
+    public List<UnifiedDiffBlock<String, Character>> unified(String previous, String next,
+        List<Conflict<String>> conflicts)
     {
         setError(null);
 
@@ -143,7 +149,48 @@ public class DiffDisplayerScriptService implements ScriptService
                 this.diffManager.diff(this.lineSplitter.split(previous), this.lineSplitter.split(next), null);
             UnifiedDiffConfiguration<String, Character> config = this.unifiedDiffDisplayer.getDefaultConfiguration();
             config.setSplitter(this.charSplitter);
-            return this.unifiedDiffDisplayer.display(diffResult, config);
+            return this.unifiedDiffDisplayer.display(diffResult, conflicts, config);
+        } catch (DiffException e) {
+            setError(e);
+            return null;
+        }
+    }
+
+    /**
+     * Builds an unified diff between two versions of a text. The unified diff provides information about both
+     * line-level and character-level changes (the later only when a line is modified).
+     *
+     * @param previous the previous version
+     * @param next the next version
+     * @return the list of extended diff blocks
+     */
+    public List<UnifiedDiffBlock<String, Character>> unified(String previous, String next)
+    {
+        return unified(previous, next, null);
+    }
+
+    /**
+     * Builds an unified diff between two versions of a list of elements. If a splitter is provided through the given
+     * configuration object then the unified diff will display changes at two levels of granularity: elements and their
+     * sub-elements.
+     *
+     * @param previous the previous version
+     * @param next the next version
+     * @param config the configuration object
+     * @param <E> the type of composite elements that are compared to produce the first level diff
+     * @param <F> the type of sub-elements that are compared to produce the second level diff when a composite element
+     * @param conflicts the {@link Conflict} to take into consideration for the display.
+     * @return the list of extended diff blocks
+     * @since 11.7RC1
+     */
+    @Unstable
+    public <E, F> List<UnifiedDiffBlock<E, F>> unified(List<E> previous, List<E> next,
+        UnifiedDiffConfiguration<E, F> config, List<Conflict<E>> conflicts)
+    {
+        setError(null);
+
+        try {
+            return this.unifiedDiffDisplayer.display(this.diffManager.diff(previous, next, null), conflicts, config);
         } catch (DiffException e) {
             setError(e);
             return null;
@@ -165,14 +212,7 @@ public class DiffDisplayerScriptService implements ScriptService
     public <E, F> List<UnifiedDiffBlock<E, F>> unified(List<E> previous, List<E> next,
         UnifiedDiffConfiguration<E, F> config)
     {
-        setError(null);
-
-        try {
-            return this.unifiedDiffDisplayer.display(this.diffManager.diff(previous, next, null), config);
-        } catch (DiffException e) {
-            setError(e);
-            return null;
-        }
+        return unified(previous, next, config, null);
     }
 
     /**

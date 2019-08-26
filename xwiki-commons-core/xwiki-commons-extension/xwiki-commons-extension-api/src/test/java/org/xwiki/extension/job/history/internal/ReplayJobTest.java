@@ -23,8 +23,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Rule;
-import org.junit.Test;
+import javax.inject.Named;
+
+import org.junit.jupiter.api.Test;
+import org.xwiki.context.Execution;
 import org.xwiki.extension.job.ExtensionRequest;
 import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.UninstallRequest;
@@ -35,10 +37,15 @@ import org.xwiki.extension.job.internal.AbstractExtensionJob;
 import org.xwiki.job.GroupedJob;
 import org.xwiki.job.Job;
 import org.xwiki.job.JobGroupPath;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.junit5.mockito.MockComponent;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Unit tests for {@link ReplayJob}.
@@ -46,10 +53,22 @@ import static org.mockito.Mockito.*;
  * @version $Id$
  * @since 7.1RC1
  */
+@ComponentTest
 public class ReplayJobTest
 {
-    @Rule
-    public MockitoComponentMockingRule<Job> mocker = new MockitoComponentMockingRule<Job>(ReplayJob.class);
+    @MockComponent
+    @Named("install")
+    private Job installJob;
+
+    @MockComponent
+    @Named("uninstall")
+    private Job uninstallJob;
+
+    @MockComponent
+    private Execution execution;
+
+    @InjectMockComponents
+    private ReplayJob replayJob;
 
     @Test
     public void replay() throws Exception
@@ -57,27 +76,34 @@ public class ReplayJobTest
         InstallRequest installRequest = new InstallRequest();
         ExtensionJobHistoryRecord installRecord =
             new ExtensionJobHistoryRecord("install", installRequest, null, null, null);
-        Job installJob = this.mocker.registerMockComponent(Job.class, "install");
 
         UninstallRequest uninstallRequest = new UninstallRequest();
         ExtensionJobHistoryRecord uninstallRecord =
             new ExtensionJobHistoryRecord("uninstall", uninstallRequest, null, null, null);
-        Job uninstallJob = this.mocker.registerMockComponent(Job.class, "uninstall");
 
         ReplayRequest request = new ReplayRequest();
         request.setRecords(Arrays.asList(installRecord, uninstallRecord));
 
-        Job replayJob = this.mocker.getComponentUnderTest();
-        replayJob.initialize(request);
-        replayJob.run();
+        assertNull(installRequest.isStatusLogIsolated());
+        assertNull(uninstallRequest.isStatusLogIsolated());
 
-        verify(installJob).initialize(installRequest);
-        verify(installJob).run();
+        this.replayJob.initialize(request);
+        this.replayJob.run();
 
-        verify(uninstallJob).initialize(uninstallRequest);
-        verify(uninstallJob).run();
+        verify(this.installJob).initialize(installRequest);
+        verify(this.installJob).run();
 
-        assertEquals(1, ((ReplayJobStatus) replayJob.getStatus()).getCurrentRecordNumber());
+        verify(this.uninstallJob).initialize(uninstallRequest);
+        verify(this.uninstallJob).run();
+
+        assertEquals(1, ((ReplayJobStatus) this.replayJob.getStatus()).getCurrentRecordNumber());
+
+        // Make sure the replay job does not need and does not initialize any ExecutionContext
+        verifyZeroInteractions(this.execution);
+
+        // Make sure the replay job force the job request to not be isolated so that their log end up in replay job log
+        assertFalse(installRequest.isStatusLogIsolated());
+        assertFalse(uninstallRequest.isStatusLogIsolated());
     }
 
     @Test
@@ -110,8 +136,7 @@ public class ReplayJobTest
         ReplayRequest request = new ReplayRequest();
         request.setRecords(records);
 
-        Job replayJob = this.mocker.getComponentUnderTest();
-        replayJob.initialize(request);
-        assertEquals(expected, ((GroupedJob) replayJob).getGroupPath());
+        this.replayJob.initialize(request);
+        assertEquals(expected, ((GroupedJob) this.replayJob).getGroupPath());
     }
 }

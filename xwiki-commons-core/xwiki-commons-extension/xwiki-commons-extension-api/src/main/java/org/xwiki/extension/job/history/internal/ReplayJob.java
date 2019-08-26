@@ -31,6 +31,7 @@ import org.xwiki.extension.job.history.ReplayJobStatus;
 import org.xwiki.extension.job.history.ReplayRequest;
 import org.xwiki.extension.job.internal.AbstractExtensionJob;
 import org.xwiki.job.AbstractJob;
+import org.xwiki.job.AbstractRequest;
 import org.xwiki.job.GroupedJob;
 import org.xwiki.job.Job;
 import org.xwiki.job.JobGroupPath;
@@ -58,6 +59,16 @@ public class ReplayJob extends AbstractJob<ReplayRequest, ReplayJobStatus> imple
      * the root namespace then this job is part of the group of extension jobs that run on global (root) namespace.
      */
     private JobGroupPath groupPath;
+
+    /**
+     * The default constructor.
+     */
+    public ReplayJob()
+    {
+        // We don't need an execution context in this job and more importantly we want to make sure sub jobs use their
+        // own context (children job reuse parent job context by default)
+        this.initExecutionContext = false;
+    }
 
     @Override
     public String getType()
@@ -116,6 +127,11 @@ public class ReplayJob extends AbstractJob<ReplayRequest, ReplayJobStatus> imple
 
     private void replay(ExtensionJobHistoryRecord record) throws ComponentLookupException
     {
+        // Make sure the executed job log end up in the replay job log
+        if (record.getRequest() instanceof AbstractRequest) {
+            ((AbstractRequest) record.getRequest()).setStatusLogIsolated(false);
+        }
+
         Job job = this.componentManager.getInstance(Job.class, record.getJobType());
         job.initialize(record.getRequest());
         job.run();

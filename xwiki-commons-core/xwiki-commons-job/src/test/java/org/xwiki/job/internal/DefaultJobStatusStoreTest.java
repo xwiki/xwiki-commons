@@ -24,84 +24,88 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.cache.CacheManager;
 import org.xwiki.cache.internal.MapCache;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.event.status.JobStatus;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.annotation.BeforeComponent;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.junit5.mockito.MockComponent;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link DefaultJobStatusStore}.
  *
  * @version $Id$
  */
+@ComponentTest
 public class DefaultJobStatusStoreTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<DefaultJobStatusStore> componentManager =
-        new MockitoComponentMockingRule<>(DefaultJobStatusStore.class);
+    @InjectMockComponents
+    private DefaultJobStatusStore store;
 
-    @Before
+    @InjectComponentManager
+    private MockitoComponentManager componentManager;
+
+    @MockComponent
+    private JobManagerConfiguration jobManagerConfiguration;
+
+    @MockComponent
+    private CacheManager cacheManager;
+
+    @MockComponent
+    private JobStatusSerializer serializer;
+
+    @BeforeComponent
     public void before() throws Exception
     {
-        JobManagerConfiguration jobManagerConfiguration =
-            this.componentManager.getInstance(JobManagerConfiguration.class);
-
         FileUtils.deleteDirectory(new File("target/test/jobs/"));
         FileUtils.copyDirectory(new File("src/test/resources/jobs/"), new File("target/test/jobs/"));
 
-        when(jobManagerConfiguration.getStorage()).thenReturn(new File("target/test/jobs/status"));
-        when(jobManagerConfiguration.getJobStatusCacheSize()).thenReturn(100);
+        when(this.jobManagerConfiguration.getStorage()).thenReturn(new File("target/test/jobs/status"));
+        when(this.jobManagerConfiguration.getJobStatusCacheSize()).thenReturn(100);
 
-        CacheManager cacheManagerMock = this.componentManager.getInstance(CacheManager.class);
-        when(cacheManagerMock.createNewCache(any())).thenReturn(new MapCache<>());
+        when(this.cacheManager.createNewCache(any())).thenReturn(new MapCache<>());
     }
 
     @Test
-    public void getJobStatusWithNullId() throws Exception
+    public void getJobStatusWithNullId()
     {
-        JobStatus jobStatus = this.componentManager.getComponentUnderTest().getJobStatus((List<String>) null);
+        JobStatus jobStatus = this.store.getJobStatus(null);
 
         assertNotNull(jobStatus);
         assertNull(jobStatus.getRequest().getId());
         assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
 
-        assertSame(jobStatus, this.componentManager.getComponentUnderTest().getJobStatus((List<String>) null));
+        assertSame(jobStatus, this.store.getJobStatus(null));
     }
 
     @Test
-    public void getJobStatusWithMultipleId() throws Exception
+    public void getJobStatusWithMultipleId()
     {
-        JobStatus jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("id1", "id2"));
+        JobStatus jobStatus = this.store.getJobStatus(Arrays.asList("id1", "id2"));
 
         assertNotNull(jobStatus);
         assertEquals(Arrays.asList("id1", "id2"), jobStatus.getRequest().getId());
         assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
 
-        assertSame(jobStatus, this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("id1", "id2")));
+        assertSame(jobStatus, this.store.getJobStatus(Arrays.asList("id1", "id2")));
     }
 
     @Test
-    public void getJobStatusInOldPlace() throws Exception
+    public void getJobStatusInOldPlace()
     {
-        JobStatus jobStatus =
-            this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("id1", "id2", "id3"));
+        JobStatus jobStatus = this.store.getJobStatus(Arrays.asList("id1", "id2", "id3"));
 
         assertNotNull(jobStatus);
         assertEquals(Arrays.asList("id1", "id2", "id3"), jobStatus.getRequest().getId());
@@ -109,51 +113,50 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void getJobStatusInWrongPlaceAndWithInvalidLogArgument() throws Exception
+    public void getJobStatusInWrongPlaceAndWithInvalidLogArgument()
     {
-        JobStatus jobStatus =
-            this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("invalidlogargument"));
+        JobStatus jobStatus = this.store.getJobStatus(Arrays.asList("invalidlogargument"));
 
         assertNotNull(jobStatus);
         assertEquals(3, jobStatus.getLog().size());
     }
 
     @Test
-    public void getJobStatusThatDoesNotExist() throws Exception
+    public void getJobStatusThatDoesNotExist()
     {
-        JobStatus jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("nostatus"));
+        JobStatus jobStatus = this.store.getJobStatus(Arrays.asList("nostatus"));
 
         assertNull(jobStatus);
 
         JobStatusSerializer mockSerializer = mock(JobStatusSerializer.class);
-        ReflectionUtils.setFieldValue(this.componentManager.getComponentUnderTest(), "serializer", mockSerializer);
+        ReflectionUtils.setFieldValue(this.store, "serializer", mockSerializer);
 
-        jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("nostatus"));
+        jobStatus = this.store.getJobStatus(Arrays.asList("nostatus"));
         assertNull(jobStatus);
 
         verifyNoMoreInteractions(mockSerializer);
     }
 
     @Test
-    public void removeJobStatus() throws ComponentLookupException
+    public void removeJobStatus()
     {
         List<String> id = null;
 
-        JobStatus jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(id);
+        JobStatus jobStatus = this.store.getJobStatus(id);
 
         assertNotNull(jobStatus);
         assertNull(jobStatus.getRequest().getId());
         assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
 
-        assertSame(jobStatus, this.componentManager.getComponentUnderTest().getJobStatus(id));
+        assertSame(jobStatus, this.store.getJobStatus(id));
 
-        this.componentManager.getComponentUnderTest().remove(id);
+        this.store.remove(id);
 
-        assertSame(null, this.componentManager.getComponentUnderTest().getJobStatus(id));
+        assertSame(null, this.store.getJobStatus(id));
     }
 
     @Test
-    public void storeJobStatus() throws ComponentLookupException
+    public void storeJobStatusWhenSerializable()
     {
         List<String> id = Arrays.asList("newstatus");
 
@@ -161,8 +164,12 @@ public class DefaultJobStatusStoreTest
         request.setId(id);
         JobStatus jobStatus = new DefaultJobStatus("type", request, null, null, null);
 
-        this.componentManager.getComponentUnderTest().store(jobStatus);
+        this.store.store(jobStatus);
 
-        assertSame(jobStatus, this.componentManager.getComponentUnderTest().getJobStatus(id));
+        assertSame(jobStatus, this.store.getJobStatus(id));
+
+        // Verify that the status has been serialized, indirectly verifying that isSerializable() has been called and
+        // returned true.
+        assertTrue(new File("target/test/jobs/status/newstatus/status.xml").exists());
     }
 }

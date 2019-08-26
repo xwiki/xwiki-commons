@@ -21,6 +21,9 @@ package org.xwiki.diff.display;
 
 import java.util.List;
 
+import org.xwiki.diff.Conflict;
+import org.xwiki.stability.Unstable;
+
 /**
  * Wraps the elements that are compared to produce a diff, holding information like their index and type of change
  * (added, removed, unmodified) to simplify the process of displaying them in an unified diff. If the wrapped element is
@@ -94,6 +97,8 @@ public class UnifiedDiffElement<E, F>
      */
     private List<InlineDiffChunk<F>> chunks;
 
+    private UnifiedDiffConflictElement<E> conflict;
+
     /**
      * Creates a new element in a unified diff.
      *
@@ -103,9 +108,27 @@ public class UnifiedDiffElement<E, F>
      */
     public UnifiedDiffElement(int index, Type type, E value)
     {
+        this(index, type, value, null);
+    }
+
+    /**
+     * Creates a new element in a unified diff.
+     *
+     * @param index the element index
+     * @param type the element type
+     * @param value the wrapped element
+     * @param conflict the {@link Conflict} that element is part of.
+     * @since 11.7RC1
+     */
+    @Unstable
+    public UnifiedDiffElement(int index, Type type, E value, Conflict<E> conflict)
+    {
         this.index = index;
         this.type = type;
         this.value = value;
+        if (conflict != null) {
+            this.conflict = new UnifiedDiffConflictElement<E>(conflict, index);
+        }
     }
 
     /**
@@ -164,6 +187,26 @@ public class UnifiedDiffElement<E, F>
     public boolean isDeleted()
     {
         return this.type == Type.DELETED;
+    }
+
+    /**
+     * @return {@code true} if this element is part of a conflict.
+     * @since 11.7RC1
+     */
+    @Unstable
+    public boolean isConflicting()
+    {
+        return this.conflict != null;
+    }
+
+    /**
+     * @return the {@link UnifiedDiffConflictElement} or null if there is no conflict.
+     * @since 11.7RC1
+     */
+    @Unstable
+    public UnifiedDiffConflictElement<E> getConflict()
+    {
+        return this.conflict;
     }
 
     @Override

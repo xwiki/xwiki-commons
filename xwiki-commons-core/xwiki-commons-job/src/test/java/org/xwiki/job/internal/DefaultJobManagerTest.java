@@ -22,45 +22,44 @@ package org.xwiki.job.internal;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jmock.Expectations;
-import org.junit.Assert;
-import org.junit.Test;
-import org.xwiki.context.Execution;
-import org.xwiki.context.ExecutionContextManager;
+import org.junit.jupiter.api.Test;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.context.internal.DefaultExecution;
 import org.xwiki.context.internal.DefaultExecutionContextManager;
-import org.xwiki.job.JobManager;
 import org.xwiki.job.JobStatusStore;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
-import org.xwiki.test.jmock.annotation.MockingRequirement;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link DefaultJobManager}.
  *
  * @version $Id$
  */
-@MockingRequirement(value = DefaultJobManager.class, exceptions = { ExecutionContextManager.class, Execution.class })
+@ComponentTest
 @ComponentList({
     DefaultExecution.class,
     DefaultExecutionContextManager.class
 })
-public class DefaultJobManagerTest extends AbstractMockingComponentTestCase<JobManager>
+public class DefaultJobManagerTest
 {
+    @InjectMockComponents
+    private DefaultJobManager jobManager;
+
+    @InjectComponentManager
+    private ComponentManager componentManager;
+
     @Test
-    public void testGetJobStatusForUnexistingJob() throws Exception
+    public void getJobStatusForUnexistingJob() throws Exception
     {
-        final List<String> jobId = Arrays.asList("unexisting-job");
-        final JobStatusStore jobStatusStorage = getComponentManager().getInstance(JobStatusStore.class);
+        List<String> jobId = Arrays.asList("unexisting-job");
+        JobStatusStore jobStatusStorage = componentManager.getInstance(JobStatusStore.class);
+        when(jobStatusStorage.getJobStatus(jobId)).thenReturn(null);
 
-        getMockery().checking(new Expectations()
-        {
-            {
-                oneOf(jobStatusStorage).getJobStatus(jobId);
-                will(returnValue(null));
-            }
-        });
-
-        Assert.assertNull(getMockedComponent().getJobStatus(jobId));
+        assertNull(jobManager.getJobStatus(jobId));
     }
 }

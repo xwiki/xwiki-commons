@@ -21,6 +21,8 @@ package org.xwiki.diff;
 
 import java.util.List;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * A snippet of the source list.
  *
@@ -61,4 +63,18 @@ public interface Chunk<E>
      * @return the index of the last element of the chunk in the list
      */
     int getLastIndex();
+
+    /**
+     * Check if the current chunk is overlapping with another chunk based on the indexes.
+     * @param otherChunk the other chunk to test.
+     * @return true if both chunks shares some indexes.
+     * @since 11.7RC1
+     * @since 10.11.10
+     * @since 11.3.3
+     */
+    @Unstable
+    default boolean isOverlappingWith(Chunk<E> otherChunk)
+    {
+        return false;
+    }
 }

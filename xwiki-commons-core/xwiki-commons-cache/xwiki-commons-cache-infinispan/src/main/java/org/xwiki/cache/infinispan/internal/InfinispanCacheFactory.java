@@ -36,6 +36,7 @@ import org.xwiki.cache.CacheException;
 import org.xwiki.cache.CacheFactory;
 import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.annotation.DisposePriority;
 import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -53,6 +54,8 @@ import org.xwiki.environment.Environment;
 @Component
 @Named("infinispan")
 @Singleton
+// Make sure the component is disposed at the end in case some components needs it for their own dispose
+@DisposePriority(10000)
 public class InfinispanCacheFactory implements CacheFactory, Initializable, Disposable
 {
     /**

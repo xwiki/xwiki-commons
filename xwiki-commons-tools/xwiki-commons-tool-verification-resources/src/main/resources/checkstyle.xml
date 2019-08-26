@@ -205,6 +205,8 @@
       <property name="allowUndeclaredRTE" value="true"/>
     </module>
 
+    <module name="MissingJavadocMethod"/>
+
     <module name="JavadocStyle"/>
 
     <module name="JavadocType">
