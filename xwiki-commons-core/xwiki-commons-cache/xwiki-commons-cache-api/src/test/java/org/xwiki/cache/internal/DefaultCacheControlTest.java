@@ -20,6 +20,8 @@
 package org.xwiki.cache.internal;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,27 +57,38 @@ public class DefaultCacheControlTest
         when(this.execution.getContext()).thenReturn(context);
     }
 
+    private Date toDate(LocalDateTime dateTtime)
+    {
+        return Date.from(dateTtime.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
     // Tests
 
     @Test
     public void isCacheReadAllowed()
     {
-        LocalDateTime dateTime = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
 
         assertTrue(this.cacheControl.isCacheReadAllowed());
-        assertTrue(this.cacheControl.isCacheReadAllowed(dateTime.minusDays(1)));
-        assertTrue(this.cacheControl.isCacheReadAllowed(dateTime.plusDays(1)));
+        assertTrue(this.cacheControl.isCacheReadAllowed(now.minusDays(1)));
+        assertTrue(this.cacheControl.isCacheReadAllowed(now.plusDays(1)));
+        assertTrue(this.cacheControl.isCacheReadAllowed(toDate(now.minusDays(1))));
+        assertTrue(this.cacheControl.isCacheReadAllowed(toDate(now.plusDays(1))));
 
         this.cacheControl.setCacheReadAllowed(false);
 
         assertFalse(this.cacheControl.isCacheReadAllowed());
-        assertFalse(this.cacheControl.isCacheReadAllowed(dateTime.minusDays(1)));
-        assertTrue(this.cacheControl.isCacheReadAllowed(dateTime.plusDays(1)));
+        assertFalse(this.cacheControl.isCacheReadAllowed(now.minusDays(1)));
+        assertTrue(this.cacheControl.isCacheReadAllowed(now.plusDays(1)));
+        assertFalse(this.cacheControl.isCacheReadAllowed(toDate(now.minusDays(1))));
+        assertTrue(this.cacheControl.isCacheReadAllowed(toDate(now.plusDays(1))));
 
         this.cacheControl.setCacheReadAllowed(true);
 
         assertTrue(this.cacheControl.isCacheReadAllowed());
-        assertTrue(this.cacheControl.isCacheReadAllowed(dateTime.minusDays(1)));
-        assertTrue(this.cacheControl.isCacheReadAllowed(dateTime.plusDays(1)));
+        assertTrue(this.cacheControl.isCacheReadAllowed(now.minusDays(1)));
+        assertTrue(this.cacheControl.isCacheReadAllowed(now.plusDays(1)));
+        assertTrue(this.cacheControl.isCacheReadAllowed(toDate(now.minusDays(1))));
+        assertTrue(this.cacheControl.isCacheReadAllowed(toDate(now.plusDays(1))));
     }
 }
