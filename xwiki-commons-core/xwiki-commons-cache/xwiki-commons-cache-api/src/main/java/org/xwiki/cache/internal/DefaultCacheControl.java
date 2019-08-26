@@ -53,7 +53,11 @@ public class DefaultCacheControl implements CacheControl
         ExecutionContext context = this.execution.getContext();
 
         if (context != null) {
-            context.setProperty(key, value);
+            if (context.hasProperty(key)) {
+                context.setProperty(key, value);
+            } else {
+                context.newProperty(key).inherited().initial(value).declare();
+            }
         }
     }
 
@@ -68,7 +72,7 @@ public class DefaultCacheControl implements CacheControl
     public void setCacheReadAllowed(boolean enabled)
     {
         if (enabled) {
-            setProperty(MAX_AGE, null);            
+            setProperty(MAX_AGE, null);
         } else {
             setProperty(MAX_AGE, LocalDateTime.now());
         }
