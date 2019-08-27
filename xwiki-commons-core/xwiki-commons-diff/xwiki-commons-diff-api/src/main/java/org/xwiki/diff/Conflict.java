@@ -47,4 +47,18 @@ public interface Conflict<E>
      * @return the {@link Delta} of the next version of the merge.
      */
     Delta<E> getDeltaNext();
+
+    /**
+     * @param delta the delta that might be concerned by this conflict.
+     * @return {@code true} if this conflict might impact the given delta.
+     * @since 11.8RC1
+     */
+    boolean concerns(Delta<E> delta);
+
+    /**
+     * @param chunk the chunk that might be concerned by this conflict.
+     * @return {@code true} if this conflict might impact the given chunk.
+     * @since 11.8RC1
+     */
+    boolean concerns(Chunk<E> chunk);
 }

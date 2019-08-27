@@ -165,7 +165,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
     {
         if (conflicts != null) {
             for (Conflict<E> conflict : conflicts) {
-                if (delta.equals(conflict.getDeltaCurrent()) || delta.equals(conflict.getDeltaNext())) {
+                if (conflict.concerns(delta)) {
                     return conflict;
                 }
             }
