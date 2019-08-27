@@ -53,12 +53,18 @@ public interface Conflict<E>
      * @return {@code true} if this conflict might impact the given delta.
      * @since 11.8RC1
      */
-    boolean concerns(Delta<E> delta);
+    default boolean concerns(Delta<E> delta)
+    {
+        return false;
+    }
 
     /**
      * @param chunk the chunk that might be concerned by this conflict.
      * @return {@code true} if this conflict might impact the given chunk.
      * @since 11.8RC1
      */
-    boolean concerns(Chunk<E> chunk);
+    default boolean concerns(Chunk<E> chunk)
+    {
+        return false;
+    }
 }
