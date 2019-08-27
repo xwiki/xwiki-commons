@@ -15,7 +15,7 @@
           "exclude": [
             "org\\.xwiki\\..*\\.internal(\\..*)?",
             "org\\.xwiki\\..*\\.test(\\..*)?",
-            "com\\.xpn\\.xwiki\\..*\\.internal(\\..*)?"
+            "com\\.xpn\\.xwiki\\.internal(\\..*)?"
           ]
         }
       }
