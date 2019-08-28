@@ -479,7 +479,7 @@ public class DefaultDiffManagerTest
         // New overlapping current
         conflict = createConflict(0,
             Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('d', 'd', 'd', 'd'),
-            Type.CHANGE, 1, 1, Arrays.asList('a'), Arrays.asList('r', 'r'));
+            Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('a', 'r', 'r', 'b'));
         mergeConfiguration = null;
         result = this.diffManager
             .merge(toCharacters("aabbcc"), toCharacters("arrbcc"), toCharacters("ddddcc"), mergeConfiguration);
@@ -516,7 +516,7 @@ public class DefaultDiffManagerTest
 
         // current overlapping new
         conflict = createConflict(0,
-            Type.CHANGE, 1, 1, Arrays.asList('a'), Arrays.asList('r', 'r'),
+            Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('a', 'r', 'r', 'b'),
             Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('d', 'd', 'd', 'd'));
         mergeConfiguration = null;
         result = this.diffManager
@@ -550,7 +550,7 @@ public class DefaultDiffManagerTest
 
         // Multiple conflicts
         conflict = createConflict(0,
-            Type.CHANGE, 1, 1, Arrays.asList('a'), Arrays.asList('r', 'r'),
+            Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('a', 'r', 'r', 'b'),
             Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('d', 'd', 'd', 'd'));
         Conflict<Character> conflict1 = createConflict(7,
             Type.CHANGE, 7, 7, Arrays.asList('a', 'b'), Arrays.asList('y','y'),
@@ -824,7 +824,7 @@ public class DefaultDiffManagerTest
         // New overlapping current
         conflict = createConflict(0,
             Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('d', 'd', 'd', 'd'),
-            Type.CHANGE, 1, 1, Arrays.asList('a'), Arrays.asList('r', 'r'));
+            Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('a', 'r', 'r', 'b'));
         conflictDecision = new DefaultConflictDecision<>(conflict);
         allConflictDecisions = Collections.singletonList(conflictDecision);
         mergeConfiguration = new MergeConfiguration<>(allConflictDecisions);
@@ -866,7 +866,7 @@ public class DefaultDiffManagerTest
 
         // current overlapping new
         conflict = createConflict(0,
-            Type.CHANGE, 1, 1, Arrays.asList('a'), Arrays.asList('r', 'r'),
+            Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('a', 'r', 'r', 'b'),
             Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('d', 'd', 'd', 'd'));
         conflictDecision = new DefaultConflictDecision<>(conflict);
         allConflictDecisions = Collections.singletonList(conflictDecision);
@@ -909,7 +909,7 @@ public class DefaultDiffManagerTest
 
         // Multiple conflicts
         conflict = createConflict(0,
-            Type.CHANGE, 1, 1, Arrays.asList('a'), Arrays.asList('r', 'r'),
+            Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('a', 'r', 'r', 'b'),
             Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('d', 'd', 'd', 'd'));
         Conflict<Character> conflict1 = createConflict(7,
             Type.CHANGE, 7, 7, Arrays.asList('a', 'b'), Arrays.asList('y','y'),
@@ -1185,7 +1185,8 @@ public class DefaultDiffManagerTest
         Conflict<String> conflict = createConflict(0,
             Type.CHANGE, 0, 0, Arrays.asList("Line 1", "Line 2", "Line 3"),
             Arrays.asList("New content", "That is completely different"),
-            Type.CHANGE, 1, 1, Arrays.asList("Line 2"), Arrays.asList("Line 2 modified"));
+            Type.CHANGE, 0, 0, Arrays.asList("Line 1", "Line 2", "Line 3"),
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3"));
         assertEquals(conflict, result.getConflicts().get(0));
         assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
 
@@ -1293,7 +1294,10 @@ public class DefaultDiffManagerTest
         assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
 
         mergeConfiguration = null;
-        MergeResult<String> resultStr = this.diffManager
+        conflict = this.createConflict(2,
+            Type.INSERT, 3, 3, Collections.emptyList(), Arrays.asList("dressed in black"),
+            Type.CHANGE, 2, 2, Arrays.asList("started to walk"), Arrays.asList("dressed in black"));
+        result = this.diffManager
             .merge(
                 Arrays.asList(
                     "Once upon a time",
@@ -1314,10 +1318,12 @@ public class DefaultDiffManagerTest
                     "dressed in black",
                     "in the forest"
                 ), mergeConfiguration);
-        assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
         assertEquals(
             Arrays.asList("Once upon a time", "a wolf", "started to walk", "dressed in black", "in the forest"),
-            resultStr.getMerged());
+            result.getMerged());
 
         // Test 6: We change everything but our first changes are the same at the beginning of current and next:
         // it still must led to a conflict, since we don't know if we should have "Another line" or not.
@@ -1338,6 +1344,49 @@ public class DefaultDiffManagerTest
         assertEquals(1, result.getConflicts().size());
         assertEquals(conflict, result.getConflicts().get(0));
         assertEquals(Arrays.asList("A second edit from another tab.", "Another line"), result.getMerged());
+
+        // Test 7: Change 3 lines between previous and next, and only 2 between previous and current:
+        // only 1 conflicts should occur, concerning the whole list of changes.
+        conflict = this.createConflict(0,
+            Type.CHANGE, 0, 0,
+            Arrays.asList(
+                "A fifth edit from another tab.",
+                "Another line.",
+                "Yet another line with other few changes."
+            ),
+            Arrays.asList(
+                "A sixth edit from the first tab.",
+                "Another line.",
+                "Yet another line edited from the first tab."
+            ),
+            Type.CHANGE, 0, 0, Arrays.asList(
+                "A fifth edit from another tab.",
+                "Another line.",
+                "Yet another line with other few changes."
+            ),
+            Arrays.asList(
+                "A sixth edit from the second tab.",
+                "Another line with small changes.",
+                "Another edit from the second tab."
+            ));
+        result = this.diffManager.merge(
+            Arrays.asList(
+                "A fifth edit from another tab.",
+                "Another line.",
+                "Yet another line with other few changes."
+            ),
+            Arrays.asList(
+                "A sixth edit from the second tab.",
+                "Another line with small changes.",
+                "Another edit from the second tab."
+            ),
+            Arrays.asList(
+                "A sixth edit from the first tab.",
+                "Another line.",
+                "Yet another line edited from the first tab."
+            ), mergeConfiguration);
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
     }
 
     private <E> Delta<E> createDelta(Type type, Chunk<E> previous, Chunk<E> next)

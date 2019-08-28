@@ -26,6 +26,7 @@ import java.util.List;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.diff.Chunk;
 import org.xwiki.diff.ConflictDecision;
 import org.xwiki.diff.Delta;
 import org.xwiki.diff.Delta.Type;
@@ -137,11 +138,11 @@ public class DefaultDiffManager implements DiffManager
                     (configuration != null) ? configuration.getConflictDecisionList() : Collections.emptyList();
                 int newIndex = applyDecision(conflictDecisionList, mergeResult.getMerged(), 0);
                 if (newIndex == Integer.MIN_VALUE) {
-                    logConflict(mergeResult, deltaCurrent, deltaNext, 0);
+                    logConflict(mergeResult, deltaCurrent, deltaNext, commonAncestor, next, current, 0);
                     mergeResult.setMerged(fallback(commonAncestor, next, current, configuration));
                 }
             } else {
-                merge(mergeResult, commonAncestor, patchNext, patchCurrent, configuration);
+                merge(mergeResult, commonAncestor, next, current, patchNext, patchCurrent, configuration);
             }
         }
 
@@ -277,8 +278,8 @@ public class DefaultDiffManager implements DiffManager
      * @param configuration the configuration of the merge behavior
      * @throws MergeException failed to merge
      */
-    private <E> void merge(DefaultMergeResult<E> mergeResult, List<E> commonAncestor, Patch<E> patchNext,
-        Patch<E> patchCurrent, MergeConfiguration<E> configuration)
+    private <E> void merge(DefaultMergeResult<E> mergeResult, List<E> commonAncestor, List<E> next, List<E> current,
+        Patch<E> patchNext, Patch<E> patchCurrent, MergeConfiguration<E> configuration)
         throws MergeException
     {
         List<ConflictDecision<E>> conflictDecisions =
@@ -328,7 +329,7 @@ public class DefaultDiffManager implements DiffManager
                                 merged, index);
                             if (newIndex == Integer.MIN_VALUE) {
                                 // Conflict
-                                logConflict(mergeResult, deltaCurrent, deltaNext, index);
+                                logConflict(mergeResult, deltaCurrent, deltaNext, commonAncestor, next, current, index);
                                 merged.addAll(or(deltaNext.getNext().getElements(),
                                     deltaCurrent.getNext().getElements()));
                                 merged.add(commonAncestor.get(index));
@@ -347,7 +348,7 @@ public class DefaultDiffManager implements DiffManager
                             merged, index);
                         if (newIndex == Integer.MIN_VALUE) {
                             // Conflict
-                            logConflict(mergeResult, deltaCurrent, deltaNext, index);
+                            logConflict(mergeResult, deltaCurrent, deltaNext, commonAncestor, next, current, index);
                             index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
                         } else {
                             index = newIndex;
@@ -362,7 +363,7 @@ public class DefaultDiffManager implements DiffManager
                             merged, index);
                         if (newIndex == Integer.MIN_VALUE) {
                             // Conflict
-                            logConflict(mergeResult, deltaCurrent, deltaNext, index);
+                            logConflict(mergeResult, deltaCurrent, deltaNext, commonAncestor, next, current, index);
                             index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
                         } else {
                             index = newIndex;
@@ -385,7 +386,7 @@ public class DefaultDiffManager implements DiffManager
                         merged, index);
                     if (newIndex == Integer.MIN_VALUE) {
                         // Conflict
-                        logConflict(mergeResult, deltaCurrent, deltaNext, index);
+                        logConflict(mergeResult, deltaCurrent, deltaNext, commonAncestor, next, current, index);
                         index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
                     } else {
                         index = newIndex;
@@ -452,10 +453,30 @@ public class DefaultDiffManager implements DiffManager
     }
 
     private <E> void logConflict(DefaultMergeResult<E> mergeResult, Delta<E> deltaCurrent, Delta<E> deltaNext,
-        int index)
+        List<E> previous, List<E> next, List<E> current, int index)
     {
-        mergeResult.getLog().error("Conflict between [{}] and [{}]", deltaCurrent, deltaNext);
-        mergeResult.addConflict(new DefaultConflict<E>(index, deltaCurrent, deltaNext));
+        Delta<E> conflictDeltaCurrent, conflictDeltaNext;
+
+        // todo: what should be the behaviour for insert and delete?e
+        if (deltaCurrent.getType() == Type.CHANGE && deltaNext.getType() == Type.CHANGE
+            && deltaCurrent.getPrevious().size() != deltaNext.getPrevious().size()) {
+            int chunkSize = Math.max(deltaCurrent.getPrevious().size(), deltaNext.getPrevious().size());
+
+            List<E> subsetPrevious = previous.subList(index, Math.min(chunkSize, previous.size()));
+            List<E> subsetNext = next.subList(index, Math.min(chunkSize, next.size()));
+            List<E> subsetCurrent = current.subList(index, Math.min(chunkSize, current.size()));
+            Chunk<E> previousChunk = new DefaultChunk<>(index, subsetPrevious);
+            Chunk<E> nextChunk = new DefaultChunk<>(index, subsetNext);
+            Chunk<E> currentChunk = new DefaultChunk<>(index, subsetCurrent);
+
+            conflictDeltaCurrent = new ChangeDelta<E>(previousChunk, currentChunk);
+            conflictDeltaNext = new ChangeDelta<E>(previousChunk, nextChunk);
+        } else {
+            conflictDeltaCurrent = deltaCurrent;
+            conflictDeltaNext = deltaNext;
+        }
+        mergeResult.getLog().error("Conflict between [{}] and [{}]", conflictDeltaCurrent, conflictDeltaNext);
+        mergeResult.addConflict(new DefaultConflict<E>(index, conflictDeltaCurrent, conflictDeltaNext));
     }
 
     private <E> int apply(Delta<E> delta, List<E> merged, int currentIndex)
