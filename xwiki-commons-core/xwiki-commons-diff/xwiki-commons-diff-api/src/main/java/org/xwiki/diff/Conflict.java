@@ -67,4 +67,13 @@ public interface Conflict<E>
     {
         return false;
     }
+
+    /**
+     * @return a unique reference for a conflict.
+     * @since 11.8RC1
+     */
+    default String getReference()
+    {
+        return String.valueOf(this.hashCode());
+    }
 }

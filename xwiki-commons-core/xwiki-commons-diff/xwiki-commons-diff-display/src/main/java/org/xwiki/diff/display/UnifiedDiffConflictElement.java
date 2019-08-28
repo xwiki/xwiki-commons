@@ -85,4 +85,12 @@ public class UnifiedDiffConflictElement<E>
         Chunk<E> currentChunk = this.conflict.getDeltaCurrent().getNext();
         return getElementFromChunk(currentChunk);
     }
+
+    /**
+     * @return the conflict reference.
+     */
+    public String getReference()
+    {
+        return this.conflict.getReference();
+    }
 }
