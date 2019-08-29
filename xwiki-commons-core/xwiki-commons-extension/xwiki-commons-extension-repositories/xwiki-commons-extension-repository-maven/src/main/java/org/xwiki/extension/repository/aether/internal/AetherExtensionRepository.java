@@ -255,6 +255,11 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             session.close();
         }
 
+        // Check if the download succeeded
+        if (download.getException() != null) {
+            throw new IOException("Failed to download file for artifact [" + artifact + "]", download.getException());
+        }
+
         return new AetherExtensionFileInputStream(file, true);
     }
 
