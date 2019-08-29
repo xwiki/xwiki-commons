@@ -457,24 +457,39 @@ public class DefaultDiffManager implements DiffManager
     {
         Delta<E> conflictDeltaCurrent, conflictDeltaNext;
 
-        // todo: what should be the behaviour for insert and delete?e
-        if (deltaCurrent.getType() == Type.CHANGE && deltaNext.getType() == Type.CHANGE
-            && deltaCurrent.getPrevious().size() != deltaNext.getPrevious().size()) {
-            int chunkSize = Math.max(deltaCurrent.getPrevious().size(), deltaNext.getPrevious().size());
+        int chunkSize = Math.max(deltaCurrent.getPrevious().size(), deltaNext.getPrevious().size());
 
-            List<E> subsetPrevious = previous.subList(index, Math.min(chunkSize, previous.size()));
-            List<E> subsetNext = next.subList(index, Math.min(chunkSize, next.size()));
-            List<E> subsetCurrent = current.subList(index, Math.min(chunkSize, current.size()));
-            Chunk<E> previousChunk = new DefaultChunk<>(index, subsetPrevious);
-            Chunk<E> nextChunk = new DefaultChunk<>(index, subsetNext);
-            Chunk<E> currentChunk = new DefaultChunk<>(index, subsetCurrent);
+        List<E> subsetPrevious = previous.subList(index, index + Math.min(chunkSize, previous.size()));
 
-            conflictDeltaCurrent = new ChangeDelta<E>(previousChunk, currentChunk);
-            conflictDeltaNext = new ChangeDelta<E>(previousChunk, nextChunk);
+        List<E> subsetNext;
+
+        // in case of delete, we only take the remaining changes, if the chunk size is actually > than the deletion.
+        if (deltaNext.getType() == Type.DELETE) {
+            int previousChangeSize = deltaNext.getPrevious().size();
+            int remainingChunkSize = chunkSize - previousChangeSize;
+
+            subsetNext = (remainingChunkSize > 0) ?
+                previous.subList(index + previousChangeSize, index + remainingChunkSize) : Collections.emptyList();
         } else {
-            conflictDeltaCurrent = deltaCurrent;
-            conflictDeltaNext = deltaNext;
+            subsetNext = next.subList(index, index + Math.min(chunkSize, next.size()));
         }
+
+        List<E> subsetCurrent;
+        if (deltaCurrent.getType() == Type.DELETE) {
+            int previousChangeSize = deltaCurrent.getPrevious().size();
+            int remainingChunkSize = chunkSize - previousChangeSize;
+
+            subsetCurrent = (remainingChunkSize > 0) ?
+                previous.subList(index + previousChangeSize, index + remainingChunkSize) : Collections.emptyList();
+        } else {
+            subsetCurrent = current.subList(index, index + Math.min(chunkSize, current.size()));
+        }
+        Chunk<E> previousChunk = new DefaultChunk<>(index, subsetPrevious);
+        Chunk<E> nextChunk = new DefaultChunk<>(index, subsetNext);
+        Chunk<E> currentChunk = new DefaultChunk<>(index, subsetCurrent);
+
+        conflictDeltaCurrent = new ChangeDelta<E>(previousChunk, currentChunk);
+        conflictDeltaNext = new ChangeDelta<E>(previousChunk, nextChunk);
         mergeResult.getLog().error("Conflict between [{}] and [{}]", conflictDeltaCurrent, conflictDeltaNext);
         mergeResult.addConflict(new DefaultConflict<E>(index, conflictDeltaCurrent, conflictDeltaNext));
     }
