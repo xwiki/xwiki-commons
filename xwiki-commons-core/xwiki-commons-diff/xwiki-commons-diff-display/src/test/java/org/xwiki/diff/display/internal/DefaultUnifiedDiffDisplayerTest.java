@@ -40,7 +40,6 @@ import org.xwiki.diff.DiffResult;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.diff.display.UnifiedDiffBlock;
 import org.xwiki.diff.display.UnifiedDiffConflictElement;
-import org.xwiki.diff.display.UnifiedDiffElement;
 import org.xwiki.diff.internal.DefaultDiffManager;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -123,7 +122,7 @@ public class DefaultUnifiedDiffDisplayerTest
         List<String> next = readLines("twoContexts_next.txt");
 
         MergeResult<String> mergeResult = getDiffManager().merge(previous, next, current, null);
-        assertFalse(mergeResult.getConflicts().isEmpty());
+        assertEquals(1, mergeResult.getConflicts().size());
 
         DiffResult<String> diffResult = getDiffManager().diff(previous, next, null);
         List<UnifiedDiffBlock<String, Object>> unifiedDiffBlocks = unifiedDiffDisplayer.display(diffResult);
@@ -137,21 +136,52 @@ public class DefaultUnifiedDiffDisplayerTest
         assertTrue(unifiedDiffBlocks.get(1).isConflicting());
 
         assertEquals(8, unifiedDiffBlocks.get(1).size());
-        UnifiedDiffConflictElement<String> unifiedDiffConflictElement = unifiedDiffBlocks.get(1).get(3).getConflict();
-        assertEquals("    //   If k > 2 then fib(k) = fib(k-1) + fib(k-2).",
+        UnifiedDiffConflictElement<String> unifiedDiffConflictElement = unifiedDiffBlocks.get(1).getConflict();
+        assertEquals(Collections.singletonList("    //   If k > 2 then fib(k) = fib(k-1) + fib(k-2)."),
             unifiedDiffConflictElement.getPreviousElement());
-        assertEquals("    //   if k > 2 then fib(k) = fib(k-1) + fib(k-2)",
+        assertEquals(Collections.singletonList("    //   if k > 2 then fib(k) = fib(k-1) + fib(k-2)"),
             unifiedDiffConflictElement.getCurrentElement());
-        assertEquals("    //   if k > 2 then fib(k) = fib(k-1) + fib(k-2)?",
+        assertEquals(Collections.singletonList("    //   if k > 2 then fib(k) = fib(k-1) + fib(k-2)?"),
             unifiedDiffConflictElement.getNextElement());
+    }
 
-        unifiedDiffConflictElement = unifiedDiffBlocks.get(1).get(4).getConflict();
-        assertEquals("    //   If k > 2 then fib(k) = fib(k-1) + fib(k-2).",
-            unifiedDiffConflictElement.getPreviousElement());
-        assertEquals("    //   if k > 2 then fib(k) = fib(k-1) + fib(k-2)",
-            unifiedDiffConflictElement.getCurrentElement());
-        assertEquals("    //   if k > 2 then fib(k) = fib(k-1) + fib(k-2)?",
-            unifiedDiffConflictElement.getNextElement());
+    @Test
+    public void displayWithConflictsMultipleLines() throws Exception
+    {
+        List<String> previous = Arrays.asList(
+            "A fifth edit from another tab.",
+            "Another line.",
+            "Yet another line with other few changes."
+        );
+
+        List<String> next = Arrays.asList(
+            "A sixth edit from the second tab.",
+            "Another line with small changes.",
+            "Another edit from the second tab."
+        );
+
+        List<String> current = Arrays.asList(
+            "A sixth edit from the first tab.",
+            "Another line.",
+            "Yet another line edited from the first tab."
+        );
+
+        MergeResult<String> mergeResult = getDiffManager().merge(previous, next, current, null);
+        assertEquals(1, mergeResult.getConflicts().size());
+
+        DiffResult<String> diffResult = getDiffManager().diff(next, current, null);
+        List<UnifiedDiffBlock<String, Object>> unifiedDiffBlocks = unifiedDiffDisplayer.display(diffResult);
+        assertEquals(1, unifiedDiffBlocks.size());
+        assertFalse(unifiedDiffBlocks.get(0).isConflicting());
+
+        List<UnifiedDiffBlock<String, Object>> unifiedDiffBlocksWithConflicts =
+            unifiedDiffDisplayer.display(diffResult, mergeResult.getConflicts());
+        assertEquals(1, unifiedDiffBlocksWithConflicts.size());
+        assertTrue(unifiedDiffBlocksWithConflicts.get(0).isConflicting());
+        UnifiedDiffConflictElement<String> conflict = unifiedDiffBlocksWithConflicts.get(0).getConflict();
+        assertEquals(previous, conflict.getPreviousElement());
+        assertEquals(next, conflict.getNextElement());
+        assertEquals(current, conflict.getCurrentElement());
     }
 
     /**

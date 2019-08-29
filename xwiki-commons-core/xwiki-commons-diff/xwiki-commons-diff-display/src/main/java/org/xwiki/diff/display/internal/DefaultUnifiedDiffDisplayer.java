@@ -80,6 +80,8 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
          */
         private Delta<E> lastDelta;
 
+        private Conflict<E> lastConflict;
+
         /**
          * Creates a new instance.
          *
@@ -106,6 +108,26 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
         public void setLastDelta(Delta<E> lastDelta)
         {
             this.lastDelta = lastDelta;
+        }
+
+        /**
+         * Sets the last detected conflict.
+         *
+         * @param lastConflict the conflict detected.
+         * @since 11.8RC1
+         */
+        public void setLastConflict(Conflict<E> lastConflict)
+        {
+            this.lastConflict = lastConflict;
+        }
+
+        /**
+         * @return the last detected conflict.
+         * @since 11.8RC1
+         */
+        public Conflict<E> getLastConflict()
+        {
+            return this.lastConflict;
         }
 
         /**
@@ -180,28 +202,29 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
         State<E, F> state = new State<E, F>(diffResult.getPrevious());
 
         for (Delta<E> delta : diffResult.getPatch()) {
+            Conflict<E> conflict = findConflict(conflicts, delta);
+
             // Add unmodified elements before the current delta. Start a new block if the distance between the current
             // delta and the last one is greater than or equal to 2 * context size.
-            maybeStartBlock(delta, state, config.getContextSize());
+            maybeStartBlock(delta, state, config.getContextSize(), conflict);
 
-            Conflict<E> conflict = findConflict(conflicts, delta);
             // Add changed elements.
             switch (delta.getType()) {
                 case CHANGE:
-                    state.getBlocks().peek().addAll(this.<E, F>getModifiedElements(delta, config, conflict));
+                    state.getBlocks().peek().addAll(this.<E, F>getModifiedElements(delta, config));
                     break;
                 case DELETE:
-                    state.getBlocks().peek().addAll(this.<E, F>getElements(delta.getPrevious(), Type.DELETED,
-                        conflict));
+                    state.getBlocks().peek().addAll(this.<E, F>getElements(delta.getPrevious(), Type.DELETED));
                     break;
                 case INSERT:
-                    state.getBlocks().peek().addAll(this.<E, F>getElements(delta.getNext(), Type.ADDED, conflict));
+                    state.getBlocks().peek().addAll(this.<E, F>getElements(delta.getNext(), Type.ADDED));
                     break;
                 default:
                     break;
             }
 
             state.setLastDelta(delta);
+            state.setLastConflict(conflict);
         }
 
         // Add unmodified elements after the last delta.
@@ -211,22 +234,24 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
     }
 
     /**
-     * Starts a new {@link UnifiedDiffBlock} if the provided change is in a different context. The distance between two
-     * changes inside the same block is less than 2 * context size.
+     * Starts a new {@link UnifiedDiffBlock} if the provided change is in a different context, or if it belongs to a
+     * conflict. The distance between two changes inside the same block is less than 2 * context size.
      *
      * @param delta the change
      * @param state the state of the displayer
      * @param contextSize the number of unmodified elements to display before and after each change
+     * @param conflict the conflict the change is related to
      * @param <E> the type of composite elements that are compared to produce the first level diff
      * @param <F> the type of sub-elements that are compared to produce the second-level diff when a composite element
      *            is modified
      */
-    private <E, F> void maybeStartBlock(Delta<E> delta, State<E, F> state, int contextSize)
+    private <E, F> void maybeStartBlock(Delta<E> delta, State<E, F> state, int contextSize, Conflict<E> conflict)
     {
-        if (state.getLastDelta() == null
+        if (state.getLastConflict() != conflict
+            || state.getLastDelta() == null
             || state.getLastDelta().getPrevious().getLastIndex() < delta.getPrevious().getIndex() - contextSize * 2) {
             maybeEndBlock(state, contextSize);
-            state.getBlocks().push(new UnifiedDiffBlock<E, F>());
+            state.getBlocks().push(new UnifiedDiffBlock<E, F>(conflict));
         }
 
         // Add the unmodified elements before the given delta.
@@ -252,11 +277,11 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
      * @return the list of unified diff elements corresponding to the elements modified in the given delta
      */
     private <E, F> List<UnifiedDiffElement<E, F>> getModifiedElements(Delta<E> delta,
-        UnifiedDiffConfiguration<E, F> config, Conflict<E> conflict)
+        UnifiedDiffConfiguration<E, F> config)
     {
         List<UnifiedDiffElement<E, F>> elements = new ArrayList<UnifiedDiffElement<E, F>>();
-        elements.addAll(this.<E, F>getElements(delta.getPrevious(), Type.DELETED, conflict));
-        elements.addAll(this.<E, F>getElements(delta.getNext(), Type.ADDED, conflict));
+        elements.addAll(this.<E, F>getElements(delta.getPrevious(), Type.DELETED));
+        elements.addAll(this.<E, F>getElements(delta.getNext(), Type.ADDED));
 
         // Compute the in-line diff if the number of removed elements equals the number of added elements.
         if (config.getSplitter() != null && delta.getPrevious().size() == delta.getNext().size()) {
@@ -277,12 +302,12 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
      *            is modified
      * @return the list of corresponding unified diff elements, matching the change type
      */
-    private <E, F> List<UnifiedDiffElement<E, F>> getElements(Chunk<E> chunk, Type changeType, Conflict<E> conflict)
+    private <E, F> List<UnifiedDiffElement<E, F>> getElements(Chunk<E> chunk, Type changeType)
     {
         int index = chunk.getIndex();
         List<UnifiedDiffElement<E, F>> elements = new ArrayList<UnifiedDiffElement<E, F>>();
         for (E element : chunk.getElements()) {
-            elements.add(new UnifiedDiffElement<E, F>(index++, changeType, element, conflict));
+            elements.add(new UnifiedDiffElement<E, F>(index++, changeType, element));
         }
         return elements;
     }

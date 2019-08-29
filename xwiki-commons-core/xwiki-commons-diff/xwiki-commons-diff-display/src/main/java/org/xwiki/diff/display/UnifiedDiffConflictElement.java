@@ -19,6 +19,8 @@
  */
 package org.xwiki.diff.display;
 
+import java.util.List;
+
 import org.xwiki.diff.Chunk;
 import org.xwiki.diff.Conflict;
 import org.xwiki.stability.Unstable;
@@ -36,54 +38,45 @@ public class UnifiedDiffConflictElement<E>
 {
     private Conflict<E> conflict;
 
-    private int elementIndex;
-
     /**
      * Creates a conflict element based on a given conflict and the index of the {@link UnifiedDiffElement}.
      * @param conflict the original conflict.
-     * @param elementIndex the index of the element.
      */
-    public UnifiedDiffConflictElement(Conflict<E> conflict, int elementIndex)
+    public UnifiedDiffConflictElement(Conflict<E> conflict)
     {
         this.conflict = conflict;
-        this.elementIndex = elementIndex;
     }
 
-    private E getElementFromChunk(Chunk<E> chunk)
+    private List<E> getElementsFromChunk(Chunk<E> chunk)
     {
-        int occurenceIndex = elementIndex - chunk.getIndex();
-        if (occurenceIndex < 0 || occurenceIndex > chunk.getLastIndex()) {
-            return null;
-        } else {
-            return chunk.getElements().get(occurenceIndex);
-        }
+        return chunk.getElements();
     }
 
     /**
      * @return the previous version of the element.
      */
-    public E getPreviousElement()
+    public List<E> getPreviousElement()
     {
         Chunk<E> previousChunk = this.conflict.getDeltaCurrent().getPrevious();
-        return getElementFromChunk(previousChunk);
+        return getElementsFromChunk(previousChunk);
     }
 
     /**
      * @return the next version of the element.
      */
-    public E getNextElement()
+    public List<E> getNextElement()
     {
         Chunk<E> nextChunk = this.conflict.getDeltaNext().getNext();
-        return getElementFromChunk(nextChunk);
+        return getElementsFromChunk(nextChunk);
     }
 
     /**
      * @return the current version of the element.
      */
-    public E getCurrentElement()
+    public List<E> getCurrentElement()
     {
         Chunk<E> currentChunk = this.conflict.getDeltaCurrent().getNext();
-        return getElementFromChunk(currentChunk);
+        return getElementsFromChunk(currentChunk);
     }
 
     /**
