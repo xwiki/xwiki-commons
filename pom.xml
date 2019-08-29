@@ -56,7 +56,7 @@
     <java.version>1.8</java.version>
 
     <!-- Jakarta modules -->
-    <jakarta.mail.version>1.6.3</jakarta.mail.version>
+    <jakarta.mail.version>1.6.4</jakarta.mail.version>
     <jakarta.activation.version>1.2.1</jakarta.activation.version>
 
     <!-- Jackson -->
