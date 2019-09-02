@@ -44,28 +44,6 @@ public class UnifiedDiffBlock<E, F> extends ArrayList<UnifiedDiffElement<E, F>>
     private UnifiedDiffConflictElement<E> conflict;
 
     /**
-     * Default constructor.
-     */
-    public UnifiedDiffBlock()
-    {
-        this(null);
-    }
-
-    /**
-     * Default constructor for a conflicting block.
-     *
-     * @param conflict a conflict that is related to this block, or null if there's none.
-     * @since 11.8RC1
-     */
-    @Unstable
-    public UnifiedDiffBlock(Conflict<E> conflict)
-    {
-        if (conflict != null) {
-            this.conflict = new UnifiedDiffConflictElement<E>(conflict);
-        }
-    }
-
-    /**
      * @return the index where this block starts in the previous version; since blocks are most of the time not empty,
      *         the returned value is the index of the first unmodified or removed element in this group
      */
@@ -141,6 +119,21 @@ public class UnifiedDiffBlock<E, F> extends ArrayList<UnifiedDiffElement<E, F>>
     public UnifiedDiffConflictElement<E> getConflict()
     {
         return this.conflict;
+    }
+
+    /**
+     * Sets the conflict related to this block element.
+     * @param conflict the conflict to be registered.
+     * @since 11.8RC1
+     */
+    @Unstable
+    public void setConflict(Conflict<E> conflict)
+    {
+        if (conflict != null) {
+            this.conflict = new UnifiedDiffConflictElement<>(conflict);
+        } else {
+            this.conflict = null;
+        }
     }
 
     @Override
