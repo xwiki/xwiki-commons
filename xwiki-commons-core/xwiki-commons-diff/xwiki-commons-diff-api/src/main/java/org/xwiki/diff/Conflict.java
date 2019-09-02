@@ -76,4 +76,16 @@ public interface Conflict<E>
     {
         return String.valueOf(this.hashCode());
     }
+
+    /**
+     * The max size of a conflict is defined by the max size of the current or next chunk size.
+     *
+     * @return the conflict max size.
+     * @since 11.8RC1
+     */
+    @Unstable
+    default int getMaxSize()
+    {
+        return Math.max(getDeltaCurrent().getNext().size(), getDeltaNext().getNext().size());
+    }
 }

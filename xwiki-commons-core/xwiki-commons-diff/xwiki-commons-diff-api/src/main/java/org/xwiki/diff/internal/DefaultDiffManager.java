@@ -452,44 +452,54 @@ public class DefaultDiffManager implements DiffManager
         return result;
     }
 
+    private <E> List<E> extractConflictPart(Delta<E> delta, List<E> previous, List<E> next, int chunkSize, int index)
+    {
+        int previousChangeSize, remainingChunkSize;
+
+        switch (delta.getType()) {
+            case DELETE:
+                previousChangeSize = delta.getPrevious().size();
+                remainingChunkSize = chunkSize - previousChangeSize;
+                return (remainingChunkSize > 0) ?
+                    previous.subList(index + previousChangeSize, index + remainingChunkSize) : Collections.emptyList();
+
+            case CHANGE:
+                return next.subList(index, index + Math.min(chunkSize, next.size()));
+
+            case INSERT:
+                int newIndex = Math.min(delta.getNext().getIndex(), index);
+                return next.subList(newIndex, newIndex + Math.min(chunkSize, next.size()));
+
+            default:
+                throw new IllegalArgumentException(
+                    String.format("Cannot extract conflict part for unknown type [%s]", delta.getType()));
+        }
+    }
+
     private <E> void logConflict(DefaultMergeResult<E> mergeResult, Delta<E> deltaCurrent, Delta<E> deltaNext,
         List<E> previous, List<E> next, List<E> current, int index)
     {
         Delta<E> conflictDeltaCurrent, conflictDeltaNext;
+        int chunkSize;
+        List<E> subsetPrevious;
 
-        int chunkSize = Math.max(deltaCurrent.getPrevious().size(), deltaNext.getPrevious().size());
-
-        List<E> subsetPrevious = previous.subList(index, index + Math.min(chunkSize, previous.size()));
-
-        List<E> subsetNext;
-
-        // in case of delete, we only take the remaining changes, if the chunk size is actually > than the deletion.
-        if (deltaNext.getType() == Type.DELETE) {
-            int previousChangeSize = deltaNext.getPrevious().size();
-            int remainingChunkSize = chunkSize - previousChangeSize;
-
-            subsetNext = (remainingChunkSize > 0) ?
-                previous.subList(index + previousChangeSize, index + remainingChunkSize) : Collections.emptyList();
+        if (deltaCurrent.getType() == Type.INSERT && deltaNext.getType() == Type.INSERT) {
+            chunkSize = Math.max(deltaCurrent.getNext().size(), deltaNext.getNext().size());
+            subsetPrevious = Collections.emptyList();
         } else {
-            subsetNext = next.subList(index, index + Math.min(chunkSize, next.size()));
+            chunkSize = Math.max(deltaCurrent.getPrevious().size(), deltaNext.getPrevious().size());
+            subsetPrevious = previous.subList(index, index + Math.min(chunkSize, previous.size()));
         }
 
-        List<E> subsetCurrent;
-        if (deltaCurrent.getType() == Type.DELETE) {
-            int previousChangeSize = deltaCurrent.getPrevious().size();
-            int remainingChunkSize = chunkSize - previousChangeSize;
+        List<E> subsetNext = extractConflictPart(deltaNext, previous, next, chunkSize, index);
+        List<E> subsetCurrent = extractConflictPart(deltaCurrent, previous, current, chunkSize, index);
 
-            subsetCurrent = (remainingChunkSize > 0) ?
-                previous.subList(index + previousChangeSize, index + remainingChunkSize) : Collections.emptyList();
-        } else {
-            subsetCurrent = current.subList(index, index + Math.min(chunkSize, current.size()));
-        }
         Chunk<E> previousChunk = new DefaultChunk<>(index, subsetPrevious);
         Chunk<E> nextChunk = new DefaultChunk<>(index, subsetNext);
         Chunk<E> currentChunk = new DefaultChunk<>(index, subsetCurrent);
 
-        conflictDeltaCurrent = new ChangeDelta<E>(previousChunk, currentChunk);
-        conflictDeltaNext = new ChangeDelta<E>(previousChunk, nextChunk);
+        conflictDeltaCurrent = DeltaFactory.createDelta(previousChunk, currentChunk, Type.CHANGE);
+        conflictDeltaNext = DeltaFactory.createDelta(previousChunk, nextChunk, Type.CHANGE);
         mergeResult.getLog().error("Conflict between [{}] and [{}]", conflictDeltaCurrent, conflictDeltaNext);
         mergeResult.addConflict(new DefaultConflict<E>(index, conflictDeltaCurrent, conflictDeltaNext));
     }

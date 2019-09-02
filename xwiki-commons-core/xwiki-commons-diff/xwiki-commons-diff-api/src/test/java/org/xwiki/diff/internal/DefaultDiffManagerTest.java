@@ -1424,6 +1424,66 @@ public class DefaultDiffManagerTest
             ), mergeConfiguration);
         assertEquals(1, result.getConflicts().size());
         assertEquals(conflict, result.getConflicts().get(0));
+
+        // Test 8: Conflicts with empty lines
+        conflict = this.createConflict(0,
+            Type.CHANGE, 0, 0, Arrays.asList("Some content."), Arrays.asList("Another content"),
+            Type.CHANGE, 0, 0, Arrays.asList("Some content."), Arrays.asList("Some content."));
+        result = this.diffManager.merge(
+            Arrays.asList(
+                "Some content."
+            ),
+            Arrays.asList(
+                "Some content.",
+                "",
+                "And now if I try",
+                "to put something",
+                "",
+                "with empty lines",
+                "like this"
+            ),
+            Arrays.asList(
+                "Another content",
+                "On multiple lines."
+            ), mergeConfiguration);
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+
+        // Test 9: Multiple conflicts and insertion of conflicting data
+        // Test3: multiple conflicts
+        conflict = this.createConflict(1,
+            Type.CHANGE, 1, 1, Arrays.asList("Second line.", "Third line."), Arrays.asList("Second line.", "Line N°4"),
+            Type.CHANGE, 1, 1, Arrays.asList("Second line.", "Third line."), Arrays.asList("Line N°2", "Third line."));
+
+        Conflict<String> conflict2 = this.createConflict(5,
+            Type.CHANGE, 5, 5, Collections.emptyList(), Arrays.asList("6th line."),
+            Type.CHANGE, 5, 5, Collections.emptyList(), Arrays.asList("Sixth line."));
+        result = this.diffManager.merge(
+            Arrays.asList(
+                "First line.",
+                "Second line.",
+                "Third line.",
+                "Fourth line.",
+                "Fifth line.",
+                "Seventh line."
+            ), Arrays.asList(
+                "First line.",
+                "Line N°2",
+                "Third line.",
+                "Fifth line.",
+                "Sixth line.",
+                "Seventh line."
+            ), Arrays.asList(
+                "First line.",
+                "Second line.",
+                "Line N°4",
+                "Fifth line.",
+                "6th line.",
+                "Seventh line."
+        ), mergeConfiguration);
+        assertEquals(2, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(conflict2, result.getConflicts().get(1));
     }
 
     private <E> Delta<E> createDelta(Type type, Chunk<E> previous, Chunk<E> next)
