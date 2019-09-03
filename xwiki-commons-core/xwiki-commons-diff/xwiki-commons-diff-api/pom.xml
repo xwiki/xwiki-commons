@@ -32,8 +32,8 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Diff API</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.61</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>49</xwiki.pitest.mutationThreshold>
+    <xwiki.jacoco.instructionRatio>0.70</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>62</xwiki.pitest.mutationThreshold>
   </properties>
   <dependencies>
     <dependency>
