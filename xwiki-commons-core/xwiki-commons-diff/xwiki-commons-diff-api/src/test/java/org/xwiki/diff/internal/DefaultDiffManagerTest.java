@@ -1543,7 +1543,6 @@ public class DefaultDiffManagerTest
         assertEquals(conflict, result.getConflicts().get(0));
 
         // Test 9: Multiple conflicts and insertion of conflicting data
-        // Test3: multiple conflicts
         conflict = this.createConflict(1,
             Type.CHANGE, 1, 1, Arrays.asList("Second line.", "Third line."), Arrays.asList("Second line.", "Line N°4"),
             Type.CHANGE, 1, 1, Arrays.asList("Second line.", "Third line."), Arrays.asList("Line N°2", "Third line."));
@@ -1712,5 +1711,55 @@ public class DefaultDiffManagerTest
         assertTrue(result.getLog().getLogs(LogLevel.ERROR).isEmpty());
         assertEquals(Arrays.asList("Line 1", "Another complete custom change", "and a line", "Line 3"),
             result.getMerged());
+
+        conflictDecisionList = new ArrayList<>();
+
+        conflict = this.createConflict(1,
+            Type.CHANGE, 1, 1, Arrays.asList("Second line.", "Third line."), Arrays.asList("Second line.", "Line N°4"),
+            Type.CHANGE, 1, 1, Arrays.asList("Second line.", "Third line."), Arrays.asList("Line N°2", "Third line."));
+        conflictDecision = new DefaultConflictDecision<>(conflict);
+        conflictDecision.setCustom(Arrays.asList("Something", "Completely", "Different"));
+        conflictDecisionList.add(conflictDecision);
+
+        Conflict<String> conflict2 = this.createConflict(5,
+            Type.CHANGE, 5, 5, Collections.emptyList(), Arrays.asList("6th line."),
+            Type.CHANGE, 5, 5, Collections.emptyList(), Arrays.asList("Sixth line."));
+        conflictDecision = new DefaultConflictDecision<>(conflict2);
+        conflictDecision.setType(ConflictDecision.DecisionType.PREVIOUS);
+        conflictDecisionList.add(conflictDecision);
+
+        mergeConfiguration = new MergeConfiguration<>(conflictDecisionList);
+        result = this.diffManager.merge(
+            Arrays.asList(
+                "First line.",
+                "Second line.",
+                "Third line.",
+                "Fourth line.",
+                "Fifth line.",
+                "Seventh line."
+            ), Arrays.asList(
+                "First line.",
+                "Line N°2",
+                "Third line.",
+                "Fifth line.",
+                "Sixth line.",
+                "Seventh line."
+            ), Arrays.asList(
+                "First line.",
+                "Second line.",
+                "Line N°4",
+                "Fifth line.",
+                "6th line.",
+                "Seventh line."
+            ), mergeConfiguration);
+        assertEquals(0, result.getConflicts().size());
+        assertEquals(Arrays.asList(
+            "First line.",
+            "Something",
+            "Completely",
+            "Different",
+            "Fifth line.",
+            "Seventh line."
+        ), result.getMerged());
     }
 }

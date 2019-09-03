@@ -333,10 +333,10 @@ public class DefaultDiffManager implements DiffManager
                                 // Conflict
                                 logConflict(mergeResult, deltaCurrent, deltaNext, commonAncestor, next, current, index);
                                 index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
-                                merged.add(commonAncestor.get(index));
                             } else {
                                 index = newIndex;
                             }
+                            merged.add(commonAncestor.get(index));
                         } else {
                             index = apply(deltaCurrent, merged, index);
                             index = apply(deltaNext, merged, index);
