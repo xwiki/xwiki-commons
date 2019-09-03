@@ -232,7 +232,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
         }
 
         // chunk concerned by the conflict
-        int listLastIndex = Math.min(originalChunk.getLastIndex(), listIndex + conflictSize);
+        int listLastIndex = Math.min(elements.size(), listIndex + conflictSize);
         result.add(new DefaultChunk<>(index, elements.subList(listIndex, listLastIndex)));
         index += conflictSize;
         listIndex = listLastIndex;
@@ -315,11 +315,16 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
             } else {
                 Conflict<E> conflict = findConflict(delta, conflicts);
 
+                // a delta can be splitted only if one of its chunk is > 1
+                boolean deltaCanBeSplitted = (delta.getPrevious().size() > 1 || delta.getNext().size() > 1);
+
+                boolean conflictIsSubpartOfDelta = conflict != null
+                    && (conflict.getMaxSize() != delta.getNext().size()
+                    || conflict.getMaxSize() != delta.getPrevious().size());
+
                 // If we found a conflict, but it only concerns a subpart of the delta, then we need to split this
                 // delta, so we can associate the conflict with only the part of the delta concerned by the conflict.
-                if (conflict != null
-                    && (conflict.getMaxSize() != delta.getNext().size()
-                    || conflict.getMaxSize() != delta.getPrevious().size())) {
+                if (conflictIsSubpartOfDelta && deltaCanBeSplitted) {
                     List<Delta<E>> splittedDeltas = splitDelta(delta, conflict);
                     result.putAll(buildDeltaConflictMap(splittedDeltas, conflicts));
 
