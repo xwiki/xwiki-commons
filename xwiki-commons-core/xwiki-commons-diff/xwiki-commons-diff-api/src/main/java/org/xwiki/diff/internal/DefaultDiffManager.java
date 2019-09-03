@@ -488,11 +488,26 @@ public class DefaultDiffManager implements DiffManager
             subsetPrevious = Collections.emptyList();
         } else {
             chunkSize = Math.max(deltaCurrent.getPrevious().size(), deltaNext.getPrevious().size());
-            subsetPrevious = previous.subList(index, index + Math.min(chunkSize, previous.size()));
+            subsetPrevious = new ArrayList<>(previous.subList(index, index + Math.min(chunkSize, previous.size())));
         }
 
-        List<E> subsetNext = extractConflictPart(deltaNext, previous, next, chunkSize, index);
-        List<E> subsetCurrent = extractConflictPart(deltaCurrent, previous, current, chunkSize, index);
+        List<E> subsetNext = new ArrayList<>(extractConflictPart(deltaNext, previous, next, chunkSize, index));
+        List<E> subsetCurrent = new ArrayList<>(extractConflictPart(deltaCurrent, previous, current, chunkSize, index));
+
+        // We might have found a conflict such as [a, b], [b, c], [d, c].
+        // In that case we only want to record the conflict between b and d VS a.
+        // We don't care about c since it's validated in both current and next versions.
+        if (subsetPrevious.size() == subsetNext.size() && subsetPrevious.size() == subsetCurrent.size()) {
+            for (int i = subsetNext.size() - 1; i > 0; i--) {
+                if (subsetCurrent.get(i).equals(subsetNext.get(i))) {
+                    subsetCurrent.remove(i);
+                    subsetNext.remove(i);
+                    subsetPrevious.remove(i);
+                } else {
+                    break;
+                }
+            }
+        }
 
         Chunk<E> previousChunk = new DefaultChunk<>(index, subsetPrevious);
         Chunk<E> nextChunk = new DefaultChunk<>(index, subsetNext);

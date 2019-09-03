@@ -1484,6 +1484,20 @@ public class DefaultDiffManagerTest
         assertEquals(2, result.getConflicts().size());
         assertEquals(conflict, result.getConflicts().get(0));
         assertEquals(conflict2, result.getConflicts().get(1));
+
+        // Test 10: conflict should only concern the minimum needed
+        conflict = this.createConflict(0,
+            Type.CHANGE, 0, 0, Arrays.asList("A second edit from another tab."),
+            Arrays.asList("A fourth edit from second tab."),
+            Type.CHANGE, 0, 0, Arrays.asList("A second edit from another tab."),
+            Arrays.asList("A third edit from another tab."));
+        result = this.diffManager.merge(
+            Arrays.asList("A second edit from another tab.", "A new line."),
+            Arrays.asList("A third edit from another tab.", "Another line.", "Yet another line."),
+            Arrays.asList("A fourth edit from second tab.", "Another line."),
+            mergeConfiguration);
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
     }
 
     private <E> Delta<E> createDelta(Type type, Chunk<E> previous, Chunk<E> next)
