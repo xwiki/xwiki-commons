@@ -253,9 +253,11 @@ public class DefaultDiffManager implements DiffManager
                     merged.add(commonAncestor.get(newIndex));
                 }
 
-                // each time this fallback is called, the loop increment back the index
-                // so we have to decrement it to be sure we are at the right position.
-                newIndex--;
+                if (currentIndex != newIndex) {
+                    // each time this fallback is called, the loop increment back the index
+                    // so we have to decrement it to be sure we are at the right position.
+                    newIndex--;
+                }
                 break;
             default:
                 // CURRENT is the default
@@ -330,8 +332,7 @@ public class DefaultDiffManager implements DiffManager
                             if (newIndex == Integer.MIN_VALUE) {
                                 // Conflict
                                 logConflict(mergeResult, deltaCurrent, deltaNext, commonAncestor, next, current, index);
-                                merged.addAll(or(deltaNext.getNext().getElements(),
-                                    deltaCurrent.getNext().getElements()));
+                                index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
                                 merged.add(commonAncestor.get(index));
                             } else {
                                 index = newIndex;
@@ -468,7 +469,8 @@ public class DefaultDiffManager implements DiffManager
 
             case INSERT:
                 int newIndex = Math.min(delta.getNext().getIndex(), index);
-                return next.subList(newIndex, newIndex + Math.min(chunkSize, next.size()));
+                int listSize = Math.min(chunkSize, delta.getNext().size());
+                return next.subList(newIndex, newIndex + Math.min(listSize, next.size()));
 
             default:
                 throw new IllegalArgumentException(
