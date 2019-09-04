@@ -48,12 +48,11 @@ public class ScriptExecutionContextInitializer implements ExecutionContextInitia
     public void initialize(ExecutionContext executionContext) throws ExecutionContextException
     {
         if (!executionContext.hasProperty(SCRIPT_CONTEXT_ID)) {
-            executionContext.newProperty(SCRIPT_CONTEXT_ID).cloneValue().inherited().initial(new SimpleScriptContext())
+            executionContext.newProperty(SCRIPT_CONTEXT_ID)
+                .cloneValue()
+                .inherited()
+                .initial(new SimpleScriptContext())
                 .declare();
         }
-
-        // We're storing an instance of the Script Context class in the Execution Context so that it can be
-        // shared between different script invocations during the lifetime of the Execution Context.
-        executionContext.setProperty(SCRIPT_CONTEXT_ID, new CloneableSimpleScriptContext());
     }
 }
