@@ -33,7 +33,7 @@ import javax.script.SimpleScriptContext;
 public class CloneableSimpleScriptContext extends SimpleScriptContext implements Cloneable
 {
     @Override
-    protected CloneableSimpleScriptContext clone() throws CloneNotSupportedException
+    public CloneableSimpleScriptContext clone() throws CloneNotSupportedException
     {
         CloneableSimpleScriptContext cloned = (CloneableSimpleScriptContext) super.clone();
 
