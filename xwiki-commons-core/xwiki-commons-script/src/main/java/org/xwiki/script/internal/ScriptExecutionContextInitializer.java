@@ -21,7 +21,6 @@ package org.xwiki.script.internal;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.script.SimpleScriptContext;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.ExecutionContext;
@@ -51,7 +50,7 @@ public class ScriptExecutionContextInitializer implements ExecutionContextInitia
             executionContext.newProperty(SCRIPT_CONTEXT_ID)
                 .cloneValue()
                 .inherited()
-                .initial(new SimpleScriptContext())
+                .initial(new CloneableSimpleScriptContext())
                 .declare();
         }
     }
