@@ -75,4 +75,15 @@ public abstract class AbstractContextStore implements ContextStore
         }
     }
 
+    /**
+     * @since 11.8RC1
+     */
+    protected <T> T get(Map<String, Serializable> contextStore, String key, T def)
+    {
+        if (contextStore.containsKey(key)) {
+            return (T) contextStore.get(key);
+        }
+
+        return def;
+    }
 }
