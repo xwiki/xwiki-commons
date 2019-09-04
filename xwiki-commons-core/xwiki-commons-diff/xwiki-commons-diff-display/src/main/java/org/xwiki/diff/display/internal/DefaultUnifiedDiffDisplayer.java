@@ -316,7 +316,8 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
                 Conflict<E> conflict = findConflict(delta, conflicts);
 
                 // a delta can be splitted only if one of its chunk is > 1
-                boolean deltaCanBeSplitted = (delta.getPrevious().size() > 1 || delta.getNext().size() > 1);
+                boolean deltaCanBeSplitted = (delta.getPrevious().size() > 1 || delta.getNext().size() > 1)
+                    && conflict.getMaxSize() < delta.getMaxChunkSize();
 
                 boolean conflictIsSubpartOfDelta = conflict != null
                     && (conflict.getMaxSize() != delta.getNext().size()
@@ -327,7 +328,6 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
                 if (conflictIsSubpartOfDelta && deltaCanBeSplitted) {
                     List<Delta<E>> splittedDeltas = splitDelta(delta, conflict);
                     result.putAll(buildDeltaConflictMap(splittedDeltas, conflicts));
-
                 // Else the conflict concerns the whole delta, so we can add it to the map and associate it with the
                 // delta. We remove the conflict from our list, since it's already associated with a delta.
                 } else {

@@ -585,7 +585,7 @@ public class DefaultDiffManagerTest
 
         // Another multiple conflicts
         conflict = createConflict(2,
-            Type.CHANGE, 2, 2, Arrays.asList('c'), Arrays.asList('c'),
+            Type.CHANGE, 2, 2, Arrays.asList('c'), Arrays.asList('c', 'd'),
             Type.CHANGE, 2, 2, Arrays.asList('c'), Arrays.asList('d'));
         conflict1 = createConflict(4,
             Type.CHANGE, 4, 4, Arrays.asList('f'), Collections.emptyList(),
@@ -738,6 +738,18 @@ public class DefaultDiffManagerTest
         assertEquals(1, result.getConflicts().size());
         assertEquals(conflict, result.getConflicts().get(0));
         assertEquals(toCharacters("ab"), result.getMerged());
+
+        // Current and next are same for the first part, so conflict should only concern the last part.
+        conflict = this.createConflict(0,
+            Type.CHANGE, 0, 0, Arrays.asList('y'), Arrays.asList('c'),
+            Type.CHANGE, 0, 0, Arrays.asList('y'), Arrays.asList('b'));
+        mergeConfiguration = null;
+        result = this.diffManager
+            .merge(toCharacters("xy"), toCharacters("ab"), toCharacters("ac"), mergeConfiguration);
+        assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+        assertEquals(toCharacters("ac"), result.getMerged());
     }
 
     @Test
@@ -1390,7 +1402,7 @@ public class DefaultDiffManagerTest
 
         mergeConfiguration = null;
         conflict = this.createConflict(2,
-            Type.CHANGE, 2, 2, Arrays.asList("started to walk"), Arrays.asList("started to walk"),
+            Type.CHANGE, 2, 2, Arrays.asList("started to walk"), Arrays.asList("started to walk", "dressed in black"),
             Type.CHANGE, 2, 2, Arrays.asList("started to walk"), Arrays.asList("dressed in black"));
         result = this.diffManager
             .merge(
@@ -1422,11 +1434,10 @@ public class DefaultDiffManagerTest
 
         // Test 6: We change everything but our first changes are the same at the beginning of current and next:
         // it still must led to a conflict, since we don't know if we should have "Another line" or not.
-        // Now the conflict created is questionable: should it be a change conflict or an insert/delete conflict?
         mergeConfiguration = null;
         conflict = createConflict(0,
             Type.CHANGE, 0, 0, Arrays.asList("A first edit from a tab."),
-            Arrays.asList("A second edit from another tab."),
+            Arrays.asList("A second edit from another tab.", "Another line"),
             Type.CHANGE, 0, 0, Arrays.asList("A first edit from a tab."),
             Arrays.asList("A second edit from another tab."));
         result = this.diffManager.merge(
@@ -1520,8 +1531,16 @@ public class DefaultDiffManagerTest
 
         // Test 8: Conflicts with empty lines
         conflict = this.createConflict(0,
-            Type.CHANGE, 0, 0, Arrays.asList("Some content."), Arrays.asList("Another content"),
-            Type.CHANGE, 0, 0, Arrays.asList("Some content."), Arrays.asList("Some content."));
+            Type.CHANGE, 0, 0, Arrays.asList("Some content."), Arrays.asList("Another content", "On multiple lines."),
+            Type.CHANGE, 0, 0, Arrays.asList("Some content."), Arrays.asList(
+                "Some content.",
+                "",
+                "And now if I try",
+                "to put something",
+                "",
+                "with empty lines",
+                "like this"
+            ));
         result = this.diffManager.merge(
             Arrays.asList(
                 "Some content."
@@ -1586,17 +1605,43 @@ public class DefaultDiffManagerTest
             "Seventh line."
         ), result.getMerged());
 
-        // Test 10: conflict should only concern the minimum needed
         conflict = this.createConflict(0,
-            Type.CHANGE, 0, 0, Arrays.asList("A second edit from another tab."),
-            Arrays.asList("A fourth edit from second tab."),
-            Type.CHANGE, 0, 0, Arrays.asList("A second edit from another tab."),
-            Arrays.asList("A third edit from another tab."));
+            Type.CHANGE, 0, 0, Arrays.asList("A second edit from another tab.", "A new line."),
+            Arrays.asList("A fourth edit from second tab.", "Another line."),
+            Type.CHANGE, 0, 0, Arrays.asList("A second edit from another tab.", "A new line."),
+            Arrays.asList("A third edit from another tab.", "Another line.", "Yet another line."));
         result = this.diffManager.merge(
             Arrays.asList("A second edit from another tab.", "A new line."),
             Arrays.asList("A third edit from another tab.", "Another line.", "Yet another line."),
             Arrays.asList("A fourth edit from second tab.", "Another line."),
             mergeConfiguration);
+        assertEquals(1, result.getConflicts().size());
+        assertEquals(conflict, result.getConflicts().get(0));
+
+        mergeConfiguration = null;
+        conflict = this.createConflict(1,
+            Type.CHANGE, 1, 1, Arrays.asList("Anything else"), Arrays.asList("",
+                "And now if I try",
+                "to put something",
+                "",
+                "with empty lines",
+                "like this"),
+            Type.CHANGE, 1, 1, Arrays.asList("Anything else"), Arrays.asList("On multiple lines."));
+        result = diffManager.merge(Arrays.asList(
+            "Some content.",
+            "Anything else"
+        ), Arrays.asList(
+            "Some content.",
+            "On multiple lines."
+        ), Arrays.asList(
+            "Some content.",
+            "",
+            "And now if I try",
+            "to put something",
+            "",
+            "with empty lines",
+            "like this"
+        ), mergeConfiguration);
         assertEquals(1, result.getConflicts().size());
         assertEquals(conflict, result.getConflicts().get(0));
     }

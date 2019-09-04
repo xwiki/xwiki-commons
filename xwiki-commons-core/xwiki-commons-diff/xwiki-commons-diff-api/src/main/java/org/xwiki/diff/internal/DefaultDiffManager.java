@@ -465,12 +465,17 @@ public class DefaultDiffManager implements DiffManager
                     previous.subList(index + previousChangeSize, index + remainingChunkSize) : Collections.emptyList();
 
             case CHANGE:
-                return next.subList(index, index + Math.min(chunkSize, next.size()));
+                int endOffset = index + Math.min(chunkSize, next.size());
+                if (endOffset > next.size()) {
+                    endOffset = next.size();
+                }
+                return next.subList(index, endOffset);
 
             case INSERT:
                 int newIndex = Math.min(delta.getNext().getIndex(), index);
+                int indexOffset = delta.getNext().getIndex() - newIndex;
                 int listSize = Math.min(chunkSize, delta.getNext().size());
-                return next.subList(newIndex, newIndex + Math.min(listSize, next.size()));
+                return next.subList(newIndex, newIndex + indexOffset + Math.min(listSize, next.size()));
 
             default:
                 throw new IllegalArgumentException(
@@ -485,12 +490,17 @@ public class DefaultDiffManager implements DiffManager
         int chunkSize;
         List<E> subsetPrevious;
 
+        chunkSize = Math.max(deltaCurrent.getMaxChunkSize(), deltaNext.getMaxChunkSize());
+
         if (deltaCurrent.getType() == Type.INSERT && deltaNext.getType() == Type.INSERT) {
-            chunkSize = Math.max(deltaCurrent.getNext().size(), deltaNext.getNext().size());
             subsetPrevious = Collections.emptyList();
         } else {
-            chunkSize = Math.max(deltaCurrent.getPrevious().size(), deltaNext.getPrevious().size());
-            subsetPrevious = new ArrayList<>(previous.subList(index, index + Math.min(chunkSize, previous.size())));
+            int newIndex = Math.min(deltaCurrent.getPrevious().getIndex(), deltaNext.getPrevious().getIndex());
+            int newOffsetEnd = Math.min(chunkSize, previous.size()) + newIndex;
+            if (newOffsetEnd > previous.size()) {
+                newOffsetEnd = previous.size();
+            }
+            subsetPrevious = new ArrayList<>(previous.subList(newIndex, newOffsetEnd));
         }
 
         List<E> subsetNext = new ArrayList<>(extractConflictPart(deltaNext, previous, next, chunkSize, index));
@@ -500,13 +510,11 @@ public class DefaultDiffManager implements DiffManager
         // In that case we only want to record the conflict between b and d VS a.
         // We don't care about c since it's validated in both current and next versions.
         if (subsetPrevious.size() == subsetNext.size() && subsetPrevious.size() == subsetCurrent.size()) {
-            for (int i = subsetNext.size() - 1; i > 0; i--) {
+            for (int i = subsetNext.size() - 1; i >= 0; i--) {
                 if (subsetCurrent.get(i).equals(subsetNext.get(i))) {
                     subsetCurrent.remove(i);
                     subsetNext.remove(i);
                     subsetPrevious.remove(i);
-                } else {
-                    break;
                 }
             }
         }
