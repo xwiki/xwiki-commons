@@ -83,6 +83,9 @@
     <junit.platform.version>1.4.2</junit.platform.version>
     <junit.vintage.version>${junit5.version}</junit.vintage.version>
 
+    <!-- Pitest -->
+    <pitest.version>1.4.10</pitest.version>
+
     <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
          are executed with surefire or failsafe) -->
     <surefire.version>2.22.2</surefire.version>
@@ -2243,7 +2246,7 @@
         <plugin>
           <groupId>org.pitest</groupId>
           <artifactId>pitest-maven</artifactId>
-          <version>1.4.9</version>
+          <version>${pitest.version}</version>
         </plugin>
         <!-- In order to make it simple to execute Dspot on XWiki with: mvn dspot:amplify-unit-tests -->
         <plugin>
@@ -2545,6 +2548,26 @@
               </mutators>
             </configuration>
             <dependencies>
+              <!-- Make sure we end up with the right pitest versions -->
+              <dependency>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest</artifactId>
+                <version>${pitest.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-entry</artifactId>
+                <version>${pitest.version}</version>
+              </dependency>
+
+              <!-- Make sure we end up with the right version of Junit 5 -->
+              <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit5.version}</version>
+                <scope>compile</scope>
+              </dependency>
+
               <dependency>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-junit5-plugin</artifactId>
