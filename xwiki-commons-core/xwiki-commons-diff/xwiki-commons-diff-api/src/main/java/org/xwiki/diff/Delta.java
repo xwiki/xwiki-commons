@@ -21,6 +21,8 @@ package org.xwiki.diff;
 
 import java.util.List;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * A delta between two version of a list.
  *
@@ -90,4 +92,14 @@ public interface Delta<E>
      * @return the chunk after the modification
      */
     Chunk<E> getNext();
+
+    /**
+     * @return the max size between the two chunks of the delta.
+     * @since 11.8RC1
+     */
+    @Unstable
+    default int getMaxChunkSize()
+    {
+        return Math.max(getNext().size(), getPrevious().size());
+    }
 }

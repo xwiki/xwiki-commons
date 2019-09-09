@@ -47,4 +47,45 @@ public interface Conflict<E>
      * @return the {@link Delta} of the next version of the merge.
      */
     Delta<E> getDeltaNext();
+
+    /**
+     * @param delta the delta that might be concerned by this conflict.
+     * @return {@code true} if this conflict might impact the given delta.
+     * @since 11.8RC1
+     */
+    default boolean concerns(Delta<E> delta)
+    {
+        return false;
+    }
+
+    /**
+     * @param chunk the chunk that might be concerned by this conflict.
+     * @return {@code true} if this conflict might impact the given chunk.
+     * @since 11.8RC1
+     */
+    default boolean concerns(Chunk<E> chunk)
+    {
+        return false;
+    }
+
+    /**
+     * @return a unique reference for a conflict.
+     * @since 11.8RC1
+     */
+    default String getReference()
+    {
+        return String.valueOf(this.hashCode());
+    }
+
+    /**
+     * The max size of a conflict is defined by the max size of the current or next chunk size.
+     *
+     * @return the conflict max size.
+     * @since 11.8RC1
+     */
+    @Unstable
+    default int getMaxSize()
+    {
+        return Math.max(getDeltaCurrent().getNext().size(), getDeltaNext().getNext().size());
+    }
 }

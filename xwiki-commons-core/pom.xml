@@ -157,9 +157,43 @@
               "revapi": {
                 "ignore" : [
                   {
+                    "code": "java.method.numberOfParametersChanged",
+                    "old": "method void org.xwiki.diff.display.UnifiedDiffConflictElement<E>::<init>(org.xwiki.diff.Conflict<E>, int)",
+                    "new": "method void org.xwiki.diff.display.UnifiedDiffConflictElement<E>::<init>(org.xwiki.diff.Conflict<E>)",
+                    "justification": "This API was marked as unstable. Breakage needed because of https://jira.xwiki.org/browse/XCOMMONS-1722."
+                  },
+                  {
+                    "code": "java.method.returnTypeChangedCovariantly",
+                    "old": "method E org.xwiki.diff.display.UnifiedDiffConflictElement<E>::getCurrentElement()",
+                    "new": "method java.util.List<E> org.xwiki.diff.display.UnifiedDiffConflictElement<E>::getCurrentElement()",
+                    "justification": "This API was marked as unstable. Breakage needed because of https://jira.xwiki.org/browse/XCOMMONS-1722."
+                  },
+                  {
+                    "code": "java.method.returnTypeChangedCovariantly",
+                    "old": "method E org.xwiki.diff.display.UnifiedDiffConflictElement<E>::getNextElement()",
+                    "new": "method java.util.List<E> org.xwiki.diff.display.UnifiedDiffConflictElement<E>::getNextElement()",
+                    "justification": "This API was marked as unstable. Breakage needed because of https://jira.xwiki.org/browse/XCOMMONS-1722."
+                  },
+                  {
+                    "code": "java.method.returnTypeChangedCovariantly",
+                    "old": "method E org.xwiki.diff.display.UnifiedDiffConflictElement<E>::getPreviousElement()",
+                    "new": "method java.util.List<E> org.xwiki.diff.display.UnifiedDiffConflictElement<E>::getPreviousElement()",
+                    "justification": "This API was marked as unstable. Breakage needed because of https://jira.xwiki.org/browse/XCOMMONS-1722."
+                  },
+                  {
                     "code": "java.method.removed",
-                    "old": "method org.xwiki.script.service.ScriptService org.xwiki.diff.script.DiffScriptService::getDisplay()",
-                    "justification": "Not an API breakage (we replaced it with a generic get() method that can also be used to access $services.diff.display)"
+                    "old": "method void org.xwiki.diff.display.UnifiedDiffElement<E, F>::<init>(int, org.xwiki.diff.display.UnifiedDiffElement.Type, E, org.xwiki.diff.Conflict<E>)",
+                    "justification": "This API was marked as unstable. Breakage needed because of https://jira.xwiki.org/browse/XCOMMONS-1722."
+                  },
+                  {
+                    "code": "java.method.removed",
+                    "old": "method org.xwiki.diff.display.UnifiedDiffConflictElement<E> org.xwiki.diff.display.UnifiedDiffElement<E, F>::getConflict()",
+                    "justification": "This API was marked as unstable. Breakage needed because of https://jira.xwiki.org/browse/XCOMMONS-1722."
+                  },
+                  {
+                    "code": "java.method.removed",
+                    "old": "method boolean org.xwiki.diff.display.UnifiedDiffElement<E, F>::isConflicting()",
+                    "justification": "This API was marked as unstable. Breakage needed because of https://jira.xwiki.org/browse/XCOMMONS-1722."
                   }
                   // Add more ignores below...
                   {

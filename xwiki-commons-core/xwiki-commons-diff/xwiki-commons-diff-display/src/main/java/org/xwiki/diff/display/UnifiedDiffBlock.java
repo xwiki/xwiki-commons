@@ -21,6 +21,7 @@ package org.xwiki.diff.display;
 
 import java.util.ArrayList;
 
+import org.xwiki.diff.Conflict;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -39,6 +40,8 @@ public class UnifiedDiffBlock<E, F> extends ArrayList<UnifiedDiffElement<E, F>>
      * Needed for serialization.
      */
     private static final long serialVersionUID = 1L;
+
+    private UnifiedDiffConflictElement<E> conflict;
 
     /**
      * @return the index where this block starts in the previous version; since blocks are most of the time not empty,
@@ -99,19 +102,38 @@ public class UnifiedDiffBlock<E, F> extends ArrayList<UnifiedDiffElement<E, F>>
     }
 
     /**
-     * @return {@code true} if any part of the block belongs to a conflict.
+     * @return {@code true} if this block is part of a conflict.
      * @since 11.7RC1
      */
     @Unstable
     public boolean isConflicting()
     {
-        for (UnifiedDiffElement<E, F> element : this) {
-            if (element.isConflicting()) {
-                return true;
-            }
-        }
+        return this.conflict != null;
+    }
 
-        return false;
+    /**
+     * @return the {@link UnifiedDiffConflictElement} or null if there is no conflict.
+     * @since 11.8RC1
+     */
+    @Unstable
+    public UnifiedDiffConflictElement<E> getConflict()
+    {
+        return this.conflict;
+    }
+
+    /**
+     * Sets the conflict related to this block element.
+     * @param conflict the conflict to be registered.
+     * @since 11.8RC1
+     */
+    @Unstable
+    public void setConflict(Conflict<E> conflict)
+    {
+        if (conflict != null) {
+            this.conflict = new UnifiedDiffConflictElement<>(conflict);
+        } else {
+            this.conflict = null;
+        }
     }
 
     @Override

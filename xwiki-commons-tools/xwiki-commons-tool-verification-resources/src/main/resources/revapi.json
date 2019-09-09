@@ -14,7 +14,8 @@
           ],
           "exclude": [
             "org\\.xwiki\\..*\\.internal(\\..*)?",
-            "org\\.xwiki\\..*\\.test(\\..*)?"
+            "org\\.xwiki\\..*\\.test(\\..*)?",
+            "com\\.xpn\\.xwiki\\.internal(\\..*)?"
           ]
         }
       }
@@ -46,6 +47,13 @@
         "regex": true,
         "code": "java\\.class\\.externalClassExposedInAPI",
         "package": "org\\.xwiki\\..*",
+        "justification": "Dragging of other XWiki types to the API is OK."
+      },
+      // Same rule for the old com.xpn.xwiki package.
+      {
+        "regex": true,
+        "code": "java\\.class\\.externalClassExposedInAPI",
+        "package": "com\\.xpn\\.xwiki\\..*",
         "justification": "Dragging of other XWiki types to the API is OK."
       }
     ]

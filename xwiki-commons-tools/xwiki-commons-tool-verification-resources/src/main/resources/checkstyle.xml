@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE module PUBLIC
-    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
-    "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+  "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+  "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <!-- Checkstyle properties for XWiki projects. Note that checks that should always executed and never be excluded
      should be moved to checkstyle-blocker.xml -->
@@ -56,6 +56,13 @@
   <!--  We actually have a lot of incomplete translations so we can't really afford this rule
   <module name="Translation"/>
    -->
+
+  <module name="LineLength">
+    <!-- @(\w+\.)+\w+::\w+\( stands for JSNI method calls: @my.package.MyClass::myMethod() -->
+    <property name="ignorePattern" value="(@version|@see|@link|^import|@(\w+\.)+\w+::\w+\()"/>
+    <property name="max" value="120"/>
+    <property name="fileExtensions" value="java"/>
+  </module>
 
   <!--
      ======================================================================================
@@ -223,12 +230,6 @@
     <module name="LeftCurly">
       <property name="option" value="nl"/>
       <property name="tokens" value="CLASS_DEF,INTERFACE_DEF"/>
-    </module>
-
-    <module name="LineLength">
-      <!-- @(\w+\.)+\w+::\w+\( stands for JSNI method calls: @my.package.MyClass::myMethod() -->
-      <property name="ignorePattern" value="(@version|@see|@link|^import|@(\w+\.)+\w+::\w+\()"/>
-      <property name="max" value="120"/>
     </module>
 
     <module name="LocalFinalVariableName"/>

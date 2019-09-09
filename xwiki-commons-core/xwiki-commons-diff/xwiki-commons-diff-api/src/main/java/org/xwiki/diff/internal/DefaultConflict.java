@@ -22,6 +22,7 @@ package org.xwiki.diff.internal;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.xwiki.diff.Chunk;
 import org.xwiki.diff.Conflict;
 import org.xwiki.diff.Delta;
 import org.xwiki.stability.Unstable;
@@ -71,6 +72,27 @@ public class DefaultConflict<E> implements Conflict<E>
     public Delta<E> getDeltaNext()
     {
         return deltaNext;
+    }
+
+    @Override
+    public boolean concerns(Chunk<E> chunk)
+    {
+        if (chunk != null) {
+            return chunk.isOverlappingWith(getDeltaCurrent().getPrevious())
+                || chunk.isOverlappingWith(getDeltaCurrent().getNext())
+                || chunk.isOverlappingWith(getDeltaNext().getNext())
+                || chunk.isOverlappingWith(getDeltaNext().getPrevious());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean concerns(Delta<E> delta)
+    {
+        if (delta != null) {
+            return concerns(delta.getPrevious()) || concerns(delta.getNext());
+        }
+        return false;
     }
 
     @Override

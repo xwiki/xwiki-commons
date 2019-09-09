@@ -40,7 +40,6 @@ import org.xwiki.diff.DiffResult;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.diff.display.UnifiedDiffBlock;
 import org.xwiki.diff.display.UnifiedDiffConflictElement;
-import org.xwiki.diff.display.UnifiedDiffElement;
 import org.xwiki.diff.internal.DefaultDiffManager;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -123,35 +122,337 @@ public class DefaultUnifiedDiffDisplayerTest
         List<String> next = readLines("twoContexts_next.txt");
 
         MergeResult<String> mergeResult = getDiffManager().merge(previous, next, current, null);
-        assertFalse(mergeResult.getConflicts().isEmpty());
+        assertEquals(1, mergeResult.getConflicts().size());
 
         DiffResult<String> diffResult = getDiffManager().diff(previous, next, null);
         List<UnifiedDiffBlock<String, Object>> unifiedDiffBlocks = unifiedDiffDisplayer.display(diffResult);
 
         assertEquals(2, unifiedDiffBlocks.size());
+        assertFalse(unifiedDiffBlocks.get(0).isConflicting());
         assertFalse(unifiedDiffBlocks.get(1).isConflicting());
 
         unifiedDiffBlocks = unifiedDiffDisplayer.display(diffResult, mergeResult.getConflicts());
 
-        assertEquals(2, unifiedDiffBlocks.size());
-        assertTrue(unifiedDiffBlocks.get(1).isConflicting());
+        // 4 blocks:
+        // - first one if the first changes without conflict
+        // - second one is a context block
+        // - third one is the conflict itself
+        // - fourth one is another context block
+        // We don't want to put the context inside the conflict to avoid any side effect when using it.
+        assertEquals(4, unifiedDiffBlocks.size());
+        assertFalse(unifiedDiffBlocks.get(0).isConflicting());
+        assertFalse(unifiedDiffBlocks.get(1).isConflicting());
+        assertTrue(unifiedDiffBlocks.get(2).isConflicting());
+        assertFalse(unifiedDiffBlocks.get(3).isConflicting());
 
-        assertEquals(8, unifiedDiffBlocks.get(1).size());
-        UnifiedDiffConflictElement<String> unifiedDiffConflictElement = unifiedDiffBlocks.get(1).get(3).getConflict();
-        assertEquals("    //   If k > 2 then fib(k) = fib(k-1) + fib(k-2).",
+        assertEquals(3, unifiedDiffBlocks.get(1).size());
+        assertEquals(2, unifiedDiffBlocks.get(2).size());
+        UnifiedDiffConflictElement<String> unifiedDiffConflictElement = unifiedDiffBlocks.get(2).getConflict();
+        assertEquals(Collections.singletonList("    //   If k > 2 then fib(k) = fib(k-1) + fib(k-2)."),
             unifiedDiffConflictElement.getPreviousElement());
-        assertEquals("    //   if k > 2 then fib(k) = fib(k-1) + fib(k-2)",
+        assertEquals(Collections.singletonList("    //   if k > 2 then fib(k) = fib(k-1) + fib(k-2)"),
             unifiedDiffConflictElement.getCurrentElement());
-        assertEquals("    //   if k > 2 then fib(k) = fib(k-1) + fib(k-2)?",
+        assertEquals(Collections.singletonList("    //   if k > 2 then fib(k) = fib(k-1) + fib(k-2)?"),
             unifiedDiffConflictElement.getNextElement());
+    }
 
-        unifiedDiffConflictElement = unifiedDiffBlocks.get(1).get(4).getConflict();
-        assertEquals("    //   If k > 2 then fib(k) = fib(k-1) + fib(k-2).",
-            unifiedDiffConflictElement.getPreviousElement());
-        assertEquals("    //   if k > 2 then fib(k) = fib(k-1) + fib(k-2)",
-            unifiedDiffConflictElement.getCurrentElement());
-        assertEquals("    //   if k > 2 then fib(k) = fib(k-1) + fib(k-2)?",
-            unifiedDiffConflictElement.getNextElement());
+    @Test
+    public void displayWithConflictsMultipleLines() throws Exception
+    {
+        //  Test1: whole blocks are in conflicts
+        List<String> previous = Arrays.asList(
+            "A fifth edit from another tab.",
+            "Another line.",
+            "Yet another line with other few changes."
+        );
+
+        List<String> next = Arrays.asList(
+            "A sixth edit from the second tab.",
+            "Another line with small changes.",
+            "Another edit from the second tab."
+        );
+
+        List<String> current = Arrays.asList(
+            "A sixth edit from the first tab.",
+            "Another line.",
+            "Yet another line edited from the first tab."
+        );
+
+        MergeResult<String> mergeResult = getDiffManager().merge(previous, next, current, null);
+        assertEquals(1, mergeResult.getConflicts().size());
+
+        DiffResult<String> diffResult = getDiffManager().diff(next, current, null);
+        List<UnifiedDiffBlock<String, Object>> unifiedDiffBlocks = unifiedDiffDisplayer.display(diffResult);
+        assertEquals(1, unifiedDiffBlocks.size());
+        assertFalse(unifiedDiffBlocks.get(0).isConflicting());
+
+        List<UnifiedDiffBlock<String, Object>> unifiedDiffBlocksWithConflicts =
+            unifiedDiffDisplayer.display(diffResult, mergeResult.getConflicts());
+        assertEquals(1, unifiedDiffBlocksWithConflicts.size());
+        assertTrue(unifiedDiffBlocksWithConflicts.get(0).isConflicting());
+        UnifiedDiffConflictElement<String> conflict = unifiedDiffBlocksWithConflicts.get(0).getConflict();
+        assertEquals(previous, conflict.getPreviousElement());
+        assertEquals(next, conflict.getNextElement());
+        assertEquals(current, conflict.getCurrentElement());
+
+        // Test2: conflict only on the first line, so we should display 2 blocks
+        previous = Arrays.asList(
+            "Some content."
+        );
+
+        next = Arrays.asList(
+            "Some content.",
+            "",
+            "And now if I try",
+            "to put something",
+            "",
+            "with empty lines",
+            "like this"
+        );
+
+        current = Arrays.asList(
+            "Another content",
+            "On multiple lines."
+        );
+        mergeResult = getDiffManager().merge(previous, next, current, null);
+        assertEquals(1, mergeResult.getConflicts().size());
+
+        // when we don't pass the conflict we only display one block for the diff
+        diffResult = getDiffManager().diff(next, current, null);
+        unifiedDiffBlocks = unifiedDiffDisplayer.display(diffResult);
+        assertEquals(1, unifiedDiffBlocks.size());
+        assertFalse(unifiedDiffBlocks.get(0).isConflicting());
+
+        // with the conflict we should still display 1 block, since the conflict concerns the whole changes
+        unifiedDiffBlocksWithConflicts =
+            unifiedDiffDisplayer.display(diffResult, mergeResult.getConflicts());
+        assertEquals(1, unifiedDiffBlocksWithConflicts.size());
+        assertTrue(unifiedDiffBlocksWithConflicts.get(0).isConflicting());
+
+        assertEquals(9, unifiedDiffBlocksWithConflicts.get(0).size());
+
+        assertEquals(previous,
+            unifiedDiffBlocksWithConflicts.get(0).getConflict().getPreviousElement());
+        assertEquals(next,
+            unifiedDiffBlocksWithConflicts.get(0).getConflict().getNextElement());
+        assertEquals(current,
+            unifiedDiffBlocksWithConflicts.get(0).getConflict().getCurrentElement());
+
+        // Test4: Same as before but with next / current inverted
+        previous = Arrays.asList(
+            "Some content.",
+            "Anything else"
+        );
+
+        next = Arrays.asList(
+            "Some content.",
+            "On multiple lines."
+        );
+
+        current = Arrays.asList(
+            "Some content.",
+            "",
+            "And now if I try",
+            "to put something",
+            "",
+            "with empty lines",
+            "like this"
+        );
+
+        mergeResult = getDiffManager().merge(previous, next, current, null);
+        assertEquals(1, mergeResult.getConflicts().size());
+
+        // when we don't pass the conflict we only display one block for the diff
+        diffResult = getDiffManager().diff(next, current, null);
+        unifiedDiffBlocks = unifiedDiffDisplayer.display(diffResult);
+        assertEquals(1, unifiedDiffBlocks.size());
+        assertFalse(unifiedDiffBlocks.get(0).isConflicting());
+
+        // but with the conflict we should display 3 blocks
+        unifiedDiffBlocksWithConflicts =
+            unifiedDiffDisplayer.display(diffResult, mergeResult.getConflicts());
+        assertEquals(2, unifiedDiffBlocksWithConflicts.size());
+        assertFalse(unifiedDiffBlocksWithConflicts.get(0).isConflicting());
+        assertTrue(unifiedDiffBlocksWithConflicts.get(1).isConflicting());
+
+        assertEquals(1, unifiedDiffBlocksWithConflicts.get(0).size());
+        assertEquals(" Some content.\n", unifiedDiffBlocksWithConflicts.get(0).get(0).toString());
+
+        assertEquals(7, unifiedDiffBlocksWithConflicts.get(1).size());
+        assertEquals("-On multiple lines.\n", unifiedDiffBlocksWithConflicts.get(1).get(0).toString());
+        assertEquals("+\n", unifiedDiffBlocksWithConflicts.get(1).get(1).toString());
+        assertEquals("+And now if I try\n", unifiedDiffBlocksWithConflicts.get(1).get(2).toString());
+        assertEquals("+to put something\n", unifiedDiffBlocksWithConflicts.get(1).get(3).toString());
+        assertEquals("+\n", unifiedDiffBlocksWithConflicts.get(1).get(4).toString());
+        assertEquals("+with empty lines\n", unifiedDiffBlocksWithConflicts.get(1).get(5).toString());
+        assertEquals("+like this\n", unifiedDiffBlocksWithConflicts.get(1).get(6).toString());
+
+        // Test3: conflict in the middle, so we should display 3 blocks
+        previous = Arrays.asList(
+            "Some content.",
+            "Anything else"
+        );
+
+        next = Arrays.asList(
+            "Some content.",
+            "",
+            "And now if I try",
+            "to put something",
+            "",
+            "with empty lines",
+            "like this"
+        );
+
+        current = Arrays.asList(
+            "Some content.",
+            "On multiple lines."
+        );
+        mergeResult = getDiffManager().merge(previous, next, current, null);
+        assertEquals(1, mergeResult.getConflicts().size());
+
+        // when we don't pass the conflict we only display one block for the diff
+        diffResult = getDiffManager().diff(next, current, null);
+        unifiedDiffBlocks = unifiedDiffDisplayer.display(diffResult);
+        assertEquals(1, unifiedDiffBlocks.size());
+        assertFalse(unifiedDiffBlocks.get(0).isConflicting());
+
+        // but with the conflict we should display 3 blocks
+        unifiedDiffBlocksWithConflicts =
+            unifiedDiffDisplayer.display(diffResult, mergeResult.getConflicts());
+        assertEquals(2, unifiedDiffBlocksWithConflicts.size());
+        assertFalse(unifiedDiffBlocksWithConflicts.get(0).isConflicting());
+        assertTrue(unifiedDiffBlocksWithConflicts.get(1).isConflicting());
+
+        assertEquals(1, unifiedDiffBlocksWithConflicts.get(0).size());
+        assertEquals(" Some content.\n", unifiedDiffBlocksWithConflicts.get(0).get(0).toString());
+
+        assertEquals(7, unifiedDiffBlocksWithConflicts.get(1).size());
+        assertEquals("-\n", unifiedDiffBlocksWithConflicts.get(1).get(0).toString());
+        assertEquals("-And now if I try\n", unifiedDiffBlocksWithConflicts.get(1).get(1).toString());
+        assertEquals("-to put something\n", unifiedDiffBlocksWithConflicts.get(1).get(2).toString());
+        assertEquals("-\n", unifiedDiffBlocksWithConflicts.get(1).get(3).toString());
+        assertEquals("-with empty lines\n", unifiedDiffBlocksWithConflicts.get(1).get(4).toString());
+        assertEquals("-like this\n", unifiedDiffBlocksWithConflicts.get(1).get(5).toString());
+        assertEquals("+On multiple lines.\n", unifiedDiffBlocksWithConflicts.get(1).get(6).toString());
+
+
+        // Test5: multiple conflicts
+        previous = Arrays.asList(
+            "First line.",
+            "Second line.",
+            "Third line.",
+            "Fourth line.",
+            "Fifth line.",
+            "Seventh line."
+        );
+
+        next = Arrays.asList(
+            "First line.",
+            "Line N°2",
+            "Third line.",
+            "Fifth line.",
+            "Sixth line.",
+            "Seventh line."
+        );
+
+        current = Arrays.asList(
+            "First line.",
+            "Second line.",
+            "Line N°4",
+            "Fifth line.",
+            "6th line.",
+            "Seventh line."
+        );
+
+        mergeResult = getDiffManager().merge(previous, next, current, null);
+        assertEquals(2, mergeResult.getConflicts().size());
+
+        // when we don't pass the conflict we only display two blocks for the diff
+        diffResult = getDiffManager().diff(next, current, null);
+        unifiedDiffBlocks = unifiedDiffDisplayer.display(diffResult);
+        assertEquals(1, unifiedDiffBlocks.size());
+        assertFalse(unifiedDiffBlocks.get(0).isConflicting());
+
+        // but with the conflict we should display 3 blocks
+        unifiedDiffBlocksWithConflicts =
+            unifiedDiffDisplayer.display(diffResult, mergeResult.getConflicts());
+        assertEquals(5, unifiedDiffBlocksWithConflicts.size());
+        assertFalse(unifiedDiffBlocksWithConflicts.get(0).isConflicting());
+        assertTrue(unifiedDiffBlocksWithConflicts.get(1).isConflicting());
+        assertFalse(unifiedDiffBlocksWithConflicts.get(2).isConflicting());
+        assertTrue(unifiedDiffBlocksWithConflicts.get(3).isConflicting());
+        assertFalse(unifiedDiffBlocksWithConflicts.get(4).isConflicting());
+
+        assertEquals(1, unifiedDiffBlocksWithConflicts.get(0).size());
+        assertEquals(" First line.\n", unifiedDiffBlocksWithConflicts.get(0).get(0).toString());
+
+        assertEquals(4, unifiedDiffBlocksWithConflicts.get(1).size());
+        assertEquals("-Line N°2\n", unifiedDiffBlocksWithConflicts.get(1).get(0).toString());
+        assertEquals("-Third line.\n", unifiedDiffBlocksWithConflicts.get(1).get(1).toString());
+        assertEquals("+Second line.\n", unifiedDiffBlocksWithConflicts.get(1).get(2).toString());
+        assertEquals("+Line N°4\n", unifiedDiffBlocksWithConflicts.get(1).get(3).toString());
+
+        assertEquals(1, unifiedDiffBlocksWithConflicts.get(2).size());
+        assertEquals(" Fifth line.\n", unifiedDiffBlocksWithConflicts.get(2).get(0).toString());
+
+        assertEquals(2, unifiedDiffBlocksWithConflicts.get(3).size());
+        assertEquals("-Sixth line.\n", unifiedDiffBlocksWithConflicts.get(3).get(0).toString());
+        assertEquals("+6th line.\n", unifiedDiffBlocksWithConflicts.get(3).get(1).toString());
+
+        assertEquals(1, unifiedDiffBlocksWithConflicts.get(4).size());
+        assertEquals(" Seventh line.\n", unifiedDiffBlocksWithConflicts.get(4).get(0).toString());
+
+        // Test6: test conflict subset.
+        previous = Arrays.asList("Foo", "Bar", "Baz");
+        current = Arrays.asList("Some", "Other", "Thing");
+        next = Arrays.asList("Any", "Other", "Thing");
+        mergeResult = getDiffManager().merge(previous, next, current, null);
+        assertEquals(1, mergeResult.getConflicts().size());
+
+        diffResult = getDiffManager().diff(previous, next, null);
+        unifiedDiffBlocks = unifiedDiffDisplayer.display(diffResult);
+        assertEquals(1, unifiedDiffBlocks.size());
+
+        unifiedDiffBlocksWithConflicts = unifiedDiffDisplayer.display(diffResult, mergeResult.getConflicts());
+        assertEquals(2, unifiedDiffBlocksWithConflicts.size());
+        assertTrue(unifiedDiffBlocksWithConflicts.get(0).isConflicting());
+        assertFalse(unifiedDiffBlocksWithConflicts.get(1).isConflicting());
+
+        assertEquals(2, unifiedDiffBlocksWithConflicts.get(0).size());
+        assertEquals(4, unifiedDiffBlocksWithConflicts.get(1).size());
+
+        assertEquals("-Foo\n", unifiedDiffBlocksWithConflicts.get(0).get(0).toString());
+        assertEquals("+Any\n", unifiedDiffBlocksWithConflicts.get(0).get(1).toString());
+
+        assertEquals("-Bar\n", unifiedDiffBlocksWithConflicts.get(1).get(0).toString());
+        assertEquals("-Baz\n", unifiedDiffBlocksWithConflicts.get(1).get(1).toString());
+        assertEquals("+Other\n", unifiedDiffBlocksWithConflicts.get(1).get(2).toString());
+        assertEquals("+Thing\n", unifiedDiffBlocksWithConflicts.get(1).get(3).toString());
+
+        previous = Arrays.asList("Foo", "Bar", "Baz");
+        current = Arrays.asList("Other");
+        next = Arrays.asList("Other", "Thing");
+        mergeResult = getDiffManager().merge(previous, next, current, null);
+        assertEquals(1, mergeResult.getConflicts().size());
+
+        diffResult = getDiffManager().diff(previous, next, null);
+        unifiedDiffBlocks = unifiedDiffDisplayer.display(diffResult);
+        assertEquals(1, unifiedDiffBlocks.size());
+
+        unifiedDiffBlocksWithConflicts = unifiedDiffDisplayer.display(diffResult, mergeResult.getConflicts());
+        assertEquals(2, unifiedDiffBlocksWithConflicts.size());
+        assertTrue(unifiedDiffBlocksWithConflicts.get(0).isConflicting());
+        assertFalse(unifiedDiffBlocksWithConflicts.get(1).isConflicting());
+
+        assertEquals(4, unifiedDiffBlocksWithConflicts.get(0).size());
+        assertEquals(1, unifiedDiffBlocksWithConflicts.get(1).size());
+
+        assertEquals("-Foo\n", unifiedDiffBlocksWithConflicts.get(0).get(0).toString());
+        assertEquals("-Bar\n", unifiedDiffBlocksWithConflicts.get(0).get(1).toString());
+        assertEquals("+Other\n", unifiedDiffBlocksWithConflicts.get(0).get(2).toString());
+        assertEquals("+Thing\n", unifiedDiffBlocksWithConflicts.get(0).get(3).toString());
+
+        assertEquals("-Baz\n", unifiedDiffBlocksWithConflicts.get(1).get(0).toString());
     }
 
     /**
