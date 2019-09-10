@@ -28,7 +28,6 @@ import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.util.RuntimeServicesAware;
 import org.apache.velocity.util.introspection.AbstractChainableUberspector;
-import org.apache.velocity.util.introspection.ConversionHandler;
 import org.apache.velocity.util.introspection.Info;
 import org.apache.velocity.util.introspection.VelMethod;
 import org.xwiki.component.manager.ComponentLookupException;

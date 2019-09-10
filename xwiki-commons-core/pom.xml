@@ -194,8 +194,7 @@
                     "code": "java.method.removed",
                     "old": "method boolean org.xwiki.diff.display.UnifiedDiffElement<E, F>::isConflicting()",
                     "justification": "This API was marked as unstable. Breakage needed because of https://jira.xwiki.org/browse/XCOMMONS-1722."
-                  }
-                  // Add more ignores below...
+                  },
                   {
                     "code": "java.class.removed",
                     "old": "class org.xwiki.velocity.introspection.TryCatchDirective",
@@ -469,6 +468,7 @@
                     "elementKind": "class",
                     "justification": "Velocity API changes. This class is only supposed to be used by Velocity."
                   }
+                  // Add more ignores below...
                 ]
               }
             }

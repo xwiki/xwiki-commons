@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.velocity.context.Context;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -70,15 +71,6 @@ public class DefaultVelocityEngineTest
     @BeforeEach
     void setUp() throws Exception
     {
-/*        Properties properties = new Properties();
-        properties.put("runtime.introspector.uberspect",
-            SecureUberspector.class.getName() + "," + DeprecatedCheckUberspector.class.getName());
-        properties.put("directive.set.null.allowed", Boolean.TRUE.toString());
-        properties.put("velocimacro.permissions.allow.inline.local.scope", Boolean.TRUE.toString());
-        properties.put(RuntimeConstants.VM_PRESERVE_ARGUMENTS_LITERALS, Boolean.TRUE.toString());
-
-        when(configuration.getProperties()).thenReturn(properties);*/
-
         when(execution.getContext()).thenReturn(new ExecutionContext());
     }
 
@@ -161,7 +153,7 @@ public class DefaultVelocityEngineTest
     {
         // For example try setting a non secure Uberspector.
         Properties properties = new Properties();
-        properties.setProperty("runtime.introspector.uberspect",
+        properties.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME,
             "org.apache.velocity.util.introspection.UberspectImpl");
         this.engine.initialize(properties);
         StringWriter writer = new StringWriter();
@@ -185,7 +177,7 @@ public class DefaultVelocityEngineTest
     {
         Properties properties = new Properties();
         // Force macros to be global
-        properties.put("velocimacro.permissions.allow.inline.local.scope", "false");
+        properties.put(RuntimeConstants.VM_PERM_INLINE_LOCAL, "false");
         this.engine.initialize(properties);
         Context context = new XWikiVelocityContext();
         this.engine.evaluate(context, new StringWriter(), "template1", "#macro(mymacro)test#end");

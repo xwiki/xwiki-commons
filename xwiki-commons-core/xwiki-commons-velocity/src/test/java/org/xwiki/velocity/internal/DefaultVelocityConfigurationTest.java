@@ -71,7 +71,7 @@ public class DefaultVelocityConfigurationTest
         assertEquals(
             StringUtils.join(new String[] { SecureUberspector.class.getName(),
                 DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','),
-            this.configuration.getProperties().getProperty("runtime.introspector.uberspect"));
+            this.configuration.getProperties().getProperty(RuntimeConstants.UBERSPECT_CLASSNAME));
 
         // Verify that Macros are isolated by default
         assertEquals(Boolean.TRUE.toString(),
