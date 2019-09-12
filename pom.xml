@@ -1849,8 +1849,14 @@
             <includes>
               <include>**/*Test.class</include>
             </includes>
-            <!-- TODO: Remove this property once all functional tests have been moved to use the failsafe plugin -->
             <systemProperties>
+              <!-- Used to automatically register JUnit5 Extenson using the service loader mechanism. For example this
+                   will enable our Extension checking that tests don't output content to stdout or stderr -->
+              <property>
+                <name>junit.jupiter.extensions.autodetection.enabled</name>
+                <value>true</value>
+              </property>
+              <!-- TODO: Remove this property once all functional tests have been moved to use the failsafe plugin -->
               <property>
                 <!-- See description of the "xwiki.test.verifyRunningXWikiAtStart" property above. -->
                 <name>xwiki.test.verifyRunningXWikiAtStart</name>

@@ -19,8 +19,6 @@
  */
 package org.xwiki.test.isolation;
 
-import java.net.URLClassLoader;
-
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
 
@@ -134,7 +132,7 @@ public class IsolatedTestRunner extends BlockJUnit4ClassRunner
      * A ClassLoader implementation that loads itself classes based on given prefixes, and delegate the rest to
      * its parent ClassLoader.
      */
-    private static class IsolatedTestClassLoader extends URLClassLoader
+    private static class IsolatedTestClassLoader extends ClassLoader
     {
         /**
          * List of class prefixes isolated by this ClassLoader.
@@ -146,7 +144,7 @@ public class IsolatedTestRunner extends BlockJUnit4ClassRunner
          * @param prefixes List of class name prefix use to limit isolation to the given classes.
          */
         IsolatedTestClassLoader(String[] prefixes) {
-            super(((URLClassLoader) Thread.currentThread().getContextClassLoader()).getURLs());
+            super(Thread.currentThread().getContextClassLoader());
             this.prefixes = prefixes;
         }
 
