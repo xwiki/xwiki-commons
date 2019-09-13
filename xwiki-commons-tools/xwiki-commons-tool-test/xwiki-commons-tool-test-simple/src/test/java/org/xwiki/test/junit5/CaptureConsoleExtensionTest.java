@@ -87,9 +87,17 @@ public class CaptureConsoleExtensionTest
 
             // Programmatically launch Jupiter Engine with our CaptureConsoleExtension registered in it.
             // Also register a SummaryGeneratingListener to capture the test output so that we can assert it.
-            LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-                .selectors(selectClass(SampleTestCase.class))
-                .build();
+
+            LauncherDiscoveryRequestBuilder builder =
+                LauncherDiscoveryRequestBuilder.request().selectors(selectClass(SampleTestCase.class));
+
+            // TODO: Because of https://github.com/pitest/pitest-junit5-plugin/issues/35 we need to force the loading
+            // of our custom Extension for the test to pass.
+            if (System.getProperty("junit.jupiter.extensions.autodetection.enabled") == null) {
+                builder = builder.configurationParameter("junit.jupiter.extensions.autodetection.enabled", "true");
+            }
+
+            LauncherDiscoveryRequest request = builder.build();
             Launcher launcher = LauncherFactory.create();
             SummaryGeneratingListener summaryListener = new SummaryGeneratingListener();
             launcher.execute(request, summaryListener);
