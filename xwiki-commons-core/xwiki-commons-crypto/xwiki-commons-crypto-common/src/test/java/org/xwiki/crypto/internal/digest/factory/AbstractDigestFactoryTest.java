@@ -25,18 +25,23 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.crypto.Digest;
 import org.xwiki.crypto.DigestFactory;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public abstract class AbstractDigestFactoryTest extends AbstractDigestFactoryTestConstants
 {
     private static final byte[] BYTES = TEXT.getBytes();
+
+    @InjectComponentManager
+    protected ComponentManager componentManager;
 
     protected DigestFactory factory;
 
@@ -47,7 +52,7 @@ public abstract class AbstractDigestFactoryTest extends AbstractDigestFactoryTes
     protected int digestSize;
     protected byte[] digestResult;
 
-    @BeforeClass
+    @BeforeAll
     public static void cleanUpCaches() {
         digest = null;
     }
@@ -61,7 +66,7 @@ public abstract class AbstractDigestFactoryTest extends AbstractDigestFactoryTes
     }
 
     @Test
-    public void digestFactoryProperties() throws Exception
+    public void digestFactoryProperties()
     {
         assertThat(factory.getDigestAlgorithmName(), equalTo(digestAlgo));
         assertThat(factory.getDigestSize(), equalTo(digestSize));
@@ -76,14 +81,14 @@ public abstract class AbstractDigestFactoryTest extends AbstractDigestFactoryTes
     }
 
     @Test
-    public void digestOneShot() throws Exception
+    public void digestOneShot()
     {
         assertThat(getDigestInstance().digest(BYTES), equalTo(digestResult));
         assertThat(getDigestInstance().digest(BYTES, 10, 20), not(equalTo(digestResult)));
     }
 
     @Test
-    public void tdigestMultiplePart() throws Exception
+    public void tdigestMultiplePart()
     {
         Digest dig = getDigestInstance();
         byte[] b = BYTES;

@@ -19,32 +19,35 @@
  */
 package org.xwiki.crypto.internal.digest.factory;
 
-import org.junit.Before;
-import org.junit.Rule;
+import javax.inject.Named;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.xwiki.crypto.BinaryStringEncoder;
-import org.xwiki.crypto.DigestFactory;
 import org.xwiki.crypto.internal.encoder.Base64BinaryStringEncoder;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
-@ComponentList({Base64BinaryStringEncoder.class})
+@ComponentTest
+@ComponentList({
+    Base64BinaryStringEncoder.class})
 public class BcSHA384DigestFactoryTest extends AbstractDigestFactoryTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<DigestFactory> mocker =
-        new MockitoComponentMockingRule<DigestFactory>(BcSHA384DigestFactory.class);
+    @InjectMockComponents
+    @Named("SHA-384")
+    private BcSHA384DigestFactory bcSHA384DigestFactory;
 
-    @Before
+    @BeforeEach
     public void configure() throws Exception
     {
-        factory = mocker.getComponentUnderTest();
+        factory = bcSHA384DigestFactory;
 
         if (digestResult == null) {
             digestAlgo = "SHA-384";
             digestAlgId = SHA384_DIGEST_ALGO;
             digestSize = 48;
 
-            BinaryStringEncoder base64encoder = mocker.getInstance(BinaryStringEncoder.class, "Base64");
+            BinaryStringEncoder base64encoder = componentManager.getInstance(BinaryStringEncoder.class, "Base64");
             digestResult = base64encoder.decode(SHA384_DIGEST);
         }
     }

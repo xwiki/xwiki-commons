@@ -19,27 +19,37 @@
  */
 package org.xwiki.crypto.internal.digest.factory;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.crypto.BinaryStringEncoder;
-import org.xwiki.crypto.DigestFactory;
 import org.xwiki.crypto.internal.encoder.Base64BinaryStringEncoder;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@ComponentList({Base64BinaryStringEncoder.class, BcMD5DigestFactory.class, BcSHA1DigestFactory.class,
-    BcSHA224DigestFactory.class, BcSHA256DigestFactory.class, BcSHA384DigestFactory.class, BcSHA512DigestFactory.class})
+@ComponentTest
+@ComponentList({
+    Base64BinaryStringEncoder.class,
+    BcMD5DigestFactory.class,
+    BcSHA1DigestFactory.class,
+    BcSHA224DigestFactory.class,
+    BcSHA256DigestFactory.class,
+    BcSHA384DigestFactory.class,
+    BcSHA512DigestFactory.class})
 public class DefaultDigestFactoryTest extends AbstractDigestFactoryTestConstants
 {
     private static final byte[] BYTES = TEXT.getBytes();
 
-    @Rule
-    public final MockitoComponentMockingRule<DigestFactory> mocker =
-        new MockitoComponentMockingRule<DigestFactory>(DefaultDigestFactory.class);
+    @InjectMockComponents
+    private DefaultDigestFactory factory;
+
+    @InjectComponentManager
+    private ComponentManager componentManager;
 
     private byte[] md5Digest;
     private byte[] sha1Digest;
@@ -48,15 +58,11 @@ public class DefaultDigestFactoryTest extends AbstractDigestFactoryTestConstants
     private byte[] sha384Digest;
     private byte[] sha512Digest;
 
-    private DigestFactory factory;
-
-    @Before
+    @BeforeEach
     public void configure() throws Exception
     {
-        factory = mocker.getComponentUnderTest();
-
         if (md5Digest == null) {
-            BinaryStringEncoder base64encoder = mocker.getInstance(BinaryStringEncoder.class, "Base64");
+            BinaryStringEncoder base64encoder = componentManager.getInstance(BinaryStringEncoder.class, "Base64");
             md5Digest = base64encoder.decode(MD5_DIGEST);
             sha1Digest = base64encoder.decode(SHA1_DIGEST);
             sha224Digest = base64encoder.decode(SHA224_DIGEST);
