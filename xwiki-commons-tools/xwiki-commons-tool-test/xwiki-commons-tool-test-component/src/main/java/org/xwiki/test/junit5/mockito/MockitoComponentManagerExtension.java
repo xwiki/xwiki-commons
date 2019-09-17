@@ -198,7 +198,7 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
     }
 
     @Override
-    public void afterEach(ExtensionContext extensionContext)
+    public void afterEach(ExtensionContext extensionContext) throws Exception
     {
         MockitoComponentManager mcm = loadComponentManager(extensionContext);
         if (mcm != null) {
