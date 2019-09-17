@@ -225,7 +225,11 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         throws Exception
     {
         if (role.equals(InjectMockComponents.class)) {
-            if (descriptors.size() > 1) {
+            if (descriptors.isEmpty()) {
+                // Does not make sense to ask for the descriptor of a class which does not have any associated
+                throw new Exception(
+                    String.format("The component under field [%s] is not implementing any role.", field.getName()));
+            } else if (descriptors.size() > 1) {
                 // Force user to specify a role in case of several
                 throw new Exception(String.format(
                     "The component under field [%s] is implementing several roles. "
