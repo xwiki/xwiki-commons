@@ -66,7 +66,8 @@ public abstract class AbstractFilterableEvent implements FilterableEvent, Serial
      */
     public AbstractFilterableEvent(String name)
     {
-        this.eventFilter = new FixedNameEventFilter(name);
+        // Assume null means everything
+        this.eventFilter = name != null ? new FixedNameEventFilter(name) : AlwaysMatchingEventFilter.INSTANCE;
     }
 
     /**
