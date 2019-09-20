@@ -2258,7 +2258,7 @@
         <plugin>
           <groupId>eu.stamp-project</groupId>
           <artifactId>dspot-maven</artifactId>
-          <version>2.1.0</version>
+          <version>2.2.0</version>
           <configuration>
             <clean>true</clean>
             <descartes>true</descartes>
