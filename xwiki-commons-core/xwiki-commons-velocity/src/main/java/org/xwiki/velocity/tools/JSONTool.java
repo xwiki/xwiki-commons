@@ -97,7 +97,7 @@ public class JSONTool
             try {
                 return objectMapper.readValue(str, Object.class);
             } catch (Exception e) {
-                LOGGER.info("Failed to parse JSON [{}]: ", StringUtils.abbreviate(str, 32),
+                LOGGER.info("Failed to parse JSON [{}]: {}", StringUtils.abbreviate(str, 32),
                     ExceptionUtils.getRootCauseMessage(e));
 
                 return null;
