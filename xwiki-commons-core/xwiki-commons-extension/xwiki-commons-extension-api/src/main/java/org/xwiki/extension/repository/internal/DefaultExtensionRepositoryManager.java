@@ -147,7 +147,7 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
                 try {
                     addRepository(repositoryDescriptor, repositoriesSource.getPriority());
                 } catch (ExtensionRepositoryException e) {
-                    this.logger.error("Failed to add repository [" + repositoryDescriptor + "]", e);
+                    this.logger.error("Failed to add repository [{}]", repositoryDescriptor, e);
                 }
             }
         }
@@ -195,8 +195,8 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
 
             addRepository(repository, priority);
         } catch (ComponentLookupException e) {
-            throw new ExtensionRepositoryException(
-                "Unsupported repository type [" + repositoryDescriptor.getType() + "]", e);
+            throw new ExtensionRepositoryException(String.format(
+                "Unsupported repository type [%s]",  repositoryDescriptor.getType()), e);
         }
 
         return repository;
@@ -255,8 +255,8 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
                     repositoryFactory = this.componentManager.getInstance(ExtensionRepositoryFactory.class,
                         repositoryDescriptor.getType());
                 } catch (ComponentLookupException e) {
-                    throw new ExtensionRepositoryException(
-                        "Unsupported extension repository type [{" + repositoryDescriptor.getType() + "}]", e);
+                    throw new ExtensionRepositoryException(String.format(
+                        "Unsupported extension repository type [%s]", repositoryDescriptor.getType()), e);
                 }
 
                 repository = repositoryFactory.createRepository(repositoryDescriptor);
@@ -296,10 +296,10 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
         }
 
         if (lastException != null) {
-            throw new ResolveException(MessageFormat.format("Failed to resolve extension [{0}]", extensionId),
+            throw new ResolveException(String.format("Failed to resolve extension [%s]", extensionId),
                 lastException);
         } else {
-            throw new ExtensionNotFoundException(MessageFormat.format("Could not find extension [{0}]", extensionId));
+            throw new ExtensionNotFoundException(String.format("Could not find extension [%s]", extensionId));
         }
     }
 
@@ -323,8 +323,8 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
             try {
                 repository = getRepository(repositoryDescriptor);
             } catch (ExtensionRepositoryException e) {
-                this.logger.warn("Invalid repository [{}] in extension dependency",
-                    extensionDependency.getRepositories(), extensionDependency, ExceptionUtils.getRootCauseMessage(e));
+                this.logger.warn("Invalid repository [{}] in extension dependency [{}]: {}", repositoryDescriptor,
+                    extensionDependency, ExceptionUtils.getRootCauseMessage(e));
 
                 continue;
             }
@@ -335,8 +335,9 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
                 this.logger.debug("Could not find extension dependency [{}] in repository [{}]", extensionDependency,
                     repository.getDescriptor(), e1);
             } catch (ResolveException e2) {
-                this.logger.warn("Unexpected error when trying to find extension dependency [{}] in repository [{}]: ",
-                    extensionDependency, repository.getDescriptor(), ExceptionUtils.getRootCauseMessage(e2));
+                this.logger.warn("Unexpected error when trying to find extension dependency [{}] "
+                    + "in repository [{}]: {}", extensionDependency, repository.getDescriptor(),
+                    ExceptionUtils.getRootCauseMessage(e2));
 
                 lastException = e2;
             }
@@ -366,11 +367,11 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
 
         if (lastException != null) {
             throw new ResolveException(
-                MessageFormat.format("Failed to resolve extension dependency [{0}]", extensionDependency),
+                String.format("Failed to resolve extension dependency [%s]", extensionDependency),
                 lastException);
         } else {
             throw new ExtensionNotFoundException(
-                MessageFormat.format("Could not find extension dependency [{0}]", extensionDependency));
+                String.format("Could not find extension dependency [%s]", extensionDependency));
         }
     }
 
@@ -396,7 +397,7 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
 
         if (versionSet.isEmpty()) {
             throw new ExtensionNotFoundException(
-                MessageFormat.format("Could not find versions for extension with id [{0}]", id));
+                String.format("Could not find versions for extension with id [%s]", id));
         }
 
         return RepositoryUtils.getIterableResult(offset, nb, versionSet);
