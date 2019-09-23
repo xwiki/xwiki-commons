@@ -20,4 +20,6 @@
 extraction:
   java:
     index:
-      build_command: "mvn clean install"
+      # We have to force maven because by default LGTM prefers gradle over maven and since we have a build.gradle
+      # file, it's been used by default if we don't provide ths .lgtm.yml file.
+      build_command: "mvn --settings target/settings.xml clean install -Plgtm"
