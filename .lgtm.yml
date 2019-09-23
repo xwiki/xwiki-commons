@@ -17,9 +17,12 @@
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 # 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 # ---------------------------------------------------------------------------
+
+# We have to force maven because by default LGTM prefers gradle over maven and since we have a build.gradle
+# file, it's been used by default if we don't provide ths .lgtm.yml file.
 extraction:
   java:
     index:
-      # We have to force maven because by default LGTM prefers gradle over maven and since we have a build.gradle
-      # file, it's been used by default if we don't provide ths .lgtm.yml file.
-      build_command: "mvn --settings target/settings.xml clean install -Plgtm"
+      # Use the snapshots profile so that the XWiki Maven Remote repository is specified for locating snapshot
+      # artifacts.
+      build_command: "mvn clean install -Psnapshots"
