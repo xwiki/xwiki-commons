@@ -142,9 +142,9 @@ public class JSONTool
     {
         try {
             return JSONSerializer.toJSON(json);
-        } catch (JSONException ex) {
-            LOGGER.info("Tried to parse invalid JSON: [{}], exception was: {}", StringUtils.abbreviate(json, 32),
-                ex.getMessage());
+        } catch (JSONException e) {
+            LOGGER.warn("Tried to parse invalid JSON: [{}], root error was: {}", StringUtils.abbreviate(json, 32),
+                ExceptionUtils.getRootCauseMessage(e));
             return null;
         }
     }
