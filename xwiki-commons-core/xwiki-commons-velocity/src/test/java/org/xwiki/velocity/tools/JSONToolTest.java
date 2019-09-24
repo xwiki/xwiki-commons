@@ -28,15 +28,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for {@link JSONTool}.
@@ -91,13 +92,13 @@ public class JSONToolTest
     private JSONTool tool = new JSONTool();
 
     @Test
-    public void testSerializeNull()
+    public void serializeNull()
     {
-        Assert.assertEquals("null", this.tool.serialize(null));
+        assertEquals("null", this.tool.serialize(null));
     }
 
     @Test
-    public void testSerializeMap()
+    public void serializeMap()
     {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("bool", false);
@@ -111,127 +112,125 @@ public class JSONToolTest
 
         String json = this.tool.serialize(map);
         // We can't predict the order in the map.
-        Assert.assertTrue(json.contains("\"bool\":false"));
-        Assert.assertTrue(json.contains("\"int\":13"));
-        Assert.assertTrue(json.contains("\"double\":0.78"));
-        Assert.assertTrue(json.contains("\"string\":\"foo\""));
-        Assert.assertTrue(json.contains("\"array\":[9,8]"));
-        Assert.assertTrue(json.contains("\"list\":[\"one\",\"two\"]"));
-        Assert.assertTrue(json.contains("\"map\":{\"level2\":true}"));
-        Assert.assertTrue(json.contains("\"null\":\"null key value\""));
+        assertTrue(json.contains("\"bool\":false"));
+        assertTrue(json.contains("\"int\":13"));
+        assertTrue(json.contains("\"double\":0.78"));
+        assertTrue(json.contains("\"string\":\"foo\""));
+        assertTrue(json.contains("\"array\":[9,8]"));
+        assertTrue(json.contains("\"list\":[\"one\",\"two\"]"));
+        assertTrue(json.contains("\"map\":{\"level2\":true}"));
+        assertTrue(json.contains("\"null\":\"null key value\""));
     }
 
     @Test
-    public void testSerializeList()
+    public void serializeList()
     {
-        Assert.assertEquals("[1,2]", this.tool.serialize(Arrays.asList(1, 2)));
-        Assert.assertEquals("[1.3,2.4]", this.tool.serialize(new double[] { 1.3, 2.4 }));
+        assertEquals("[1,2]", this.tool.serialize(Arrays.asList(1, 2)));
+        assertEquals("[1.3,2.4]", this.tool.serialize(new double[] { 1.3, 2.4 }));
     }
 
     @Test
-    public void testSerializeNumber()
+    public void serializeNumber()
     {
-        Assert.assertEquals("27", this.tool.serialize(27));
-        Assert.assertEquals("2.7", this.tool.serialize(2.7));
+        assertEquals("27", this.tool.serialize(27));
+        assertEquals("2.7", this.tool.serialize(2.7));
     }
 
     @Test
-    public void testSerializeBoolean()
+    public void serializeBoolean()
     {
-        Assert.assertEquals("false", this.tool.serialize(false));
-        Assert.assertEquals("true", this.tool.serialize(true));
+        assertEquals("false", this.tool.serialize(false));
+        assertEquals("true", this.tool.serialize(true));
     }
 
     @Test
-    public void testSerializeString()
+    public void serializeString()
     {
-        Assert.assertEquals("\"\\\"te'st\\\"\"", this.tool.serialize("\"te'st\""));
+        assertEquals("\"\\\"te'st\\\"\"", this.tool.serialize("\"te'st\""));
     }
 
     @Test
-    public void testSerializeBean()
+    public void serializeBean()
     {
         String json = this.tool.serialize(new MockBean());
         // We can't predict the order in the map.
-        Assert.assertTrue(json.contains("\"age\":28"));
-        Assert.assertTrue(json.contains("\"enabled\":true"));
-        Assert.assertTrue(json.contains("\"grade\":9.48"));
-        Assert.assertTrue(json.contains("\"items\":[\"one\"]"));
-        Assert.assertTrue(json.contains("\"name\":\"XWiki\""));
-        Assert.assertTrue(json.contains("\"parameters\":{\"foo\":\"bar\"}"));
-        Assert.assertFalse(json.contains("\"transientProperty\":\"transient\""));
+        assertTrue(json.contains("\"age\":28"));
+        assertTrue(json.contains("\"enabled\":true"));
+        assertTrue(json.contains("\"grade\":9.48"));
+        assertTrue(json.contains("\"items\":[\"one\"]"));
+        assertTrue(json.contains("\"name\":\"XWiki\""));
+        assertTrue(json.contains("\"parameters\":{\"foo\":\"bar\"}"));
+        assertFalse(json.contains("\"transientProperty\":\"transient\""));
     }
 
     @Test
-    public void testParseArray()
+    public void parseArray()
     {
         JSON json = this.tool.parse("[1,2,3]");
-        Assert.assertTrue(json.isArray());
-        Assert.assertEquals(3, json.size());
+        assertTrue(json.isArray());
+        assertEquals(3, json.size());
     }
 
     @Test
-    public void testParseEmptyArray()
+    public void parseEmptyArray()
     {
         JSON json = this.tool.parse("[]");
-        Assert.assertTrue(json.isArray());
-        Assert.assertTrue(json.isEmpty());
-        Assert.assertEquals(0, json.size());
+        assertTrue(json.isArray());
+        assertTrue(json.isEmpty());
+        assertEquals(0, json.size());
     }
 
     @Test
-    public void testParseMap()
+    public void parseMap()
     {
         JSONObject json = (JSONObject) this.tool.parse("{\"a\" : 1, \"b\": [1], \"c\": true}");
-        Assert.assertFalse(json.isArray());
-        Assert.assertFalse(json.isEmpty());
-        Assert.assertEquals(3, json.size());
-        Assert.assertTrue(json.getBoolean("c"));
+        assertFalse(json.isArray());
+        assertFalse(json.isEmpty());
+        assertEquals(3, json.size());
+        assertTrue(json.getBoolean("c"));
     }
 
     @Test
-    public void testParseEmptyMap()
+    public void parseEmptyMap()
     {
         JSONObject json = (JSONObject) this.tool.parse("{}");
-        Assert.assertFalse(json.isArray());
-        Assert.assertTrue(json.isEmpty());
-        Assert.assertEquals(0, json.size());
+        assertFalse(json.isArray());
+        assertTrue(json.isEmpty());
+        assertEquals(0, json.size());
     }
 
     @Test
-    public void testParseNull()
+    public void parseNull()
     {
-        Assert.assertTrue(this.tool.parse(null) instanceof JSONNull);
+        assertTrue(this.tool.parse(null) instanceof JSONNull);
     }
 
     @Test
-    public void testParseEmptyString()
+    public void parseEmptyString()
     {
-        Assert.assertNull(this.tool.parse(""));
+        assertNull(this.tool.parse(""));
     }
 
     @Test
-    public void testParseInvalidJSON()
+    public void parseInvalidJSON()
     {
-        Assert.assertNull(this.tool.parse("This is not the JSON you are looking for..."));
+        assertNull(this.tool.parse("This is not the JSON you are looking for..."));
     }
 
-    ////
-
     @Test
-    public void testFromStringArray()
+    public void fromStringArray()
     {
         assertEquals(Arrays.asList(1, 2, 3), this.tool.fromString("[1,2,3]"));
     }
 
     @Test
-    public void testFromStringEmptyArray()
+    public void fromStringEmptyArray()
     {
         assertEquals(new ArrayList<>(), this.tool.fromString("[]"));
     }
 
     @Test
-    public void testFromStringMap()
+    public void fromStringMap()
     {
         Map<?, ?> map = (Map) this.tool.fromString("{\"a\" : 1, \"b\": [1], \"c\": true}");
 
@@ -242,25 +241,25 @@ public class JSONToolTest
     }
 
     @Test
-    public void testFromStringEmptyMap()
+    public void fromStringEmptyMap()
     {
         assertEquals(new HashMap(), this.tool.fromString("{}"));
     }
 
     @Test
-    public void testFromStringNull()
+    public void fromStringNull()
     {
         assertNull(this.tool.fromString(null));
     }
 
     @Test
-    public void testFromStringEmptyString()
+    public void fromStringEmptyString()
     {
         assertNull(this.tool.fromString(""));
     }
 
     @Test
-    public void testFromStringInvalidJSON()
+    public void fromStringInvalidJSON()
     {
         assertNull(this.tool.fromString("This is not the JSON you are looking for..."));
     }
@@ -274,8 +273,8 @@ public class JSONToolTest
         org.json.JSONObject object = new org.json.JSONObject();
         object.put("a", "b");
         object.put("c", true);
-        // Assert.assertEquals(variants.get(0), this.tool.serialize(object));
-        Assert.assertTrue(variants.contains(this.tool.serialize(object)));
+        // assertEquals(variants.get(0), this.tool.serialize(object));
+        assertTrue(variants.contains(this.tool.serialize(object)));
     }
 
     @Test
@@ -291,8 +290,8 @@ public class JSONToolTest
         map.put("before", Collections.singletonList("nothing"));
         map.put("json", object);
         map.put("after", 42);
-        // Assert.assertEquals(variants.get(0), this.tool.serialize(map));
-        Assert.assertTrue(variants.contains(this.tool.serialize(map)));
+        // assertEquals(variants.get(0), this.tool.serialize(map));
+        assertTrue(variants.contains(this.tool.serialize(map)));
     }
 
     @Test
@@ -302,7 +301,7 @@ public class JSONToolTest
         array.put("a");
         array.put(42);
         array.put(true);
-        Assert.assertEquals("[\"a\",42,true]", this.tool.serialize(array));
+        assertEquals("[\"a\",42,true]", this.tool.serialize(array));
     }
 
     @Test
@@ -316,7 +315,7 @@ public class JSONToolTest
         map.put("before", Collections.singletonList("nothing"));
         map.put("json", array);
         map.put("after", 42);
-        Assert.assertEquals("{\"before\":[\"nothing\"],\"json\":[\"a\",42,true],\"after\":42}",
+        assertEquals("{\"before\":[\"nothing\"],\"json\":[\"a\",42,true],\"after\":42}",
             this.tool.serialize(map));
     }
 }
