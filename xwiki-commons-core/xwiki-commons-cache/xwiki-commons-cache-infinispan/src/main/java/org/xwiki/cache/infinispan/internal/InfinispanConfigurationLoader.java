@@ -67,8 +67,7 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
     /**
      * Customize the eviction configuration.
      * 
-     * @param buil the configuration builder
-     * @param configuration the configuration
+     * @param builder the configuration builder
      * @return the configuration builder
      */
     private void customizeEviction(ConfigurationBuilder builder)
@@ -155,9 +154,8 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
     /**
      * Add missing location for filesystem based cache.
      * 
-     * @param currentBuilder the configuration builder
+     * @param builder the configuration builder
      * @param configuration the configuration
-     * @return the configuration builder
      */
     private void completeFilesystem(ConfigurationBuilder builder, Configuration configuration)
     {

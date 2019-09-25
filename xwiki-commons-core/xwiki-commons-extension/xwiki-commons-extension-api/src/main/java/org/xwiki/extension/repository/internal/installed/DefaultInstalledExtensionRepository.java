@@ -477,7 +477,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
     /**
      * Install provided extension.
      *
-     * @param localExtension the extension to install
+     * @param installedExtension the extension to install
      * @param namespace the namespace
      * @param dependency indicate if the extension is stored as a dependency of another one
      * @param properties the custom properties to set on the installed extension for the specified namespace

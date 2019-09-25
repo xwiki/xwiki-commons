@@ -221,7 +221,7 @@ public class MavenUtils
     }
 
     /**
-     * @param modelVersion the current String representing the group id to resolve
+     * @param modelGroupId the current String representing the group id to resolve
      * @param mavenModel the Maven Model instance
      * @param dependency indicate if it's a dependency group id
      * @return the resolved group id
