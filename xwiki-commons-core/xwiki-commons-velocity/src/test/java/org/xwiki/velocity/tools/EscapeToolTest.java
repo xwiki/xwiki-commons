@@ -24,9 +24,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for {@link EscapeTool}.
@@ -44,7 +48,7 @@ public class EscapeToolTest
     /**
      * Initialize the tested tool.
      */
-    @Before
+    @BeforeEach
     public void setUp()
     {
         this.tool = new EscapeTool();
@@ -55,29 +59,29 @@ public class EscapeToolTest
     {
         String escapedText = this.tool.xml("a < a' && a' < a\" => a < a\"");
 
-        Assert.assertFalse("Failed to escape <", escapedText.contains("<"));
-        Assert.assertFalse("Failed to escape >", escapedText.contains(">"));
-        Assert.assertFalse("Failed to escape '", escapedText.contains("'"));
-        Assert.assertFalse("Failed to escape \"", escapedText.contains("\""));
-        Assert.assertFalse("Failed to escape &", escapedText.contains("&&"));
+        assertFalse(escapedText.contains("<"), "Failed to escape <");
+        assertFalse(escapedText.contains(">"), "Failed to escape >");
+        assertFalse(escapedText.contains("'"), "Failed to escape '");
+        assertFalse(escapedText.contains("\""), "Failed to escape \"");
+        assertFalse(escapedText.contains("&&"), "Failed to escape &");
     }
 
     @Test
     public void escapeXMLApos()
     {
-        Assert.assertFalse("' wrongly escaped to non-HTML &apos;", this.tool.xml("'").equals("&apos;"));
+        assertFalse(this.tool.xml("'").equals("&apos;"), "' wrongly escaped to non-HTML &apos;");
     }
 
     @Test
     public void escapeXMLWithNull()
     {
-        Assert.assertNull("null should be null", this.tool.xml(null));
+        assertNull(this.tool.xml(null), "null should be null");
     }
 
     @Test
     public void escapeXMLNonAscii()
     {
-        Assert.assertEquals("Non-ASCII characters shouldn't be escaped", "\u0123", this.tool.xml("\u0123"));
+        assertEquals("\u0123", this.tool.xml("\u0123"), "Non-ASCII characters shouldn't be escaped");
     }
 
     @Test
@@ -85,103 +89,103 @@ public class EscapeToolTest
     {
         String escapedText = this.tool.json("\"'\\/\b\f\n\r\t\u1234 plain  text");
 
-        Assert.assertTrue("Failed to escape [\"]", escapedText.contains("\\\""));
-        Assert.assertTrue("Wrongly escaped [']", escapedText.contains("'"));
-        Assert.assertTrue("Failed to escape [\\]", escapedText.contains("\\\\"));
-        Assert.assertTrue("Failed to escape [/]", escapedText.contains("\\/"));
-        Assert.assertTrue("Failed to escape [\\b]", escapedText.contains("\\b"));
-        Assert.assertTrue("Failed to escape [\\f]", escapedText.contains("\\f"));
-        Assert.assertTrue("Failed to escape [\\n]", escapedText.contains("\\n"));
-        Assert.assertTrue("Failed to escape [\\r]", escapedText.contains("\\r"));
-        Assert.assertTrue("Failed to escape [\\t]", escapedText.contains("\\t"));
-        Assert.assertTrue("Failed to escape [\\u1234]", escapedText.contains("\\u1234"));
-        Assert.assertTrue("Wrongly escaped plain text", escapedText.contains(" plain  text"));
+        assertTrue(escapedText.contains("\\\""), "Failed to escape [\"]");
+        assertTrue(escapedText.contains("'"), "Wrongly escaped [']");
+        assertTrue(escapedText.contains("\\\\"), "Failed to escape [\\]");
+        assertTrue(escapedText.contains("\\/"), "Failed to escape [/]");
+        assertTrue(escapedText.contains("\\b"), "Failed to escape [\\b]");
+        assertTrue(escapedText.contains("\\f"), "Failed to escape [\\f]");
+        assertTrue(escapedText.contains("\\n"), "Failed to escape [\\n]");
+        assertTrue(escapedText.contains("\\r"), "Failed to escape [\\r]");
+        assertTrue(escapedText.contains("\\t"), "Failed to escape [\\t]");
+        assertTrue(escapedText.contains("\\u1234"), "Failed to escape [\\u1234]");
+        assertTrue(escapedText.contains(" plain  text"), "Wrongly escaped plain text");
     }
 
     @Test
     public void escapeJSONWithNullInput()
     {
-        Assert.assertNull("Unexpected non-null output for null input", this.tool.json(null));
+        assertNull(this.tool.json(null), "Unexpected non-null output for null input");
     }
 
     @Test
     public void escapeJSONWithNonStringInput()
     {
-        Assert.assertEquals("true", this.tool.json(true));
-        Assert.assertEquals("42", this.tool.json(42));
-        Assert.assertEquals(this.tool.toString(), this.tool.json(this.tool));
+        assertEquals("true", this.tool.json(true));
+        assertEquals("42", this.tool.json(42));
+        assertEquals(this.tool.toString(), this.tool.json(this.tool));
     }
 
     @Test
     public void quotedPrintableWithSimpleText()
     {
-        Assert.assertEquals("Hello World", this.tool.quotedPrintable("Hello World"));
+        assertEquals("Hello World", this.tool.quotedPrintable("Hello World"));
     }
 
     @Test
     public void quotedPrintableWithSpecialChars()
     {
-        Assert.assertEquals("a=3Db=0A", this.tool.quotedPrintable("a=b\n"));
+        assertEquals("a=3Db=0A", this.tool.quotedPrintable("a=b\n"));
     }
 
     @Test
     public void quotedPrintableWithNonAsciiChars()
     {
-        Assert.assertEquals("=C4=A3", this.tool.quotedPrintable("\u0123"));
+        assertEquals("=C4=A3", this.tool.quotedPrintable("\u0123"));
     }
 
     @Test
     public void quotedPrintableWithNull()
     {
-        Assert.assertNull(this.tool.quotedPrintable(null));
+        assertNull(this.tool.quotedPrintable(null));
     }
 
     @Test
     public void qWithSimpleText()
     {
-        Assert.assertEquals("=?UTF-8?Q?Hello_World?=", this.tool.q("Hello World"));
+        assertEquals("=?UTF-8?Q?Hello_World?=", this.tool.q("Hello World"));
     }
 
     @Test
     public void qWithSpecialChars()
     {
-        Assert.assertEquals("=?UTF-8?Q?a=3Db=3F=5F=0A?=", this.tool.q("a=b?_\n"));
+        assertEquals("=?UTF-8?Q?a=3Db=3F=5F=0A?=", this.tool.q("a=b?_\n"));
     }
 
     @Test
     public void qWithNonAsciiChars()
     {
-        Assert.assertEquals("=?UTF-8?Q?=C4=A3?=", this.tool.q("\u0123"));
+        assertEquals("=?UTF-8?Q?=C4=A3?=", this.tool.q("\u0123"));
     }
 
     @Test
     public void qWithNull()
     {
-        Assert.assertNull(this.tool.q(null));
+        assertNull(this.tool.q(null));
     }
 
     @Test
     public void bWithSimpleText()
     {
-        Assert.assertEquals("=?UTF-8?B?SGVsbG8gV29ybGQ=?=", this.tool.b("Hello World"));
+        assertEquals("=?UTF-8?B?SGVsbG8gV29ybGQ=?=", this.tool.b("Hello World"));
     }
 
     @Test
     public void bWithSpecialChars()
     {
-        Assert.assertEquals("=?UTF-8?B?YT1iPwo=?=", this.tool.b("a=b?\n"));
+        assertEquals("=?UTF-8?B?YT1iPwo=?=", this.tool.b("a=b?\n"));
     }
 
     @Test
     public void bWithNonAsciiChars()
     {
-        Assert.assertEquals("=?UTF-8?B?xKM=?=", this.tool.b("\u0123"));
+        assertEquals("=?UTF-8?B?xKM=?=", this.tool.b("\u0123"));
     }
 
     @Test
     public void bWithNull()
     {
-        Assert.assertNull(this.tool.b(null));
+        assertNull(this.tool.b(null));
     }
 
     @Test
@@ -192,7 +196,7 @@ public class EscapeToolTest
         map.put(null, "value");
         map.put("B& B", "yes");
         map.put("empty", null);
-        Assert.assertEquals("hello=world&B%26%20B=yes&empty=", this.tool.url(map));
+        assertEquals("hello=world&B%26%20B=yes&empty=", this.tool.url(map));
     }
 
     @Test
@@ -201,7 +205,7 @@ public class EscapeToolTest
         HashMap<String, Double> map = new LinkedHashMap<>();
         map.put("A&A", 1.5);
         map.put("B&B", 1.2);
-        Assert.assertEquals("A%26A=1.5&B%26B=1.2", this.tool.url(map));
+        assertEquals("A%26A=1.5&B%26B=1.2", this.tool.url(map));
     }
 
     @Test
@@ -210,7 +214,7 @@ public class EscapeToolTest
         HashMap<String, String[]> map = new HashMap<>();
         String[] array = {"M&M", null, "Astronomy&Astrophysics"};
         map.put("couple", array);
-        Assert.assertEquals("couple=M%26M&couple=&couple=Astronomy%26Astrophysics", this.tool.url(map));
+        assertEquals("couple=M%26M&couple=&couple=Astronomy%26Astrophysics", this.tool.url(map));
     }
 
     @Test
@@ -225,7 +229,7 @@ public class EscapeToolTest
         collection2.add("t&t");
         collection2.add("R&D");
         map.put("bob", collection2);
-        Assert.assertEquals("bob=&bob=t%26t&bob=R%26D&alice=test", this.tool.url(map));
+        assertEquals("bob=&bob=t%26t&bob=R%26D&alice=test", this.tool.url(map));
     }
 
     /**
@@ -234,9 +238,9 @@ public class EscapeToolTest
     @Test
     public void css()
     {
-        Assert.assertEquals(this.tool.css("a#b.c d[e=f]g{h:i;j}k"), "a\\#b\\.c\\ d\\[e\\=f\\]g\\{h\\:i\\;j\\}k");
+        assertEquals(this.tool.css("a#b.c d[e=f]g{h:i;j}k"), "a\\#b\\.c\\ d\\[e\\=f\\]g\\{h\\:i\\;j\\}k");
 
         // Invalid character U+0000 (the exception must be caught)
-        Assert.assertNull(this.tool.css("a\u0000b"));
+        assertNull(this.tool.css("a\u0000b"));
     }
 }

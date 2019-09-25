@@ -23,9 +23,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.velocity.tools.RegexTool.RegexResult;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for {@link RegexTool}.
@@ -36,28 +41,28 @@ import org.xwiki.velocity.tools.RegexTool.RegexResult;
 public class RegexToolTest
 {
     @Test
-    public void testFind()
+    public void find()
     {
         RegexTool tool = new RegexTool();
         List<RegexResult> result =
             tool.find("<h1><span>header</span></h1> whatever", "<[hH][12].*?><span>(.*?)</span></[hH][12]>");
 
-        Assert.assertEquals(2, result.size());
-        Assert.assertEquals("<h1><span>header</span></h1>", result.get(0).getGroup());
-        Assert.assertEquals(0, result.get(0).getStart());
-        Assert.assertEquals(28, result.get(0).getEnd());
-        Assert.assertEquals("header", result.get(1).getGroup());
-        Assert.assertEquals(10, result.get(1).getStart());
-        Assert.assertEquals(16, result.get(1).getEnd());
+        assertEquals(2, result.size());
+        assertEquals("<h1><span>header</span></h1>", result.get(0).getGroup());
+        assertEquals(0, result.get(0).getStart());
+        assertEquals(28, result.get(0).getEnd());
+        assertEquals("header", result.get(1).getGroup());
+        assertEquals(10, result.get(1).getStart());
+        assertEquals(16, result.get(1).getEnd());
     }
 
     @Test
-    public void testFindWithoutMatches()
+    public void findWithoutMatches()
     {
         RegexTool tool = new RegexTool();
         List<RegexResult> result = tool.find("nothing here", "something");
 
-        Assert.assertEquals(0, result.size());
+        assertEquals(0, result.size());
     }
 
     @Test
@@ -67,17 +72,17 @@ public class RegexToolTest
         List<List<RegexResult>> result =
             tool.findAll("one :two three (:four) five :six seven=:eight", ":(\\w+) (\\w+)");
 
-        Assert.assertEquals(2, result.size());
-        Assert.assertEquals(":two three", result.get(0).get(0).getGroup());
-        Assert.assertEquals(":six seven", result.get(1).get(0).getGroup());
+        assertEquals(2, result.size());
+        assertEquals(":two three", result.get(0).get(0).getGroup());
+        assertEquals(":six seven", result.get(1).get(0).getGroup());
 
-        Assert.assertEquals(3, result.get(0).size());
-        Assert.assertEquals("two", result.get(0).get(1).getGroup());
-        Assert.assertEquals("three", result.get(0).get(2).getGroup());
+        assertEquals(3, result.get(0).size());
+        assertEquals("two", result.get(0).get(1).getGroup());
+        assertEquals("three", result.get(0).get(2).getGroup());
 
-        Assert.assertEquals(3, result.get(1).size());
-        Assert.assertEquals("six", result.get(1).get(1).getGroup());
-        Assert.assertEquals("seven", result.get(1).get(2).getGroup());
+        assertEquals(3, result.get(1).size());
+        assertEquals("six", result.get(1).get(1).getGroup());
+        assertEquals("seven", result.get(1).get(2).getGroup());
     }
 
     @Test
@@ -86,7 +91,7 @@ public class RegexToolTest
         RegexTool tool = new RegexTool();
         List<List<RegexResult>> result = tool.findAll("nothing here", "something");
 
-        Assert.assertEquals(0, result.size());
+        assertEquals(0, result.size());
     }
 
     /**
@@ -97,63 +102,63 @@ public class RegexToolTest
     {
         RegexTool tool = new RegexTool();
         Pattern p = tool.compile("ab?");
-        Assert.assertNotNull(p);
+        assertNotNull(p);
         // Try to check that the right regular expression was parsed.
         Matcher m = p.matcher("xyz");
-        Assert.assertFalse(m.matches());
+        assertFalse(m.matches());
         m = p.matcher("a");
-        Assert.assertTrue(m.matches());
+        assertTrue(m.matches());
         m = p.matcher("aba");
-        Assert.assertFalse(m.matches());
+        assertFalse(m.matches());
         m.reset();
-        Assert.assertTrue(m.find() && m.find() && m.hitEnd());
+        assertTrue(m.find() && m.find() && m.hitEnd());
     }
 
     /**
      * Compiling a valid regular expression with internal flags should work.
      */
     @Test
-    public void testCompileRegexWithFlags()
+    public void compileRegexWithFlags()
     {
         RegexTool tool = new RegexTool();
         Pattern p = tool.compile("(?im)^ab?$");
-        Assert.assertNotNull(p);
+        assertNotNull(p);
         // Try to check that the right regular expression was parsed.
         Matcher m = p.matcher("xyz");
-        Assert.assertFalse(m.matches());
+        assertFalse(m.matches());
         m = p.matcher("A");
-        Assert.assertTrue(m.matches());
+        assertTrue(m.matches());
         m = p.matcher("ab\na");
-        Assert.assertFalse(m.matches());
+        assertFalse(m.matches());
         m.reset();
-        Assert.assertTrue(m.find() && m.find() && m.hitEnd());
+        assertTrue(m.find() && m.find() && m.hitEnd());
     }
 
     /**
      * Compiling an invalid regular expression should return null, and not throw an exception.
      */
     @Test
-    public void testCompileInvalidRegex()
+    public void compileInvalidRegex()
     {
         RegexTool tool = new RegexTool();
         Pattern p = tool.compile("*");
-        Assert.assertNull(p);
+        assertNull(p);
     }
 
     /**
      * Escaping a string containing regex syntax characters.
      */
     @Test
-    public void testQuote()
+    public void quote()
     {
         RegexTool tool = new RegexTool();
-        Assert.assertEquals(Pattern.quote("^(\\)[]"), tool.quote("^(\\)[]"));
+        assertEquals(Pattern.quote("^(\\)[]"), tool.quote("^(\\)[]"));
     }
 
     @Test
-    public void testQuoteReplacement()
+    public void quoteReplacement()
     {
         RegexTool tool = new RegexTool();
-        Assert.assertEquals(Matcher.quoteReplacement("$1 \\$2"), tool.quoteReplacement("$1 \\$2"));
+        assertEquals(Matcher.quoteReplacement("$1 \\$2"), tool.quoteReplacement("$1 \\$2"));
     }
 }
