@@ -100,9 +100,12 @@ public class FormatMojo extends AbstractVerifyMojo
         } else {
             writer = new XWikiXMLWriter(new FileOutputStream(file));
         }
-        writer.setVersion(getXMLVersion(domdoc));
-        writer.write(domdoc);
-        writer.close();
+        try {
+            writer.setVersion(getXMLVersion(domdoc));
+            writer.write(domdoc);
+        } finally {
+            writer.close();
+        }
 
         String parentName = file.getParentFile().getName();
         getLog().info(String.format("  Formatting [%s/%s]... ok", parentName, file.getName()));
