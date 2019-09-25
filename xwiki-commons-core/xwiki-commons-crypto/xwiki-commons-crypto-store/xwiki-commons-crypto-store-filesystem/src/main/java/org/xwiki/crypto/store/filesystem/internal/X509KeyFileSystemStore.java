@@ -83,8 +83,8 @@ public class X509KeyFileSystemStore extends AbstractX509FileSystemStore implemen
         try {
             key = this.encryptor.encrypt(password, keyPair.getPrivateKey());
         } catch (Exception e) {
-            throw new KeyStoreException(String.format("Error while encrypting private key to store a key pair in [%s]",
-                store), e);
+            throw new KeyStoreException(
+                String.format("Error while encrypting private key to store a key pair in [%s]", store), e);
         }
 
         storeKeyPair(store, getPublicKey(keyPair.getCertificate()), key, ENCRYPTED_PRIVATE_KEY);
@@ -137,8 +137,8 @@ public class X509KeyFileSystemStore extends AbstractX509FileSystemStore implemen
         File file = getStoreFile(store);
 
         if (isMulti(store)) {
-            throw new KeyStoreException(String.format("Unexpected store reference, [%s] should be single key store.",
-                file));
+            throw new KeyStoreException(
+                String.format("Unexpected store reference, [%s] should be single key store.", file));
         }
 
         X509CertifiedPublicKey cert = null;
