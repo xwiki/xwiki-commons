@@ -64,7 +64,7 @@
     <jackson.version>2.9.10</jackson.version>
 
     <!-- ASM -->
-    <asm.version>7.1</asm.version>
+    <asm.version>7.2</asm.version>
 
     <!-- Guava -->
     <guava.version>28.1-jre</guava.version>
