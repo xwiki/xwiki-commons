@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.xwiki.commons</groupId>
+    <artifactId>xwiki-commons-filter</artifactId>
+    <version>11.3.5-SNAPSHOT</version>
+  </parent>
+  <artifactId>xwiki-commons-filter-api</artifactId>
+  <name>XWiki Commons - Filter - API</name>
+  <packaging>jar</packaging>
+  <description>XWiki Commons - Filter - API</description>
+  <properties>
+    <xwiki.jacoco.instructionRatio>0.30</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>15</xwiki.pitest.mutationThreshold>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-component-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-properties</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-job</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>test-jar</id>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+            <configuration>
+              <includes>
+                <include>**/test/**.class</include>
+                <include>META-INF/**</include>
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!-- Apply the Checkstyle configurations defined in the top level pom.xml file -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <excludes>
+              org/xwiki/filter/AbstractBeanFilterStreamFactory.java,
+              org/xwiki/filter/AbstractFilterStreamFactory.java,
+              org/xwiki/filter/descriptor/DefaultFilterStreamBeanDescriptor.java,
+              org/xwiki/filter/descriptor/DefaultFilterStreamBeanParameterDescriptor.java,
+              org/xwiki/filter/descriptor/FilterStreamDescriptor.java,
+              org/xwiki/filter/descriptor/FilterStreamPropertyDescriptor.java,
+              org/xwiki/filter/input/BeanInputFilterStreamFactory.java,
+              org/xwiki/filter/input/BeanInputFilterStream.java,
+              org/xwiki/filter/input/FileInputSource.java,
+              org/xwiki/filter/input/InputSource.java,
+              org/xwiki/filter/input/InputStreamInputSource.java,
+              org/xwiki/filter/input/InputFilterStream.java,
+              org/xwiki/filter/input/InputFilterStreamFactory.java,
+              org/xwiki/filter/input/ReaderInputSource.java,
+              org/xwiki/filter/input/URLInputSource.java,
+              org/xwiki/filter/input/DefaultByteArrayInputSource.java,
+              org/xwiki/filter/input/DefaultFileInputSource.java,
+              org/xwiki/filter/input/DefaultInputStreamInputSource.java,
+              org/xwiki/filter/input/DefaultReaderInputSource.java,
+              org/xwiki/filter/input/DefaultURLInputSource.java,
+              org/xwiki/filter/input/DirectoryInputSource.java,
+              org/xwiki/filter/input/AbstractBeanInputFilterStream.java,
+              org/xwiki/filter/input/AbstractBeanInputFilterStreamFactory.java,
+              org/xwiki/filter/input/AbstractReaderInputSource.java,
+              org/xwiki/filter/input/StringInputSource.java,
+              org/xwiki/filter/internal/CompositeFilter.java,
+              org/xwiki/filter/internal/FilterProxy.java,
+              org/xwiki/filter/internal/input/InputSourceConverter.java,
+              org/xwiki/filter/internal/output/OutputTargetConverter.java,
+              org/xwiki/filter/internal/utils/AllFilterInvocationHandler.java,
+              org/xwiki/filter/output/BeanOutputFilterStreamFactory.java,
+              org/xwiki/filter/output/BeanOutputFilterStream.java,
+              org/xwiki/filter/output/FileOutputTarget.java,
+              org/xwiki/filter/output/OutputStreamOutputTarget.java,
+              org/xwiki/filter/output/OutputTarget.java,
+              org/xwiki/filter/output/OutputFilterStream.java,
+              org/xwiki/filter/output/WriterOutputTarget.java,
+              org/xwiki/filter/output/AbstractBeanOutputFilterStream.java,
+              org/xwiki/filter/output/AbstractBeanOutputFilterStreamFactory.java,
+              org/xwiki/filter/output/ByteArrayOutputTarget.java,
+              org/xwiki/filter/output/DefaultFileOutputTarget.java,
+              org/xwiki/filter//output/DefaultOutputStreamOutputTarget.java,
+              org/xwiki/filter/output/DefaultWriterOutputTarget.java,
+              org/xwiki/filter/utils/FilterStreamConstants.java
+          </excludes>
+        </configuration>
+      </plugin>
+      <!-- Add test source root for executing DSpot-generated tests -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+       

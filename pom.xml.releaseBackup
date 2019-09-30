@@ -1,0 +1,2599 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.xwiki.commons</groupId>
+  <artifactId>xwiki-commons</artifactId>
+  <name>XWiki Commons - Parent POM</name>
+  <packaging>pom</packaging>
+  <version>11.3.5-SNAPSHOT</version>
+  <description>A collaborative development platform runtime based on the wiki paradigm</description>
+  <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
+       passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
+       added to better support javadoc links.
+       It allows to have a single URL definition in this top-level POM and still get valid website URLs for all
+       modules.
+       Note that we're ending the URL with ":::" for the following reasons:
+       - Since we don't overwrite the <url> element in children POM, Maven automatically appends the relative path
+         to the children modules. For example:
+         "/xwiki-commons-pom/xwiki-commons-core/xwiki-commons-component/xwiki-commons-component-api"
+         and the javadoc produce external link using a path like for example:
+         "/xwiki-commons-pom/.../apidocs/org/xwiki/model/reference/DocumentReference.html?is-external=true"
+       - Ideally we would use instead a generic URL like:
+         "http://extensions.xwiki.org?id=${project.groupId}:${project.artifactId}&amp;path="
+         However this makes the site plugin fails, see http://jira.codehaus.org/browse/MNG-5242
+  -->
+  <url>http://extensions.xwiki.org?id=${project.groupId}:${project.artifactId}:${project.version}:::</url>
+  <inceptionYear>2004</inceptionYear>
+  <properties>
+    <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
+         commons children anyway -->
+    <commons.version>11.3.5</commons.version>
+
+    <!-- The previous stable version of this project to check against for finding backward incompatibility
+         (binary and source). -->
+    <xwiki.compatibility.previous.version>11.3.4</xwiki.compatibility.previous.version>
+
+    <!-- Java -->
+    <java.version>1.8</java.version>
+
+    <!-- Jakarta modules -->
+    <jakarta.mail.version>1.6.3</jakarta.mail.version>
+    <jakarta.activation.version>1.2.1</jakarta.activation.version>
+
+    <!-- Jackson -->
+    <jackson.version>2.9.8</jackson.version>
+
+    <!-- ASM -->
+    <asm.version>7.1</asm.version>
+
+    <!-- Guava -->
+    <!-- FIXME: Can't upgrade to Guava 21 because Solr 6.3.0 use a method that have been deleted in Guava 21... -->
+    <guava.version>20.0</guava.version>
+
+    <!-- SLF4J -->
+    <slf4j.version>1.7.26</slf4j.version>
+
+    <!-- Hamcrest -->
+    <hamcrest.version>1.3</hamcrest.version>
+
+    <!-- JUnit -->
+    <junit.version>4.12</junit.version>
+    <junit5.version>5.4.2</junit5.version>
+    <junit.platform.version>1.4.2</junit.platform.version>
+    <junit.vintage.version>${junit5.version}</junit.vintage.version>
+
+    <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
+         are executed with surefire or failsafe) -->
+    <surefire.version>2.22.0</surefire.version>
+
+    <!-- Mock libraries -->
+    <jmock.version>2.6.0</jmock.version>
+    <mockito.version>2.27.0</mockito.version>
+
+    <!-- Byte Buddy -->
+    <bytebuddy.version>1.9.12</bytebuddy.version>
+
+    <!-- AspectJ -->
+    <aspectj.version>1.9.3</aspectj.version>
+
+    <!-- Clover & Jacoco -->
+    <clover.version>4.3.1</clover.version>
+    <jacoco.version>0.8.3</jacoco.version>
+
+    <!-- Checkstyle -->
+    <checkstyle.version>8.19</checkstyle.version>
+
+    <!-- Spoon -->
+    <spoon.version>7.3.0</spoon.version>
+
+    <!-- Groovy -->
+    <groovy.version>2.5.6</groovy.version>
+
+    <!-- Ivy -->
+    <ivy.version>2.4.0</ivy.version>
+
+    <!-- By default Checkstyle, Backward compatibility check, Enforcer, License plugins, etc are on -->
+    <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
+    <xwiki.revapi.skip>false</xwiki.revapi.skip>
+    <xwiki.jacoco.skip>false</xwiki.jacoco.skip>
+    <xwiki.enforcer.skip>false</xwiki.enforcer.skip>
+    <xwiki.enforcer.enforce-plugins.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-plugins.skip>
+    <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
+    <xwiki.enforcer.enforce-glasshfish-jaxb.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glasshfish-jaxb.skip>
+    <xwiki.enforcer.enforce-jakarta.xml.bind-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.xml.bind-api.skip>
+    <xwiki.enforcer.enforce-open-json.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-open-json.skip>
+    <xwiki.enforcer.enforce-glassfish-el.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glassfish-el.skip>
+    <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
+    <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
+    <xwiki.enforcer.enforce-jakarta.activation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.activation.skip>
+    <xwiki.enforcer.enforce-jakarta.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.mail.skip>
+    <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
+    <xwiki.enforcer.enforce-jsr305.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jsr305.skip>
+    <xwiki.enforcer.enforce-jta.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jta.skip>
+    <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
+    <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
+    <xwiki.enforcer.enforce-java.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-java.skip>
+    <xwiki.license.skip>false</xwiki.license.skip>
+
+    <!-- By default we don't run pitest/descartes since it's taking too long to execute to be executed after all
+         commits. Thus the idea is that the CI will set this as a system property to run it using a scheduler. It can
+         also be execute locally by running "mvn install -Pquality -Dxwiki.pitest.skip=false" -->
+    <xwiki.pitest.skip>true</xwiki.pitest.skip>
+    <!-- Default Pitest timeout factor. Increasing the value will increase the duration of a build
+         but might change the mutation score: some mutation might take longer than the timeout to be killed
+         on some machines. See: https://github.com/STAMP-project/pitest-descartes/issues/62 -->
+    <xwiki.pitest.timeoutFactor>1.25</xwiki.pitest.timeoutFactor>
+
+    <!-- Enable by default auto release on Jira -->
+    <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
+    <xwiki.release.jira.settingsKey>jira.xwiki.org</xwiki.release.jira.settingsKey>
+    <xwiki.release.jira.scope>session</xwiki.release.jira.scope>
+
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- When this property is set to true then functional tests will check if an XWiki instance is already running
+         before trying to start XWiki and if so, reuse it and don't start XWiki. This is useful for example when you
+         wish to manually execute functional tests on your machine and start XWiki manually rather than XWiki being
+         started by the tests.
+
+         When this property is set to false, then verify if some XWiki instance is already running by verifying if the
+         port is free and fail if so. Otherwise start XWiki.
+
+         By default it's set to false since functional UI tests should not check if an XWiki instance is already
+         running before starting XWiki since performing this check would delay the build and there should be no running
+         instance when the build executes. -->
+    <xwiki.test.verifyRunningXWikiAtStart>false</xwiki.test.verifyRunningXWikiAtStart>
+
+    <!-- Sonar/Jacoco integration. Note that these properties need to be defined outside the "coverage" profile
+         because we want to be to able to execute mvn sonar:sonar without passing a profile -->
+    <!-- Config to push to Sonarcloud.io -->
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.organization>xwiki</sonar.organization>
+    <!-- Tells Sonar to use jacoco for coverage results -->
+    <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+    <!-- The system property xwiki.jacoco.itDestFile needs to be passed on the command line.
+         Example:
+            mvn clean install -Pcoverage -Dxwiki.jacoco.itDestFile=`pwd`/target/jacoco-it.exec
+         Note that unfortunately using the following does not work because of
+         http://jira.codehaus.org/browse/SONAR-3427:
+            <xwiki.jacoco.itDestFile>
+              ${session.executionRootDirectory}/target/xwiki-jacoco-it.exec
+            </xwiki.jacoco.itDestFile>
+    -->
+    <!-- Tells Sonar where the Jacoco coverage result file is located for IT tests so that Sonar can display coverage
+         for ITs -->
+    <sonar.jacoco.itReportPath>${xwiki.jacoco.itDestFile}</sonar.jacoco.itReportPath>
+
+    <!-- Version of Maven used during the build (the one used as dependency when building and during Maven plugins
+         executions)  -->
+    <maven.build.version>3.5.4</maven.build.version>
+    <!-- Minimum version of the actual Maven binary required to build -->
+    <maven.minimum.version>3.5.0</maven.minimum.version>
+    <!-- The current Maven version declared in the dependency management (so that it can be change for the distribution
+         for example) -->
+    <maven.version>${maven.build.version}</maven.version>
+    <maven.resolver.build.version>1.1.1</maven.resolver.build.version>
+    <maven.resolver.version>${maven.resolver.build.version}</maven.resolver.version>
+
+    <!-- Plexus -->
+    <plexus-containers.version>2.0.0</plexus-containers.version>
+
+    <!-- The version of Maven Enforcer plugin -->
+    <maven-enforcer.version>1.4.1</maven-enforcer.version>
+    <!-- The version of Maven used by enforcer plugin -->
+    <maven.maven-enforcer.version>2.2.1</maven.maven-enforcer.version>
+
+    <!-- The version of the Maven Plugin Tools -->
+    <maven.plugin.tools.version>3.6.0</maven.plugin.tools.version>
+
+    <!-- The version of the Maven Remote Resource plugin -->
+    <maven-remote-resources-plugin.version>1.6.0</maven-remote-resources-plugin.version>
+
+    <!-- The recommended version of known extensions to use -->
+    <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]</xwiki.extension.recommendedVersions.commons>
+    <xwiki.extension.recommendedVersions>${xwiki.extension.recommendedVersion.commons}</xwiki.extension.recommendedVersions>
+
+    <!-- Control Nexus staging (release on Maven Central for xwiki-commons and xwiki-rendering) -->
+    <xwiki.nexus.serverId>ossrh</xwiki.nexus.serverId>
+    <xwiki.nexus.nexusUrl>https://oss.sonatype.org/</xwiki.nexus.nexusUrl>
+    <xwiki.nexus.autoReleaseAfterClose>true</xwiki.nexus.autoReleaseAfterClose>
+    <xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure>true</xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure>
+    <xwiki.nexus.skipLocalStaging>false</xwiki.nexus.skipLocalStaging>
+    <xwiki.nexus.skipStaging>false</xwiki.nexus.skipStaging>
+
+    <!-- Control Maven output directory -->
+    <maven.build.dir>${project.basedir}/target</maven.build.dir>
+
+  </properties>
+  <prerequisites>
+    <maven>${maven.minimum.version}</maven>
+  </prerequisites>
+  <licenses>
+    <license>
+      <name>LGPL 2.1</name>
+      <url>http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <issueManagement>
+    <system>jira</system>
+    <url>https://jira.xwiki.org/browse/XCOMMONS</url>
+  </issueManagement>
+  <developers>
+    <!-- Note that this information is read by XWiki's Extension Manager and passed to the XWiki Repository Application
+         to mention who developed the various published XWiki extensions. We use a fake Developer who represents the
+         whole team because it's simpler to manage only one developer at this level and instead use the wiki at
+         http://dev.xwiki.org/xwiki/bin/view/Community/HallOfFame to provide an up to date view of all XWiki devs. -->
+    <developer>
+      <id>devs</id>
+      <name>XWiki Development Team</name>
+    </developer>
+  </developers>
+  <organization>
+    <name>XWiki</name>
+    <url>http://xwiki.org/</url>
+  </organization>
+  <scm>
+    <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
+    <developerConnection>scm:git:git@github.com:xwiki/xwiki-commons.git</developerConnection>
+    <url>https://github.com/xwiki/xwiki-commons/tree/master/</url>
+    <tag>stable-11.3.x</tag>
+  </scm>
+  <mailingLists>
+    <mailingList>
+      <name>XWiki Users List</name>
+      <post>users@xwiki.org</post>
+      <subscribe>http://lists.xwiki.org/mailman/listinfo/users</subscribe>
+      <unsubscribe>http://lists.xwiki.org/mailman/listinfo/users</unsubscribe>
+      <archive>http://lists.xwiki.org/pipermail/users/</archive>
+      <otherArchives>
+        <otherArchive>http://xwiki.markmail.org/</otherArchive>
+        <otherArchive>http://www.nabble.com/XWiki-f2563.html</otherArchive>
+        <otherArchive>http://gmane.org/find.php?list=xwiki</otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>XWiki Developers List</name>
+      <post>devs@xwiki.org</post>
+      <subscribe>http://lists.xwiki.org/mailman/listinfo/devs</subscribe>
+      <unsubscribe>http://lists.xwiki.org/mailman/listinfo/devs</unsubscribe>
+      <archive>http://lists.xwiki.org/pipermail/devs/</archive>
+      <otherArchives>
+        <otherArchive>http://xwiki.markmail.org/</otherArchive>
+        <otherArchive>http://www.nabble.com/XWiki-f2563.html</otherArchive>
+        <otherArchive>http://gmane.org/find.php?list=xwiki</otherArchive>
+      </otherArchives>
+    </mailingList>
+  </mailingLists>
+  <dependencyManagement>
+    <!-- Standard dependencies used in several XWiki build modules. Ensures all modules
+         use the same version for these dependencies -->
+    <dependencies>
+      <!-- Apache Commons -->
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.9</version>
+      </dependency>
+      <!-- We don't use Commons Lang 2.x ourselves (we use Commons Lang 3.x) but some of our transitive dependencies
+           require Commons Lang. The issue is that Maven uses a "closest-to-root" strategy to resolve dependency
+           versions and since the transitive dependencies that require Commons Lang don't use version ranges we need
+           to help them... (see http://guntherpopp.blogspot.fr/2011/02/understanding-maven-dependency.html). Since
+           the Commons Lang project takes a lot of care of preserving backward compatibility we force to use the
+           latest version which is the version that has the least chance of causing problems! -->
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>2.6</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-collections4</artifactId>
+        <version>4.3</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-collections</groupId>
+        <artifactId>commons-collections</artifactId>
+        <version>3.2.2</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.6</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-exec</artifactId>
+        <version>1.3</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-net</groupId>
+        <artifactId>commons-net</artifactId>
+        <version>3.6</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-chain</groupId>
+        <artifactId>commons-chain</artifactId>
+        <version>1.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>1.6</version>
+      </dependency>
+      <!-- Apache HttpComponents -->
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.5.8</version>
+        <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpmime</artifactId>
+        <version>4.5.8</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>4.4.11</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore-nio</artifactId>
+        <version>4.4.11</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpasyncclient</artifactId>
+        <version>4.1.4</version>
+      </dependency>
+      <!-- Old httpclient -->
+      <dependency>
+        <groupId>commons-httpclient</groupId>
+        <artifactId>commons-httpclient</artifactId>
+        <version>3.1</version>
+        <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-dbcp2</artifactId>
+        <!-- DBCP2 requires JDBC 4.1 starting with 2.4.0 and JDBC 4.2 with 2.5.0 -->
+        <version>2.3.0</version>
+        <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.12</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>1.9.3</version>
+        <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <!-- Old version of Commons Configuration, just making sure we end up with the last one -->
+      <dependency>
+       <groupId>commons-configuration</groupId>
+         <artifactId>commons-configuration</artifactId>
+         <version>1.10</version>
+         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+         <exclusions>
+           <exclusion>
+             <groupId>commons-logging</groupId>
+             <artifactId>commons-logging</artifactId>
+           </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-configuration2</artifactId>
+        <version>2.4</version>
+         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+         <exclusions>
+           <exclusion>
+             <groupId>commons-logging</groupId>
+             <artifactId>commons-logging</artifactId>
+           </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>1.18</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-validator</groupId>
+        <artifactId>commons-validator</artifactId>
+        <version>1.6</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-digester</groupId>
+        <artifactId>commons-digester</artifactId>
+        <version>2.1</version>
+      </dependency>
+
+      <!-- XZ -->
+      <dependency>
+        <groupId>org.tukaani</groupId>
+        <artifactId>xz</artifactId>
+        <version>1.8</version>
+      </dependency>
+
+      <!-- XML processing -->
+      <dependency>
+        <groupId>com.thoughtworks.xstream</groupId>
+        <artifactId>xstream</artifactId>
+        <version>1.4.11.1</version>
+      </dependency>
+      <!-- Note: The DOM4J project has been dead for several years and we've decided to not use it in any new code and
+           over time to refactor existing code to use JDOM or other XML techniques (such as STaX). When all code has
+           been converted, remove this dependency and add it as a build failure so that we don't reintroduce it again
+           by error -->
+      <dependency>
+        <groupId>org.dom4j</groupId>
+        <artifactId>dom4j</artifactId>
+        <!-- Note: We cannot upgrade to 2.1.1 since it has an important regression, see
+             https://github.com/dom4j/dom4j/issues/51 -->
+        <version>2.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jdom</groupId>
+        <artifactId>jdom</artifactId>
+        <version>1.1.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jdom</groupId>
+        <artifactId>jdom2</artifactId>
+        <version>2.0.6</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.stax-utils</groupId>
+        <artifactId>stax-utils</artifactId>
+        <version>20070216</version>
+        <exclusions>
+          <!-- Not needed since Java 1.6 -->
+          <exclusion>
+            <groupId>com.bea.xml</groupId>
+            <artifactId>jsr173-ri</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>xpp3</groupId>
+        <artifactId>xpp3</artifactId>
+        <version>1.1.4c</version>
+      </dependency>
+      <dependency>
+        <groupId>xpp3</groupId>
+        <artifactId>xpp3_min</artifactId>
+        <version>1.1.4c</version>
+      </dependency>
+      <!-- What is included in the JRE is too old and Oracle does not seems to plan to upgrade it anytime soon -->
+      <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xercesImpl</artifactId>
+        <version>2.12.0</version>
+      </dependency>
+      <!-- xerces require this version of xml-apis -->
+      <dependency>
+        <groupId>xml-apis</groupId>
+        <artifactId>xml-apis</artifactId>
+        <version>1.4.01</version>
+      </dependency>
+      <!-- Used by several projects (HTMLCleaner, Formula renderer, etc.) directly or indirectly to do XPath and XSLT
+           transformations -->
+      <dependency>
+        <groupId>xalan</groupId>
+        <artifactId>xalan</artifactId>
+        <version>2.7.2</version>
+      </dependency>
+      <dependency>
+        <groupId>xalan</groupId>
+        <artifactId>serializer</artifactId>
+        <version>2.7.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.woodstox</groupId>
+        <artifactId>stax2-api</artifactId>
+        <version>4.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.woodstox</groupId>
+        <artifactId>woodstox-core</artifactId>
+        <version>5.2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>jaxen</groupId>
+        <artifactId>jaxen</artifactId>
+        <version>1.2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.simpleframework</groupId>
+        <artifactId>simple-xml</artifactId>
+        <version>2.7.1</version>
+        <exclusions>
+          <!-- Already part of Java SE 6 -->
+          <exclusion>
+            <groupId>stax</groupId>
+            <artifactId>stax</artifactId>
+          </exclusion>
+          <!-- Already part of Java SE 6 -->
+          <exclusion>
+            <groupId>stax</groupId>
+            <artifactId>stax-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <!-- JAXB -->
+      <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>2.3.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>2.3.2</version>
+      </dependency>
+
+      <!-- Json -->
+      <dependency>
+        <groupId>net.sf.json-lib</groupId>
+        <artifactId>json-lib</artifactId>
+        <version>2.4</version>
+        <classifier>jdk15</classifier>
+        <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <!-- Replace org.json:json for license reasons -->
+      <dependency>
+        <groupId>com.tdunning</groupId>
+        <artifactId>json</artifactId>
+        <version>1.8</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.8.5</version>
+      </dependency>
+
+      <!-- Jackson -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-csv</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-smile</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-xml</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-yaml</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-cbor</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-avro</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-ion</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-jaxb-annotations</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-jsonSchema</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jdk8</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jsr310</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jsr353</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-guava</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.yaml</groupId>
+        <artifactId>snakeyaml</artifactId>
+        <version>1.24</version>
+      </dependency>
+
+      <!-- JAX-RS -->
+      <dependency>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>jsr311-api</artifactId>
+        <version>1.1.1</version>
+      </dependency>
+
+      <!-- JTA -->
+      <dependency>
+        <groupId>javax.transaction</groupId>
+        <artifactId>javax.transaction-api</artifactId>
+        <version>1.2</version>
+      </dependency>
+
+      <!-- Bouncy Castle -->
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk15on</artifactId>
+        <version>1.61</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcpkix-jdk15on</artifactId>
+        <version>1.61</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcmail-jdk15on</artifactId>
+        <version>1.61</version>
+      </dependency>
+
+      <!-- Various project are using it to scan the classpath -->
+      <dependency>
+        <groupId>org.reflections</groupId>
+        <artifactId>reflections</artifactId>
+        <version>0.9.11</version>
+      </dependency>
+
+      <!-- Used by reflections and other projects in commons, platform and rendering -->
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava-testlib</artifactId>
+        <version>${guava.version}</version>
+      </dependency>
+
+      <!-- Groovy engine. Used in both commons and platform -->
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy</artifactId>
+        <version>${groovy.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-datetime</artifactId>
+        <version>${groovy.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-jmx</artifactId>
+        <version>${groovy.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-json</artifactId>
+        <version>${groovy.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-jsr223</artifactId>
+        <version>${groovy.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-macro</artifactId>
+        <version>${groovy.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-nio</artifactId>
+        <version>${groovy.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-servlet</artifactId>
+        <version>${groovy.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-sql</artifactId>
+        <version>${groovy.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-templates</artifactId>
+        <version>${groovy.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-xml</artifactId>
+        <version>${groovy.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-dateutil</artifactId>
+        <version>${groovy.version}</version>
+      </dependency>
+
+      <!-- Everybody logs -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <!-- SLF4J implementation we use -->
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.2.3</version>
+      </dependency>
+      <!-- External libraries using Commons Logging will delegate to SLF4J -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <!-- External libraries using Log4J will delegate to SLF4J -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>log4j-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+
+      <!-- Make sure everyone use the same version of JBoss Logging -->
+      <dependency>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging</artifactId>
+        <version>3.4.0.Final</version>
+      </dependency>
+      <!-- Make sure everyone use the same version of JBoss Marshalling -->
+      <dependency>
+        <groupId>org.jboss.marshalling</groupId>
+        <artifactId>jboss-marshalling</artifactId>
+        <version>2.0.7.Final</version>
+      </dependency>
+
+      <!-- Javassist -->
+      <dependency>
+        <groupId>org.javassist</groupId>
+        <artifactId>javassist</artifactId>
+        <version>3.25.0-GA</version>
+      </dependency>
+
+      <!-- Triggered by several Maven related projects (Doxia, Maven, Aether) as transitive dependency. We need
+           these explicit versions to help Maven decide which version to use. -->
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-utils</artifactId>
+        <version>3.2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-container-default</artifactId>
+        <version>${plexus-containers.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-component-annotations</artifactId>
+        <version>${plexus-containers.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-interpolation</artifactId>
+        <version>1.25</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-interactivity-api</artifactId>
+        <version>1.0-alpha-6 </version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-archiver</artifactId>
+        <version>4.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-classworlds</artifactId>
+        <version>2.6.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.plexus</groupId>
+        <artifactId>plexus-sec-dispatcher</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.sisu</groupId>
+        <artifactId>org.eclipse.sisu.plexus</artifactId>
+        <version>0.3.3</version>
+        <exclusions>
+          <!-- This dependency is now deprecated and replaced by annotation-api. -->
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <!-- Maven -->
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-artifact</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-core</artifactId>
+        <version>${maven.version}</version>
+        <exclusions>
+          <!-- Remove exclusion when https://jira.xwiki.org/browse/XCOMMONS-1155 is fixed -->
+          <exclusion>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-plugin-api</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-compat</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-settings</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-settings-builder</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-repository-metadata</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model-builder</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-resolver-provider</artifactId>
+        <version>${maven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.plugin-tools</groupId>
+        <artifactId>maven-plugin-annotations</artifactId>
+        <version>${maven.plugin.tools.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.shared</groupId>
+        <artifactId>maven-shared-utils</artifactId>
+        <version>3.2.1</version>
+      </dependency>
+      <!-- Maven Resolver -->
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-api</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-util</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-impl</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-connector-basic</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-transport-http</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-transport-file</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-spi</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+
+      <!-- Everybody tests -->
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-core</artifactId>
+        <version>${hamcrest.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-library</artifactId>
+        <version>${hamcrest.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${junit5.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.platform</groupId>
+        <artifactId>junit-platform-launcher</artifactId>
+        <version>${junit.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.platform</groupId>
+        <artifactId>junit-platform-engine</artifactId>
+        <version>${junit.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-platform-suite-api</artifactId>
+        <version>${junit5.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.vintage</groupId>
+        <artifactId>junit-vintage-engine</artifactId>
+        <version>${junit.vintage.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jmock</groupId>
+        <artifactId>jmock</artifactId>
+        <version>${jmock.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jmock</groupId>
+        <artifactId>jmock-junit4</artifactId>
+        <version>${jmock.version}</version>
+        <exclusions>
+          <!-- junit-dep is deprecated and junit should be used instead  -->
+          <exclusion>
+            <artifactId>junit-dep</artifactId>
+            <groupId>junit</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jmock</groupId>
+        <artifactId>jmock-legacy</artifactId>
+        <version>${jmock.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-junit-jupiter</artifactId>
+        <version>${mockito.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.objenesis</groupId>
+        <artifactId>objenesis</artifactId>
+        <version>2.6</version>
+      </dependency>
+      <dependency>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy</artifactId>
+        <version>${bytebuddy.version}</version>
+      </dependency>
+
+      <!-- Several modules depend on the servlet API -->
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>3.0.1</version>
+        <!-- It should always be provided as the API jar is provided by the Servlet Container in which XWiki is
+             deployed -->
+        <scope>provided</scope>
+      </dependency>
+      <!-- Needed for Legacy modules. The version needs to be in sync with the one used by the AspectJ plugin -->
+      <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjrt</artifactId>
+        <version>${aspectj.version}</version>
+      </dependency>
+      <!-- CSS parsing -->
+      <dependency>
+        <groupId>net.sourceforge.cssparser</groupId>
+        <artifactId>cssparser</artifactId>
+        <version>0.9.27</version>
+      </dependency>
+      <!-- Bean validation -->
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>1.1.0.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>4.3.2.Final</version>
+        <scope>runtime</scope>
+      </dependency>
+      <!-- Mail -->
+      <dependency>
+        <groupId>jakarta.mail</groupId>
+        <artifactId>jakarta.mail-api</artifactId>
+        <version>${jakarta.mail.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.activation</groupId>
+        <artifactId>jakarta.activation-api</artifactId>
+        <version>${jakarta.activation.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+      <groupId>com.sun.activation</groupId>
+        <artifactId>jakarta.activation</artifactId>
+        <version>${jakarta.activation.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>jakarta.mail</artifactId>
+        <version>${jakarta.mail.version}</version>
+      </dependency>
+      <!-- Diff tools used in commons for diff and blame -->
+      <dependency>
+        <groupId>com.googlecode.java-diff-utils</groupId>
+        <artifactId>diffutils</artifactId>
+        <version>1.3.0</version>
+      </dependency>
+      <!-- Apache Velocity -->
+      <dependency>
+        <groupId>org.apache.velocity</groupId>
+        <artifactId>velocity</artifactId>
+        <version>1.7</version>
+      </dependency>
+      <!-- Apache Velocity Tools -->
+      <dependency>
+        <groupId>org.apache.velocity</groupId>
+        <artifactId>velocity-tools</artifactId>
+        <version>2.0</version>
+        <exclusions>
+          <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+          <!-- Note: Because of this exclusion, we need to manually add servlet-api
+               to the dependencies list each time we depend on velocity-tools. -->
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <!-- XWiki is using org.dom4j:dom4j:2.0.0+. Previous versions of dom4j were using dom4j:dom4j
+               and thus we need to exclude them so that they don't end up in the XWiki WAR -->
+          <exclusion>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <!-- Generic java annotations. These superseed jsr250-api, so we need to make
+           sure to exclude it in case it is pulled transitively. -->
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>1.3.2</version>
+      </dependency>
+      <!-- JSR 305 -->
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <version>3.0.2</version>
+      </dependency>
+      <!-- ASM -->
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-analysis</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-commons</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-tree</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-util</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <!-- ANTLR -->
+      <dependency>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr-runtime</artifactId>
+        <version>3.5.2</version>
+      </dependency>
+      <dependency>
+        <groupId>antlr</groupId>
+        <artifactId>antlr</artifactId>
+        <version>2.7.7</version>
+      </dependency>
+      <!-- Used on remote observation and also by JBossCache/Infinispan (even if it does not really use it) -->
+      <dependency>
+        <groupId>org.jgroups</groupId>
+        <artifactId>jgroups</artifactId>
+        <version>4.0.19.Final</version>
+      </dependency>
+      <!-- Used by Solr and Infinispan -->
+      <dependency>
+        <groupId>com.github.ben-manes.caffeine</groupId>
+        <artifactId>caffeine</artifactId>
+        <version>2.7.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.errorprone</groupId>
+        <artifactId>error_prone_annotations</artifactId>
+        <version>2.3.3</version>
+      </dependency>
+      <!-- The maven remote resource plugin is also used as dependency -->
+      <dependency>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-remote-resources-plugin</artifactId>
+          <version>${maven-remote-resources-plugin.version}</version>
+        </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <build>
+    <defaultGoal>install</defaultGoal>
+    <directory>${maven.build.dir}</directory>
+    <plugins>
+      <!-- Ensure that we lock down all plugin versions -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <!-- Lock down plugin version for build reproducibility -->
+        <version>${maven-enforcer.version}</version>
+        <configuration>
+          <skip>${xwiki.enforcer.skip}</skip>
+        </configuration>
+        <executions>
+          <!-- Check that all Maven plugins have versions defined -->
+          <execution>
+            <id>enforce-plugins</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requirePluginVersions>
+                  <message>Best Practice is to always define plugin versions!</message>
+                  <banLatest>false</banLatest>
+                  <banRelease>false</banRelease>
+                  <banSnapshots>false</banSnapshots>
+                </requirePluginVersions>
+              </rules>
+              <skip>${xwiki.enforcer.enforce-plugins.skip}</skip>
+            </configuration>
+          </execution>
+          <!-- Check that we're using SLF4J only -->
+          <execution>
+            <id>enforce-jcl-log4j-isolation</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jcl-log4j-isolation.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.</message>
+                  <excludes>
+                    <exclude>commons-logging:commons-logging</exclude>
+                    <exclude>commons-logging:commons-logging-api</exclude>
+                    <exclude>log4j:log4j</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using the right JAXB implementation artifacts -->
+          <execution>
+            <id>enforce-glasshfish-jaxb</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-glasshfish-jaxb.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>XWiki uses org.glassfish.jaxb:jaxb-runtime instead</message>
+                  <excludes>
+                    <exclude>com.sun.xml.bind:jaxb-impl</exclude>
+                    <exclude>com.sun.xml.bind:jaxb-core</exclude>
+                    <exclude>org.glassfish.jaxb:jaxb-core</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using the right JAXB API artifacts -->
+          <execution>
+            <id>enforce-jakarta.xml.bind-api</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jakarta.xml.bind-api.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>XWiki uses jakarta.xml.bind:jakarta.xml.bind-api instead</message>
+                  <excludes>
+                    <exclude>javax.xml.bind:jaxb-api</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using Open JSON and not JSON-Java -->
+          <execution>
+            <id>enforce-open-json</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-open-json.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    Use Open JSON which has a less fuzzy license
+                  </message>
+                  <excludes>
+                    <exclude>org.json:json</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Embbed javax.el:javax.el-api -->
+          <execution>
+            <id>enforce-glassfish-el</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-glassfish-el.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    Glasshfish EL embbed javax.el:javax.el-api
+                  </message>
+                  <excludes>
+                    <exclude>javax.el:javax.el-api</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using commons-lang3 and not commons-lang -->
+          <execution>
+            <id>enforce-commons-lang3</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-commons-lang3.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>false</searchTransitive>
+                  <message>
+                    Best practice is to use Commons Lang 3.x
+                  </message>
+                  <excludes>
+                    <exclude>commons-lang:commons-lang</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using commons-configuration3 and not commons-configuration -->
+          <execution>
+            <id>enforce-commons-configuration2</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-commons-configuration2.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>false</searchTransitive>
+                  <message>
+                    Best practice is to use Commons Configuration 2.x
+                  </message>
+                  <excludes>
+                    <exclude>commons-configuration:commons-configuration</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we are using the latest version of Jakarta Activation -->
+          <execution>
+            <id>enforce-jakarta.activation-api</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jakarta.activation.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    Javax Activation artifact id changed, the current one is jakarta.activation:jakarta.activation-api
+                  </message>
+                  <excludes>
+                    <exclude>javax.activation:javax.activation-api</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enforce-jakarta.activation</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jakarta.activation.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    Javax Activation artifact id changed, the current one is com.sun.mail:jakarta.activation
+                  </message>
+                  <excludes>
+                    <exclude>javax.activation:activation</exclude>
+                    <exclude>com.sun.activation:javax.activation</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using latest version of Jakarta Mail -->
+          <execution>
+            <id>enforce-jakarta.mail-api</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jakarta.mail.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    Javax Mail artifact id changed, the current one is jakarta.mail:jakarta.mail-api
+                  </message>
+                  <excludes>
+                    <exclude>javax.mail:mailapi</exclude>
+                    <exclude>com.sun.mail:javax.mail-api</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enforce-jakarta.mail</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jakarta.mail.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    Javax Mail artifact id changed, the current one is com.sun.mail:jakarta.mail
+                  </message>
+                  <excludes>
+                    <exclude>javax.mail:mail</exclude>
+                    <exclude>com.sun.mail:javax.mail</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using right Bouncy Castle ids -->
+          <execution>
+            <id>enforce-bouncycastle-ids</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-bouncycastle-ids.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>false</searchTransitive>
+                  <message>
+                    Wrong Bouncy Castle dependency used
+                  </message>
+                  <excludes>
+                    <exclude>bouncycastle:bcprov-jdk16</exclude>
+                    <exclude>bouncycastle:bcprov-jdk15</exclude>
+                    <exclude>bouncycastle:bcprov-jdk14</exclude>
+                    <exclude>bouncycastle:bcprov-jdk13</exclude>
+                    <exclude>bouncycastle:bcprov-jdk12</exclude>
+                    <exclude>org.bouncycastle:bcprov-jdk16</exclude>
+                    <exclude>org.bouncycastle:bcprov-jdk15</exclude>
+                    <exclude>org.bouncycastle:bcprov-jdk14</exclude>
+                    <exclude>org.bouncycastle:bcprov-jdk13</exclude>
+                    <exclude>org.bouncycastle:bcprov-jdk12</exclude>
+                    <exclude>bouncycastle:bcpkix-jdk16</exclude>
+                    <exclude>bouncycastle:bcpkix-jdk15</exclude>
+                    <exclude>bouncycastle:bcpkix-jdk14</exclude>
+                    <exclude>bouncycastle:bcpkix-jdk13</exclude>
+                    <exclude>bouncycastle:bcpkix-jdk12</exclude>
+                    <exclude>org.bouncycastle:bcpkix-jdk16</exclude>
+                    <exclude>org.bouncycastle:bcpkix-jdk15</exclude>
+                    <exclude>org.bouncycastle:bcpkix-jdk14</exclude>
+                    <exclude>org.bouncycastle:bcpkix-jdk13</exclude>
+                    <exclude>org.bouncycastle:bcpkix-jdk12</exclude>
+                    <exclude>bouncycastle:bcmail-jdk16</exclude>
+                    <exclude>bouncycastle:bcmail-jdk15</exclude>
+                    <exclude>bouncycastle:bcmail-jdk14</exclude>
+                    <exclude>bouncycastle:bcmail-jdk13</exclude>
+                    <exclude>bouncycastle:bcmail-jdk12</exclude>
+                    <exclude>org.bouncycastle:bcmail-jdk16</exclude>
+                    <exclude>org.bouncycastle:bcmail-jdk15</exclude>
+                    <exclude>org.bouncycastle:bcmail-jdk14</exclude>
+                    <exclude>org.bouncycastle:bcmail-jdk13</exclude>
+                    <exclude>org.bouncycastle:bcmail-jdk12</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we don't trigger a dependency containing stuff already included the minimum Java SE version
+               supported by XWiki -->
+          <execution>
+            <id>enforce-javase-dependencies</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-javase-dependencies.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    Found a dependency already included in in the minimum Java SE ${java.version}
+                  </message>
+                  <excludes>
+                    <exclude>stax:stax</exclude>
+                    <exclude>javax.xml.stream:stax-api</exclude>
+                    <exclude>stax:stax-api</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we use the right version of the JSR305 API -->
+          <execution>
+            <id>enforce-jsr305</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jsr305.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>Use com.google.code.findbugs:jsr305 instead</message>
+                  <excludes>
+                    <exclude>com.google.code.findbugs:annotations</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we use the right version of the JTA -->
+          <execution>
+            <id>enforce-jta</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jta.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>Use javax.transaction:javax.transaction-api instead</message>
+                  <excludes>
+                    <exclude>javax.transaction:jta</exclude>
+                    <exclude>org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check dependency versions compatibility -->
+          <execution>
+            <id>enforce-upper-bounds</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-upper-bounds.skip}</skip>
+              <rules>
+                <requireUpperBoundDeps/>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.0.0</version>
+          <configuration>
+            <consoleOutput>true</consoleOutput>
+            <!-- We use this to disable checkstyle when the clover profile is executed since there's a
+                 conflict between checkstyle and clover. Namely the clovered code doesn't pass our
+                 checkstyle rules -->
+            <skip>${xwiki.checkstyle.skip}</skip>
+          </configuration>
+          <!-- We redeclare the version of checkstyle to control which version we use. We do that since we also write
+               custom checkstyle checks and we need to keep in sync the checkstyle version used to compile those
+               checks with the checkstyle version used by the checkstyle plugin -->
+          <dependencies>
+            <dependency>
+              <groupId>com.puppycrawl.tools</groupId>
+              <artifactId>checkstyle</artifactId>
+              <version>${checkstyle.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <!-- The version of Spoon and Spoon Maven plugin to use -->
+        <plugin>
+          <groupId>fr.inria.gforge.spoon</groupId>
+          <artifactId>spoon-maven-plugin</artifactId>
+          <version>3.1</version>
+          <dependencies>
+            <dependency>
+              <groupId>fr.inria.gforge.spoon</groupId>
+              <artifactId>spoon-core</artifactId>
+              <version>${spoon.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <!-- Used to check/update license headers -->
+        <plugin>
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-remote-resources-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>${maven-remote-resources-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <!-- Since 2.0-beta-9 maven-release-plugin uses remote tagging by default. Remote tagging implies that SCM
+               information is not fetched from the local working copy but from the SCM pom configuration. This forces
+               us to specify SCM configuration in every module which has its own lifecycle. Inheritance can't be used
+               for SCM configuration since a released parent pom contains SCM information about its tag and not about
+               the trunk. We could have globally set remoteTagging to false but we haven't since we prefer to follow
+               maven conventions as much as possible. -->
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.5.3</version>
+          <configuration>
+            <!-- By default the release plugin will execute the "clean" and "verify" goals but won't perform an
+                 "install". This is causing problems since several modules will fail to build during release:prepare.
+                 See http://tinyurl.com/354vwe for more details. Thus we're forcing the execution of the "install"
+                 goal. -->
+            <preparationGoals>clean install</preparationGoals>
+            <!-- Avoid site generation during the release:perform to speed up release process -->
+            <goals>deploy</goals>
+            <mavenExecutorId>forked-path</mavenExecutorId>
+            <!-- We always use the same version for submodules -->
+            <autoVersionSubmodules>true</autoVersionSubmodules>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.1.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.0.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-plugin-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>${maven.plugin.tools.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.8.0</version>
+          <configuration>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
+
+            <!-- Avoid surprises. If a module needs annotation processing it can enabled it easily -->
+            <proc>none</proc>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>${surefire.version}</version>
+          <!-- XWiki rule is to put test in *Test classes -->
+          <configuration>
+            <!-- We want to show nested stack traces to see what is the real problem when a test fails! -->
+            <trimStackTrace>false</trimStackTrace>
+            <includes>
+              <include>**/*Test.class</include>
+            </includes>
+            <!-- TODO: Remove this property once all functional tests have been moved to use the failsafe plugin -->
+            <systemProperties>
+              <property>
+                <!-- See description of the "xwiki.test.verifyRunningXWikiAtStart" property above. -->
+                <name>xwiki.test.verifyRunningXWikiAtStart</name>
+                <value>${xwiki.test.verifyRunningXWikiAtStart}</value>
+              </property>
+            </systemProperties>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>${surefire.version}</version>
+          <configuration>
+            <!-- By default we want to make sure we only run AllITs since that runs all the tests, and
+                 starting/stopping XWiki only once for the whole suite -->
+            <includes>
+              <include>**/AllITs.java</include>
+            </includes>
+            <!-- We want to show nested stack traces to see what is the real problem when a test fails! -->
+            <trimStackTrace>false</trimStackTrace>
+            <systemProperties>
+              <property>
+                <!-- See description of the "xwiki.test.verifyRunningXWikiAtStart" property above. -->
+                <name>xwiki.test.verifyRunningXWikiAtStart</name>
+                <value>${xwiki.test.verifyRunningXWikiAtStart}</value>
+              </property>
+            </systemProperties>
+          </configuration>
+          <executions>
+            <execution>
+              <id>functional-tests</id>
+              <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.1.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.1.1</version>
+          <configuration>
+            <archive>
+              <manifest>
+                <!-- Make easier to get various standard information trough java.lang.Package -->
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+              </manifest>
+              <manifestEntries>
+                <!-- Add some useful information about the extension in the manifest file. -->
+                <XWiki-Extension-Id>${project.groupId}:${project.artifactId}</XWiki-Extension-Id>
+              </manifestEntries>
+            </archive>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.1.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.1.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-war-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.2.2</version>
+          <configuration>
+            <!-- Add some useful information about the extension in the manifest file. -->
+            <archive>
+              <manifestEntries>
+                <XWiki-Extension-Id>${project.groupId}:${project.artifactId}</XWiki-Extension-Id>
+              </manifestEntries>
+            </archive>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.8.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>aspectj-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.11</version>
+          <configuration>
+            <complianceLevel>${java.version}</complianceLevel>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
+
+            <!-- Avoid surprises. If a module needs annotation processing it can enabled it easily -->
+            <proc>none</proc>
+          </configuration>
+          <!-- Override so that we can use the AspectJ version we wish -->
+          <dependencies>
+            <dependency>
+              <groupId>org.aspectj</groupId>
+              <artifactId>aspectjtools</artifactId>
+              <version>${aspectj.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.8</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-invoker-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>xml-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.0.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.0.0</version>
+          <executions>
+            <!-- Used to execute the tests generated by DSpot -->
+            <execution>
+              <id>dspot-test-source</id>
+              <phase>generate-test-sources</phase>
+              <goals>
+                <goal>add-test-source</goal>
+              </goals>
+              <configuration>
+                <sources>
+                  <source>src/test/dspot</source>
+                </sources>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.6.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>sablecc-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.0.0</version>
+        </plugin>
+        <!-- Used for checking backward compatibility (binary and source) -->
+        <plugin>
+          <groupId>org.revapi</groupId>
+          <artifactId>revapi-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>0.11.0</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.revapi</groupId>
+              <artifactId>revapi-java</artifactId>
+              <version>0.19.0</version>
+            </dependency>
+          </dependencies>
+          <executions>
+            <execution>
+              <id>revapi-check</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <oldVersion>${xwiki.compatibility.previous.version}</oldVersion>
+            <skip>${xwiki.revapi.skip}</skip>
+            <!-- Only output minimal differences required when revapi fails, so that we don't copy unnecessary
+                 differences which could lead to issues when releasing XWiki, see
+                 https://github.com/revapi/revapi/issues/137 for more info. -->
+            <outputNonIdentifyingDifferenceInfo>false</outputNonIdentifyingDifferenceInfo>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-archetype-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.0.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>4.2.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.openclover</groupId>
+          <artifactId>clover-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>${clover.version}</version>
+          <configuration>
+            <!-- We want to incude test source roots in order to have more information in the Clover report, such as:
+                 - which tests are covering whichg part of the code
+                 - how many tests were executed overall
+                 However, for comparison purposes between reportsn, we need to recomute the TPC by excluding all
+                 tests classes from the computation as otherwise it skews the results. This is what we do in the
+                 Jenkins Clover pipeline that we use, see
+                 https://github.com/xwiki/xwiki-jenkins-pipeline/blob/master/scripts/clover.groovy
+            -->
+            <includesTestSourceRoots>true</includesTestSourceRoots>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>cobertura-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.5.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.sonarsource.scanner.maven</groupId>
+          <artifactId>sonar-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.6.0.1398</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.6</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.1.0</version>
+          <configuration>
+            <!-- Always exclude the internal package since it's not user-public -->
+            <excludePackageNames>*.internal, *.internal.*</excludePackageNames>
+            <!-- Make sure javadoc has enough memory -->
+            <maxmemory>1024m</maxmemory>
+          </configuration>
+        </plugin>
+        <!-- We don't use site plugin but we org.apache.maven.plugins.enforcer.RequirePluginVersions enforcer rule
+             complain if we don't define it -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.3</version>
+          <!-- Site Plugin doesn’t automatically pull the Apache Wagon Dav implementation which is needed for
+               site:deploy goal when using Dav protocol. -->
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.maven.wagon</groupId>
+              <artifactId>wagon-webdav-jackrabbit</artifactId>
+              <version>2.6</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>${jacoco.version}</version>
+          <configuration>
+            <skip>${xwiki.jacoco.skip}</skip>
+            <excludes>
+              <!-- Don't run Jacoco on com/steadystate/css/parser/SACParserCSS21TokenManager since it generates an
+                   error, see
+                   http://stackoverflow.com/questions/14559117/how-do-i-disable-jacoco-agent-after-jacocoreport
+                   TODO: remove when https://sourceforge.net/p/cssparser/bugs/53/ is fixed -->
+              <exclude>**com.steadystate.css.parser.SACParserCSS21TokenManager</exclude>
+
+              <!-- Jacoco instrumentation makes relaxng go nuts. See https://github.com/jacoco/jacoco/issues/528
+                   and https://github.com/validator/validator/issues/505 -->
+              <exclude>**com.thaiopensource.relaxng.impl.**</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>com.github.searls</groupId>
+          <artifactId>jasmine-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.1</version>
+          <configuration>
+            <phantomjs>
+              <version>2.1.1</version>
+            </phantomjs>
+          </configuration>
+          <!-- Turn off logging in the console since some non-important errors (duh!) make Jenkins fail the build.
+               For example:
+                   [INFO] Executing Jasmine Specs
+                   [ERROR] Unexpected exception occurred while parsing HTML snippet
+                   [ERROR] runtimeError: message=[Unexpected exception occurred while parsing HTML snippet:
+                     input name="x"] sourceName=[file:/home/hudsonagent/hudson_root/workspace/xwiki-platform/
+                     xwiki-platform-core/xwiki-platform-web/target/jasmine/src/js/prototype/prototype.js] line=[2084]
+                     lineSource=[null] lineOffset=[0]
+          -->
+          <dependencies>
+            <dependency>
+              <groupId>org.slf4j</groupId>
+              <artifactId>jcl-over-slf4j</artifactId>
+              <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.slf4j</groupId>
+              <artifactId>slf4j-nop</artifactId>
+              <version>${slf4j.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.jvnet.jaxb2.maven2</groupId>
+          <artifactId>maven-jaxb2-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>0.14.0</version>
+          <configuration>
+            <extension>true</extension>
+            <args>
+              <arg>-Xfluent-api</arg>
+            </args>
+            <verbose>true</verbose>
+            <removeOldOutput>false</removeOldOutput>
+            <plugins>
+              <plugin>
+                <groupId>org.jvnet.jaxb2_commons</groupId>
+                <artifactId>jaxb2-fluent-api</artifactId>
+                <version>3.0</version>
+              </plugin>
+              <plugin>
+                <groupId>org.jvnet.jaxb2_commons</groupId>
+                <artifactId>jaxb2-default-value</artifactId>
+                <version>1.1</version>
+              </plugin>
+            </plugins>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>net.alchim31.maven</groupId>
+          <artifactId>yuicompressor-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.5.1</version>
+        </plugin>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.xwiki.commons</groupId>
+                    <artifactId>
+                      xwiki-commons-tool-remote-resource-plugin
+                    </artifactId>
+                    <versionRange>[10.5-SNAPSHOT,)</versionRange>
+                    <goals>
+                      <goal>process</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore/>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.pitest</groupId>
+          <artifactId>pitest-maven</artifactId>
+          <version>1.4.0</version>
+        </plugin>
+        <!-- In order to make it simple to execute Dspot on XWiki with: mvn dspot:amplify-unit-tests -->
+        <plugin>
+          <groupId>eu.stamp-project</groupId>
+          <artifactId>dspot-maven</artifactId>
+          <version>1.2.3</version>
+          <configuration>
+            <clean>true</clean>
+            <descartes>true</descartes>
+            <verbose>true</verbose>
+            <withComment>true</withComment>
+            <generateNewTestClass>true</generateNewTestClass>
+            <pathToProperties>./dspot.properties</pathToProperties>
+            <amplifiers>
+              <!-- Uncomment the amplifier to use or pass them on the command line using -Damplifiers=... -->
+              <!--amplifier>StringLiteralAmplifier</amplifier-->
+              <!--amplifier>NumberLiteralAmplifier</amplifier-->
+              <!--amplifier>CharLiteralAmplifier</amplifier-->
+              <!--amplifier>BooleanLiteralAmplifier</amplifier-->
+              <!--amplifier>AllLiteralAmplifiers</amplifier-->
+              <!--amplifier>MethodAdd</amplifier-->
+              <!--amplifier>MethodRemove</amplifier-->
+              <!--amplifier>MethodGeneratorAmplifier</amplifier-->
+              <!--amplifier>ReturnValueAmplifier</amplifier-->
+              <!--amplifier>ReplacementAmplifier</amplifier-->
+              <!--amplifier>NullifierAmplifier</amplifier-->
+            </amplifiers>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+  <profiles>
+    <profile>
+      <!-- Profile used when the release plugin executes. We want javadocs and source jars to be released
+           + ensure we sign files using GPG. -->
+      <id>release</id>
+      <activation>
+        <property>
+          <!-- This property is automatically defined by the Maven release plugin when executing
+               a release. Thus this profile will be automatically enabled when releasing -->
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <!-- Deploy source package -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Deploy javadoc package -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Force the Java version to use to build release -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>enforce-java</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <skip>${xwiki.enforcer.enforce-java.skip}</skip>
+                  <rules>
+                    <requireJavaVersion>
+                      <message>You must release with Java 8!</message>
+                      <version>[1.8, 1.9)</version>
+                    </requireJavaVersion>
+                  </rules>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Sign artifacts -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Because of http://jira.codehaus.org/browse/MJAVADOC-329 we need to find a workaround to create a Javadoc
+               JAR to satisfy the Maven Central Repository requirements. We do this by creating an apidocs/ dir in the
+               target directory.
+               Note that even though this "hack" is only needed for java projects having all their sources in the
+               internal packages we put it here in the top level POM to not have to duplicate it at lots of places. -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <!-- The Javadoc JAR plugin runs in the package phase so we need a phase before that -->
+                <phase>generate-resources</phase>
+                <configuration>
+                  <target>
+                    <mkdir dir="${project.build.directory}/apidocs"/>
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Automatically release on Jira -->
+          <plugin>
+            <groupId>net.sigmalab.maven.plugins</groupId>
+            <artifactId>jira-maven-plugin</artifactId>
+            <version>0.7</version>
+            <configuration>
+            <skip>${xwiki.release.jira.skip}</skip>
+            <settingsKey>${xwiki.release.jira.settingsKey}</settingsKey>
+            <scope>${xwiki.release.jira.scope}</scope>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>release-jira-version</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Automatically close and release project on Nexus -->
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.6.8</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>${xwiki.nexus.serverId}</serverId>
+              <nexusUrl>${xwiki.nexus.nexusUrl}</nexusUrl>
+              <autoReleaseAfterClose>${xwiki.nexus.autoReleaseAfterClose}</autoReleaseAfterClose>
+              <keepStagingRepositoryOnCloseRuleFailure>${xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure}</keepStagingRepositoryOnCloseRuleFailure>
+              <skipLocalStaging>${xwiki.nexus.skipLocalStaging}</skipLocalStaging>
+              <skipStaging>${xwiki.nexus.skipStaging}</skipStaging>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <!-- To generate Clover reports, see http://dev.xwiki.org/xwiki/bin/view/Community/Testing#HTestCoverage -->
+    <profile>
+      <id>clover</id>
+      <properties>
+        <!-- We need to skip checkstyle execution since otherwise it conflicts with Clover -->
+        <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
+        <!-- Skip backward-compatiblity checks since we don't need it when computing test coverage and it speeds up
+             the build not to run it -->
+        <xwiki.revapi.skip>true</xwiki.revapi.skip>
+        <!-- Skip Enforcer since we don't need it for coverage and it speeds up the build not to run it -->
+        <xwiki.enforcer.skip>true</xwiki.enforcer.skip>
+      </properties>
+      <dependencyManagement>
+        <dependencies>
+          <!-- Needed when using Clover for runtime execution of integration tests -->
+          <dependency>
+            <groupId>org.openclover</groupId>
+            <artifactId>clover</artifactId>
+            <version>${clover.version}</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+    </profile>
+    <!-- Profile for m2eclipse which is used to tell m2eclipse to use a different output directory -->
+    <profile>
+      <id>m2e</id>
+      <properties>
+        <m2BuildDirectory>target-eclipse</m2BuildDirectory>
+      </properties>
+      <activation>
+        <property>
+          <name>m2e.version</name>
+        </property>
+      </activation>
+      <build>
+        <directory>${m2BuildDirectory}</directory>
+      </build>
+    </profile>
+    <!-- Profile for QA verifications that takes time -->
+    <profile>
+      <id>quality</id>
+      <properties>
+        <!-- Default Jacoco Instruction Ratio. We use 100% to force each module to define its
+             own ratio. Note that good values are above 70%. -->
+        <xwiki.jacoco.instructionRatio>1.00</xwiki.jacoco.instructionRatio>
+        <!-- Default Pitest Instruction Ratio. We use 100% to force each module to define its own ratio. -->
+        <xwiki.pitest.mutationThreshold>100</xwiki.pitest.mutationThreshold>
+      </properties>
+      <build>
+        <plugins>
+          <!-- Fail the build if the test coverage is below a given value. -->
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>jacoco-prepare</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>jacoco-check</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <rules>
+                <rule>
+                  <limits>
+                    <limit>
+                      <counter>INSTRUCTION</counter>
+                      <minimum>${xwiki.jacoco.instructionRatio}</minimum>
+                    </limit>
+                  </limits>
+                </rule>
+              </rules>
+            </configuration>
+          </plugin>
+          <!-- Fail the build of the test quality is below a given value -->
+          <plugin>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-maven</artifactId>
+            <executions>
+              <execution>
+                <id>pitest-check</id>
+                <goals>
+                  <goal>mutationCoverage</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <skip>${xwiki.pitest.skip}</skip>
+              <failWhenNoMutations>false</failWhenNoMutations>
+              <mutationThreshold>${xwiki.pitest.mutationThreshold}</mutationThreshold>
+              <mutationEngine>descartes</mutationEngine>
+              <timeoutFactor>${xwiki.pitest.timeoutFactor}</timeoutFactor>
+              <threads>4</threads>
+              <outputFormats>
+                <value>HTML</value>
+                <value>JSON</value>
+                <value>METHODS</value>
+                <value>ISSUES</value>
+              </outputFormats>
+              <!-- List of mutations we want to run for each test -->
+              <mutators>
+                <mutator>void</mutator>
+                <mutator>null</mutator>
+                <mutator>true</mutator>
+                <mutator>false</mutator>
+                <mutator>empty</mutator>
+                <mutator>0</mutator>
+                <mutator>1</mutator>
+                <mutator>(byte)0</mutator>
+                <mutator>(byte)1</mutator>
+                <mutator>(short)1</mutator>
+                <mutator>(short)2</mutator>
+                <mutator>0L</mutator>
+                <mutator>1L</mutator>
+                <mutator>0.0</mutator>
+                <mutator>1.0</mutator>
+                <mutator>0.0f</mutator>
+                <mutator>1.0f</mutator>
+                <mutator>'\40'</mutator>
+                <mutator>'A'</mutator>
+                <mutator>""</mutator>
+                <mutator>"A"</mutator>
+              </mutators>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-junit5-plugin</artifactId>
+                <version>0.5</version>
+              </dependency>
+              <dependency>
+                <groupId>eu.stamp-project</groupId>
+                <artifactId>descartes</artifactId>
+                <version>1.2.4</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!-- Run full coverage for all modules in the current maven reactor build by generating the Jacoco result file
+           in one common location and appending data to it. -->
+      <id>coverage</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>jacoco-prepare</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <!-- Tell the Agent Mojo to use a single destination file (instead of one per Maven module) -->
+              <destFile>${xwiki.jacoco.itDestFile}</destFile>
+              <!-- Tell the Report Mojos to use the same destination file used for instrumentation -->
+              <dataFile>${xwiki.jacoco.itDestFile}</dataFile>
+              <append>true</append>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+  <distributionManagement>
+    <site>
+      <id>nexus.xwiki.org</id>
+      <url>dav:http://nexus.xwiki.org/nexus/content/sites/site/</url>
+    </site>
+    <snapshotRepository>
+      <id>nexus.xwiki.org</id>
+      <name>XWiki Maven Development Repository for Snapshots</name>
+      <url>http://nexus.xwiki.org/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+  <modules>
+    <!-- Sorted Alphabetically -->
+    <module>xwiki-commons-core</module>
+    <module>xwiki-commons-pom</module>
+    <module>xwiki-commons-tools</module>
+  </modules>
+  <reporting>
+  <plugins>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-project-info-reports-plugin</artifactId>
+      <version>2.4</version>
+      <configuration>
+        <!-- Since contacting the Maven Repositories can take a very long time, tell the plugin not to display
+             the repository locations of the dependencies in the report. -->
+        <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+      </configuration>
+      <reportSets>
+        <reportSet>
+          <reports>
+            <report>summary</report>
+            <report>index</report>
+            <report>dependencies</report>
+            <report>dependency-convergence</report>
+            <report>mailing-list</report>
+            <report>issue-tracking</report>
+            <report>scm</report>
+          </reports>
+        </reportSet>
+      </reportSets>
+    </plugin>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-javadoc-plugin</artifactId>
+      <configuration>
+        <!-- Always exclude the internal package since it's not user-public -->
+        <excludePackageNames>*.internal.*</excludePackageNames>
+        <!-- Make sure javadoc has enough memory -->
+        <maxmemory>300m</maxmemory>
+      </configuration>
+      <!-- Don't generate test javadoc -->
+      <reportSets>
+        <reportSet>
+          <reports>
+            <report>javadoc</report>
+          </reports>
+        </reportSet>
+      </reportSets>
+    </plugin>
+    <plugin>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>cobertura-maven-plugin</artifactId>
+      <version>2.5.1</version>
+    </plugin>
+  </plugins>
+  </reporting>
+</project>
