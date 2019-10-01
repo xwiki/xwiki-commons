@@ -23,6 +23,7 @@ package org.xwiki.blame.internal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 import org.xwiki.blame.AnnotatedContent;
@@ -34,6 +35,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ComponentTest
 public class DefaultBlameManagerTest
@@ -133,5 +136,12 @@ public class DefaultBlameManagerTest
         annotatedElement = iter.next();
         assertThat(annotatedElement.getElement(), is("the lazy dog"));
         assertThat(annotatedElement.getRevision(), sameInstance(rev3));
+
+        assertThat(iter.hasNext(), is(false));
+        Throwable exception = assertThrows(NoSuchElementException.class, () -> {
+            iter.next();
+        });
+        assertEquals("No more annotated content", exception.getMessage());
+
     }
 }
