@@ -34,8 +34,8 @@
   <properties>
     <!-- Skipping revapi since xwiki-commons-legacy-component-api wraps this module and runs checks on it -->
     <xwiki.revapi.skip>true</xwiki.revapi.skip>
-    <xwiki.jacoco.instructionRatio>0.52</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>51</xwiki.pitest.mutationThreshold>
+    <xwiki.jacoco.instructionRatio>0.55</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>54</xwiki.pitest.mutationThreshold>
   </properties>
   <dependencies>
     <!-- Even though this module may not use the stability API, we declare a dependency here since this module is
@@ -87,6 +87,11 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <!-- Add test source root for executing DSpot-generated tests -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
