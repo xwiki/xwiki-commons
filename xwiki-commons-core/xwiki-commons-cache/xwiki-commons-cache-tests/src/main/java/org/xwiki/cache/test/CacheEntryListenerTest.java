@@ -205,7 +205,8 @@ public class CacheEntryListenerTest implements CacheEntryListener<Object>
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
-                    // ignore
+                    // Ignore but properly restore the interrupted status
+                    Thread.currentThread().interrupt();
                 }
             }
         }
