@@ -36,6 +36,7 @@ import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.logging.event.LogEvent;
 import org.xwiki.logging.event.LoggerListener;
+import org.xwiki.logging.tail.LogTail;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.WrappedThreadEventListener;
 
@@ -82,9 +83,14 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
     private final DefaultJobProgress progress = new DefaultJobProgress();
 
     /**
-     * Log sent during job execution.
+     * Log sent during job execution. Kept as a cache for {@link #getLog()} and a way to unzerialize old status logs.
      */
-    private final LogQueue logs;
+    private transient LogQueue logs;
+
+    /**
+     * Used to navigate the log.
+     */
+    private transient LogTail logTail;
 
     /**
      * Used to listen to all the log produced during job execution.
@@ -263,8 +269,35 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
     @Override
     public LogQueue getLog()
     {
-        // Make sure to always return something (it could be null if unserialized as such)
-        return this.logs != null ? this.logs : new LogQueue();
+        // Make sure to always return something
+        if (this.logs == null) {
+            if (this.logTail instanceof LogQueue) {
+                this.logs = (LogQueue) this.logTail;
+            } else {
+                this.logs = new LogQueue();
+
+                if (this.logTail != null) {
+                    this.logTail.log(this.logs);
+                }
+            }
+        }
+
+        return this.logs;
+    }
+
+    @Override
+    public LogTail getLogTail()
+    {
+        // Make sure to always return something
+        if (this.logTail == null) {
+            if (this.logs != null) {
+                this.logTail = this.logs;
+            } else {
+                this.logTail = new LogQueue();
+            }
+        }
+
+        return this.logTail;
     }
 
     @Override

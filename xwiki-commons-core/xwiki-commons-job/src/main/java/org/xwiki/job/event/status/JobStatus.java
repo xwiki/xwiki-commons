@@ -27,6 +27,7 @@ import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.tail.LogTail;
 
 /**
  * Describe the current status of a job.
@@ -96,6 +97,12 @@ public interface JobStatus
      * @return the log sent during job execution
      */
     LogQueue getLog();
+
+    /**
+     * @return the log tail
+     * @since 11.9RC1
+     */
+    LogTail getLogTail();
 
     /**
      * @return progress information about the job (percent, etc.)
