@@ -185,8 +185,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
         // It's possible in a (bad JAR) to declare the entry META-INF/MANIFEST.MF without the entry META-INF/
         urls.addAll(ClasspathHelper.forResource("META-INF/MANIFEST.MF"));
         // Workaround javax.inject 1 JAR which is incredibly hacky and does not even contain any META-INF folder so we
-        // have to do
-        // something special for it
+        // have to do something special for it
         urls.addAll(ClasspathHelper.forPackage("javax"));
 
         Collection<URL> jarURLs = new ArrayList<>(urls.size());
@@ -214,7 +213,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
         if (existingCoreExtension == null) {
             extensions.put(coreExtension.getId().getId(), coreExtension);
-        } else {
+        } else if (existingCoreExtension.isGuessed() == coreExtension.isGuessed()) {
             Version existingVersion = existingCoreExtension.getId().getVersion();
             Version version = coreExtension.getId().getVersion();
 
@@ -236,6 +235,8 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                 }
                 logger.warn("[{} ({})] is selected", selectedExtension.getId(), selectedExtension.getDescriptorURL());
             }
+        } else if (existingCoreExtension.isGuessed()) {
+            extensions.put(coreExtension.getId().getId(), coreExtension);
         }
     }
 
