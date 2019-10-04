@@ -2085,10 +2085,10 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>${clover.version}</version>
           <configuration>
-            <!-- We want to incude test source roots in order to have more information in the Clover report, such as:
-                 - which tests are covering whichg part of the code
+            <!-- We want to include test source roots in order to have more information in the Clover report, such as:
+                 - which tests are covering which part of the code
                  - how many tests were executed overall
-                 However, for comparison purposes between reportsn, we need to recomute the TPC by excluding all
+                 However, for comparison purposes between reports, we need to recompute the TPC by excluding all
                  tests classes from the computation as otherwise it skews the results. This is what we do in the
                  Jenkins Clover pipeline that we use, see
                  https://github.com/xwiki/xwiki-jenkins-pipeline/blob/master/scripts/clover.groovy
@@ -2263,14 +2263,14 @@
         <plugin>
           <groupId>eu.stamp-project</groupId>
           <artifactId>dspot-maven</artifactId>
-          <version>2.2.0</version>
+          <version>2.2.1</version>
           <configuration>
             <clean>true</clean>
             <descartes>true</descartes>
             <verbose>true</verbose>
             <withComment>true</withComment>
             <generateNewTestClass>true</generateNewTestClass>
-            <pathToProperties>./dspot.properties</pathToProperties>
+            <iteration>1</iteration>
             <amplifiers>
               <!-- Uncomment the amplifier to use or pass them on the command line using -Damplifiers=... -->
               <!--amplifier>StringLiteralAmplifier</amplifier-->
@@ -2278,12 +2278,12 @@
               <!--amplifier>CharLiteralAmplifier</amplifier-->
               <!--amplifier>BooleanLiteralAmplifier</amplifier-->
               <!--amplifier>AllLiteralAmplifiers</amplifier-->
-              <!--amplifier>MethodAdd</amplifier-->
-              <!--amplifier>MethodRemove</amplifier-->
-              <!--amplifier>MethodGeneratorAmplifier</amplifier-->
-              <!--amplifier>ReturnValueAmplifier</amplifier-->
               <!--amplifier>ReplacementAmplifier</amplifier-->
-              <!--amplifier>NullifierAmplifier</amplifier-->
+              <amplifier>MethodAdd</amplifier>
+              <amplifier>MethodRemove</amplifier>
+              <amplifier>MethodGeneratorAmplifier</amplifier>
+              <amplifier>ReturnValueAmplifier</amplifier>
+              <amplifier>NullifierAmplifier</amplifier>
             </amplifiers>
           </configuration>
         </plugin>
