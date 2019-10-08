@@ -19,6 +19,9 @@
  */
 package org.xwiki.job.internal.xstream;
 
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
 import org.xwiki.job.annotation.Serializable;
 import org.xwiki.xstream.internal.XStreamChecker;
 
@@ -28,6 +31,8 @@ import org.xwiki.xstream.internal.XStreamChecker;
  * @version $Id$
  * @since 11.9RC1
  */
+@Component
+@Singleton
 public class SerializableXStreamChecker implements XStreamChecker
 {
     @Override
