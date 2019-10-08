@@ -45,7 +45,7 @@
   </dependencies>
   <build>
     <plugins>
-      <!-- Add test source root for executing DSpot-generated tests -->
+      <!-- Add test source root for executing generated tests -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
