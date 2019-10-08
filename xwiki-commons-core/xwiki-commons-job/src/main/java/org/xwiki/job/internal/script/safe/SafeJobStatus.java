@@ -75,6 +75,7 @@ public class SafeJobStatus<J extends JobStatus> extends AbstractSafeObject<J> im
     }
 
     @Override
+    @Deprecated
     public LogQueue getLog()
     {
         return getWrapped().getLog();

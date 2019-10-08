@@ -19,7 +19,6 @@
  */
 package org.xwiki.logging.tail;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import org.xwiki.logging.event.LogEvent;
@@ -32,9 +31,10 @@ import org.xwiki.stability.Unstable;
  * @since 11.9RC1
  */
 @Unstable
-public interface LogTailResult
+public interface LogTailResult extends Iterable<LogEvent>
 {
-    List<LogEvent> list();
-
+    /**
+     * @return a sequential {@code Stream} over the elements in this collection
+     */
     Stream<LogEvent> stream();
 }

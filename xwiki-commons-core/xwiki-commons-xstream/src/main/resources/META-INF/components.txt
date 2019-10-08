@@ -1,0 +1,2 @@
+org.xwiki.xstream.internal.SafeXStream
+org.xwiki.xstream.internal.XStreamUtils

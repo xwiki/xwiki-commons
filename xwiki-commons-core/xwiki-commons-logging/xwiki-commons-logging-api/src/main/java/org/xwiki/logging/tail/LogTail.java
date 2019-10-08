@@ -19,6 +19,8 @@
  */
 package org.xwiki.logging.tail;
 
+import java.io.IOException;
+
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.Logger;
 import org.xwiki.logging.event.LogEvent;
@@ -33,11 +35,46 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public interface LogTail extends Iterable<LogEvent>
 {
+    /**
+     * @param logger the logger to send logs to
+     */
     void log(org.slf4j.Logger logger);
 
-    LogEvent getLogEvent(int index);
+    /**
+     * @param index the index of the log event
+     * @return the log event associated with the passed index or null if it does not exist
+     * @throws IOException when failing to extract the log event from its storage
+     */
+    LogEvent getLogEvent(int index) throws IOException;
 
-    LogTailResult getLogEvents(LogLevel from, int index, int limit);
+    /**
+     * @param from the log level from which to select log events
+     * @return the log events with the passed level or more
+     * @throws IOException when failing to extract the log event from its storage
+     */
+    default LogTailResult getLogEvents(LogLevel from) throws IOException
+    {
+        return getLogEvents(from, 0, -1);
+    }
 
+    /**
+     * @param from the log level from which to select log events
+     * @param offset the offset where to start searching for the log events
+     * @param limit the maximum number of results to return
+     * @return the log events with the passed level or more
+     * @throws IOException when failing to extract the log event from its storage
+     */
+    LogTailResult getLogEvents(LogLevel from, int offset, int limit) throws IOException;
+
+    /**
+     * @param from the log level from which to select log events
+     * @return true if a log event with the passed log level or more was found
+     * @throws IOException when failing to extract the log event from its storage
+     */
+    boolean hasLevel(LogLevel from) throws IOException;
+
+    /**
+     * @return the number of log event in that tail
+     */
     int size();
 }

@@ -38,13 +38,14 @@
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-logging-api</artifactId>
+      <artifactId>xwiki-commons-logging-common</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
     </dependency>
+
     <!-- Tests dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>

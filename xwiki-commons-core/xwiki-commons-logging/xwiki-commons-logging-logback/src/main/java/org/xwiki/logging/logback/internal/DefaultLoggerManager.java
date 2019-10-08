@@ -19,12 +19,15 @@
  */
 package org.xwiki.logging.logback.internal;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -33,6 +36,8 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LoggerManager;
+import org.xwiki.logging.internal.tail.XStreamFileLoggerTail;
+import org.xwiki.logging.tail.LoggerTail;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.WrappedThreadEventListener;
@@ -56,6 +61,9 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
      */
     @Inject
     private ObservationManager observation;
+
+    @Inject
+    private Provider<XStreamFileLoggerTail> loggerTailProvider;
 
     /**
      * The logger.
@@ -95,8 +103,8 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
                 }
             }
         } else {
-            this.logger.warn(
-                "Could not find any Logback root logger." + " All logging module advanced features will be disabled.");
+            this.logger
+                .warn("Could not find any Logback root logger. All logging module advanced features will be disabled.");
         }
     }
 
@@ -216,5 +224,15 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
     protected LoggerContext getLoggerContext()
     {
         return this.utils.getLoggerContext();
+    }
+
+    @Override
+    public LoggerTail createLoggerTail(Path path, boolean readonly) throws IOException
+    {
+        XStreamFileLoggerTail loggerTail = this.loggerTailProvider.get();
+
+        loggerTail.initialize(path, readonly);
+
+        return loggerTail;
     }
 }

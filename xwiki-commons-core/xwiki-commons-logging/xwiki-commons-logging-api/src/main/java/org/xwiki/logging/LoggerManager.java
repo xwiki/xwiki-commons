@@ -19,6 +19,7 @@
  */
 package org.xwiki.logging;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 
@@ -86,9 +87,14 @@ public interface LoggerManager
      * Create a {@link LoggerTail} in charge of navigating and appending the passed file with logs.
      * 
      * @param file the file where to store the log
+     * @param readonly true of the log is read only
      * @return the {@link LoggerTail} instance
+     * @throws IOException when failing to open the {@link LoggerTail}
      * @since 11.9RC1
      */
     @Unstable
-    LoggerTail createLoggerTail(Path file);
+    default LoggerTail createLoggerTail(Path file, boolean readonly) throws IOException
+    {
+        return new LogQueue();
+    }
 }

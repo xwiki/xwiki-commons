@@ -42,6 +42,7 @@
   </dependencies>
   <modules>
     <module>xwiki-commons-logging-api</module>
+    <module>xwiki-commons-logging-common</module>
     <module>xwiki-commons-logging-logback</module>
   </modules>
 </project>

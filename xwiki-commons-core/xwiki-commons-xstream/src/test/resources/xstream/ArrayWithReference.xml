@@ -1,0 +1,9 @@
+<org.xwiki.job.test.CustomObject-array>
+  <org.xwiki.job.test.CustomObject>
+    <field>1</field>
+  </org.xwiki.job.test.CustomObject>
+  <org.xwiki.job.test.CustomObject>
+    <field>2</field>
+  </org.xwiki.job.test.CustomObject>
+  <org.xwiki.job.test.CustomObject reference="../org.xwiki.job.test.CustomObject[2]"/>
+</org.xwiki.job.test.CustomObject-array>

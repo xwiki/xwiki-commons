@@ -168,6 +168,10 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
     {
         this.request = castRequest(request);
         this.status = createNewStatus(this.request);
+
+        if (this.status instanceof AbstractJobStatus) {
+            ((AbstractJobStatus) this.status).setLoggerTail(this.store.createLoggerTail(request.getId(), false));
+        }
     }
 
     @Override

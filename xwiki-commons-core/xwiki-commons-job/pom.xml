@@ -47,7 +47,7 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-logging-api</artifactId>
+      <artifactId>xwiki-commons-logging-common</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -63,6 +63,11 @@
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-context</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-xstream</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

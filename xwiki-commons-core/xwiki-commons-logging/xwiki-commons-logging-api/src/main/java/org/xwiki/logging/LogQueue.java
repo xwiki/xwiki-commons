@@ -21,7 +21,6 @@ package org.xwiki.logging;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -150,16 +149,15 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements LoggerT
         return null;
     }
 
-    @Override
-    public LogTailResult getLogEvents(LogLevel from, int index, int limit)
+    private List<LogEvent> getLogEvents(LogLevel level, int offset, int limit, boolean exact)
     {
-        List<LogEvent> levelLogs = new ArrayList<>(limit);
+        List<LogEvent> levelLogs = limit > 0 ? new ArrayList<>(limit) : new ArrayList<>();
 
-        int actualIndex = index >= 0 ? index : 0;
+        int actualIndex = offset >= 0 ? offset : 0;
 
         int i = 0;
         for (LogEvent log : this) {
-            if (i >= actualIndex && log.getLevel().compareTo(from) <= 0) {
+            if (i >= actualIndex && (exact ? log.getLevel() == level : log.getLevel().compareTo(level) <= 0)) {
                 levelLogs.add(log);
 
                 if (limit > 0 && levelLogs.size() == limit) {
@@ -170,7 +168,25 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements LoggerT
             ++i;
         }
 
-        return new ListLogTailResult(levelLogs);
+        return levelLogs;
+    }
+
+    @Override
+    public LogTailResult getLogEvents(LogLevel from, int offset, int limit)
+    {
+        return new ListLogTailResult(getLogEvents(from, offset, limit, false));
+    }
+
+    @Override
+    public boolean hasLevel(LogLevel from)
+    {
+        for (LogEvent log : this) {
+            if (log.getLevel().compareTo(from) <= 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -182,15 +198,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements LoggerT
      */
     public List<LogEvent> getLogs(LogLevel level)
     {
-        List<LogEvent> levelLogs = new LinkedList<>();
-
-        for (LogEvent log : this) {
-            if (log.getLevel() == level) {
-                levelLogs.add(log);
-            }
-        }
-
-        return levelLogs;
+        return getLogEvents(level, 0, -1, true);
     }
 
     /**
@@ -202,7 +210,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements LoggerT
      */
     public List<LogEvent> getLogsFrom(LogLevel level)
     {
-        return getLogEvents(level, 0, -1).list();
+        return getLogEvents(level, 0, -1, false);
     }
 
     /**
@@ -599,5 +607,17 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements LoggerT
     public void error(Marker marker, String msg, Throwable t)
     {
         addLogEvent(marker, LogLevel.ERROR, msg, ArrayUtils.EMPTY_OBJECT_ARRAY, t);
+    }
+
+    @Override
+    public void flush()
+    {
+        // Nothing to do
+    }
+
+    @Override
+    public void close() throws Exception
+    {
+        // Nothing to do
     }
 }

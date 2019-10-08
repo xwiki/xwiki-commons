@@ -19,6 +19,8 @@
  */
 package org.xwiki.logging.tail;
 
+import java.io.IOException;
+
 import org.xwiki.logging.Logger;
 import org.xwiki.stability.Unstable;
 
@@ -29,7 +31,11 @@ import org.xwiki.stability.Unstable;
  * @since 11.9RC1
  */
 @Unstable
-public interface LoggerTail extends Logger, LogTail
+public interface LoggerTail extends Logger, LogTail, AutoCloseable
 {
-
+    /**
+     * Force writing and wait for any writing to be finished.
+     * @throws IOException when failing to flush
+     */
+    void flush() throws IOException;
 }

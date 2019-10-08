@@ -94,15 +94,13 @@ public interface JobStatus
     Request getRequest();
 
     /**
-     * @return the log sent during job execution
-     */
-    LogQueue getLog();
-
-    /**
      * @return the log tail
      * @since 11.9RC1
      */
-    LogTail getLogTail();
+    default LogTail getLogTail()
+    {
+        return getLog();
+    }
 
     /**
      * @return progress information about the job (percent, etc.)
@@ -185,6 +183,13 @@ public interface JobStatus
     }
 
     // Deprecated
+
+    /**
+     * @return the log sent during job execution
+     * @deprecated since 11.9RC1, use {@link #getLogTail()} instead
+     */
+    @Deprecated
+    LogQueue getLog();
 
     /**
      * @param level the level of the log
