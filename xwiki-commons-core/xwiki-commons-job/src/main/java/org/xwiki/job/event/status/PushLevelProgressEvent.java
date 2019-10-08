@@ -46,7 +46,7 @@ public class PushLevelProgressEvent extends AbstractProgressEvent
      */
     public PushLevelProgressEvent()
     {
-        
+
     }
 
     /**
@@ -61,6 +61,22 @@ public class PushLevelProgressEvent extends AbstractProgressEvent
      * @return the number of sub steps
      */
     public int getSteps()
+    {
+        return this.steps;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof PushLevelProgressEvent) {
+            return this.steps == ((PushLevelProgressEvent) obj).steps;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode()
     {
         return this.steps;
     }

@@ -19,14 +19,17 @@
  */
 package org.xwiki.logging;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Marker;
 import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.internal.ListLogTailResult;
+import org.xwiki.logging.tail.LogTailResult;
+import org.xwiki.logging.tail.LoggerTail;
 
 /**
  * A queue of {@link LogEvent}s.
@@ -34,7 +37,7 @@ import org.xwiki.logging.event.LogEvent;
  * @version $Id$
  * @since 3.2M3
  */
-public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
+public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements LoggerTail
 {
     /**
      * Serialization identifier.
@@ -47,6 +50,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
      * @param targetLogger the logger where to copy the stored log
      * @since 5.3M1
      */
+    @Override
     public void log(org.slf4j.Logger targetLogger)
     {
         for (LogEvent logEvent : this) {
@@ -125,6 +129,66 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
         add(logEvent);
     }
 
+    @Override
+    public LogEvent getLogEvent(int index)
+    {
+        int size = size();
+        if (index < 0 || index >= size) {
+            return null;
+        }
+
+        int i = 0;
+        for (LogEvent log : this) {
+            if (i == index) {
+                return log;
+            }
+
+            ++i;
+        }
+
+        return null;
+    }
+
+    private List<LogEvent> getLogEvents(LogLevel level, int offset, int limit, boolean exact)
+    {
+        List<LogEvent> levelLogs = limit > 0 ? new ArrayList<>(limit) : new ArrayList<>();
+
+        int actualIndex = offset >= 0 ? offset : 0;
+
+        int i = 0;
+        for (LogEvent log : this) {
+            if (i >= actualIndex && (exact ? log.getLevel() == level : log.getLevel().compareTo(level) <= 0)) {
+                levelLogs.add(log);
+
+                if (limit > 0 && levelLogs.size() == limit) {
+                    break;
+                }
+            }
+
+            ++i;
+        }
+
+        return levelLogs;
+    }
+
+    @Override
+    public LogTailResult getLogEvents(LogLevel from, int offset, int limit)
+    {
+        return new ListLogTailResult(getLogEvents(from, offset, limit, false));
+    }
+
+    @Override
+    public boolean hasLevel(LogLevel from)
+    {
+        for (LogEvent log : this) {
+            if (log.getLevel().compareTo(from) <= 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Filter logs of a specific level.
      *
@@ -134,15 +198,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
      */
     public List<LogEvent> getLogs(LogLevel level)
     {
-        List<LogEvent> levelLogs = new LinkedList<LogEvent>();
-
-        for (LogEvent log : this) {
-            if (log.getLevel() == level) {
-                levelLogs.add(log);
-            }
-        }
-
-        return levelLogs;
+        return getLogEvents(level, 0, -1, true);
     }
 
     /**
@@ -154,15 +210,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
      */
     public List<LogEvent> getLogsFrom(LogLevel level)
     {
-        List<LogEvent> levelLogs = new LinkedList<LogEvent>();
-
-        for (LogEvent log : this) {
-            if (log.getLevel().compareTo(level) <= 0) {
-                levelLogs.add(log);
-            }
-        }
-
-        return levelLogs;
+        return getLogEvents(level, 0, -1, false);
     }
 
     /**
@@ -559,5 +607,17 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     public void error(Marker marker, String msg, Throwable t)
     {
         addLogEvent(marker, LogLevel.ERROR, msg, ArrayUtils.EMPTY_OBJECT_ARRAY, t);
+    }
+
+    @Override
+    public void flush()
+    {
+        // Nothing to do
+    }
+
+    @Override
+    public void close() throws Exception
+    {
+        // Nothing to do
     }
 }

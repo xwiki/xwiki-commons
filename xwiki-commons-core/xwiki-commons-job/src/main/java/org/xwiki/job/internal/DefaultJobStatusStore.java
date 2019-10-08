@@ -46,11 +46,15 @@ import org.xwiki.cache.config.LRUCacheConfiguration;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.job.AbstractJobStatus;
 import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.JobStatusStore;
 import org.xwiki.job.annotation.Serializable;
 import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.logging.LogQueue;
+import org.xwiki.logging.LoggerManager;
+import org.xwiki.logging.tail.LoggerTail;
 
 /**
  * Default implementation of {@link JobStatusStorage}.
@@ -92,6 +96,8 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
      */
     private static final String FOLDER_NULL = "&null";
 
+    private static final String STATUS_LOG_PREFIX = "log";
+
     private static final JobStatus NOSTATUS = new DefaultJobStatus<>(null, null, null, null, null);
 
     /**
@@ -103,13 +109,17 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     @Inject
     private CacheManager cacheManager;
 
+    @Inject
+    private LoggerManager loggerManager;
+
+    @Inject
+    private JobStatusSerializer serializer;
+
     /**
      * The logger to log.
      */
     @Inject
     private Logger logger;
-
-    private JobStatusSerializer serializer;
 
     private ExecutorService executorService;
 
@@ -138,8 +148,6 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     public void initialize() throws InitializationException
     {
         try {
-            this.serializer = new JobStatusSerializer();
-
             // Check if the store need to be upgraded
             File folder = this.configuration.getStorage();
             File file = new File(folder, INDEX_FILE);
@@ -264,7 +272,26 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     {
         File statusFile = new File(folder, FILENAME_STATUS);
         if (statusFile.exists()) {
-            return loadJobStatus(statusFile);
+            JobStatus status = loadJobStatus(statusFile);
+
+            // Check if there is a separated log available
+            for (File child : folder.listFiles()) {
+                if (!child.isDirectory() && child.getName().startsWith(STATUS_LOG_PREFIX)) {
+                    try {
+                        LoggerTail loggerTail = createLoggerTail(new File(folder, STATUS_LOG_PREFIX), true);
+
+                        if (status instanceof AbstractJobStatus) {
+                            ((AbstractJobStatus) status).setLoggerTail(loggerTail);
+                        }
+                    } catch (Exception e) {
+                        this.logger.error("Failed to load the job status log in [{}]", folder, e);
+                    }
+
+                    break;
+                }
+            }
+
+            return status;
         }
 
         return null;
@@ -297,6 +324,11 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         }
 
         return folder;
+    }
+
+    private File getJobLogBaseFile(List<String> id)
+    {
+        return new File(getJobFolder(id), STATUS_LOG_PREFIX);
     }
 
     /**
@@ -412,5 +444,32 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         }
 
         this.cache.remove(toUniqueString(id));
+    }
+
+    @Override
+    public LoggerTail createLoggerTail(List<String> jobId, boolean readonly)
+    {
+        if (jobId != null) {
+            try {
+                return createLoggerTail(getJobLogBaseFile(jobId), readonly);
+            } catch (Exception e) {
+                this.logger.error("Failed to create a logger tail for job [{}]", jobId, e);
+            }
+        }
+
+        return new LogQueue();
+    }
+
+    private LoggerTail createLoggerTail(File logBaseFile, boolean readonly) throws IOException
+    {
+        return this.loggerManager.createLoggerTail(logBaseFile.toPath(), readonly);
+    }
+
+    /**
+     * Remove all elements from the cache.
+     */
+    public void flushCache()
+    {
+        this.cache.removeAll();
     }
 }

@@ -28,6 +28,7 @@ import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.tail.LogTail;
 import org.xwiki.script.internal.safe.AbstractSafeObject;
 import org.xwiki.script.internal.safe.ScriptSafeProvider;
 
@@ -74,9 +75,16 @@ public class SafeJobStatus<J extends JobStatus> extends AbstractSafeObject<J> im
     }
 
     @Override
+    @Deprecated
     public LogQueue getLog()
     {
         return getWrapped().getLog();
+    }
+
+    @Override
+    public LogTail getLogTail()
+    {
+        return getWrapped().getLogTail();
     }
 
     @Override

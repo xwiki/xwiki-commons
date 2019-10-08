@@ -63,6 +63,7 @@
     <module>xwiki-commons-text</module>
     <module>xwiki-commons-velocity</module>
     <module>xwiki-commons-xml</module>
+    <module>xwiki-commons-xstream</module>
   </modules>
   <build>
     <pluginManagement>

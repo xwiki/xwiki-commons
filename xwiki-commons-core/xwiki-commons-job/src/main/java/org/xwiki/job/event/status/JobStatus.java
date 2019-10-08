@@ -27,6 +27,7 @@ import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.tail.LogTail;
 
 /**
  * Describe the current status of a job.
@@ -93,9 +94,13 @@ public interface JobStatus
     Request getRequest();
 
     /**
-     * @return the log sent during job execution
+     * @return the log tail
+     * @since 11.9RC1
      */
-    LogQueue getLog();
+    default LogTail getLogTail()
+    {
+        return getLog();
+    }
 
     /**
      * @return progress information about the job (percent, etc.)
@@ -178,6 +183,13 @@ public interface JobStatus
     }
 
     // Deprecated
+
+    /**
+     * @return the log sent during job execution
+     * @deprecated since 11.9RC1, use {@link #getLogTail()} instead
+     */
+    @Deprecated
+    LogQueue getLog();
 
     /**
      * @param level the level of the log

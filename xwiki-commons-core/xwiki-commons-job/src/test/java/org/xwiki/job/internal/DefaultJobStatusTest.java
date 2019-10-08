@@ -20,6 +20,7 @@
 package org.xwiki.job.internal;
 
 import java.util.Arrays;
+import java.util.Date;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -27,14 +28,23 @@ import org.mockito.stubbing.Answer;
 import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.job.event.status.JobStatus.State;
 import org.xwiki.job.event.status.QuestionAnsweredEvent;
 import org.xwiki.job.event.status.QuestionAskedEvent;
+import org.xwiki.logging.LogLevel;
+import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.LoggerManager;
+import org.xwiki.logging.tail.LoggerTail;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.doAnswer;
@@ -116,5 +126,153 @@ public class DefaultJobStatusTest
 
         QuestionAnsweredEvent questionAnswered = new QuestionAnsweredEvent(String.class.getName(), request.getId());
         verify(this.observationManager).notify(questionAnswered, jobStatus);
+    }
+
+    @Test
+    public void defaultogQueue()
+    {
+        DefaultJobStatus<DefaultRequest> jobStatus =
+            new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
+
+        assertSame(jobStatus.getLog(), jobStatus.getLog());
+        assertSame(jobStatus.getLog(), jobStatus.getLoggerTail());
+    }
+
+    @Test
+    public void getLogLevel()
+    {
+        DefaultJobStatus<DefaultRequest> jobStatus =
+            new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
+
+        assertEquals(0, jobStatus.getLog(LogLevel.TRACE).size());
+
+        jobStatus.getLog().trace("message");
+
+        assertEquals(1, jobStatus.getLog(LogLevel.TRACE).size());
+        assertEquals("message", jobStatus.getLog(LogLevel.TRACE).get(0).getMessage());
+    }
+
+    @Test
+    public void setError()
+    {
+        DefaultJobStatus<DefaultRequest> jobStatus =
+            new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
+
+        assertNull(jobStatus.getError());
+
+        Exception error = new Exception();
+        jobStatus.setError(error);
+
+        assertSame(error, jobStatus.getError());
+    }
+
+    @Test
+    public void setCancellable()
+    {
+        DefaultJobStatus<DefaultRequest> jobStatus =
+            new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
+
+        assertFalse(jobStatus.isCancelable());
+
+        jobStatus.setCancelable(true);
+
+        assertTrue(jobStatus.isCancelable());
+
+        jobStatus.setCancelable(false);
+
+        assertFalse(jobStatus.isCancelable());
+    }
+
+    @Test
+    public void setState()
+    {
+        DefaultJobStatus<DefaultRequest> jobStatus =
+            new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
+
+        assertSame(State.NONE, jobStatus.getState());
+
+        jobStatus.setState(State.RUNNING);
+
+        assertSame(State.RUNNING, jobStatus.getState());
+    }
+
+    @Test
+    public void setDates()
+    {
+        DefaultJobStatus<DefaultRequest> jobStatus =
+            new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
+
+        assertNull(jobStatus.getStartDate());
+        assertNull(jobStatus.getEndDate());
+
+        jobStatus.setStartDate(new Date(0));
+        jobStatus.setEndDate(new Date(1));
+
+        assertEquals(new Date(0), jobStatus.getStartDate());
+        assertEquals(new Date(1), jobStatus.getEndDate());
+    }
+
+    @Test
+    public void setIsolated()
+    {
+        DefaultRequest request = new DefaultRequest();
+        DefaultJobStatus<DefaultRequest> jobStatus = new DefaultJobStatus<>("type", request, null, null, null);
+
+        assertTrue(jobStatus.isIsolated());
+
+        jobStatus.setIsolated(false);
+
+        assertFalse(jobStatus.isIsolated());
+
+        jobStatus.setIsolated(true);
+
+        assertTrue(jobStatus.isIsolated());
+
+        request.setStatusLogIsolated(false);
+
+        assertFalse(jobStatus.isIsolated());
+
+        request.setStatusLogIsolated(true);
+
+        assertTrue(jobStatus.isIsolated());
+    }
+
+    @Test
+    public void cancel()
+    {
+        DefaultJobStatus<DefaultRequest> jobStatus =
+            new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
+
+        assertFalse(jobStatus.isCanceled());
+
+        jobStatus.cancel();
+
+        assertTrue(jobStatus.isCanceled());
+    }
+
+    @Test
+    public void setLoggerTail()
+    {
+        DefaultJobStatus<DefaultRequest> jobStatus =
+            new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
+
+        assertNotNull(jobStatus.getLoggerTail());
+
+        LoggerTail loggerTail = new LogQueue();
+
+        jobStatus.setLoggerTail(loggerTail);
+
+        assertSame(loggerTail, jobStatus.getLogTail());
+        assertSame(loggerTail, jobStatus.getLog());
+
+        jobStatus = new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
+
+        loggerTail = mock(LoggerTail.class);
+
+        jobStatus.setLoggerTail(loggerTail);
+
+        assertSame(loggerTail, jobStatus.getLogTail());
+        assertNotSame(loggerTail, jobStatus.getLog());
+        assertNotSame(jobStatus.getLog(), jobStatus.getLog());
     }
 }

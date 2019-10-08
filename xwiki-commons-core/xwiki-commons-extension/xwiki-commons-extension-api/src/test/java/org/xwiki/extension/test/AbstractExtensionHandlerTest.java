@@ -21,7 +21,7 @@ package org.xwiki.extension.test;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -94,10 +94,10 @@ public abstract class AbstractExtensionHandlerTest
             throw installJob.getStatus().getError();
         }
 
-        List<LogEvent> errors = installJob.getStatus().getLog().getLogsFrom(failFrom);
-        if (!errors.isEmpty()) {
-            throw errors.get(0).getThrowable() != null ? errors.get(0).getThrowable()
-                : new Exception(errors.get(0).getFormattedMessage());
+        Stream<LogEvent> errors = installJob.getStatus().getLogTail().getLogEvents(failFrom).stream();
+        if (errors.count() > 0) {
+            LogEvent error = errors.findFirst().get();
+            throw error.getThrowable() != null ? error.getThrowable() : new Exception(error.getFormattedMessage());
         }
 
         return installJob;
@@ -176,7 +176,8 @@ public abstract class AbstractExtensionHandlerTest
         return installPlan(extensionId, (String[]) null, rootModifications);
     }
 
-    protected ExtensionPlan installPlan(Collection<ExtensionId> extensionIds, boolean rootModifications) throws Throwable
+    protected ExtensionPlan installPlan(Collection<ExtensionId> extensionIds, boolean rootModifications)
+        throws Throwable
     {
         return installPlan(extensionIds, (String[]) null, rootModifications);
     }
@@ -192,8 +193,8 @@ public abstract class AbstractExtensionHandlerTest
         return installPlan(extensionId, namespaces, rootModifications, LogLevel.WARN);
     }
 
-    protected ExtensionPlan installPlan(Collection<ExtensionId> extensionIds, String[] namespaces, boolean rootModifications)
-        throws Throwable
+    protected ExtensionPlan installPlan(Collection<ExtensionId> extensionIds, String[] namespaces,
+        boolean rootModifications) throws Throwable
     {
         return installPlan(extensionIds, namespaces, rootModifications, LogLevel.WARN);
     }
@@ -222,8 +223,8 @@ public abstract class AbstractExtensionHandlerTest
         return installPlan(Arrays.asList(extensionId), namespaces, rootModifications, failFrom);
     }
 
-    protected ExtensionPlan installPlan(Collection<ExtensionId> extensionIds, String[] namespaces, boolean rootModifications,
-        LogLevel failFrom) throws Throwable
+    protected ExtensionPlan installPlan(Collection<ExtensionId> extensionIds, String[] namespaces,
+        boolean rootModifications, LogLevel failFrom) throws Throwable
     {
         InstallRequest installRequest = createInstallRequest(extensionIds, namespaces, rootModifications);
 

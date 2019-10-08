@@ -19,11 +19,15 @@
  */
 package org.xwiki.logging;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Role;
+import org.xwiki.logging.tail.LoggerTail;
 import org.xwiki.observation.EventListener;
+import org.xwiki.stability.Unstable;
 
 /**
  * Provide some logging management APIs such as the ability to redirect logs to an {@link EventListener}.
@@ -78,4 +82,19 @@ public interface LoggerManager
      * @return all the registered loggers
      */
     Collection<Logger> getLoggers();
+
+    /**
+     * Create a {@link LoggerTail} in charge of navigating and appending the passed file with logs.
+     * 
+     * @param file the file where to store the log
+     * @param readonly true of the log is read only
+     * @return the {@link LoggerTail} instance
+     * @throws IOException when failing to open the {@link LoggerTail}
+     * @since 11.9RC1
+     */
+    @Unstable
+    default LoggerTail createLoggerTail(Path file, boolean readonly) throws IOException
+    {
+        return new LogQueue();
+    }
 }
