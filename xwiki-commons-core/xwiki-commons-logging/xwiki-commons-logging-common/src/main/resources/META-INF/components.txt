@@ -1,2 +1,3 @@
 org.xwiki.logging.logback.internal.DefaultLoggerManager
 org.xwiki.logging.logback.internal.LogbackEventGenerator
+org.xwiki.logging.internal.tail.XStreamFileLoggerTail
