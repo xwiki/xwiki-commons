@@ -35,8 +35,7 @@ import javax.inject.Singleton;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.job.history.ExtensionJobHistoryRecord;
 import org.xwiki.extension.job.history.ExtensionJobHistorySerializer;
-
-import com.thoughtworks.xstream.XStream;
+import org.xwiki.xstream.internal.SafeXStream;
 
 /**
  * Default implementation of {@link ExtensionJobHistorySerializer}.
@@ -52,7 +51,7 @@ public class DefaultExtensionJobHistorySerializer implements ExtensionJobHistory
      * Used to serialize and deserialize extension job history records.
      */
     @Inject
-    private XStream xstream;
+    private SafeXStream xstream;
 
     @Override
     public String serialize(ExtensionJobHistoryRecord record)
