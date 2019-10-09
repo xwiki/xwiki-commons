@@ -51,10 +51,4 @@ public class EmptyLogTailResult implements LogTailResult
     {
         return Collections.<LogEvent>emptyList().iterator();
     }
-
-    @Override
-    public int size()
-    {
-        return 0;
-    }
 }

@@ -175,18 +175,18 @@ public class LogQueueTest
 
         queue.warn("");
 
-        assertEquals(1, queue.getLogEvents(LogLevel.TRACE).size());
+        assertEquals(1, queue.getLogEvents(LogLevel.TRACE).stream().count());
         assertTrue(queue.hasLogLevel(LogLevel.TRACE));
-        assertEquals(1, queue.getLogEvents(LogLevel.DEBUG).size());
+        assertEquals(1, queue.getLogEvents(LogLevel.DEBUG).stream().count());
         assertTrue(queue.hasLogLevel(LogLevel.DEBUG));
-        assertEquals(1, queue.getLogEvents(LogLevel.INFO).size());
+        assertEquals(1, queue.getLogEvents(LogLevel.INFO).stream().count());
         assertTrue(queue.hasLogLevel(LogLevel.INFO));
-        assertEquals(1, queue.getLogEvents(LogLevel.WARN).size());
+        assertEquals(1, queue.getLogEvents(LogLevel.WARN).stream().count());
         assertTrue(queue.hasLogLevel(LogLevel.WARN));
-        assertEquals(0, queue.getLogEvents(LogLevel.ERROR).size());
+        assertEquals(0, queue.getLogEvents(LogLevel.ERROR).stream().count());
         assertFalse(queue.hasLogLevel(LogLevel.ERROR));
 
-        assertEquals(1, queue.getLogEvents(null).size());
+        assertEquals(1, queue.getLogEvents(null).stream().count());
     }
 
     @Test
