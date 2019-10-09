@@ -56,4 +56,10 @@ public class ListLogTailResult implements LogTailResult
     {
         return this.list.iterator();
     }
+
+    @Override
+    public int size()
+    {
+        return this.list.size();
+    }
 }

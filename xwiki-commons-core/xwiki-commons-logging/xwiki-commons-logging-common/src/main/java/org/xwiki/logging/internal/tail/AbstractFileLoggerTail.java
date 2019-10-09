@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.inject.Inject;
 
@@ -63,7 +64,7 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
     @Inject
     protected Logger componentLogger;
 
-    protected final List<IndexEntry> index = new ArrayList<>();
+    protected final List<IndexEntry> index = new CopyOnWriteArrayList<>();
 
     protected File logFile;
 
@@ -257,6 +258,11 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
 
         IndexEntry indexEntry = this.index.get(index);
 
+        return getLogEvent(index, indexEntry);
+    }
+
+    private LogEvent getLogEvent(int index, IndexEntry indexEntry) throws IOException
+    {
         Long fromPosition = indexEntry.position;
 
         synchronized (this) {
@@ -276,6 +282,43 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
                 close(open);
             }
         }
+    }
+
+    @Override
+    public LogEvent getFirstLogEvent(LogLevel from) throws IOException
+    {
+        for (int i = 0; i < this.index.size(); ++i) {
+            IndexEntry indexEntry = this.index.get(i);
+
+            if (isLogLevel(indexEntry, from)) {
+                return getLogEvent(i, indexEntry);
+            }
+        }
+
+        return null;
+    }
+
+    private boolean isLogLevel(IndexEntry indexEntry, LogLevel from)
+    {
+        return from == null || indexEntry.level.compareTo(from) <= 0;
+    }
+
+    @Override
+    public LogEvent getLastLogEvent(LogLevel from) throws IOException
+    {
+        IndexEntry lastIndexEntry = null;
+        int lastIndex = -1;
+
+        for (int i = 0; i < this.index.size(); ++i) {
+            IndexEntry indexEntry = this.index.get(i);
+
+            if (isLogLevel(indexEntry, from)) {
+                lastIndexEntry = indexEntry;
+                lastIndex = i;
+            }
+        }
+
+        return lastIndexEntry != null ? getLogEvent(lastIndex, lastIndexEntry) : null;
     }
 
     @Override
@@ -303,7 +346,7 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
                 for (int i = offset; i < toIndex; ++i) {
                     IndexEntry indexEntry = this.index.get(i);
 
-                    if (indexEntry.level.compareTo(from) <= 0) {
+                    if (isLogLevel(indexEntry, from)) {
                         events.add(getLogEvent(i));
                     }
                 }
@@ -316,15 +359,11 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
     }
 
     @Override
-    public boolean hasLevel(LogLevel from)
+    public boolean hasLogLevel(LogLevel from)
     {
-        synchronized (this) {
-            for (int i = 0; i < this.index.size(); ++i) {
-                IndexEntry indexEntry = this.index.get(i);
-
-                if (indexEntry.level.compareTo(from) <= 0) {
-                    return true;
-                }
+        for (IndexEntry indexEntry : this.index) {
+            if (isLogLevel(indexEntry, from)) {
+                return true;
             }
         }
 

@@ -37,4 +37,9 @@ public interface LogTailResult extends Iterable<LogEvent>
      * @return a sequential {@code Stream} over the elements in this collection
      */
     Stream<LogEvent> stream();
+
+    /**
+     * @return the size of the result
+     */
+    int size();
 }

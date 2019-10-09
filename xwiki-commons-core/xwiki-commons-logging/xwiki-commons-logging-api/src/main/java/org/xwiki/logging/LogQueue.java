@@ -19,6 +19,7 @@
  */
 package org.xwiki.logging;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -149,6 +150,32 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements LoggerT
         return null;
     }
 
+    @Override
+    public LogEvent getFirstLogEvent(LogLevel from) throws IOException
+    {
+        for (LogEvent log : this) {
+            if (log.getLevel().compareTo(from) <= 0) {
+                return log;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public LogEvent getLastLogEvent(LogLevel from) throws IOException
+    {
+        LogEvent logEvent = null;
+
+        for (LogEvent log : this) {
+            if (log.getLevel().compareTo(from) <= 0) {
+                logEvent = log;
+            }
+        }
+
+        return logEvent;
+    }
+
     private List<LogEvent> getLogEvents(LogLevel level, int offset, int limit, boolean exact)
     {
         List<LogEvent> levelLogs = limit > 0 ? new ArrayList<>(limit) : new ArrayList<>();
@@ -157,7 +184,8 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements LoggerT
 
         int i = 0;
         for (LogEvent log : this) {
-            if (i >= actualIndex && (exact ? log.getLevel() == level : log.getLevel().compareTo(level) <= 0)) {
+            if (i >= actualIndex
+                && (level == null || (exact ? log.getLevel() == level : log.getLevel().compareTo(level) <= 0))) {
                 levelLogs.add(log);
 
                 if (limit > 0 && levelLogs.size() == limit) {
@@ -178,7 +206,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements LoggerT
     }
 
     @Override
-    public boolean hasLevel(LogLevel from)
+    public boolean hasLogLevel(LogLevel from)
     {
         for (LogEvent log : this) {
             if (log.getLevel().compareTo(from) <= 0) {

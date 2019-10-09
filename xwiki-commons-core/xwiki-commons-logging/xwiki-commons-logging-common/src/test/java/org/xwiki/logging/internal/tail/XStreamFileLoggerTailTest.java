@@ -25,6 +25,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentLifecycleException;
+import org.xwiki.logging.LogLevel;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.XWikiTempDir;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -86,5 +87,49 @@ public class XStreamFileLoggerTailTest
         this.tail.error("error2");
 
         assertNull(this.tail.getLogEvent(2));
+    }
+
+    @Test
+    public void getFirstLogEvent() throws IOException
+    {
+        this.tail.initialize(new File(this.tmpDir, "log").toPath(), false);
+
+        assertNull(this.tail.getFirstLogEvent());
+        assertNull(this.tail.getFirstLogEvent(LogLevel.ERROR));
+
+        this.tail.info("info0");
+        this.tail.info("info1");
+        this.tail.warn("warn0");
+        this.tail.warn("warn1");
+        this.tail.error("error0");
+        this.tail.error("error1");
+
+        assertEquals("info0", this.tail.getFirstLogEvent().getMessage());
+        assertEquals("info0", this.tail.getFirstLogEvent(LogLevel.TRACE).getMessage());
+        assertEquals("info0", this.tail.getFirstLogEvent(LogLevel.INFO).getMessage());
+        assertEquals("warn0", this.tail.getFirstLogEvent(LogLevel.WARN).getMessage());
+        assertEquals("error0", this.tail.getFirstLogEvent(LogLevel.ERROR).getMessage());
+    }
+
+    @Test
+    public void getLastLogEvent() throws IOException
+    {
+        this.tail.initialize(new File(this.tmpDir, "log").toPath(), false);
+
+        assertNull(this.tail.getLastLogEvent());
+        assertNull(this.tail.getLastLogEvent(LogLevel.ERROR));
+
+        this.tail.error("error0");
+        this.tail.error("error1");
+        this.tail.warn("warn0");
+        this.tail.warn("warn1");
+        this.tail.info("info0");
+        this.tail.info("info1");
+
+        assertEquals("info1", this.tail.getLastLogEvent().getMessage());
+        assertEquals("info1", this.tail.getLastLogEvent(LogLevel.TRACE).getMessage());
+        assertEquals("info1", this.tail.getLastLogEvent(LogLevel.INFO).getMessage());
+        assertEquals("warn1", this.tail.getLastLogEvent(LogLevel.WARN).getMessage());
+        assertEquals("error1", this.tail.getLastLogEvent(LogLevel.ERROR).getMessage());
     }
 }
