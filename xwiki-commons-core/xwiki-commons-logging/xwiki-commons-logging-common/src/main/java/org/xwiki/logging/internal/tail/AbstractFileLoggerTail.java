@@ -334,8 +334,8 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
                 fromIndex = 0;
             }
             int toIndex = fromIndex + limit;
-            if (toIndex >= this.index.size()) {
-                toIndex = this.index.size() - 1;
+            if (toIndex <= fromIndex) {
+                toIndex = this.index.size();
             }
 
             List<LogEvent> events = new ArrayList<>(toIndex - fromIndex);
