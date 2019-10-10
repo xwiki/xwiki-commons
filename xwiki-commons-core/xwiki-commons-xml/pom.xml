@@ -32,7 +32,7 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - XML</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.6</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.64</xwiki.jacoco.instructionRatio>
     <xwiki.pitest.mutationThreshold>65</xwiki.pitest.mutationThreshold>
     <!-- There's a utility class with lots of features, allow it to have many dependencies;
          There's a SAX event listener, which requires complex code -->
@@ -85,15 +85,6 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    <!-- TODO: Remove when Botsing/Evosuite is fixed see
-         https://github.com/STAMP-project/botsing/issues/89#issuecomment-538650459
-         Runtime library for executing Botsing/Evosuite-generated tests -->
-    <dependency>
-      <groupId>org.evosuite</groupId>
-      <artifactId>evosuite-standalone-runtime</artifactId>
-      <version>1.0.6</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -111,11 +102,6 @@
             <exclude>**/*.dtd</exclude>
           </excludes>
         </configuration>
-      </plugin>
-      <!-- Add test source root for executing generated tests -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
