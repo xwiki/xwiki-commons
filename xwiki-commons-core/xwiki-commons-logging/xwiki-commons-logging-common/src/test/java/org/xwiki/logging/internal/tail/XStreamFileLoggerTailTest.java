@@ -143,4 +143,34 @@ public class XStreamFileLoggerTailTest
         assertEquals("warn1", this.tail.getLastLogEvent(LogLevel.WARN).getMessage());
         assertEquals("error1", this.tail.getLastLogEvent(LogLevel.ERROR).getMessage());
     }
+
+    @Test
+    public void getLogEvents() throws IOException
+    {
+        this.tail.initialize(new File(this.tmpDir, "log").toPath(), false);
+
+        assertEquals(0, this.tail.getLogEvents(null).stream().count());
+        assertEquals(0, this.tail.getLogEvents(LogLevel.DEBUG).stream().count());
+
+        this.tail.info("info0");
+        this.tail.warn("warn0");
+        this.tail.error("error0");
+        this.tail.info("info1");
+        this.tail.warn("warn1");
+        this.tail.error("error1");
+        this.tail.info("info2");
+        this.tail.warn("warn2");
+        this.tail.error("error2");
+
+        assertEquals(9, this.tail.getLogEvents(null).stream().count());
+        assertEquals(9, this.tail.getLogEvents(LogLevel.DEBUG).stream().count());
+        assertEquals(9, this.tail.getLogEvents(LogLevel.INFO).stream().count());
+        assertEquals(6, this.tail.getLogEvents(LogLevel.WARN).stream().count());
+        assertEquals(3, this.tail.getLogEvents(LogLevel.ERROR).stream().count());
+
+        assertEquals(9, this.tail.getLogEvents(0, -1).stream().count());
+        assertEquals(6, this.tail.getLogEvents(3, -1).stream().count());
+        assertEquals(3, this.tail.getLogEvents(0, 3).stream().count());
+        assertEquals(3, this.tail.getLogEvents(3, 3).stream().count());
+    }
 }
