@@ -136,7 +136,7 @@ public class ComponentAnnotationCheck extends AbstractCheck
 
         Class<?> componentClass;
         try {
-            componentClass = getClassLoader().loadClass(getFullClassName());
+            componentClass = Thread.currentThread().getContextClassLoader().loadClass(getFullClassName());
         } catch (ClassNotFoundException e) {
             log(ast.getLineNo(), ast.getColumnNo(), String.format(
                 "Failed to load class in package [%s]: [%s]", this.packageName, getThrowableString(e)));
@@ -199,7 +199,8 @@ public class ComponentAnnotationCheck extends AbstractCheck
         List<String> results = new ArrayList<>();
 
         try {
-            Enumeration<URL> urls = getClassLoader().getResources(COMPONENTS_TXT_LOCATION);
+            Enumeration<URL> urls =
+                Thread.currentThread().getContextClassLoader().getResources(COMPONENTS_TXT_LOCATION);
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
                 // We find the right components.txt by checking that the URL is using a "file" scheme (maven points
@@ -266,7 +267,8 @@ public class ComponentAnnotationCheck extends AbstractCheck
     {
         Class<? extends Annotation> annotationClass;
         try {
-            annotationClass = getClassLoader().loadClass(annotationClassString).asSubclass(Annotation.class);
+            annotationClass = Thread.currentThread().getContextClassLoader().loadClass(annotationClassString)
+                .asSubclass(Annotation.class);
         } catch (Exception e) {
             // This means that we're in a module that doesn't have a dependency on xwiki-commons-component-api (where
             // Component and InstantiationStrategy annotations are located) and thus this module cannot define
