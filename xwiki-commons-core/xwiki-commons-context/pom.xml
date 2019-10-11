@@ -32,8 +32,8 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Context</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.79</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>91</xwiki.pitest.mutationThreshold>
+    <xwiki.jacoco.instructionRatio>0.86</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>97</xwiki.pitest.mutationThreshold>
   </properties>
   <dependencies>
     <dependency>
@@ -48,6 +48,15 @@
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-tool-test-simple</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- TODO: Remove when Botsing/Evosuite is fixed see
+         https://github.com/STAMP-project/botsing/issues/89#issuecomment-538650459
+         Runtime library for executing Botsing/Evosuite-generated tests -->
+    <dependency>
+      <groupId>org.evosuite</groupId>
+      <artifactId>evosuite-standalone-runtime</artifactId>
+      <version>1.0.6</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
