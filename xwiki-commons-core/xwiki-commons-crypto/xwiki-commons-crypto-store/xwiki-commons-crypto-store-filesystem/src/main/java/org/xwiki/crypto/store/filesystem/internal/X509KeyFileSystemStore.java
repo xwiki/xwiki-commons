@@ -108,7 +108,9 @@ public class X509KeyFileSystemStore extends AbstractX509FileSystemStore implemen
                 File certfile = new File(file, filename + CERTIFICATE_FILE_EXTENSION);
 
                 store(new BufferedWriter(new FileWriter(keyfile)), type, privateKey);
-                store(new BufferedWriter(new FileWriter(certfile)), CERTIFICATE, certificate.getEncoded());
+
+                byte[] encodedCertificate = certificate.getEncoded();
+                store(new BufferedWriter(new FileWriter(certfile)), CERTIFICATE, encodedCertificate);
             } else {
                 if (!file.exists()) {
                     if (!file.createNewFile()) {
