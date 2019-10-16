@@ -61,6 +61,8 @@ import org.xwiki.logging.tail.LogTailResult;
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
 public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implements Disposable
 {
+    protected static final String FAILED_STORE_LOG = "Failed to store the log";
+
     @Inject
     protected Logger componentLogger;
 
@@ -219,24 +221,26 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
 
     private void writeLog(LogEvent logEvent)
     {
-        synchronized (this) {
-            try {
-                IndexEntry indexEntry = new IndexEntry(this.logStore.length(), logEvent.getLevel());
-                this.index.add(indexEntry);
+        // We can't store this log since it has a good chance of creating a infinine loop
+        // We don't use #equals for performance reason, it works because it's the exact same String instance
+        if (FAILED_STORE_LOG != logEvent.getMessage()) {
+            synchronized (this) {
+                try {
+                    IndexEntry indexEntry = new IndexEntry(this.logStore.length(), logEvent.getLevel());
+                    this.index.add(indexEntry);
 
-                // Go to the end of the file
-                this.logStore.seek(indexEntry.position);
+                    // Go to the end of the file
+                    this.logStore.seek(indexEntry.position);
 
-                write(logEvent, this.logStore);
+                    write(logEvent, this.logStore);
 
-                // Add a new line for readability
-                this.logStore.write('\n');
+                    // Add a new line for readability
+                    this.logStore.write('\n');
 
-                writeIndex(indexEntry.position, logEvent.getLevel());
-            } catch (Exception e) {
-                // We can't log that in the current thread since it has a good chance of create a infinine loop
-
-                this.componentLogger.error("Failed to store the log", e);
+                    writeIndex(indexEntry.position, logEvent.getLevel());
+                } catch (Exception e) {
+                    this.componentLogger.error(org.xwiki.logging.Logger.ROOT_MARKER, FAILED_STORE_LOG, e);
+                }
             }
         }
     }
