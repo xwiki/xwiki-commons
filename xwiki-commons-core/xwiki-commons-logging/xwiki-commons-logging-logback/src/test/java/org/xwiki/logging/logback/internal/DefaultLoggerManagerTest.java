@@ -142,12 +142,19 @@ public class DefaultLoggerManagerTest
         // Make sure the log has been sent to the logback appender
         Assert.assertEquals("[test] other thread", this.listAppender.list.get(1).getMessage());
 
+        this.logger.error(org.xwiki.logging.Logger.ROOT_MARKER, "[test] root log");
+
+        // Make sure the log has been added to the queue
+        Assert.assertEquals("[test] root log", queue.poll().getMessage());
+        // Make sure the log also been sent to the logback appender
+        Assert.assertEquals("[test] root log", this.listAppender.list.get(2).getMessage());
+
         this.loggerManager.popLogListener();
 
         this.logger.error("[test] after pop");
 
         Assert.assertTrue(queue.isEmpty());
-        Assert.assertEquals("[test] after pop", this.listAppender.list.get(2).getMessage());
+        Assert.assertEquals("[test] after pop", this.listAppender.list.get(3).getMessage());
     }
 
     @Test
