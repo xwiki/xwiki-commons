@@ -33,6 +33,7 @@
   <description>XWiki Commons - Job</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.58</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>57</xwiki.pitest.mutationThreshold>
   </properties>
   <dependencies>
     <dependency>
@@ -131,22 +132,4 @@
       </plugin>
     </plugins>
   </build>
-  <profiles>
-    <profile>
-      <id>quality</id>
-      <build>
-        <plugins>
-          <!-- pitest/descartes is currently failing on this module,
-               see https://github.com/STAMP-project/pitest-descartes/issues/51 -->
-          <plugin>
-            <groupId>org.pitest</groupId>
-            <artifactId>pitest-maven</artifactId>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>

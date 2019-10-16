@@ -33,7 +33,7 @@
   <description>XWiki Commons - Groovy</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.94</xwiki.jacoco.instructionRatio>
-
+    <xwiki.pitest.mutationThreshold>100</xwiki.pitest.mutationThreshold>
     <!-- Impersonate the old groovy-all module so that EM does not try to install it when hitting it as dependency of an extension -->
     <xwiki.extension.features>org.codehaus.groovy:groovy-all</xwiki.extension.features>
   </properties>

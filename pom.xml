@@ -89,7 +89,7 @@
           - xwiki-platform-mailsender
     -->
     <pitest.version>1.4.10</pitest.version>
-    <descartes.version>1.2.5</descartes.version>
+    <descartes.version>1.2.6</descartes.version>
 
     <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
          are executed with surefire or failsafe) -->
