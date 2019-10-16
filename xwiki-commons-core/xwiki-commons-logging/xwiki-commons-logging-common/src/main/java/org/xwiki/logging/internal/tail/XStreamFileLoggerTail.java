@@ -40,6 +40,8 @@ import org.xwiki.xstream.internal.SafeXStream;
 @Component(roles = XStreamFileLoggerTail.class)
 public class XStreamFileLoggerTail extends AbstractTextFileLoggerTail
 {
+    protected static final String FILE_EXTENSION = ".xml";
+
     @Inject
     private SafeXStream xstream;
 
@@ -56,7 +58,16 @@ public class XStreamFileLoggerTail extends AbstractTextFileLoggerTail
     @Override
     protected String getFileExtension()
     {
-        return ".xml";
+        return FILE_EXTENSION;
+    }
+
+    /**
+     * @param path the base path of the log
+     * @return true of a log has been stored at this location
+     */
+    public static boolean exist(Path path)
+    {
+        return exist(path, FILE_EXTENSION);
     }
 
     @Override

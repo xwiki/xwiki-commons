@@ -20,7 +20,6 @@
 package org.xwiki.logging.logback.internal;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Iterator;
 
 import org.junit.Assert;
@@ -279,6 +278,12 @@ public class DefaultLoggerManagerTest
         this.mocker.registerMockComponent(SafeXStream.class);
 
         File logFile = new File(XWikiTempDirUtil.createTemporaryDirectory(), "log");
+
+        Assert.assertTrue(
+            !(this.loggerManager.createLoggerTail(logFile.toPath(), true) instanceof XStreamFileLoggerTail));
+
+        Assert
+            .assertTrue(this.loggerManager.createLoggerTail(logFile.toPath(), false) instanceof XStreamFileLoggerTail);
 
         Assert.assertTrue(this.loggerManager.createLoggerTail(logFile.toPath(), true) instanceof XStreamFileLoggerTail);
     }

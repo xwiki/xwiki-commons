@@ -35,6 +35,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.logging.LogLevel;
+import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.logging.internal.tail.XStreamFileLoggerTail;
 import org.xwiki.logging.tail.LoggerTail;
@@ -229,10 +230,14 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
     @Override
     public LoggerTail createLoggerTail(Path path, boolean readonly) throws IOException
     {
-        XStreamFileLoggerTail loggerTail = this.loggerTailProvider.get();
+        if (readonly && !XStreamFileLoggerTail.exist(path)) {
+            return new LogQueue();
+        } else {
+            XStreamFileLoggerTail loggerTail = this.loggerTailProvider.get();
 
-        loggerTail.initialize(path, readonly);
+            loggerTail.initialize(path, readonly);
 
-        return loggerTail;
+            return loggerTail;
+        }
     }
 }

@@ -41,12 +41,12 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.phase.Disposable;
 import org.xwiki.logging.LogLevel;
+import org.xwiki.logging.Logger;
 import org.xwiki.logging.event.LogEvent;
 import org.xwiki.logging.internal.ListLogTailResult;
 import org.xwiki.logging.tail.EmptyLogTailResult;
@@ -63,8 +63,10 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
 {
     protected static final String FAILED_STORE_LOG = "Failed to store the log";
 
+    protected static final String FILE_EXTENSION = ".log";
+
     @Inject
-    protected Logger componentLogger;
+    protected org.slf4j.Logger componentLogger;
 
     protected final List<IndexEntry> index = new CopyOnWriteArrayList<>();
 
@@ -72,7 +74,11 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
 
     protected RandomAccessFile logStore;
 
+    protected File indexFile;
+
     protected Writer indexStore;
+
+    protected long indexStoreDate;
 
     protected boolean closed = true;
 
@@ -114,10 +120,39 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
 
             try {
                 return getLogEvent(this.current++);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to get log event in [" + logFile + "]", e);
             }
         }
+    }
+
+    /**
+     * @param path the base path of the log
+     * @return true of a log has been stored at this location
+     */
+    public static boolean exist(Path path)
+    {
+        return exist(path, FILE_EXTENSION);
+    }
+
+    /**
+     * @param path the base path of the log
+     * @param extension the extension of the file containing the log
+     * @return true of a log has been stored at this location
+     */
+    public static boolean exist(Path path, String extension)
+    {
+        return getLogFile(path, extension).exists();
+    }
+
+    protected static File getLogFile(Path path, String extension)
+    {
+        File logFile = path.toFile();
+        if (!logFile.getName().endsWith(extension)) {
+            logFile = new File(logFile.getParentFile(), logFile.getName() + extension);
+        }
+
+        return logFile;
     }
 
     /**
@@ -136,7 +171,7 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
         this.logFile.getParentFile().mkdirs();
 
         // The index file
-        File indexFile = new File(this.logFile.getParentFile(),
+        this.indexFile = new File(this.logFile.getParentFile(),
             this.logFile.getName().substring(0, this.logFile.getName().length() - extension.length()) + ".index");
 
         if (!readonly) {
@@ -146,10 +181,11 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
             // Open the log store
             open();
 
-            this.indexStore = new FileWriter(indexFile, false);
+            this.indexStore = new FileWriter(this.indexFile, false);
+            this.indexStoreDate = this.indexFile.lastModified();
         } else if (indexFile.exists()) {
             // Load the existing index
-            loadIndex(indexFile);
+            loadIndex();
         }
     }
 
@@ -192,12 +228,14 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
      */
     protected String getFileExtension()
     {
-        return ".log";
+        return FILE_EXTENSION;
     }
 
-    private void loadIndex(File indexFile)
+    private void loadIndex()
     {
-        try (BufferedReader reader = new BufferedReader(new FileReader(indexFile))) {
+        this.index.clear();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(this.indexFile))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 int i = line.indexOf(':');
@@ -205,6 +243,8 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
                 this.index
                     .add(new IndexEntry(Long.valueOf(line.substring(0, i)), LogLevel.valueOf(line.substring(i + 1))));
             }
+
+            this.indexStoreDate = this.indexFile.lastModified();
         } catch (Exception e) {
             this.componentLogger.warn("Failed to read log index file [{}]: {}", indexFile,
                 ExceptionUtils.getRootCauseMessage(e));
@@ -239,7 +279,7 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
 
                     writeIndex(indexEntry.position, logEvent.getLevel());
                 } catch (Exception e) {
-                    this.componentLogger.error(org.xwiki.logging.Logger.ROOT_MARKER, FAILED_STORE_LOG, e);
+                    this.componentLogger.error(Logger.ROOT_MARKER, FAILED_STORE_LOG, e);
                 }
             }
         }
@@ -251,11 +291,25 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
         this.indexStore.append(':');
         this.indexStore.append(level.toString());
         this.indexStore.append('\n');
+        this.indexStore.flush();
+        this.indexStoreDate = this.indexFile.lastModified();
+    }
+
+    private void checkIndexStore()
+    {
+        if (!this.index.isEmpty() && this.indexFile.lastModified() != this.indexStoreDate) {
+            // TODO: log something about that external change
+
+            // Reload the index since it changed
+            loadIndex();
+        }
     }
 
     @Override
     public LogEvent getLogEvent(int index) throws IOException
     {
+        checkIndexStore();
+
         if (this.index.size() <= index) {
             return null;
         }
@@ -291,6 +345,8 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
     @Override
     public LogEvent getFirstLogEvent(LogLevel from) throws IOException
     {
+        checkIndexStore();
+
         for (int i = 0; i < this.index.size(); ++i) {
             IndexEntry indexEntry = this.index.get(i);
 
@@ -304,12 +360,16 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
 
     private boolean isLogLevel(IndexEntry indexEntry, LogLevel from)
     {
+        checkIndexStore();
+
         return from == null || indexEntry.level.compareTo(from) <= 0;
     }
 
     @Override
     public LogEvent getLastLogEvent(LogLevel from) throws IOException
     {
+        checkIndexStore();
+
         IndexEntry lastIndexEntry = null;
         int lastIndex = -1;
 
@@ -328,6 +388,8 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
     @Override
     public LogTailResult getLogEvents(LogLevel from, int offset, int limit) throws IOException
     {
+        checkIndexStore();
+
         if (this.index.size() <= offset) {
             return EmptyLogTailResult.INSTANCE;
         }
@@ -365,6 +427,8 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
     @Override
     public boolean hasLogLevel(LogLevel from)
     {
+        checkIndexStore();
+
         for (IndexEntry indexEntry : this.index) {
             if (isLogLevel(indexEntry, from)) {
                 return true;
@@ -377,6 +441,8 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
     @Override
     public int size()
     {
+        checkIndexStore();
+
         return this.index.size();
     }
 
