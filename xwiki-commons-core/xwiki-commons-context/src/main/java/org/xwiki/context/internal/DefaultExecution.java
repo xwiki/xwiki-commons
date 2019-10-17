@@ -47,11 +47,17 @@ public class DefaultExecution implements Execution
     @Override
     public void pushContext(ExecutionContext context)
     {
+        pushContext(context, true);
+    }
+
+    @Override
+    public void pushContext(ExecutionContext context, boolean inherit)
+    {
         Stack<ExecutionContext> stack = this.context.get();
         if (stack == null) {
-            stack = new Stack<ExecutionContext>();
+            stack = new Stack<>();
             this.context.set(stack);
-        } else if (!stack.isEmpty()) {
+        } else if (inherit && !stack.isEmpty()) {
             context.inheritFrom(stack.peek());
         }
 

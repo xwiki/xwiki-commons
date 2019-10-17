@@ -43,9 +43,24 @@ public interface Execution
     void setContext(ExecutionContext context);
 
     /**
+     * Push a the passed context and make it inherit the existing one.
+     * 
      * @param context create a new context level for the current thread and set the provided context
+     * @see #popContext()
      */
     void pushContext(ExecutionContext context);
+
+    /**
+     * Push a the passed context.
+     * 
+     * @param context create a new context level for the current thread and set the provided context
+     * @param inherit true if the passed context should inherit the existing one
+     * @since 11.9RC1
+     */
+    default void pushContext(ExecutionContext context, boolean inherit)
+    {
+        pushContext(context);
+    }
 
     /**
      * Remove a context level in the current thread.
