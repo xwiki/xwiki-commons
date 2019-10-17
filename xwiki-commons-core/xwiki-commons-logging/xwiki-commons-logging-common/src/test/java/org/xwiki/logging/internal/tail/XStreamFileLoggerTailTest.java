@@ -173,5 +173,6 @@ public class XStreamFileLoggerTailTest
         assertEquals(3, this.tail.getLogEvents(0, 3).stream().count());
         assertEquals(3, this.tail.getLogEvents(3, 3).stream().count());
         assertEquals(6, this.tail.getLogEvents(3, 42).stream().count());
+        assertEquals(9, this.tail.getLogEvents(-1, -1).stream().count());
     }
 }

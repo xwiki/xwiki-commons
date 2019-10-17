@@ -19,7 +19,6 @@
  */
 package org.xwiki.logging;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -151,7 +150,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements LoggerT
     }
 
     @Override
-    public LogEvent getFirstLogEvent(LogLevel from) throws IOException
+    public LogEvent getFirstLogEvent(LogLevel from)
     {
         for (LogEvent log : this) {
             if (log.getLevel().compareTo(from) <= 0) {
@@ -163,7 +162,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements LoggerT
     }
 
     @Override
-    public LogEvent getLastLogEvent(LogLevel from) throws IOException
+    public LogEvent getLastLogEvent(LogLevel from)
     {
         LogEvent logEvent = null;
 

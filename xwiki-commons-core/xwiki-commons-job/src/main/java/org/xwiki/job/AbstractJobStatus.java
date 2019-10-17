@@ -19,7 +19,6 @@
  */
 package org.xwiki.job;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -528,11 +527,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
     @Deprecated
     public List<LogEvent> getLog(LogLevel level)
     {
-        try {
-            return getLogTail().getLogEvents(level).stream().filter(log -> log.getLevel() == level)
-                .collect(Collectors.toList());
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load log", e);
-        }
+        return getLogTail().getLogEvents(level).stream().filter(log -> log.getLevel() == level)
+            .collect(Collectors.toList());
     }
 }
