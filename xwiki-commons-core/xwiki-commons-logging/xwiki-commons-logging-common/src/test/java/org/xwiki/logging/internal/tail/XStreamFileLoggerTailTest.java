@@ -20,6 +20,7 @@
 package org.xwiki.logging.internal.tail;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.junit.jupiter.api.AfterEach;
@@ -174,5 +175,43 @@ public class XStreamFileLoggerTailTest
         assertEquals(3, this.tail.getLogEvents(3, 3).stream().count());
         assertEquals(6, this.tail.getLogEvents(3, 42).stream().count());
         assertEquals(9, this.tail.getLogEvents(-1, -1).stream().count());
+    }
+
+    @Test
+    public void getDeleteLog() throws IOException
+    {
+        this.tail.initialize(new File(this.tmpDir, "log").toPath(), false);
+
+        this.tail.info("info");
+
+        this.tail.close();
+
+        this.tail.initialize(new File(this.tmpDir, "log").toPath(), true);
+
+        assertEquals("info", this.tail.getLogEvent(0).getMessage());
+
+        this.tail.logFile.delete();
+
+        assertNull(this.tail.getLogEvent(0));
+    }
+
+    @Test
+    public void getModifiedLog() throws IOException
+    {
+        this.tail.initialize(new File(this.tmpDir, "log").toPath(), false);
+
+        this.tail.info("info");
+
+        this.tail.close();
+
+        this.tail.initialize(new File(this.tmpDir, "log").toPath(), true);
+
+        assertEquals("info", this.tail.getLogEvent(0).getMessage());
+
+        try (FileOutputStream fw = new FileOutputStream(this.tail.logFile, false)) {
+            fw.flush();
+        }
+
+        assertNull(this.tail.getLogEvent(0));
     }
 }
