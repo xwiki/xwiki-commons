@@ -19,16 +19,16 @@
  */
 package org.xwiki.context;
 
-import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @version $Id$
@@ -54,7 +54,6 @@ public class ExecutionContextTest
         assertEquals("shadowed", context.getProperty("shadowed"));
     }
 
-    @Test(expected = IllegalStateException.class)
     public void illegalInheritance()
     {
         ExecutionContext context = new ExecutionContext();
@@ -63,7 +62,7 @@ public class ExecutionContextTest
         parent.newProperty("inherited").inherited().initial("test").makeFinal().declare();
         context.newProperty("inherited").inherited().initial("test").makeFinal().declare();
 
-        context.inheritFrom(parent);
+        assertThrows(IllegalStateException.class, () -> context.inheritFrom(parent));
     }
 
     @Test
@@ -73,7 +72,7 @@ public class ExecutionContextTest
         context.setProperty("key", "value");
         Map<String, Object> properties = context.getProperties();
         assertEquals(1, properties.size());
-        assertThat(properties, hasEntry("key", (Object) "value"));
+        assertEquals("value", properties.get("key"));
     }
 
     @Test
@@ -104,9 +103,53 @@ public class ExecutionContextTest
     }
 
     @Test
+    public void removeFinalProperty()
+    {
+        ExecutionContext context = new ExecutionContext();
+        context.newProperty("key").makeFinal().initial("value").declare();
+
+        assertEquals("value", context.getProperty("key"));
+
+        assertThrows(PropertyIsFinalException.class, () -> context.removeProperty("key"));
+    }
+
+    @Test
     public void removeUnexistingProperty()
     {
         ExecutionContext context = new ExecutionContext();
         context.removeProperty("doesnotexist");
+    }
+
+    @Test
+    public void setFinalProperty()
+    {
+        ExecutionContext context = new ExecutionContext();
+        context.newProperty("key").makeFinal().initial("value").declare();
+
+        assertEquals("value", context.getProperty("key"));
+
+        assertThrows(PropertyIsFinalException.class, () -> context.setProperty("key", "value2"));
+    }
+
+    @Test
+    public void declareExistingProperty()
+    {
+        ExecutionContext context = new ExecutionContext();
+        context.setProperty("key", "value");
+
+        assertThrows(PropertyAlreadyExistsException.class,
+            () -> context.newProperty("key").declare());
+    }
+
+    @Test
+    public void hasProperty()
+    {
+        ExecutionContext context = new ExecutionContext();
+
+        assertFalse(context.hasProperty("key"));
+
+        context.setProperty("key", "value");
+
+        assertTrue(context.hasProperty("key"));
     }
 }
