@@ -38,7 +38,9 @@ public abstract class AbstractLoggerTail extends AbstractLogger implements Logge
     public void log(Logger logger)
     {
         for (LogEvent logEvent : this) {
-            logEvent.log(logger);
+            if (logEvent != null) {
+                logEvent.log(logger);
+            }
         }
     }
 }
