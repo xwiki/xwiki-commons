@@ -22,6 +22,7 @@ package org.xwiki.context;
 import java.util.EmptyStackException;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
  * Allows setting/retrieving the {@link ExecutionContext}.
@@ -57,6 +58,7 @@ public interface Execution
      * @param inherit true if the passed context should inherit the existing one
      * @since 11.9RC1
      */
+    @Unstable
     default void pushContext(ExecutionContext context, boolean inherit)
     {
         pushContext(context);

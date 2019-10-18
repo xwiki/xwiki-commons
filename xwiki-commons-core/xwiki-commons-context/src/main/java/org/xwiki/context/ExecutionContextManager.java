@@ -22,6 +22,7 @@ package org.xwiki.context;
 import java.util.EmptyStackException;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
  * Provides various services for manipulating an {@link ExecutionContext}.
@@ -56,6 +57,7 @@ public interface ExecutionContextManager
      * @throws ExecutionContextException in case one {@link ExecutionContextInitializer} fails to execute
      * @since 11.9RC1
      */
+    @Unstable
     default void pushContext(ExecutionContext context, boolean inherit) throws ExecutionContextException
     {
         
@@ -67,6 +69,7 @@ public interface ExecutionContextManager
      * @throws EmptyStackException if this stack is empty.
      * @since 11.9RC1
      */
+    @Unstable
     default void popContext()
     {
         
