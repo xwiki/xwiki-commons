@@ -35,7 +35,7 @@ import org.xwiki.xstream.internal.SafeXStream;
 import org.xwiki.xstream.internal.XStreamUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -82,11 +82,11 @@ public class XStreamFileLoggerTailTest
 
         this.tail.dispose();
 
-        assertTrue(this.tail.closed);
+        assertNull(this.tail.logStore);
         assertTrue(this.tail.open());
-        assertFalse(this.tail.closed);
+        assertNotNull(this.tail.logStore);
         this.tail.close(true);
-        assertTrue(this.tail.closed);
+        assertNull(this.tail.logStore);
 
         this.tail.initialize(new File(this.tmpDir, "log").toPath(), true);
 
@@ -94,7 +94,7 @@ public class XStreamFileLoggerTailTest
         assertEquals("error1", this.tail.getLogEvent(1).getMessage());
         assertEquals(2, this.tail.getLogEvents(0, -1).stream().count());
 
-        assertTrue(this.tail.closed);
+        assertNull(this.tail.logStore);
 
         this.tail.error("error2");
 

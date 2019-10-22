@@ -80,8 +80,6 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
 
     protected Writer indexStore;
 
-    protected boolean closed;
-
     protected class IndexEntry
     {
         private final LogLevel level;
@@ -181,14 +179,11 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
 
                 // Open the log store
                 this.logStore = new RandomAccessFile(this.logFile, "rw");
-                this.closed = false;
 
                 this.indexStore = new FileWriter(this.indexFile, false);
             } else if (indexFile.exists()) {
                 // Load the existing index
                 loadIndex();
-
-                this.closed = true;
             }
 
             // Remember the date of log file to catch external modifications
@@ -203,10 +198,8 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
 
     protected boolean open() throws FileNotFoundException
     {
-        if (this.closed) {
+        if (this.logStore == null) {
             this.logStore = new RandomAccessFile(this.logFile, "r");
-
-            this.closed = false;
 
             return true;
         }
@@ -217,20 +210,20 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
     protected void close(boolean open) throws IOException
     {
         if (open) {
-            // Indicate the logger is closed
-            this.closed = true;
+            synchronized (this) {
+                // Make sure to write everything
+                flush();
 
-            // Make sure to write everything
-            flush();
+                if (this.indexStore != null) {
+                    this.indexStore.close();
+                    this.indexStore = null;
+                }
 
-            // Close the store
-            if (this.logStore != null) {
-                this.logStore.close();
-                this.logStore = null;
-            }
-            if (this.indexStore != null) {
-                this.indexStore.close();
-                this.indexStore = null;
+                // Close the store
+                if (this.logStore != null) {
+                    this.logStore.close();
+                    this.logStore = null;
+                }
             }
         }
     }
@@ -264,7 +257,7 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
     @Override
     public void log(LogEvent logEvent)
     {
-        if (!this.closed) {
+        if (this.logStore != null) {
             writeLog(logEvent);
         }
     }
@@ -495,7 +488,7 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
     @Override
     public void close() throws IOException
     {
-        close(!this.closed);
+        close(this.logStore != null);
     }
 
     @Override
