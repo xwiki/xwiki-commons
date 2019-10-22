@@ -303,11 +303,11 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
     {
         checkChanged();
 
-        if (this.index.size() <= index) {
+        IndexEntry indexEntry = getIndexEntry(index);
+        if (indexEntry == null) {
+            // Not entry associated with this index
             return null;
         }
-
-        IndexEntry indexEntry = getIndexEntry(index);
 
         return getLogEvent(index, indexEntry);
     }
@@ -356,6 +356,10 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
 
         for (int i = 0; i < this.index.size(); ++i) {
             IndexEntry indexEntry = getIndexEntry(i);
+            if (indexEntry == null) {
+                // Generally means the log has been modify by another process during the for loop
+                break;
+            }
 
             if (isLogLevel(indexEntry, from)) {
                 return getLogEvent(i, indexEntry);
@@ -367,15 +371,25 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
 
     private IndexEntry getIndexEntry(int i)
     {
+        if (this.index.size() <= i) {
+            return null;
+        }
+
         IndexEntry indexEntry = this.index.get(i);
 
         if (this.logFile.length() < indexEntry.position) {
             synchronized (this) {
-                // Looks like the index has been modified by another thread
-                // Try to reload the index
-                loadIndex();
+                if (this.logFile.length() == 0) {
+                    // Looks like the log file was deleted/emptied by another thread
+                    // Reset the index
+                    this.index.clear();
+                } else {
+                    // Looks like the index has been modified by another thread
+                    // Try to reload the index
+                    loadIndex();
+                }
 
-                indexEntry = this.index.get(i);
+                indexEntry = i < this.index.size() ? this.index.get(i) : null;
             }
         }
 
@@ -397,6 +411,10 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
 
         for (int i = 0; i < this.index.size(); ++i) {
             IndexEntry indexEntry = getIndexEntry(i);
+            if (indexEntry == null) {
+                // Generally means the log has been modify by another process during the for loop
+                break;
+            }
 
             if (isLogLevel(indexEntry, from)) {
                 lastIndexEntry = indexEntry;

@@ -214,4 +214,25 @@ public class XStreamFileLoggerTailTest
 
         assertNull(this.tail.getLogEvent(0));
     }
+
+    @Test
+    public void logStoreDeletedWhileReading() throws IOException
+    {
+        this.tail.initialize(new File(this.tmpDir, "log").toPath(), false);
+
+        this.tail.info("info0");
+        this.tail.info("info1");
+        this.tail.info("info2");
+
+        assertEquals("info0", this.tail.getLogEvent(0).getMessage());
+
+        this.tail.flush();
+
+        this.tail.logFile.delete();
+
+        assertNull(this.tail.getLogEvent(1));
+
+        this.tail.error("info3");
+
+    }
 }
