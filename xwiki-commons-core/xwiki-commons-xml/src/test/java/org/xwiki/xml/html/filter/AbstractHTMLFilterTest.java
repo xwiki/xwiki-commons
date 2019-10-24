@@ -35,6 +35,7 @@ import org.xwiki.xml.html.HTMLCleaner;
 import org.xwiki.xml.internal.html.DefaultHTMLCleaner;
 import org.xwiki.xml.internal.html.filter.AttributeFilter;
 import org.xwiki.xml.internal.html.filter.BodyFilter;
+import org.xwiki.xml.internal.html.filter.ControlCharactersFilter;
 import org.xwiki.xml.internal.html.filter.FontFilter;
 import org.xwiki.xml.internal.html.filter.LinkFilter;
 import org.xwiki.xml.internal.html.filter.ListFilter;
@@ -58,7 +59,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     BodyFilter.class,
     AttributeFilter.class,
     DefaultHTMLCleaner.class,
-    DefaultExecution.class
+    DefaultExecution.class,
+    ControlCharactersFilter.class
 })
 public class AbstractHTMLFilterTest
 {

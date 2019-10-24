@@ -37,6 +37,7 @@ import org.xwiki.xml.html.HTMLUtils;
 import org.xwiki.xml.html.filter.HTMLFilter;
 import org.xwiki.xml.internal.html.filter.AttributeFilter;
 import org.xwiki.xml.internal.html.filter.BodyFilter;
+import org.xwiki.xml.internal.html.filter.ControlCharactersFilter;
 import org.xwiki.xml.internal.html.filter.FontFilter;
 import org.xwiki.xml.internal.html.filter.LinkFilter;
 import org.xwiki.xml.internal.html.filter.ListFilter;
@@ -60,7 +61,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
     AttributeFilter.class,
     UniqueIdFilter.class,
     DefaultHTMLCleaner.class,
-    LinkFilter.class
+    LinkFilter.class,
+    ControlCharactersFilter.class
 })
 public class DefaultHTMLCleanerTest
 {
@@ -450,6 +452,13 @@ public class DefaultHTMLCleanerTest
             "<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff\">content</div>");
         assertHTML("<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee'fff\">content</div>",
             "<div foo='aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff'>content</div>");
+    }
+
+    @Test
+    public void controlCharacters() throws Exception
+    {
+        assertHTML(" ", "\u0008");
+        assertHTML(" ", "&#8;");
     }
 
     private void assertHTML(String expected, String actual)
