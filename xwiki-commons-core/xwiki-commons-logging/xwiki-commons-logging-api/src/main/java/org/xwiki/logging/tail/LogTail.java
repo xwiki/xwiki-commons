@@ -19,8 +19,6 @@
  */
 package org.xwiki.logging.tail;
 
-import java.io.IOException;
-
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.Logger;
 import org.xwiki.logging.event.LogEvent;
