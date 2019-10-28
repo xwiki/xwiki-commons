@@ -43,7 +43,6 @@ public interface LogTail extends Iterable<LogEvent>
     /**
      * @param index the index of the log event
      * @return the log event associated with the passed index or null if it does not exist
-     * @throws IOException when failing to extract the log event from its storage
      */
     LogEvent getLogEvent(int index);
 
@@ -51,7 +50,6 @@ public interface LogTail extends Iterable<LogEvent>
      * @param offset the offset where to start searching for the log events
      * @param limit the maximum number of results to return
      * @return the log events with the passed level or more
-     * @throws IOException when failing to extract the log event from its storage
      */
     default LogTailResult getLogEvents(int offset, int limit)
     {
@@ -60,7 +58,6 @@ public interface LogTail extends Iterable<LogEvent>
 
     /**
      * @return the last log event
-     * @throws IOException when failing to extract the log event from its storage
      */
     default LogEvent getFirstLogEvent()
     {
@@ -69,7 +66,6 @@ public interface LogTail extends Iterable<LogEvent>
 
     /**
      * @return the last log event
-     * @throws IOException when failing to extract the log event from its storage
      */
     default LogEvent getLastLogEvent()
     {
@@ -81,21 +77,18 @@ public interface LogTail extends Iterable<LogEvent>
     /**
      * @param from the log level from which to select log events
      * @return the first log event with passed level or more
-     * @throws IOException when failing to extract the log event from its storage
      */
     LogEvent getFirstLogEvent(LogLevel from);
 
     /**
      * @param from the log level from which to select log events
      * @return the last log event with passed level or more
-     * @throws IOException when failing to extract the log event from its storage
      */
     LogEvent getLastLogEvent(LogLevel from);
 
     /**
      * @param from the log level from which to select log events
      * @return the log events with the passed level or more
-     * @throws IOException when failing to extract the log event from its storage
      */
     default LogTailResult getLogEvents(LogLevel from)
     {
@@ -107,14 +100,12 @@ public interface LogTail extends Iterable<LogEvent>
      * @param offset the offset where to start searching for the log events
      * @param limit the maximum number of results to return
      * @return the log events with the passed level or more
-     * @throws IOException when failing to extract the log event from its storage
      */
     LogTailResult getLogEvents(LogLevel from, int offset, int limit);
 
     /**
      * @param from the log level from which to select log events
      * @return true if a log event with the passed log level or more was found
-     * @throws IOException when failing to extract the log event from its storage
      */
     boolean hasLogLevel(LogLevel from);
 
