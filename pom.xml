@@ -119,7 +119,7 @@
     <groovy.version>2.5.8</groovy.version>
 
     <!-- Ivy -->
-    <ivy.version>2.4.0</ivy.version>
+    <ivy.version>2.5.0</ivy.version>
 
     <!-- By default Checkstyle, Backward compatibility check, Enforcer, License plugins, etc are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
