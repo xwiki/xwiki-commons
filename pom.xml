@@ -267,7 +267,7 @@
     <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki/xwiki-commons.git</developerConnection>
     <url>https://github.com/xwiki/xwiki-commons/tree/master/</url>
-    <tag>stable-10.11.x</tag>
+    <tag>stable-11.9.x</tag>
   </scm>
   <mailingLists>
     <mailingList>
