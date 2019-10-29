@@ -37,7 +37,7 @@ stage ('Commons Builds') {
           xvnc = false
           mavenOpts = globalMavenOpts
           profiles = 'legacy,integration-tests'
-          properties = '-Dxwiki.checkstyle.skip=true -Dxwiki.surefire.captureconsole.skip=true -Dxwiki.revapi.skip=true',
+          properties = '-Dxwiki.checkstyle.skip=true -Dxwiki.surefire.captureconsole.skip=true -Dxwiki.revapi.skip=true'
           javadoc = false
         }
       }
@@ -53,7 +53,7 @@ stage ('Commons Builds') {
           mavenOpts = globalMavenOpts
           goals = 'clean install'
           profiles = 'legacy,integration-tests'
-          properties = '-DskipTests -DperformRelease=true -Dgpg.skip=true -Dxwiki.checkstyle.skip=true -Ddoclint=all',
+          properties = '-DskipTests -DperformRelease=true -Dgpg.skip=true -Dxwiki.checkstyle.skip=true -Ddoclint=all'
           javadoc = false
         }
       }
@@ -65,7 +65,7 @@ stage ('Commons Builds') {
           xvnc = false
           mavenOpts = globalMavenOpts
           goals = 'clean install jacoco:report'
-          profiles = 'quality,legacy',
+          profiles = 'quality,legacy'
           javadoc = false
         }
       }
@@ -79,7 +79,7 @@ stage ('Commons Builds') {
           xvnc = false
           mavenOpts = globalMavenOpts
           goals = 'clean test-compile checkstyle:check'
-          profiles = 'legacy',
+          profiles = 'legacy'
           javadoc = false
         }
       }
