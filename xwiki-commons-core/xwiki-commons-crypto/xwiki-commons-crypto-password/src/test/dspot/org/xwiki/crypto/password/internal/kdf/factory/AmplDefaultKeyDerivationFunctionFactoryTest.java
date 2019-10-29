@@ -5,7 +5,7 @@ import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.encoders.Hex;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
-import org.hamcrest.core.IsEqual;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -57,14 +57,14 @@ public class AmplDefaultKeyDerivationFunctionFactoryTest {
         KeyDerivationFunction kdf = getKDFInstance(new ScryptParameters(32, 512, 2, 16, Hex.decode("1c3b5e4bd2b434d4ed91279521caa09d")));
         KeyWithIVParameters params2 = factory.getInstance(encoded).derive(password, 8);
         kdf.getEncoded();
-        Matcher<byte[]> o_ScryptDecodingTest__16 = CoreMatchers.equalTo(encoded);
-        Assert.assertEquals("[<48>, <44>, <6>, <9>, <43>, <6>, <1>, <4>, <1>, <-38>, <71>, <4>, <11>, <48>, <31>, <4>, <16>, <28>, <59>, <94>, <75>, <-46>, <-76>, <52>, <-44>, <-19>, <-111>, <39>, <-107>, <33>, <-54>, <-96>, <-99>, <2>, <2>, <2>, <0>, <2>, <1>, <16>, <2>, <1>, <2>, <2>, <1>, <32>]", ((IsEqual) (o_ScryptDecodingTest__16)).toString());
+        Matcher<byte[]> o_ScryptDecodingTest__16 = CoreMatchers.equalTo(new byte[] {48, 44, 6, 9, 43, 6, 1, 4, 1, -38, 71, 4, 11, 48, 31, 4, 16, 28, 59, 94, 75, -46, -76, 52, -44, -19, -111, 39, -107, 33, -54, -96, -99, 2, 2, 2, 0, 2, 1, 16, 2, 1, 2, 2, 1, 32});
+        MatcherAssert.assertThat(encoded, o_ScryptDecodingTest__16);
         kdf.derive(password, 8).getKey();
-        Matcher<byte[]> o_ScryptDecodingTest__18 = CoreMatchers.equalTo(params2.getKey());
-        Assert.assertEquals("[<103>, <-10>, <11>, <9>, <-6>, <107>, <-51>, <70>, <-94>, <45>, <-116>, <127>, <17>, <-8>, <80>, <-70>, <-96>, <24>, <-78>, <-43>, <-31>, <-96>, <25>, <-5>, <67>, <-55>, <7>, <100>, <27>, <-84>, <-109>, <66>]", ((IsEqual) (o_ScryptDecodingTest__18)).toString());
+        Matcher<byte[]> o_ScryptDecodingTest__18 = CoreMatchers.equalTo(new byte[] {103, -10, 11, 9, -6, 107, -51, 70, -94, 45, -116, 127, 17, -8, 80, -70, -96, 24, -78, -43, -31, -96, 25, -5, 67, -55, 7, 100, 27, -84, -109, 66});
+        MatcherAssert.assertThat(params2.getKey(), o_ScryptDecodingTest__18);
         params2.getIV();
-        Matcher<byte[]> o_ScryptDecodingTest__21 = CoreMatchers.equalTo(params2.getIV());
-        Assert.assertEquals("[<64>, <-58>, <70>, <49>, <112>, <-37>, <25>, <86>]", ((IsEqual) (o_ScryptDecodingTest__21)).toString());
+        Matcher<byte[]> o_ScryptDecodingTest__21 = CoreMatchers.equalTo(new byte[] {64, -58, 70, 49, 112, -37, 25, 86});
+        MatcherAssert.assertThat(params2.getIV(), o_ScryptDecodingTest__21);
     }
 }
 
