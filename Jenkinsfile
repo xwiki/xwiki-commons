@@ -52,7 +52,7 @@ stage ('Commons Builds') {
           mavenOpts = globalMavenOpts
           goals = 'clean install'
           profiles = 'legacy,integration-tests'
-          properties = '-DskipTests -DperformRelease=true -Dgpg.skip=true -Dxwiki.checkstyle.skip=true'
+          properties = '-DskipTests -DperformRelease=true -Dgpg.skip=true -Dxwiki.checkstyle.skip=true -Ddoclint=all'
         }
       }
     },
