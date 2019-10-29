@@ -2050,6 +2050,8 @@
             <excludePackageNames>*.internal, *.internal.*</excludePackageNames>
             <!-- Make sure javadoc has enough memory -->
             <maxmemory>1024m</maxmemory>
+            <!-- Enable all doclint checks by default -->
+            <doclint>all</doclint>
           </configuration>
         </plugin>
         <!-- We don't use site plugin but we org.apache.maven.plugins.enforcer.RequirePluginVersions enforcer rule

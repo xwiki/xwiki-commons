@@ -38,6 +38,7 @@ stage ('Commons Builds') {
           mavenOpts = globalMavenOpts
           profiles = 'legacy,integration-tests'
           properties = '-Dxwiki.checkstyle.skip=true -Dxwiki.surefire.captureconsole.skip=true -Dxwiki.revapi.skip=true'
+          javadoc = false
         }
 
         // If the "main" build has succeeded then trigger the rendering pipeline.
@@ -57,6 +58,7 @@ stage ('Commons Builds') {
           mavenOpts = globalMavenOpts
           goals = 'clean test-compile checkstyle:check@default'
           profiles = 'legacy'
+          javadoc = false
         }
       }
     },
@@ -69,6 +71,7 @@ stage ('Commons Builds') {
           goals = 'clean install'
           profiles = 'legacy,integration-tests'
           properties = '-DskipTests -DperformRelease=true -Dgpg.skip=true -Dxwiki.checkstyle.skip=true -Ddoclint=all'
+          javadoc = false
         }
       }
     },
@@ -81,6 +84,7 @@ stage ('Commons Builds') {
           goals = 'clean install jacoco:report sonar:sonar'
           profiles = 'quality,legacy'
           sonar = true
+          javadoc = false
         }
       }
     }
