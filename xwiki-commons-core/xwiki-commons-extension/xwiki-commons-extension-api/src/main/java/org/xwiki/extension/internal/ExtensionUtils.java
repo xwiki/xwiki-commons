@@ -33,6 +33,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.xwiki.extension.CoreExtension;
+import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionManagerConfiguration;
@@ -112,7 +113,12 @@ public final class ExtensionUtils
             }
         }
 
-        return managedDependency != null ? managedDependency : dependency;
+        // If a managed dependency was found change the dependency version constraint
+        if (managedDependency != null) {
+            return new DefaultExtensionDependency(dependency, managedDependency.getVersionConstraint());
+        }
+
+        return dependency;
     }
 
     /**
