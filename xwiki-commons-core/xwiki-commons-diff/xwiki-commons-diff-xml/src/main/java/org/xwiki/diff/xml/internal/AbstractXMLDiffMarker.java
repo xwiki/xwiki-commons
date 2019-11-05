@@ -67,8 +67,8 @@ public abstract class AbstractXMLDiffMarker implements XMLDiffMarker
     public boolean markDiff(Node left, Node right) throws DiffException
     {
         // Normalize in order to avoid false changes.
-        left.normalize();
-        right.normalize();
+        normalize(left);
+        normalize(right);
 
         // Compute the differences.
         Map<Node, Patch<?>> patches = this.xmlDiff.diff(left, right, new XMLDiffConfiguration());
@@ -85,6 +85,11 @@ public abstract class AbstractXMLDiffMarker implements XMLDiffMarker
         cleanUp(left);
 
         return !patches.isEmpty();
+    }
+
+    protected void normalize(Node node)
+    {
+        node.normalize();
     }
 
     //

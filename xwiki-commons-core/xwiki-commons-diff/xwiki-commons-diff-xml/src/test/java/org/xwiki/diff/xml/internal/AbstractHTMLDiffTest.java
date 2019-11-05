@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.w3c.dom.Document;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
@@ -83,6 +84,12 @@ public abstract class AbstractHTMLDiffTest
                 key = line.substring(3);
                 data.delete(0, data.length());
             } else if (!line.startsWith("##-")) {
+                if (key != null && key.startsWith("expected-")) {
+                    // Remove whitespace at the start of the line (in order to ignore formatting).
+                    line = StringUtils.stripStart(line, null);
+                    // Remove line ending (in order to ignore formatting).
+                    line = StringUtils.chomp(line);
+                }
                 data.append(line);
             }
         }

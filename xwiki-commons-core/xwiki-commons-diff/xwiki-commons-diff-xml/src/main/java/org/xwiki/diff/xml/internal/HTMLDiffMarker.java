@@ -29,6 +29,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -67,11 +68,68 @@ public class HTMLDiffMarker extends AbstractXMLDiffMarker
             "embed", "iframe", "area", "param", "source", "track", "input", "textarea", "select", "optgroup", "option",
             "dl", "ol", "ul", "table", "thead", "tfoot", "tbody", "colgroup", "col", "tr");
 
+    private static final List<String> TAGS_WITH_INSIGNIFICANT_WHITESPACE = Arrays.asList("body", "colgroup", "dl",
+        "head", "html", "ol", "optgroup", "picture", "select", "table", "tbody", "tfoot", "thead", "tr", "ul");
+
+    private static final List<String> BLOCK_ELEMENTS = Arrays.asList("address", "article", "aside", "audio",
+        "blockquote", "center", "dd", "details", "dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer",
+        "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li", "main", "menu", "nav", "noframes",
+        "ol", "p", "pre", "section", "table", "ul", "video");
+
     private static final String DELETED = "deleted";
 
     private static final String INSERTED = "inserted";
 
     private static final String RIGHT_BLOCK = "xwiki-html-diff-block-right";
+
+    //
+    // Normalize
+    //
+
+    @Override
+    protected void normalize(Node node)
+    {
+        super.normalize(node);
+
+        // Remove whitespace-only text nodes that are not significant in HTML.
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        String expression = "//text()";
+        try {
+            XMLDiffUtils.asList((NodeList) xpath.compile(expression).evaluate(node, XPathConstants.NODESET)).stream()
+                .filter(this::isInsignificantWhitespaceOnlyTextNode).forEach(this::detachNode);
+        } catch (XPathExpressionException e) {
+            // This shouldn't happen.
+        }
+    }
+
+    private boolean isInsignificantWhitespaceOnlyTextNode(Node node)
+    {
+        // Is whitespace-only text node ...
+        return node.getNodeValue().trim().isEmpty()
+            // ... and is not significant (either because of its parent or because of its siblings).
+            && (TAGS_WITH_INSIGNIFICANT_WHITESPACE.contains(node.getParentNode().getNodeName().toLowerCase())
+                || isBetweenBlockElements(node));
+    }
+
+    private boolean isBetweenBlockElements(Node node)
+    {
+        // Is not the only child ...
+        return (node.getPreviousSibling() != null || node.getNextSibling() != null)
+            // ... and either doesn't have a previous sibling or the previous sibling is a block element.
+            && isBlockElementOrNull(node.getPreviousSibling())
+            // ... and either doesn't have a next sibling or the next sibling is a block element.
+            && isBlockElementOrNull(node.getNextSibling());
+    }
+
+    private boolean isBlockElementOrNull(Node node)
+    {
+        return node == null || BLOCK_ELEMENTS.contains(StringUtils.lowerCase(node.getNodeName()));
+    }
+
+    private void detachNode(Node node)
+    {
+        node.getParentNode().removeChild(node);
+    }
 
     //
     // Filtering
