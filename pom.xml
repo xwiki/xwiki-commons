@@ -938,7 +938,7 @@
       <dependency>
         <groupId>org.eclipse.sisu</groupId>
         <artifactId>org.eclipse.sisu.plexus</artifactId>
-        <version>0.3.3</version>
+        <version>0.3.4</version>
         <exclusions>
           <!-- This dependency is now deprecated and replaced by annotation-api. -->
           <exclusion>
