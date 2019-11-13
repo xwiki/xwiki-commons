@@ -21,7 +21,7 @@ package org.xwiki.extension.test;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -94,9 +94,10 @@ public abstract class AbstractExtensionHandlerTest
             throw installJob.getStatus().getError();
         }
 
-        Stream<LogEvent> errors = installJob.getStatus().getLogTail().getLogEvents(failFrom).stream();
-        if (errors.count() > 0) {
-            LogEvent error = errors.findFirst().get();
+        Optional<LogEvent> errorResult =
+            installJob.getStatus().getLogTail().getLogEvents(failFrom).stream().findFirst();
+        if (errorResult.isPresent()) {
+            LogEvent error = errorResult.get();
             throw error.getThrowable() != null ? error.getThrowable() : new Exception(error.getFormattedMessage());
         }
 
@@ -289,14 +290,35 @@ public abstract class AbstractExtensionHandlerTest
         return installRequest;
     }
 
+    protected LocalExtension uninstall(ExtensionId extensionId) throws Throwable
+    {
+        return uninstall(extensionId, (Iterable<String>) null);
+    }
+
     protected LocalExtension uninstall(ExtensionId extensionId, String namespace) throws Throwable
     {
         return uninstall(extensionId, namespace, LogLevel.WARN);
     }
 
+    protected LocalExtension uninstall(ExtensionId extensionId, Iterable<String> namespaces) throws Throwable
+    {
+        return uninstall(extensionId, namespaces, LogLevel.WARN);
+    }
+
+    protected LocalExtension uninstall(ExtensionId extensionId, LogLevel failFrom) throws Throwable
+    {
+        return uninstall(extensionId, (Iterable<String>) null, failFrom);
+    }
+
     protected LocalExtension uninstall(ExtensionId extensionId, String namespace, LogLevel failFrom) throws Throwable
     {
-        uninstall("uninstall", extensionId, namespace, failFrom);
+        return uninstall(extensionId, namespace != null ? Arrays.asList(namespace) : null, failFrom);
+    }
+
+    protected LocalExtension uninstall(ExtensionId extensionId, Iterable<String> namespaces, LogLevel failFrom)
+        throws Throwable
+    {
+        uninstall("uninstall", extensionId, namespaces, failFrom);
 
         return this.localExtensionRepository.resolve(extensionId);
     }
@@ -311,10 +333,16 @@ public abstract class AbstractExtensionHandlerTest
 
     protected Job uninstall(String jobId, ExtensionId extensionId, String namespace, LogLevel failFrom) throws Throwable
     {
+        return uninstall(jobId, extensionId, namespace != null ? Arrays.asList(namespace) : null, failFrom);
+    }
+
+    protected Job uninstall(String jobId, ExtensionId extensionId, Iterable<String> namespaces, LogLevel failFrom)
+        throws Throwable
+    {
         UninstallRequest uninstallRequest = new UninstallRequest();
         uninstallRequest.addExtension(extensionId);
-        if (namespace != null) {
-            uninstallRequest.addNamespace(namespace);
+        if (namespaces != null) {
+            namespaces.forEach(uninstallRequest::addNamespace);
         }
 
         return executeJob(jobId, uninstallRequest, failFrom);

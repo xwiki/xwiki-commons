@@ -23,20 +23,33 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.xwiki.component.namespace.Namespace;
+import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
+import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.internal.tree.DefaultExtensionNode;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.internal.AbstractCachedExtensionRepository;
 import org.xwiki.extension.repository.internal.RepositoryUtils;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
+import org.xwiki.extension.tree.ExtensionNode;
 
 /**
  * Base class for {@link InstalledExtensionRepository} implementations.
@@ -48,6 +61,9 @@ import org.xwiki.extension.repository.search.SearchException;
 public abstract class AbstractInstalledExtensionRepository<E extends InstalledExtension>
     extends AbstractCachedExtensionRepository<E> implements InstalledExtensionRepository
 {
+    @Inject
+    protected transient Logger logger;
+
     @Override
     public int countExtensions()
     {
@@ -165,6 +181,123 @@ public abstract class AbstractInstalledExtensionRepository<E extends InstalledEx
         }
 
         return result;
+    }
 
+    @Override
+    public ExtensionNode<InstalledExtension> getOrphanedDependencies(InstalledExtension installedExtension,
+        Namespace namespace)
+    {
+        ExtensionNode<InstalledExtension> node;
+
+        Map<String, Set<ExtensionId>> backward = new HashMap<>();
+
+        int count = 10;
+
+        do {
+            int backwardSize = backward.size();
+
+            node = getOrphanedDependencies(installedExtension, namespace, backward);
+
+            if (backward.size() == 1 || backwardSize == backward.size()) {
+                break;
+            }
+        } while (count > 0);
+
+        return node;
+    }
+
+    private ExtensionNode<InstalledExtension> getOrphanedDependencies(InstalledExtension installedExtension,
+        Namespace namespace, Map<String, Set<ExtensionId>> backward)
+    {
+        String namespaceString = namespace.toString();
+
+        // Remember the extension in the list of backward dependencies
+        Set<ExtensionId> backwardNamespace = backward.get(namespaceString);
+        if (backwardNamespace == null) {
+            backwardNamespace = new HashSet<>();
+            backward.put(namespaceString, backwardNamespace);
+        }
+        backwardNamespace.add(installedExtension.getId());
+
+        // Search exclusive dependencies
+        List<ExtensionNode<InstalledExtension>> orphaned = new ArrayList<>(installedExtension.getDependencies().size());
+        for (ExtensionDependency dependency : installedExtension.getDependencies()) {
+            InstalledExtension dependencyExtension = getInstalledExtension(dependency.getId(), namespaceString);
+
+            if (dependencyExtension != null) {
+                String dependencyNamespace = namespaceString;
+                if (dependencyNamespace != null && dependencyExtension.isInstalled(null)) {
+                    dependencyNamespace = null;
+                }
+
+                if (dependencyExtension.isDependency(dependencyNamespace)
+                    && isExclusive(dependencyExtension, dependencyNamespace, backward)) {
+                    orphaned.add(getOrphanedDependencies(installedExtension, namespace, backward));
+                }
+            }
+        }
+
+        // Create a new node
+        return new DefaultExtensionNode<>(namespace, installedExtension, orphaned);
+    }
+
+    private boolean isExclusive(InstalledExtension dependencyExtension, String namespace,
+        Map<String, Set<ExtensionId>> backward)
+    {
+        try {
+            if (namespace == null) {
+                Map<String, Collection<InstalledExtension>> backwardDependencies =
+                    getBackwardDependencies(dependencyExtension.getId(), true);
+
+                for (Map.Entry<String, Collection<InstalledExtension>> entry : backwardDependencies.entrySet()) {
+                    if (!isExclusive(entry.getValue(), backward.get(entry.getKey()))) {
+                        return false;
+                    }
+                }
+            } else {
+                Collection<InstalledExtension> backwardDependencies =
+                    getBackwardDependencies(dependencyExtension.getId().getId(), namespace, true);
+
+                if (!isExclusive(backwardDependencies, backward.get(namespace))) {
+                    return false;
+                }
+            }
+
+            return true;
+        } catch (ResolveException e) {
+            this.logger.error("Failed to get backward dependencies for id [{}] on namespace [{}]: {}",
+                dependencyExtension.getId(), namespace, ExceptionUtils.getRootCauseMessage(e));
+        }
+
+        return false;
+    }
+
+    private boolean isExclusive(Collection<InstalledExtension> backwardDependencies, Set<ExtensionId> backward)
+    {
+        if (backward == null) {
+            return false;
+        }
+
+        for (InstalledExtension backwardDependency : backwardDependencies) {
+            if (!backward.contains(backwardDependency.getId())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public Map<String, Collection<InstalledExtension>> getBackwardDependencies(ExtensionId extensionId)
+        throws ResolveException
+    {
+        return getBackwardDependencies(extensionId, false);
+    }
+
+    @Override
+    public Collection<InstalledExtension> getBackwardDependencies(String feature, String namespace)
+        throws ResolveException
+    {
+        return getBackwardDependencies(feature, namespace, false);
     }
 }

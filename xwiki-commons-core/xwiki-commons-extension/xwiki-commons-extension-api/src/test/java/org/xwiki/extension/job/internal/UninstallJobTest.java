@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension.job.internal;
 
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.extension.TestResources;
@@ -53,7 +55,7 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
     @Test
     public void testUninstall() throws Throwable
     {
-        uninstall(TestResources.INSTALLED_ID, null);
+        uninstall(TestResources.INSTALLED_ID);
 
         Assert.assertFalse(this.handler.getExtensions().get(null).contains(this.resources.installed));
         Assert.assertNull(
@@ -67,7 +69,7 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
     @Test
     public void testUninstallWithBackwarDepencency() throws Throwable
     {
-        uninstall(TestResources.INSTALLED_DEPENDENCY_ID, null);
+        uninstall(TestResources.INSTALLED_DEPENDENCY_ID);
 
         Assert.assertFalse(this.handler.getExtensions().get(null).contains(this.resources.installed));
         Assert.assertNull(
@@ -81,10 +83,10 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
     @Test
     public void testUninstallTwice() throws Throwable
     {
-        uninstall(TestResources.INSTALLED_ID, null);
+        uninstall(TestResources.INSTALLED_ID);
 
         try {
-            uninstall(TestResources.INSTALLED_ID, null);
+            uninstall(TestResources.INSTALLED_ID);
 
             fail("Should have failed to uninstall the extension twice");
         } catch (UninstallException expected) {
@@ -97,7 +99,7 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
     {
         // prepare
 
-        uninstall(TestResources.INSTALLED_DEPENDENCY_ID, null);
+        uninstall(TestResources.INSTALLED_DEPENDENCY_ID);
         install(TestResources.INSTALLED_ID, "namespace1");
         install(TestResources.INSTALLED_ID, "namespace2");
 
@@ -119,7 +121,7 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
     {
         // prepare
 
-        uninstall(TestResources.INSTALLED_DEPENDENCY_ID, null);
+        uninstall(TestResources.INSTALLED_DEPENDENCY_ID);
         install(TestResources.INSTALLED_ID, "namespace1");
         install(TestResources.INSTALLED_ID, "namespace2");
 
@@ -147,13 +149,13 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
     {
         // prepare
 
-        uninstall(TestResources.INSTALLED_DEPENDENCY_ID, null);
+        uninstall(TestResources.INSTALLED_DEPENDENCY_ID);
         install(TestResources.INSTALLED_ID, "namespace1");
         install(TestResources.INSTALLED_ID, "namespace2");
 
         // actual test
 
-        uninstall(TestResources.INSTALLED_ID, null);
+        uninstall(TestResources.INSTALLED_ID);
 
         Assert.assertFalse(this.handler.getExtensions().get("namespace1").contains(this.resources.installed));
         Assert.assertNull(
@@ -161,6 +163,28 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
 
         Assert.assertFalse(this.handler.getExtensions().get("namespace2").contains(this.resources.installed));
         Assert.assertNull(
+            this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID.getId(), "namespace2"));
+    }
+
+    @Test
+    public void testUninstallFromSeveralNamespaceIncludingWrong() throws Throwable
+    {
+        // prepare
+
+        uninstall(TestResources.INSTALLED_DEPENDENCY_ID);
+        install(TestResources.INSTALLED_ID, "namespace1");
+        install(TestResources.INSTALLED_ID, "namespace2");
+
+        // actual test
+
+        uninstall(TestResources.INSTALLED_ID, Arrays.asList("namespace1", "nonamespace"));
+
+        Assert.assertFalse(this.handler.getExtensions().get("namespace1").contains(this.resources.installed));
+        Assert.assertNull(
+            this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID.getId(), "namespace1"));
+
+        Assert.assertTrue(this.handler.getExtensions().get("namespace2").contains(this.resources.installed));
+        Assert.assertNotNull(
             this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID.getId(), "namespace2"));
     }
 }

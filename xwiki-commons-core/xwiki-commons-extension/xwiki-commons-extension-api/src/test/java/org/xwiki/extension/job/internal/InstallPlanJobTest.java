@@ -851,7 +851,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     {
         // Install 1.0 on root
         install(TestResources.REMOTE_ROOTEXTENSION10_ID);
-        uninstall(TestResources.REMOTE_ROOTEXTENSION10_ID, null);
+        uninstall(TestResources.REMOTE_ROOTEXTENSION10_ID);
 
         // Install 1.0 on incompatible namespace
         try {

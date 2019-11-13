@@ -151,7 +151,9 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest>
             for (String namespace : namespaces) {
                 this.progressManager.startStep(this);
 
-                uninstallExtension(installedExtension, namespace, parentBranch, withBackWard);
+                if (namespaces.size() == 1 || installedExtension.isInstalled(namespace)) {
+                    uninstallExtension(installedExtension, namespace, parentBranch, withBackWard);
+                }
 
                 this.progressManager.endStep(this);
             }
@@ -195,12 +197,9 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest>
     protected void uninstallExtension(InstalledExtension installedExtension, String namespace,
         Collection<ExtensionPlanNode> parentBranch, boolean withBackWard) throws UninstallException
     {
-        if (namespace != null) {
-            // Make sure the extension is installed
-            if (installedExtension.getNamespaces() == null || !installedExtension.getNamespaces().contains(namespace)) {
-                throw new UninstallException(
-                    String.format(EXCEPTION_NOTINSTALLEDNAMESPACE, installedExtension, namespace));
-            }
+        // Make sure the extension is installed
+        if (!installedExtension.isInstalled(namespace)) {
+            throw new UninstallException(String.format(EXCEPTION_NOTINSTALLEDNAMESPACE, installedExtension, namespace));
         }
 
         // Make sure it's allowed to uninstall extensions

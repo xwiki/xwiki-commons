@@ -190,7 +190,7 @@ public class LogQueueTest
     }
 
     @Test
-    public void getFirstEvent() throws IOException
+    public void getFirstEvent()
     {
         LogQueue queue = new LogQueue();
 
