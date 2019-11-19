@@ -30,7 +30,7 @@ import org.xwiki.stability.Unstable;
  *
  * @param <E> the type of extension (installed, core, etc.) the node contains
  * @version $Id$
- * @since 11.10RC1
+ * @since 11.10
  */
 @Unstable
 public interface ExtensionNode<E extends Extension>

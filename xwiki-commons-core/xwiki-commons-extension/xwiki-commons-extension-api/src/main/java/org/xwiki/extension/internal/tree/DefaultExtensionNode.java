@@ -32,7 +32,7 @@ import org.xwiki.extension.tree.ExtensionNode;
  * 
  * @param <E> the type of extension (installed, core, etc.) the node contains
  * @version $Id$
- * @since 11.10RC1
+ * @since 11.10
  */
 public class DefaultExtensionNode<E extends Extension> implements ExtensionNode<E>
 {

@@ -154,7 +154,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
      * @param namespace the namespace where to search for backward dependencies
      * @return the backward dependencies, an empty collection of none could be found
      * @throws ResolveException error when searching for backward dependencies
-     * @since 11.10RC1
+     * @since 11.10
      */
     @Unstable
     default Collection<InstalledExtension> getBackwardDependencies(String feature, String namespace,
@@ -180,7 +180,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
      * @param withOptionals include optional dependencies in the search
      * @return the extension backward dependencies in all namespaces
      * @throws ResolveException error when searching for extension backward dependencies
-     * @since 11.10RC1
+     * @since 11.10
      */
     @Unstable
     default Map<String, Collection<InstalledExtension>> getBackwardDependencies(ExtensionId extensionId,
@@ -196,7 +196,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
      * @param namespace the namespace where to search for orphan extension dependencies
      * @return the extensions installed as dependency in the passed namespace and which no longer have backward
      *         dependencies
-     * @since 11.10RC1
+     * @since 11.10
      */
     @Unstable
     default ExtensionNode<InstalledExtension> getOrphanedDependencies(InstalledExtension extension, Namespace namespace)
