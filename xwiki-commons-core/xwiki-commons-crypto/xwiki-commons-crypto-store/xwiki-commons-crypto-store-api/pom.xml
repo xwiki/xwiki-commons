@@ -32,6 +32,7 @@
   <name>XWiki Commons - Cryptographic Services - Storage API</name>
   <description>Provides common storage API for cryptographic data</description>
   <properties>
+    <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Common Storage API for cryptographic data</xwiki.extension.name>
   </properties>

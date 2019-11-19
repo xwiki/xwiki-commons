@@ -32,6 +32,7 @@
   <packaging>jar</packaging>
   <description>Legacy module for xwiki-commons-component-api</description>
   <properties>
+    <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
     <!-- The features provided by this module so that it's found when resolving extension -->
     <xwiki.extension.features>org.xwiki.commons:xwiki-commons-component-api</xwiki.extension.features>
   </properties>
