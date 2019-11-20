@@ -28,6 +28,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -120,6 +123,12 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
      */
     @Inject
     private Logger logger;
+
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+    private final ReadLock readLock = lock.readLock();
+
+    private final WriteLock writeLock = lock.writeLock();
 
     private ExecutorService executorService;
 
@@ -270,28 +279,34 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
      */
     private JobStatus loadStatus(File folder)
     {
-        File statusFile = new File(folder, FILENAME_STATUS);
-        if (statusFile.exists()) {
-            JobStatus status = loadJobStatus(statusFile);
+        this.readLock.lock();
 
-            // Check if there is a separated log available
-            for (File child : folder.listFiles()) {
-                if (!child.isDirectory() && child.getName().startsWith(STATUS_LOG_PREFIX)) {
-                    try {
-                        LoggerTail loggerTail = createLoggerTail(new File(folder, STATUS_LOG_PREFIX), true);
+        try {
+            File statusFile = new File(folder, FILENAME_STATUS);
+            if (statusFile.exists()) {
+                JobStatus status = loadJobStatus(statusFile);
 
-                        if (status instanceof AbstractJobStatus) {
-                            ((AbstractJobStatus) status).setLoggerTail(loggerTail);
+                // Check if there is a separated log available
+                for (File child : folder.listFiles()) {
+                    if (!child.isDirectory() && child.getName().startsWith(STATUS_LOG_PREFIX)) {
+                        try {
+                            LoggerTail loggerTail = createLoggerTail(new File(folder, STATUS_LOG_PREFIX), true);
+
+                            if (status instanceof AbstractJobStatus) {
+                                ((AbstractJobStatus) status).setLoggerTail(loggerTail);
+                            }
+                        } catch (Exception e) {
+                            this.logger.error("Failed to load the job status log in [{}]", folder, e);
                         }
-                    } catch (Exception e) {
-                        this.logger.error("Failed to load the job status log in [{}]", folder, e);
+
+                        break;
                     }
-
-                    break;
                 }
-            }
 
-            return status;
+                return status;
+            }
+        } finally {
+            this.readLock.unlock();
         }
 
         return null;
@@ -338,12 +353,18 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     private void saveJobStatus(JobStatus status)
     {
         try {
-            File statusFile = getJobFolder(status.getRequest().getId());
-            statusFile = new File(statusFile, FILENAME_STATUS);
+            this.writeLock.lock();
 
-            this.logger.debug("Serializing status [{}] in [{}]", status.getRequest().getId(), statusFile);
+            try {
+                File statusFile = getJobFolder(status.getRequest().getId());
+                statusFile = new File(statusFile, FILENAME_STATUS);
 
-            this.serializer.write(status, statusFile);
+                this.logger.debug("Serializing status [{}] in [{}]", status.getRequest().getId(), statusFile);
+
+                this.serializer.write(status, statusFile);
+            } finally {
+                this.writeLock.unlock();
+            }
         } catch (Exception e) {
             this.logger.warn("Failed to save job status [{}]", status, e);
         }
@@ -433,17 +454,23 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     @Override
     public void remove(List<String> id)
     {
-        File jobFolder = getJobFolder(id);
+        this.writeLock.lock();
 
-        if (jobFolder.exists()) {
-            try {
-                FileUtils.deleteDirectory(jobFolder);
-            } catch (IOException e) {
-                this.logger.warn("Failed to delete job folder [{}]", jobFolder, e);
+        try {
+            File jobFolder = getJobFolder(id);
+
+            if (jobFolder.exists()) {
+                try {
+                    FileUtils.deleteDirectory(jobFolder);
+                } catch (IOException e) {
+                    this.logger.warn("Failed to delete job folder [{}]", jobFolder, e);
+                }
             }
-        }
 
-        this.cache.remove(toUniqueString(id));
+            this.cache.remove(toUniqueString(id));
+        } finally {
+            this.writeLock.unlock();
+        }
     }
 
     @Override
