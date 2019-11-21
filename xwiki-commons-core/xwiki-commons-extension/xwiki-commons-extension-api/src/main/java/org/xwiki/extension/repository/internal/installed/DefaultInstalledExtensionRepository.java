@@ -38,6 +38,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.extension.CoreExtension;
+import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
@@ -51,7 +52,6 @@ import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
-import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
 
 /**
@@ -201,17 +201,11 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
 
     private void getInstalledLocalExtension(String feature, String namespace, LocalExtension localExtension)
     {
-        Map<String, Set<LocalExtension>> localInstallExtensionFeature = this.localInstalledExtensionsCache.get(feature);
-        if (localInstallExtensionFeature == null) {
-            localInstallExtensionFeature = new HashMap<>();
-            this.localInstalledExtensionsCache.put(feature, localInstallExtensionFeature);
-        }
+        Map<String, Set<LocalExtension>> localInstallExtensionFeature =
+            this.localInstalledExtensionsCache.computeIfAbsent(feature, key -> new HashMap<>());
 
-        Set<LocalExtension> localInstallExtensionNamespace = localInstallExtensionFeature.get(namespace);
-        if (localInstallExtensionNamespace == null) {
-            localInstallExtensionNamespace = new HashSet<LocalExtension>();
-            localInstallExtensionFeature.put(namespace, localInstallExtensionNamespace);
-        }
+        Set<LocalExtension> localInstallExtensionNamespace =
+            localInstallExtensionFeature.computeIfAbsent(namespace, k -> new HashSet<>());
 
         localInstallExtensionNamespace.add(localExtension);
     }
@@ -275,7 +269,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
 
             if (localInstallExtensionNamespace != null) {
                 for (LocalExtension dependencyVersion : localInstallExtensionNamespace) {
-                    if (isCompatible(dependencyVersion.getId().getVersion(), dependency.getVersionConstraint())) {
+                    if (isCompatible(dependencyVersion, dependency)) {
                         return dependencyVersion;
                     }
                 }
@@ -296,7 +290,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
         CoreExtension coreExtension = this.coreExtensionRepository.getCoreExtension(dependency.getId());
 
         if (coreExtension != null) {
-            if (!isCompatible(coreExtension.getId().getVersion(), dependency.getVersionConstraint())) {
+            if (!isCompatible(coreExtension, dependency)) {
                 throw new InvalidExtensionException(String
                     .format("Dependency [%s] is incompatible with the core extension [%s]", dependency, coreExtension));
             }
@@ -405,17 +399,16 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
         return false;
     }
 
-    private boolean isCompatible(Version existingVersion, VersionConstraint versionConstraint)
+    private boolean isCompatible(Extension extension, ExtensionDependency dependency)
     {
-        boolean compatible = true;
+        return isCompatible(extension, dependency.getId(), dependency.getVersionConstraint());
+    }
 
-        if (versionConstraint.getVersion() == null) {
-            compatible = versionConstraint.containsVersion(existingVersion);
-        } else {
-            compatible = existingVersion.compareTo(versionConstraint.getVersion()) >= 0;
-        }
+    private boolean isCompatible(Extension extension, String feature, VersionConstraint versionConstraint)
+    {
+        ExtensionId featureExtension = extension.getExtensionFeature(feature);
 
-        return compatible;
+        return versionConstraint.isCompatible(featureExtension.getVersion());
     }
 
     // Install/Uninstall
