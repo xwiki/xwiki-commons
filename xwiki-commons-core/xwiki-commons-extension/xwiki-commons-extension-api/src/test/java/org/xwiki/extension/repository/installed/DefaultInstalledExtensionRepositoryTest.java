@@ -178,6 +178,7 @@ public class DefaultInstalledExtensionRepositoryTest
 
         assertNotNull(extension);
         assertEquals(TestResources.INSTALLED_WITHFEATUREASDEPENDENCY_ID, extension.getId());
+        assertTrue(extension.isValid(null));
         assertTrue(this.handler.getExtensions().get(null).contains(extension));
         assertFalse(this.handler.getExtensions().get("namespace").contains(extension));
 

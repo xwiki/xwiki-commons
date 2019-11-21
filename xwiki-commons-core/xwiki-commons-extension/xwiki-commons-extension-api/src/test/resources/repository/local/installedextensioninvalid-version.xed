@@ -26,9 +26,6 @@
   <id>installedextensioninvalid</id>
   <version>version</version>
   <type>test</type>
-  <features>
-    <feature>installedextension-feature</feature>
-  </features>
   <installed>true</installed>
   <dependencies>
     <dependency>

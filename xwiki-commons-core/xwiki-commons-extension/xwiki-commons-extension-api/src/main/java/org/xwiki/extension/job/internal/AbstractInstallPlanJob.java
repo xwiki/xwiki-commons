@@ -359,7 +359,10 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
         ModifableExtensionPlanNode existingNode = getExtensionNode(extensionDependency.getId(), namespace);
         if (existingNode != null) {
-            if (versionConstraint.isCompatible(existingNode.getAction().getExtension().getId().getVersion())) {
+            ExtensionId feature =
+                existingNode.getAction().getExtension().getExtensionFeature(extensionDependency.getId());
+
+            if (versionConstraint.isCompatible(feature.getVersion())) {
                 ModifableExtensionPlanNode node = new ModifableExtensionPlanNode(extensionDependency, existingNode);
                 addExtensionNode(node);
                 parentBranch.add(node);
