@@ -26,9 +26,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
@@ -48,24 +48,27 @@ import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.ExtensionQuery.COMPARISON;
 import org.xwiki.extension.repository.search.SearchException;
-import org.xwiki.extension.test.MockitoRepositoryUtilsRule;
+import org.xwiki.extension.test.MockitoRepositoryUtilsExtension;
 import org.xwiki.extension.test.TestExtensionHandler;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(MockitoRepositoryUtilsExtension.class)
 @AllComponents
 public class DefaultInstalledExtensionRepositoryTest
 {
-    @Rule
-    public MockitoRepositoryUtilsRule repositoryUtil = new MockitoRepositoryUtilsRule();
+    @InjectComponentManager
+    private MockitoComponentManager componentManager;
 
     private InstalledExtensionRepository installedExtensionRepository;
 
@@ -77,18 +80,15 @@ public class DefaultInstalledExtensionRepositoryTest
 
     private TestExtensionHandler handler;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         // lookup
 
-        this.installedExtensionRepository =
-            this.repositoryUtil.getComponentManager().getInstance(InstalledExtensionRepository.class);
-        this.localExtensionRepository =
-            this.repositoryUtil.getComponentManager().getInstance(LocalExtensionRepository.class);
-        this.repositoryManager =
-            this.repositoryUtil.getComponentManager().getInstance(ExtensionRepositoryManager.class);
-        this.handler = this.repositoryUtil.getComponentManager().getInstance(ExtensionHandler.class, "test");
+        this.installedExtensionRepository = this.componentManager.getInstance(InstalledExtensionRepository.class);
+        this.localExtensionRepository = this.componentManager.getInstance(LocalExtensionRepository.class);
+        this.repositoryManager = this.componentManager.getInstance(ExtensionRepositoryManager.class);
+        this.handler = this.componentManager.getInstance(ExtensionHandler.class, "test");
 
         // resources
 
@@ -289,22 +289,14 @@ public class DefaultInstalledExtensionRepositoryTest
     @Test
     public void testResolve() throws ResolveException
     {
-        try {
+        assertThrows(ResolveException.class, () -> {
             this.installedExtensionRepository.resolve(new ExtensionId("unexistingextension", "version"));
+        });
 
-            fail("Resolve should have failed");
-        } catch (ResolveException expected) {
-            // expected
-        }
-
-        try {
+        assertThrows(ResolveException.class, () -> {
             this.installedExtensionRepository
                 .resolve(new ExtensionId(TestResources.INSTALLED_ID.getId(), "wrongversion"));
-
-            fail("Resolve should have failed");
-        } catch (ResolveException expected) {
-            // expected
-        }
+        });
 
         Extension extension = this.installedExtensionRepository.resolve(TestResources.INSTALLED_ID);
 
@@ -315,23 +307,15 @@ public class DefaultInstalledExtensionRepositoryTest
     @Test
     public void testResolveDependency() throws ResolveException
     {
-        try {
+        assertThrows(ResolveException.class, () -> {
             this.installedExtensionRepository.resolve(
                 new DefaultExtensionDependency("unexistingextension", new DefaultVersionConstraint("version")));
+        });
 
-            fail("Resolve should have failed");
-        } catch (ResolveException expected) {
-            // expected
-        }
-
-        try {
+        assertThrows(ResolveException.class, () -> {
             this.installedExtensionRepository.resolve(new DefaultExtensionDependency(TestResources.INSTALLED_ID.getId(),
                 new DefaultVersionConstraint("wrongversion")));
-
-            fail("Resolve should have failed");
-        } catch (ResolveException expected) {
-            // expected
-        }
+        });
 
         Extension extension =
             this.installedExtensionRepository.resolve(new DefaultExtensionDependency(TestResources.INSTALLED_ID.getId(),
@@ -349,13 +333,10 @@ public class DefaultInstalledExtensionRepositoryTest
             !this.resources.installed.isDependency("namespace"));
 
         // Try to install again with the same status
-        try {
+        assertThrows(InstallException.class, () -> {
             this.installedExtensionRepository.installExtension(this.resources.installed, "namespace",
                 this.resources.installed.isDependency("namespace"));
-            fail("Install should have failed");
-        } catch (InstallException expected) {
-            // expected
-        }
+        });
     }
 
     @Test
