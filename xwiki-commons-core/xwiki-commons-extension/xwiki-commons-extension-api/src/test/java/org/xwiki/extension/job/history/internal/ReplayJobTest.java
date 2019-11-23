@@ -31,7 +31,6 @@ import org.xwiki.extension.job.ExtensionRequest;
 import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.UninstallRequest;
 import org.xwiki.extension.job.history.ExtensionJobHistoryRecord;
-import org.xwiki.extension.job.history.ReplayJobStatus;
 import org.xwiki.extension.job.history.ReplayRequest;
 import org.xwiki.extension.job.internal.AbstractExtensionJob;
 import org.xwiki.job.GroupedJob;
@@ -41,11 +40,11 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Unit tests for {@link ReplayJob}.
@@ -71,7 +70,7 @@ public class ReplayJobTest
     private ReplayJob replayJob;
 
     @Test
-    public void replay() throws Exception
+    public void replay()
     {
         InstallRequest installRequest = new InstallRequest();
         ExtensionJobHistoryRecord installRecord =
@@ -96,10 +95,10 @@ public class ReplayJobTest
         verify(this.uninstallJob).initialize(uninstallRequest);
         verify(this.uninstallJob).run();
 
-        assertEquals(1, ((ReplayJobStatus) this.replayJob.getStatus()).getCurrentRecordNumber());
+        assertEquals(1, this.replayJob.getStatus().getCurrentRecordNumber());
 
         // Make sure the replay job does not need and does not initialize any ExecutionContext
-        verifyZeroInteractions(this.execution);
+        verifyNoInteractions(this.execution);
 
         // Make sure the replay job force the job request to not be isolated so that their log end up in replay job log
         assertFalse(installRequest.isStatusLogIsolated());
@@ -126,7 +125,7 @@ public class ReplayJobTest
         assertGroupPath(AbstractExtensionJob.ROOT_GROUP, installOnTech, installGlobally);
     }
 
-    private void assertGroupPath(JobGroupPath expected, ExtensionRequest... requests) throws Exception
+    private void assertGroupPath(JobGroupPath expected, ExtensionRequest... requests)
     {
         List<ExtensionJobHistoryRecord> records = new ArrayList<>();
         for (ExtensionRequest request : requests) {

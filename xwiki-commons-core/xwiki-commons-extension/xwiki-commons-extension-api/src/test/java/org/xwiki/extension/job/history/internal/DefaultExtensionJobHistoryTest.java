@@ -19,23 +19,25 @@
  */
 package org.xwiki.extension.job.history.internal;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.PredicateUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
 import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.UninstallRequest;
-import org.xwiki.extension.job.history.ExtensionJobHistory;
 import org.xwiki.extension.job.history.ExtensionJobHistoryConfiguration;
 import org.xwiki.extension.job.history.ExtensionJobHistoryRecord;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.annotation.BeforeComponent;
+import org.xwiki.test.junit5.XWikiTempDir;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.junit5.mockito.MockComponent;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -44,44 +46,50 @@ import static org.mockito.Mockito.*;
  * @version $Id$
  * @since 7.1RC1
  */
+@ComponentTest
 public class DefaultExtensionJobHistoryTest
 {
-    @Rule
-    public MockitoComponentMockingRule<ExtensionJobHistory> mocker =
-        new MockitoComponentMockingRule<ExtensionJobHistory>(DefaultExtensionJobHistory.class);
+    @XWikiTempDir
+    private static File TMP_DIRECTORY;
 
-    @Rule
-    public TemporaryFolder testFolder = new TemporaryFolder();
+    @InjectMockComponents
+    private DefaultExtensionJobHistory history;
+
+    @MockComponent
+    private ExtensionJobHistoryConfiguration configuration;
+
+    @BeforeComponent
+    public void setupConfiguration()
+    {
+        // Needed in @BeforeComponent because it's used in the DefaultExtensionJobHistory initialize() method.
+        when(this.configuration.getStorage()).thenReturn(TMP_DIRECTORY);
+    }
 
     @Test
-    public void addGetRecords() throws Exception
+    public void addGetRecords()
     {
-        ExtensionJobHistoryConfiguration config = this.mocker.getInstance(ExtensionJobHistoryConfiguration.class);
-        when(config.getStorage()).thenReturn(testFolder.getRoot());
-
         long now = new Date().getTime();
         ExtensionJobHistoryRecord firstRecord =
             new ExtensionJobHistoryRecord("install", new InstallRequest(), null, null, new Date(now - 7000));
         ExtensionJobHistoryRecord secondRecord =
             new ExtensionJobHistoryRecord("uninstall", new UninstallRequest(), null, null, new Date(now + 4000));
 
-        ExtensionJobHistory history = this.mocker.getComponentUnderTest();
-        history.addRecord(firstRecord);
-        history.addRecord(secondRecord);
+        this.history.addRecord(firstRecord);
+        this.history.addRecord(secondRecord);
 
         // Get all records.
         Predicate<ExtensionJobHistoryRecord> all =
             PredicateUtils.allPredicate(Collections.<Predicate<ExtensionJobHistoryRecord>>emptyList());
-        assertEquals(Arrays.asList(secondRecord, firstRecord), history.getRecords(all, null, -1));
+        assertEquals(Arrays.asList(secondRecord, firstRecord), this.history.getRecords(all, null, -1));
 
         // Limit the number of returned records.
-        assertEquals(Arrays.asList(secondRecord), history.getRecords(all, null, 1));
+        assertEquals(Arrays.asList(secondRecord), this.history.getRecords(all, null, 1));
 
         // Get records from offset.
-        assertEquals(Arrays.asList(firstRecord), history.getRecords(all, secondRecord.getId(), -1));
+        assertEquals(Arrays.asList(firstRecord), this.history.getRecords(all, secondRecord.getId(), -1));
 
         // Filter the records by job type.
-        assertEquals(Arrays.asList(firstRecord), history.getRecords(new Predicate<ExtensionJobHistoryRecord>()
+        assertEquals(Arrays.asList(firstRecord), this.history.getRecords(new Predicate<ExtensionJobHistoryRecord>()
         {
             @Override
             public boolean evaluate(ExtensionJobHistoryRecord record)
