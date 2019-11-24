@@ -24,8 +24,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.xwiki.classloader.ClassLoaderManager;
 import org.xwiki.component.internal.StackingComponentEventManager;
 import org.xwiki.component.internal.multi.ComponentManagerManager;
@@ -39,19 +40,30 @@ import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.repository.internal.installed.DefaultInstalledExtension;
 import org.xwiki.extension.test.AbstractExtensionHandlerTest;
+import org.xwiki.extension.test.MockitoRepositoryUtilsExtension;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.test.annotation.AfterComponent;
+import org.xwiki.test.junit5.mockito.ComponentTest;
 
 import packagefile.jarextension.DefaultTestComponent;
 import packagefile.jarextension.TestComponent;
 import packagefile.jarextensionwithdeps.DefaultTestComponentWithDeps;
 import packagefile.jarextensionwithdeps.TestComponentWithDeps;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
+@ComponentTest
+@ExtendWith(MockitoRepositoryUtilsExtension.class)
 public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 {
     private ComponentManagerManager componentManagerManager;
@@ -67,17 +79,18 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     {
         // Override the system ClassLoader to isolate class loading of extensions from the current ClassLoader
         // (which already contains the extensions)
-        this.mocker.registerComponent(TestJarExtensionClassLoaderManager.class);
+        this.componentManager.registerComponent(TestJarExtensionClassLoaderManager.class);
 
         // Make sure to fully enable ObservationManager to test EventListener live registration
         StackingComponentEventManager componentEventManager = new StackingComponentEventManager();
         componentEventManager.shouldStack(false);
-        this.mocker.setComponentEventManager(componentEventManager);
+        this.componentManager.setComponentEventManager(componentEventManager);
 
         // Ignore warning log during setup
-        ((LoggerManager) this.mocker.getInstance(LoggerManager.class)).pushLogListener(null);
+        ((LoggerManager) this.componentManager.getInstance(LoggerManager.class)).pushLogListener(null);
     }
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception
     {
@@ -86,22 +99,22 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         this.testApplicationClassloader = Thread.currentThread().getContextClassLoader();
 
         // lookup
-        this.componentManagerManager = this.mocker.getInstance(ComponentManagerManager.class);
-        this.jarExtensionClassLoader = this.mocker.getInstance(ClassLoaderManager.class);
+        this.componentManagerManager = this.componentManager.getInstance(ComponentManagerManager.class);
+        this.jarExtensionClassLoader = this.componentManager.getInstance(ClassLoaderManager.class);
 
         // Make sure to fully enable ObservationManager to test EventListener live registration
         StackingComponentEventManager componentEventManager =
-            (StackingComponentEventManager) this.mocker.getComponentEventManager();
-        ObservationManager manager = this.mocker.getInstance(ObservationManager.class);
+            (StackingComponentEventManager) this.componentManager.getComponentEventManager();
+        ObservationManager manager = this.componentManager.getInstance(ObservationManager.class);
         componentEventManager.setObservationManager(manager);
 
-        ((LoggerManager) this.mocker.getInstance(LoggerManager.class)).popLogListener();
+        ((LoggerManager) this.componentManager.getInstance(LoggerManager.class)).popLogListener();
     }
 
-    private void assertNotEquals(Type type1, Type type2)
+    private void assertTypeNotEquals(Type type1, Type type2)
     {
         if (type1.equals(type2)) {
-            Assert.fail("expected not equals");
+            fail("expected not equals");
         }
     }
 
@@ -129,7 +142,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         ComponentManager extensionComponentManager = this.componentManagerManager.getComponentManager(namespace, false);
         if (extensionComponentManager == null) {
             try {
-                extensionComponentManager = this.mocker.getInstance(ComponentManager.class);
+                extensionComponentManager = this.componentManager.getInstance(ComponentManager.class);
             } catch (Exception e) {
                 // Should never happen
             }
@@ -157,19 +170,19 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     private void checkInstallStatus(InstalledExtension installedExtension, String namespace)
     {
         // check extension status
-        Assert.assertNotNull(installedExtension);
-        Assert.assertNotNull(installedExtension.getFile());
-        Assert.assertTrue(new File(installedExtension.getFile().getAbsolutePath()).exists());
-        Assert.assertTrue(installedExtension.isInstalled(namespace));
+        assertNotNull(installedExtension);
+        assertNotNull(installedExtension.getFile());
+        assertTrue(new File(installedExtension.getFile().getAbsolutePath()).exists());
+        assertTrue(installedExtension.isInstalled(namespace));
         if (namespace != null) {
-            Assert.assertFalse(installedExtension.isInstalled(null));
+            assertFalse(installedExtension.isInstalled(null));
         }
 
         // check repository status
-        Assert.assertNotNull(
+        assertNotNull(
             this.installedExtensionRepository.getInstalledExtension(installedExtension.getId().getId(), namespace));
         if (namespace != null) {
-            Assert.assertNull(
+            assertNull(
                 this.installedExtensionRepository.getInstalledExtension(installedExtension.getId().getId(), null));
         }
     }
@@ -218,18 +231,18 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         throws Exception
     {
         ClassLoader extensionLoader = getExtensionClassloader(namespace);
-        Assert.assertNotNull(extensionLoader);
-        Assert.assertNotSame(this.testApplicationClassloader, extensionLoader);
+        assertNotNull(extensionLoader);
+        assertNotSame(this.testApplicationClassloader, extensionLoader);
 
         Type loadedRole = getLoadedType(role, extensionLoader);
         // Ensure the loaded role does not came from the application classloader (a check to validate the test)
-        Assert.assertFalse(loadedRole.equals(role));
+        assertFalse(loadedRole.equals(role));
 
         if (namespace != null) {
             try {
                 this.jarExtensionClassLoader.getURLClassLoader(null, false)
                     .loadClass(ReflectionUtils.getTypeClass(loadedRole).getName());
-                Assert.fail("the interface should not be in the root class loader");
+                fail("the interface should not be in the root class loader");
             } catch (ClassNotFoundException expected) {
                 // expected
             }
@@ -241,16 +254,16 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
             componentInstanceClass = getExtensionComponentManager(namespace).getInstance(loadedRole).getClass();
 
             try {
-                this.mocker.getInstance(loadedRole);
-                Assert.fail("the component should not be in the root component manager");
+                this.componentManager.getInstance(loadedRole);
+                fail("the component should not be in the root component manager");
             } catch (ComponentLookupException expected) {
                 // expected
             }
         } else {
-            componentInstanceClass = this.mocker.getInstance(loadedRole).getClass();
+            componentInstanceClass = this.componentManager.getInstance(loadedRole).getClass();
         }
-        Assert.assertEquals(implementation.getName(), componentInstanceClass.getName());
-        Assert.assertNotSame(implementation, componentInstanceClass);
+        assertEquals(implementation.getName(), componentInstanceClass.getName());
+        assertNotSame(implementation, componentInstanceClass);
 
         return loadedRole;
     }
@@ -274,14 +287,14 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     private void ckeckUninstallStatus(LocalExtension localExtension, String namespace)
     {
         // check extension status
-        Assert.assertFalse(DefaultInstalledExtension.isInstalled(localExtension, namespace));
-        Assert.assertFalse(DefaultInstalledExtension.isInstalled(localExtension, null));
+        assertFalse(DefaultInstalledExtension.isInstalled(localExtension, namespace));
+        assertFalse(DefaultInstalledExtension.isInstalled(localExtension, null));
 
         // check repository status
         InstalledExtension installedExtension =
             this.installedExtensionRepository.getInstalledExtension(localExtension.getId().getId(), namespace);
         if (installedExtension != null) {
-            Assert.assertNotEquals(localExtension.getId(), installedExtension.getId());
+            assertNotEquals(localExtension.getId(), installedExtension.getId());
         }
     }
 
@@ -312,10 +325,10 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
             Type loadedRole = getLoadedType(role, extensionLoader);
 
             // check components managers
-            this.mocker.getInstance(loadedRole);
-            Assert.fail("the extension has not been uninstalled, component found!");
+            this.componentManager.getInstance(loadedRole);
+            fail("the extension has not been uninstalled, component found!");
         } catch (ComponentLookupException unexpected) {
-            Assert.fail("the extension has not been uninstalled, role found!");
+            fail("the extension has not been uninstalled, role found!");
         } catch (ClassNotFoundException expected) {
             // expected
         }
@@ -331,14 +344,14 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
 
         Type extensionRole1 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
 
         // try to install again
         try {
             install(extensionId);
-            Assert.fail("installExtension should have failed");
+            fail("installExtension should have failed");
         } catch (InstallException expected) {
             // expected
         }
@@ -356,7 +369,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         checkInstallStatus(installedExtension);
 
         Type extensionRole2 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
-        assertNotEquals(extensionRole1, extensionRole2);
+        assertTypeNotEquals(extensionRole1, extensionRole2);
     }
 
     @Test
@@ -391,9 +404,9 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, NAMESPACE);
 
-        Assert.assertSame(installedExtension,
+        assertSame(installedExtension,
             this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), NAMESPACE));
-        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), null));
+        assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), null));
 
         Class<?> clazz = Class.forName("test.TestClass", true, getExtensionClassloader(NAMESPACE));
         assertNotNull(MethodUtils.getAccessibleMethod(clazz, "method1"));
@@ -404,9 +417,9 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, NAMESPACE);
 
-        Assert.assertSame(installedExtension,
+        assertSame(installedExtension,
             this.installedExtensionRepository.getInstalledExtension(extensionId2.getId(), NAMESPACE));
-        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId2.getId(), null));
+        assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId2.getId(), null));
 
         clazz = Class.forName("test.TestClass", true, getExtensionClassloader(NAMESPACE));
         assertNotNull(MethodUtils.getAccessibleMethod(clazz, "method1"));
@@ -417,9 +430,9 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, NAMESPACE);
 
-        Assert.assertSame(installedExtension,
+        assertSame(installedExtension,
             this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), NAMESPACE));
-        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), null));
+        assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), null));
 
         clazz = Class.forName("test.TestClass", true, getExtensionClassloader(NAMESPACE));
         assertNotNull(MethodUtils.getAccessibleMethod(clazz, "method1"));
@@ -436,14 +449,14 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, NAMESPACE);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", NAMESPACE));
-        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", NAMESPACE));
+        assertNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
 
         checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, NAMESPACE);
 
         try {
             install(extensionId, NAMESPACE);
-            Assert.fail("installExtension should have failed");
+            fail("installExtension should have failed");
         } catch (InstallException expected) {
             // expected
         }
@@ -487,8 +500,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", null));
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", null));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
 
         Type extensionRole1 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class);
@@ -501,7 +514,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkJarExtensionUnavailability(TestComponentWithDeps.class);
         Type extensionDep2 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
-        assertNotEquals(extensionDep1, extensionDep2);
+        assertTypeNotEquals(extensionDep1, extensionDep2);
 
         // actual reinstall test
         installedExtension = install(extensionId);
@@ -511,8 +524,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Type extensionRole2 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class);
         Type extensionDep3 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
-        assertNotEquals(extensionRole1, extensionRole2);
-        Assert.assertEquals(extensionDep2, extensionDep3);
+        assertTypeNotEquals(extensionRole1, extensionRole2);
+        assertEquals(extensionDep2, extensionDep3);
     }
 
     @Test
@@ -526,8 +539,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installExtension, namespace);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace));
-        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", null));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace));
+        assertNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", null));
 
         checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace);
         checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace);
@@ -552,8 +565,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", null));
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", null));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
 
         Type extensionRole1 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class);
@@ -575,8 +588,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Type extensionRole2 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class);
         Type extensionDep2 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
-        assertNotEquals(extensionRole1, extensionRole2);
-        assertNotEquals(extensionDep1, extensionDep2);
+        assertTypeNotEquals(extensionRole1, extensionRole2);
+        assertTypeNotEquals(extensionDep1, extensionDep2);
     }
 
     @Test
@@ -591,8 +604,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, namespace);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace));
-        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", null));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace));
+        assertNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", null));
 
         checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace);
         checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace);
@@ -617,7 +630,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         InstalledExtension installedExtension = install(dependencyId);
 
         checkInstallStatus(installedExtension);
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
         Type extensionDep1 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
 
         // actual install test
@@ -626,11 +639,11 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         checkInstallStatus(installedExtension, namespace);
         checkInstallStatus(this.installedExtensionRepository.resolve(dependencyId));
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace));
         Type extensionRole1 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace);
         Type extensionDep2 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
-        Assert.assertEquals(extensionDep1, extensionDep2);
+        assertEquals(extensionDep1, extensionDep2);
 
         // actual uninstall test
         LocalExtension localExtension = uninstall(extensionId, namespace);
@@ -640,7 +653,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkJarExtensionUnavailability(TestComponentWithDeps.class, namespace);
         Type extensionDep3 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
-        Assert.assertEquals(extensionDep1, extensionDep3);
+        assertEquals(extensionDep1, extensionDep3);
 
         // actual reinstall test
         installedExtension = install(extensionId, namespace);
@@ -650,8 +663,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Type extensionRole2 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace);
         Type extensionDep4 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
-        assertNotEquals(extensionRole1, extensionRole2);
-        Assert.assertEquals(extensionDep1, extensionDep4);
+        assertTypeNotEquals(extensionRole1, extensionRole2);
+        assertEquals(extensionDep1, extensionDep4);
     }
 
     @Test
@@ -665,7 +678,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         InstalledExtension installedExtension = install(dependencyId);
 
         checkInstallStatus(installedExtension);
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
         Type extensionDep1 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
 
         // actual install test
@@ -674,11 +687,11 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         checkInstallStatus(installedExtension, namespace);
         checkInstallStatus(this.installedExtensionRepository.resolve(dependencyId));
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace));
         Type extensionRole1 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace);
         Type extensionDep2 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
-        Assert.assertEquals(extensionDep1, extensionDep2);
+        assertEquals(extensionDep1, extensionDep2);
 
         // actual uninstall test
         LocalExtension localExtension = uninstall(dependencyId);
@@ -699,8 +712,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace);
         Type extensionDep3 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace);
-        assertNotEquals(extensionRole1, extensionRole2);
-        assertNotEquals(extensionDep1, extensionDep3);
+        assertTypeNotEquals(extensionRole1, extensionRole2);
+        assertTypeNotEquals(extensionDep1, extensionDep3);
     }
 
     @Test
@@ -715,7 +728,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, namespace1);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace1));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace1));
         Type extensionRole1 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace1);
         Type extensionDep1 =
@@ -727,13 +740,13 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, namespace2);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace2));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace2));
         Type extensionRole2 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace2);
         Type extensionDep2 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace2);
-        assertNotEquals(extensionRole1, extensionRole2);
-        assertNotEquals(extensionDep1, extensionDep2);
+        assertTypeNotEquals(extensionRole1, extensionRole2);
+        assertTypeNotEquals(extensionDep1, extensionDep2);
 
         // actual uninstall test
         // FIXME: Ignore warning because of https://jira.xwiki.org/browse/XCOMMONS-213
@@ -744,14 +757,14 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         checkJarExtensionUnavailability(TestComponentWithDeps.class, namespace1);
         Type extensionDep3 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace1);
-        assertNotEquals(extensionDep1, extensionDep3);
+        assertTypeNotEquals(extensionDep1, extensionDep3);
 
         Type extensionRole3 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace2);
         Type extensionDep4 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace2);
-        Assert.assertEquals(extensionRole2, extensionRole3);
-        Assert.assertEquals(extensionDep2, extensionDep4);
+        assertEquals(extensionRole2, extensionRole3);
+        assertEquals(extensionDep2, extensionDep4);
 
         // actual uninstall test
         // FIXME: Ignore warning because of https://jira.xwiki.org/browse/XCOMMONS-213
@@ -762,11 +775,11 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         checkJarExtensionUnavailability(TestComponentWithDeps.class, namespace2);
         Type extensionDep5 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace2);
-        assertNotEquals(extensionDep2, extensionDep5);
+        assertTypeNotEquals(extensionDep2, extensionDep5);
 
         Type extensionDep6 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace1);
-        Assert.assertEquals(extensionDep3, extensionDep6);
+        assertEquals(extensionDep3, extensionDep6);
     }
 
     @Test
@@ -781,7 +794,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, namespace1);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace1));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace1));
         Type extensionRole1 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace1);
         Type extensionDep1 =
@@ -792,13 +805,13 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, namespace2);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace2));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace2));
         Type extensionRole2 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace2);
         Type extensionDep2 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace2);
-        assertNotEquals(extensionRole1, extensionRole2);
-        assertNotEquals(extensionDep1, extensionDep2);
+        assertTypeNotEquals(extensionRole1, extensionRole2);
+        assertTypeNotEquals(extensionDep1, extensionDep2);
 
         // actual uninstall test
         LocalExtension localExtension = uninstall(dependencyId, namespace1);
@@ -812,8 +825,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace2);
         Type extensionDep3 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace2);
-        Assert.assertEquals(extensionRole2, extensionRole3);
-        Assert.assertEquals(extensionDep2, extensionDep3);
+        assertEquals(extensionRole2, extensionRole3);
+        assertEquals(extensionDep2, extensionDep3);
 
         // actual uninstall test
         localExtension = uninstall(dependencyId, namespace2);
@@ -835,7 +848,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, namespace1);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace1));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace1));
         Type extensionRole1 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace1);
         Type extensionDep1 =
@@ -846,13 +859,13 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, namespace2);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace2));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace2));
         Type extensionRole2 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace2);
         Type extensionDep2 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace2);
-        assertNotEquals(extensionRole1, extensionRole2);
-        assertNotEquals(extensionDep1, extensionDep2);
+        assertTypeNotEquals(extensionRole1, extensionRole2);
+        assertTypeNotEquals(extensionDep1, extensionDep2);
 
         // actual uninstall test
         // FIXME: Ignore warning because of https://jira.xwiki.org/browse/XCOMMONS-213
@@ -863,10 +876,10 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         checkJarExtensionUnavailability(TestComponentWithDeps.class, namespace1);
         Type extensionDep3 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace1);
-        assertNotEquals(extensionDep1, extensionDep3);
+        assertTypeNotEquals(extensionDep1, extensionDep3);
         Type extensionDep4 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace2);
-        assertNotEquals(extensionDep2, extensionDep4);
+        assertTypeNotEquals(extensionDep2, extensionDep4);
     }
 
     @Test
@@ -881,7 +894,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, namespace1);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace1));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace1));
         Type extensionRole1 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace1);
         Type extensionDep1 =
@@ -892,13 +905,13 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, namespace2);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace2));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace2));
         Type extensionRole2 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace2);
         Type extensionDep2 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace2);
-        assertNotEquals(extensionRole1, extensionRole2);
-        assertNotEquals(extensionDep1, extensionDep2);
+        assertTypeNotEquals(extensionRole1, extensionRole2);
+        assertTypeNotEquals(extensionDep1, extensionDep2);
 
         // actual uninstall test
         LocalExtension localExtension = uninstall(dependencyId);
@@ -924,7 +937,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
         Type extensionDep1 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
 
         // actual install test
@@ -933,11 +946,11 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         checkInstallStatus(installedExtension, namespace1);
         checkInstallStatus(this.installedExtensionRepository.resolve(dependencyId));
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace1));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace1));
         Type extensionRole1 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace1);
         Type extensionDep2 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
-        Assert.assertEquals(extensionDep1, extensionDep2);
+        assertEquals(extensionDep1, extensionDep2);
 
         // actual install test
         installedExtension = install(extensionId, namespace2);
@@ -945,12 +958,12 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         checkInstallStatus(installedExtension, namespace2);
         checkInstallStatus(this.installedExtensionRepository.resolve(dependencyId));
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace2));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace2));
         Type extensionRole2 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace2);
         Type extensionDep3 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
-        assertNotEquals(extensionRole1, extensionRole2);
-        Assert.assertEquals(extensionDep1, extensionDep3);
+        assertTypeNotEquals(extensionRole1, extensionRole2);
+        assertEquals(extensionDep1, extensionDep3);
 
         // actual uninstall test
         LocalExtension localExtension = uninstall(extensionId, namespace1);
@@ -963,8 +976,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Type extensionRole3 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace2);
         Type extensionDep4 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
-        Assert.assertEquals(extensionRole2, extensionRole3);
-        Assert.assertEquals(extensionDep1, extensionDep4);
+        assertEquals(extensionRole2, extensionRole3);
+        assertEquals(extensionDep1, extensionDep4);
 
         // actual uninstall test
         localExtension = uninstall(extensionId, namespace2);
@@ -974,7 +987,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkJarExtensionUnavailability(TestComponentWithDeps.class, namespace2);
         Type extensionDep5 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
-        Assert.assertEquals(extensionDep1, extensionDep5);
+        assertEquals(extensionDep1, extensionDep5);
     }
 
     @Test
@@ -990,29 +1003,29 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
         Type extensionDep1 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
 
         installedExtension = install(extensionId, namespace1);
 
         checkInstallStatus(installedExtension, namespace1);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace1));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace1));
         Type extensionRole1 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace1);
         Type extensionDep2 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
-        Assert.assertEquals(extensionDep1, extensionDep2);
+        assertEquals(extensionDep1, extensionDep2);
 
         installedExtension = install(extensionId, namespace2);
 
         checkInstallStatus(installedExtension, namespace2);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace2));
+        assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature-with-deps", namespace2));
         Type extensionRole2 =
             checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, namespace2);
         Type extensionDep3 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
-        assertNotEquals(extensionRole1, extensionRole2);
-        Assert.assertEquals(extensionDep1, extensionDep3);
+        assertTypeNotEquals(extensionRole1, extensionRole2);
+        assertEquals(extensionDep1, extensionDep3);
 
         // actual uninstall test
         LocalExtension localExtension = uninstall(dependencyId);
@@ -1082,9 +1095,9 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, NAMESPACE);
 
-        Assert.assertSame(installedExtension,
+        assertSame(installedExtension,
             this.installedExtensionRepository.getInstalledExtension(extensionId.getId(), NAMESPACE));
-        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId.getId(), null));
+        assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId.getId(), null));
 
         checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, NAMESPACE);
 
@@ -1107,9 +1120,9 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension1, NAMESPACE);
 
-        Assert.assertSame(installedExtension1,
+        assertSame(installedExtension1,
             this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), NAMESPACE));
-        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), null));
+        assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), null));
 
         checkJarExtensionAvailability(packagefile.jarupgrade1.TestComponent.class,
             packagefile.jarupgrade1.DefaultTestComponent.class, NAMESPACE);

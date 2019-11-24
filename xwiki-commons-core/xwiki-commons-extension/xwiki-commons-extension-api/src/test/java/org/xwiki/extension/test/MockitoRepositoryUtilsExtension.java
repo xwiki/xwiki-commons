@@ -20,15 +20,25 @@
 package org.xwiki.extension.test;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.xwiki.test.junit5.mockito.MockitoComponentManagerExtension;
+import org.junit.jupiter.api.extension.TestInstancePostProcessor;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
-public class MockitoRepositoryUtilsExtension extends MockitoComponentManagerExtension
+public class MockitoRepositoryUtilsExtension implements TestInstancePostProcessor
 {
-    @Override
     public void postProcessTestInstance(Object testInstance, ExtensionContext context) throws Exception
     {
-        super.postProcessTestInstance(testInstance, context);
-
         new MockitoRepositoryUtils(loadComponentManager(context)).setup();
+    }
+
+    protected MockitoComponentManager loadComponentManager(ExtensionContext context)
+    {
+        ExtensionContext.Store store = getGlobalRootStore(context);
+        Class<?> testClass = context.getRequiredTestClass();
+        return store.get(testClass, MockitoComponentManager.class);
+    }
+
+    private static ExtensionContext.Store getGlobalRootStore(ExtensionContext context)
+    {
+        return context.getRoot().getStore(ExtensionContext.Namespace.GLOBAL);
     }
 }

@@ -93,8 +93,6 @@ import org.xwiki.test.mockito.MockitoComponentMocker;
  */
 public class MockitoComponentManagerExtension implements TestInstancePostProcessor, AfterEachCallback, ParameterResolver
 {
-    private static final Namespace NAMESPACE = Namespace.create(MockitoComponentManagerExtension.class);
-
     private static final ComponentAnnotationLoader LOADER = new ComponentAnnotationLoader();
 
     @Override
@@ -272,27 +270,27 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
 
     protected MockitoComponentManager loadComponentManager(ExtensionContext context)
     {
-        ExtensionContext.Store store = getStore(context);
+        ExtensionContext.Store store = getGlobalRootStore(context);
         Class<?> testClass = context.getRequiredTestClass();
         return store.get(testClass, MockitoComponentManager.class);
     }
 
     private void removeComponentManager(ExtensionContext context)
     {
-        ExtensionContext.Store store = getStore(context);
+        ExtensionContext.Store store = getGlobalRootStore(context);
         Class<?> testClass = context.getRequiredTestClass();
         store.remove(testClass);
     }
 
     private void saveComponentManager(ExtensionContext context, MockitoComponentManager componentManager)
     {
-        ExtensionContext.Store store = getStore(context);
+        ExtensionContext.Store store = getGlobalRootStore(context);
         Class<?> testClass = context.getRequiredTestClass();
         store.put(testClass, componentManager);
     }
 
-    private static ExtensionContext.Store getStore(ExtensionContext context)
+    private static ExtensionContext.Store getGlobalRootStore(ExtensionContext context)
     {
-        return context.getRoot().getStore(NAMESPACE);
+        return context.getRoot().getStore(Namespace.GLOBAL);
     }
 }

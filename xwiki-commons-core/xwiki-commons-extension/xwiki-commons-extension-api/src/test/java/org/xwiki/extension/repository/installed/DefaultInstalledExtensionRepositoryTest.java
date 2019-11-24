@@ -52,6 +52,7 @@ import org.xwiki.extension.test.MockitoRepositoryUtilsExtension;
 import org.xwiki.extension.test.TestExtensionHandler;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectComponentManager;
 import org.xwiki.test.mockito.MockitoComponentManager;
 
@@ -63,6 +64,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ComponentTest
 @ExtendWith(MockitoRepositoryUtilsExtension.class)
 @AllComponents
 public class DefaultInstalledExtensionRepositoryTest

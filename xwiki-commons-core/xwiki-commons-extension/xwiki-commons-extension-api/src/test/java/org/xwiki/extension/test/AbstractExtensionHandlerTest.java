@@ -23,8 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.jupiter.api.BeforeEach;
 import org.xwiki.cache.CacheManager;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
 import org.xwiki.extension.ExtensionId;
@@ -43,15 +42,14 @@ import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
 import org.xwiki.test.annotation.AllComponents;
-import org.xwiki.test.mockito.MockitoComponentManagerRule;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
 @AllComponents
 public abstract class AbstractExtensionHandlerTest
 {
-    protected MockitoComponentManagerRule mocker = new MockitoComponentManagerRule();
-
-    @Rule
-    public MockitoRepositoryUtilsRule repositoryUtil = new MockitoRepositoryUtilsRule(this.mocker);
+    @InjectComponentManager
+    protected MockitoComponentManager componentManager;
 
     protected LocalExtensionRepository localExtensionRepository;
 
@@ -61,16 +59,16 @@ public abstract class AbstractExtensionHandlerTest
 
     protected MemoryConfigurationSource memoryConfigurationSource;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
-        this.jobExecutor = this.mocker.getInstance(JobExecutor.class);
-        this.localExtensionRepository = this.mocker.getInstance(LocalExtensionRepository.class);
-        this.installedExtensionRepository = this.mocker.getInstance(InstalledExtensionRepository.class);
+        this.jobExecutor = this.componentManager.getInstance(JobExecutor.class);
+        this.localExtensionRepository = this.componentManager.getInstance(LocalExtensionRepository.class);
+        this.installedExtensionRepository = this.componentManager.getInstance(InstalledExtensionRepository.class);
 
-        this.mocker.registerMockComponent(CacheManager.class);
+        this.componentManager.registerMockComponent(CacheManager.class);
 
-        this.memoryConfigurationSource = this.mocker.registerMemoryConfigurationSource();
+        this.memoryConfigurationSource = this.componentManager.registerMemoryConfigurationSource();
     }
 
     protected ExtensionPlanNode getNode(ExtensionId id, Collection<ExtensionPlanNode> nodes)
