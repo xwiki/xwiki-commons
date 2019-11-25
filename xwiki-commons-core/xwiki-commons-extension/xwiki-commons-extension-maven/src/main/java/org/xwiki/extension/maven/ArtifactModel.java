@@ -20,7 +20,6 @@
 package org.xwiki.extension.maven;
 
 import org.apache.maven.model.Model;
-import org.xwiki.stability.Unstable;
 
 /**
  * Add classifier and type information to Maven {@link Model}.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @since 10.9
  * @since 10.8.1
  */
-@Unstable
 public class ArtifactModel
 {
     private String classifier;

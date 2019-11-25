@@ -23,7 +23,6 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Generates the HTML used to display the values of a given type {@link T}.
@@ -33,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @since 10.11RC1
  */
 @Role
-@Unstable
 public interface HTMLDisplayer<T>
 {
     /**
