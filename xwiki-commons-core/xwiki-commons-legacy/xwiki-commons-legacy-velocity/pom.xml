@@ -100,6 +100,14 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <!-- ListTool is code from old Velocity version embedded here for retro compatibility  -->
+          <excludePackageNames combine.children="append">org.apache.*</excludePackageNames>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
