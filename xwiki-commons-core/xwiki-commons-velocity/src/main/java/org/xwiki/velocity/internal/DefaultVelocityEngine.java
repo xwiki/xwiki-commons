@@ -22,32 +22,33 @@ package org.xwiki.velocity.internal;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
+import java.util.Deque;
 import java.util.Enumeration;
-import java.util.Map;
+import java.util.LinkedList;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.velocity.Template;
 import org.apache.velocity.context.Context;
-import org.apache.velocity.context.InternalContextAdapterImpl;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.RuntimeInstance;
 import org.apache.velocity.runtime.RuntimeServices;
-import org.apache.velocity.runtime.directive.Scope;
 import org.apache.velocity.runtime.directive.StopCommand;
-import org.apache.velocity.runtime.parser.node.SimpleNode;
+import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
 import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.XWikiVelocityException;
-import org.xwiki.velocity.internal.log.AbstractSLF4JLogChute;
-import org.xwiki.velocity.introspection.TryCatchDirective;
+import org.xwiki.velocity.internal.directive.TryCatchDirective;
 
 /**
  * Default implementation of the Velocity service which initializes the Velocity system using configuration values
@@ -61,12 +62,81 @@ import org.xwiki.velocity.introspection.TryCatchDirective;
  */
 @Component
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
-public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements VelocityEngine
+public class DefaultVelocityEngine implements VelocityEngine
 {
-    /**
-     * The name of the context variable used for the template-level scope.
-     */
-    private static final String TEMPLATE_SCOPE_NAME = "template";
+    private static final String ECONTEXT_TEMPLATES = "velocity.templates";
+
+    private static class SingletonResourceReader extends StringResourceLoader
+    {
+        private final Reader reader;
+
+        SingletonResourceReader(Reader r)
+        {
+            this.reader = r;
+        }
+
+        @Override
+        public Reader getResourceReader(String source, String encoding)
+        {
+            return this.reader;
+        }
+    }
+
+    private class TemplateEntry
+    {
+        private Template template;
+
+        private String namespace;
+
+        private int counter;
+
+        /**
+         * @param namespace the namespace
+         */
+        TemplateEntry(String namespace)
+        {
+            this.namespace = namespace;
+            this.template = new Template();
+            this.template.setName(namespace);
+            this.template.setRuntimeServices(runtimeInstance);
+
+            this.counter = 1;
+
+            if (globalEntry != null) {
+                // Inject global macros
+                this.template.getMacros().putAll(globalEntry.getTemplate().getMacros());
+            }
+        }
+
+        Template getTemplate()
+        {
+            return this.template;
+        }
+
+        String getNamespace()
+        {
+            return this.namespace;
+        }
+
+        int getCounter()
+        {
+            return this.counter;
+        }
+
+        int incrementCounter()
+        {
+            ++this.counter;
+
+            return this.counter;
+        }
+
+        int decrementCounter()
+        {
+            --this.counter;
+
+            return this.counter;
+        }
+    }
 
     /**
      * Used to set it as a Velocity Application Attribute so that Velocity extensions done by XWiki can use it to lookup
@@ -88,6 +158,9 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
     @Inject
     private VelocityContextFactory velocityContextFactory;
 
+    @Inject
+    private Execution execution;
+
     /**
      * The logger to use for logging.
      */
@@ -95,64 +168,58 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
     private Logger logger;
 
     /**
-     * The Velocity engine we're wrapping.
+     * The actual Velocity runtime.
      */
-    private org.apache.velocity.app.VelocityEngine engine;
+    private RuntimeInstance runtimeInstance;
 
-    /**
-     * See the comment in {@link #init(org.apache.velocity.runtime.RuntimeServices)}.
-     */
-    private RuntimeServices rsvc;
-
-    /** Counter for the number of active rendering processes using each namespace. */
-    private final Map<String, Integer> namespaceUsageCount = new ConcurrentHashMap<String, Integer>();
+    private TemplateEntry globalEntry;
 
     @Override
     public void initialize(Properties overridingProperties) throws XWikiVelocityException
     {
-        org.apache.velocity.app.VelocityEngine velocityEngine = new org.apache.velocity.app.VelocityEngine();
+        RuntimeInstance runtime = new RuntimeInstance();
 
         // Add the Component Manager to allow Velocity extensions to lookup components.
-        velocityEngine.setApplicationAttribute(ComponentManager.class.getName(), this.componentManager);
+        runtime.setApplicationAttribute(ComponentManager.class.getName(), this.componentManager);
 
         // Set up properties
-        initializeProperties(velocityEngine, this.velocityConfiguration.getProperties(), overridingProperties);
+        initializeProperties(runtime, this.velocityConfiguration.getProperties(), overridingProperties);
 
         // Set up directives
-        velocityEngine.loadDirective(TryCatchDirective.class.getName());
+        runtime.loadDirective(TryCatchDirective.class.getName());
 
         try {
-            velocityEngine.init();
+            runtime.init();
         } catch (Exception e) {
             throw new XWikiVelocityException("Cannot start the Velocity engine", e);
         }
 
-        this.engine = velocityEngine;
+        this.runtimeInstance = runtime;
+
+        this.globalEntry = new TemplateEntry("");
     }
 
     /**
-     * @param velocityEngine the Velocity engine against which to initialize Velocity properties
+     * @param runtime the Velocity engine against which to initialize Velocity properties
      * @param configurationProperties the Velocity properties coming from XWiki's configuration
      * @param overridingProperties the Velocity properties that override the properties coming from XWiki's
      *            configuration
      */
-    private void initializeProperties(org.apache.velocity.app.VelocityEngine velocityEngine,
-        Properties configurationProperties, Properties overridingProperties)
+    private void initializeProperties(RuntimeInstance runtime, Properties configurationProperties,
+        Properties overridingProperties)
     {
         // Avoid "unable to find resource 'VM_global_library.vm' in any resource loader." if no
         // Velocimacro library is defined. This value is overriden below.
-        velocityEngine.setProperty("velocimacro.library", "");
-
-        velocityEngine.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM, this);
+        runtime.setProperty(RuntimeConstants.VM_LIBRARY, "");
 
         // Configure Velocity by passing the properties defined in this component's configuration
         if (configurationProperties != null) {
             for (Enumeration<?> e = configurationProperties.propertyNames(); e.hasMoreElements();) {
                 String key = e.nextElement().toString();
                 // Only set a property if it's not overridden by one of the passed properties
-                if (!overridingProperties.containsKey(key)) {
+                if (overridingProperties == null || !overridingProperties.containsKey(key)) {
                     String value = configurationProperties.getProperty(key);
-                    velocityEngine.setProperty(key, value);
+                    runtime.setProperty(key, value);
                     this.logger.debug("Setting property [{}] = [{}]", key, value);
                 }
             }
@@ -163,32 +230,11 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
             for (Enumeration<?> e = overridingProperties.propertyNames(); e.hasMoreElements();) {
                 String key = e.nextElement().toString();
                 String value = overridingProperties.getProperty(key);
-                velocityEngine.setProperty(key, value);
+                runtime.setProperty(key, value);
+
                 this.logger.debug("Overriding property [{}] = [{}]", key, value);
             }
         }
-    }
-
-    /**
-     * Restore the previous {@code $template} variable, if any, in the velocity context.
-     *
-     * @param ica the current velocity context
-     * @param currentTemplateScope the current Scope, from which to take the replaced variable
-     */
-    private void restoreTemplateScope(InternalContextAdapterImpl ica, Scope currentTemplateScope)
-    {
-        if (currentTemplateScope.getParent() != null) {
-            ica.put(TEMPLATE_SCOPE_NAME, currentTemplateScope.getParent());
-        } else if (currentTemplateScope.getReplaced() != null) {
-            ica.put(TEMPLATE_SCOPE_NAME, currentTemplateScope.getReplaced());
-        } else {
-            ica.remove(TEMPLATE_SCOPE_NAME);
-        }
-    }
-
-    private String toThreadSafeNamespace(String namespace)
-    {
-        return StringUtils.isNotEmpty(namespace) ? Thread.currentThread().getId() + ":" + namespace : namespace;
     }
 
     @Override
@@ -199,142 +245,130 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
     }
 
     @Override
-    public boolean evaluate(Context context, Writer out, String templateName, Reader source)
-        throws XWikiVelocityException
+    public boolean evaluate(Context context, Writer out, String namespace, Reader source) throws XWikiVelocityException
     {
         // Ensure that initialization has been called
-        if (this.engine == null) {
+        if (this.runtimeInstance == null) {
             throw new XWikiVelocityException("This Velocity Engine has not yet been initialized. "
                 + " You must call its initialize() method before you can use it.");
         }
 
-        // Velocity macros handling is all but thread safe. We try to make sure that the same namespace is not going to
-        // be manipulated by several threads at the same time
-        String namespace = toThreadSafeNamespace(templateName);
-
-        // We override the default implementation here. See #init(RuntimeServices)
-        // for explanations.
         try {
+            TemplateEntry templateEntry;
             if (StringUtils.isNotEmpty(namespace)) {
-                startedUsingMacroNamespaceInternal(namespace);
+                templateEntry = startedUsingMacroNamespaceInternal(namespace);
+            } else {
+                templateEntry = this.globalEntry;
             }
 
-            return evaluateInternal(context, out, namespace, source);
+            // Set source
+            templateEntry.getTemplate().setResourceLoader(new SingletonResourceReader(source));
+
+            // Compile the template
+            templateEntry.getTemplate().process();
+
+            // Execute the velocity script
+            templateEntry.getTemplate().merge(context != null ? context : this.velocityContextFactory.createContext(),
+                out);
+
+            return true;
         } catch (StopCommand s) {
             // Someone explicitly stopped the script with something like #stop. No reason to make a scene.
             return true;
         } catch (Exception e) {
-            throw new XWikiVelocityException("Failed to evaluate content with id [" + templateName + "]", e);
+            throw new XWikiVelocityException("Failed to evaluate content with id [" + namespace + "]", e);
         } finally {
             if (StringUtils.isNotEmpty(namespace)) {
-                stoppedUsingMacroNamespaceInternal(namespace);
+                stoppedUsingMacroNamespace(namespace);
             }
         }
-    }
-
-    private boolean evaluateInternal(Context context, Writer out, String namespace, Reader source) throws Exception
-    {
-        // The trick is done here: We use the signature that allows
-        // passing a boolean and we pass false, thus preventing Velocity
-        // from cleaning the namespace of its velocimacros even though the
-        // config property velocimacro.permissions.allow.inline.local.scope
-        // is set to true.
-        SimpleNode nodeTree = this.rsvc.parse(source, namespace, false);
-
-        if (nodeTree != null) {
-            InternalContextAdapterImpl ica =
-                new InternalContextAdapterImpl(context != null ? context : this.velocityContextFactory.createContext());
-            ica.pushCurrentTemplateName(namespace);
-            boolean provideTemplateScope = this.rsvc.getBoolean("template.provide.scope.control", true);
-            Object templateScopeMarker = new Object();
-            Scope templateScope = null;
-            if (provideTemplateScope) {
-                Object previous = ica.get(TEMPLATE_SCOPE_NAME);
-                templateScope = new Scope(templateScopeMarker, previous);
-                templateScope.put("templateName", namespace);
-                ica.put(TEMPLATE_SCOPE_NAME, templateScope);
-            }
-            try {
-                nodeTree.init(ica, this.rsvc);
-                nodeTree.render(ica, out);
-            } catch (StopCommand stop) {
-                // Check if we're supposed to stop here or not:
-                // - stop if the template is breaking explicitly on the provided $template
-                // - or stop if this is the topmost evaluation
-                if (!stop.isFor(templateScopeMarker) && ica.getTemplateNameStack().length > 1) {
-                    throw stop;
-                }
-            } finally {
-                ica.popCurrentTemplateName();
-                if (provideTemplateScope) {
-                    restoreTemplateScope(ica, templateScope);
-                }
-            }
-            return true;
-        }
-
-        return false;
     }
 
     @Override
-    public void clearMacroNamespace(String templateName)
+    @Deprecated
+    public void clearMacroNamespace(String namespace)
     {
-        this.rsvc.dumpVMNamespace(toThreadSafeNamespace(templateName));
+        // Does not really make much sense anymore since macros are now stored in the execution context
     }
 
     @Override
     public void startedUsingMacroNamespace(String namespace)
     {
-        startedUsingMacroNamespaceInternal(toThreadSafeNamespace(namespace));
+        startedUsingMacroNamespaceInternal(namespace);
     }
 
-    private void startedUsingMacroNamespaceInternal(String namespace)
+    private Deque<TemplateEntry> getCurrentTemplates(boolean create)
     {
-        Integer count = this.namespaceUsageCount.get(namespace);
-        if (count == null) {
-            count = Integer.valueOf(0);
+        ExecutionContext executionContext = this.execution.getContext();
+
+        if (executionContext == null) {
+            return null;
         }
-        count = count + 1;
-        this.namespaceUsageCount.put(namespace, count);
+
+        Deque<TemplateEntry> templates = (Deque<TemplateEntry>) executionContext.getProperty(ECONTEXT_TEMPLATES);
+
+        if (templates == null && create) {
+            templates = new LinkedList<>();
+            if (!executionContext.hasProperty(ECONTEXT_TEMPLATES)) {
+                executionContext.newProperty(ECONTEXT_TEMPLATES).inherited().declare();
+            }
+            executionContext.setProperty(ECONTEXT_TEMPLATES, templates);
+        }
+
+        return templates;
+    }
+
+    private TemplateEntry startedUsingMacroNamespaceInternal(String namespace)
+    {
+        Deque<TemplateEntry> templates = getCurrentTemplates(true);
+
+        TemplateEntry templateEntry;
+        if (templates != null) {
+            // If this is already the current template namespace increment the counter, otherwise push a new
+            // TemplateEntry
+            if (!templates.isEmpty() && templates.peek().getNamespace().equals(namespace)) {
+                templateEntry = templates.peek();
+                templateEntry.incrementCounter();
+            } else {
+                templateEntry = new TemplateEntry(namespace);
+                templates.push(templateEntry);
+            }
+        } else {
+            // If no execution context can be found create a new template entry
+            templateEntry = new TemplateEntry(namespace);
+        }
+
+        return templateEntry;
     }
 
     @Override
     public void stoppedUsingMacroNamespace(String namespace)
     {
-        stoppedUsingMacroNamespaceInternal(toThreadSafeNamespace(namespace));
+        Deque<TemplateEntry> templates = getCurrentTemplates(true);
+
+        if (templates != null) {
+            if (templates.isEmpty()) {
+                this.logger.warn("Impossible to pop namespace [{}] because there is no namespace in the stack",
+                    namespace);
+            } else {
+                popTemplateEntry(templates, namespace);
+            }
+        }
     }
 
-    private void stoppedUsingMacroNamespaceInternal(String namespace)
+    private void popTemplateEntry(Deque<TemplateEntry> templates, String namespace)
     {
-        Integer count = this.namespaceUsageCount.get(namespace);
-        if (count == null) {
-            // This shouldn't happen
-            this.logger.warn("Wrong usage count for namespace [{}]", namespace);
-            return;
-        }
-        count = count - 1;
-        if (count <= 0) {
-            this.namespaceUsageCount.remove(namespace);
-            this.rsvc.dumpVMNamespace(namespace);
+        TemplateEntry templateEntry = templates.peek();
+
+        if (templateEntry.getNamespace().equals(namespace)) {
+            if (templateEntry.getCounter() > 1) {
+                templateEntry.decrementCounter();
+            } else {
+                templates.pop();
+            }
         } else {
-            this.namespaceUsageCount.put(namespace, count);
+            this.logger.warn("Impossible to pop namespace [{}] because current namespace is [{}]", namespace,
+                templateEntry.getNamespace());
         }
-    }
-
-    @Override
-    public void init(RuntimeServices runtimeServices)
-    {
-        // We save the RuntimeServices instance in order to be able to override the
-        // VelocityEngine.evaluate() method. We need to do this so that it's possible
-        // to make macros included with #includeMacros() work even though we're using
-        // the Velocity setting:
-        // velocimacro.permissions.allow.inline.local.scope = true
-        this.rsvc = runtimeServices;
-    }
-
-    @Override
-    public Logger getLogger()
-    {
-        return this.logger;
     }
 }

@@ -62,15 +62,11 @@ public interface VelocityFactory
      * any other instance.
      *
      * @param key the key used to cache the Velocity engine instance to return
-     * @param properties the list of properties that will override the default properties when creating the engine. For
-     *            example it's possible to define a list of global velocimacros by passing the
-     *            <code>RuntimeConstants.VM_LIBRARY</code> property key.
+     * @param properties the list of properties that will override the default properties when creating the engine.
      * @return the newly created Velocity Engine, or an existing one, if an engine was previously created for the same
      *         key.
      * @throws XWikiVelocityException if the Velocity Engine cannot be initialized for some reason
      */
-    // TODO: How to create a new engine instance when parameters have changed? Shouldn't this discard the old instance
-    // and create a new one, instead?
     VelocityEngine createVelocityEngine(String key, Properties properties) throws XWikiVelocityException;
 
     /**

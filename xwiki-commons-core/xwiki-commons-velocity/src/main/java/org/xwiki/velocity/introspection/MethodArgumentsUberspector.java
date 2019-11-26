@@ -19,7 +19,7 @@
  */
 package org.xwiki.velocity.introspection;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -46,10 +46,12 @@ import org.xwiki.properties.ConverterManager;
  * obj.someMethod(SomeEnum.VALUE)
  * // if obj has someMethod(SomeEnum) and not someMethod(String)}
  * </pre>
+ * <p>
  *
  * @since 4.1M2
  * @version $Id$
  */
+// TODO: Implement TypeConversionHandler instead
 public class MethodArgumentsUberspector extends AbstractChainableUberspector implements RuntimeServicesAware
 {
     /**
@@ -60,6 +62,8 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
     @Override
     public void setRuntimeServices(RuntimeServices runtimeServices)
     {
+        super.setRuntimeServices(runtimeServices);
+
         ComponentManager componentManager =
             (ComponentManager) runtimeServices.getApplicationAttribute(ComponentManager.class.getName());
         try {
@@ -70,7 +74,7 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
     }
 
     @Override
-    public VelMethod getMethod(Object obj, String methodName, Object[] args, Info i) throws Exception
+    public VelMethod getMethod(Object obj, String methodName, Object[] args, Info i)
     {
         // Let Velocity find a matching method. However, Velocity finds the closest matching method.
         // According to the JavaDoc of MethodMap:
@@ -92,7 +96,7 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
             if (velMethod == null) {
                 shouldConvert = true;
             } else {
-                Method method = getPrivateMethod(velMethod);
+                Method method = velMethod.getMethod();
                 boolean sameParameterNumbers = method.getParameterTypes().length == args.length;
                 if (!sameParameterNumbers) {
                     shouldConvert = true;
@@ -114,21 +118,6 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
         }
 
         return velMethod;
-    }
-
-    /**
-     * This is hackish but there's no way in Velocity to get access to the underlying Method from a VelMethod instance.
-     */
-    private Method getPrivateMethod(VelMethod velMethod) throws Exception
-    {
-        Field methodField = velMethod.getClass().getDeclaredField("method");
-        boolean isAccessible = methodField.isAccessible();
-        try {
-            methodField.setAccessible(true);
-            return (Method) methodField.get(velMethod);
-        } finally {
-            methodField.setAccessible(isAccessible);
-        }
     }
 
     /**
@@ -209,7 +198,7 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
         }
 
         @Override
-        public Object invoke(Object o, Object[] params) throws Exception
+        public Object invoke(Object o, Object[] params) throws IllegalAccessException, InvocationTargetException
         {
             return this.innerMethod.invoke(o, convertArguments(o, this.innerMethod.getMethodName(), params));
         }
@@ -230,6 +219,12 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
         public Class<?> getReturnType()
         {
             return this.innerMethod.getReturnType();
+        }
+
+        @Override
+        public Method getMethod()
+        {
+            return this.innerMethod.getMethod();
         }
     }
 }

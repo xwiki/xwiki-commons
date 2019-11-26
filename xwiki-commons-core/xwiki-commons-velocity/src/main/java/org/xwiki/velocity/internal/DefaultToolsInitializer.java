@@ -17,29 +17,23 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.velocity.introspection;
+package org.xwiki.velocity.internal;
 
-import org.apache.velocity.util.introspection.Info;
-import org.apache.velocity.util.introspection.VelMethod;
-import org.apache.velocity.util.introspection.VelPropertyGet;
+import java.util.Properties;
 
-public class TestingUberspector extends AbstractChainableUberspector
+import org.xwiki.component.annotation.Role;
+
+/**
+ * Inject default velocity tools.
+ * 
+ * @version $Id$
+ * @since 11.2RC1
+ */
+@Role
+public interface DefaultToolsInitializer
 {
-    public static int methodCalls = 0;
-
-    public static int getterCalls = 0;
-
-    @Override
-    public VelMethod getMethod(Object obj, String methodName, Object[] args, Info i)
-    {
-        ++methodCalls;
-        return super.getMethod(obj, methodName, args, i);
-    }
-
-    @Override
-    public VelPropertyGet getPropertyGet(Object obj, String identifier, Info i)
-    {
-        ++getterCalls;
-        return super.getPropertyGet(obj, identifier, i);
-    }
+    /**
+     * @param defaultTools the {@link Properties} where to inject the tools
+     */
+    void initialize(Properties defaultTools);
 }

@@ -23,10 +23,10 @@ import java.util.Arrays;
 import java.util.Properties;
 
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.tools.generic.ListTool;
+import org.apache.velocity.tools.generic.NumberTool;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.test.annotation.BeforeComponent;
+import org.xwiki.test.annotation.AfterComponent;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
@@ -60,11 +60,11 @@ public class DefaultVelocityContextFactoryTest
     @InjectMockComponents
     private DefaultVelocityContextFactory factory;
 
-    @BeforeComponent
-    public void configure() throws Exception
+    @AfterComponent
+    public void afterComponent()
     {
         Properties properties = new Properties();
-        properties.put("listtool", ListTool.class.getName());
+        properties.put("numbertool", NumberTool.class.getName());
         when(this.configuration.getTools()).thenReturn(properties);
     }
 
@@ -78,8 +78,8 @@ public class DefaultVelocityContextFactoryTest
     {
         // We also verify that the VelocityContextInitializers are called.
         VelocityContextInitializer mockInitializer = mock(VelocityContextInitializer.class);
-        when(this.componentManager.getInstanceList(VelocityContextInitializer.class)).thenReturn(
-            Arrays.asList(mockInitializer));
+        when(this.componentManager.getInstanceList(VelocityContextInitializer.class))
+            .thenReturn(Arrays.asList(mockInitializer));
 
         VelocityContext context1 = this.factory.createContext();
         context1.put("param", "value");
@@ -89,8 +89,8 @@ public class DefaultVelocityContextFactoryTest
         verify(this.componentManager, times(2)).getInstanceList(VelocityContextInitializer.class);
 
         assertNotSame(context1, context2);
-        assertNotNull(context1.get("listtool"));
-        assertSame(context2.get("listtool"), context1.get("listtool"));
+        assertNotNull(context1.get("numbertool"));
+        assertSame(context2.get("numbertool"), context1.get("numbertool"));
         assertNull(context2.get("param"));
     }
 }

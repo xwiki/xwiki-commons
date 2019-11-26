@@ -22,14 +22,15 @@ package org.xwiki.velocity.internal;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.velocity.tools.generic.ListTool;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.tools.generic.NumberTool;
+import org.apache.velocity.util.introspection.DeprecatedCheckUberspector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
-import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
 import org.xwiki.velocity.introspection.MethodArgumentsUberspector;
 import org.xwiki.velocity.introspection.SecureUberspector;
 
@@ -59,24 +60,28 @@ public class DefaultVelocityConfigurationTest
     @Test
     public void getToolsReturnsDefaultTools()
     {
-        // Verify for example that the List tool is present.
-        assertEquals(ListTool.class.getName(), this.configuration.getTools().get("listtool"));
+        // Verify for example that the number tool is present.
+        assertEquals(NumberTool.class.getName(), this.configuration.getTools().get("numbertool"));
     }
 
     @Test
     public void getPropertiesReturnsDefaultProperties() throws Exception
     {
         // Verify that the secure uberspector is set by default
-        assertEquals(StringUtils.join(new String[] { SecureUberspector.class.getName(),
-            DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','),
-            this.configuration.getProperties().getProperty("runtime.introspector.uberspect"));
-
-        // Verify that null values are allowed by default
-        assertEquals(Boolean.TRUE.toString(),
-            this.configuration.getProperties().getProperty("directive.set.null.allowed"));
+        assertEquals(
+            StringUtils.join(new String[] { SecureUberspector.class.getName(),
+                DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','),
+            this.configuration.getProperties().getProperty(RuntimeConstants.UBERSPECT_CLASSNAME));
 
         // Verify that Macros are isolated by default
         assertEquals(Boolean.TRUE.toString(),
-            this.configuration.getProperties().getProperty("velocimacro.permissions.allow.inline.local.scope"));
+            this.configuration.getProperties().getProperty(RuntimeConstants.VM_PERM_INLINE_LOCAL));
+
+        // Verify that we use Velocity 1.x Space Gobbling
+        assertEquals("bc", this.configuration.getProperties().getProperty(RuntimeConstants.SPACE_GOBBLING));
+
+        // Verify that empty string #if evaluate to true
+        assertEquals(Boolean.FALSE.toString(),
+            this.configuration.getProperties().getProperty(RuntimeConstants.CHECK_EMPTY_OBJECTS));
     }
 }

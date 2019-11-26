@@ -73,19 +73,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.velocity</groupId>
-      <artifactId>velocity</artifactId>
+      <artifactId>velocity-engine-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.velocity</groupId>
-      <artifactId>velocity-tools</artifactId>
-      <exclusions>
-        <!-- XWiki is using org.dom4j:dom4j:2.0.0+. Previous versions of dom4j were using dom4j:dom4j
-             and thus we need to exclude them so that they don't end up in the XWiki WAR -->
-        <exclusion>
-          <groupId>dom4j</groupId>
-          <artifactId>dom4j</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.apache.velocity.tools</groupId>
+      <artifactId>velocity-tools-generic</artifactId>
     </dependency>
     <!-- Needed by velocity-tools, now that we excluded commons-logging that was bringing it. -->
     <dependency>

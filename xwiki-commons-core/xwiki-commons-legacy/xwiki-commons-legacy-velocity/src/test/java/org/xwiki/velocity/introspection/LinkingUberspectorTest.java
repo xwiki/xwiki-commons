@@ -66,8 +66,8 @@ public class LinkingUberspectorTest
         TestingUberspector.methodCalls = 0;
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
-            "#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
+        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+            new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
         assertEquals("$bar", writer.toString());
         assertEquals(1, TestingUberspector.methodCalls);
     }
@@ -81,15 +81,15 @@ public class LinkingUberspectorTest
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, LinkingUberspector.class.getCanonicalName());
-        prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES, TestingUberspector.class.getCanonicalName()
-            + "," + TestingUberspector.class.getCanonicalName() + "," + UberspectImpl.class.getCanonicalName() + ","
-            + TestingUberspector.class.getCanonicalName());
+        prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES,
+            TestingUberspector.class.getCanonicalName() + "," + TestingUberspector.class.getCanonicalName() + ","
+                + UberspectImpl.class.getCanonicalName() + "," + TestingUberspector.class.getCanonicalName());
         TestingUberspector.methodCalls = 0;
         TestingUberspector.getterCalls = 0;
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
-            "#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
+        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+            new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
         assertEquals("hello", writer.toString());
         assertEquals(2, TestingUberspector.methodCalls);
         assertEquals(0, TestingUberspector.getterCalls);
@@ -103,15 +103,16 @@ public class LinkingUberspectorTest
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, LinkingUberspector.class.getCanonicalName());
-        prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES, Date.class.getCanonicalName() + ","
-            + AbstractChainableUberspector.class.getCanonicalName() + "," + InvalidUberspector.class.getCanonicalName()
-            + "," + TestingUberspector.class.getCanonicalName() + "," + UberspectImpl.class.getCanonicalName());
+        prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES,
+            Date.class.getCanonicalName() + "," + AbstractChainableUberspector.class.getCanonicalName() + ","
+                + InvalidUberspector.class.getCanonicalName() + "," + TestingUberspector.class.getCanonicalName() + ","
+                + UberspectImpl.class.getCanonicalName());
         TestingUberspector.methodCalls = 0;
         InvalidUberspector.methodCalls = 0;
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
-            "#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
+        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+            new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
         assertEquals("hello", writer.toString());
         assertEquals(1, TestingUberspector.methodCalls);
         assertEquals(0, InvalidUberspector.methodCalls);
@@ -128,8 +129,8 @@ public class LinkingUberspectorTest
         prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES, UberspectImpl.class.getCanonicalName());
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
-            "#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$bar"));
+        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+            new StringReader("#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$bar"));
         assertTrue(writer.toString().startsWith("[Ljava.lang.reflect.Constructor"));
     }
 
@@ -144,8 +145,8 @@ public class LinkingUberspectorTest
         prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES, SecureUberspector.class.getCanonicalName());
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
-            "#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$foo$bar"));
+        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+            new StringReader("#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$foo$bar"));
         assertEquals("hello$bar", writer.toString());
     }
 
@@ -160,8 +161,8 @@ public class LinkingUberspectorTest
         prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES, "");
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
-            "#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$foo$bar"));
+        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+            new StringReader("#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$foo$bar"));
         assertEquals("hello$bar", writer.toString());
     }
 }

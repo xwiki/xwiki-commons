@@ -25,10 +25,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.velocity.tools.generic.ListTool;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.tools.generic.MathTool;
 import org.apache.velocity.tools.generic.NumberTool;
-import org.apache.velocity.tools.generic.SortTool;
+import org.apache.velocity.util.introspection.DeprecatedCheckUberspector;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -36,7 +36,6 @@ import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.text.StringUtils;
 import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.internal.util.RestrictParseLocationEventHandler;
-import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
 import org.xwiki.velocity.introspection.MethodArgumentsUberspector;
 import org.xwiki.velocity.introspection.SecureUberspector;
 import org.xwiki.velocity.tools.CollectionsTool;
@@ -68,25 +67,23 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
     protected Properties defaultTools = new Properties();
 
     /**
+     * Default properties.
+     */
+    protected Properties defaultProperties = new Properties();
+
+    /**
      * Defines from where to read the rendering configuration data.
      */
     @Inject
     private ConfigurationSource configuration;
 
-    /**
-     * Default properties.
-     */
-    private Properties defaultProperties = new Properties();
-
     @Override
     public void initialize() throws InitializationException
     {
         // Default Velocity tools.
-        this.defaultTools.setProperty("listtool", ListTool.class.getName());
         this.defaultTools.setProperty("numbertool", NumberTool.class.getName());
         this.defaultTools.setProperty("datetool", ComparisonDateTool.class.getName());
         this.defaultTools.setProperty("mathtool", MathTool.class.getName());
-        this.defaultTools.setProperty("sorttool", SortTool.class.getName());
         this.defaultTools.setProperty("escapetool", EscapeTool.class.getName());
         this.defaultTools.setProperty("regextool", RegexTool.class.getName());
         this.defaultTools.setProperty("collectionstool", CollectionsTool.class.getName());
@@ -97,21 +94,27 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty("niotool", NIOTool.class.getName());
 
         // Default Velocity properties
-        this.defaultProperties.setProperty("directive.set.null.allowed", Boolean.TRUE.toString());
-        this.defaultProperties.setProperty("velocimacro.messages.on", Boolean.FALSE.toString());
-        this.defaultProperties.setProperty("velocimacro.max.depth", "100");
-        this.defaultProperties.setProperty("resource.manager.logwhenfound", Boolean.FALSE.toString());
-        this.defaultProperties.setProperty("velocimacro.permissions.allow.inline.local.scope", Boolean.TRUE.toString());
+        this.defaultProperties.setProperty(RuntimeConstants.VM_MAX_DEPTH, "100");
+        this.defaultProperties.setProperty(RuntimeConstants.RESOURCE_MANAGER_LOGWHENFOUND, Boolean.FALSE.toString());
+        this.defaultProperties.setProperty(RuntimeConstants.VM_PERM_INLINE_LOCAL, Boolean.TRUE.toString());
+        this.defaultProperties.setProperty(RuntimeConstants.VM_PERM_ALLOW_INLINE_REPLACE_GLOBAL,
+            Boolean.TRUE.toString());
+        // [Retro compatibility] Make empty string #if evaluate to true
+        this.defaultProperties.setProperty(RuntimeConstants.CHECK_EMPTY_OBJECTS, Boolean.FALSE.toString());
+        // [Retro compatibility] Use Velocity 1.x Space Gobbling
+        this.defaultProperties.setProperty(RuntimeConstants.SPACE_GOBBLING, "bc");
+        // [Retro compatibility] Allow "-" in variables names
+        this.defaultProperties.setProperty(RuntimeConstants.PARSER_HYPHEN_ALLOWED, Boolean.TRUE.toString());
+        // [Retro compatibility] Keep original variable name when passing null parameter
+        this.defaultProperties.setProperty(RuntimeConstants.VM_PRESERVE_ARGUMENTS_LITERALS, Boolean.TRUE.toString());
+
         // Prevents users from calling #parse on files outside the /templates/ directory
-        this.defaultProperties.setProperty("eventhandler.include.class",
+        this.defaultProperties.setProperty(RuntimeConstants.EVENTHANDLER_INCLUDE,
             RestrictParseLocationEventHandler.class.getName());
         // Prevents users from writing dangerous Velocity code like using Class.forName or Java threading APIs.
-        this.defaultProperties.setProperty("runtime.introspector.uberspect", StringUtils.join(
-            new String[] { SecureUberspector.class.getName(), DeprecatedCheckUberspector.class.getName(),
-                MethodArgumentsUberspector.class.getName() }, ','));
-        // Enable the extra scope variables $template and $macro, similar to $foreach
-        this.defaultProperties.setProperty("template.provide.scope.control", Boolean.TRUE.toString());
-        this.defaultProperties.setProperty("macro.provide.scope.control", Boolean.TRUE.toString());
+        this.defaultProperties.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME,
+            StringUtils.join(new String[] { SecureUberspector.class.getName(),
+                DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','));
     }
 
     @Override
@@ -120,7 +123,12 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         // Merge default properties and properties defined in the configuration
         Properties props = new Properties();
         props.putAll(this.defaultProperties);
-        props.putAll(this.configuration.getProperty(PREFIX + "properties", Properties.class));
+
+        Properties configuredProperties = this.configuration.getProperty(PREFIX + "properties", Properties.class);
+        if (configuredProperties != null) {
+            props.putAll(configuredProperties);
+        }
+
         return props;
     }
 
@@ -130,7 +138,12 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         // Merge default tools and tools defined in the configuration
         Properties props = new Properties();
         props.putAll(this.defaultTools);
-        props.putAll(this.configuration.getProperty(PREFIX + "tools", Properties.class));
+
+        Properties configuredTools = this.configuration.getProperty(PREFIX + "tools", Properties.class);
+        if (configuredTools != null) {
+            props.putAll(configuredTools);
+        }
+
         return props;
     }
 }

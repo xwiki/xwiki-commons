@@ -24,19 +24,17 @@ import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.util.ClassUtils;
 import org.apache.velocity.util.RuntimeServicesAware;
 import org.apache.velocity.util.introspection.Uberspect;
-import org.apache.velocity.util.introspection.UberspectLoggable;
 
 /**
  * <p>
  * Since the current version of the Velocity engine (1.5) does not allow more than one uberspector, this class is a
- * workaround. It manually constructs a <strong>chain of uberspectors</strong>, loading the classes in the order
- * defined in the <code>"runtime.introspector.uberspect.chainClasses"</code> property, and after that simply
- * forwarding all calls to the top of the chain. Note that the calls will be made from the rightmost class to the
- * leftmost one. Along the chain, each uberspectors can forward the call to the rest of the chain, build its own result,
- * and/or process in any way the resulting value. This allows uberspectors to enhance the list of returned methods,
- * block out methods returned by other uberspectors, or take various actions on the returned method (for example add or
- * remove parameters before searching the method, log executed method names, or catch exceptions when executing those
- * methods).
+ * workaround. It manually constructs a <strong>chain of uberspectors</strong>, loading the classes in the order defined
+ * in the <code>"runtime.introspector.uberspect.chainClasses"</code> property, and after that simply forwarding all
+ * calls to the top of the chain. Note that the calls will be made from the rightmost class to the leftmost one. Along
+ * the chain, each uberspectors can forward the call to the rest of the chain, build its own result, and/or process in
+ * any way the resulting value. This allows uberspectors to enhance the list of returned methods, block out methods
+ * returned by other uberspectors, or take various actions on the returned method (for example add or remove parameters
+ * before searching the method, log executed method names, or catch exceptions when executing those methods).
  * </p>
  * <p>
  * This is not actually part of the chain, but is more of a handle that allows the calls intended for only one
@@ -44,8 +42,8 @@ import org.apache.velocity.util.introspection.UberspectLoggable;
  * that a future version of the engine will support chaining natively.
  * </p>
  * <p>
- * The chain is defined using the configuration parameter <code>runtime.introspector.uberspect.chainClasses</code>.
- * This property should contain a list of canonical class names. Any wrong entry in the list will be ignored. If this
+ * The chain is defined using the configuration parameter <code>runtime.introspector.uberspect.chainClasses</code>. This
+ * property should contain a list of canonical class names. Any wrong entry in the list will be ignored. If this
  * property is not defined or contains only wrong classnames, then by default a <code>SecureUberspector</code> is used
  * as the only entry in the chain. The first (leftmost) uberspector does not have to be chainable (as it will not need
  * to forward calls). If a uberspector in the middle of the chain is not chainable, then it will break the chain at that
@@ -59,8 +57,7 @@ import org.apache.velocity.util.introspection.UberspectLoggable;
  *             from {@code runtime.introspector.uberspect.chainClasses} to {@code runtime.introspector.uberspect}
  */
 @Deprecated
-public class ChainingUberspector extends AbstractChainableUberspector implements Uberspect, RuntimeServicesAware,
-    UberspectLoggable
+public class ChainingUberspector extends AbstractChainableUberspector implements Uberspect, RuntimeServicesAware
 {
     /** The key of the parameter that allows defining the list of chained uberspectors. */
     public static final String UBERSPECT_CHAIN_CLASSNAMES = "runtime.introspector.uberspect.chainClasses";
@@ -123,9 +120,6 @@ public class ChainingUberspector extends AbstractChainableUberspector implements
             }
 
             // Set the log and runtime services, if applicable
-            if (u instanceof UberspectLoggable) {
-                ((UberspectLoggable) u).setLog(this.log);
-            }
             if (u instanceof RuntimeServicesAware) {
                 ((RuntimeServicesAware) u).setRuntimeServices(this.runtime);
             }
@@ -153,16 +147,17 @@ public class ChainingUberspector extends AbstractChainableUberspector implements
         try {
             o = ClassUtils.getNewInstance(classname);
         } catch (ClassNotFoundException cnfe) {
-            this.log.warn(String.format("The specified uberspector [%s]"
-                + " does not exist or is not accessible to the current classloader.", classname));
-        } catch (IllegalAccessException e) {
-            this.log.warn(String.format("The specified uberspector [%s] does not have a public default constructor.",
+            this.log.warn(String.format(
+                "The specified uberspector [%s]" + " does not exist or is not accessible to the current classloader.",
                 classname));
+        } catch (IllegalAccessException e) {
+            this.log.warn(
+                String.format("The specified uberspector [%s] does not have a public default constructor.", classname));
         } catch (InstantiationException e) {
             this.log.warn(String.format("The specified uberspector [%s] cannot be instantiated.", classname));
         } catch (ExceptionInInitializerError e) {
-            this.log.warn(String.format("Exception while instantiating the Uberspector [%s]: %s", classname, e
-                .getMessage()));
+            this.log.warn(
+                String.format("Exception while instantiating the Uberspector [%s]: %s", classname, e.getMessage()));
         }
 
         if (!(o instanceof Uberspect)) {

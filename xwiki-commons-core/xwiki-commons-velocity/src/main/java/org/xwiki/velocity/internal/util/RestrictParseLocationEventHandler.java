@@ -22,6 +22,7 @@ package org.xwiki.velocity.internal.util;
 import java.net.URI;
 
 import org.apache.velocity.app.event.IncludeEventHandler;
+import org.apache.velocity.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,16 +43,18 @@ public class RestrictParseLocationEventHandler implements IncludeEventHandler
     private static final String BASE_TEMPLATE_DIRECTORY = "/templates/";
 
     @Override
-    public String includeEvent(String includeResourcePath, String currentResourcePath,
+    public String includeEvent(Context context, String includeResourcePath, String currentResourcePath,
         String directiveName)
     {
-        LOGGER.trace("Velocity include event: include [{}] from [{}] using [{}]",
-            new Object[] { includeResourcePath, currentResourcePath, directiveName });
+        LOGGER.trace("Velocity include event: include [{}] from [{}] using [{}]", includeResourcePath,
+            currentResourcePath, directiveName);
         String template = URI.create(BASE_TEMPLATE_DIRECTORY + includeResourcePath).normalize().toString();
         if (!template.startsWith(BASE_TEMPLATE_DIRECTORY)) {
             LOGGER.warn("Direct access to template file [{}] refused. Possible break-in attempt!", template);
+
             return null;
         }
+
         return template;
     }
 }

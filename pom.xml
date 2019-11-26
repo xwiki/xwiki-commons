@@ -141,6 +141,7 @@
     <xwiki.enforcer.enforce-jta.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jta.skip>
     <xwiki.enforcer.enforce-jboss-marshalling-osgi.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jboss-marshalling-osgi.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
+    <xwiki.enforcer.enforce-velocity-engine-core.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-velocity-engine-core.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
     <xwiki.enforcer.enforce-java.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-java.skip>
     <xwiki.license.skip>false</xwiki.license.skip>
@@ -1217,27 +1218,18 @@
       <!-- Apache Velocity -->
       <dependency>
         <groupId>org.apache.velocity</groupId>
-        <artifactId>velocity</artifactId>
-        <version>1.7</version>
+        <artifactId>velocity-engine-core</artifactId>
+        <version>2.2</version>
       </dependency>
       <!-- Apache Velocity Tools -->
       <dependency>
-        <groupId>org.apache.velocity</groupId>
-        <artifactId>velocity-tools</artifactId>
-        <version>2.0</version>
+        <groupId>org.apache.velocity.tools</groupId>
+        <artifactId>velocity-tools-generic</artifactId>
+        <version>3.0</version>
         <exclusions>
-          <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
-          <!-- Note: Because of this exclusion, we need to manually add servlet-api
-               to the dependencies list each time we depend on velocity-tools. -->
           <exclusion>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-          </exclusion>
-          <!-- XWiki is using org.dom4j:dom4j:2.0.0+. Previous versions of dom4j were using dom4j:dom4j
-               and thus we need to exclude them so that they don't end up in the XWiki WAR -->
-          <exclusion>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1634,6 +1626,28 @@
                     <exclude>org.bouncycastle:bcmail-jdk14</exclude>
                     <exclude>org.bouncycastle:bcmail-jdk13</exclude>
                     <exclude>org.bouncycastle:bcmail-jdk12</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using velocity-engine-core and not velocity -->
+          <execution>
+            <id>enforce-velocity-engine-core</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-velocity-engine-core.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>false</searchTransitive>
+                  <message>
+                    Wrong Velocity dependency used
+                  </message>
+                  <excludes>
+                    <exclude>org.apache.velocity:velocity</exclude>
+                    <exclude>org.apache.velocity:velocity-tools</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
