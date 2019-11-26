@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.util.ClassUtils;
 import org.apache.velocity.util.RuntimeServicesAware;
 import org.apache.velocity.util.introspection.Info;
@@ -68,17 +67,8 @@ public class LinkingUberspector extends UberspectImpl implements Uberspect, Runt
     /** The key of the parameter that allows defining the array of uberspectors. */
     public static final String UBERSPECT_ARRAY_CLASSNAMES = "runtime.introspector.uberspect.arrayClasses";
 
-    /** The runtime is needed for accessing the configuration. */
-    private RuntimeServices runtime;
-
     /** The array of uberspectors to use. */
     private List<Uberspect> uberspectors;
-
-    @Override
-    public void setRuntimeServices(RuntimeServices rs)
-    {
-        this.runtime = rs;
-    }
 
     /**
      * {@inheritDoc}
@@ -93,8 +83,8 @@ public class LinkingUberspector extends UberspectImpl implements Uberspect, Runt
     {
         this.log.debug("Initializing the linking uberspector.");
         // Create the array
-        String[] arrayClassnames = this.runtime.getConfiguration().getStringArray(UBERSPECT_ARRAY_CLASSNAMES);
-        this.uberspectors = new ArrayList<Uberspect>(arrayClassnames.length);
+        String[] arrayClassnames = this.rsvc.getConfiguration().getStringArray(UBERSPECT_ARRAY_CLASSNAMES);
+        this.uberspectors = new ArrayList<>(arrayClassnames.length);
         for (String classname : arrayClassnames) {
             initializeUberspector(classname);
         }
@@ -123,7 +113,7 @@ public class LinkingUberspector extends UberspectImpl implements Uberspect, Runt
             }
 
             if (u instanceof RuntimeServicesAware) {
-                ((RuntimeServicesAware) u).setRuntimeServices(this.runtime);
+                ((RuntimeServicesAware) u).setRuntimeServices(this.rsvc);
             }
 
             // Initialize the uberspector
@@ -166,8 +156,8 @@ public class LinkingUberspector extends UberspectImpl implements Uberspect, Runt
 
         if (!(o instanceof Uberspect)) {
             if (o != null) {
-                this.log.warn("The specified class for Uberspect [" + classname + "] does not implement "
-                    + Uberspect.class.getName());
+                this.log.warn("The specified class for Uberspect [{}] does not implement {}", classname,
+                    Uberspect.class.getName());
             }
             return null;
         }

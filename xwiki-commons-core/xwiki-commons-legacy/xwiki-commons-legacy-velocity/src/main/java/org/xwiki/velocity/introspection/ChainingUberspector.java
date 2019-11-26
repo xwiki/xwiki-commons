@@ -20,7 +20,6 @@
 package org.xwiki.velocity.introspection;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.util.ClassUtils;
 import org.apache.velocity.util.RuntimeServicesAware;
 import org.apache.velocity.util.introspection.Uberspect;
@@ -62,15 +61,6 @@ public class ChainingUberspector extends AbstractChainableUberspector implements
     /** The key of the parameter that allows defining the list of chained uberspectors. */
     public static final String UBERSPECT_CHAIN_CLASSNAMES = "runtime.introspector.uberspect.chainClasses";
 
-    /** The runtime is needed for accessing the configuration. */
-    private RuntimeServices runtime;
-
-    @Override
-    public void setRuntimeServices(RuntimeServices rs)
-    {
-        this.runtime = rs;
-    }
-
     /**
      * {@inheritDoc}
      * <p>
@@ -85,7 +75,7 @@ public class ChainingUberspector extends AbstractChainableUberspector implements
         this.log.debug("Initializing the chaining uberspector.");
         // Create the chain
         // TODO Since we're in Plexus already, should we use components?
-        String[] chainClassnames = this.runtime.getConfiguration().getStringArray(UBERSPECT_CHAIN_CLASSNAMES);
+        String[] chainClassnames = this.rsvc.getConfiguration().getStringArray(UBERSPECT_CHAIN_CLASSNAMES);
         for (String classname : chainClassnames) {
             initializeUberspector(classname);
         }
@@ -121,7 +111,7 @@ public class ChainingUberspector extends AbstractChainableUberspector implements
 
             // Set the log and runtime services, if applicable
             if (u instanceof RuntimeServicesAware) {
-                ((RuntimeServicesAware) u).setRuntimeServices(this.runtime);
+                ((RuntimeServicesAware) u).setRuntimeServices(this.rsvc);
             }
 
             // Link it in the chain
@@ -162,8 +152,8 @@ public class ChainingUberspector extends AbstractChainableUberspector implements
 
         if (!(o instanceof Uberspect)) {
             if (o != null) {
-                this.log.warn("The specified class for Uberspect [" + classname + "] does not implement "
-                    + Uberspect.class.getName());
+                this.log.warn("The specified class for Uberspect [{}] does not implement {}", classname,
+                    Uberspect.class.getName());
             }
             return null;
         }

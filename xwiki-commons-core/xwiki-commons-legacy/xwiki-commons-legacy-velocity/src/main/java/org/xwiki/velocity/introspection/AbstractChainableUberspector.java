@@ -33,16 +33,5 @@ package org.xwiki.velocity.introspection;
 public abstract class AbstractChainableUberspector
     extends org.apache.velocity.util.introspection.AbstractChainableUberspector implements ChainableUberspector
 {
-    @Override
-    public void init()
-    {
-        // This method is kept because the version in Velocity 1.7 doesn't catch exceptions
-        if (this.inner != null) {
-            try {
-                this.inner.init();
-            } catch (Exception e) {
-                this.log.error(e.getMessage(), e);
-            }
-        }
-    }
+
 }

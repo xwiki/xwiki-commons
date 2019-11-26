@@ -486,6 +486,204 @@
                     "code": "java.method.removed",
                     "old": "method int org.apache.velocity.tools.generic.DateTool::getStyleAsInt(java.lang.String) @ org.xwiki.velocity.tools.ComparisonDateTool",
                     "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.field.typeChanged",
+                    "old": "field org.apache.velocity.util.introspection.UberspectImpl.log @ org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "new": "field org.apache.velocity.util.introspection.UberspectImpl.log @ org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.exception.checkedRemoved",
+                    "old": "method java.util.Iterator org.apache.velocity.util.introspection.AbstractChainableUberspector::getIterator(java.lang.Object, org.apache.velocity.util.introspection.Info) throws java.lang.Exception @ org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "new": "method java.util.Iterator org.apache.velocity.util.introspection.AbstractChainableUberspector::getIterator(java.lang.Object, org.apache.velocity.util.introspection.Info) @ org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "exception": "java.lang.Exception",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.exception.checkedRemoved",
+                    "old": "method org.apache.velocity.util.introspection.VelMethod org.apache.velocity.util.introspection.AbstractChainableUberspector::getMethod(java.lang.Object, java.lang.String, java.lang.Object[], org.apache.velocity.util.introspection.Info) throws java.lang.Exception @ org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "new": "method org.apache.velocity.util.introspection.VelMethod org.apache.velocity.util.introspection.AbstractChainableUberspector::getMethod(java.lang.Object, java.lang.String, java.lang.Object[], org.apache.velocity.util.introspection.Info) @ org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "exception": "java.lang.Exception",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.exception.checkedRemoved",
+                    "old": "method org.apache.velocity.util.introspection.VelPropertyGet org.apache.velocity.util.introspection.AbstractChainableUberspector::getPropertyGet(java.lang.Object, java.lang.String, org.apache.velocity.util.introspection.Info) throws java.lang.Exception @ org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "new": "method org.apache.velocity.util.introspection.VelPropertyGet org.apache.velocity.util.introspection.AbstractChainableUberspector::getPropertyGet(java.lang.Object, java.lang.String, org.apache.velocity.util.introspection.Info) @ org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "exception": "java.lang.Exception",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.exception.checkedRemoved",
+                    "old": "method org.apache.velocity.util.introspection.VelPropertySet org.apache.velocity.util.introspection.AbstractChainableUberspector::getPropertySet(java.lang.Object, java.lang.String, java.lang.Object, org.apache.velocity.util.introspection.Info) throws java.lang.Exception @ org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "new": "method org.apache.velocity.util.introspection.VelPropertySet org.apache.velocity.util.introspection.AbstractChainableUberspector::getPropertySet(java.lang.Object, java.lang.String, java.lang.Object, org.apache.velocity.util.introspection.Info) @ org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "exception": "java.lang.Exception",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.parameterTypeChanged",
+                    "old": "parameter void org.apache.velocity.util.introspection.UberspectImpl::setLog(===org.apache.velocity.runtime.log.Log===) @ org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "new": "parameter void org.apache.velocity.util.introspection.UberspectImpl::setLog(===org.slf4j.Logger===) @ org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.removed",
+                    "old": "method void org.apache.velocity.util.introspection.UberspectImpl::setRuntimeLogger(org.apache.velocity.runtime.RuntimeLogger) @ org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.class.noLongerImplementsInterface",
+                    "old": "class org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "new": "class org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "interface": "org.apache.velocity.util.introspection.UberspectLoggable",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.exception.checkedRemoved",
+                    "old": "method java.util.Iterator org.apache.velocity.util.introspection.Uberspect::getIterator(java.lang.Object, org.apache.velocity.util.introspection.Info) throws java.lang.Exception @ org.xwiki.velocity.introspection.ChainableUberspector",
+                    "new": "method java.util.Iterator org.apache.velocity.util.introspection.Uberspect::getIterator(java.lang.Object, org.apache.velocity.util.introspection.Info) @ org.xwiki.velocity.introspection.ChainableUberspector",
+                    "exception": "java.lang.Exception",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.exception.checkedRemoved",
+                    "old": "method org.apache.velocity.util.introspection.VelMethod org.apache.velocity.util.introspection.Uberspect::getMethod(java.lang.Object, java.lang.String, java.lang.Object[], org.apache.velocity.util.introspection.Info) throws java.lang.Exception @ org.xwiki.velocity.introspection.ChainableUberspector",
+                    "new": "method org.apache.velocity.util.introspection.VelMethod org.apache.velocity.util.introspection.Uberspect::getMethod(java.lang.Object, java.lang.String, java.lang.Object[], org.apache.velocity.util.introspection.Info) @ org.xwiki.velocity.introspection.ChainableUberspector",
+                    "exception": "java.lang.Exception",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.exception.checkedRemoved",
+                    "old": "method org.apache.velocity.util.introspection.VelPropertyGet org.apache.velocity.util.introspection.Uberspect::getPropertyGet(java.lang.Object, java.lang.String, org.apache.velocity.util.introspection.Info) throws java.lang.Exception @ org.xwiki.velocity.introspection.ChainableUberspector",
+                    "new": "method org.apache.velocity.util.introspection.VelPropertyGet org.apache.velocity.util.introspection.Uberspect::getPropertyGet(java.lang.Object, java.lang.String, org.apache.velocity.util.introspection.Info) @ org.xwiki.velocity.introspection.ChainableUberspector",
+                    "exception": "java.lang.Exception",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.exception.checkedRemoved",
+                    "old": "method org.apache.velocity.util.introspection.VelPropertySet org.apache.velocity.util.introspection.Uberspect::getPropertySet(java.lang.Object, java.lang.String, java.lang.Object, org.apache.velocity.util.introspection.Info) throws java.lang.Exception @ org.xwiki.velocity.introspection.ChainableUberspector",
+                    "new": "method org.apache.velocity.util.introspection.VelPropertySet org.apache.velocity.util.introspection.Uberspect::getPropertySet(java.lang.Object, java.lang.String, java.lang.Object, org.apache.velocity.util.introspection.Info) @ org.xwiki.velocity.introspection.ChainableUberspector",
+                    "exception": "java.lang.Exception",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.field.typeChanged",
+                    "old": "field org.apache.velocity.util.introspection.UberspectImpl.log @ org.xwiki.velocity.introspection.ChainingUberspector",
+                    "new": "field org.apache.velocity.util.introspection.UberspectImpl.log @ org.xwiki.velocity.introspection.ChainingUberspector",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.exception.checkedRemoved",
+                    "old": "method java.util.Iterator org.apache.velocity.util.introspection.AbstractChainableUberspector::getIterator(java.lang.Object, org.apache.velocity.util.introspection.Info) throws java.lang.Exception @ org.xwiki.velocity.introspection.ChainingUberspector",
+                    "new": "method java.util.Iterator org.apache.velocity.util.introspection.AbstractChainableUberspector::getIterator(java.lang.Object, org.apache.velocity.util.introspection.Info) @ org.xwiki.velocity.introspection.ChainingUberspector",
+                    "exception": "java.lang.Exception",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.exception.checkedRemoved",
+                    "old": "method org.apache.velocity.util.introspection.VelMethod org.apache.velocity.util.introspection.AbstractChainableUberspector::getMethod(java.lang.Object, java.lang.String, java.lang.Object[], org.apache.velocity.util.introspection.Info) throws java.lang.Exception @ org.xwiki.velocity.introspection.ChainingUberspector",
+                    "new": "method org.apache.velocity.util.introspection.VelMethod org.apache.velocity.util.introspection.AbstractChainableUberspector::getMethod(java.lang.Object, java.lang.String, java.lang.Object[], org.apache.velocity.util.introspection.Info) @ org.xwiki.velocity.introspection.ChainingUberspector",
+                    "exception": "java.lang.Exception",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.exception.checkedRemoved",
+                    "old": "method org.apache.velocity.util.introspection.VelPropertyGet org.apache.velocity.util.introspection.AbstractChainableUberspector::getPropertyGet(java.lang.Object, java.lang.String, org.apache.velocity.util.introspection.Info) throws java.lang.Exception @ org.xwiki.velocity.introspection.ChainingUberspector",
+                    "new": "method org.apache.velocity.util.introspection.VelPropertyGet org.apache.velocity.util.introspection.AbstractChainableUberspector::getPropertyGet(java.lang.Object, java.lang.String, org.apache.velocity.util.introspection.Info) @ org.xwiki.velocity.introspection.ChainingUberspector",
+                    "exception": "java.lang.Exception",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.exception.checkedRemoved",
+                    "old": "method org.apache.velocity.util.introspection.VelPropertySet org.apache.velocity.util.introspection.AbstractChainableUberspector::getPropertySet(java.lang.Object, java.lang.String, java.lang.Object, org.apache.velocity.util.introspection.Info) throws java.lang.Exception @ org.xwiki.velocity.introspection.ChainingUberspector",
+                    "new": "method org.apache.velocity.util.introspection.VelPropertySet org.apache.velocity.util.introspection.AbstractChainableUberspector::getPropertySet(java.lang.Object, java.lang.String, java.lang.Object, org.apache.velocity.util.introspection.Info) @ org.xwiki.velocity.introspection.ChainingUberspector",
+                    "exception": "java.lang.Exception",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.parameterTypeChanged",
+                    "old": "parameter void org.apache.velocity.util.introspection.UberspectImpl::setLog(===org.apache.velocity.runtime.log.Log===) @ org.xwiki.velocity.introspection.ChainingUberspector",
+                    "new": "parameter void org.apache.velocity.util.introspection.UberspectImpl::setLog(===org.slf4j.Logger===) @ org.xwiki.velocity.introspection.ChainingUberspector",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.removed",
+                    "old": "method void org.apache.velocity.util.introspection.UberspectImpl::setRuntimeLogger(org.apache.velocity.runtime.RuntimeLogger) @ org.xwiki.velocity.introspection.ChainingUberspector",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.class.noLongerImplementsInterface",
+                    "old": "class org.xwiki.velocity.introspection.ChainingUberspector",
+                    "new": "class org.xwiki.velocity.introspection.ChainingUberspector",
+                    "interface": "org.apache.velocity.util.introspection.UberspectLoggable",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.class.noLongerImplementsInterface",
+                    "old": "class org.xwiki.velocity.introspection.ChainingUberspector",
+                    "new": "class org.xwiki.velocity.introspection.ChainingUberspector",
+                    "interface": "org.apache.velocity.util.introspection.UberspectLoggable",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.field.typeChanged",
+                    "old": "field org.apache.velocity.util.introspection.UberspectImpl.log @ org.xwiki.velocity.introspection.LinkingUberspector",
+                    "new": "field org.apache.velocity.util.introspection.UberspectImpl.log @ org.xwiki.velocity.introspection.LinkingUberspector",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.exception.checkedRemoved",
+                    "old": "method java.util.Iterator org.xwiki.velocity.introspection.LinkingUberspector::getIterator(java.lang.Object, org.apache.velocity.util.introspection.Info) throws java.lang.Exception",
+                    "new": "method java.util.Iterator org.xwiki.velocity.introspection.LinkingUberspector::getIterator(java.lang.Object, org.apache.velocity.util.introspection.Info)",
+                    "exception": "java.lang.Exception",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.exception.checkedRemoved",
+                    "old": "method org.apache.velocity.util.introspection.VelMethod org.xwiki.velocity.introspection.LinkingUberspector::getMethod(java.lang.Object, java.lang.String, java.lang.Object[], org.apache.velocity.util.introspection.Info) throws java.lang.Exception",
+                    "new": "method org.apache.velocity.util.introspection.VelMethod org.xwiki.velocity.introspection.LinkingUberspector::getMethod(java.lang.Object, java.lang.String, java.lang.Object[], org.apache.velocity.util.introspection.Info)",
+                    "exception": "java.lang.Exception",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.exception.checkedRemoved",
+                    "old": "method org.apache.velocity.util.introspection.VelPropertyGet org.xwiki.velocity.introspection.LinkingUberspector::getPropertyGet(java.lang.Object, java.lang.String, org.apache.velocity.util.introspection.Info) throws java.lang.Exception",
+                    "new": "method org.apache.velocity.util.introspection.VelPropertyGet org.xwiki.velocity.introspection.LinkingUberspector::getPropertyGet(java.lang.Object, java.lang.String, org.apache.velocity.util.introspection.Info)",
+                    "exception": "java.lang.Exception",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.exception.checkedRemoved",
+                    "old": "method org.apache.velocity.util.introspection.VelPropertySet org.xwiki.velocity.introspection.LinkingUberspector::getPropertySet(java.lang.Object, java.lang.String, java.lang.Object, org.apache.velocity.util.introspection.Info) throws java.lang.Exception",
+                    "new": "method org.apache.velocity.util.introspection.VelPropertySet org.xwiki.velocity.introspection.LinkingUberspector::getPropertySet(java.lang.Object, java.lang.String, java.lang.Object, org.apache.velocity.util.introspection.Info)",
+                    "exception": "java.lang.Exception",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.parameterTypeChanged",
+                    "old": "parameter void org.apache.velocity.util.introspection.UberspectImpl::setLog(===org.apache.velocity.runtime.log.Log===) @ org.xwiki.velocity.introspection.LinkingUberspector",
+                    "new": "parameter void org.apache.velocity.util.introspection.UberspectImpl::setLog(===org.slf4j.Logger===) @ org.xwiki.velocity.introspection.LinkingUberspector",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.method.removed",
+                    "old": "method void org.apache.velocity.util.introspection.UberspectImpl::setRuntimeLogger(org.apache.velocity.runtime.RuntimeLogger) @ org.xwiki.velocity.introspection.LinkingUberspector",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.class.noLongerImplementsInterface",
+                    "old": "class org.xwiki.velocity.introspection.LinkingUberspector",
+                    "new": "class org.xwiki.velocity.introspection.LinkingUberspector",
+                    "interface": "org.apache.velocity.util.introspection.UberspectLoggable",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
+                  },
+                  {
+                    "code": "java.class.noLongerImplementsInterface",
+                    "old": "class org.xwiki.velocity.introspection.LinkingUberspector",
+                    "new": "class org.xwiki.velocity.introspection.LinkingUberspector",
+                    "interface": "org.apache.velocity.util.introspection.UberspectLoggable",
+                    "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
                   }
                   // Add more ignores below...
                 ]

@@ -50,7 +50,9 @@ public class LinkingUberspectorTest
     @BeforeEach
     public void setUp(MockitoComponentManager componentManager) throws Exception
     {
+        // Register in-memory configuration sources for the test.
         componentManager.registerMemoryConfigurationSource();
+
         this.engine = componentManager.getInstance(VelocityEngine.class);
     }
 
@@ -131,7 +133,7 @@ public class LinkingUberspectorTest
         StringWriter writer = new StringWriter();
         this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$bar"));
-        assertTrue(writer.toString().startsWith("[Ljava.lang.reflect.Constructor"));
+        assertTrue(writer.toString().contains("public java.lang.String(byte[],int,int)"), writer.toString());
     }
 
     /*
