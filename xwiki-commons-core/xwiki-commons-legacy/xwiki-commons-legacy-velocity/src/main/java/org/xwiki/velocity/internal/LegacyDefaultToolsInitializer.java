@@ -32,7 +32,7 @@ import org.xwiki.component.annotation.Component;
  * Add legacy tools.
  * 
  * @version $Id$
- * @since 11.2RC1
+ * @since 12.0RC1
  */
 @Component
 @Named("legacy")
