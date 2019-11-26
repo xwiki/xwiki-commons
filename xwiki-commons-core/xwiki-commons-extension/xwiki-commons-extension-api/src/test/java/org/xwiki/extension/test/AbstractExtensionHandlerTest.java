@@ -21,10 +21,9 @@ package org.xwiki.extension.test;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.jupiter.api.BeforeEach;
 import org.xwiki.cache.CacheManager;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
 import org.xwiki.extension.ExtensionId;
@@ -43,15 +42,14 @@ import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
 import org.xwiki.test.annotation.AllComponents;
-import org.xwiki.test.mockito.MockitoComponentManagerRule;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
 @AllComponents
 public abstract class AbstractExtensionHandlerTest
 {
-    protected MockitoComponentManagerRule mocker = new MockitoComponentManagerRule();
-
-    @Rule
-    public MockitoRepositoryUtilsRule repositoryUtil = new MockitoRepositoryUtilsRule(this.mocker);
+    @InjectComponentManager
+    protected MockitoComponentManager componentManager;
 
     protected LocalExtensionRepository localExtensionRepository;
 
@@ -61,16 +59,16 @@ public abstract class AbstractExtensionHandlerTest
 
     protected MemoryConfigurationSource memoryConfigurationSource;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
-        this.jobExecutor = this.mocker.getInstance(JobExecutor.class);
-        this.localExtensionRepository = this.mocker.getInstance(LocalExtensionRepository.class);
-        this.installedExtensionRepository = this.mocker.getInstance(InstalledExtensionRepository.class);
+        this.jobExecutor = this.componentManager.getInstance(JobExecutor.class);
+        this.localExtensionRepository = this.componentManager.getInstance(LocalExtensionRepository.class);
+        this.installedExtensionRepository = this.componentManager.getInstance(InstalledExtensionRepository.class);
 
-        this.mocker.registerMockComponent(CacheManager.class);
+        this.componentManager.registerMockComponent(CacheManager.class);
 
-        this.memoryConfigurationSource = this.mocker.registerMemoryConfigurationSource();
+        this.memoryConfigurationSource = this.componentManager.registerMemoryConfigurationSource();
     }
 
     protected ExtensionPlanNode getNode(ExtensionId id, Collection<ExtensionPlanNode> nodes)
@@ -94,10 +92,11 @@ public abstract class AbstractExtensionHandlerTest
             throw installJob.getStatus().getError();
         }
 
-        List<LogEvent> errors = installJob.getStatus().getLog().getLogsFrom(failFrom);
-        if (!errors.isEmpty()) {
-            throw errors.get(0).getThrowable() != null ? errors.get(0).getThrowable()
-                : new Exception(errors.get(0).getFormattedMessage());
+        Optional<LogEvent> errorResult =
+            installJob.getStatus().getLogTail().getLogEvents(failFrom).stream().findFirst();
+        if (errorResult.isPresent()) {
+            LogEvent error = errorResult.get();
+            throw error.getThrowable() != null ? error.getThrowable() : new Exception(error.getFormattedMessage());
         }
 
         return installJob;
@@ -176,7 +175,8 @@ public abstract class AbstractExtensionHandlerTest
         return installPlan(extensionId, (String[]) null, rootModifications);
     }
 
-    protected ExtensionPlan installPlan(Collection<ExtensionId> extensionIds, boolean rootModifications) throws Throwable
+    protected ExtensionPlan installPlan(Collection<ExtensionId> extensionIds, boolean rootModifications)
+        throws Throwable
     {
         return installPlan(extensionIds, (String[]) null, rootModifications);
     }
@@ -192,8 +192,8 @@ public abstract class AbstractExtensionHandlerTest
         return installPlan(extensionId, namespaces, rootModifications, LogLevel.WARN);
     }
 
-    protected ExtensionPlan installPlan(Collection<ExtensionId> extensionIds, String[] namespaces, boolean rootModifications)
-        throws Throwable
+    protected ExtensionPlan installPlan(Collection<ExtensionId> extensionIds, String[] namespaces,
+        boolean rootModifications) throws Throwable
     {
         return installPlan(extensionIds, namespaces, rootModifications, LogLevel.WARN);
     }
@@ -222,8 +222,8 @@ public abstract class AbstractExtensionHandlerTest
         return installPlan(Arrays.asList(extensionId), namespaces, rootModifications, failFrom);
     }
 
-    protected ExtensionPlan installPlan(Collection<ExtensionId> extensionIds, String[] namespaces, boolean rootModifications,
-        LogLevel failFrom) throws Throwable
+    protected ExtensionPlan installPlan(Collection<ExtensionId> extensionIds, String[] namespaces,
+        boolean rootModifications, LogLevel failFrom) throws Throwable
     {
         InstallRequest installRequest = createInstallRequest(extensionIds, namespaces, rootModifications);
 
@@ -288,14 +288,35 @@ public abstract class AbstractExtensionHandlerTest
         return installRequest;
     }
 
+    protected LocalExtension uninstall(ExtensionId extensionId) throws Throwable
+    {
+        return uninstall(extensionId, (Iterable<String>) null);
+    }
+
     protected LocalExtension uninstall(ExtensionId extensionId, String namespace) throws Throwable
     {
         return uninstall(extensionId, namespace, LogLevel.WARN);
     }
 
+    protected LocalExtension uninstall(ExtensionId extensionId, Iterable<String> namespaces) throws Throwable
+    {
+        return uninstall(extensionId, namespaces, LogLevel.WARN);
+    }
+
+    protected LocalExtension uninstall(ExtensionId extensionId, LogLevel failFrom) throws Throwable
+    {
+        return uninstall(extensionId, (Iterable<String>) null, failFrom);
+    }
+
     protected LocalExtension uninstall(ExtensionId extensionId, String namespace, LogLevel failFrom) throws Throwable
     {
-        uninstall("uninstall", extensionId, namespace, failFrom);
+        return uninstall(extensionId, namespace != null ? Arrays.asList(namespace) : null, failFrom);
+    }
+
+    protected LocalExtension uninstall(ExtensionId extensionId, Iterable<String> namespaces, LogLevel failFrom)
+        throws Throwable
+    {
+        uninstall("uninstall", extensionId, namespaces, failFrom);
 
         return this.localExtensionRepository.resolve(extensionId);
     }
@@ -310,10 +331,16 @@ public abstract class AbstractExtensionHandlerTest
 
     protected Job uninstall(String jobId, ExtensionId extensionId, String namespace, LogLevel failFrom) throws Throwable
     {
+        return uninstall(jobId, extensionId, namespace != null ? Arrays.asList(namespace) : null, failFrom);
+    }
+
+    protected Job uninstall(String jobId, ExtensionId extensionId, Iterable<String> namespaces, LogLevel failFrom)
+        throws Throwable
+    {
         UninstallRequest uninstallRequest = new UninstallRequest();
         uninstallRequest.addExtension(extensionId);
-        if (namespace != null) {
-            uninstallRequest.addNamespace(namespace);
+        if (namespaces != null) {
+            namespaces.forEach(uninstallRequest::addNamespace);
         }
 
         return executeJob(jobId, uninstallRequest, failFrom);

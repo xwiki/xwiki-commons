@@ -19,10 +19,13 @@
  */
 package org.xwiki.context.internal;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Unit tests for {@link DefaultExecution}.
@@ -36,13 +39,13 @@ public class DefaultExecutionTest
     {
         Execution execution = new DefaultExecution();
 
-        Assert.assertNull(execution.getContext());
+        assertNull(execution.getContext());
 
         ExecutionContext context1 = new ExecutionContext();
 
         execution.setContext(context1);
 
-        Assert.assertSame(context1, execution.getContext());
+        assertSame(context1, execution.getContext());
 
         ExecutionContext context2 = new ExecutionContext();
 
@@ -50,7 +53,7 @@ public class DefaultExecutionTest
 
         execution.pushContext(context2);
 
-        Assert.assertSame(context2, execution.getContext());
+        assertSame(context2, execution.getContext());
 
         // Change level 1
 
@@ -58,19 +61,19 @@ public class DefaultExecutionTest
 
         execution.setContext(context3);
 
-        Assert.assertSame(context3, execution.getContext());
+        assertSame(context3, execution.getContext());
 
         // Go back to level 0
 
         execution.popContext();
 
-        Assert.assertSame(context1, execution.getContext());
+        assertSame(context1, execution.getContext());
 
         // Go back to no context
 
         execution.popContext();
 
-        Assert.assertNull(execution.getContext());
+        assertNull(execution.getContext());
     }
 
     @Test
@@ -84,6 +87,28 @@ public class DefaultExecutionTest
 
         execution.removeContext();
 
-        Assert.assertNull(execution.getContext());
+        assertNull(execution.getContext());
+    }
+
+    @Test
+    public void pushContext()
+    {
+        Execution execution = new DefaultExecution();
+
+        execution.pushContext(new ExecutionContext());
+
+        execution.getContext().newProperty("inherited").inherited().initial("value").declare();
+
+        execution.pushContext(new ExecutionContext());
+
+        assertNotNull(execution.getContext().getProperty("inherited"));
+
+        execution.pushContext(new ExecutionContext(), true);
+
+        assertNotNull(execution.getContext().getProperty("inherited"));
+
+        execution.pushContext(new ExecutionContext(), false);
+
+        assertNull(execution.getContext().getProperty("inherited"));
     }
 }

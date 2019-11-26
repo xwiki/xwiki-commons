@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Save and restore contextual data.
@@ -33,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @since 10.10RC1
  */
 @Role
-@Unstable
 public interface ContextStore
 {
     /**

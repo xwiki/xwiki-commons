@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.component.namespace.Namespace;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
@@ -30,10 +31,13 @@ import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
+import org.xwiki.extension.internal.tree.DefaultExtensionNode;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.AdvancedSearchable;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
+import org.xwiki.extension.tree.ExtensionNode;
+import org.xwiki.stability.Unstable;
 
 /**
  * A repository containing installed extension.
@@ -140,6 +144,26 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
     Collection<InstalledExtension> getBackwardDependencies(String feature, String namespace) throws ResolveException;
 
     /**
+     * Get provided installed extension backward dependencies in the provided namespace.
+     * <p>
+     * Only look at the backward dependencies in the provided namespace. To get all the dependencies of a root extension
+     * (namespace=null) across namespaces use {@link #getBackwardDependencies(ExtensionId)} instead.
+     *
+     * @param feature the extension unique identifier
+     * @param withOptionals include optional dependencies in the search
+     * @param namespace the namespace where to search for backward dependencies
+     * @return the backward dependencies, an empty collection of none could be found
+     * @throws ResolveException error when searching for backward dependencies
+     * @since 11.10
+     */
+    @Unstable
+    default Collection<InstalledExtension> getBackwardDependencies(String feature, String namespace,
+        boolean withOptionals) throws ResolveException
+    {
+        return getBackwardDependencies(feature, namespace);
+    }
+
+    /**
      * Get all backward dependencies by namespace for the provided installed extension.
      *
      * @param extensionId the extension identifier
@@ -148,6 +172,37 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
      */
     Map<String, Collection<InstalledExtension>> getBackwardDependencies(ExtensionId extensionId)
         throws ResolveException;
+
+    /**
+     * Get all backward dependencies by namespace for the provided installed extension.
+     *
+     * @param extensionId the extension identifier
+     * @param withOptionals include optional dependencies in the search
+     * @return the extension backward dependencies in all namespaces
+     * @throws ResolveException error when searching for extension backward dependencies
+     * @since 11.10
+     */
+    @Unstable
+    default Map<String, Collection<InstalledExtension>> getBackwardDependencies(ExtensionId extensionId,
+        boolean withOptionals) throws ResolveException
+    {
+        return getBackwardDependencies(extensionId);
+    }
+
+    /**
+     * Create a dependency tree containing the dependencies which are not shared with other extensions.
+     * 
+     * @param extension the extension for which to resolve the exclusive dependencies
+     * @param namespace the namespace where to search for orphan extension dependencies
+     * @return the extensions installed as dependency in the passed namespace and which no longer have backward
+     *         dependencies
+     * @since 11.10
+     */
+    @Unstable
+    default ExtensionNode<InstalledExtension> getOrphanedDependencies(InstalledExtension extension, Namespace namespace)
+    {
+        return new DefaultExtensionNode<>(namespace, extension);
+    }
 
     // ExtensionRepository
 

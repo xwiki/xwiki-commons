@@ -198,9 +198,11 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
      */
     private <E> Conflict<E> findConflict(Delta<E> delta, List<Conflict<E>> conflicts)
     {
-        for (Conflict<E> conflict : conflicts) {
-            if (conflict.concerns(delta)) {
-                return conflict;
+        if (conflicts != null) {
+            for (Conflict<E> conflict : conflicts) {
+                if (conflict.concerns(delta)) {
+                    return conflict;
+                }
             }
         }
         return null;
@@ -310,33 +312,39 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
         // We need to use a LinkedHashMap here since we want to keep track of the order of insertion of the elements.
         Map<Delta<E>, Conflict<E>> result = new LinkedHashMap<>();
         for (Delta<E> delta : deltaList) {
-            if (conflicts == null || conflicts.isEmpty()) {
-                result.put(delta, null);
+            Conflict<E> conflict = findConflict(delta, conflicts);
+
+            // If we found a conflict, but it only concerns a subpart of the delta, then we need to split this
+            // delta, so we can associate the conflict with only the part of the delta concerned by
+            // the conflict.
+            if (canDeltaSplitted(conflict, delta)) {
+                List<Delta<E>> splittedDeltas = splitDelta(delta, conflict);
+                result.putAll(buildDeltaConflictMap(splittedDeltas, conflicts));
+                // Else the conflict concerns the whole delta, so we can add it to the map and associate it
+                // with the delta. We remove the conflict from our list, since it's already associated
+                // with a delta.
             } else {
-                Conflict<E> conflict = findConflict(delta, conflicts);
-
-                // a delta can be splitted only if one of its chunk is > 1
-                boolean deltaCanBeSplitted = (delta.getPrevious().size() > 1 || delta.getNext().size() > 1)
-                    && conflict.getMaxSize() < delta.getMaxChunkSize();
-
-                boolean conflictIsSubpartOfDelta = conflict != null
-                    && (conflict.getMaxSize() != delta.getNext().size()
-                    || conflict.getMaxSize() != delta.getPrevious().size());
-
-                // If we found a conflict, but it only concerns a subpart of the delta, then we need to split this
-                // delta, so we can associate the conflict with only the part of the delta concerned by the conflict.
-                if (conflictIsSubpartOfDelta && deltaCanBeSplitted) {
-                    List<Delta<E>> splittedDeltas = splitDelta(delta, conflict);
-                    result.putAll(buildDeltaConflictMap(splittedDeltas, conflicts));
-                // Else the conflict concerns the whole delta, so we can add it to the map and associate it with the
-                // delta. We remove the conflict from our list, since it's already associated with a delta.
-                } else {
-                    result.put(delta, conflict);
+                result.put(delta, conflict);
+                if (conflicts != null && conflict != null) {
                     conflicts.remove(conflict);
                 }
             }
         }
         return result;
+    }
+
+    private <E> boolean canDeltaSplitted(Conflict<E> conflict, Delta<E> delta)
+    {
+        if (conflict != null) {
+            // a delta can be splitted only if one of its chunk is > 1
+            boolean deltaCanBeSplitted = (delta.getPrevious().size() > 1 || delta.getNext().size() > 1)
+                && conflict.getMaxSize() < delta.getMaxChunkSize();
+            boolean conflictIsSubpartOfDelta = (conflict.getMaxSize() != delta.getNext().size()
+                || conflict.getMaxSize() != delta.getPrevious().size());
+
+            return deltaCanBeSplitted && conflictIsSubpartOfDelta;
+        }
+        return false;
     }
 
     @Override

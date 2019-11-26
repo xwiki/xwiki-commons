@@ -23,7 +23,6 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Provides a way to access the HTML Displayer for the given type.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @since 10.11RC1
  */
 @Role
-@Unstable
 public interface HTMLDisplayerManager
 {
     /**

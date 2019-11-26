@@ -189,24 +189,24 @@ public class CacheEntryListenerTest implements CacheEntryListener<Object>
         {
             CacheEntryEvent<Object> event;
 
-            while (this.run) {
-                if (this.eventType == EventType.ADD) {
-                    event = addedEvent;
-                } else if (this.eventType == EventType.MODIFY) {
-                    event = modifiedEvent;
-                } else {
-                    event = removedEvent;
-                }
+            try {
+                while (this.run) {
+                    if (this.eventType == EventType.ADD) {
+                        event = addedEvent;
+                    } else if (this.eventType == EventType.MODIFY) {
+                        event = modifiedEvent;
+                    } else {
+                        event = removedEvent;
+                    }
 
-                if (event != null) {
-                    break;
-                }
-
-                try {
+                    if (event != null) {
+                        break;
+                    }
                     Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    // ignore
                 }
+            } catch (InterruptedException e) {
+                // Ignore but properly restore the interrupted status
+                Thread.currentThread().interrupt();
             }
         }
     }

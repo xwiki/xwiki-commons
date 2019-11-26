@@ -93,8 +93,6 @@ import org.xwiki.test.mockito.MockitoComponentMocker;
  */
 public class MockitoComponentManagerExtension implements TestInstancePostProcessor, AfterEachCallback, ParameterResolver
 {
-    private static final Namespace NAMESPACE = Namespace.create(MockitoComponentManagerExtension.class);
-
     private static final ComponentAnnotationLoader LOADER = new ComponentAnnotationLoader();
 
     @Override
@@ -224,8 +222,19 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
     private ComponentDescriptor<?> getDescriptor(Class<?> role, List<ComponentDescriptor> descriptors, Field field)
         throws Exception
     {
-        if (role.equals(InjectMockComponents.class)) {
-            if (descriptors.size() > 1) {
+        // When the role is InjectMockComponents.class it means that no role has been set by the user, see the
+        // InjectMockComponents javadoc.
+        //
+        // For disambiguation we support 2 ways:
+        // - specify a role class in the @InjectMockComponents annotation
+        // - specify a role string in the @Named annotation
+        if (!isRolePresent(role) && !field.isAnnotationPresent(Named.class)) {
+            if (descriptors.isEmpty()) {
+                // Does not make sense to ask for the descriptor of a class which does not have any associated
+                // descriptor.
+                throw new Exception(
+                    String.format("The component under field [%s] is not implementing any role.", field.getName()));
+            } else if (descriptors.size() > 1) {
                 // Force user to specify a role in case of several
                 throw new Exception(String.format(
                     "The component under field [%s] is implementing several roles. "
@@ -236,9 +245,16 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
             }
         } else {
             for (ComponentDescriptor<?> descriptor : descriptors) {
-                Class<?> roleClass = ReflectionUtils.getTypeClass(descriptor.getRoleType());
-                if (roleClass.equals(role)) {
-                    return descriptor;
+                if (isRolePresent(role)) {
+                    Class<?> roleClass = ReflectionUtils.getTypeClass(descriptor.getRoleType());
+                    if (roleClass.equals(role)) {
+                        return descriptor;
+                    }
+                } else {
+                    String roleHint = field.getAnnotation(Named.class).value();
+                    if (descriptor.getRoleHint().equals(roleHint)) {
+                        return descriptor;
+                    }
                 }
             }
             throw new Exception(String.format(
@@ -247,29 +263,34 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         }
     }
 
+    private boolean isRolePresent(Class<?> role)
+    {
+        return !role.equals(InjectMockComponents.class);
+    }
+
     protected MockitoComponentManager loadComponentManager(ExtensionContext context)
     {
-        ExtensionContext.Store store = getStore(context);
+        ExtensionContext.Store store = getGlobalRootStore(context);
         Class<?> testClass = context.getRequiredTestClass();
         return store.get(testClass, MockitoComponentManager.class);
     }
 
     private void removeComponentManager(ExtensionContext context)
     {
-        ExtensionContext.Store store = getStore(context);
+        ExtensionContext.Store store = getGlobalRootStore(context);
         Class<?> testClass = context.getRequiredTestClass();
         store.remove(testClass);
     }
 
     private void saveComponentManager(ExtensionContext context, MockitoComponentManager componentManager)
     {
-        ExtensionContext.Store store = getStore(context);
+        ExtensionContext.Store store = getGlobalRootStore(context);
         Class<?> testClass = context.getRequiredTestClass();
         store.put(testClass, componentManager);
     }
 
-    private static ExtensionContext.Store getStore(ExtensionContext context)
+    private static ExtensionContext.Store getGlobalRootStore(ExtensionContext context)
     {
-        return context.getRoot().getStore(NAMESPACE);
+        return context.getRoot().getStore(Namespace.GLOBAL);
     }
 }

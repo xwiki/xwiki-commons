@@ -22,13 +22,13 @@ package org.xwiki.extension.job.history.internal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.extension.job.history.ExtensionJobHistoryRecord;
 import org.xwiki.extension.job.history.QuestionRecorder;
 import org.xwiki.extension.job.history.ReplayJobStatus;
 import org.xwiki.job.event.status.QuestionAskedEvent;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**

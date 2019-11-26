@@ -25,12 +25,15 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-legacy</artifactId>
-    <version>11.8-SNAPSHOT</version>
+    <version>12.0-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-legacy-configuration</artifactId>
   <name>XWiki Commons - Legacy - Configuration</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Legacy - Configuration</description>
+  <properties>
+    <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>

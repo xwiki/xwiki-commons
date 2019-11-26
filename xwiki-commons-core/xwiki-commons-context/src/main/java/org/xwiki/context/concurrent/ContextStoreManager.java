@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.stability.Unstable;
 
 /**
  * Entry point to manipulate all {@link ContextStore}s.
@@ -34,7 +33,6 @@ import org.xwiki.stability.Unstable;
  * @since 10.10RC1
  */
 @Role
-@Unstable
 public interface ContextStoreManager
 {
     /**

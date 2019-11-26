@@ -47,6 +47,11 @@ public class EventListenerTest
             super(name, events);
         }
 
+        public TestEventListener(String name, Object... values)
+        {
+            super(name, values);
+        }
+
         @Override
         public void onEvent(Event event, Object source, Object data)
         {
@@ -67,12 +72,22 @@ public class EventListenerTest
     @Test
     public void constructorWithList()
     {
-        TestEventListener listener =
-            new TestEventListener("name", Arrays.asList(new ActionExecutionEvent("action1"), new ActionExecutionEvent(
-                "action2")));
+        TestEventListener listener = new TestEventListener("name",
+            Arrays.asList(new ActionExecutionEvent("action1"), new ActionExecutionEvent("action2")));
 
         assertEquals("name", listener.getName());
         assertEquals(Arrays.asList(new ActionExecutionEvent("action1"), new ActionExecutionEvent("action2")),
             listener.getEvents());
+    }
+
+    @Test
+    public void constructorWithObjects()
+    {
+        TestEventListener listener = new TestEventListener("name", new ActionExecutionEvent("action1"),
+            Arrays.asList(new ActionExecutionEvent("action2")), new Event[] { new ActionExecutionEvent("action3") });
+
+        assertEquals("name", listener.getName());
+        assertEquals(Arrays.asList(new ActionExecutionEvent("action1"), new ActionExecutionEvent("action2"),
+            new ActionExecutionEvent("action3")), listener.getEvents());
     }
 }

@@ -19,11 +19,15 @@
  */
 package org.xwiki.logging.logback.internal;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Iterator;
-import java.util.Stack;
+import java.util.LinkedList;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -31,7 +35,10 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.logging.LogLevel;
+import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.LoggerManager;
+import org.xwiki.logging.internal.tail.XStreamFileLoggerTail;
+import org.xwiki.logging.tail.LoggerTail;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.WrappedThreadEventListener;
@@ -56,6 +63,9 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
     @Inject
     private ObservationManager observation;
 
+    @Inject
+    private Provider<XStreamFileLoggerTail> loggerTailProvider;
+
     /**
      * The logger.
      */
@@ -65,7 +75,7 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
     /**
      * The stack of listeners for the current thread.
      */
-    private ThreadLocal<Stack<EventListener>> listeners = new ThreadLocal<Stack<EventListener>>();
+    private ThreadLocal<Deque<EventListener>> listeners = new ThreadLocal<>();
 
     /**
      * Logback utilities.
@@ -94,18 +104,18 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
                 }
             }
         } else {
-            this.logger.warn("Could not find any Logback root logger."
-                + " All logging module advanced features will be disabled.");
+            this.logger
+                .warn("Could not find any Logback root logger. All logging module advanced features will be disabled.");
         }
     }
 
     @Override
     public void pushLogListener(EventListener listener)
     {
-        Stack<EventListener> listenerStack = this.listeners.get();
+        Deque<EventListener> listenerStack = this.listeners.get();
 
         if (listenerStack == null) {
-            listenerStack = new Stack<EventListener>();
+            listenerStack = new LinkedList<>();
             this.listeners.set(listenerStack);
         }
 
@@ -125,7 +135,7 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
     @Override
     public EventListener popLogListener()
     {
-        Stack<EventListener> listenerStack = this.listeners.get();
+        Deque<EventListener> listenerStack = this.listeners.get();
 
         EventListener listener;
         if (listenerStack != null && !listenerStack.isEmpty()) {
@@ -215,5 +225,19 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
     protected LoggerContext getLoggerContext()
     {
         return this.utils.getLoggerContext();
+    }
+
+    @Override
+    public LoggerTail createLoggerTail(Path path, boolean readonly) throws IOException
+    {
+        if (readonly && !XStreamFileLoggerTail.exist(path)) {
+            return new LogQueue();
+        } else {
+            XStreamFileLoggerTail loggerTail = this.loggerTailProvider.get();
+
+            loggerTail.initialize(path, readonly);
+
+            return loggerTail;
+        }
     }
 }

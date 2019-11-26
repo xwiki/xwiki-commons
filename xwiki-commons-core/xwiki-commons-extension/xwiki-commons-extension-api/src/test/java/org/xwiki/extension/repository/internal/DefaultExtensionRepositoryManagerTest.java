@@ -25,16 +25,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.xwiki.component.manager.ComponentLookupException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepository;
-import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.SearchException;
@@ -42,10 +38,13 @@ import org.xwiki.extension.repository.search.Searchable;
 import org.xwiki.extension.test.ExtensionUtils;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersion;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import com.google.common.collect.Lists;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
@@ -55,11 +54,11 @@ import static org.mockito.Mockito.withSettings;
  *
  * @version $Id$
  */
+@ComponentTest
 public class DefaultExtensionRepositoryManagerTest
 {
-    @Rule
-    public MockitoComponentMockingRule<ExtensionRepositoryManager> mock =
-        new MockitoComponentMockingRule<ExtensionRepositoryManager>(DefaultExtensionRepositoryManager.class);
+    @InjectMockComponents
+    private DefaultExtensionRepositoryManager manager;
 
     private ExtensionRepository mockRepository1;
 
@@ -77,7 +76,7 @@ public class DefaultExtensionRepositoryManagerTest
 
     private Extension extension4;
 
-    @Before
+    @BeforeEach
     public void configure() throws Exception
     {
         this.mockRepository1 =
@@ -85,14 +84,14 @@ public class DefaultExtensionRepositoryManagerTest
         this.mockSearchableRepository1 = (Searchable) this.mockRepository1;
         when(this.mockRepository1.getDescriptor())
             .thenReturn(new DefaultExtensionRepositoryDescriptor("repository1", "type", new URI("uri:uri")));
-        this.mock.getComponentUnderTest().addRepository(this.mockRepository1);
+        this.manager.addRepository(this.mockRepository1);
 
         this.mockRepository2 =
             mock(ExtensionRepository.class, withSettings().extraInterfaces(Searchable.class).name("repository2"));
         this.mockSearchableRepository2 = (Searchable) this.mockRepository2;
         when(this.mockRepository2.getDescriptor())
             .thenReturn(new DefaultExtensionRepositoryDescriptor("repository2", "type", new URI("uri:uri")));
-        this.mock.getComponentUnderTest().addRepository(this.mockRepository2);
+        this.manager.addRepository(this.mockRepository2);
 
         this.extension1 = ExtensionUtils.mockExtension("id1", "version1");
         this.extension2 = ExtensionUtils.mockExtension("id2", "version2");
@@ -132,63 +131,61 @@ public class DefaultExtensionRepositoryManagerTest
             Object element1 = i1.next();
             Object element2 = i2.next();
             if (element1 != element2) {
-                Assert.fail("[" + element1 + "] is not the same as [" + element2 + "]");
+                fail("[" + element1 + "] is not the same as [" + element2 + "]");
             }
         }
     }
 
-    private void assertResolveVersions(String id, int offset, int nb, String... versions)
-        throws ResolveException, ComponentLookupException
+    private void assertResolveVersions(int offset, int nb, String... versions) throws ResolveException
     {
-        Assert.assertEquals(toVersionList(versions),
-            Lists.newArrayList(this.mock.getComponentUnderTest().resolveVersions("id", offset, nb)));
+        assertEquals(toVersionList(versions),
+            Lists.newArrayList(this.manager.resolveVersions("id", offset, nb)));
     }
 
-    private void assertSearch(String id, int offset, int nb, Extension... extensions)
-        throws ComponentLookupException, SearchException
+    private void assertSearch(int offset, int nb, Extension... extensions) throws SearchException
     {
-        assertSameElements(Arrays.asList(extensions), this.mock.getComponentUnderTest().search("id", offset, nb));
+        assertSameElements(Arrays.asList(extensions), this.manager.search("id", offset, nb));
     }
 
     // Tests
 
     @Test
-    public void resolveVersions() throws ResolveException, ComponentLookupException
+    public void resolveVersions() throws ResolveException
     {
         when(this.mockRepository1.resolveVersions("id", 0, -1)).thenReturn(toIterableVersions("1.0", "2.0"));
         when(this.mockRepository2.resolveVersions("id", 0, -1)).thenReturn(toIterableVersions("3.0", "2.0", "4.0"));
 
-        assertResolveVersions("id", 0, -1, "1.0", "2.0", "3.0", "4.0");
-        assertResolveVersions("id", 0, 1, "1.0");
-        assertResolveVersions("id", 1, -1, "2.0", "3.0", "4.0");
+        assertResolveVersions(0, -1, "1.0", "2.0", "3.0", "4.0");
+        assertResolveVersions(0, 1, "1.0");
+        assertResolveVersions(1, -1, "2.0", "3.0", "4.0");
     }
 
     @Test
-    public void search() throws SearchException, ComponentLookupException
+    public void search() throws SearchException
     {
         when(this.mockSearchableRepository1.search("pattern", 0, -1))
             .thenReturn(toIterableExtensions(this.extension1, this.extension2));
         when(this.mockSearchableRepository2.search("pattern", 0, -1))
             .thenReturn(toIterableExtensions(this.extension3, this.extension4));
 
-        assertSearch("pattern", 0, -1, this.extension1, this.extension2, this.extension3, this.extension4);
-        assertSearch("pattern", 0, 1, this.extension1);
-        assertSearch("pattern", 1, -1, this.extension2, this.extension3, this.extension4);
+        assertSearch(0, -1, this.extension1, this.extension2, this.extension3, this.extension4);
+        assertSearch(0, 1, this.extension1);
+        assertSearch(1, -1, this.extension2, this.extension3, this.extension4);
 
         when(this.mockSearchableRepository1.search("pattern", 0, -1)).thenReturn(toIterableExtensions());
         when(this.mockSearchableRepository2.search("pattern", 0, -1))
             .thenReturn(toIterableExtensions(this.extension3, this.extension4));
 
-        assertSearch("pattern", 0, -1, this.extension3, this.extension4);
-        assertSearch("pattern", 0, 1, this.extension3);
-        assertSearch("pattern", 1, -1, this.extension4);
+        assertSearch(0, -1, this.extension3, this.extension4);
+        assertSearch(0, 1, this.extension3);
+        assertSearch(1, -1, this.extension4);
 
         when(this.mockSearchableRepository1.search("pattern", 0, -1))
             .thenReturn(toIterableExtensions(this.extension1, this.extension2));
         when(this.mockSearchableRepository2.search("pattern", 0, -1)).thenReturn(toIterableExtensions());
 
-        assertSearch("pattern", 0, -1, this.extension1, this.extension2, this.extension3, this.extension4);
-        assertSearch("pattern", 0, 1, this.extension1);
-        assertSearch("pattern", 1, -1, this.extension2, this.extension3, this.extension4);
+        assertSearch(0, -1, this.extension1, this.extension2, this.extension3, this.extension4);
+        assertSearch(0, 1, this.extension1);
+        assertSearch(1, -1, this.extension2, this.extension3, this.extension4);
     }
 }

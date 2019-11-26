@@ -3,6 +3,7 @@ org.xwiki.xml.internal.html.filter.ListFilter
 org.xwiki.xml.internal.html.filter.FontFilter
 org.xwiki.xml.internal.html.filter.LinkFilter
 org.xwiki.xml.internal.html.filter.BodyFilter
+org.xwiki.xml.internal.html.filter.ControlCharactersFilter
 org.xwiki.xml.internal.html.filter.AttributeFilter
 org.xwiki.xml.internal.html.filter.UniqueIdFilter
 org.xwiki.xml.internal.html.DefaultHTMLCleaner

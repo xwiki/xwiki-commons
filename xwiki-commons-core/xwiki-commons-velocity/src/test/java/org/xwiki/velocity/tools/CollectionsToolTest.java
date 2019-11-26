@@ -32,8 +32,13 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.concurrent.BlockingQueue;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for {@link CollectionsTool}.
@@ -46,35 +51,35 @@ public class CollectionsToolTest
     private CollectionsTool tool = new CollectionsTool();
 
     @Test
-    public void testGetMap()
+    public void getMap()
     {
         Map<String, String> result = this.tool.getMap();
-        Assert.assertNotNull("Returned null instead of a map", result);
-        Assert.assertTrue("Returned map wasn't initially empty", result.isEmpty());
+        assertNotNull(result, "Returned null instead of a map");
+        assertTrue(result.isEmpty(), "Returned map wasn't initially empty");
 
         // Check that null values are supported
-        Assert.assertFalse("null value already present in the empty map", result.containsKey("nullvalue"));
-        Assert.assertFalse("null value already present in the empty map", result.containsValue(null));
+        assertFalse(result.containsKey("nullvalue"), "null value already present in the empty map");
+        assertFalse(result.containsValue(null), "null value already present in the empty map");
         result.put("nullvalue", null);
-        Assert.assertNull(result.get("nullvalue"));
-        Assert.assertTrue("Failed to insert null value in the map", result.containsKey("nullvalue"));
-        Assert.assertTrue("Failed to insert null value in the map", result.containsValue(null));
+        assertNull(result.get("nullvalue"));
+        assertTrue(result.containsKey("nullvalue"), "Failed to insert null value in the map");
+        assertTrue(result.containsValue(null), "Failed to insert null value in the map");
 
         // Check that null keys are supported
-        Assert.assertFalse("null key already present in the empty map", result.containsKey(null));
-        Assert.assertFalse("null key already present in the empty map", result.containsValue("nullkey"));
+        assertFalse(result.containsKey(null), "null key already present in the empty map");
+        assertFalse(result.containsValue("nullkey"), "null key already present in the empty map");
         result.put(null, "nullkey");
-        Assert.assertEquals("Failed to insert null key in the map", "nullkey", result.get(null));
-        Assert.assertTrue("Failed to insert null key in the map", result.containsKey(null));
-        Assert.assertTrue("Failed to insert null key in the map", result.containsValue("nullkey"));
+        assertEquals("nullkey", result.get(null), "Failed to insert null key in the map");
+        assertTrue(result.containsKey(null), "Failed to insert null key in the map");
+        assertTrue(result.containsValue("nullkey"), "Failed to insert null key in the map");
     }
 
     @Test
-    public void testGetSortedMap()
+    public void getSortedMap()
     {
         SortedMap<Double, Integer> result = this.tool.getSortedMap();
-        Assert.assertNotNull("Returned null instead of a map", result);
-        Assert.assertTrue("Returned map wasn't initially empty", result.isEmpty());
+        assertNotNull(result, "Returned null instead of a map");
+        assertTrue(result.isEmpty(), "Returned map wasn't initially empty");
 
         // Check that the map is indeed sorted by the key
         Random r = new Random();
@@ -83,17 +88,17 @@ public class CollectionsToolTest
         }
         Double d = 0.0;
         for (Map.Entry<Double, Integer> e : result.entrySet()) {
-            Assert.assertTrue("Map doesn't preserve the natural order of the elements", e.getKey() >= d);
+            assertTrue(e.getKey() >= d, "Map doesn't preserve the natural order of the elements");
             d = e.getKey();
         }
     }
 
     @Test
-    public void testGetOrderedMap()
+    public void getOrderedMap()
     {
         Map<Double, Integer> result = this.tool.getOrderedMap();
-        Assert.assertNotNull("Returned null instead of a map", result);
-        Assert.assertTrue("Returned map wasn't initially empty", result.isEmpty());
+        assertNotNull(result, "Returned null instead of a map");
+        assertTrue(result.isEmpty(), "Returned map wasn't initially empty");
 
         // Check that the map is indeed ordered
         Random r = new Random();
@@ -102,32 +107,32 @@ public class CollectionsToolTest
         }
         int i = 0;
         for (Map.Entry<Double, Integer> e : result.entrySet()) {
-            Assert.assertEquals("Map doesn't preserve the insertion order", i++, e.getValue().intValue());
+            assertEquals(i++, e.getValue().intValue(), "Map doesn't preserve the insertion order");
         }
     }
 
     @Test
-    public void testGetSet()
+    public void getSet()
     {
         Set<String> result = this.tool.getSet();
-        Assert.assertNotNull("Returned null instead of a set", result);
-        Assert.assertTrue("Returned set wasn't initially empty", result.isEmpty());
+        assertNotNull(result, "Returned null instead of a set");
+        assertTrue(result.isEmpty(), "Returned set wasn't initially empty");
 
         // Check that null values are supported
-        Assert.assertFalse("null value already present in the empty set", result.contains(null));
-        Assert.assertTrue("null value already present in the empty set", result.add(null));
-        Assert.assertTrue("null value wasn't inserted in the set", result.contains(null));
-        Assert.assertFalse("null value was re-inserted in the set", result.add(null));
-        Assert.assertTrue("failed to remove null value from the set", result.remove(null));
-        Assert.assertFalse("null value present in the set after being removed", result.contains(null));
+        assertFalse(result.contains(null), "null value already present in the empty set");
+        assertTrue(result.add(null), "null value already present in the empty set");
+        assertTrue(result.contains(null), "null value wasn't inserted in the set");
+        assertFalse(result.add(null), "null value was re-inserted in the set");
+        assertTrue(result.remove(null), "failed to remove null value from the set");
+        assertFalse(result.contains(null), "null value present in the set after being removed");
     }
 
     @Test
-    public void testGetSortedSet()
+    public void getSortedSet()
     {
         SortedSet<Double> result = this.tool.getSortedSet();
-        Assert.assertNotNull("Returned null instead of a set", result);
-        Assert.assertTrue("Returned set wasn't initially empty", result.isEmpty());
+        assertNotNull(result, "Returned null instead of a set");
+        assertTrue(result.isEmpty(), "Returned set wasn't initially empty");
 
         // Check that the set is indeed sorted
         Random r = new Random();
@@ -136,17 +141,17 @@ public class CollectionsToolTest
         }
         Double d = 0.0;
         for (Double e : result) {
-            Assert.assertTrue("Set doesn't preserve the natural order of the elements", e >= d);
+            assertTrue(e >= d, "Set doesn't preserve the natural order of the elements");
             d = e;
         }
     }
 
     @Test
-    public void testGetOrderedSet()
+    public void getOrderedSet()
     {
         Set<Double> result = this.tool.getOrderedSet();
-        Assert.assertNotNull("Returned null instead of a set", result);
-        Assert.assertTrue("Returned set wasn't initially empty", result.isEmpty());
+        assertNotNull(result, "Returned null instead of a set");
+        assertTrue(result.isEmpty(), "Returned set wasn't initially empty");
 
         // Check that the set is indeed ordered
         Random r = new Random();
@@ -158,49 +163,49 @@ public class CollectionsToolTest
         }
         Iterator<Double> valueIterator = values.iterator();
         for (Double e : result) {
-            Assert.assertEquals("Set doesn't preserve the insertion order", valueIterator.next(), e);
+            assertEquals(valueIterator.next(), e, "Set doesn't preserve the insertion order");
         }
     }
 
     @Test
-    public void testGetArrayList()
+    public void getArrayList()
     {
         List<String> result = this.tool.getArrayList();
-        Assert.assertNotNull("Returned null instead of a list", result);
-        Assert.assertTrue("Returned list wasn't initially empty", result.isEmpty());
+        assertNotNull(result, "Returned null instead of a list");
+        assertTrue(result.isEmpty(), "Returned list wasn't initially empty");
     }
 
     @Test
-    public void testGetLinkedList()
+    public void getLinkedList()
     {
         List<String> result = this.tool.getLinkedList();
-        Assert.assertNotNull("Returned null instead of a list", result);
-        Assert.assertTrue("Returned list wasn't initially empty", result.isEmpty());
+        assertNotNull(result, "Returned null instead of a list");
+        assertTrue(result.isEmpty(), "Returned list wasn't initially empty");
     }
 
     @Test
-    public void testGetQueue()
+    public void getQueue()
     {
         Queue<String> result = this.tool.getQueue();
-        Assert.assertNotNull("Returned null instead of a queue", result);
-        Assert.assertTrue("Returned queue wasn't initially empty", result.isEmpty());
-        Assert.assertNull(result.poll());
+        assertNotNull(result, "Returned null instead of a queue");
+        assertTrue(result.isEmpty(), "Returned queue wasn't initially empty");
+        assertNull(result.poll());
     }
 
     @Test
-    public void testGetBlockingQueue()
+    public void getBlockingQueue()
     {
         BlockingQueue<String> result = this.tool.getBlockingQueue();
-        Assert.assertNotNull("Returned null instead of a queue", result);
-        Assert.assertTrue("Returned queue wasn't initially empty", result.isEmpty());
+        assertNotNull(result, "Returned null instead of a queue");
+        assertTrue(result.isEmpty(), "Returned queue wasn't initially empty");
     }
 
     @Test
-    public void testGetPriorityQueue()
+    public void getPriorityQueue()
     {
         Queue<Double> result = this.tool.getPriorityQueue();
-        Assert.assertNotNull("Returned null instead of a queue", result);
-        Assert.assertTrue("Returned queue wasn't initially empty", result.isEmpty());
+        assertNotNull(result, "Returned null instead of a queue");
+        assertTrue(result.isEmpty(), "Returned queue wasn't initially empty");
 
         // Check that the queue is indeed prioritized
         Random r = new Random();
@@ -210,31 +215,31 @@ public class CollectionsToolTest
         Double d = 0.0;
         while (!result.isEmpty()) {
             Double e = result.poll();
-            Assert.assertTrue("Queue doesn't preserve the natural order of the elements", e >= d);
+            assertTrue(e >= d, "Queue doesn't preserve the natural order of the elements");
             d = e;
         }
     }
 
     @Test
-    public void testUnmodifiableList()
+    public void unmodifiableList()
     {
         List<String> original = this.tool.getLinkedList();
         original.add("one");
         original.add("two");
         original.add("three");
         List<String> result = this.tool.unmodifiable(original);
-        Assert.assertNotNull("Returned null instead of a proper unmodifiable wrapper", result);
-        Assert.assertFalse("Returned wrapper was empty", result.isEmpty());
-        Assert.assertEquals("Wrong size of the wrapper list", 3, result.size());
+        assertNotNull(result, "Returned null instead of a proper unmodifiable wrapper");
+        assertFalse(result.isEmpty(), "Returned wrapper was empty");
+        assertEquals(3, result.size(), "Wrong size of the wrapper list");
         boolean failed = false;
         try {
             result.add("four");
         } catch (UnsupportedOperationException ex) {
             failed = true;
         }
-        Assert.assertTrue("Shouldn't be allowed to add new items", failed);
+        assertTrue(failed, "Shouldn't be allowed to add new items");
         original.add("four");
-        Assert.assertEquals("Wrapper list doesn't show changes in the original list", 4, result.size());
+        assertEquals(4, result.size(), "Wrapper list doesn't show changes in the original list");
         Iterator<String> it = result.iterator();
         failed = false;
         try {
@@ -242,94 +247,94 @@ public class CollectionsToolTest
         } catch (UnsupportedOperationException ex) {
             failed = true;
         }
-        Assert.assertTrue("Shouldn't be allowed to remove items using the iterator", failed);
+        assertTrue(failed, "Shouldn't be allowed to remove items using the iterator");
     }
 
     @Test
-    public void testUnmodifiableMap()
+    public void unmodifiableMap()
     {
         Map<String, Integer> original = this.tool.getMap();
         original.put("one", 1);
         original.put("two", 2);
         original.put("three", 3);
         Map<String, Integer> result = this.tool.unmodifiable(original);
-        Assert.assertNotNull("Returned null instead of a proper unmodifiable wrapper", result);
-        Assert.assertFalse("Returned wrapper was empty", result.isEmpty());
-        Assert.assertEquals("Wrong size of the wrapper map", 3, result.size());
+        assertNotNull(result, "Returned null instead of a proper unmodifiable wrapper");
+        assertFalse(result.isEmpty(), "Returned wrapper was empty");
+        assertEquals(3, result.size(), "Wrong size of the wrapper map");
         boolean failed = false;
         try {
             result.put("four", 4);
         } catch (UnsupportedOperationException ex) {
             failed = true;
         }
-        Assert.assertTrue("Shouldn't be allowed to add new items", failed);
+        assertTrue(failed, "Shouldn't be allowed to add new items");
         original.put("four", 4);
-        Assert.assertEquals("Wrapper map doesn't show changes in the original map", 4, result.size());
+        assertEquals(4, result.size(), "Wrapper map doesn't show changes in the original map");
     }
 
     @Test
-    public void testUnmodifiableSet()
+    public void unmodifiableSet()
     {
         SortedSet<Integer> original = this.tool.getSortedSet();
         for (int i = 0; i < 100; ++i) {
             original.add(150 - i);
         }
         Set<Integer> result = this.tool.unmodifiable(original);
-        Assert.assertNotNull("Returned null instead of a proper unmodifiable wrapper", result);
-        Assert.assertFalse("Returned wrapper was empty", result.isEmpty());
-        Assert.assertEquals("Wrong size of the wrapper set", 100, result.size());
-        Assert.assertEquals("Wrapper set doesn't preserve the order of the original set", 51,
-            result.iterator().next().intValue());
+        assertNotNull(result, "Returned null instead of a proper unmodifiable wrapper");
+        assertFalse(result.isEmpty(), "Returned wrapper was empty");
+        assertEquals(100, result.size(), "Wrong size of the wrapper set");
+        assertEquals(51, result.iterator().next().intValue(),
+            "Wrapper set doesn't preserve the order of the original set");
         boolean failed = false;
         try {
             result.add(307);
         } catch (UnsupportedOperationException ex) {
             failed = true;
         }
-        Assert.assertTrue("Shouldn't be allowed to add new items", failed);
+        assertTrue(failed, "Shouldn't be allowed to add new items");
         original.add(42);
-        Assert.assertEquals("Wrapper set doesn't show changes in the original set", 101, result.size());
-        Assert.assertEquals("Wrapper set doesn't preserve the order of the original set", 42,
-            result.iterator().next().intValue());
+        assertEquals(101, result.size(), "Wrapper set doesn't show changes in the original set");
+        assertEquals(42, result.iterator().next().intValue(),
+            "Wrapper set doesn't preserve the order of the original set");
     }
 
     @Test
-    public void testUnmodifiableCollection()
+    public void unmodifiableCollection()
     {
         Collection<Integer> original = this.tool.getPriorityQueue();
         for (int i = 0; i < 100; ++i) {
             original.add(150 - i);
         }
         Collection<Integer> result = this.tool.unmodifiable(original);
-        Assert.assertNotNull("Returned null instead of a proper unmodifiable wrapper", result);
-        Assert.assertFalse("Returned wrapper was empty", result.isEmpty());
-        Assert.assertEquals("Wrong size of the wrapper collection", 100, result.size());
-        Assert.assertEquals("Wrapper collection doesn't preserve the order of the original collection", 51,
-            result.iterator().next().intValue());
+        assertNotNull(result, "Returned null instead of a proper unmodifiable wrapper");
+        assertFalse(result.isEmpty(), "Returned wrapper was empty");
+        assertEquals(100, result.size(), "Wrong size of the wrapper collection");
+        assertEquals(51, result.iterator().next().intValue(),
+            "Wrapper collection doesn't preserve the order of the original collection");
         boolean failed = false;
         try {
             result.add(307);
         } catch (UnsupportedOperationException ex) {
             failed = true;
         }
-        Assert.assertTrue("Shouldn't be allowed to add new items", failed);
+        assertTrue(failed, "Shouldn't be allowed to add new items");
         original.add(42);
-        Assert.assertEquals("Wrapper set doesn't show changes in the original set", 101, result.size());
-        Assert.assertEquals("Wrapper set doesn't preserve the order of the original set", 42,
-            result.iterator().next().intValue());
+        assertEquals(101, result.size(), "Wrapper set doesn't show changes in the original set");
+        assertEquals(42, result.iterator().next().intValue(),
+            "Wrapper set doesn't preserve the order of the original set");
     }
 
     @Test
-    public void testNullUnmodifiable()
+    public void nullUnmodifiable()
     {
-        Assert.assertNull(this.tool.unmodifiable((List<Object>) null));
-        Assert.assertNull(this.tool.unmodifiable((Set<Object>) null));
-        Assert.assertNull(this.tool.unmodifiable((Map<Object, Object>) null));
-        Assert.assertNull(this.tool.unmodifiable((Collection<Object>) null));
+        assertNull(this.tool.unmodifiable((List<Object>) null));
+        assertNull(this.tool.unmodifiable((Set<Object>) null));
+        assertNull(this.tool.unmodifiable((Map<Object, Object>) null));
+        assertNull(this.tool.unmodifiable((Collection<Object>) null));
     }
 
     @Test
-    public void testSetUnion()
+    public void setUnion()
     {
         Set<String> set1 = this.tool.getSet();
         set1.add("one");
@@ -340,15 +345,15 @@ public class CollectionsToolTest
         set2.add("four");
         set2.add("five");
         Collection<String> result = this.tool.union(set1, set2);
-        Assert.assertNotNull("Returned null instead of a proper collection", result);
-        Assert.assertFalse("Returned union was empty", result.isEmpty());
-        Assert.assertEquals("Wrong size of the union collection", 5, result.size());
-        Assert.assertTrue("Not all elements from the first set were included in the union", result.containsAll(set1));
-        Assert.assertTrue("Not all elements from the second set were included in the union", result.containsAll(set2));
+        assertNotNull(result, "Returned null instead of a proper collection");
+        assertFalse(result.isEmpty(), "Returned union was empty");
+        assertEquals(5, result.size(), "Wrong size of the union collection");
+        assertTrue(result.containsAll(set1), "Not all elements from the first set were included in the union");
+        assertTrue(result.containsAll(set2), "Not all elements from the second set were included in the union");
     }
 
     @Test
-    public void testListUnion()
+    public void listUnion()
     {
         List<String> list1 = this.tool.getLinkedList();
         list1.add("one");
@@ -362,27 +367,27 @@ public class CollectionsToolTest
         list2.add("four");
         list2.add("five");
         Collection<String> result = this.tool.union(list1, list2);
-        Assert.assertNotNull("Returned null instead of a proper collection", result);
-        Assert.assertFalse("Returned union was empty", result.isEmpty());
-        Assert.assertEquals("Wrong size of the union collection", 8, result.size());
-        Assert.assertTrue("Not all elements from the first list were included in the union", result.containsAll(list1));
-        Assert.assertTrue("Not all elements from the second list were included", result.containsAll(list2));
+        assertNotNull(result, "Returned null instead of a proper collection");
+        assertFalse(result.isEmpty(), "Returned union was empty");
+        assertEquals(8, result.size(), "Wrong size of the union collection");
+        assertTrue(result.containsAll(list1), "Not all elements from the first list were included in the union");
+        assertTrue(result.containsAll(list2), "Not all elements from the second list were included");
     }
 
     @Test
-    public void testNullUnion()
+    public void nullUnion()
     {
         List<String> list = this.tool.getLinkedList();
         list.add("one");
         list.add("two");
         list.add("three");
-        Assert.assertEquals(list, this.tool.union(list, null));
-        Assert.assertEquals(list, this.tool.union(null, list));
-        Assert.assertNull(this.tool.union(null, null));
+        assertEquals(list, this.tool.union(list, null));
+        assertEquals(list, this.tool.union(null, list));
+        assertNull(this.tool.union(null, null));
     }
 
     @Test
-    public void testSetIntersection()
+    public void setIntersection()
     {
         Set<String> set1 = this.tool.getSet();
         set1.add("one");
@@ -393,14 +398,14 @@ public class CollectionsToolTest
         set2.add("four");
         set2.add("five");
         Collection<String> result = this.tool.intersection(set1, set2);
-        Assert.assertNotNull("Returned null instead of a proper collection", result);
-        Assert.assertFalse("Returned intersection was empty", result.isEmpty());
-        Assert.assertEquals("Wrong size of the intersection collection", 1, result.size());
-        Assert.assertEquals("Wrong element included in the intersection", "three", result.iterator().next());
+        assertNotNull(result, "Returned null instead of a proper collection");
+        assertFalse(result.isEmpty(), "Returned intersection was empty");
+        assertEquals(1, result.size(), "Wrong size of the intersection collection");
+        assertEquals("three", result.iterator().next(), "Wrong element included in the intersection");
     }
 
     @Test
-    public void testListIntersection()
+    public void listIntersection()
     {
         List<String> list1 = this.tool.getLinkedList();
         list1.add("one");
@@ -414,29 +419,29 @@ public class CollectionsToolTest
         list2.add("four");
         list2.add("five");
         Collection<String> result = this.tool.intersection(list1, list2);
-        Assert.assertNotNull("Returned null instead of a proper collection", result);
-        Assert.assertFalse("Returned intersection was empty", result.isEmpty());
-        Assert.assertEquals("Wrong size of the intersection collection", 2, result.size());
+        assertNotNull(result, "Returned null instead of a proper collection");
+        assertFalse(result.isEmpty(), "Returned intersection was empty");
+        assertEquals(2, result.size(), "Wrong size of the intersection collection");
         Iterator<String> it = result.iterator();
-        Assert.assertEquals("Wrong element included in the intersection", "three", it.next());
-        Assert.assertEquals("Wrong element included in the intersection", "three", it.next());
-        Assert.assertFalse("Wrong size of the intersection collection", it.hasNext());
+        assertEquals("three", it.next(), "Wrong element included in the intersection");
+        assertEquals("three", it.next(), "Wrong element included in the intersection");
+        assertFalse(it.hasNext(), "Wrong size of the intersection collection");
     }
 
     @Test
-    public void testNullIntersection()
+    public void nullIntersection()
     {
         List<String> list = this.tool.getLinkedList();
         list.add("one");
         list.add("two");
         list.add("three");
-        Assert.assertEquals(list, this.tool.intersection(list, null));
-        Assert.assertEquals(list, this.tool.intersection(null, list));
-        Assert.assertNull(this.tool.intersection(null, null));
+        assertEquals(list, this.tool.intersection(list, null));
+        assertEquals(list, this.tool.intersection(null, list));
+        assertNull(this.tool.intersection(null, null));
     }
 
     @Test
-    public void testSetDisjunction()
+    public void setDisjunction()
     {
         Set<String> set1 = this.tool.getSet();
         set1.add("one");
@@ -447,18 +452,18 @@ public class CollectionsToolTest
         set2.add("four");
         set2.add("five");
         Collection<String> result = this.tool.disjunction(set1, set2);
-        Assert.assertNotNull("Returned null instead of a proper collection", result);
-        Assert.assertFalse("Returned disjunction was empty", result.isEmpty());
-        Assert.assertEquals("Wrong size of the intersection collection", 4, result.size());
-        Assert.assertTrue("Missing element from the disjunction", result.contains("one"));
-        Assert.assertTrue("Missing element from the disjunction", result.contains("two"));
-        Assert.assertFalse("Wrong element included in the disjunction", result.contains("three"));
-        Assert.assertTrue("Missing element from the disjunction", result.contains("four"));
-        Assert.assertTrue("Missing element from the disjunction", result.contains("five"));
+        assertNotNull(result, "Returned null instead of a proper collection");
+        assertFalse(result.isEmpty(), "Returned disjunction was empty");
+        assertEquals(4, result.size(), "Wrong size of the intersection collection");
+        assertTrue(result.contains("one"), "Missing element from the disjunction");
+        assertTrue(result.contains("two"), "Missing element from the disjunction");
+        assertFalse(result.contains("three"), "Wrong element included in the disjunction");
+        assertTrue(result.contains("four"), "Missing element from the disjunction");
+        assertTrue(result.contains("five"), "Missing element from the disjunction");
     }
 
     @Test
-    public void testListDisjunction()
+    public void listDisjunction()
     {
         List<String> list1 = this.tool.getLinkedList();
         list1.add("one");
@@ -473,43 +478,43 @@ public class CollectionsToolTest
         list2.add("four");
         list2.add("five");
         Collection<String> result = this.tool.disjunction(list1, list2);
-        Assert.assertNotNull("Returned null instead of a proper collection", result);
-        Assert.assertFalse("Returned disjunction was empty", result.isEmpty());
-        Assert.assertEquals("Wrong size of the disjunction collection", 4, result.size());
-        Assert.assertTrue("Missing element from the disjunction", result.contains("one"));
-        Assert.assertTrue("Missing element from the disjunction", result.contains("two"));
-        Assert.assertTrue("Missing element from the disjunction", result.contains("three"));
-        Assert.assertFalse("Wrong element included in the disjunction", result.contains("four"));
-        Assert.assertTrue("Missing element from the disjunction", result.contains("five"));
+        assertNotNull(result, "Returned null instead of a proper collection");
+        assertFalse(result.isEmpty(), "Returned disjunction was empty");
+        assertEquals(4, result.size(), "Wrong size of the disjunction collection");
+        assertTrue(result.contains("one"), "Missing element from the disjunction");
+        assertTrue(result.contains("two"), "Missing element from the disjunction");
+        assertTrue(result.contains("three"), "Missing element from the disjunction");
+        assertFalse(result.contains("four"), "Wrong element included in the disjunction");
+        assertTrue(result.contains("five"), "Missing element from the disjunction");
     }
 
     @Test
-    public void testNullDisjunction()
+    public void nullDisjunction()
     {
         List<String> list = this.tool.getLinkedList();
         list.add("one");
         list.add("two");
         list.add("three");
-        Assert.assertEquals(list, this.tool.disjunction(list, null));
-        Assert.assertEquals(list, this.tool.disjunction(null, list));
-        Assert.assertNull(this.tool.disjunction(null, null));
+        assertEquals(list, this.tool.disjunction(list, null));
+        assertEquals(list, this.tool.disjunction(null, list));
+        assertNull(this.tool.disjunction(null, null));
     }
 
     @Test
-    public void testReverse()
+    public void reverse()
     {
         List<String> list = this.tool.getLinkedList();
         list.add("one");
         list.add("two");
         list.add("three");
-        Assert.assertTrue("Failed to reverse list", this.tool.reverse(list));
-        Assert.assertEquals("List wasn't properly reversed", "three", list.get(0));
-        Assert.assertEquals("List wasn't properly reversed", "two", list.get(1));
-        Assert.assertEquals("List wasn't properly reversed", "one", list.get(2));
+        assertTrue(this.tool.reverse(list), "Failed to reverse list");
+        assertEquals("three", list.get(0), "List wasn't properly reversed");
+        assertEquals("two", list.get(1), "List wasn't properly reversed");
+        assertEquals("one", list.get(2), "List wasn't properly reversed");
         List<String> readonly = this.tool.unmodifiable(list);
-        Assert.assertFalse("Unmodifiable list wrongly reversed", this.tool.reverse(readonly));
-        Assert.assertEquals("Unmodifiable list was changed", "three", list.get(0));
-        Assert.assertFalse("Reversed a null list?", this.tool.reverse(null));
+        assertFalse(this.tool.reverse(readonly), "Unmodifiable list wrongly reversed");
+        assertEquals("three", list.get(0), "Unmodifiable list was changed");
+        assertFalse(this.tool.reverse(null), "Reversed a null list?");
     }
 
     @Test
@@ -519,15 +524,15 @@ public class CollectionsToolTest
         list.add("one");
         list.add("two");
         list.add("three");
-        Assert.assertTrue("Failed to sort the list", this.tool.sort(list));
-        Assert.assertEquals("List wasn't properly sorted", "one", list.get(0));
-        Assert.assertEquals("List wasn't properly sorted", "three", list.get(1));
-        Assert.assertEquals("List wasn't properly sorted", "two", list.get(2));
+        assertTrue(this.tool.sort(list), "Failed to sort the list");
+        assertEquals("one", list.get(0), "List wasn't properly sorted");
+        assertEquals("three", list.get(1), "List wasn't properly sorted");
+        assertEquals("two", list.get(2), "List wasn't properly sorted");
         this.tool.reverse(list);
         List<String> readonly = this.tool.unmodifiable(list);
-        Assert.assertFalse("Unmodifiable list wrongly sorted", this.tool.sort(readonly));
-        Assert.assertEquals("Unmodifiable list was changed", "two", list.get(0));
+        assertFalse(this.tool.sort(readonly), "Unmodifiable list wrongly sorted");
+        assertEquals("two", list.get(0), "Unmodifiable list was changed");
         list = null;
-        Assert.assertFalse("Sorted a null list?", this.tool.sort(list));
+        assertFalse(this.tool.sort(list), "Sorted a null list?");
     }
 }

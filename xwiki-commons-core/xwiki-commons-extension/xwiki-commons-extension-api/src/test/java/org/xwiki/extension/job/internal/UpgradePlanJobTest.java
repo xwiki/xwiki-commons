@@ -22,8 +22,8 @@ package org.xwiki.extension.job.internal;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.TestResources;
 import org.xwiki.extension.job.InstallRequest;
@@ -31,16 +31,24 @@ import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
-import org.xwiki.extension.repository.internal.installed.DefaultInstalledExtension;
 import org.xwiki.extension.test.AbstractExtensionHandlerTest;
+import org.xwiki.extension.test.MockitoRepositoryUtilsExtension;
+import org.xwiki.test.junit5.mockito.ComponentTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
+@ComponentTest
+@ExtendWith(MockitoRepositoryUtilsExtension.class)
 public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
 {
     @Test
     public void testUpgradePlanOnRoot() throws Throwable
     {
         // Install first version
-        InstalledExtension extension = (DefaultInstalledExtension) install(TestResources.REMOTE_UPGRADE10_ID);
+        InstalledExtension extension = install(TestResources.REMOTE_UPGRADE10_ID);
         // Tag it as dependency
         this.installedExtensionRepository.installExtension(extension, null, true);
 
@@ -50,47 +58,47 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
 
         // Tree
 
-        Assert.assertEquals(2, plan.getTree().size());
+        assertEquals(2, plan.getTree().size());
 
         ExtensionPlanNode node = getNode(TestResources.REMOTE_UPGRADE20_ID, plan.getTree());
         ExtensionPlanAction action = node.getAction();
 
-        Assert.assertEquals(TestResources.REMOTE_UPGRADE20_ID, action.getExtension().getId());
-        Assert.assertEquals(Action.UPGRADE, action.getAction());
-        Assert.assertNull(action.getNamespace());
-        Assert.assertEquals(0, node.getChildren().size());
+        assertEquals(TestResources.REMOTE_UPGRADE20_ID, action.getExtension().getId());
+        assertEquals(Action.UPGRADE, action.getAction());
+        assertNull(action.getNamespace());
+        assertEquals(0, node.getChildren().size());
 
         node = getNode(TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID, plan.getTree());
         action = node.getAction();
 
-        Assert.assertEquals(TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID, action.getExtension().getId());
-        Assert.assertEquals(Action.REPAIR, action.getAction());
-        Assert.assertEquals(0, action.getPreviousExtensions().size());
-        Assert.assertNull(action.getNamespace());
-        Assert.assertEquals(1, node.getChildren().size());
+        assertEquals(TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID, action.getExtension().getId());
+        assertEquals(Action.REPAIR, action.getAction());
+        assertEquals(0, action.getPreviousExtensions().size());
+        assertNull(action.getNamespace());
+        assertEquals(1, node.getChildren().size());
 
         node = node.getChildren().iterator().next();
         action = node.getAction();
 
-        Assert.assertEquals(TestResources.REMOTE_MISSINGDEPENDENCY_ID, action.getExtension().getId());
-        Assert.assertEquals(Action.INSTALL, action.getAction());
-        Assert.assertEquals(0, action.getPreviousExtensions().size());
-        Assert.assertNull(action.getNamespace());
-        Assert.assertEquals(0, node.getChildren().size());
+        assertEquals(TestResources.REMOTE_MISSINGDEPENDENCY_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertEquals(0, action.getPreviousExtensions().size());
+        assertNull(action.getNamespace());
+        assertEquals(0, node.getChildren().size());
 
         // Actions
 
-        Assert.assertEquals(3, plan.getActions().size());
+        assertEquals(3, plan.getActions().size());
 
         // //////////////////////
         // Exclude extension
 
-        Assert.assertEquals(0,
+        assertEquals(0,
             upgradePlan(null,
                 Arrays.asList(TestResources.REMOTE_UPGRADE10_ID, TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID))
                     .getTree().size());
-        Assert.assertEquals(1, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE10_ID)).getTree().size());
-        Assert.assertEquals(2, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE20_ID)).getTree().size());
+        assertEquals(1, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE10_ID)).getTree().size());
+        assertEquals(2, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE20_ID)).getTree().size());
     }
 
     @Test
@@ -105,7 +113,7 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
 
         // Tree
 
-        Assert.assertEquals(0, plan.getTree().size());
+        assertEquals(0, plan.getTree().size());
     }
 
     @Test
@@ -121,49 +129,49 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
         // Tree
         // ////////
 
-        Assert.assertEquals(2, plan.getTree().size());
+        assertEquals(2, plan.getTree().size());
 
         // First node
         ExtensionPlanNode node = getNode(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, plan.getTree());
         ExtensionPlanAction action = node.getAction();
 
-        Assert.assertEquals(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, action.getExtension().getId());
-        Assert.assertEquals(Action.UPGRADE, action.getAction());
-        Assert.assertNull(action.getNamespace());
+        assertEquals(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, action.getExtension().getId());
+        assertEquals(Action.UPGRADE, action.getAction());
+        assertNull(action.getNamespace());
 
-        Assert.assertEquals(1, node.getChildren().size());
+        assertEquals(1, node.getChildren().size());
 
         ExtensionPlanNode childNode = node.getChildren().iterator().next();
 
         ExtensionPlanAction childAction = childNode.getAction();
 
-        Assert.assertEquals(TestResources.REMOTE_UPGRADE20_ID, childAction.getExtension().getId());
-        Assert.assertEquals(Action.UPGRADE, childAction.getAction());
-        Assert.assertNull(childAction.getNamespace());
+        assertEquals(TestResources.REMOTE_UPGRADE20_ID, childAction.getExtension().getId());
+        assertEquals(Action.UPGRADE, childAction.getAction());
+        assertNull(childAction.getNamespace());
 
         // Second node
         node = getNode(TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID, plan.getTree());
         action = node.getAction();
 
-        Assert.assertEquals(TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID, action.getExtension().getId());
-        Assert.assertEquals(Action.REPAIR, action.getAction());
-        Assert.assertEquals(0, action.getPreviousExtensions().size());
-        Assert.assertNull(action.getNamespace());
-        Assert.assertEquals(1, node.getChildren().size());
+        assertEquals(TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID, action.getExtension().getId());
+        assertEquals(Action.REPAIR, action.getAction());
+        assertEquals(0, action.getPreviousExtensions().size());
+        assertNull(action.getNamespace());
+        assertEquals(1, node.getChildren().size());
 
         node = node.getChildren().iterator().next();
         action = node.getAction();
 
-        Assert.assertEquals(TestResources.REMOTE_MISSINGDEPENDENCY_ID, action.getExtension().getId());
-        Assert.assertEquals(Action.INSTALL, action.getAction());
-        Assert.assertEquals(0, action.getPreviousExtensions().size());
-        Assert.assertNull(action.getNamespace());
-        Assert.assertEquals(0, node.getChildren().size());
+        assertEquals(TestResources.REMOTE_MISSINGDEPENDENCY_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertEquals(0, action.getPreviousExtensions().size());
+        assertNull(action.getNamespace());
+        assertEquals(0, node.getChildren().size());
 
         // Actions
         // ////////
 
-        Assert.assertEquals(4, plan.getActions().size());
+        assertEquals(4, plan.getActions().size());
     }
 
     @Test
@@ -179,7 +187,7 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
         // Tree
         // ////////
 
-        Assert.assertEquals(1, plan.getTree().size());
+        assertEquals(1, plan.getTree().size());
 
         Iterator<ExtensionPlanNode> iterator = plan.getTree().iterator();
 
@@ -188,32 +196,32 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
 
         ExtensionPlanAction action = node.getAction();
 
-        Assert.assertEquals(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, action.getExtension().getId());
-        Assert.assertEquals(Action.UPGRADE, action.getAction());
-        Assert.assertEquals("namespace", action.getNamespace());
+        assertEquals(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, action.getExtension().getId());
+        assertEquals(Action.UPGRADE, action.getAction());
+        assertEquals("namespace", action.getNamespace());
 
-        Assert.assertEquals(1, node.getChildren().size());
+        assertEquals(1, node.getChildren().size());
 
         ExtensionPlanNode childNode = node.getChildren().iterator().next();
 
         ExtensionPlanAction childAction = childNode.getAction();
 
-        Assert.assertEquals(TestResources.REMOTE_UPGRADE20_ID, childAction.getExtension().getId());
-        Assert.assertEquals(Action.UPGRADE, childAction.getAction());
-        Assert.assertEquals("namespace", childAction.getNamespace());
+        assertEquals(TestResources.REMOTE_UPGRADE20_ID, childAction.getExtension().getId());
+        assertEquals(Action.UPGRADE, childAction.getAction());
+        assertEquals("namespace", childAction.getNamespace());
 
         // Second node
-        Assert.assertFalse(iterator.hasNext());
+        assertFalse(iterator.hasNext());
 
         // Actions
         // ////////
 
-        Assert.assertEquals(2, plan.getActions().size());
+        assertEquals(2, plan.getActions().size());
 
         Iterator<ExtensionPlanAction> actionIterator = plan.getActions().iterator();
 
-        Assert.assertSame(childAction, actionIterator.next());
-        Assert.assertSame(action, actionIterator.next());
+        assertSame(childAction, actionIterator.next());
+        assertSame(action, actionIterator.next());
     }
 
     @Test
@@ -230,22 +238,22 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
 
         // Tree
 
-        Assert.assertEquals(1, plan.getTree().size());
+        assertEquals(1, plan.getTree().size());
 
         ExtensionPlanNode node = plan.getTree().iterator().next();
 
         ExtensionPlanAction action = node.getAction();
 
-        Assert.assertEquals(TestResources.REMOTE_UPGRADE20_ID, action.getExtension().getId());
-        Assert.assertEquals(Action.UPGRADE, action.getAction());
-        Assert.assertNull(action.getNamespace());
+        assertEquals(TestResources.REMOTE_UPGRADE20_ID, action.getExtension().getId());
+        assertEquals(Action.UPGRADE, action.getAction());
+        assertNull(action.getNamespace());
 
-        Assert.assertEquals(0, node.getChildren().size());
+        assertEquals(0, node.getChildren().size());
 
         // Actions
 
-        Assert.assertEquals(1, plan.getActions().size());
+        assertEquals(1, plan.getActions().size());
 
-        Assert.assertSame(action, plan.getActions().iterator().next());
+        assertSame(action, plan.getActions().iterator().next());
     }
 }

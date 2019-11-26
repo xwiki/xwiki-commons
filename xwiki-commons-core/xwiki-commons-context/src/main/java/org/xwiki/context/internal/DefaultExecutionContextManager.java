@@ -48,10 +48,10 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
     private Execution execution;
 
     /**
-     * Used to initialize the passed {@link ExecutionContext}. Note that we use a Provider so that the loading of
-     * all the Initializers is done lazily when they are required. This allows Extensions to contribute Initializers.
-     * Incidentally it also prevents creating Component Manager cycles since an Initializer could depend on
-     * something required to initialize this class.
+     * Used to initialize the passed {@link ExecutionContext}. Note that we use a Provider so that the loading of all
+     * the Initializers is done lazily when they are required. This allows Extensions to contribute Initializers.
+     * Incidentally it also prevents creating Component Manager cycles since an Initializer could depend on something
+     * required to initialize this class.
      */
     @Inject
     private Provider<List<ExecutionContextInitializer>> initializerProvider;
@@ -101,6 +101,22 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
         }
 
         runInitializers(context);
+    }
+
+    @Override
+    public void pushContext(ExecutionContext context, boolean inherit) throws ExecutionContextException
+    {
+        this.execution.pushContext(context, inherit);
+
+        if (!inherit) {
+            runInitializers(context);
+        }
+    }
+
+    @Override
+    public void popContext()
+    {
+        this.execution.popContext();
     }
 
     /**

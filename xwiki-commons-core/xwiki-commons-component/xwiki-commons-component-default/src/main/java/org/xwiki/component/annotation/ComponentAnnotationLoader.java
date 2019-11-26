@@ -235,15 +235,15 @@ public class ComponentAnnotationLoader
                         "Component [{}] which implements [{}] tried to overwrite component "
                             + "[{}]. However, no action was taken since both components have the same priority "
                             + "level of [{}].",
-                        new Object[] { componentDeclaration.getImplementationClassName(), roleHint,
-                            descriptorMap.get(roleHint).getImplementation().getName(), currentPriority });
+                        componentDeclaration.getImplementationClassName(), roleHint,
+                        descriptorMap.get(roleHint).getImplementation().getName(), currentPriority);
                 }
             } else {
                 getLogger().debug(
                     "Ignored component [{}] since its priority level of [{}] is lower "
                         + "than the currently registered component [{}] which has a priority of [{}]",
-                    new Object[] { componentDeclaration.getImplementationClassName(),
-                        componentDeclaration.getPriority(), currentPriority });
+                    componentDeclaration.getImplementationClassName(), componentDeclaration.getPriority(),
+                    descriptorMap.get(roleHint).getImplementation().getName(), currentPriority);
             }
         } else {
             descriptorMap.put(roleHint, componentDescriptor);

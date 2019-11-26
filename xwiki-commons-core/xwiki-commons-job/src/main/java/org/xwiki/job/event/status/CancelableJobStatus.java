@@ -19,15 +19,12 @@
  */
 package org.xwiki.job.event.status;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * The status of a job that can be canceled.
  * 
  * @version $Id$
  * @since 10.2
  */
-@Unstable
 public interface CancelableJobStatus extends JobStatus
 {
     /**

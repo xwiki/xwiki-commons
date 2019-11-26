@@ -25,13 +25,14 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-legacy-component</artifactId>
-    <version>11.8-SNAPSHOT</version>
+    <version>12.0-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-legacy-component-api</artifactId>
   <name>XWiki Commons - Legacy - Component - API</name>
   <packaging>jar</packaging>
   <description>Legacy module for xwiki-commons-component-api</description>
   <properties>
+    <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
     <!-- The features provided by this module so that it's found when resolving extension -->
     <xwiki.extension.features>org.xwiki.commons:xwiki-commons-component-api</xwiki.extension.features>
   </properties>

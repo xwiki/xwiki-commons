@@ -1,0 +1,5 @@
+<org.xwiki.job.internal.xstream.SafeXStreamTest_-RecursiveObjectThroughArray>
+  <recurse>
+    <org.xwiki.job.internal.xstream.SafeXStreamTest_-RecursiveObjectThroughArray reference="../.."/>
+  </recurse>
+</org.xwiki.job.internal.xstream.SafeXStreamTest_-RecursiveObjectThroughArray>

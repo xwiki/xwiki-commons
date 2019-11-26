@@ -88,19 +88,15 @@ public class FilterStreamConverterJob
         InputFilterStreamFactory inputFactory = this.componentManagerProvider.get()
             .getInstance(InputFilterStreamFactory.class, getRequest().getInputType().serialize());
 
-        InputFilterStream inputFilter = inputFactory.createInputFilterStream(getRequest().getInputProperties());
+        try (InputFilterStream inputFilter = inputFactory.createInputFilterStream(getRequest().getInputProperties())) {
+            OutputFilterStreamFactory outputFactory = this.componentManagerProvider.get()
+                .getInstance(OutputFilterStreamFactory.class, getRequest().getOutputType().serialize());
 
-        OutputFilterStreamFactory outputFactory = this.componentManagerProvider.get()
-            .getInstance(OutputFilterStreamFactory.class, getRequest().getOutputType().serialize());
-
-        OutputFilterStream outputFilter = outputFactory.createOutputFilterStream(getRequest().getOutputProperties());
-
-        // Convert
-
-        inputFilter.read(outputFilter.getFilter());
-
-        inputFilter.close();
-        outputFilter.close();
+            try (OutputFilterStream outputFilter =
+                outputFactory.createOutputFilterStream(getRequest().getOutputProperties())) {
+                inputFilter.read(outputFilter.getFilter());
+            }
+        }
     }
 
     @Override

@@ -19,6 +19,7 @@
  */
 package org.xwiki.extension.repository.internal.local;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -172,8 +173,10 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
             try {
                 localExtension = createExtension(extension);
 
+                File targetFile = localExtension.getFile().getFile();
+
                 InputStream is = extension.getFile().openStream();
-                FileUtils.copyInputStreamToFile(is, localExtension.getFile().getFile());
+                FileUtils.copyInputStreamToFile(is, targetFile);
                 this.storage.saveDescriptor(localExtension);
 
                 // Cache extension

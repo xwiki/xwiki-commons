@@ -26,19 +26,23 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.internal.DefaultExtensionRepositoryManager;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -48,11 +52,14 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id$
  */
+@ComponentTest
 public class DefaultExtensionRepositoryManagerTest
 {
-    @Rule
-    public MockitoComponentMockingRule<ExtensionRepositoryManager> mocker =
-        new MockitoComponentMockingRule<ExtensionRepositoryManager>(DefaultExtensionRepositoryManager.class);
+    @InjectMockComponents
+    private DefaultExtensionRepositoryManager manager;
+
+    @InjectComponentManager
+    private MockitoComponentManager componentManager;
 
     private ExtensionRepository testRepository;
 
@@ -66,10 +73,10 @@ public class DefaultExtensionRepositoryManagerTest
 
     private ExtensionRepositoryFactory factory;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception
     {
-        this.factory = this.mocker.registerMockComponent(ExtensionRepositoryFactory.class, "test");
+        this.factory = this.componentManager.registerMockComponent(ExtensionRepositoryFactory.class, "test");
         this.testRepository = mock(ExtensionRepository.class);
 
         this.descriptor =
@@ -90,83 +97,87 @@ public class DefaultExtensionRepositoryManagerTest
     // Tests
 
     @Test
-    public void addRepository() throws ExtensionRepositoryException, ComponentLookupException
+    public void addRepository() throws ExtensionRepositoryException
     {
-        ExtensionRepository repository = this.mocker.getComponentUnderTest().addRepository(this.descriptor);
+        ExtensionRepository repository = this.manager.addRepository(this.descriptor);
 
-        Assert.assertSame(this.testRepository, repository);
+        assertSame(this.testRepository, repository);
     }
 
-    @Test(expected = ExtensionRepositoryException.class)
-    public void addRepository_unsuported() throws ComponentLookupException, ExtensionRepositoryException
+    @Test
+    public void addRepository_unsuported()
     {
-        this.mocker.getComponentUnderTest().addRepository(this.unsupportedDescriptor);
+        assertThrows(ExtensionRepositoryException.class, () -> {
+            this.manager.addRepository(this.unsupportedDescriptor);
+        });
     }
 
     @Test
     public void getRepository() throws ExtensionRepositoryException, ComponentLookupException
     {
-        this.mocker.getComponentUnderTest().addRepository(this.descriptor);
+        this.manager.addRepository(this.descriptor);
 
-        ExtensionRepository repository = this.mocker.getComponentUnderTest().getRepository("id");
+        ExtensionRepository repository = this.manager.getRepository("id");
 
-        Assert.assertSame(this.testRepository, repository);
+        assertSame(this.testRepository, repository);
     }
 
     @Test
-    public void getRepository_doesnotexists() throws ComponentLookupException
+    public void getRepository_doesnotexists()
     {
-        ExtensionRepository repository = this.mocker.getComponentUnderTest().getRepository("id");
+        ExtensionRepository repository = this.manager.getRepository("id");
 
-        Assert.assertNull(repository);
+        assertNull(repository);
     }
 
     @Test
-    public void removeRepository() throws ExtensionRepositoryException, ComponentLookupException
+    public void removeRepository() throws ExtensionRepositoryException
     {
-        this.mocker.getComponentUnderTest().addRepository(this.descriptor);
+        this.manager.addRepository(this.descriptor);
 
-        this.mocker.getComponentUnderTest().removeRepository(this.descriptor.getId());
+        this.manager.removeRepository(this.descriptor.getId());
 
-        ExtensionRepository repository = this.mocker.getComponentUnderTest().getRepository("id");
+        ExtensionRepository repository = this.manager.getRepository("id");
 
-        Assert.assertNull(repository);
+        assertNull(repository);
     }
 
     @Test
-    public void getRepositories() throws ExtensionRepositoryException, ComponentLookupException
+    public void getRepositories() throws ExtensionRepositoryException
     {
-        this.mocker.getComponentUnderTest().addRepository(this.descriptor);
+        this.manager.addRepository(this.descriptor);
 
-        Collection<ExtensionRepository> repositorties = this.mocker.getComponentUnderTest().getRepositories();
+        Collection<ExtensionRepository> repositorties = this.manager.getRepositories();
 
-        Assert.assertEquals(Arrays.asList(this.testRepository), new ArrayList<ExtensionRepository>(repositorties));
-    }
-
-    @Test(expected = ResolveException.class)
-    public void resolveDependencyWithNoRegisteredRepository() throws ResolveException, ComponentLookupException
-    {
-        this.mocker.getComponentUnderTest().resolve(this.dependency);
+        assertEquals(Arrays.asList(this.testRepository), new ArrayList<ExtensionRepository>(repositorties));
     }
 
     @Test
-    public void resolveDependencyWithEmbeddedRepository() throws ResolveException, ComponentLookupException
+    public void resolveDependencyWithNoRegisteredRepository()
+    {
+        assertThrows(ResolveException.class, () -> {
+            this.manager.resolve(this.dependency);
+        });
+    }
+
+    @Test
+    public void resolveDependencyWithEmbeddedRepository() throws ResolveException
     {
         this.dependency.addRepository(this.testRepository.getDescriptor());
 
-        assertSame(this.testExtension, this.mocker.getComponentUnderTest().resolve(this.dependency));
+        assertSame(this.testExtension, this.manager.resolve(this.dependency));
     }
 
     @Test
-    public void resolveDependencyWithRegisteredRepository() throws ResolveException, ComponentLookupException
+    public void resolveDependencyWithRegisteredRepository() throws ResolveException
     {
-        this.mocker.getComponentUnderTest().addRepository(this.testRepository);
+        this.manager.addRepository(this.testRepository);
 
-        assertSame(this.testExtension, this.mocker.getComponentUnderTest().resolve(this.dependency));
+        assertSame(this.testExtension, this.manager.resolve(this.dependency));
     }
 
     @Test
-    public void repositoryOrder() throws URISyntaxException, ExtensionRepositoryException, ComponentLookupException
+    public void repositoryOrder() throws URISyntaxException, ExtensionRepositoryException
     {
         ExtensionRepositoryDescriptor repDescriptor0 =
             new DefaultExtensionRepositoryDescriptor("id0", "test", new URI("http", "host", "/path", "fragment"));
@@ -189,12 +200,12 @@ public class DefaultExtensionRepositoryManagerTest
         when(this.factory.createRepository(same(repDescriptor3))).thenReturn(rep3);
         when(rep3.getDescriptor()).thenReturn(repDescriptor3);
 
-        this.mocker.getComponentUnderTest().addRepository(repDescriptor3, 3);
-        this.mocker.getComponentUnderTest().addRepository(repDescriptor2, 2);
-        this.mocker.getComponentUnderTest().addRepository(repDescriptor1, 1);
-        this.mocker.getComponentUnderTest().addRepository(repDescriptor0, 0);
+        this.manager.addRepository(repDescriptor3, 3);
+        this.manager.addRepository(repDescriptor2, 2);
+        this.manager.addRepository(repDescriptor1, 1);
+        this.manager.addRepository(repDescriptor0, 0);
 
-        Collection<ExtensionRepository> repositories = this.mocker.getComponentUnderTest().getRepositories();
+        Collection<ExtensionRepository> repositories = this.manager.getRepositories();
         Iterator<ExtensionRepository> it = repositories.iterator();
 
         assertSame(rep0, it.next());

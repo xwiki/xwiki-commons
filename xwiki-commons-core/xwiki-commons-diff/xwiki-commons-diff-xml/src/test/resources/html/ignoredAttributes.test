@@ -8,9 +8,11 @@
 ##--------------------
 ## right
 ##--------------------
-<ul>
-  <li width="23">one</li>
-  <li foo="abc">two</li>
+<ul>  
+    <li width="23">one</li>
+      
+ <li foo="abc">two</li>
+   
 </ul>
 ##--------------------
 ## expected-marker

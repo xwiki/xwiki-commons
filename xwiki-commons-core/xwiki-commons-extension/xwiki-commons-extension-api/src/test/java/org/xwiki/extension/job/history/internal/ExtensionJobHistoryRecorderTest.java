@@ -26,9 +26,8 @@ import java.util.Date;
 
 import javax.inject.Provider;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
@@ -41,11 +40,15 @@ import org.xwiki.job.Job;
 import org.xwiki.job.event.JobFinishedEvent;
 import org.xwiki.job.event.JobStartedEvent;
 import org.xwiki.job.event.status.QuestionAnsweredEvent;
-import org.xwiki.observation.EventListener;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.annotation.BeforeComponent;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.junit5.mockito.MockComponent;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,26 +59,30 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  * @since 7.1RC1
  */
+@ComponentTest
 public class ExtensionJobHistoryRecorderTest
 {
-    @Rule
-    public MockitoComponentMockingRule<EventListener> mocker = new MockitoComponentMockingRule<EventListener>(
-        ExtensionJobHistoryRecorder.class);
+    @InjectMockComponents
+    private ExtensionJobHistoryRecorder recorder;
 
-    @Before
+    @MockComponent
+    private ExtensionJobHistory history;
+
+    @InjectComponentManager
+    private MockitoComponentManager componentManager;
+
+    @BeforeComponent
     public void configure() throws Exception
     {
         Provider<ComponentManager> componentManagerProvider =
-            this.mocker.registerMockComponent(
+            this.componentManager.registerMockComponent(
                 new DefaultParameterizedType(null, Provider.class, ComponentManager.class), "context");
-        when(componentManagerProvider.get()).thenReturn(this.mocker);
+        when(componentManagerProvider.get()).thenReturn(this.componentManager);
     }
 
     @Test
     public void record() throws Exception
     {
-        ExtensionJobHistory history = this.mocker.getInstance(ExtensionJobHistory.class);
-
         ExtensionRequest request = mock(ExtensionRequest.class);
         when(request.getId()).thenReturn(Arrays.asList("job", "id"));
 
@@ -91,18 +98,17 @@ public class ExtensionJobHistoryRecorderTest
 
         ParameterizedType questionRecorderType =
             new DefaultParameterizedType(null, QuestionRecorder.class, String.class);
-        QuestionRecorder<String> questionRecorder = this.mocker.registerMockComponent(questionRecorderType);
+        QuestionRecorder<String> questionRecorder = this.componentManager.registerMockComponent(questionRecorderType);
 
-        EventListener recorder = this.mocker.getComponentUnderTest();
-        recorder.onEvent(new JobStartedEvent(), job, null);
-        recorder.onEvent(new QuestionAnsweredEvent(), job.getStatus(), null);
-        recorder.onEvent(new JobFinishedEvent(), job, null);
+        this.recorder.onEvent(new JobStartedEvent(), job, null);
+        this.recorder.onEvent(new QuestionAnsweredEvent(), job.getStatus(), null);
+        this.recorder.onEvent(new JobFinishedEvent(), job, null);
 
         verify(questionRecorder).record((String) status.getQuestion());
 
         ArgumentCaptor<ExtensionJobHistoryRecord> recordCaptor =
             ArgumentCaptor.forClass(ExtensionJobHistoryRecord.class);
-        verify(history).addRecord(recordCaptor.capture());
+        verify(this.history).addRecord(recordCaptor.capture());
 
         ExtensionJobHistoryRecord record = recordCaptor.getValue();
         assertEquals(job.getType(), record.getJobType());

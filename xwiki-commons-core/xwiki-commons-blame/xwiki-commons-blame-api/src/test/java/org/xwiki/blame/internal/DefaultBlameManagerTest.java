@@ -23,6 +23,7 @@ package org.xwiki.blame.internal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 import org.xwiki.blame.AnnotatedContent;
@@ -32,8 +33,10 @@ import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.jmock.Expectations.same;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ComponentTest
 public class DefaultBlameManagerTest
@@ -82,7 +85,7 @@ public class DefaultBlameManagerTest
             "the lazy dog"));
 
         assertThat(annotatedContent.isEntirelyAnnotated(), is(false));
-        assertThat(annotatedContent.getOldestRevision(), same(rev3));
+        assertThat(annotatedContent.getOldestRevision(), sameInstance(rev3));
 
         annotatedContent = blameManager.blame(annotatedContent,
             rev2, Arrays.asList(
@@ -91,7 +94,7 @@ public class DefaultBlameManagerTest
                 "jumps over the lazy dog"));
 
         assertThat(annotatedContent.isEntirelyAnnotated(), is(false));
-        assertThat(annotatedContent.getOldestRevision(), same(rev2));
+        assertThat(annotatedContent.getOldestRevision(), sameInstance(rev2));
 
         annotatedContent = blameManager.blame(annotatedContent,
             rev1, Arrays.asList(
@@ -100,7 +103,7 @@ public class DefaultBlameManagerTest
                 "jumps over the lazy dog."));
 
         assertThat(annotatedContent.isEntirelyAnnotated(), is(false));
-        assertThat(annotatedContent.getOldestRevision(), same(rev1));
+        assertThat(annotatedContent.getOldestRevision(), sameInstance(rev1));
 
         annotatedContent = blameManager.blame(annotatedContent, null, null);
 
@@ -112,26 +115,33 @@ public class DefaultBlameManagerTest
         assertThat(iter.hasNext(), is(true));
         AnnotatedElement<Revision, String> annotatedElement = iter.next();
         assertThat(annotatedElement.getElement(), is("Jackdaws love my big sphinx of quartz."));
-        assertThat(annotatedElement.getRevision(), same(rev3));
+        assertThat(annotatedElement.getRevision(), sameInstance(rev3));
 
         assertThat(iter.hasNext(), is(true));
         annotatedElement = iter.next();
         assertThat(annotatedElement.getElement(), is("Cozy lummox gives smart squid who asks for job pen."));
-        assertThat(annotatedElement.getRevision(), same(rev1));
+        assertThat(annotatedElement.getRevision(), sameInstance(rev1));
 
         assertThat(iter.hasNext(), is(true));
         annotatedElement = iter.next();
         assertThat(annotatedElement.getElement(), is("The quick red fox"));
-        assertThat(annotatedElement.getRevision(), same(rev2));
+        assertThat(annotatedElement.getRevision(), sameInstance(rev2));
 
         assertThat(iter.hasNext(), is(true));
         annotatedElement = iter.next();
         assertThat(annotatedElement.getElement(), is("jumps over"));
-        assertThat(annotatedElement.getRevision(), same(rev3));
+        assertThat(annotatedElement.getRevision(), sameInstance(rev3));
 
         assertThat(iter.hasNext(), is(true));
         annotatedElement = iter.next();
         assertThat(annotatedElement.getElement(), is("the lazy dog"));
-        assertThat(annotatedElement.getRevision(), same(rev3));
+        assertThat(annotatedElement.getRevision(), sameInstance(rev3));
+
+        assertThat(iter.hasNext(), is(false));
+        Throwable exception = assertThrows(NoSuchElementException.class, () -> {
+            iter.next();
+        });
+        assertEquals("No more annotated content", exception.getMessage());
+
     }
 }

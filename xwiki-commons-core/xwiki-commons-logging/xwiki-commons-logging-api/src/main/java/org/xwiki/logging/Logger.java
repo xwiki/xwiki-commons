@@ -19,6 +19,8 @@
  */
 package org.xwiki.logging;
 
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.xwiki.logging.event.LogEvent;
 
 /**
@@ -29,6 +31,13 @@ import org.xwiki.logging.event.LogEvent;
  */
 public interface Logger extends org.slf4j.Logger
 {
+    /**
+     * Marker used to indicate the log should not be filtered and always be allowed to end up in the main log.
+     * 
+     * @since 11.9RC1
+     */
+    Marker ROOT_MARKER = MarkerFactory.getMarker("root");
+
     /**
      * @param logEvent the log event
      */

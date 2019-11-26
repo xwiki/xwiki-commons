@@ -26,13 +26,20 @@ import java.util.Map;
 
 import javax.inject.Provider;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextInitializer;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Unit tests for {@link ExecutionContext}.
@@ -43,21 +50,13 @@ import org.xwiki.context.ExecutionContextInitializer;
 @SuppressWarnings("unchecked")
 public class DefaultExecutionContextManagerTest
 {
-    /**
-     * Verify we have different objects in the Execution Context after the clone.
-     */
-    @Test
-    public void cloneExecutionContext() throws Exception
+    Execution execution = new DefaultExecution();
+
+    DefaultExecutionContextManager contextManager = new DefaultExecutionContextManager();
+
+    @BeforeEach
+    public void beforeEach()
     {
-        Execution execution = new DefaultExecution();
-        ExecutionContext context = new ExecutionContext();
-        execution.setContext(context);
-
-        Map<Object, Object> xwikicontext = new HashMap<>();
-        context.newProperty("property1").initial(xwikicontext).inherited().declare();
-        context.newProperty("property2").initial(xwikicontext).inherited().makeFinal().cloneValue().declare();
-
-        DefaultExecutionContextManager contextManager = new DefaultExecutionContextManager();
         ReflectionUtils.setFieldValue(contextManager, "execution", execution);
 
         // Set up an Execution Context Initiliazer for the test
@@ -77,14 +76,51 @@ public class DefaultExecutionContextManagerTest
                 return Arrays.asList(initializer);
             }
         };
+
         ReflectionUtils.setFieldValue(contextManager, "initializerProvider", provider);
+    }
+
+    /**
+     * Verify we have different objects in the Execution Context after the clone.
+     */
+    @Test
+    public void cloneExecutionContext() throws Exception
+    {
+        ExecutionContext context = new ExecutionContext();
+        this.execution.setContext(context);
+
+        Map<Object, Object> xwikicontext = new HashMap<>();
+        context.newProperty("property1").initial(xwikicontext).inherited().declare();
+        context.newProperty("property2").initial(xwikicontext).inherited().makeFinal().cloneValue().declare();
 
         ExecutionContext clonedContext = contextManager.clone(context);
 
-        Assert.assertSame(context, execution.getContext());
-        Assert.assertEquals("value", ((List<String>) clonedContext.getProperty("key")).get(0));
-        Assert.assertNotSame(context.getProperty("key"), clonedContext.getProperty("key"));
-        Assert.assertSame(xwikicontext, clonedContext.getProperty("property1"));
-        Assert.assertNotSame(xwikicontext, clonedContext.getProperty("property2"));
+        assertSame(context, execution.getContext());
+        assertEquals("value", ((List<String>) clonedContext.getProperty("key")).get(0));
+        assertNotSame(context.getProperty("key"), clonedContext.getProperty("key"));
+        assertSame(xwikicontext, clonedContext.getProperty("property1"));
+        assertNotSame(xwikicontext, clonedContext.getProperty("property2"));
+    }
+
+    @Test
+    public void pushContext() throws ExecutionContextException
+    {
+        ReflectionUtils.setFieldValue(contextManager, "execution", execution);
+
+        execution.pushContext(new ExecutionContext());
+
+        execution.getContext().newProperty("inherited").inherited().initial("value").declare();
+
+        contextManager.pushContext(new ExecutionContext(), true);
+
+        assertNull(execution.getContext().getProperty("key"));
+
+        assertNotNull(execution.getContext().getProperty("inherited"));
+
+        contextManager.pushContext(new ExecutionContext(), false);
+
+        assertEquals("value", ((List<String>) execution.getContext().getProperty("key")).get(0));
+
+        assertNull(execution.getContext().getProperty("inherited"));
     }
 }

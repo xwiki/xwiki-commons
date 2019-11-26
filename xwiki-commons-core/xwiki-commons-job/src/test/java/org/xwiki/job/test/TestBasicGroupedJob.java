@@ -32,6 +32,7 @@ import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.tail.LogTail;
 
 public class TestBasicGroupedJob implements GroupedJob, JobStatus
 {
@@ -144,6 +145,12 @@ public class TestBasicGroupedJob implements GroupedJob, JobStatus
 
     @Override
     public LogQueue getLog()
+    {
+        return this.logQueue;
+    }
+
+    @Override
+    public LogTail getLogTail()
     {
         return this.logQueue;
     }

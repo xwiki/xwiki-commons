@@ -89,6 +89,37 @@ public class CancelableEventTest
     }
 
     @Test
+    public void matchesEqualsHashcodeWhenNull()
+    {
+        TestCancelableEvent event = new TestCancelableEvent((String) null);
+
+        // matches
+
+        assertTrue(event.matches(event));
+        assertTrue(event.matches(new TestCancelableEvent("name")));
+        assertTrue(event.matches(new TestCancelableEvent(new FixedNameEventFilter("name2"))));
+
+        assertFalse(event.matches(new TestCancelableEvent2()));
+
+        // equals
+
+        assertEquals(event, event);
+        assertEquals(event, new TestCancelableEvent());
+
+        assertFalse(event.equals(new TestCancelableEvent("name")));
+        assertFalse(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name"))));
+        assertFalse(event.equals(new TestCancelableEvent2()));
+
+        // hashcode
+
+        assertEquals(event.hashCode(), new TestCancelableEvent().hashCode());
+        assertFalse(event.equals(new TestCancelableEvent2()));
+
+        assertNotEquals(event.hashCode(), new TestCancelableEvent("name").hashCode());
+        assertNotEquals(event.hashCode(), new TestCancelableEvent(new FixedNameEventFilter("name")).hashCode());
+    }
+
+    @Test
     public void matchesEqualsHashcodeWhenFixedNameEvenFilterConstructor()
     {
         TestCancelableEvent event = new TestCancelableEvent(new FixedNameEventFilter("name"));

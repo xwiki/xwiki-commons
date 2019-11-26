@@ -24,7 +24,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>11.8-SNAPSHOT</version>
+  <version>12.0-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -46,11 +46,11 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>11.8-SNAPSHOT</commons.version>
+    <commons.version>12.0-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
-    <xwiki.compatibility.previous.version>11.7</xwiki.compatibility.previous.version>
+    <xwiki.compatibility.previous.version>11.10</xwiki.compatibility.previous.version>
 
     <!-- Java -->
     <java.version>1.8</java.version>
@@ -61,51 +61,56 @@
     <jakarta.transaction.version>1.3.3</jakarta.transaction.version>
 
     <!-- Jackson -->
-    <jackson.version>2.9.9</jackson.version>
-    <!-- TODO: get rid of this variable as soon as jackson-database get back on track -->
-    <jackson.databind.version>2.9.9.1</jackson.databind.version>
+    <jackson.version>2.10.1</jackson.version>
 
     <!-- ASM -->
-    <asm.version>7.1</asm.version>
+    <asm.version>7.2</asm.version>
 
     <!-- Guava -->
     <guava.version>28.1-jre</guava.version>
 
     <!-- SLF4J -->
-    <slf4j.version>1.7.28</slf4j.version>
+    <slf4j.version>1.7.29</slf4j.version>
 
     <!-- Hamcrest -->
-    <hamcrest.version>1.3</hamcrest.version>
+    <hamcrest.version>2.2</hamcrest.version>
 
     <!-- JUnit -->
     <junit.version>4.12</junit.version>
-    <junit5.version>5.4.2</junit5.version>
-    <junit.platform.version>1.4.2</junit.platform.version>
+    <junit5.version>5.5.2</junit5.version>
+    <junit.platform.version>1.5.2</junit.platform.version>
     <junit.vintage.version>${junit5.version}</junit.vintage.version>
 
     <!-- Pitest -->
+    <!-- TODO: The following modules have had their mutation score threshold lowered because of problems in the
+          versions of pitest/descartes that we use. When changing the version please review each of them and try to
+          put back the previous threshold values (check the comments in their pom.xml too).
+
+          - xwiki-platform-mailsender
+    -->
     <pitest.version>1.4.10</pitest.version>
+    <descartes.version>1.2.6</descartes.version>
 
     <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
          are executed with surefire or failsafe) -->
-    <surefire.version>2.22.2</surefire.version>
+    <surefire.version>3.0.0-M4</surefire.version>
 
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
-    <mockito.version>2.28.2</mockito.version>
+    <mockito.version>3.1.0</mockito.version>
 
     <!-- Byte Buddy -->
-    <bytebuddy.version>1.10.1</bytebuddy.version>
+    <bytebuddy.version>1.10.2</bytebuddy.version>
 
     <!-- AspectJ -->
     <aspectj.version>1.9.4</aspectj.version>
 
     <!-- Clover & Jacoco -->
     <clover.version>4.3.1</clover.version>
-    <jacoco.version>0.8.4</jacoco.version>
+    <jacoco.version>0.8.5</jacoco.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>8.24</checkstyle.version>
+    <checkstyle.version>8.26</checkstyle.version>
 
     <!-- Spoon -->
     <spoon.version>7.5.0</spoon.version>
@@ -114,7 +119,7 @@
     <groovy.version>2.5.8</groovy.version>
 
     <!-- Ivy -->
-    <ivy.version>2.4.0</ivy.version>
+    <ivy.version>2.5.0</ivy.version>
 
     <!-- By default Checkstyle, Backward compatibility check, Enforcer, License plugins, etc are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
@@ -202,7 +207,7 @@
     <maven.resolver.version>${maven.resolver.build.version}</maven.resolver.version>
 
     <!-- Plexus -->
-    <plexus-containers.version>2.0.0</plexus-containers.version>
+    <plexus-containers.version>2.1.0</plexus-containers.version>
 
     <!-- The version of Maven Enforcer plugin -->
     <maven-enforcer.version>1.4.1</maven-enforcer.version>
@@ -214,6 +219,9 @@
 
     <!-- The version of the Maven Remote Resource plugin -->
     <maven-remote-resources-plugin.version>1.6.0</maven-remote-resources-plugin.version>
+
+    <!-- The version of Eclipse Sisu to use-->
+    <sisu.version>0.3.4</sisu.version>
 
     <!-- The recommended version of known extensions to use -->
     <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]</xwiki.extension.recommendedVersions.commons>
@@ -263,7 +271,7 @@
     <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki/xwiki-commons.git</developerConnection>
     <url>https://github.com/xwiki/xwiki-commons/tree/master/</url>
-    <tag>stable-10.11.x</tag>
+    <tag>stable-11.9.x</tag>
   </scm>
   <mailingLists>
     <mailingList>
@@ -351,7 +359,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.5.9</version>
+        <version>4.5.10</version>
         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
         <exclusions>
           <exclusion>
@@ -363,7 +371,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
-        <version>4.5.9</version>
+        <version>4.5.10</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -443,7 +451,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-configuration2</artifactId>
-        <version>2.5</version>
+        <version>2.6</version>
          <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
          <exclusions>
            <exclusion>
@@ -554,7 +562,7 @@
       <dependency>
         <groupId>com.fasterxml.woodstox</groupId>
         <artifactId>woodstox-core</artifactId>
-        <version>6.0.0</version>
+        <version>6.0.2</version>
       </dependency>
       <dependency>
         <groupId>jaxen</groupId>
@@ -593,7 +601,7 @@
       <dependency>
         <groupId>com.ibm.icu</groupId>
         <artifactId>icu4j</artifactId>
-        <version>64.2</version>
+        <version>65.1</version>
       </dependency>
       <!-- Saxon -->
       <dependency>
@@ -625,7 +633,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.8.5</version>
+        <version>2.8.6</version>
       </dependency>
 
       <!-- Jackson -->
@@ -637,7 +645,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>${jackson.databind.version}</version>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
@@ -733,17 +741,17 @@
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-jdk15on</artifactId>
-        <version>1.62</version>
+        <version>1.64</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcpkix-jdk15on</artifactId>
-        <version>1.62</version>
+        <version>1.64</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcmail-jdk15on</artifactId>
-        <version>1.62</version>
+        <version>1.64</version>
       </dependency>
 
       <!-- Various project are using it to scan the classpath -->
@@ -881,7 +889,7 @@
       <dependency>
         <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
-        <version>3.25.0-GA</version>
+        <version>3.26.0-GA</version>
       </dependency>
 
       <!-- Triggered by several Maven related projects (Doxia, Maven, Aether) as transitive dependency. We need
@@ -889,7 +897,7 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
-        <version>3.2.1</version>
+        <version>3.3.0</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -919,7 +927,7 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-archiver</artifactId>
-        <version>4.1.0</version>
+        <version>4.2.1</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -934,7 +942,7 @@
       <dependency>
         <groupId>org.eclipse.sisu</groupId>
         <artifactId>org.eclipse.sisu.plexus</artifactId>
-        <version>0.3.3</version>
+        <version>${sisu.version}</version>
         <exclusions>
           <!-- This dependency is now deprecated and replaced by annotation-api. -->
           <exclusion>
@@ -942,6 +950,11 @@
             <artifactId>jsr250-api</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.sisu</groupId>
+        <artifactId>org.eclipse.sisu.inject</artifactId>
+        <version>${sisu.version}</version>
       </dependency>
 
       <!-- Maven -->
@@ -1132,7 +1145,7 @@
       <dependency>
         <groupId>org.objenesis</groupId>
         <artifactId>objenesis</artifactId>
-        <version>2.6</version>
+        <version>3.1</version>
       </dependency>
       <dependency>
         <groupId>net.bytebuddy</groupId>
@@ -1274,7 +1287,7 @@
       <dependency>
         <groupId>org.jgroups</groupId>
         <artifactId>jgroups</artifactId>
-        <version>4.0.21.Final</version>
+        <version>4.1.8.Final</version>
       </dependency>
       <!-- Used by Solr and Infinispan -->
       <dependency>
@@ -1285,7 +1298,7 @@
       <dependency>
         <groupId>org.checkerframework</groupId>
         <artifactId>checker-qual</artifactId>
-        <version>2.11.0</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.errorprone</groupId>
@@ -1745,7 +1758,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.0.0</version>
+          <version>3.1.0</version>
           <configuration>
             <consoleOutput>true</consoleOutput>
             <!-- We use this to disable checkstyle when the clover profile is executed since there's a
@@ -1824,7 +1837,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.1.0</version>
+          <version>3.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1863,8 +1876,14 @@
             <includes>
               <include>**/*Test.class</include>
             </includes>
-            <!-- TODO: Remove this property once all functional tests have been moved to use the failsafe plugin -->
             <systemProperties>
+              <!-- Used to automatically register JUnit5 Extenson using the service loader mechanism. For example this
+                   will enable our Extension checking that tests don't output content to stdout or stderr -->
+              <property>
+                <name>junit.jupiter.extensions.autodetection.enabled</name>
+                <value>true</value>
+              </property>
+              <!-- TODO: Remove this property once all functional tests have been moved to use the failsafe plugin -->
               <property>
                 <!-- See description of the "xwiki.test.verifyRunningXWikiAtStart" property above. -->
                 <name>xwiki.test.verifyRunningXWikiAtStart</name>
@@ -1914,7 +1933,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.1.2</version>
+          <version>3.2.0</version>
           <configuration>
             <archive>
               <manifest>
@@ -1933,7 +1952,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.1.1</version>
+          <version>3.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1993,7 +2012,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-invoker-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.2.0</version>
+          <version>3.2.1</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -2045,12 +2064,12 @@
           <groupId>org.revapi</groupId>
           <artifactId>revapi-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.11.1</version>
+          <version>0.11.2</version>
           <dependencies>
             <dependency>
               <groupId>org.revapi</groupId>
               <artifactId>revapi-java</artifactId>
-              <version>0.19.1</version>
+              <version>0.20.0</version>
             </dependency>
           </dependencies>
           <executions>
@@ -2088,10 +2107,10 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>${clover.version}</version>
           <configuration>
-            <!-- We want to incude test source roots in order to have more information in the Clover report, such as:
-                 - which tests are covering whichg part of the code
+            <!-- We want to include test source roots in order to have more information in the Clover report, such as:
+                 - which tests are covering which part of the code
                  - how many tests were executed overall
-                 However, for comparison purposes between reportsn, we need to recomute the TPC by excluding all
+                 However, for comparison purposes between reports, we need to recompute the TPC by excluding all
                  tests classes from the computation as otherwise it skews the results. This is what we do in the
                  Jenkins Clover pipeline that we use, see
                  https://github.com/xwiki/xwiki-jenkins-pipeline/blob/master/scripts/clover.groovy
@@ -2109,7 +2128,7 @@
           <groupId>org.sonarsource.scanner.maven</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.6.1.1688</version>
+          <version>3.7.0.1746</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -2127,6 +2146,8 @@
             <excludePackageNames>*.internal, *.internal.*</excludePackageNames>
             <!-- Make sure javadoc has enough memory -->
             <maxmemory>1024m</maxmemory>
+            <!-- Enable all doclint checks by default -->
+            <doclint>all</doclint>
           </configuration>
         </plugin>
         <!-- We don't use site plugin but we org.apache.maven.plugins.enforcer.RequirePluginVersions enforcer rule
@@ -2266,14 +2287,14 @@
         <plugin>
           <groupId>eu.stamp-project</groupId>
           <artifactId>dspot-maven</artifactId>
-          <version>2.1.0</version>
+          <version>2.2.1</version>
           <configuration>
             <clean>true</clean>
             <descartes>true</descartes>
             <verbose>true</verbose>
             <withComment>true</withComment>
             <generateNewTestClass>true</generateNewTestClass>
-            <pathToProperties>./dspot.properties</pathToProperties>
+            <iteration>1</iteration>
             <amplifiers>
               <!-- Uncomment the amplifier to use or pass them on the command line using -Damplifiers=... -->
               <!--amplifier>StringLiteralAmplifier</amplifier-->
@@ -2281,12 +2302,12 @@
               <!--amplifier>CharLiteralAmplifier</amplifier-->
               <!--amplifier>BooleanLiteralAmplifier</amplifier-->
               <!--amplifier>AllLiteralAmplifiers</amplifier-->
-              <!--amplifier>MethodAdd</amplifier-->
-              <!--amplifier>MethodRemove</amplifier-->
-              <!--amplifier>MethodGeneratorAmplifier</amplifier-->
-              <!--amplifier>ReturnValueAmplifier</amplifier-->
               <!--amplifier>ReplacementAmplifier</amplifier-->
-              <!--amplifier>NullifierAmplifier</amplifier-->
+              <amplifier>MethodAdd</amplifier>
+              <amplifier>MethodRemove</amplifier>
+              <amplifier>MethodGeneratorAmplifier</amplifier>
+              <amplifier>ReturnValueAmplifier</amplifier>
+              <amplifier>NullifierAmplifier</amplifier>
             </amplifiers>
           </configuration>
         </plugin>
@@ -2585,12 +2606,12 @@
               <dependency>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-junit5-plugin</artifactId>
-                <version>0.9</version>
+                <version>0.10</version>
               </dependency>
               <dependency>
                 <groupId>eu.stamp-project</groupId>
                 <artifactId>descartes</artifactId>
-                <version>1.2.5</version>
+                <version>${descartes.version}</version>
               </dependency>
             </dependencies>
           </plugin>
@@ -2624,6 +2645,60 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <!-- To be executed when building snapshots. This allows to not have to have a special settings.xml file
+           when building snapshots while not incurring the downside of specifying a maven remote repo for releases,
+           see https://blog.sonatype.com/2009/02/why-putting-repositories-in-your-poms-is-a-bad-idea/ -->
+      <id>snapshot</id>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>xwiki-snapshots</id>
+          <name>XWiki Nexus Plugin Snapshot Repository Proxy</name>
+          <url>http://nexus.xwiki.org/nexus/content/groups/public-snapshots</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>xwiki-releases</id>
+          <name>XWiki Nexus Plugin Releases Repository Proxy</name>
+          <url>http://nexus.xwiki.org/nexus/content/groups/public</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+      <repositories>
+        <repository>
+          <id>xwiki-snapshots</id>
+          <name>XWiki Nexus Snapshot Repository Proxy</name>
+          <url>http://nexus.xwiki.org/nexus/content/groups/public-snapshots</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>xwiki-releases</id>
+          <name>XWiki Nexus Releases Repository Proxy</name>
+          <url>http://nexus.xwiki.org/nexus/content/groups/public</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
     </profile>
   </profiles>
   <distributionManagement>

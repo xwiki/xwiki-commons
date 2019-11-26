@@ -19,6 +19,7 @@
  */
 package org.xwiki.logging;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -117,9 +119,90 @@ public class LogQueueTest
         queue.warn("");
 
         assertFalse(queue.getLogsFrom(LogLevel.TRACE).isEmpty());
+        assertTrue(queue.hasLogLevel(LogLevel.TRACE));
         assertFalse(queue.getLogsFrom(LogLevel.DEBUG).isEmpty());
+        assertTrue(queue.hasLogLevel(LogLevel.DEBUG));
         assertFalse(queue.getLogsFrom(LogLevel.INFO).isEmpty());
+        assertTrue(queue.hasLogLevel(LogLevel.INFO));
         assertFalse(queue.getLogsFrom(LogLevel.WARN).isEmpty());
+        assertTrue(queue.hasLogLevel(LogLevel.WARN));
         assertTrue(queue.getLogsFrom(LogLevel.ERROR).isEmpty());
+        assertFalse(queue.hasLogLevel(LogLevel.ERROR));
+    }
+
+    @Test
+    public void getLogEvent()
+    {
+        LogQueue queue = new LogQueue();
+
+        assertNull(queue.getLogEvent(0));
+        assertNull(queue.getLogEvent(1));
+
+        queue.warn("message");
+
+        assertEquals("message", queue.getLogEvent(0).getMessage());
+        assertNull(queue.getLogEvent(1));
+    }
+
+    @Test
+    public void copyLog()
+    {
+        LogQueue queue1 = new LogQueue();
+        LogQueue queue2 = new LogQueue();
+
+        queue1.log(queue2);
+
+        assertTrue(queue2.isEmpty());
+
+        queue1.warn("message");
+
+        queue1.log(queue2);
+
+        assertEquals(1, queue2.size());
+        assertSame(LogLevel.WARN, queue2.getLogEvent(0).getLevel());
+    }
+
+    @Test
+    public void getLogEvents() throws IOException
+    {
+        LogQueue queue = new LogQueue();
+
+        assertEquals(0, queue.getLogEvents(LogLevel.TRACE).stream().count());
+        assertEquals(0, queue.getLogEvents(LogLevel.DEBUG).stream().count());
+        assertEquals(0, queue.getLogEvents(LogLevel.INFO).stream().count());
+        assertEquals(0, queue.getLogEvents(LogLevel.WARN).stream().count());
+        assertEquals(0, queue.getLogEvents(LogLevel.ERROR).stream().count());
+
+        queue.warn("");
+
+        assertEquals(1, queue.getLogEvents(LogLevel.TRACE).stream().count());
+        assertTrue(queue.hasLogLevel(LogLevel.TRACE));
+        assertEquals(1, queue.getLogEvents(LogLevel.DEBUG).stream().count());
+        assertTrue(queue.hasLogLevel(LogLevel.DEBUG));
+        assertEquals(1, queue.getLogEvents(LogLevel.INFO).stream().count());
+        assertTrue(queue.hasLogLevel(LogLevel.INFO));
+        assertEquals(1, queue.getLogEvents(LogLevel.WARN).stream().count());
+        assertTrue(queue.hasLogLevel(LogLevel.WARN));
+        assertEquals(0, queue.getLogEvents(LogLevel.ERROR).stream().count());
+        assertFalse(queue.hasLogLevel(LogLevel.ERROR));
+
+        assertEquals(1, queue.getLogEvents(null).stream().count());
+    }
+
+    @Test
+    public void getFirstEvent()
+    {
+        LogQueue queue = new LogQueue();
+
+        assertNull(queue.getFirstLogEvent());
+
+        queue.info("info");
+        queue.warn("warn");
+        queue.error("error");
+
+        assertEquals("info", queue.getFirstLogEvent().getMessage());
+        assertEquals("info", queue.getFirstLogEvent(LogLevel.INFO).getMessage());
+        assertEquals("warn", queue.getFirstLogEvent(LogLevel.WARN).getMessage());
+        assertEquals("error", queue.getFirstLogEvent(LogLevel.ERROR).getMessage());
     }
 }

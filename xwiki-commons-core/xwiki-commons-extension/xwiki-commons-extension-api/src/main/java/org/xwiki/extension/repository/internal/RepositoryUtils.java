@@ -423,9 +423,8 @@ public final class RepositoryUtils
                         }
                     }
                 }
-            } catch (SearchException e) {
-                LOGGER.error(
-                    "Failed to search on repository [{}] with query [{}]. " + "Ignore and go to next repository.",
+            } catch (Exception e) {
+                LOGGER.error("Failed to search on repository [{}] with query [{}]. Ignore and go to next repository.",
                     repository.getDescriptor().toString(), query, e);
             }
         }

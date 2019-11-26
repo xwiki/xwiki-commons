@@ -12,8 +12,9 @@
 ##--------------------
 <div class="foo">
   <p>xyz</p>
-</div>
-<div>
+</div>  
+
+  <div>
   <p>456</p>
 </div>
 ##--------------------
@@ -27,5 +28,5 @@
 </div>
 <div>
   <p data-xwiki-html-diff-block="deleted"><span data-xwiki-html-diff="deleted">123</span></p>
-<p data-xwiki-html-diff-block="inserted"><span data-xwiki-html-diff="inserted">456</span></p>
+  <p data-xwiki-html-diff-block="inserted"><span data-xwiki-html-diff="inserted">456</span></p>
 </div>

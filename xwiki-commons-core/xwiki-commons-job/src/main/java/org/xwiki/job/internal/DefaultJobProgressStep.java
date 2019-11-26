@@ -76,8 +76,8 @@ public class DefaultJobProgressStep implements JobProgressStep
         this.source = source;
 
         if (this.parent != null) {
-            this.index = parent.children.size();
-            this.startTime = this.index == 0 ? parent.startTime : System.nanoTime();
+            this.index = this.parent.children.size();
+            this.startTime = this.index == 0 ? this.parent.startTime : System.nanoTime();
         } else {
             this.index = 0;
             this.startTime = System.nanoTime();

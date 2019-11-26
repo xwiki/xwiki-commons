@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.xwiki.logging.Logger;
+
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
@@ -42,7 +44,8 @@ public class ForbiddenThreadsFilter extends Filter<ILoggingEvent>
     @Override
     public FilterReply decide(ILoggingEvent event)
     {
-        if (this.threads.contains(Thread.currentThread())) {
+        // Let events marked with Logger.ROOT_MARKER go trough
+        if (event.getMarker() != Logger.ROOT_MARKER && this.threads.contains(Thread.currentThread())) {
             return FilterReply.DENY;
         }
 

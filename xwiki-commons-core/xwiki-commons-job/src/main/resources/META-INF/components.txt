@@ -5,5 +5,7 @@ org.xwiki.job.internal.DefaultJobManagerConfiguration
 org.xwiki.job.internal.DefaultJobProgressManager
 org.xwiki.job.internal.DefaultJobStatusStorage
 org.xwiki.job.internal.DefaultJobStatusStore
+org.xwiki.job.internal.JobStatusSerializer
 org.xwiki.job.internal.script.safe.JobStatusScriptSafeProvider
+org.xwiki.job.internal.xstream.SerializableXStreamChecker
 org.xwiki.job.script.ProgressScripService

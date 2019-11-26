@@ -22,24 +22,33 @@ package org.xwiki.extension.job.internal;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.TestResources;
 import org.xwiki.extension.handler.ExtensionHandler;
 import org.xwiki.extension.test.AbstractExtensionHandlerTest;
+import org.xwiki.extension.test.MockitoRepositoryUtilsExtension;
 import org.xwiki.extension.test.TestExtensionHandler;
+import org.xwiki.test.junit5.mockito.ComponentTest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ComponentTest
+@ExtendWith(MockitoRepositoryUtilsExtension.class)
 public class InstallJobTest extends AbstractExtensionHandlerTest
 {
     private TestExtensionHandler handler;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception
     {
@@ -47,7 +56,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
 
         // lookup
 
-        this.handler = (TestExtensionHandler) this.mocker.getInstance(ExtensionHandler.class, "test");
+        this.handler = this.componentManager.getInstance(ExtensionHandler.class, "test");
     }
 
     @Test
@@ -58,22 +67,22 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
         // Is extension installed
         InstalledExtension installedExtension = this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID.getId(), null);
-        Assert.assertNotNull(installedExtension);
-        Assert.assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
-        Assert.assertNotNull(this.installedExtensionRepository
+        assertNotNull(installedExtension);
+        assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
+        assertNotNull(this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID.getId(), "namespace"));
-        Assert.assertFalse(installedExtension.isDependency(null));
-        Assert.assertFalse(installedExtension.isDependency("namespace"));
+        assertFalse(installedExtension.isDependency(null));
+        assertFalse(installedExtension.isDependency("namespace"));
 
         // Is dependency installed
         installedExtension =
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(), null);
-        Assert.assertNotNull(installedExtension);
-        Assert.assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
-        Assert.assertNotNull(this.installedExtensionRepository
+        assertNotNull(installedExtension);
+        assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
+        assertNotNull(this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(), "namespace"));
-        Assert.assertTrue(installedExtension.isDependency(null));
-        Assert.assertTrue(installedExtension.isDependency("namespace"));
+        assertTrue(installedExtension.isDependency(null));
+        assertTrue(installedExtension.isDependency("namespace"));
     }
 
     @Test
@@ -84,18 +93,18 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
         // Is extension installed
         InstalledExtension installedExtension = this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID.getId(), "namespace");
-        Assert.assertNotNull(installedExtension);
-        Assert.assertTrue(this.handler.getExtensions().get("namespace").contains(installedExtension));
-        Assert.assertFalse(installedExtension.isDependency(null));
-        Assert.assertFalse(installedExtension.isDependency("namespace"));
+        assertNotNull(installedExtension);
+        assertTrue(this.handler.getExtensions().get("namespace").contains(installedExtension));
+        assertFalse(installedExtension.isDependency(null));
+        assertFalse(installedExtension.isDependency("namespace"));
 
         // Is dependency installed
         installedExtension = this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(), "namespace");
-        Assert.assertNotNull(installedExtension);
-        Assert.assertTrue(this.handler.getExtensions().get("namespace").contains(installedExtension));
-        Assert.assertFalse(installedExtension.isDependency(null));
-        Assert.assertTrue(installedExtension.isDependency("namespace"));
+        assertNotNull(installedExtension);
+        assertTrue(this.handler.getExtensions().get("namespace").contains(installedExtension));
+        assertFalse(installedExtension.isDependency(null));
+        assertTrue(installedExtension.isDependency("namespace"));
     }
 
     @Test
@@ -105,19 +114,19 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
 
         LocalExtension installedExtension = this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID.getId(), "namespace1");
-        Assert.assertNotNull(installedExtension);
-        Assert.assertNotNull(this.installedExtensionRepository
+        assertNotNull(installedExtension);
+        assertNotNull(this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID.getId(), "namespace2"));
-        Assert.assertTrue(this.handler.getExtensions().get("namespace1").contains(installedExtension));
-        Assert.assertTrue(this.handler.getExtensions().get("namespace2").contains(installedExtension));
+        assertTrue(this.handler.getExtensions().get("namespace1").contains(installedExtension));
+        assertTrue(this.handler.getExtensions().get("namespace2").contains(installedExtension));
 
         installedExtension = this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(), "namespace1");
-        Assert.assertNotNull(installedExtension);
-        Assert.assertNotNull(this.installedExtensionRepository
+        assertNotNull(installedExtension);
+        assertNotNull(this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(), "namespace2"));
-        Assert.assertTrue(this.handler.getExtensions().get("namespace1").contains(installedExtension));
-        Assert.assertTrue(this.handler.getExtensions().get("namespace2").contains(installedExtension));
+        assertTrue(this.handler.getExtensions().get("namespace1").contains(installedExtension));
+        assertTrue(this.handler.getExtensions().get("namespace2").contains(installedExtension));
     }
 
     @Test
@@ -133,13 +142,12 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
 
         installedExtension =
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE20_ID.getId(), null);
-        Assert.assertNotNull(installedExtension);
-        Assert.assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
-        Assert.assertNotNull(this.installedExtensionRepository
+        assertNotNull(installedExtension);
+        assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
+        assertNotNull(this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_UPGRADE20_ID.getId(), "namespace"));
 
-        Assert.assertNull(installedExtension =
-            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID));
+        assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID));
 
         // Test downgrade
 
@@ -147,9 +155,9 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
 
         installedExtension =
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID.getId(), null);
-        Assert.assertNotNull(installedExtension);
-        Assert.assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
-        Assert.assertNotNull(this.installedExtensionRepository
+        assertNotNull(installedExtension);
+        assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
+        assertNotNull(this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID.getId(), "namespace"));
     }
 
@@ -167,9 +175,9 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
 
         installedExtension =
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID.getId(), null);
-        Assert.assertNotNull(installedExtension);
-        Assert.assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
-        Assert.assertNotNull(this.installedExtensionRepository
+        assertNotNull(installedExtension);
+        assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
+        assertNotNull(this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID.getId(), "namespace"));
 
         // Test upgrade
@@ -178,9 +186,9 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
 
         installedExtension =
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE20_ID.getId(), null);
-        Assert.assertNotNull(installedExtension);
-        Assert.assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
-        Assert.assertNotNull(this.installedExtensionRepository
+        assertNotNull(installedExtension);
+        assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
+        assertNotNull(this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_UPGRADE20_ID.getId(), "namespace"));
     }
 
@@ -191,9 +199,9 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
             this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID);
 
         // installedextensiondependency 1.0
-        Assert.assertEquals(Arrays.asList(installedextension), this.installedExtensionRepository
+        assertEquals(Arrays.asList(installedextension), this.installedExtensionRepository
             .getBackwardDependencies(TestResources.INSTALLED_DEPENDENCY_ID.getId(), null));
-        Assert.assertEquals(Collections.singletonMap(null, Arrays.asList(installedextension)),
+        assertEquals(Collections.singletonMap(null, Arrays.asList(installedextension)),
             this.installedExtensionRepository.getBackwardDependencies(TestResources.INSTALLED_DEPENDENCY_ID));
 
         ExtensionId installedextensiondependency2 = new ExtensionId("overrideinstalledextensiondependency", "2.0");
@@ -202,12 +210,12 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
         install(installedextensiondependency2);
 
         // installedextensiondependency 2.0
-        Assert.assertEquals(Arrays.asList(installedextension), this.installedExtensionRepository
+        assertEquals(Arrays.asList(installedextension), this.installedExtensionRepository
             .getBackwardDependencies(TestResources.INSTALLED_DEPENDENCY_ID.getId(), null));
         // overrideinstalledextensiondependency
-        Assert.assertEquals(Arrays.asList(installedextension),
+        assertEquals(Arrays.asList(installedextension),
             this.installedExtensionRepository.getBackwardDependencies(installedextensiondependency2.getId(), null));
-        Assert.assertEquals(Collections.singletonMap(null, Arrays.asList(installedextension)),
+        assertEquals(Collections.singletonMap(null, Arrays.asList(installedextension)),
             this.installedExtensionRepository.getBackwardDependencies(installedextensiondependency2));
     }
 
@@ -221,9 +229,9 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
         InstalledExtension installedExtension =
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID);
 
-        Assert.assertNotNull(installedExtension);
-        Assert.assertNotNull(installedExtension.getNamespaces());
-        Assert.assertTrue(this.handler.getExtensions().get("namespace").contains(installedExtension));
+        assertNotNull(installedExtension);
+        assertNotNull(installedExtension.getNamespaces());
+        assertTrue(this.handler.getExtensions().get("namespace").contains(installedExtension));
 
         // Install 1.0 on root
 
@@ -231,11 +239,11 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
 
         installedExtension =
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID.getId(), null);
-        Assert.assertSame(installedExtension, this.installedExtensionRepository
+        assertSame(installedExtension, this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID.getId(), "namespace"));
-        Assert.assertNotNull(installedExtension);
-        Assert.assertNull("Extension is not marked as installed on root", installedExtension.getNamespaces());
-        Assert.assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
+        assertNotNull(installedExtension);
+        assertNull(installedExtension.getNamespaces(), "Extension is not marked as installed on root");
+        assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
     }
 
     @Test
@@ -248,7 +256,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
         InstalledExtension installedExtension1 =
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID);
 
-        Assert.assertNotNull(installedExtension1);
+        assertNotNull(installedExtension1);
 
         // Upgrade 2.0 on root
 
@@ -257,15 +265,14 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
         installedExtension1 =
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID);
 
-        Assert.assertNull(installedExtension1);
+        assertNull(installedExtension1);
 
         LocalExtension installedExtension2 =
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE20_ID.getId(), null);
-        Assert.assertNotNull(installedExtension2);
-        Assert.assertTrue(this.handler.getExtensions().get(null).contains(installedExtension2));
+        assertNotNull(installedExtension2);
+        assertTrue(this.handler.getExtensions().get(null).contains(installedExtension2));
 
-        Assert.assertNull(installedExtension2 =
-            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID));
+        assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID));
     }
 
     @Test
@@ -273,20 +280,20 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     {
         install(TestResources.REMOTE_WITHRDEPENDENCY_ID, "namespace");
 
-        Assert.assertNotNull(this.installedExtensionRepository
+        assertNotNull(this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_WITHRDEPENDENCY_ID.getId(), "namespace"));
-        Assert.assertNotNull(this.installedExtensionRepository
+        assertNotNull(this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(), "namespace"));
 
         install(TestResources.REMOTE_SIMPLE_ID);
 
-        Assert.assertNotNull(this.installedExtensionRepository
+        assertNotNull(this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(), "namespace"));
-        Assert.assertNotNull(
+        assertNotNull(
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(), null));
-        Assert.assertNotNull(this.installedExtensionRepository
+        assertNotNull(this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_WITHRDEPENDENCY_ID.getId(), "namespace"));
-        Assert.assertNull(this.installedExtensionRepository
+        assertNull(this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_WITHRDEPENDENCY_ID.getId(), null));
     }
 
@@ -298,24 +305,24 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
         // Upgrade dependency
         install(TestResources.REMOTE_OTHERUPGRADEWITHDEPENDENCY20_ID, "namespace");
 
-        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID));
-        Assert.assertNull(
+        assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID));
+        assertNull(
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID));
 
         // Install extension on root
         install(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID);
 
-        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID));
-        Assert.assertNull(
+        assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID));
+        assertNull(
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID));
 
-        Assert.assertNotNull(this.installedExtensionRepository
+        assertNotNull(this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_UPGRADE20_ID.getId(), "namespace"));
-        Assert.assertNotNull(
+        assertNotNull(
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE20_ID.getId(), null));
-        Assert.assertNotNull(this.installedExtensionRepository
+        assertNotNull(this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID.getId(), "namespace"));
-        Assert.assertNotNull(this.installedExtensionRepository
+        assertNotNull(this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID.getId(), null));
     }
 

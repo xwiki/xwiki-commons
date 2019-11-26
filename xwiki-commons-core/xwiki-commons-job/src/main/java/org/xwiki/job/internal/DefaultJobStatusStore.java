@@ -28,6 +28,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -46,11 +49,15 @@ import org.xwiki.cache.config.LRUCacheConfiguration;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.job.AbstractJobStatus;
 import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.JobStatusStore;
 import org.xwiki.job.annotation.Serializable;
 import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.logging.LogQueue;
+import org.xwiki.logging.LoggerManager;
+import org.xwiki.logging.tail.LoggerTail;
 
 /**
  * Default implementation of {@link JobStatusStorage}.
@@ -92,6 +99,8 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
      */
     private static final String FOLDER_NULL = "&null";
 
+    private static final String STATUS_LOG_PREFIX = "log";
+
     private static final JobStatus NOSTATUS = new DefaultJobStatus<>(null, null, null, null, null);
 
     /**
@@ -103,13 +112,23 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     @Inject
     private CacheManager cacheManager;
 
+    @Inject
+    private LoggerManager loggerManager;
+
+    @Inject
+    private JobStatusSerializer serializer;
+
     /**
      * The logger to log.
      */
     @Inject
     private Logger logger;
 
-    private JobStatusSerializer serializer;
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+    private final ReadLock readLock = lock.readLock();
+
+    private final WriteLock writeLock = lock.writeLock();
 
     private ExecutorService executorService;
 
@@ -138,8 +157,6 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     public void initialize() throws InitializationException
     {
         try {
-            this.serializer = new JobStatusSerializer();
-
             // Check if the store need to be upgraded
             File folder = this.configuration.getStorage();
             File file = new File(folder, INDEX_FILE);
@@ -262,9 +279,34 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
      */
     private JobStatus loadStatus(File folder)
     {
-        File statusFile = new File(folder, FILENAME_STATUS);
-        if (statusFile.exists()) {
-            return loadJobStatus(statusFile);
+        this.readLock.lock();
+
+        try {
+            File statusFile = new File(folder, FILENAME_STATUS);
+            if (statusFile.exists()) {
+                JobStatus status = loadJobStatus(statusFile);
+
+                // Check if there is a separated log available
+                for (File child : folder.listFiles()) {
+                    if (!child.isDirectory() && child.getName().startsWith(STATUS_LOG_PREFIX)) {
+                        try {
+                            LoggerTail loggerTail = createLoggerTail(new File(folder, STATUS_LOG_PREFIX), true);
+
+                            if (status instanceof AbstractJobStatus) {
+                                ((AbstractJobStatus) status).setLoggerTail(loggerTail);
+                            }
+                        } catch (Exception e) {
+                            this.logger.error("Failed to load the job status log in [{}]", folder, e);
+                        }
+
+                        break;
+                    }
+                }
+
+                return status;
+            }
+        } finally {
+            this.readLock.unlock();
         }
 
         return null;
@@ -299,6 +341,11 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         return folder;
     }
 
+    private File getJobLogBaseFile(List<String> id)
+    {
+        return new File(getJobFolder(id), STATUS_LOG_PREFIX);
+    }
+
     /**
      * @param status the job status to save
      * @throws IOException when falling to store the provided status
@@ -306,12 +353,18 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     private void saveJobStatus(JobStatus status)
     {
         try {
-            File statusFile = getJobFolder(status.getRequest().getId());
-            statusFile = new File(statusFile, FILENAME_STATUS);
+            this.writeLock.lock();
 
-            this.logger.debug("Serializing status [{}] in [{}]", status.getRequest().getId(), statusFile);
+            try {
+                File statusFile = getJobFolder(status.getRequest().getId());
+                statusFile = new File(statusFile, FILENAME_STATUS);
 
-            this.serializer.write(status, statusFile);
+                this.logger.debug("Serializing status [{}] in [{}]", status.getRequest().getId(), statusFile);
+
+                this.serializer.write(status, statusFile);
+            } finally {
+                this.writeLock.unlock();
+            }
         } catch (Exception e) {
             this.logger.warn("Failed to save job status [{}]", status, e);
         }
@@ -401,16 +454,49 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     @Override
     public void remove(List<String> id)
     {
-        File jobFolder = getJobFolder(id);
+        this.writeLock.lock();
 
-        if (jobFolder.exists()) {
+        try {
+            File jobFolder = getJobFolder(id);
+
+            if (jobFolder.exists()) {
+                try {
+                    FileUtils.deleteDirectory(jobFolder);
+                } catch (IOException e) {
+                    this.logger.warn("Failed to delete job folder [{}]", jobFolder, e);
+                }
+            }
+
+            this.cache.remove(toUniqueString(id));
+        } finally {
+            this.writeLock.unlock();
+        }
+    }
+
+    @Override
+    public LoggerTail createLoggerTail(List<String> jobId, boolean readonly)
+    {
+        if (jobId != null) {
             try {
-                FileUtils.deleteDirectory(jobFolder);
-            } catch (IOException e) {
-                this.logger.warn("Failed to delete job folder [{}]", jobFolder, e);
+                return createLoggerTail(getJobLogBaseFile(jobId), readonly);
+            } catch (Exception e) {
+                this.logger.error("Failed to create a logger tail for job [{}]", jobId, e);
             }
         }
 
-        this.cache.remove(toUniqueString(id));
+        return new LogQueue();
+    }
+
+    private LoggerTail createLoggerTail(File logBaseFile, boolean readonly) throws IOException
+    {
+        return this.loggerManager.createLoggerTail(logBaseFile.toPath(), readonly);
+    }
+
+    /**
+     * Remove all elements from the cache.
+     */
+    public void flushCache()
+    {
+        this.cache.removeAll();
     }
 }

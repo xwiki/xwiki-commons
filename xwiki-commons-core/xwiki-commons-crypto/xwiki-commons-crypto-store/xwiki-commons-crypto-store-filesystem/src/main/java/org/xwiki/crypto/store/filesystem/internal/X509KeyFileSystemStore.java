@@ -83,8 +83,8 @@ public class X509KeyFileSystemStore extends AbstractX509FileSystemStore implemen
         try {
             key = this.encryptor.encrypt(password, keyPair.getPrivateKey());
         } catch (Exception e) {
-            throw new KeyStoreException(String.format("Error while encrypting private key to store a key pair in [%s]",
-                store), e);
+            throw new KeyStoreException(
+                String.format("Error while encrypting private key to store a key pair in [%s]", store), e);
         }
 
         storeKeyPair(store, getPublicKey(keyPair.getCertificate()), key, ENCRYPTED_PRIVATE_KEY);
@@ -108,7 +108,9 @@ public class X509KeyFileSystemStore extends AbstractX509FileSystemStore implemen
                 File certfile = new File(file, filename + CERTIFICATE_FILE_EXTENSION);
 
                 store(new BufferedWriter(new FileWriter(keyfile)), type, privateKey);
-                store(new BufferedWriter(new FileWriter(certfile)), CERTIFICATE, certificate.getEncoded());
+
+                byte[] encodedCertificate = certificate.getEncoded();
+                store(new BufferedWriter(new FileWriter(certfile)), CERTIFICATE, encodedCertificate);
             } else {
                 if (!file.exists()) {
                     if (!file.createNewFile()) {
@@ -137,16 +139,14 @@ public class X509KeyFileSystemStore extends AbstractX509FileSystemStore implemen
         File file = getStoreFile(store);
 
         if (isMulti(store)) {
-            throw new KeyStoreException(String.format("Unexpected store reference, [%s] should be single key store.",
-                file));
+            throw new KeyStoreException(
+                String.format("Unexpected store reference, [%s] should be single key store.", file));
         }
 
         X509CertifiedPublicKey cert = null;
         PrivateKeyParameters key = null;
 
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(file));
-
+        try (BufferedReader in = new BufferedReader(new FileReader(file))) {
             Object obj;
             while ((obj = readObject(in, password)) != null) {
                 if (obj instanceof X509CertifiedPublicKey) {
@@ -183,19 +183,20 @@ public class X509KeyFileSystemStore extends AbstractX509FileSystemStore implemen
         X509CertifiedPublicKey certificate = getPublicKey(publicKey);
 
         if (!isMulti(store)) {
-            throw new KeyStoreException(String.format("Unexpected store reference, [%s] should be multi key store.",
-                file));
+            throw new KeyStoreException(
+                String.format("Unexpected store reference, [%s] should be multi key store.", file));
         }
 
         try {
             File keyfile = new File(file, getCertIdentifier(certificate) + KEY_FILE_EXTENSION);
 
             if (keyfile.exists()) {
-                BufferedReader in = new BufferedReader(new FileReader(keyfile));
-                Object obj;
-                while ((obj = readObject(in, password)) != null) {
-                    if (obj instanceof PrivateKeyParameters) {
-                        return new CertifiedKeyPair(((PrivateKeyParameters) obj), certificate);
+                try (BufferedReader in = new BufferedReader(new FileReader(keyfile))) {
+                    Object obj;
+                    while ((obj = readObject(in, password)) != null) {
+                        if (obj instanceof PrivateKeyParameters) {
+                            return new CertifiedKeyPair(((PrivateKeyParameters) obj), certificate);
+                        }
                     }
                 }
             }

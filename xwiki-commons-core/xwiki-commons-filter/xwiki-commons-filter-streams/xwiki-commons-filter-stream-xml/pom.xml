@@ -25,14 +25,13 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-filter-streams</artifactId>
-    <version>11.8-SNAPSHOT</version>
+    <version>12.0-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-filter-stream-xml</artifactId>
   <name>XWiki Commons - Filter - Stream - Generic XML</name>
   <description>Filter stream extension to read and write any filter event as XML</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.70</xwiki.jacoco.instructionRatio>
-
+    <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Filter XML module</xwiki.extension.name>
   </properties>

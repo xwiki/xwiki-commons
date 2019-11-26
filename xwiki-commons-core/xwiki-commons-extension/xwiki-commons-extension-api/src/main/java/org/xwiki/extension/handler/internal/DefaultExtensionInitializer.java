@@ -197,8 +197,8 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
             if (dependencyExtension != null) {
                 if (dependencyExtension == installedExtension) {
                     throw new ExtensionException(String.format(
-                        "Extension [] has itself as dependency ([])."
-                            + " It usually mean an extension is installed along with one of it's features.",
+                        "Extension [%s] has itself as a dependency ([%s]). "
+                            + "It usually means an extension is installed along with one of its features.",
                         installedExtension, dependency));
                 }
 
@@ -209,12 +209,13 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
                         this.logger.warn("Failed to initialize dependency [{}]: {}", dependency,
                             ExceptionUtils.getRootCauseMessage(e));
                     } else {
-                        throw new ExtensionException("Failed to initialize dependency [" + dependency + "]", e);
+                        throw new ExtensionException(String.format(
+                            "Failed to initialize dependency [%s]", dependency), e);
                     }
                 }
             } else if (!dependency.isOptional()) {
-                throw new ExtensionException("Mandatory dependency [" + dependency + "] of extension ["
-                    + installedExtension.getId() + "] is not installed");
+                throw new ExtensionException(String.format("Mandatory dependency [%s] of extension [%s] "
+                    + "is not installed", dependency, installedExtension.getId()));
             }
         }
     }

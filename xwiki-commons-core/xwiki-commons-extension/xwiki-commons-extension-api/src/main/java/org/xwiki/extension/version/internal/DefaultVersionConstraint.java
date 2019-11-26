@@ -303,7 +303,7 @@ public class DefaultVersionConstraint implements VersionConstraint
      * Create a new {@link DefaultVersionConstraint} instance which is the combination of the provided version ranges
      * and this version ranges.
      *
-     * @param otherRanges the version ranges to merge with this version ranges
+     * @param otherConstraint the version ranges to merge with this version ranges
      * @return the new {@link DefaultVersionConstraint}
      * @throws IncompatibleVersionConstraintException the provided version and version ranges are not compatible with
      *             this version constraint

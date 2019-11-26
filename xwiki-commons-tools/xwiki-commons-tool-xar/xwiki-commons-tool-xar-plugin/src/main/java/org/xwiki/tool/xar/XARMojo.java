@@ -246,9 +246,12 @@ public class XARMojo extends AbstractXARMojo
 
                 // Write the modified file to disk
                 XMLWriter writer = new XMLWriter(new FileOutputStream(file));
-                writer.write(document);
-                writer.flush();
-                writer.close();
+                try {
+                    writer.write(document);
+                    writer.flush();
+                } finally {
+                    writer.close();
+                }
             } else {
                 getLog().warn("Can't find any node matching the xpath [" + transformation.getXpath() + "]");
             }
