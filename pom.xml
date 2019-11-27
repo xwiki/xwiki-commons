@@ -142,6 +142,7 @@
     <xwiki.enforcer.enforce-jboss-marshalling-osgi.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jboss-marshalling-osgi.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
     <xwiki.enforcer.enforce-velocity-engine-core.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-velocity-engine-core.skip>
+    <xwiki.enforcer.enforce-asm.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-asm.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
     <xwiki.enforcer.enforce-java.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-java.skip>
     <xwiki.license.skip>false</xwiki.license.skip>
@@ -1231,6 +1232,10 @@
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <!-- Generic java annotations. These superseed jsr250-api, so we need to make
@@ -1648,6 +1653,27 @@
                   <excludes>
                     <exclude>org.apache.velocity:velocity</exclude>
                     <exclude>org.apache.velocity:velocity-tools</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using the right asm artifact -->
+          <execution>
+            <id>enforce-asm</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-asm.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>false</searchTransitive>
+                  <message>
+                    Wrong ASM dependency used, the current one is org.ow2.asm:asm
+                  </message>
+                  <excludes>
+                    <exclude>asm:asm</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
