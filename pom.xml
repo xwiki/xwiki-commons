@@ -96,7 +96,7 @@
     <surefire.version>3.0.0-M4</surefire.version>
 
     <!-- Mock libraries -->
-    <jmock.version>2.6.0</jmock.version>
+    <jmock.version>2.12.0</jmock.version>
     <mockito.version>3.1.0</mockito.version>
 
     <!-- Byte Buddy -->
@@ -143,6 +143,7 @@
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
     <xwiki.enforcer.enforce-velocity-engine-core.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-velocity-engine-core.skip>
     <xwiki.enforcer.enforce-asm.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-asm.skip>
+    <xwiki.enforcer.enforce-cglib.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-cglib.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
     <xwiki.enforcer.enforce-java.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-java.skip>
     <xwiki.license.skip>false</xwiki.license.skip>
@@ -1277,6 +1278,12 @@
         <artifactId>asm-util</artifactId>
         <version>${asm.version}</version>
       </dependency>
+      <!-- CGLib -->
+      <dependency>
+        <groupId>cglib</groupId>
+        <artifactId>cglib</artifactId>
+        <version>3.3.0</version>
+      </dependency>
       <!-- ANTLR -->
       <dependency>
         <groupId>org.antlr</groupId>
@@ -1674,6 +1681,27 @@
                   </message>
                   <excludes>
                     <exclude>asm:asm</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using the right cglib artifact -->
+          <execution>
+            <id>enforce-cglib</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-cglib.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    We use cglib and not cglib-nodep
+                  </message>
+                  <excludes>
+                    <exclude>cglib:cglib-nodep</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
