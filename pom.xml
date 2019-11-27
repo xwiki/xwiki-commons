@@ -1596,7 +1596,7 @@
               <skip>${xwiki.enforcer.enforce-bouncycastle-ids.skip}</skip>
               <rules>
                 <bannedDependencies>
-                  <searchTransitive>false</searchTransitive>
+                  <searchTransitive>true</searchTransitive>
                   <message>
                     Wrong Bouncy Castle dependency used
                   </message>
@@ -1646,7 +1646,7 @@
               <skip>${xwiki.enforcer.enforce-velocity-engine-core.skip}</skip>
               <rules>
                 <bannedDependencies>
-                  <searchTransitive>false</searchTransitive>
+                  <searchTransitive>true</searchTransitive>
                   <message>
                     Wrong Velocity dependency used
                   </message>
@@ -1668,7 +1668,7 @@
               <skip>${xwiki.enforcer.enforce-asm.skip}</skip>
               <rules>
                 <bannedDependencies>
-                  <searchTransitive>false</searchTransitive>
+                  <searchTransitive>true</searchTransitive>
                   <message>
                     Wrong ASM dependency used, the current one is org.ow2.asm:asm
                   </message>
