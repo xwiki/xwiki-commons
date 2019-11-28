@@ -36,6 +36,9 @@
   </description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
+
+    <!-- The Remote Resource plugin still use the old Velocity but it won't cause any conflict -->
+    <xwiki.enforcer.enforce-velocity-engine-core.skip>true</xwiki.enforcer.enforce-velocity-engine-core.skip>
   </properties>
   <dependencies>
     <!-- Extend Maven Remove Resource Plugin -->
