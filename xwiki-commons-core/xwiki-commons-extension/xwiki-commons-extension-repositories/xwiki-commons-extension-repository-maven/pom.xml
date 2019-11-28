@@ -97,8 +97,8 @@
     <!-- Explicitly depending on it since we've excluded the deprecated package above and we want
          the other dependencies that were working with jsr250-api to still work properly.  -->
     <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>javax.annotation-api</artifactId>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotations-api</artifactId>
     </dependency>
 
     <!-- Test dependencies -->
