@@ -1110,6 +1110,12 @@
         <groupId>org.jmock</groupId>
         <artifactId>jmock</artifactId>
         <version>${jmock.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jmock</groupId>
