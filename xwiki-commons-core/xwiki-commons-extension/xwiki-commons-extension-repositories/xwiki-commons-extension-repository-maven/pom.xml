@@ -98,7 +98,7 @@
          the other dependencies that were working with jsr250-api to still work properly.  -->
     <dependency>
       <groupId>jakarta.annotation</groupId>
-      <artifactId>jakarta.annotations-api</artifactId>
+      <artifactId>jakarta.annotation-api</artifactId>
     </dependency>
 
     <!-- Test dependencies -->

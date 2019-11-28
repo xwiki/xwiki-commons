@@ -136,7 +136,7 @@
     <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
     <xwiki.enforcer.enforce-jakarta.activation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.activation.skip>
     <xwiki.enforcer.enforce-jakarta.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.mail.skip>
-    <xwiki.enforcer.enforce-jakarta.annotations-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.annotations-api.skip>
+    <xwiki.enforcer.enforce-jakarta.annotation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.annotation-api.skip>
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
     <xwiki.enforcer.enforce-jsr305.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jsr305.skip>
     <xwiki.enforcer.enforce-jta.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jta.skip>
@@ -1254,7 +1254,7 @@
       <!-- Jakarta Annotations -->
       <dependency>
         <groupId>jakarta.annotation</groupId>
-        <artifactId>jakarta.annotations-api</artifactId>
+        <artifactId>jakarta.annotation-api</artifactId>
         <version>1.3.5</version>
       </dependency>
       <!-- JSR 305 -->
@@ -1606,17 +1606,17 @@
           </execution>
           <!-- Check that we're using latest version of Jakarta Mail -->
           <execution>
-            <id>enforce-jakarta.annotations-api</id>
+            <id>enforce-jakarta.annotation-api</id>
             <goals>
               <goal>enforce</goal>
             </goals>
             <configuration>
-              <skip>${xwiki.enforcer.enforce-jakarta.annotations-api.skip}</skip>
+              <skip>${xwiki.enforcer.enforce-jakarta.annotation-api.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
                   <message>
-                    Javax Annotations artifact id changed, the current one is jakarta.annotation:jakarta.annotations-api
+                    Javax Annotations artifact id changed, the current one is jakarta.annotation:jakarta.annotation-api
                   </message>
                   <excludes>
                     <exclude>javax.annotation:jsr250-api</exclude>
