@@ -2855,4 +2855,16 @@
     </plugin>
   </plugins>
   </reporting>
+  <!-- TODO: Remove when Velocity 2.2 final is available on Maven central -->
+  <repositories>
+    <repository>
+      <id>xwiki-external</id>
+      <name>XWiki External Repository</name>
+      <layout>default</layout>
+      <url>http://maven.xwiki.org/externals/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 </project>
