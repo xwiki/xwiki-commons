@@ -48,13 +48,13 @@ public class ArrayListConverterTest
     public void testConvertToString()
     {
         assertEquals("1, 2, 3",
-                this.converterManager.convert(String.class, new ArrayList<>(Arrays.asList("1", "2", "3"))));
+            this.converterManager.convert(String.class, new ArrayList<>(Arrays.asList("1", "2", "3"))));
     }
 
     @Test
     public void testConvertFromArrayList()
     {
-        ArrayList<String> expect = new ArrayList<String>(Arrays.asList("1", "2", "3"));
+        ArrayList<String> expect = new ArrayList<>(Arrays.asList("1", "2", "3"));
 
         assertSame(expect, this.converterManager.convert(ArrayList.class, expect));
     }
@@ -63,6 +63,6 @@ public class ArrayListConverterTest
     public void testConvertFromBoolean()
     {
         assertEquals(Collections.singletonList("false"),
-                this.converterManager.convert(ArrayList.class, false));
+            this.converterManager.convert(ArrayList.class, false));
     }
 }

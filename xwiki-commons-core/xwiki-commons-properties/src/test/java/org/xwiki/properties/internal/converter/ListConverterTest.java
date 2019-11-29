@@ -22,54 +22,59 @@ package org.xwiki.properties.internal.converter;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.properties.ConverterManager;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
 import com.google.common.reflect.TypeToken;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Validate {@link ListConverter} component.
  *
  * @version $Id$
  */
-public class ListConverterTest extends AbstractComponentTestCase
+@ComponentTest
+@AllComponents
+public class ListConverterTest
 {
+    @InjectComponentManager
+    MockitoComponentManager componentManager;
+
     private ConverterManager converterManager;
 
     public List<Integer> listField1;
 
     public List<List<Integer>> listField2;
 
-    @Before
-    @Override
-    public void setUp() throws Exception
+    @BeforeEach
+    void setup() throws Exception
     {
-        super.setUp();
-
-        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
+        this.converterManager = this.componentManager.getInstance(ConverterManager.class);
     }
 
     @Test
-    public void testConvertFromString() throws SecurityException, NoSuchFieldException
+    void convertFromString() throws Exception
     {
-        Assert.assertEquals(Arrays.asList("1", "2", "3"), this.converterManager.convert(List.class, "1, 2, 3"));
+        assertEquals(Arrays.asList("1", "2", "3"), this.converterManager.convert(List.class, "1, 2, 3"));
 
-        Assert.assertEquals(Arrays.asList("1", "\n", "2", "\n", "3"),
+        assertEquals(Arrays.asList("1", "\n", "2", "\n", "3"),
             this.converterManager.convert(List.class, "1,\n 2,\n 3"));
 
-        Assert.assertEquals(Arrays.asList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3)),
+        assertEquals(Arrays.asList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3)),
             this.converterManager.convert(ListConverterTest.class.getField("listField1").getGenericType(), "1, 2, 3"));
 
-        Assert.assertEquals(Arrays.asList(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6)), this.converterManager
+        assertEquals(Arrays.asList(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6)), this.converterManager
             .convert(ListConverterTest.class.getField("listField2").getGenericType(), "'\\'1\\', 2, 3', \"4, 5, 6\""));
 
-        Assert.assertEquals(Arrays.asList("1:2"), this.converterManager.convert(List.class, "1:2"));
+        assertEquals(Arrays.asList("1:2"), this.converterManager.convert(List.class, "1:2"));
 
         assertEquals(Arrays.asList(1, 2, 3),
             this.converterManager.convert(new DefaultParameterizedType(null, List.class, Integer.class), "1, 2, 3"));
@@ -84,24 +89,24 @@ public class ListConverterTest extends AbstractComponentTestCase
     }
 
     @Test
-    public void testConvertFromIterable() throws SecurityException
+    void convertFromIterable()
     {
         assertEquals(Arrays.asList(1, 2, 3), this.converterManager
             .convert(new DefaultParameterizedType(null, List.class, Integer.class), Arrays.asList("1", "2", "3")));
     }
 
     @Test
-    public void testConvertFromArray() throws SecurityException
+    void convertFromArray()
     {
         assertEquals(Arrays.asList(1, 2, 3), this.converterManager
-            .convert(new DefaultParameterizedType(null, List.class, Integer.class), new String[] { "1", "2", "3" }));
+            .convert(new DefaultParameterizedType(null, List.class, Integer.class), new String[]{ "1", "2", "3" }));
     }
 
     @Test
-    public void testConvertFromList()
+    void convertFromList()
     {
         List<String> expect = Arrays.asList("1", "2", "3");
 
-        Assert.assertSame(expect, this.converterManager.convert(List.class, expect));
+        assertSame(expect, this.converterManager.convert(List.class, expect));
     }
 }

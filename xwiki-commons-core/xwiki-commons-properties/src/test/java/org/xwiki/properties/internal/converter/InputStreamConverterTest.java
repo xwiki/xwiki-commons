@@ -24,40 +24,47 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.properties.ConverterManager;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.mockito.MockitoComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link InputStreamConverter} component.
  *
  * @version $Id$
  */
-public class InputStreamConverterTest extends AbstractComponentTestCase
+@ComponentTest
+@AllComponents
+public class InputStreamConverterTest
 {
+    @InjectComponentManager
+    MockitoComponentManager componentManager;
+
     private ConverterManager converterManager;
 
-    @Before
-    @Override
-    public void setUp() throws Exception
+    @BeforeEach
+    void setup() throws Exception
     {
-        super.setUp();
-
-        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
+        this.converterManager = this.componentManager.getInstance(ConverterManager.class);
     }
 
     @Test
-    public void testFromString() throws IOException
+    void testFromString() throws IOException
     {
-        Assert.assertTrue(Arrays.equals(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 },
+        assertTrue(Arrays.equals(new byte[]{ 1, 2, 3, 4, 5, 6, 7, 8, 9 },
             IOUtils.toByteArray(this.converterManager.<InputStream>convert(InputStream.class, "1,2,3,4,5,6,7,8,9"))));
     }
 
     @Test
-    public void testConvertNull()
+    void convertNull()
     {
-        Assert.assertNull(this.converterManager.convert(InputStream.class, null));
+        assertNull(this.converterManager.convert(InputStream.class, null));
     }
 }

@@ -21,39 +21,45 @@ package org.xwiki.properties.internal.converter;
 
 import java.util.Locale;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.properties.ConverterManager;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.mockito.MockitoComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Validate {@link LocaleConverter} component.
  *
  * @version $Id$
  */
-public class LocaleConverterTest extends AbstractComponentTestCase
+@ComponentTest
+@AllComponents
+public class LocaleConverterTest
 {
+    @InjectComponentManager
+    MockitoComponentManager componentManager;
+
     private ConverterManager converterManager;
 
-    @Before
-    @Override
-    public void setUp() throws Exception
+    @BeforeEach
+    void setup() throws Exception
     {
-        super.setUp();
-
-        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
+        this.converterManager = this.componentManager.getInstance(ConverterManager.class);
     }
 
     @Test
-    public void testConvertToLocale()
+    void convertToLocale()
     {
-        Assert.assertEquals(Locale.US, this.converterManager.convert(Locale.class, Locale.US.toString()));
+        assertEquals(Locale.US, this.converterManager.convert(Locale.class, Locale.US.toString()));
     }
 
     @Test
-    public void testConvertToString()
+    void convertToString()
     {
-        Assert.assertEquals(Locale.US.toString(), this.converterManager.convert(String.class, Locale.US));
+        assertEquals(Locale.US.toString(), this.converterManager.convert(String.class, Locale.US));
     }
 }

@@ -19,20 +19,31 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.converter.ConversionException;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.mockito.MockitoComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Validate {@link EnumConverter} component.
  *
  * @version $Id$
  */
-public class EnumConverterTest extends AbstractComponentTestCase
+@ComponentTest
+@AllComponents
+public class EnumConverterTest
 {
+    @InjectComponentManager
+    MockitoComponentManager componentManager;
+
     private ConverterManager converterManager;
 
     public enum EnumTest
@@ -41,42 +52,42 @@ public class EnumConverterTest extends AbstractComponentTestCase
         Value2
     }
 
-    @Before
-    @Override
-    public void setUp() throws Exception
+    @BeforeEach
+    void setup() throws Exception
     {
-        super.setUp();
-
-        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
+        this.converterManager = this.componentManager.getInstance(ConverterManager.class);
     }
 
     @Test
-    public void testConvertValid()
+    void convertValid()
     {
-        Assert.assertEquals(EnumTest.VALUE1, this.converterManager.convert(EnumTest.class, "VALUE1"));
+        assertEquals(EnumTest.VALUE1, this.converterManager.convert(EnumTest.class, "VALUE1"));
     }
 
     @Test
-    public void testConvertIgnireCase()
+    void convertIgnireCase()
     {
-        Assert.assertEquals(EnumTest.VALUE1, this.converterManager.convert(EnumTest.class, "value1"));
+        assertEquals(EnumTest.VALUE1, this.converterManager.convert(EnumTest.class, "value1"));
     }
 
     @Test
-    public void testConvertToString()
+    void convertToString()
     {
-        Assert.assertEquals("VALUE1", this.converterManager.convert(String.class, EnumTest.VALUE1));
-    }
-
-    @Test(expected = ConversionException.class)
-    public void testConvertInvalid()
-    {
-        this.converterManager.convert(EnumTest.class, "notexistingvalue");
+        assertEquals("VALUE1", this.converterManager.convert(String.class, EnumTest.VALUE1));
     }
 
     @Test
-    public void testConvertNull()
+    void convertInvalid()
     {
-        Assert.assertNull(this.converterManager.convert(EnumTest.class, null));
+        Throwable exception = assertThrows(ConversionException.class,
+            () -> this.converterManager.convert(EnumTest.class, "notexistingvalue"));
+        assertEquals("Unable to convert value [notexistingvalue]. Allowed values are (case insensitive) \"VALUE1\" "
+            + "or \"Value2\".", exception.getMessage());
+    }
+
+    @Test
+    void convertNull()
+    {
+        assertNull(this.converterManager.convert(EnumTest.class, null));
     }
 }

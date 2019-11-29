@@ -23,35 +23,41 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.properties.ConverterManager;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.mockito.MockitoComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Validate {@link HashSetConverter} component.
  *
  * @version $Id$
  */
-public class HashSetConverterTest extends AbstractComponentTestCase
+@ComponentTest
+@AllComponents
+public class HashSetConverterTest
 {
+    @InjectComponentManager
+    MockitoComponentManager componentManager;
+
     private ConverterManager converterManager;
 
-    @Before
-    @Override
-    public void setUp() throws Exception
+    @BeforeEach
+    void setup() throws Exception
     {
-        super.setUp();
-
-        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
+        this.converterManager = this.componentManager.getInstance(ConverterManager.class);
     }
 
     @Test
-    public void testConvertFromHashSet()
+    void convertFromHashSet()
     {
-        HashSet<String> expect = new LinkedHashSet<String>(Arrays.asList("1", "2", "3"));
+        HashSet<String> expect = new LinkedHashSet<>(Arrays.asList("1", "2", "3"));
 
-        Assert.assertSame(expect, this.converterManager.convert(HashSet.class, expect));
+        assertSame(expect, this.converterManager.convert(HashSet.class, expect));
     }
 }

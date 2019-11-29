@@ -23,42 +23,49 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.properties.ConverterManager;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.mockito.MockitoComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Validate {@link LinkedHashSetConverter} component.
  *
  * @version $Id$
  */
-public class LinkedHashSetConverterTest extends AbstractComponentTestCase
+@ComponentTest
+@AllComponents
+public class LinkedHashSetConverterTest
 {
+    @InjectComponentManager
+    MockitoComponentManager componentManager;
+
     private ConverterManager converterManager;
 
-    @Before
-    @Override
-    public void setUp() throws Exception
+    @BeforeEach
+    void setup() throws Exception
     {
-        super.setUp();
-
-        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
+        this.converterManager = this.componentManager.getInstance(ConverterManager.class);
     }
 
     @Test
-    public void testConvertToString()
+    void convertToString()
     {
-        Assert.assertEquals("1, 2, 3",
-            this.converterManager.convert(String.class, new LinkedHashSet<String>(Arrays.asList("1", "2", "3"))));
+        assertEquals("1, 2, 3",
+            this.converterManager.convert(String.class, new LinkedHashSet<>(Arrays.asList("1", "2", "3"))));
     }
 
     @Test
-    public void testConvertFromLinkedHashSet()
+    void convertFromLinkedHashSet()
     {
-        HashSet<String> expect = new LinkedHashSet<String>(Arrays.asList("1", "2", "3"));
+        HashSet<String> expect = new LinkedHashSet<>(Arrays.asList("1", "2", "3"));
 
-        Assert.assertSame(expect, this.converterManager.convert(LinkedHashSet.class, expect));
+        assertSame(expect, this.converterManager.convert(LinkedHashSet.class, expect));
     }
 }

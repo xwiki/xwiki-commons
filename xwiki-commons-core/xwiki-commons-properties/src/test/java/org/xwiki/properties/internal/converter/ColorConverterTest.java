@@ -19,55 +19,64 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import java.awt.Color;
+import java.awt.*;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.converter.ConversionException;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.mockito.MockitoComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Validate {@link ColorConverter} component.
  *
  * @version $Id$
  */
-public class ColorConverterTest extends AbstractComponentTestCase
+@ComponentTest
+@AllComponents
+public class ColorConverterTest
 {
+    @InjectComponentManager
+    MockitoComponentManager componentManager;
+
     private ConverterManager converterManager;
 
-    @Before
-    @Override
-    public void setUp() throws Exception
+    @BeforeEach
+    void setup() throws Exception
     {
-        super.setUp();
-
-        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
+        this.converterManager = this.componentManager.getInstance(ConverterManager.class);
     }
 
     @Test
-    public void testConvertRGB()
+    void convertRGB()
     {
-        Assert.assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "255 , 255 , 255"));
+        assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "255 , 255 , 255"));
     }
 
     @Test
-    public void testConvertHTML()
+    void convertHTML()
     {
-        Assert.assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "#ffffff"));
-        Assert.assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "#FFFFFF"));
+        assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "#ffffff"));
+        assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "#FFFFFF"));
     }
 
     @Test
-    public void testConvertToString()
+    void convertToString()
     {
-        Assert.assertEquals("255, 255, 255", this.converterManager.convert(String.class, Color.WHITE));
+        assertEquals("255, 255, 255", this.converterManager.convert(String.class, Color.WHITE));
     }
 
-    @Test(expected = ConversionException.class)
-    public void testConvertInvalid()
+    @Test
+    void convertInvalid()
     {
-        this.converterManager.convert(Color.class, "wrongformat");
+        Throwable exception = assertThrows(ConversionException.class,
+            () -> this.converterManager.convert(Color.class, "wrongformat"));
+        assertEquals("Color value should be in the form of '#xxxxxx' or 'r,g,b'", exception.getMessage());
     }
 }

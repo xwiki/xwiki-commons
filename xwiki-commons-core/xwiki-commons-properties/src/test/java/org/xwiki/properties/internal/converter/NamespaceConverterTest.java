@@ -19,40 +19,47 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.namespace.Namespace;
 import org.xwiki.properties.ConverterManager;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.mockito.MockitoComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Validate {@link LocaleConverter} component.
  *
  * @version $Id$
  */
-public class NamespaceConverterTest extends AbstractComponentTestCase
+@ComponentTest
+@AllComponents
+public class NamespaceConverterTest
 {
+    @InjectComponentManager
+    MockitoComponentManager componentManager;
+
     private ConverterManager converterManager;
 
-    @Before
-    @Override
-    public void setUp() throws Exception
+    @BeforeEach
+    void setup() throws Exception
     {
-        super.setUp();
-
-        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
+        this.converterManager = this.componentManager.getInstance(ConverterManager.class);
     }
 
     @Test
-    public void testConvertToNamespace()
+    void convertToNamespace()
     {
-        Assert.assertEquals(new Namespace("wiki", "wikiid"), this.converterManager.convert(Namespace.class, "wiki:wikiid"));
+        assertEquals(new Namespace("wiki", "wikiid"),
+            this.converterManager.convert(Namespace.class, "wiki:wikiid"));
     }
 
     @Test
-    public void testConvertToString()
+    void convertToString()
     {
-        Assert.assertEquals("wiki:wikiid", this.converterManager.convert(String.class, new Namespace("wiki", "wikiid")));
+        assertEquals("wiki:wikiid", this.converterManager.convert(String.class, new Namespace("wiki", "wikiid")));
     }
 }

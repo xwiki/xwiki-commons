@@ -21,54 +21,59 @@ package org.xwiki.properties.internal.converter;
 
 import java.lang.reflect.Type;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.descriptor.ComponentRole;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.properties.ConverterManager;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.mockito.MockitoComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Validate {@link LocaleConverter} component.
  *
  * @version $Id$
  */
-public class TypeConverterTest extends AbstractComponentTestCase
+@ComponentTest
+@AllComponents
+public class TypeConverterTest
 {
+    @InjectComponentManager
+    MockitoComponentManager componentManager;
+
     private ConverterManager converterManager;
 
-    @Before
-    @Override
-    public void setUp() throws Exception
+    @BeforeEach
+    void setUp() throws Exception
     {
-        super.setUp();
-
-        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
+        this.converterManager = this.componentManager.getInstance(ConverterManager.class);
     }
 
     @Test
-    public void testConvertToType()
+    void convertToType()
     {
         Type simpleType = ComponentRole.class;
-        Assert.assertEquals(simpleType,
+        assertEquals(simpleType,
             this.converterManager.convert(Type.class, "org.xwiki.component.descriptor.ComponentRole"));
 
         Type genericsType = new DefaultParameterizedType(null, ComponentRole.class, String.class);
-        Assert
-            .assertEquals(genericsType, this.converterManager.convert(Type.class,
-                "org.xwiki.component.descriptor.ComponentRole<java.lang.String>"));
+        assertEquals(genericsType, this.converterManager.convert(Type.class,
+            "org.xwiki.component.descriptor.ComponentRole<java.lang.String>"));
     }
 
     @Test
-    public void testConvertToString()
+    void convertToString()
     {
         Type simpleType = ComponentRole.class;
-        Assert.assertEquals("org.xwiki.component.descriptor.ComponentRole",
+        assertEquals("org.xwiki.component.descriptor.ComponentRole",
             this.converterManager.convert(String.class, simpleType));
 
         Type genericsType = new DefaultParameterizedType(null, ComponentRole.class, String.class);
-        Assert.assertEquals("org.xwiki.component.descriptor.ComponentRole<java.lang.String>",
+        assertEquals("org.xwiki.component.descriptor.ComponentRole<java.lang.String>",
             this.converterManager.convert(String.class, genericsType));
     }
 }

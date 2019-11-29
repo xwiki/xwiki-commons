@@ -24,52 +24,58 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.properties.ConverterManager;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.mockito.MockitoComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Validate {@link HashSetConverter} component.
  *
  * @version $Id$
  */
-public class SetConverterTest extends AbstractComponentTestCase
+@ComponentTest
+@AllComponents
+public class SetConverterTest
 {
+    @InjectComponentManager
+    MockitoComponentManager componentManager;
+
     private ConverterManager converterManager;
 
     public Set<Integer> setField1;
 
     public Set<Set<Integer>> setField2;
 
-    @Before
-    @Override
-    public void setUp() throws Exception
+    @BeforeEach
+    void setUp() throws Exception
     {
-        super.setUp();
-
-        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
+        this.converterManager = this.componentManager.getInstance(ConverterManager.class);
     }
 
     @Test
-    public void testConvert() throws SecurityException, NoSuchFieldException
+    void convert() throws Exception
     {
-        Assert.assertEquals(new LinkedHashSet<String>(Arrays.asList("1", "2", "3")),
+        assertEquals(new LinkedHashSet<String>(Arrays.asList("1", "2", "3")),
             this.converterManager.convert(Set.class, "1, 2, 3"));
 
-        Assert.assertEquals(new LinkedHashSet<String>(Arrays.asList("1", "\n", "2", "\n", "3")),
+        assertEquals(new LinkedHashSet<String>(Arrays.asList("1", "\n", "2", "\n", "3")),
             this.converterManager.convert(Set.class, "1,\n 2,\n 3"));
 
-        Assert.assertEquals(
+        assertEquals(
             new LinkedHashSet<Integer>(Arrays.asList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3))),
             this.converterManager.convert(SetConverterTest.class.getField("setField1").getGenericType(), "1, 2, 3"));
 
-        Assert.assertEquals(
+        assertEquals(
             new LinkedHashSet<Set<Integer>>(Arrays.asList(new LinkedHashSet<Integer>(Arrays.asList(1, 2, 3)),
                 new LinkedHashSet<Integer>(Arrays.asList(4, 5, 6)))), this.converterManager.convert(
-                    SetConverterTest.class.getField("setField2").getGenericType(), "'\\'1\\', 2, 3', \"4, 5, 6\""));
+                SetConverterTest.class.getField("setField2").getGenericType(), "'\\'1\\', 2, 3', \"4, 5, 6\""));
 
-        Assert.assertEquals(new HashSet<String>(Arrays.asList("1:2")), this.converterManager.convert(Set.class, "1:2"));
+        assertEquals(new HashSet<String>(Arrays.asList("1:2")), this.converterManager.convert(Set.class, "1:2"));
     }
 }
