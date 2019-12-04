@@ -108,6 +108,11 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         // [Retro compatibility] Keep original variable name when passing null parameter
         this.defaultProperties.setProperty(RuntimeConstants.VM_PRESERVE_ARGUMENTS_LITERALS, Boolean.TRUE.toString());
 
+        // Enable the extra scope variables $template and $macro, similar to $foreach
+        this.defaultProperties.setProperty(RuntimeConstants.CONTEXT_SCOPE_CONTROL + ".template",
+            Boolean.TRUE.toString());
+        this.defaultProperties.setProperty(RuntimeConstants.CONTEXT_SCOPE_CONTROL + ".macro", Boolean.TRUE.toString());
+
         // Prevents users from calling #parse on files outside the /templates/ directory
         this.defaultProperties.setProperty(RuntimeConstants.EVENTHANDLER_INCLUDE,
             RestrictParseLocationEventHandler.class.getName());

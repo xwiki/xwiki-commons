@@ -276,7 +276,7 @@ public class DefaultVelocityEngine implements VelocityEngine
             // Someone explicitly stopped the script with something like #stop. No reason to make a scene.
             return true;
         } catch (Exception e) {
-            throw new XWikiVelocityException("Failed to evaluate content with id [" + namespace + "]", e);
+            throw new XWikiVelocityException("Failed to evaluate content with namespace [" + namespace + "]", e);
         } finally {
             if (StringUtils.isNotEmpty(namespace)) {
                 stoppedUsingMacroNamespace(namespace);

@@ -74,6 +74,11 @@ public class DefaultVelocityEngineTest
         when(execution.getContext()).thenReturn(new ExecutionContext());
     }
 
+    private void assertEvaluate(String expected, String content) throws XWikiVelocityException
+    {
+        assertEvaluate(expected, content, "mytemplaye");
+    }
+
     private void assertEvaluate(String expected, String content, String template) throws XWikiVelocityException
     {
         assertEvaluate(expected, content, template, new XWikiVelocityContext());
@@ -182,6 +187,22 @@ public class DefaultVelocityEngineTest
         Context context = new XWikiVelocityContext();
         this.engine.evaluate(context, new StringWriter(), "template1", "#macro(mymacro)test#end");
         assertEvaluate("test", "#mymacro", "template2");
+    }
+
+    @Test
+    public void testMacroScope() throws XWikiVelocityException
+    {
+        this.engine.initialize(new Properties());
+
+        assertEvaluate("{}", "#macro (testMacro)$macro#end#testMacro()");
+    }
+
+    @Test
+    public void testTemplateScope() throws XWikiVelocityException
+    {
+        this.engine.initialize(new Properties());
+
+        assertEvaluate("{}", "$template");
     }
 
     /**
