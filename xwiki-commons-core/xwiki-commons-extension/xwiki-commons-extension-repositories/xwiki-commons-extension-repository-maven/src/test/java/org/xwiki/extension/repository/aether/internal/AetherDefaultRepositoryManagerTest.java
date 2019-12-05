@@ -189,6 +189,17 @@ public class AetherDefaultRepositoryManagerTest
     }
 
     @Test
+    public void testResolveWebjar() throws ResolveException, IOException
+    {
+        Extension webjar = this.repositoryManager.resolve(new ExtensionId("wgroupid:wartifactid", "wversion"));
+
+        // Make sure accessing the webjar file works
+        try (InputStream stream = webjar.getFile().openStream()) {
+            Assert.assertEquals("webjar", IOUtils.toString(stream));
+        }
+    }
+
+    @Test
     public void testResolveSNAPSHOT() throws ResolveException
     {
         Extension extension = this.repositoryManager.resolve(this.snapshotExtensionId);

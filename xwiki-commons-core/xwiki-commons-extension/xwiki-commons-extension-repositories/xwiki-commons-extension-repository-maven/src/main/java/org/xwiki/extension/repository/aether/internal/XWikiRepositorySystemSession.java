@@ -93,6 +93,7 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
         wsession.setSystemProperty("groupId", null);
 
         // Add various type descriptors
+        // TODO: Find them in extensions registered in pom files
         ArtifactTypeRegistry artifactTypeRegistry = wsession.getArtifactTypeRegistry();
         if (artifactTypeRegistry instanceof DefaultArtifactTypeRegistry) {
             DefaultArtifactTypeRegistry defaultArtifactTypeRegistry =
@@ -101,6 +102,8 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
                 .add(new DefaultArtifactType("bundle", MavenUtils.JAR_EXTENSION, "", MavenUtils.JAVA_LANGUAGE));
             defaultArtifactTypeRegistry
                 .add(new DefaultArtifactType("eclipse-plugin", MavenUtils.JAR_EXTENSION, "", MavenUtils.JAVA_LANGUAGE));
+            defaultArtifactTypeRegistry
+                .add(new DefaultArtifactType("webjar", MavenUtils.JAR_EXTENSION, "", (String) null));
         }
 
         // Fail when the pom is missing or invalid
