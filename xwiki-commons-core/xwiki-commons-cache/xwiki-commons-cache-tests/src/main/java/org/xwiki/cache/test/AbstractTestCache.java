@@ -19,13 +19,14 @@
  */
 package org.xwiki.cache.test;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.jupiter.api.BeforeEach;
 import org.xwiki.cache.CacheFactory;
 import org.xwiki.cache.CacheManager;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
-import org.xwiki.test.mockito.MockitoComponentManagerRule;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.mockito.MockitoComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Base class for testing cache component implementation.
@@ -57,8 +58,8 @@ public abstract class AbstractTestCache
     /**
      * The Mockito tool.
      */
-    @Rule
-    public MockitoComponentManagerRule componentManager = new MockitoComponentManagerRule();
+    @InjectComponentManager
+    protected MockitoComponentManager componentManager;
 
     /**
      * The role hint of the cache component implementation to test.
@@ -78,7 +79,7 @@ public abstract class AbstractTestCache
      * 
      * @throws Exception when initialization fail
      */
-    @Before
+    @BeforeEach
     public void before() throws Exception
     {
         MemoryConfigurationSource configuration = this.componentManager.registerMemoryConfigurationSource();
@@ -96,7 +97,7 @@ public abstract class AbstractTestCache
 
         CacheFactory factory = cacheManager.getCacheFactory();
 
-        Assert.assertNotNull(factory);
+        assertNotNull(factory);
 
         return factory;
     }

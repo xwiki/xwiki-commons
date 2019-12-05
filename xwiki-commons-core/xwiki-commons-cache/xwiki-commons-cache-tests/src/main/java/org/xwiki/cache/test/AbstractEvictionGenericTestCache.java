@@ -19,8 +19,7 @@
  */
 package org.xwiki.cache.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheFactory;
 import org.xwiki.cache.config.CacheConfiguration;
@@ -29,11 +28,17 @@ import org.xwiki.cache.eviction.EntryEvictionConfiguration;
 import org.xwiki.cache.eviction.LRUEvictionConfiguration;
 import org.xwiki.cache.test.CacheEntryListenerTest.EventType;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Base class for testing cache component implementation. Also test eviction.
  * <p>
  * Implementations with asynch eviction system should write there own tests.
- * 
+ *
  * @version $Id$
  */
 public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTestCache
@@ -44,7 +49,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
     private boolean supportEvictionEvent;
 
     /**
-     * @param roleHint the role hint of the cache component implementation to test.
+     * @param roleHint             the role hint of the cache component implementation to test.
      * @param supportEvictionEvent indicate of the cache implementation send eviction related events
      */
     protected AbstractEvictionGenericTestCache(String roleHint, boolean supportEvictionEvent)
@@ -64,7 +69,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
 
     /**
      * Validate the maximum cache entries constraint.
-     * 
+     *
      * @throws Exception error
      */
     @Test
@@ -80,7 +85,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
 
         Cache<Object> cache = factory.newCache(conf);
 
-        Assert.assertNotNull(cache);
+        assertNotNull(cache);
 
         CacheEntryListenerTest eventListener;
         if (this.supportEvictionEvent) {
@@ -92,25 +97,24 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
 
         cache.set(KEY, VALUE);
 
-        Assert.assertEquals(VALUE, cache.get(KEY));
+        assertEquals(VALUE, cache.get(KEY));
 
         cache.set(KEY2, VALUE2);
 
         if (eventListener != null) {
-            Assert.assertTrue("No value has been evicted from the cache",
-                eventListener.waitForEntryEvent(EventType.REMOVE));
-            Assert.assertSame(VALUE, eventListener.getRemovedEvent().getEntry().getValue());
+            assertTrue(eventListener.waitForEntryEvent(EventType.REMOVE), "No value has been evicted from the cache");
+            assertSame(VALUE, eventListener.getRemovedEvent().getEntry().getValue());
         }
 
-        Assert.assertNull(cache.get(KEY));
-        Assert.assertEquals(VALUE2, cache.get(KEY2));
+        assertNull(cache.get(KEY));
+        assertEquals(VALUE2, cache.get(KEY2));
 
         cache.dispose();
     }
 
     /**
      * Validate the maximum time to live constraint.
-     * 
+     *
      * @throws Exception error
      */
     @Test
@@ -126,7 +130,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
 
         Cache<Object> cache = factory.newCache(conf);
 
-        Assert.assertNotNull(cache);
+        assertNotNull(cache);
 
         CacheEntryListenerTest eventListener;
         if (this.supportEvictionEvent) {
@@ -138,22 +142,22 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
 
         cache.set(KEY, VALUE);
 
-        Assert.assertEquals(VALUE, cache.get(KEY));
+        assertEquals(VALUE, cache.get(KEY));
 
         if (eventListener != null) {
-            Assert.assertTrue("No value has expired from the cache after provided max idle time",
-                eventListener.waitForEntryEvent(EventType.REMOVE));
-            Assert.assertSame(VALUE, eventListener.getRemovedEvent().getEntry().getValue());
+            assertTrue(eventListener.waitForEntryEvent(EventType.REMOVE),
+                "No value has expired from the cache after provided max idle time");
+            assertSame(VALUE, eventListener.getRemovedEvent().getEntry().getValue());
         }
 
-        Assert.assertNull(cache.get(KEY));
+        assertNull(cache.get(KEY));
 
         cache.dispose();
     }
 
     /**
      * Validate the maximum time to live constraint.
-     * 
+     *
      * @throws Exception error
      */
     @Test
@@ -169,7 +173,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
 
         Cache<Object> cache = factory.newCache(conf);
 
-        Assert.assertNotNull(cache);
+        assertNotNull(cache);
 
         CacheEntryListenerTest eventListener;
         if (this.supportEvictionEvent) {
@@ -181,22 +185,22 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
 
         cache.set(KEY, VALUE);
 
-        Assert.assertEquals(VALUE, cache.get(KEY));
+        assertEquals(VALUE, cache.get(KEY));
 
         if (eventListener != null) {
-            Assert.assertTrue("No value has expired from the cache after provide lifespan",
-                eventListener.waitForEntryEvent(EventType.REMOVE));
-            Assert.assertSame(VALUE, eventListener.getRemovedEvent().getEntry().getValue());
+            assertTrue(eventListener.waitForEntryEvent(EventType.REMOVE),
+                "No value has expired from the cache after provide lifespan");
+            assertSame(VALUE, eventListener.getRemovedEvent().getEntry().getValue());
         }
 
-        Assert.assertNull(cache.get(KEY));
+        assertNull(cache.get(KEY));
 
         cache.dispose();
     }
 
     /**
      * Validate the combination of maximum time to live and maximum cache entries constraints.
-     * 
+     *
      * @throws Exception error
      */
     @Test
@@ -213,7 +217,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
 
         Cache<Object> cache = factory.newCache(conf);
 
-        Assert.assertNotNull(cache);
+        assertNotNull(cache);
 
         CacheEntryListenerTest eventListener;
         if (this.supportEvictionEvent) {
@@ -223,17 +227,17 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
 
         cache.set(KEY, VALUE);
 
-        Assert.assertEquals(VALUE, cache.get(KEY));
+        assertEquals(VALUE, cache.get(KEY));
 
         cache.set(KEY2, VALUE2);
 
-        Assert.assertNull(cache.get(KEY));
-        Assert.assertEquals(VALUE2, cache.get(KEY2));
+        assertNull(cache.get(KEY));
+        assertEquals(VALUE2, cache.get(KEY2));
 
         Thread.sleep(1100);
 
-        Assert.assertNull(cache.get(KEY));
-        Assert.assertNull(cache.get(KEY2));
+        assertNull(cache.get(KEY));
+        assertNull(cache.get(KEY2));
 
         cache.dispose();
     }

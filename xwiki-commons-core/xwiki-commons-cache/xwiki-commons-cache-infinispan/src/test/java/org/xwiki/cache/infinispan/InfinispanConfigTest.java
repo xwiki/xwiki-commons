@@ -27,7 +27,8 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.SingleFileStoreConfiguration;
 import org.infinispan.configuration.cache.StoreConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.cache.config.LRUCacheConfiguration;
 import org.xwiki.cache.infinispan.internal.InfinispanCacheFactory;
@@ -37,6 +38,7 @@ import org.xwiki.cache.internal.DefaultCacheManagerConfiguration;
 import org.xwiki.cache.test.AbstractTestCache;
 import org.xwiki.environment.Environment;
 import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.junit5.mockito.ComponentTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -47,8 +49,13 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  * @since 3.4M1
  */
-@ComponentList({ InfinispanCacheFactory.class, DefaultCacheManager.class, DefaultCacheFactory.class,
-    DefaultCacheManagerConfiguration.class })
+@ComponentTest
+@ComponentList({
+    InfinispanCacheFactory.class,
+    DefaultCacheManager.class,
+    DefaultCacheFactory.class,
+    DefaultCacheManagerConfiguration.class
+})
 public class InfinispanConfigTest extends AbstractTestCache
 {
     private Environment environment;
@@ -58,6 +65,7 @@ public class InfinispanConfigTest extends AbstractTestCache
         super("infinispan");
     }
 
+    @BeforeEach
     @Override
     public void before() throws Exception
     {
@@ -85,7 +93,7 @@ public class InfinispanConfigTest extends AbstractTestCache
     }
 
     @Test
-    public void testUnnamedCache() throws Exception
+    public void createCacheWhenUnnamed() throws Exception
     {
         CacheConfiguration configuration = new CacheConfiguration("noname");
 
@@ -95,7 +103,7 @@ public class InfinispanConfigTest extends AbstractTestCache
     }
 
     @Test
-    public void testFileCacheNoPath() throws Exception
+    public void createCacheWhenFileCacheNoPath() throws Exception
     {
         CacheConfiguration configuration = new LRUCacheConfiguration("file-cache-nopath", 42);
 
@@ -109,7 +117,7 @@ public class InfinispanConfigTest extends AbstractTestCache
     }
 
     @Test
-    public void testFileCachePath() throws Exception
+    public void createCacheWhenFileCachePath() throws Exception
     {
         CacheConfiguration configuration = new LRUCacheConfiguration("file-cache-path", 42);
 

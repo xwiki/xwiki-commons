@@ -19,11 +19,15 @@
  */
 package org.xwiki.cache.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheFactory;
 import org.xwiki.cache.config.CacheConfiguration;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Base class for testing cache component implementation.
@@ -55,7 +59,7 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
 
         CacheFactory factory2 = getCacheFactory();
 
-        Assert.assertSame(factory, factory2);
+        assertSame(factory, factory2);
     }
 
     /**
@@ -70,13 +74,13 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
 
         Cache<Object> cache = factory.newCache(new CacheConfiguration());
 
-        Assert.assertNotNull(cache);
+        assertNotNull(cache);
 
         cache.set(KEY, VALUE);
         cache.set(KEY2, VALUE2);
 
-        Assert.assertEquals(VALUE, cache.get(KEY));
-        Assert.assertEquals(VALUE2, cache.get(KEY2));
+        assertEquals(VALUE, cache.get(KEY));
+        assertEquals(VALUE2, cache.get(KEY2));
 
         cache.dispose();
     }
@@ -98,8 +102,8 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
 
         cache.remove(KEY);
 
-        Assert.assertNull(cache.get(KEY));
-        Assert.assertEquals(VALUE2, cache.get(KEY2));
+        assertNull(cache.get(KEY));
+        assertEquals(VALUE2, cache.get(KEY2));
     }
 
     /**
@@ -119,8 +123,8 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
 
         cache.removeAll();
 
-        Assert.assertNull(cache.get(KEY));
-        Assert.assertNull(cache.get(KEY2));
+        assertNull(cache.get(KEY));
+        assertNull(cache.get(KEY2));
     }
 
     /**
@@ -141,30 +145,30 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
 
         cache.set(KEY, VALUE);
 
-        Assert.assertNotNull(eventListener.getAddedEvent());
-        Assert.assertSame(cache, eventListener.getAddedEvent().getCache());
-        Assert.assertEquals(KEY, eventListener.getAddedEvent().getEntry().getKey());
-        Assert.assertEquals(VALUE, eventListener.getAddedEvent().getEntry().getValue());
+        assertNotNull(eventListener.getAddedEvent());
+        assertSame(cache, eventListener.getAddedEvent().getCache());
+        assertEquals(KEY, eventListener.getAddedEvent().getEntry().getKey());
+        assertEquals(VALUE, eventListener.getAddedEvent().getEntry().getValue());
 
         cache.set(KEY, VALUE2);
 
-        Assert.assertNotNull(eventListener.getModifiedEvent());
-        Assert.assertSame(cache, eventListener.getModifiedEvent().getCache());
-        Assert.assertEquals(KEY, eventListener.getModifiedEvent().getEntry().getKey());
-        Assert.assertEquals(VALUE2, eventListener.getModifiedEvent().getEntry().getValue());
+        assertNotNull(eventListener.getModifiedEvent());
+        assertSame(cache, eventListener.getModifiedEvent().getCache());
+        assertEquals(KEY, eventListener.getModifiedEvent().getEntry().getKey());
+        assertEquals(VALUE2, eventListener.getModifiedEvent().getEntry().getValue());
 
         cache.remove(KEY);
         cache.get(KEY);
 
-        Assert.assertNotNull(eventListener.getRemovedEvent());
-        Assert.assertSame(cache, eventListener.getRemovedEvent().getCache());
-        Assert.assertEquals(KEY, eventListener.getRemovedEvent().getEntry().getKey());
-        Assert.assertEquals(VALUE2, eventListener.getRemovedEvent().getEntry().getValue());
+        assertNotNull(eventListener.getRemovedEvent());
+        assertSame(cache, eventListener.getRemovedEvent().getCache());
+        assertEquals(KEY, eventListener.getRemovedEvent().getEntry().getKey());
+        assertEquals(VALUE2, eventListener.getRemovedEvent().getEntry().getValue());
 
         eventListener.reinitRemovedEvent();
         cache.remove(KEY);
 
-        Assert.assertNull(eventListener.getRemovedEvent());
+        assertNull(eventListener.getRemovedEvent());
     }
 
     /**
@@ -182,7 +186,7 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
 
         cache.set(KEY, VALUE);
 
-        Assert.assertNull(cache2.get(KEY));
+        assertNull(cache2.get(KEY));
     }
 
     /**
@@ -202,7 +206,7 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
 
         cache.set(KEY, VALUE);
 
-        Assert.assertEquals(VALUE, cache.get(KEY));
+        assertEquals(VALUE, cache.get(KEY));
 
         // dispose the first cache
 
@@ -212,10 +216,10 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
 
         cache = factory.newCache(configuration);
 
-        Assert.assertNull(cache.get(KEY));
+        assertNull(cache.get(KEY));
 
         cache.set(KEY, VALUE);
 
-        Assert.assertEquals(VALUE, cache.get(KEY));
+        assertEquals(VALUE, cache.get(KEY));
     }
 }
