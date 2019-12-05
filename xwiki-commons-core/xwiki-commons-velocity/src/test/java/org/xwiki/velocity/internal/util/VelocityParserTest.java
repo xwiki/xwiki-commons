@@ -19,16 +19,19 @@
  */
 package org.xwiki.velocity.internal.util;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.velocity.internal.util.VelocityBlock.VelocityType;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class VelocityParserTest
 {
     private VelocityParser parser;
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         this.parser = new VelocityParser();
@@ -39,11 +42,11 @@ public class VelocityParserTest
     @Test
     public void isValidVelocityIdentifierChar()
     {
-        Assert.assertTrue(this.parser.isValidVelocityIdentifierChar('a'));
-        Assert.assertTrue(this.parser.isValidVelocityIdentifierChar('_'));
-        Assert.assertTrue(this.parser.isValidVelocityIdentifierChar('-'));
+        assertTrue(this.parser.isValidVelocityIdentifierChar('a'));
+        assertTrue(this.parser.isValidVelocityIdentifierChar('_'));
+        assertTrue(this.parser.isValidVelocityIdentifierChar('-'));
 
-        Assert.assertFalse(this.parser.isValidVelocityIdentifierChar('.'));
+        assertFalse(this.parser.isValidVelocityIdentifierChar('.'));
     }
 
     @Test
@@ -54,10 +57,10 @@ public class VelocityParserTest
 
         int index = this.parser.getKeyWord("## some comment\n  ".toCharArray(), 0, buffer, context);
 
-        Assert.assertEquals("## some comment\n".length(), index);
-        Assert.assertEquals("## some comment\n", buffer.toString());
-        Assert.assertFalse(context.isInVelocityBlock());
-        Assert.assertEquals(VelocityType.COMMENT, context.getType());
+        assertEquals("## some comment\n".length(), index);
+        assertEquals("## some comment\n", buffer.toString());
+        assertFalse(context.isInVelocityBlock());
+        assertEquals(VelocityType.COMMENT, context.getType());
     }
 
     @Test
@@ -68,10 +71,10 @@ public class VelocityParserTest
 
         int index = this.parser.getKeyWord("#*\n some comment\n*#  ".toCharArray(), 0, buffer, context);
 
-        Assert.assertEquals("#*\n some comment\n*#".length(), index);
-        Assert.assertEquals("#*\n some comment\n*#", buffer.toString());
-        Assert.assertFalse(context.isInVelocityBlock());
-        Assert.assertEquals(VelocityType.COMMENT, context.getType());
+        assertEquals("#*\n some comment\n*#".length(), index);
+        assertEquals("#*\n some comment\n*#", buffer.toString());
+        assertFalse(context.isInVelocityBlock());
+        assertEquals(VelocityType.COMMENT, context.getType());
     }
 
     @Test
@@ -82,10 +85,10 @@ public class VelocityParserTest
 
         int index = this.parser.getKeyWord("#directive(param1 param2, param2)  ".toCharArray(), 0, buffer, context);
 
-        Assert.assertEquals("#directive(param1 param2, param2)".length(), index);
-        Assert.assertEquals("#directive(param1 param2, param2)", buffer.toString());
-        Assert.assertFalse(context.isInVelocityBlock());
-        Assert.assertEquals(VelocityType.MACRO, context.getType());
+        assertEquals("#directive(param1 param2, param2)".length(), index);
+        assertEquals("#directive(param1 param2, param2)", buffer.toString());
+        assertFalse(context.isInVelocityBlock());
+        assertEquals(VelocityType.MACRO, context.getType());
     }
 
     @Test
@@ -96,8 +99,8 @@ public class VelocityParserTest
 
         int index = this.parser.getDirective("#if($a==1)true enough#elseno way!#end".toCharArray(), 0, buffer, context);
 
-        Assert.assertEquals("#if($a==1)".length(), index);
-        Assert.assertEquals("#if($a==1)", buffer.toString());
-        Assert.assertTrue(context.isInVelocityBlock());
+        assertEquals("#if($a==1)".length(), index);
+        assertEquals("#if($a==1)", buffer.toString());
+        assertTrue(context.isInVelocityBlock());
     }
 }

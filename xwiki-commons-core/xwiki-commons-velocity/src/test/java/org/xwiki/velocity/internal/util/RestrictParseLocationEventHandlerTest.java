@@ -19,10 +19,13 @@
  */
 package org.xwiki.velocity.internal.util;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.xwiki.test.LogRule;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.xwiki.test.LogLevel;
+import org.xwiki.test.junit5.LogCaptureExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit tests for {@link RestrictParseLocationEventHandler}.
@@ -37,30 +40,24 @@ public class RestrictParseLocationEventHandlerTest
     /**
      * Capture logs with WARN or higher severity to assert them.
      */
-    @Rule
-    public LogRule logRule = new LogRule()
-    {
-        {
-            record(LogLevel.WARN);
-            recordLoggingForType(RestrictParseLocationEventHandler.class);
-        }
-    };
+    @RegisterExtension
+    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
     @Test
     public void includeEventWhenAllowedPath()
     {
-        Assert.assertEquals("Wrong template returned", "/templates/xwikivars.vm",
-            this.handler.includeEvent(null, "xwikivars.vm", "xwiki:Main.WebHome", "parse"));
+        assertEquals("/templates/xwikivars.vm",
+            this.handler.includeEvent(null, "xwikivars.vm", "xwiki:Main.WebHome", "parse"), "Wrong template returned");
     }
 
     @Test
     public void includeEventWhenIllegalPath()
     {
-        Assert.assertNull("Template shouldn't have been returned",
-            this.handler.includeEvent(null, "../WEB-INF/xwiki.cfg", "xwiki:Main.WebHome", "parse"));
+        assertNull(this.handler.includeEvent(null, "../WEB-INF/xwiki.cfg", "xwiki:Main.WebHome", "parse"),
+            "Template shouldn't have been returned");
 
-        Assert.assertEquals(1, this.logRule.size());
-        Assert.assertTrue(this.logRule
-            .contains("Direct access to template file [/WEB-INF/xwiki.cfg] refused. Possible break-in attempt!"));
+        assertEquals(1, this.logCapture.size());
+        assertEquals("Direct access to template file [/WEB-INF/xwiki.cfg] refused. Possible break-in attempt!",
+            this.logCapture.getMessage(0));
     }
 }

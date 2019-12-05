@@ -26,27 +26,26 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.velocity.VelocityContext;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentManagerRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.MockComponent;
+import org.xwiki.test.mockito.MockitoComponentManager;
 import org.xwiki.velocity.VelocityEngine;
-import org.xwiki.velocity.XWikiVelocityException;
 import org.xwiki.velocity.internal.DefaultVelocityConfiguration;
 import org.xwiki.velocity.internal.DefaultVelocityContextFactory;
 import org.xwiki.velocity.internal.DefaultVelocityEngine;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 /**
@@ -55,12 +54,18 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  * @since 6.4M3
  */
-@ComponentList({ DefaultVelocityEngine.class, DefaultVelocityConfiguration.class, DefaultVelocityContextFactory.class })
+@ComponentTest
+@ComponentList({
+    DefaultVelocityEngine.class,
+    DefaultVelocityConfiguration.class,
+    DefaultVelocityContextFactory.class
+})
 public class MethodArgumentUberspectorTest
 {
-    @Rule
-    public MockitoComponentManagerRule componentManager = new MockitoComponentManagerRule();
+    @InjectComponentManager
+    MockitoComponentManager componentManager;
 
+    @MockComponent
     private ConverterManager converterManager;
 
     private StringWriter writer;
@@ -73,7 +78,6 @@ public class MethodArgumentUberspectorTest
     public void setUpComponents() throws Exception
     {
         this.componentManager.registerMemoryConfigurationSource();
-        this.converterManager = this.componentManager.registerMockComponent(ConverterManager.class);
 
         ExecutionContext executionContext = new ExecutionContext();
         Execution execution = this.componentManager.registerMockComponent(Execution.class);
@@ -119,7 +123,7 @@ public class MethodArgumentUberspectorTest
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         this.engine = this.componentManager.getInstance(VelocityEngine.class);
@@ -129,7 +133,7 @@ public class MethodArgumentUberspectorTest
         this.context.put("var", new ExtendingClass());
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         if (this.writer != null) {
