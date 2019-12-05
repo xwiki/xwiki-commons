@@ -25,6 +25,7 @@ import org.xwiki.test.mockito.MockitoComponentManager;
 
 public class MockitoRepositoryUtilsExtension implements TestInstancePostProcessor
 {
+    @Override
     public void postProcessTestInstance(Object testInstance, ExtensionContext context) throws Exception
     {
         new MockitoRepositoryUtils(loadComponentManager(context)).setup();
