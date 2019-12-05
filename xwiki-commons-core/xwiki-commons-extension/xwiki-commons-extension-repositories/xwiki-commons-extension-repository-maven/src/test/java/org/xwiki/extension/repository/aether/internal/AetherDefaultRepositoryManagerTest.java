@@ -315,6 +315,14 @@ public class AetherDefaultRepositoryManagerTest
     }
 
     @Test
+    public void testResolveVersionRangeWithNoResult()
+    {
+        assertThrows(ExtensionNotFoundException.class,
+            () -> this.repositoryManager.resolve(new DefaultExtensionDependency(this.extensionDependencyId.getId(),
+                new DefaultVersionConstraint("[42000,)"))));
+    }
+
+    @Test
     public void testDownload() throws ExtensionException, IOException
     {
         Extension extension = this.repositoryManager.resolve(this.extensionId);

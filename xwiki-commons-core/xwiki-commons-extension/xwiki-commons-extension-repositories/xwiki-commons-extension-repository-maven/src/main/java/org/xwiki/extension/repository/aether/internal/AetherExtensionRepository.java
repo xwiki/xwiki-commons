@@ -386,18 +386,19 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     {
         Artifact artifact = AetherUtils.createArtifact(id, versionRange.getValue());
 
+        List<org.eclipse.aether.version.Version> versions;
         try {
-            List<org.eclipse.aether.version.Version> versions = resolveVersions(artifact, session);
-
-            if (versions.isEmpty()) {
-                throw new ExtensionNotFoundException(
-                    "No versions available for id [" + id + "] and version range [" + versionRange + "]");
-            }
-
-            return versions;
+            versions = resolveVersions(artifact, session);
         } catch (Exception e) {
             throw new ResolveException("Failed to resolve version range", e);
         }
+
+        if (versions.isEmpty()) {
+            throw new ExtensionNotFoundException(
+                "No versions available for id [" + id + "] and version range [" + versionRange + "]");
+        }
+
+        return versions;
     }
 
     private org.eclipse.aether.version.Version resolveVersionConstraint(Artifact artifact,
