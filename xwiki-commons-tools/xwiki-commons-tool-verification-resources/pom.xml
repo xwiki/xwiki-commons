@@ -50,10 +50,15 @@
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
-	    <!-- FIXME: the Guava version required by Checkstyle 8+ is too recent, see https://jira.xwiki.org/browse/XCOMMONS-1155 -->
+
+        <!-- Exclude some frequently upgraded dependencies to make easier to test with Checkstyle SNAPSHOT (Checkstyle project use XWiki to execute non-regression tests) -->
         <exclusion>
           <groupId>com.google.guava</groupId>
           <artifactId>guava</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>net.sf.saxon</groupId>
+          <artifactId>Saxon-HE</artifactId>
         </exclusion>
       </exclusions>
       <scope>provided</scope>
@@ -65,18 +70,29 @@
       <type>test-jar</type>
       <version>${checkstyle.version}</version>
       <exclusions>
-	    <!-- FIXME: the Guava version required by Checkstyle 8+ is too recent, see https://jira.xwiki.org/browse/XCOMMONS-1155 -->
+        <!-- Exclude some frequently upgraded dependencies to make easier to test with Checkstyle SNAPSHOT (Checkstyle project use XWiki to execute non-regression tests) -->
         <exclusion>
           <groupId>com.google.guava</groupId>
           <artifactId>guava</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>net.sf.saxon</groupId>
+          <artifactId>Saxon-HE</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
-    <!-- FIXME: the Guava version required by Checkstyle 8+ is too recent, see https://jira.xwiki.org/browse/XCOMMONS-1155 -->
+    <!-- Put back artifact excluded in previous dependencies -->
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
+      <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>Saxon-HE</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
