@@ -19,14 +19,13 @@
  */
 package org.xwiki.diff.xml;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
 /**
- * Used to configure the way we compute changes between two XML documents.
+ * Used to split strings before computing their changes and to re-create the strings after applying patches.
  * 
  * @version $Id$
  * @since 11.10.1
@@ -34,31 +33,22 @@ import org.xwiki.stability.Unstable;
  */
 @Role
 @Unstable
-public interface XMLDiffConfiguration
+public interface StringSplitter
 {
     /**
-     * @return the list of filters that should be applied on the XML documents before and after computing their changes
+     * Splits the given string into a list of objects, which can be characters, words, phrases, etc. depending on the
+     * implementation. A larger list of objects will lead to a more detailed difference report when comparing strings.
+     * 
+     * @param text the string to split
+     * @return the list of objects on which to compute the changes when comparing strings
      */
-    default List<XMLDiffFilter> getFilters()
-    {
-        return Collections.emptyList();
-    }
+    List<Object> split(String text);
 
     /**
-     * @param nodeType an XML DOM node type
-     * @return the splitter to use for the specified node type
+     * The reverse operation of {@link #split(String)}. Recreates the string from a list of objects.
+     * 
+     * @param objects a list of objects produced by {@link #split(String)} or by patching such a list
+     * @return a string that produces the given list of objects when passed to {@link #split(String)}
      */
-    default StringSplitter getSplitterForNodeType(short nodeType)
-    {
-        return null;
-    }
-
-    /**
-     * @return the threshold below which two nodes are considered to be very similar; the value must be between 0 and 1,
-     *         where 0 means identical nodes and 1 means completely different nodes
-     */
-    default double getSimilarityThreshold()
-    {
-        return 0;
-    }
+    String join(List<Object> objects);
 }

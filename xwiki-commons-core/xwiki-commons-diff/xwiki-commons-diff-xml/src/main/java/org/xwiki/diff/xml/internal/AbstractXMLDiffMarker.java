@@ -44,6 +44,7 @@ import org.xwiki.diff.Delta;
 import org.xwiki.diff.DiffException;
 import org.xwiki.diff.Patch;
 import org.xwiki.diff.PatchException;
+import org.xwiki.diff.xml.StringSplitter;
 import org.xwiki.diff.xml.XMLDiff;
 import org.xwiki.diff.xml.XMLDiffConfiguration;
 import org.xwiki.diff.xml.XMLDiffMarker;
@@ -64,14 +65,14 @@ public abstract class AbstractXMLDiffMarker implements XMLDiffMarker
     private XMLDiff xmlDiff;
 
     @Override
-    public boolean markDiff(Node left, Node right) throws DiffException
+    public boolean markDiff(Node left, Node right, XMLDiffConfiguration config) throws DiffException
     {
         // Normalize in order to avoid false changes.
         normalize(left);
         normalize(right);
 
         // Compute the differences.
-        Map<Node, Patch<?>> patches = this.xmlDiff.diff(left, right, new XMLDiffConfiguration());
+        Map<Node, Patch<?>> patches = this.xmlDiff.diff(left, right, config);
 
         // Filter patches for relevant changes.
         patches = filterPatches(patches);
@@ -80,7 +81,7 @@ public abstract class AbstractXMLDiffMarker implements XMLDiffMarker
         patches = markDiffBlocks(patches);
 
         // Apply in-line changes.
-        applyPatches(patches);
+        applyPatches(patches, config);
 
         cleanUp(left);
 
@@ -113,17 +114,17 @@ public abstract class AbstractXMLDiffMarker implements XMLDiffMarker
         if (node == null || patch.isEmpty()) {
             // Don't accept patches that target the root node or that are empty.
         } else if (node.getNodeType() == Node.TEXT_NODE) {
-            return acceptPatch((Text) node, (Patch<Character>) patch);
+            return acceptPatch((Text) node, patch);
         } else if (node.getNodeType() == Node.ELEMENT_NODE) {
             return acceptPatch((Element) node, (Patch<Node>) patch);
         } else if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
-            return acceptPatch((Attr) node, (Patch<Character>) patch);
+            return acceptPatch((Attr) node, patch);
         }
 
         return false;
     }
 
-    protected boolean acceptPatch(Text text, Patch<Character> patch)
+    protected boolean acceptPatch(Text text, Patch<?> patch)
     {
         Node parent = text.getParentNode();
         return parent != null && parent.getNodeType() == Node.ELEMENT_NODE && acceptChangesFor((Element) parent);
@@ -155,7 +156,7 @@ public abstract class AbstractXMLDiffMarker implements XMLDiffMarker
         }
     }
 
-    protected boolean acceptPatch(Attr attribute, Patch<Character> patch)
+    protected boolean acceptPatch(Attr attribute, Patch<?> patch)
     {
         return acceptChangesFor(attribute);
     }
@@ -288,36 +289,36 @@ public abstract class AbstractXMLDiffMarker implements XMLDiffMarker
     // Mark In-line changes
     //
 
-    protected void applyPatches(Map<Node, Patch<?>> patches) throws PatchException
+    protected void applyPatches(Map<Node, Patch<?>> patches, XMLDiffConfiguration config) throws PatchException
     {
         for (Map.Entry<Node, Patch<?>> entry : patches.entrySet()) {
-            this.applyPatch(entry.getKey(), entry.getValue());
+            this.applyPatch(entry.getKey(), entry.getValue(), config);
         }
     }
 
     @SuppressWarnings("unchecked")
-    protected void applyPatch(Node node, Patch<?> patch) throws PatchException
+    protected void applyPatch(Node node, Patch<?> patch, XMLDiffConfiguration config) throws PatchException
     {
         if (node.getNodeValue() != null) {
             if (node.getNodeType() == Node.TEXT_NODE) {
-                applyPatch((Text) node, (Patch<Character>) patch);
+                applyPatch((Text) node, (Patch<Object>) patch, config);
             } else if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
-                applyPatch((Attr) node, (Patch<Character>) patch);
+                applyPatch((Attr) node, (Patch<Object>) patch, config);
             }
         } else if (node.getNodeType() == Node.ELEMENT_NODE) {
             applyPatch((Element) node, (Patch<Node>) patch);
         }
     }
 
-    protected void applyPatch(Text textLeft, Patch<Character> patch) throws PatchException
+    protected void applyPatch(Text textLeft, Patch<Object> patch, XMLDiffConfiguration config) throws PatchException
     {
         Text textRight = (Text) getOrCreateRightNode(textLeft);
-        textRight.setNodeValue(applyPatch(textLeft.getNodeValue(), patch));
+        patchNodeValue(textRight, patch, config);
 
         Element parentLeft = (Element) textLeft.getParentNode();
         if (supportsInlineMarkerElements(parentLeft)) {
-            markTextValueChange(textLeft, patch, true);
-            markTextValueChange(textRight, patch, false);
+            markTextValueChange(textLeft, patch, true, config);
+            markTextValueChange(textRight, patch, false, config);
         } else {
             markElementModified(parentLeft, true);
             markElementModified((Element) textRight.getParentNode(), false);
@@ -329,51 +330,49 @@ public abstract class AbstractXMLDiffMarker implements XMLDiffMarker
         return true;
     }
 
-    protected void markTextValueChange(Node text, Patch<Character> patch, boolean left)
+    protected void markTextValueChange(Node text, Patch<Object> patch, boolean left, XMLDiffConfiguration config)
     {
         Document document = text.getOwnerDocument();
         // We use a wrapper because we don't want to change the node index of the next siblings when the text node is
         // split in multiple parts (in order to show the parts that were deleter or inserted).
         Element wrapper = document.createElement(getInlineMarkerElementName());
         wrapper.setAttribute(TEXT_WRAPPER, "true");
-        String textValue = text.getNodeValue();
+        StringSplitter splitter = config.getSplitterForNodeType(text.getNodeType());
+        List<Object> objects = splitter.split(text.getNodeValue());
         int lastIndex = 0;
-        for (Delta<Character> delta : patch) {
-            Chunk<Character> chunk = left ? delta.getPrevious() : delta.getNext();
+        for (Delta<Object> delta : patch) {
+            Chunk<Object> chunk = left ? delta.getPrevious() : delta.getNext();
             if (chunk.size() > 0) {
-                wrapper.appendChild(document.createTextNode(textValue.substring(lastIndex, chunk.getIndex())));
+                // Append the unmodified text as is.
+                List<Object> unmodified = objects.subList(lastIndex, chunk.getIndex());
+                wrapper.appendChild(document.createTextNode(splitter.join(unmodified)));
+                // Wrap the modified text with an in-line element that can be styled.
                 Element marker = (Element) document.createElement(getInlineMarkerElementName());
-                marker.appendChild(document.createTextNode(toString(chunk.getElements())));
+                marker.appendChild(document.createTextNode(splitter.join(chunk.getElements())));
                 wrapper.appendChild(marker);
                 markElementModified(marker, left);
                 lastIndex = chunk.getLastIndex() + 1;
             }
         }
-        wrapper.appendChild(document.createTextNode(textValue.substring(lastIndex)));
+        wrapper.appendChild(document.createTextNode(splitter.join(objects.subList(lastIndex, objects.size()))));
         text.getParentNode().replaceChild(wrapper, text);
     }
 
     protected abstract String getInlineMarkerElementName();
 
-    protected void applyPatch(Attr attributeLeft, Patch<Character> patch) throws PatchException
+    protected void applyPatch(Attr attributeLeft, Patch<Object> patch, XMLDiffConfiguration config)
+        throws PatchException
     {
         Attr attributeRight = (Attr) getOrCreateRightNode(attributeLeft);
-        attributeRight.setValue(applyPatch(attributeLeft.getValue(), patch));
+        patchNodeValue(attributeRight, patch, config);
         markElementModified(attributeLeft.getOwnerElement(), true);
         markElementModified(attributeRight.getOwnerElement(), false);
     }
 
-    private String applyPatch(String string, Patch<Character> patch) throws PatchException
+    private void patchNodeValue(Node node, Patch<Object> patch, XMLDiffConfiguration config) throws PatchException
     {
-        List<Character> chars = string.chars().mapToObj(c -> (char) c).collect(Collectors.toList());
-        return toString(patch.apply(chars));
-    }
-
-    private String toString(List<Character> characters)
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        characters.forEach(stringBuilder::append);
-        return stringBuilder.toString();
+        StringSplitter splitter = config.getSplitterForNodeType(node.getNodeType());
+        node.setNodeValue(splitter.join(patch.apply(splitter.split(node.getNodeValue()))));
     }
 
     protected void applyPatch(Element parent, Patch<Node> patch)
