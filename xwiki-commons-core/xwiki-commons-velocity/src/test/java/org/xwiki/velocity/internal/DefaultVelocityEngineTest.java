@@ -332,4 +332,12 @@ public class DefaultVelocityEngineTest
         assertEvaluate("$", "#set($var = \"$\")$var", "mytemplate");
         assertEvaluate("test$", "#set($var = \"test$\")$var", "mytemplate");
     }
+
+    @Test
+    public void testExpressionFollowedByTwoPipes() throws XWikiVelocityException
+    {
+        this.engine.initialize(new Properties());
+
+        assertEvaluate("$var||", "$var||");
+    }
 }
