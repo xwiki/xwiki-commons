@@ -19,42 +19,25 @@
  */
 package org.xwiki.diff.xml.internal;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.InstantiationStrategy;
-import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
-import org.xwiki.component.phase.InitializationException;
-import org.xwiki.diff.xml.XMLDiffFilter;
+import org.xwiki.component.annotation.Role;
+import org.xwiki.diff.DiffException;
 
 /**
- * Used to configure the way we compute changes between two HTML documents.
+ * Converts an URL to a Data URI by accessing the URL and encoding the response data as base64.
  * 
  * @version $Id$
  * @since 11.10.1
  * @since 12.0RC1
  */
-@Component
-@Named("html")
-@InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
-public class HTMLDiffConfiguration extends DefaultXMLDiffConfiguration
+@Role
+public interface DataURIConverter
 {
-    @Inject
-    @Named("html/imageEmbedder")
-    private XMLDiffFilter htmlImageEmbedder;
-
-    @Inject
-    @Named("html/pruner")
-    private XMLDiffFilter htmlDiffPruner;
-
-    @Override
-    public void initialize() throws InitializationException
-    {
-        super.initialize();
-
-        // HTML defaults.
-        getFilters().add(this.htmlImageEmbedder);
-        getFilters().add(this.htmlDiffPruner);
-    }
+    /**
+     * Converts the given URL to a Data URI by accessing the URL and encoding the response data as base64.
+     * 
+     * @param url the URL to convert
+     * @return the data URI
+     * @throws DiffException if the conversion fails
+     */
+    String convert(String url) throws DiffException;
 }
