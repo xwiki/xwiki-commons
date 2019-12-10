@@ -29,18 +29,32 @@ import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xwiki.diff.xml.StringSplitter;
 import org.xwiki.diff.xml.XMLDiffConfiguration;
 import org.xwiki.diff.xml.XMLDiffFilter;
 import org.xwiki.diff.xml.XMLDiffManager;
+import org.xwiki.test.LogLevel;
 import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Integration tests for {@link UnifiedHTMLDiffManager}.
@@ -59,6 +73,14 @@ public class UnifiedHTMLDiffManagerTest
 
     private StringSplitter wordSplitter;
 
+    @MockComponent
+    private DataURIConverter dataURIConverter;
+
+    @RegisterExtension
+    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
+
+    private Map<String, String> images = new HashMap<>();
+
     @BeforeEach
     public void configure(MockitoComponentManager componentManager) throws Exception
     {
@@ -66,6 +88,20 @@ public class UnifiedHTMLDiffManagerTest
         this.config = componentManager.getInstance(XMLDiffConfiguration.class, "html");
         this.htmlDiffPruner = componentManager.getInstance(XMLDiffFilter.class, "html/pruner");
         this.wordSplitter = componentManager.getInstance(StringSplitter.class, "word");
+
+        this.images.put("alice.png", "data:image/png;base64,ABCD");
+        this.images.put("images/alice.png", "data:image/png;base64,ABCD");
+        this.images.put("bob.png", "data:image/png;base64,DCBA");
+        this.images.put("images/bob.png", "data:image/png;base64,DCBA");
+
+        when(this.dataURIConverter.convert(any(String.class))).thenAnswer(new Answer<String>()
+        {
+            @Override
+            public String answer(InvocationOnMock invocation) throws Throwable
+            {
+                return images.getOrDefault(invocation.getArgument(0), invocation.getArgument(0));
+            }
+        });
     }
 
     @ParameterizedTest
@@ -93,6 +129,27 @@ public class UnifiedHTMLDiffManagerTest
             String actualHTML = this.unifiedHTMLDiffManager.diff(testData.get("left"), testData.get("right"), config);
             assertEquals(expectedHTML, actualHTML);
         }
+    }
+
+    @Test
+    public void verifyXMLDiffFiltersThrowingExceptions() throws Exception
+    {
+        XMLDiffFilter alice = mock(XMLDiffFilter.class, "alice");
+        doThrow(new RuntimeException("before alice failed!")).when(alice).before(any(Document.class));
+        doThrow(new RuntimeException("after alice failed!")).when(alice).after(any(Document.class));
+
+        XMLDiffFilter bob = mock(XMLDiffFilter.class, "bob");
+        this.config.getFilters().add(0, alice);
+        this.config.getFilters().add(bob);
+
+        this.unifiedHTMLDiffManager.diff("<p>one</p>", "<p>two</p>", this.config);
+
+        assertEquals("Failed to apply filter before diff.", this.logCapture.getMessage(0));
+        assertEquals("Failed to apply filter before diff.", this.logCapture.getMessage(1));
+        assertEquals("Failed to apply filter after diff.", this.logCapture.getMessage(2));
+
+        verify(bob, times(2)).before(any(Document.class));
+        verify(bob).after(any(Document.class));
     }
 
     @ParameterizedTest

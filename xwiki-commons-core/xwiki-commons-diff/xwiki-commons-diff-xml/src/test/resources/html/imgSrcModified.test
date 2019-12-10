@@ -1,0 +1,22 @@
+##--------------------
+## left
+##--------------------
+<ul>
+  <li><img src="alice.png"/></li>
+  <li><img src="bob.png"/><img src="carol.png"/></li>
+</ul>
+##--------------------
+## right
+##--------------------
+<ul>
+  <li><img src="images/alice.png"/></li>
+  <li><img src="images/bob.png"/><img src="denis.png"/></li>
+</ul>
+##--------------------
+## expected-marker
+##--------------------
+<ul>
+  <li><img src="alice.png" /></li>
+  <li data-xwiki-html-diff-block="deleted"><img src="bob.png" /><img data-xwiki-html-diff="deleted" src="carol.png" /></li>
+  <li data-xwiki-html-diff-block="inserted"><img src="bob.png" /><img data-xwiki-html-diff="inserted" src="denis.png" /></li>
+</ul>

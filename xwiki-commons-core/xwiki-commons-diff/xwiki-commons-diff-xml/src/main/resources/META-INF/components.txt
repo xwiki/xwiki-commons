@@ -5,5 +5,6 @@ org.xwiki.diff.xml.internal.DefaultXMLDiffConfiguration
 org.xwiki.diff.xml.internal.HTMLDiffConfiguration
 org.xwiki.diff.xml.internal.HTMLDiffMarker
 org.xwiki.diff.xml.internal.HTMLDiffPruner
+org.xwiki.diff.xml.internal.HTMLImageEmbedder
 org.xwiki.diff.xml.internal.UnifiedHTMLDiffManager
 org.xwiki.diff.xml.internal.WordStringSplitter
