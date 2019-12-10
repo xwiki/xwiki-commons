@@ -21,7 +21,6 @@ package org.xwiki.diff.xml.internal;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -69,14 +68,5 @@ public final class XMLDiffUtils
             list.add(nodeList.item(i));
         }
         return list;
-    }
-
-    /**
-     * @param string the string whose characters to return
-     * @return the list of characters of the given string
-     */
-    public static List<Character> toCharacterList(String string)
-    {
-        return string.chars().mapToObj(c -> (char) c).collect(Collectors.toList());
     }
 }

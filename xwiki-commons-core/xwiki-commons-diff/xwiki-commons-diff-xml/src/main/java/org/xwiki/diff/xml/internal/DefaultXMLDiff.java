@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,6 +45,7 @@ import org.xwiki.diff.internal.DefaultChunk;
 import org.xwiki.diff.internal.DefaultPatch;
 import org.xwiki.diff.internal.DeleteDelta;
 import org.xwiki.diff.internal.InsertDelta;
+import org.xwiki.diff.xml.StringSplitter;
 import org.xwiki.diff.xml.XMLDiff;
 import org.xwiki.diff.xml.XMLDiffConfiguration;
 
@@ -102,7 +102,8 @@ public class DefaultXMLDiff implements XMLDiff
         if (left.getNodeValue() != null) {
             // These are value nodes (e.g. text, attributes, comments) so compute the value difference.
             if (!left.getNodeValue().equals(right.getNodeValue())) {
-                patches.put(left, diff(left.getNodeValue(), right.getNodeValue(), config));
+                StringSplitter splitter = config.getSplitterForNodeType(left.getNodeType());
+                patches.put(left, diff(left.getNodeValue(), right.getNodeValue(), splitter));
             }
         } else {
             // Compute the difference between attributes.
@@ -142,11 +143,9 @@ public class DefaultXMLDiff implements XMLDiff
         return map;
     }
 
-    protected Patch<Character> diff(String left, String right, XMLDiffConfiguration config) throws DiffException
+    protected Patch<?> diff(String left, String right, StringSplitter splitter) throws DiffException
     {
-        // Compute the difference at character level.
-        return new DefaultPatch<>(
-            DiffUtils.diff(XMLDiffUtils.toCharacterList(left), XMLDiffUtils.toCharacterList(right)));
+        return new DefaultPatch<>(DiffUtils.diff(splitter.split(left), splitter.split(right)));
     }
 
     protected Map<Node, Patch<?>> diff(List<Node> left, List<Node> right, XMLDiffConfiguration config)
@@ -155,7 +154,8 @@ public class DefaultXMLDiff implements XMLDiff
         Map<Node, Patch<?>> patches = new LinkedHashMap<>();
 
         // First compute the difference between the direct children.
-        Patch<Node> patch = new DefaultPatch<>(DiffUtils.diff(left, right, this::areVerySimilar));
+        Patch<Node> patch =
+            new DefaultPatch<>(DiffUtils.diff(left, right, (alice, bob) -> this.areVerySimilar(alice, bob, config)));
 
         // Then compute the difference inside the child elements that are very similar (for all the descendants).
         Set<Node> leftModified = patch.stream().map(Delta::getPrevious).map(Chunk::getElements).flatMap(List::stream)
@@ -251,31 +251,40 @@ public class DefaultXMLDiff implements XMLDiff
         return true;
     }
 
-    protected boolean areVerySimilar(Node left, Node right)
+    protected boolean areVerySimilar(Node left, Node right, XMLDiffConfiguration config)
     {
-        // TODO: Make the difference threshold configurable.
-        return areSimilar(left, right)
-            && (left == null || getDiffPercentage(left.getTextContent(), right.getTextContent()) < .6);
+        return areSimilar(left, right) && (left == null || getDiffPercentage(left.getTextContent(),
+            right.getTextContent(), config) < config.getSimilarityThreshold());
     }
 
-    private double getDiffPercentage(String left, String right)
+    private double getDiffPercentage(String left, String right, XMLDiffConfiguration config)
     {
-        if (Objects.equals(left, right)) {
+        if (left != null && right != null) {
+            // Use the text node splitter because the difference percentage is computed on the inner text.
+            StringSplitter splitter = config.getSplitterForNodeType(Node.TEXT_NODE);
+            List<Object> leftList = splitter.split(left);
+            List<Object> rightList = splitter.split(right);
+            if (leftList.equals(rightList)) {
+                return 0;
+            } else {
+                // Note that the max length can't be zero because leftList and rightList are different.
+                int maxLength = Math.max(leftList.size(), rightList.size());
+                try {
+                    Patch<?> patch = new DefaultPatch<>(DiffUtils.diff(leftList, rightList));
+                    int levenshteinDistance =
+                        patch.stream().map(delta -> Math.max(delta.getPrevious().size(), delta.getNext().size()))
+                            .reduce(0, Integer::sum);
+                    return (double) levenshteinDistance / maxLength;
+                } catch (DiffException e) {
+                    // This shouldn't happen. Let's assume the strings are completely different.
+                    return 1;
+                }
+            }
+        } else if (left == right) {
+            // Both are null.
             return 0;
-        } else if (left == null || right == null) {
-            return 1;
-        }
-
-        // Note that the max length can't be zero because left and right are different.
-        int maxLength = Math.max(left.length(), right.length());
-        try {
-            Patch<Character> patch = new DefaultPatch<>(
-                DiffUtils.diff(XMLDiffUtils.toCharacterList(left), XMLDiffUtils.toCharacterList(right)));
-            int levenshteinDistance = patch.stream()
-                .map(delta -> Math.max(delta.getPrevious().size(), delta.getNext().size())).reduce(0, Integer::sum);
-            return (double) levenshteinDistance / maxLength;
-        } catch (DiffException e) {
-            // This shouldn't happen. Let's assume the strings are completely different.
+        } else {
+            // One is null and the other is not.
             return 1;
         }
     }

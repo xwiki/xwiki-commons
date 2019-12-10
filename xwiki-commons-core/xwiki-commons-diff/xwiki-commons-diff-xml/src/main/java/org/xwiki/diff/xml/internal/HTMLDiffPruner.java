@@ -34,35 +34,43 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.diff.xml.XMLDiffPruner;
+import org.xwiki.diff.xml.XMLDiffFilter;
 
 /**
- * Default implementation for {@link XMLDiffPruner} that prunes the unchanged nodes from a change tree marked with
+ * {@link XMLDiffFilter} implementation that prunes the unchanged nodes from a change tree marked with
  * {@link HTMLDiffMarker}.
  * 
  * @version $Id$
- * @since 11.6RC1
+ * @since 11.10.1
+ * @since 12.0RC1
  */
 @Component
 @Singleton
-@Named("html")
-public class HTMLDiffPruner implements XMLDiffPruner
+@Named("html/pruner")
+public class HTMLDiffPruner implements XMLDiffFilter
 {
     private static final String DIFF_CONTEXT_ATTRIBUTE = "data-xwiki-html-diff-context";
 
     private static final String DIFF_HIDDEN_ATTRIBUTE = "data-xwiki-html-diff-hidden";
 
     @Override
-    public void prune(Node root)
+    public void before(Document document)
+    {
+        // Nothing to do.
+    }
+
+    @Override
+    public void after(Document document)
     {
         // Mark parents and siblings we want to keep by going upwards from the change blocks.
-        getElementsWithAttribute(root, HTMLDiffMarker.DIFF_BLOCK_ATTRIBUTE).stream().forEach(this::markContextElements);
+        getElementsWithAttribute(document, HTMLDiffMarker.DIFF_BLOCK_ATTRIBUTE).stream()
+            .forEach(this::markContextElements);
 
         // Iterate the tree top -> down and hide nodes we don't want to keep.
-        hideNodesWeDontWantToKeep(root);
+        hideNodesWeDontWantToKeep(document);
 
         // Remove the marker from the context nodes.
-        getElementsWithAttribute(root, DIFF_CONTEXT_ATTRIBUTE).stream().forEach(this::unmarkContextElement);
+        getElementsWithAttribute(document, DIFF_CONTEXT_ATTRIBUTE).stream().forEach(this::unmarkContextElement);
     }
 
     private void markContextElements(Node diffBlock)

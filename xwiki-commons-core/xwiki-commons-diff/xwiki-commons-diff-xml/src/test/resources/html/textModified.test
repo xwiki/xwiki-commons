@@ -11,3 +11,8 @@
 ##--------------------
 <p data-xwiki-html-diff-block="deleted">one <span data-xwiki-html-diff="deleted">two</span> three</p>
 <p data-xwiki-html-diff-block="inserted">one <span data-xwiki-html-diff="inserted">xyz</span> three</p>
+##--------------------
+## expected-marker-word
+##--------------------
+<p data-xwiki-html-diff-block="deleted">one<span data-xwiki-html-diff="deleted">two</span>three</p>
+<p data-xwiki-html-diff-block="inserted">one<span data-xwiki-html-diff="inserted">xyz</span>three</p>

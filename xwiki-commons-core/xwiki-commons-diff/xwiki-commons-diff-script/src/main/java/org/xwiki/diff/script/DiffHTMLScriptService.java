@@ -19,28 +19,17 @@
  */
 package org.xwiki.diff.script;
 
-import java.io.StringReader;
-import java.util.Collections;
-
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.slf4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSInput;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.diff.DiffException;
-import org.xwiki.diff.xml.XMLDiffMarker;
-import org.xwiki.diff.xml.XMLDiffPruner;
+import org.xwiki.diff.xml.XMLDiffConfiguration;
+import org.xwiki.diff.xml.XMLDiffManager;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.stability.Unstable;
-import org.xwiki.xml.XMLUtils;
-import org.xwiki.xml.html.HTMLCleaner;
-import org.xwiki.xml.html.HTMLCleanerConfiguration;
-import org.xwiki.xml.html.HTMLUtils;
 
 /**
  * Provides script oriented APIs to compute and display the changes between HTML documents.
@@ -55,38 +44,16 @@ import org.xwiki.xml.html.HTMLUtils;
 public class DiffHTMLScriptService implements ScriptService
 {
     @Inject
-    private Logger logger;
+    @Named("html/unified")
+    private XMLDiffManager unifiedHTMLDiffManager;
 
     @Inject
-    private HTMLCleaner htmlCleaner;
-
-    @Inject
-    @Named("html")
-    private XMLDiffMarker htmlDiffMarker;
-
-    @Inject
-    @Named("html")
-    private XMLDiffPruner htmlDiffPruner;
+    @Named("html/script")
+    private Provider<XMLDiffConfiguration> configurationProvider;
 
     /**
-     * Helper object for manipulating DOM Level 3 Load and Save APIs.
-     **/
-    private DOMImplementationLS lsImpl;
-
-    /**
-     * Default component constructor.
-     */
-    public DiffHTMLScriptService()
-    {
-        try {
-            this.lsImpl = (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS 3.0");
-        } catch (Exception exception) {
-            this.logger.warn("Cannot initialize the HTML Diff Script Service", exception);
-        }
-    }
-
-    /**
-     * Computes the changes between the given HTML fragments and returns them in the unified format.
+     * Computes the changes between the given HTML fragments using the default configuration, and returns them in the
+     * unified format.
      * 
      * @param previousHTML the previous version of the HTML
      * @param nextHTML the next version of the HTML
@@ -94,55 +61,39 @@ public class DiffHTMLScriptService implements ScriptService
      */
     public String unified(String previousHTML, String nextHTML)
     {
-        Document previousDocument = parseHTML(previousHTML);
+        return unified(previousHTML, nextHTML, getDefaultConfiguration());
+    }
+
+    /**
+     * Computes the changes between the given HTML fragments using the given configuration and returns them in the
+     * unified format.
+     * 
+     * @param previousHTML the previous version of the HTML
+     * @param nextHTML the next version of the HTML
+     * @param config the configuration
+     * @return the changes between the given HTML fragments in unified format
+     * @since 11.10.1
+     * @since 12.0RC1
+     */
+    @Unstable
+    public String unified(String previousHTML, String nextHTML, XMLDiffConfiguration config)
+    {
         try {
-            if (!this.htmlDiffMarker.markDiff(previousDocument, parseHTML(nextHTML))) {
-                // No changes detected.
-                return "";
-            }
+            return this.unifiedHTMLDiffManager.diff(previousHTML, nextHTML, config);
         } catch (DiffException e) {
             // Failed to compute the changes.
             return null;
         }
-        this.htmlDiffPruner.prune(previousDocument);
-        return unwrap(HTMLUtils.toString(previousDocument, false, false).trim());
     }
 
-    private Document parseHTML(String html)
+    /**
+     * @return the default configuration
+     * @since 11.10.1
+     * @since 12.0RC1
+     */
+    @Unstable
+    public XMLDiffConfiguration getDefaultConfiguration()
     {
-        // We need to clean the HTML because it may have been generated with the HTML macro using clean=false.
-        return parseXML(cleanHTML(html));
-    }
-
-    private String cleanHTML(String html)
-    {
-        HTMLCleanerConfiguration config = this.htmlCleaner.getDefaultConfiguration();
-        // We need to parse the clean HTML as XML later and we don't want to resolve the entity references from the DTD.
-        config.setParameters(Collections.singletonMap(HTMLCleanerConfiguration.USE_CHARACTER_REFERENCES, "true"));
-        Document htmlDoc = this.htmlCleaner.clean(new StringReader(wrap(html)), config);
-        // We serialize and parse again the HTML as XML because the HTML Cleaner doesn't handle entity and character
-        // references very well: they all end up as plain text (they are included in the value returned by
-        // Node#getNodeValue()).
-        return HTMLUtils.toString(htmlDoc);
-    }
-
-    private Document parseXML(String xml)
-    {
-        LSInput input = this.lsImpl.createLSInput();
-        input.setStringData(xml);
-        return XMLUtils.parse(input);
-    }
-
-    private String wrap(String fragment)
-    {
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html>"
-            + "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body>" + fragment + "</body></html>";
-    }
-
-    private String unwrap(String html)
-    {
-        int start = html.indexOf("<body>") + 6;
-        int end = html.indexOf("</body>");
-        return html.substring(start, end);
+        return this.configurationProvider.get();
     }
 }

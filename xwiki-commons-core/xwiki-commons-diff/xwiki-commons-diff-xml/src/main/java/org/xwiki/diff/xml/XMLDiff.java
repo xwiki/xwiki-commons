@@ -40,9 +40,9 @@ import org.xwiki.stability.Unstable;
 public interface XMLDiff
 {
     /**
-     * Computes the difference between two XML nodes and their descendants. When a text node, attribute, comment or any
-     * value node type in general is modified we compute the difference at character level. Otherwise the difference is
-     * expressed at node level, as if two lists of nodes are compared.
+     * Computes the difference between two XML nodes and their descendants. When a value node type (e.g. text,
+     * attribute, comment) is modified we compute the difference on the text value using the splitter indicated by the
+     * configuration. Otherwise the difference is expressed at node level, as if two lists of nodes are compared.
      * <p>
      * The result is a mapping between nodes from the left side and the patches that need to be applied to these nodes
      * in order for the left tree to become the right tree. If the root nodes of the left and right trees don't match
@@ -70,9 +70,9 @@ public interface XMLDiff
 
     /**
      * Computes the difference between two maps of XML nodes. This is mostly used to compare the attributes of two XML
-     * elements. Attributes that are on both sides are compared at character level. The deltas that correspond to
-     * deleted or added attributes have index {@code -1} because attribute order is not significant (we're comparing two
-     * maps of nodes anyway).
+     * elements. The values of the attributes that are on both sides are compared using the splitter indicated by the
+     * configuration. The deltas that correspond to deleted or added attributes have index {@code -1} because attribute
+     * order is not significant (we're comparing two maps of nodes anyway).
      * 
      * @param left the left side of the comparison
      * @param right the right side of the comparison

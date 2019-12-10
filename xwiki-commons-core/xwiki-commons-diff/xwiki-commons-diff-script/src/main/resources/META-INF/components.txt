@@ -1,3 +1,4 @@
+org.xwiki.diff.script.internal.ScriptHTMLDiffConfiguration
 org.xwiki.diff.script.DiffScriptService
 org.xwiki.diff.script.DiffDisplayerScriptService
 org.xwiki.diff.script.DiffHTMLScriptService

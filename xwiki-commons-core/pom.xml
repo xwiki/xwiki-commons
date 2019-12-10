@@ -157,6 +157,96 @@
             {
               "revapi": {
                 "ignore" : [
+                  {
+                    "code": "java.method.removed",
+                    "old": "method void org.xwiki.diff.xml.XMLDiffConfiguration::<init>()",
+                    "justification": "Unstable API change (XMLDiffConfiguration is now an interface)"
+                  },
+                  {
+                    "code": "java.method.removed",
+                    "old": "method java.lang.Object java.lang.Object::clone() throws java.lang.CloneNotSupportedException @ org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "justification": "Unstable API change (XMLDiffConfiguration is now an interface)"
+                  },
+                  {
+                    "code": "java.method.removed",
+                    "old": "method boolean java.lang.Object::equals(java.lang.Object) @ org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "justification": "Unstable API change (XMLDiffConfiguration is now an interface)"
+                  },
+                  {
+                    "code": "java.method.removed",
+                    "old": "method void java.lang.Object::finalize() throws java.lang.Throwable @ org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "justification": "Unstable API change (XMLDiffConfiguration is now an interface)"
+                  },
+                  {
+                    "code": "java.method.removed",
+                    "old": "method java.lang.Class<?> java.lang.Object::getClass() @ org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "justification": "Unstable API change (XMLDiffConfiguration is now an interface)"
+                  },
+                  {
+                    "code": "java.method.removed",
+                    "old": "method int java.lang.Object::hashCode() @ org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "justification": "Unstable API change (XMLDiffConfiguration is now an interface)"
+                  },
+                  {
+                    "code": "java.method.removed",
+                    "old": "method void java.lang.Object::notify() @ org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "justification": "Unstable API change (XMLDiffConfiguration is now an interface)"
+                  },
+                  {
+                    "code": "java.method.removed",
+                    "old": "method void java.lang.Object::notifyAll() @ org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "justification": "Unstable API change (XMLDiffConfiguration is now an interface)"
+                  },
+                  {
+                    "code": "java.method.removed",
+                    "old": "method java.lang.String java.lang.Object::toString() @ org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "justification": "Unstable API change (XMLDiffConfiguration is now an interface)"
+                  },
+                  {
+                    "code": "java.method.removed",
+                    "old": "method void java.lang.Object::wait() throws java.lang.InterruptedException @ org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "justification": "Unstable API change (XMLDiffConfiguration is now an interface)"
+                  },
+                  {
+                    "code": "java.method.removed",
+                    "old": "method void java.lang.Object::wait(long) throws java.lang.InterruptedException @ org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "justification": "Unstable API change (XMLDiffConfiguration is now an interface)"
+                  },
+                  {
+                    "code": "java.method.removed",
+                    "old": "method void java.lang.Object::wait(long, int) throws java.lang.InterruptedException @ org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "justification": "Unstable API change (XMLDiffConfiguration is now an interface)"
+                  },
+                  {
+                    "code": "java.class.kindChanged",
+                    "old": "class org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "new": "interface org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "justification": "Unstable API change (XMLDiffConfiguration is now an interface)"
+                  },
+                  {
+                    "code": "java.class.nowAbstract",
+                    "old": "class org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "new": "interface org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "justification": "Unstable API change (XMLDiffConfiguration is now an interface)"
+                  },
+                  {
+                    "code": "java.annotation.added",
+                    "old": "class org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "new": "interface org.xwiki.diff.xml.XMLDiffConfiguration",
+                    "annotation": "@org.xwiki.component.annotation.Role",
+                    "justification": "Unstable API change (XMLDiffConfiguration is now an interface)"
+                  },
+                  {
+                    "code": "java.method.numberOfParametersChanged",
+                    "old": "method boolean org.xwiki.diff.xml.XMLDiffMarker::markDiff(org.w3c.dom.Node, org.w3c.dom.Node) throws org.xwiki.diff.DiffException",
+                    "new": "method boolean org.xwiki.diff.xml.XMLDiffMarker::markDiff(org.w3c.dom.Node, org.w3c.dom.Node, org.xwiki.diff.xml.XMLDiffConfiguration) throws org.xwiki.diff.DiffException",
+                    "justification": "Unstable API change (Added configuration parameter)"
+                  },
+                  {
+                    "code": "java.class.removed",
+                    "old": "interface org.xwiki.diff.xml.XMLDiffPruner",
+                    "justification": "Unstable API change (XMLDiffPruner has been converted to an XMLDiffFilter)"
+                  }
                   // Add more ignores below...
                 ]
               }

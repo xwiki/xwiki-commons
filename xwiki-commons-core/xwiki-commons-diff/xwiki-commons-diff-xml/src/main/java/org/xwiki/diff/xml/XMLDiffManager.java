@@ -19,14 +19,12 @@
  */
 package org.xwiki.diff.xml;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.xwiki.component.annotation.Role;
+import org.xwiki.diff.DiffException;
 import org.xwiki.stability.Unstable;
 
 /**
- * Used to configure the way we compute changes between two XML documents.
+ * Computes and marks the differences between two XML documents.
  * 
  * @version $Id$
  * @since 11.10.1
@@ -34,31 +32,16 @@ import org.xwiki.stability.Unstable;
  */
 @Role
 @Unstable
-public interface XMLDiffConfiguration
+public interface XMLDiffManager
 {
     /**
-     * @return the list of filters that should be applied on the XML documents before and after computing their changes
+     * Computes and marks the differences between two XML documents.
+     * 
+     * @param left the left side of the comparison
+     * @param right the right side of the comparison
+     * @param config the configuration
+     * @return the differences between the two XML documents
+     * @throws DiffException if the difference can't be computed
      */
-    default List<XMLDiffFilter> getFilters()
-    {
-        return Collections.emptyList();
-    }
-
-    /**
-     * @param nodeType an XML DOM node type
-     * @return the splitter to use for the specified node type
-     */
-    default StringSplitter getSplitterForNodeType(short nodeType)
-    {
-        return null;
-    }
-
-    /**
-     * @return the threshold below which two nodes are considered to be very similar; the value must be between 0 and 1,
-     *         where 0 means identical nodes and 1 means completely different nodes
-     */
-    default double getSimilarityThreshold()
-    {
-        return 0;
-    }
+    String diff(String left, String right, XMLDiffConfiguration config) throws DiffException;
 }

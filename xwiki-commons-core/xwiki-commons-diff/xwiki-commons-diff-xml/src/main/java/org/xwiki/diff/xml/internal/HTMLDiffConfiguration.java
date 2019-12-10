@@ -17,26 +17,39 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.diff.xml;
+package org.xwiki.diff.xml.internal;
 
-import org.w3c.dom.Node;
-import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.component.annotation.InstantiationStrategy;
+import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
+import org.xwiki.component.phase.InitializationException;
+import org.xwiki.diff.xml.XMLDiffFilter;
 
 /**
- * Prunes the nodes that haven't changed from a change tree previously marked with a {@link XMLDiffMarker}.
+ * Used to configure the way we compute changes between two HTML documents.
  * 
  * @version $Id$
- * @since 11.6RC1
+ * @since 11.10.1
+ * @since 12.0RC1
  */
-@Role
-@Unstable
-public interface XMLDiffPruner
+@Component
+@Named("html")
+@InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
+public class HTMLDiffConfiguration extends DefaultXMLDiffConfiguration
 {
-    /**
-     * Prunes the unchanged nodes from the given tree that was previously marked with a {@link XMLDiffMarker}.
-     * 
-     * @param node the tree to be pruned
-     */
-    void prune(Node node);
+    @Inject
+    @Named("html/pruner")
+    private XMLDiffFilter htmlDiffPruner;
+
+    @Override
+    public void initialize() throws InitializationException
+    {
+        super.initialize();
+
+        // HTML defaults.
+        getFilters().add(this.htmlDiffPruner);
+    }
 }

@@ -17,48 +17,39 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.diff.xml;
+package org.xwiki.diff.xml.internal;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.diff.xml.StringSplitter;
 
 /**
- * Used to configure the way we compute changes between two XML documents.
+ * Default implementation of {@link StringSplitter} that generates a list with a single object, the string itself. Use
+ * this when you don't need a detailed report of the changes between two string (i.e. you only care if the strings are
+ * different).
  * 
  * @version $Id$
  * @since 11.10.1
  * @since 12.0RC1
  */
-@Role
-@Unstable
-public interface XMLDiffConfiguration
+@Component
+@Singleton
+public class DefaultStringSplitter implements StringSplitter
 {
-    /**
-     * @return the list of filters that should be applied on the XML documents before and after computing their changes
-     */
-    default List<XMLDiffFilter> getFilters()
+    @Override
+    public List<Object> split(String text)
     {
-        return Collections.emptyList();
+        return Collections.singletonList(text);
     }
 
-    /**
-     * @param nodeType an XML DOM node type
-     * @return the splitter to use for the specified node type
-     */
-    default StringSplitter getSplitterForNodeType(short nodeType)
+    @Override
+    public String join(List<Object> objects)
     {
-        return null;
-    }
-
-    /**
-     * @return the threshold below which two nodes are considered to be very similar; the value must be between 0 and 1,
-     *         where 0 means identical nodes and 1 means completely different nodes
-     */
-    default double getSimilarityThreshold()
-    {
-        return 0;
+        return objects.stream().map(Object::toString).collect(Collectors.joining(""));
     }
 }

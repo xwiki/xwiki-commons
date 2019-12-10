@@ -46,9 +46,10 @@ public interface XMLDiffMarker
      * 
      * @param left the left side of the comparison
      * @param right the right side of the comparison
+     * @param config the configuration
      * @return {@code true} if there is at least one difference between left and right side that has been marked,
      *         {@code false} otherwise
      * @throws DiffException if we fail to compute the difference
      */
-    boolean markDiff(Node left, Node right) throws DiffException;
+    boolean markDiff(Node left, Node right, XMLDiffConfiguration config) throws DiffException;
 }
