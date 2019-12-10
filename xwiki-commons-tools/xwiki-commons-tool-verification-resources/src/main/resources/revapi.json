@@ -55,6 +55,12 @@
         "code": "java\\.class\\.externalClassExposedInAPI",
         "package": "com\\.xpn\\.xwiki\\..*",
         "justification": "Dragging of other XWiki types to the API is OK."
+      },
+      // Workaround a revapi bug
+      // TODO: remove when https://github.com/revapi/revapi/issues/171 is fixed
+      {
+        "regex": true,
+        "old": ".* org\\.apache\\.struts\\.action\\.Action.*",
       }
     ]
   }
