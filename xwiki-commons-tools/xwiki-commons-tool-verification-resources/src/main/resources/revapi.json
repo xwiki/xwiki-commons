@@ -60,7 +60,12 @@
       // TODO: remove when https://github.com/revapi/revapi/issues/171 is fixed
       {
         "regex": true,
-        "code": ".*",
+        "code": "java\\.field\\.removed",
+        "old": ".* org\\.apache\\.struts\\.action\\.Action.*"
+      },
+      {
+        "regex": true,
+        "code": "java\\.method\\.removed",
         "old": ".* org\\.apache\\.struts\\.action\\.Action.*"
       }
     ]
