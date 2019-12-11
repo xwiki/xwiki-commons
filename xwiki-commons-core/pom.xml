@@ -478,6 +478,26 @@
                     "justification": "org.xwiki.velocity.tools.CollectionsTool is not supposed to be extended and even so it should not have much impact"
                   },
                   {
+                    "code": "java.method.finalMethodAddedToNonFinalClass",
+                    "new": "method java.lang.String org.apache.velocity.tools.generic.CollectionTool::getStringsDelimiter() @ org.xwiki.velocity.tools.CollectionsTool",
+                    "justification": "org.xwiki.velocity.tools.CollectionsTool is not supposed to be extended and even so it should not have much impact"
+                  },
+                  {
+                    "code": "java.method.finalMethodAddedToNonFinalClass",
+                    "new": "method boolean org.apache.velocity.tools.generic.CollectionTool::getStringsTrim() @ org.xwiki.velocity.tools.CollectionsTool",
+                    "justification": "org.xwiki.velocity.tools.CollectionsTool is not supposed to be extended and even so it should not have much impact"
+                  },
+                  {
+                    "code": "java.method.finalMethodAddedToNonFinalClass",
+                    "new": "method void org.apache.velocity.tools.generic.CollectionTool::setStringsDelimiter(java.lang.String) @ org.xwiki.velocity.tools.CollectionsTool",
+                    "justification": "org.xwiki.velocity.tools.CollectionsTool is not supposed to be extended and even so it should not have much impact"
+                  },
+                  {
+                    "code": "java.method.finalMethodAddedToNonFinalClass",
+                    "new": "method void org.apache.velocity.tools.generic.CollectionTool::setStringsTrim(boolean) @ org.xwiki.velocity.tools.CollectionsTool",
+                    "justification": "org.xwiki.velocity.tools.CollectionsTool is not supposed to be extended and even so it should not have much impact"
+                  },
+                  {
                     "code": "java.method.removed",
                     "old": "method java.text.DateFormat org.apache.velocity.tools.generic.DateTool::getDateFormat(int, int, java.util.Locale, java.util.TimeZone) @ org.xwiki.velocity.tools.ComparisonDateTool",
                     "justification": "Velocity API changes. Only a protected method so not impact for Velocity scripts"
