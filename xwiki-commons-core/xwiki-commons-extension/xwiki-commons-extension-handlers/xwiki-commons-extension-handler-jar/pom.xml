@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-extension-handlers</artifactId>
-    <version>11.10.1-SNAPSHOT</version>
+    <version>11.10.1</version>
   </parent>
   <artifactId>xwiki-commons-extension-handler-jar</artifactId>
   <name>XWiki Commons - Extension - Handler - JAR</name>
