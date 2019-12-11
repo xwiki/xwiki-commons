@@ -60,6 +60,7 @@
       // TODO: remove when https://github.com/revapi/revapi/issues/171 is fixed
       {
         "regex": true,
+        "code": ".*",
         "old": ".* org\\.apache\\.struts\\.action\\.Action.*"
       }
     ]
