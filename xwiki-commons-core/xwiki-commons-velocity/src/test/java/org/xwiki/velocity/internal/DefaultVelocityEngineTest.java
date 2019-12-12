@@ -310,9 +310,13 @@ public class DefaultVelocityEngineTest
     {
         this.engine.initialize(new Properties());
 
-        assertEvaluate("$caller", "#macro (testMacro $called)$called#end#testMacro($caller)", "mytemplate");
-        assertEvaluate("$caller", "#macro (testMacro $called)#set($called = $NULL)$called#set($called = 'value')#end#testMacro($caller)", "mytemplate");
-        assertEvaluate("$caller", "#macro (testMacro $called)#set($called = $NULL)$called#set($called = 'value')#end#set($caller = 'value')#testMacro($caller)", "mytemplate");
+        assertEvaluate("$caller", "#macro (testMacro $called)$called#end#testMacro($caller)");
+        assertEvaluate("$caller",
+            "#macro (testMacro $called)#set($called = $NULL)$called#set($called = 'value')#end#testMacro($caller)");
+        assertEvaluate("$caller",
+            "#macro (testMacro $called)#set($called = $NULL)$called#set($called = 'value')#end#set($caller = 'value')#testMacro($caller)");
+        assertEvaluate("$caller$caller2$caller",
+            "#macro(macro1 $called)$called#macro2($caller2)$called#end#macro(macro2 $called)$called#end#macro1($caller)");
     }
 
     @Test
