@@ -198,6 +198,22 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
+    public void testMacroWithMissingParameter() throws XWikiVelocityException
+    {
+        this.engine.initialize(new Properties());
+
+        assertEvaluate("", "#macro (testMacro $param)$param#end#testMacro()");
+    }
+
+    @Test
+    public void testMacroWithBooleanParameter() throws XWikiVelocityException
+    {
+        this.engine.initialize(new Properties());
+
+        assertEvaluate("", "#macro (testMacro $param)$param#end#testMacro(true)");
+    }
+
+    @Test
     public void testTemplateScope() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
