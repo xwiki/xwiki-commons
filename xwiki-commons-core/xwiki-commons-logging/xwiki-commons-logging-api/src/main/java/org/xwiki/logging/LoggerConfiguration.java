@@ -26,7 +26,6 @@ import org.xwiki.stability.Unstable;
  * 
  * @version $Id$
  * @since 12.0RC1
- * @see 11.10.2
  */
 @Unstable
 public interface LoggerConfiguration
