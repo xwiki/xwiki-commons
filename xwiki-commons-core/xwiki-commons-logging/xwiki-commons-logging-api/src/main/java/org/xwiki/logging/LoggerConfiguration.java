@@ -19,6 +19,7 @@
  */
 package org.xwiki.logging;
 
+import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -28,6 +29,7 @@ import org.xwiki.stability.Unstable;
  * @since 12.0RC1
  */
 @Unstable
+@Role
 public interface LoggerConfiguration
 {
     /**

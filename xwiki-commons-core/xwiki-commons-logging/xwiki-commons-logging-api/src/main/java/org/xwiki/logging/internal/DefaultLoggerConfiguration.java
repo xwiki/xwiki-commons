@@ -21,7 +21,9 @@ package org.xwiki.logging.internal;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
+import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.logging.LoggerConfiguration;
 
@@ -31,6 +33,8 @@ import org.xwiki.logging.LoggerConfiguration;
  * @version $Id$
  * @since 12.0RC1
  */
+@Component
+@Singleton
 public class DefaultLoggerConfiguration implements LoggerConfiguration
 {
     @Inject
