@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xwiki.configuration.internal.DefaultConfigurationSourceProvider;
 import org.xwiki.context.Execution;
+import org.xwiki.logging.LoggerConfiguration;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -59,6 +60,9 @@ public class ChainingUberspectorTest
 
     @MockComponent
     Execution execution;
+
+    @MockComponent
+    private LoggerConfiguration loggerConfiguration;
 
     VelocityEngine engine;
 

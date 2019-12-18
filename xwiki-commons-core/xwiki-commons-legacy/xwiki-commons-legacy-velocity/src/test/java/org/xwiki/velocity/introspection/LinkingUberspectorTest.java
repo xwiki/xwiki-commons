@@ -28,8 +28,10 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.util.introspection.UberspectImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.xwiki.logging.LoggerConfiguration;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.test.mockito.MockitoComponentManager;
 import org.xwiki.velocity.VelocityEngine;
 
@@ -45,6 +47,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @AllComponents
 public class LinkingUberspectorTest
 {
+    @MockComponent
+    private LoggerConfiguration loggerConfiguration;
+
     private VelocityEngine engine;
 
     @BeforeEach
