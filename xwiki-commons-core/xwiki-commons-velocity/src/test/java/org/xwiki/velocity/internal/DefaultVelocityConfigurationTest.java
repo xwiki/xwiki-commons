@@ -29,8 +29,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.logging.LoggerConfiguration;
+import org.xwiki.test.annotation.AfterComponent;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.junit5.mockito.MockComponent;
+import org.xwiki.test.mockito.MockitoComponentManager;
 import org.xwiki.velocity.introspection.MethodArgumentsUberspector;
 import org.xwiki.velocity.introspection.SecureUberspector;
 
@@ -48,6 +52,15 @@ public class DefaultVelocityConfigurationTest
 {
     @InjectMockComponents
     private DefaultVelocityConfiguration configuration;
+
+    @MockComponent
+    private LoggerConfiguration loggerConfiguration;
+
+    @AfterComponent
+    public void afterComponent()
+    {
+        when(this.loggerConfiguration.isDeprecatedLogEnabled()).thenReturn(true);
+    }
 
     @BeforeEach
     public void configure(ComponentManager componentManager) throws Exception

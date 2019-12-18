@@ -34,6 +34,7 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
+import org.xwiki.logging.LoggerConfiguration;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.LogCaptureExtension;
@@ -59,6 +60,9 @@ public class DefaultVelocityEngineTest
     @MockComponent
     private ComponentManager componentManager;
 
+    @MockComponent
+    private LoggerConfiguration loggerConfiguration;
+
     @InjectMockComponents
     private DefaultVelocityEngine engine;
 
@@ -72,6 +76,7 @@ public class DefaultVelocityEngineTest
     void setUp() throws Exception
     {
         when(execution.getContext()).thenReturn(new ExecutionContext());
+        when(this.loggerConfiguration.isDeprecatedLogEnabled()).thenReturn(true);
     }
 
     private void assertEvaluate(String expected, String content) throws XWikiVelocityException

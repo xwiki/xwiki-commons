@@ -30,6 +30,7 @@ import org.apache.velocity.util.introspection.UberspectImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.xwiki.configuration.internal.DefaultConfigurationSourceProvider;
 import org.xwiki.context.Execution;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.LogCaptureExtension;
@@ -48,7 +49,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Unit tests for {@link ChainingUberspector}.
  */
-@ComponentList({ DefaultVelocityEngine.class, DefaultVelocityConfiguration.class, DefaultVelocityContextFactory.class })
+@ComponentList({ DefaultVelocityEngine.class, DefaultVelocityConfiguration.class, DefaultVelocityContextFactory.class,
+    DefaultConfigurationSourceProvider.class })
 @ComponentTest
 public class ChainingUberspectorTest
 {

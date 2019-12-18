@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
+import org.xwiki.logging.LoggerConfiguration;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
@@ -67,6 +68,9 @@ public class MethodArgumentUberspectorTest
 
     @MockComponent
     private ConverterManager converterManager;
+
+    @MockComponent
+    private LoggerConfiguration loggerConfiguration;
 
     private StringWriter writer;
 

@@ -33,6 +33,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.logging.LoggerConfiguration;
 import org.xwiki.text.StringUtils;
 import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.internal.util.RestrictParseLocationEventHandler;
@@ -62,6 +63,18 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
     private static final String PREFIX = "velocity.";
 
     /**
+     * Used to find out if deprecated log is enabled by default.
+     */
+    @Inject
+    protected LoggerConfiguration loggerConfiguration;
+
+    /**
+     * Defines from where to read the rendering configuration data.
+     */
+    @Inject
+    protected ConfigurationSource configuration;
+
+    /**
      * Default Tools.
      */
     protected Properties defaultTools = new Properties();
@@ -70,12 +83,6 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
      * Default properties.
      */
     protected Properties defaultProperties = new Properties();
-
-    /**
-     * Defines from where to read the rendering configuration data.
-     */
-    @Inject
-    private ConfigurationSource configuration;
 
     @Override
     public void initialize() throws InitializationException
@@ -116,10 +123,29 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         // Prevents users from calling #parse on files outside the /templates/ directory
         this.defaultProperties.setProperty(RuntimeConstants.EVENTHANDLER_INCLUDE,
             RestrictParseLocationEventHandler.class.getName());
-        // Prevents users from writing dangerous Velocity code like using Class.forName or Java threading APIs.
-        this.defaultProperties.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME,
-            StringUtils.join(new String[] { SecureUberspector.class.getName(),
-                DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','));
+
+        // The uberspectors enabled by default
+        initializeDefaultUberspectors();
+    }
+
+    private void initializeDefaultUberspectors()
+    {
+        StringBuilder unberspectors = new StringBuilder();
+
+        // Block access to dangerous APIs
+        unberspectors.append(SecureUberspector.class.getName());
+
+        // Warning logs when using deprecated APIs
+        if (this.loggerConfiguration.isDeprecatedLogEnabled()) {
+            unberspectors.append(',');
+            unberspectors.append(DeprecatedCheckUberspector.class.getName());
+        }
+
+        // Auto conversion of method parameters
+        unberspectors.append(',');
+        unberspectors.append(MethodArgumentsUberspector.class.getName());
+
+        this.defaultProperties.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, unberspectors.toString());
     }
 
     @Override
