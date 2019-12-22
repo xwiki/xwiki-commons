@@ -170,10 +170,8 @@
         </executions>
         <configuration>
           <skip>${xwiki.spoon.skip}</skip>
-
           <!-- Don't fail in case of missing sources -->
           <skipSpoonErrors>true</skipSpoonErrors>
-
           <processors>
             <processor>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</processor>
           </processors>
@@ -185,9 +183,11 @@
                   <name>methods</name>
                   <value>
                     {
-                      <!-- Does not make any sense in the context of an application server and it can cause memory leaks -->
+                      <!-- Does not make any sense in the context of an application server and it can cause memory
+                           leaks -->
                       "java.io.File": ["deleteOnExit"],
-                      <!-- The URL#equals implementation is insane (it actually try to access the host with HTTP URLs for example) -->
+                      <!-- The URL#equals implementation is insane (it actually tries to access the host with HTTP URLs
+                           for example) -->
                       "java.net.URL": ["equals"]
                     }
                   </value>
