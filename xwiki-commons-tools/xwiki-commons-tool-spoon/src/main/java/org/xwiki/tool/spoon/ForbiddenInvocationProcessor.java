@@ -31,7 +31,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 
 /**
- * Failed the build if some code is calling a forbidden method.
+ * Fail the build if some code is calling a forbidden method.
  * 
  * @version $Id$
  * @since 9.9RC2
