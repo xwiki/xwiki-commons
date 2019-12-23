@@ -19,16 +19,26 @@
  */
 package org.xwiki.extension.repository.installed;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.xwiki.component.namespace.Namespace;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
@@ -44,26 +54,25 @@ import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepositoryException;
+import org.xwiki.extension.repository.internal.installed.DefaultInstalledExtensionRepository;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.ExtensionQuery.COMPARISON;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.test.MockitoRepositoryUtilsExtension;
 import org.xwiki.extension.test.TestExtensionHandler;
+import org.xwiki.extension.tree.ExtensionNode;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectComponentManager;
 import org.xwiki.test.mockito.MockitoComponentManager;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+/**
+ * Validate {@link DefaultInstalledExtensionRepository}.
+ * 
+ * @version $Id$
+ */
 @ComponentTest
 @ExtendWith(MockitoRepositoryUtilsExtension.class)
 @AllComponents
@@ -72,7 +81,7 @@ public class DefaultInstalledExtensionRepositoryTest
     @InjectComponentManager
     private MockitoComponentManager componentManager;
 
-    private InstalledExtensionRepository installedExtensionRepository;
+    private DefaultInstalledExtensionRepository installedExtensionRepository;
 
     private LocalExtensionRepository localExtensionRepository;
 
@@ -259,8 +268,7 @@ public class DefaultInstalledExtensionRepositoryTest
         assertTrue(extension.isInstalled(null));
         assertEquals("version", extension.getId().getVersion().toString());
 
-        extension =
-            this.installedExtensionRepository.getInstalledExtension("installedwithnotoptionalmanaged", null);
+        extension = this.installedExtensionRepository.getInstalledExtension("installedwithnotoptionalmanaged", null);
 
         assertNotNull(extension);
         assertTrue(extension.isValid(null));
@@ -508,14 +516,14 @@ public class DefaultInstalledExtensionRepositoryTest
     {
         IterableResult<Extension> result = this.installedExtensionRepository.search(null, 0, -1);
 
-        assertEquals(17, result.getTotalHits());
-        assertEquals(17, result.getSize());
+        assertEquals(18, result.getTotalHits());
+        assertEquals(18, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search("", 0, -1);
 
-        assertEquals(17, result.getTotalHits());
-        assertEquals(17, result.getSize());
+        assertEquals(18, result.getTotalHits());
+        assertEquals(18, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search("extension", 0, -1);
@@ -532,49 +540,49 @@ public class DefaultInstalledExtensionRepositoryTest
 
         result = this.installedExtensionRepository.search("dependency", 0, -1);
 
-        assertEquals(9, result.getTotalHits());
-        assertEquals(9, result.getSize());
+        assertEquals(10, result.getTotalHits());
+        assertEquals(10, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, 0, 0);
 
-        assertEquals(17, result.getTotalHits());
+        assertEquals(18, result.getTotalHits());
         assertEquals(0, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, 0, 2);
 
-        assertEquals(17, result.getTotalHits());
+        assertEquals(18, result.getTotalHits());
         assertEquals(2, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, 0, 1);
 
-        assertEquals(17, result.getTotalHits());
+        assertEquals(18, result.getTotalHits());
         assertEquals(1, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, 1, 2);
 
-        assertEquals(17, result.getTotalHits());
+        assertEquals(18, result.getTotalHits());
         assertEquals(2, result.getSize());
         assertEquals(1, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, 2, 2);
 
-        assertEquals(17, result.getTotalHits());
+        assertEquals(18, result.getTotalHits());
         assertEquals(2, result.getSize());
         assertEquals(2, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, -1, 2);
 
-        assertEquals(17, result.getTotalHits());
+        assertEquals(18, result.getTotalHits());
         assertEquals(2, result.getSize());
         assertEquals(-1, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, -1, 1);
 
-        assertEquals(17, result.getTotalHits());
+        assertEquals(18, result.getTotalHits());
         assertEquals(1, result.getSize());
         assertEquals(-1, result.getOffset());
     }
@@ -617,22 +625,22 @@ public class DefaultInstalledExtensionRepositoryTest
         IterableResult<InstalledExtension> result =
             this.installedExtensionRepository.searchInstalledExtensions(null, null, 0, -1);
 
-        assertEquals(11, result.getTotalHits());
-        assertEquals(11, result.getSize());
+        assertEquals(12, result.getTotalHits());
+        assertEquals(12, result.getSize());
         assertEquals(0, result.getOffset());
 
         // Namespace "namespace" + "root"
         result = this.installedExtensionRepository.searchInstalledExtensions(null, "namespace", 0, -1);
 
-        assertEquals(15, result.getTotalHits());
-        assertEquals(15, result.getSize());
+        assertEquals(16, result.getTotalHits());
+        assertEquals(16, result.getSize());
         assertEquals(0, result.getOffset());
 
         // This namespace does not exist so same as root
         result = this.installedExtensionRepository.searchInstalledExtensions(null, "notnamespace", 0, -1);
 
-        assertEquals(11, result.getTotalHits());
-        assertEquals(11, result.getSize());
+        assertEquals(12, result.getTotalHits());
+        assertEquals(12, result.getSize());
         assertEquals(0, result.getOffset());
     }
 
@@ -656,5 +664,25 @@ public class DefaultInstalledExtensionRepositoryTest
 
         assertNotNull(extension);
         assertEquals(TestResources.INSTALLED_ID, extension.getId());
+    }
+
+    @Test
+    public void getOrphanedDependencies() throws ResolveException
+    {
+        ExtensionNode<InstalledExtension> node = this.installedExtensionRepository
+            .getOrphanedDependencies(this.resources.installedorphaneddependency, Namespace.ROOT);
+
+        assertSame(this.resources.installedorphaneddependency, node.getExtension());
+        assertEquals(Namespace.ROOT, node.getNamespace());
+
+        List<ExtensionNode<InstalledExtension>> children = node.getChildren();
+
+        assertEquals(1, children.size());
+
+        ExtensionNode<InstalledExtension> child = children.get(0);
+
+        assertSame(this.resources.installedorphaneddependencyd, child.getExtension());
+        assertEquals(Namespace.ROOT, child.getNamespace());
+        assertEquals(0, child.getChildren().size());
     }
 }
