@@ -49,6 +49,12 @@ public class TestResources
     public static final ExtensionId INSTALLED_WITHMISSINDEPENDENCY_ID =
         new ExtensionId("installedwithmissingdependency", "version");
 
+    public static final ExtensionId INSTALLED_ORPHANEDDEPENDENCY_ID =
+        new ExtensionId("installedorphaneddependency", "version");
+
+    public static final ExtensionId INSTALLED_ORPHANEDDEPENDENCYD_ID =
+        new ExtensionId("installedorphaneddependencyd", "version");
+
     public InstalledExtension installed;
 
     public InstalledExtension installedDependency;
@@ -56,6 +62,10 @@ public class TestResources
     public InstalledExtension installedwithfeatureasdependency;
 
     public InstalledExtension installedonnemspacewithrootdependency;
+
+    public InstalledExtension installedorphaneddependency;
+
+    public InstalledExtension installedorphaneddependencyd;
 
     // Remote
 
@@ -136,5 +146,10 @@ public class TestResources
             installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_WITHFEATUREASDEPENDENCY_ID);
         this.installedonnemspacewithrootdependency = installedExtensionRepository
             .getInstalledExtension(TestResources.INSTALLED_ONNAMESPACEWITHROOTDEPENDENCY_ID);
+        this.installedorphaneddependency =
+            installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ORPHANEDDEPENDENCY_ID);
+        this.installedorphaneddependencyd =
+            installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ORPHANEDDEPENDENCYD_ID);
+
     }
 }
