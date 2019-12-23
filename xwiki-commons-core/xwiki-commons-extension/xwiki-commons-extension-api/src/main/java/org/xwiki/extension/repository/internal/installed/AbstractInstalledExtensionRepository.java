@@ -232,7 +232,7 @@ public abstract class AbstractInstalledExtensionRepository<E extends InstalledEx
 
                 if (dependencyExtension.isDependency(dependencyNamespace)
                     && isExclusive(dependencyExtension, dependencyNamespace, backward)) {
-                    orphaned.add(getOrphanedDependencies(installedExtension, namespace, backward));
+                    orphaned.add(getOrphanedDependencies(dependencyExtension, namespace, backward));
                 }
             }
         }
