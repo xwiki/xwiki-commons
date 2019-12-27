@@ -2361,6 +2361,21 @@
                     <ignore />
                   </action>
                 </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.xwiki.platform</groupId>
+                    <artifactId>
+                      xwiki-platform-tool-packager-plugin
+                    </artifactId>
+                    <versionRange>[12.0-SNAPSHOT,)</versionRange>
+                    <goals>
+                      <goal>package</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>
