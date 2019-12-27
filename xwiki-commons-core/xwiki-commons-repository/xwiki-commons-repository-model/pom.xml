@@ -39,6 +39,12 @@
     <!-- Only contain generated sources for which we don't control the code style -->
     <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
   </properties>
+  <dependencies>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>
