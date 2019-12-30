@@ -231,7 +231,7 @@ public class DefaultVelocityEngineTest
     {
         this.engine.initialize(new Properties());
 
-        assertEvaluate("true", "#macro (testMacro $param)$param#end#set()#testMacro([])");
+        assertEvaluate("true", "#macro (testMacro $param)$param#end#testMacro([])");
     }
 
     @Test
