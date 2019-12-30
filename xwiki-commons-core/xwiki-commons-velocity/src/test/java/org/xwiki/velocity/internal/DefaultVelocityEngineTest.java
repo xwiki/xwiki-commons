@@ -211,11 +211,27 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void testMacroWithBooleanParameter() throws XWikiVelocityException
+    public void testMacroWithLiterralBooleanParameter() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
         assertEvaluate("true", "#macro (testMacro $param)$param#end#testMacro(true)");
+    }
+
+    @Test
+    public void testMacroWithLiterralMapParameter() throws XWikiVelocityException
+    {
+        this.engine.initialize(new Properties());
+
+        assertEvaluate("true", "#macro (testMacro $param)$param#end#testMacro({})");
+    }
+
+    @Test
+    public void testMacroWithLiterralArrayParameter() throws XWikiVelocityException
+    {
+        this.engine.initialize(new Properties());
+
+        assertEvaluate("true", "#macro (testMacro $param)$param#end#set()#testMacro([])");
     }
 
     @Test
