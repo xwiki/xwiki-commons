@@ -54,6 +54,14 @@ import static org.mockito.Mockito.when;
 @ComponentList(DefaultVelocityConfiguration.class)
 public class DefaultVelocityEngineTest
 {
+    private static class TestClass
+    {
+        public String getName()
+        {
+            return "name";
+        }
+    }
+
     @RegisterExtension
     LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
@@ -87,6 +95,11 @@ public class DefaultVelocityEngineTest
     private void assertEvaluate(String expected, String content, String template) throws XWikiVelocityException
     {
         assertEvaluate(expected, content, template, new XWikiVelocityContext());
+    }
+
+    private void assertEvaluate(String expected, String content, Context context) throws XWikiVelocityException
+    {
+        assertEvaluate(expected, content, "mytemplaye", context);
     }
 
     private void assertEvaluate(String expected, String content, String template, Context context)
@@ -380,5 +393,17 @@ public class DefaultVelocityEngineTest
         this.engine.initialize(new Properties());
 
         assertEvaluate("$var||", "$var||");
+    }
+
+    @Test
+    public void testClassMethods() throws XWikiVelocityException
+    {
+        this.engine.initialize(new Properties());
+
+        Context context = new XWikiVelocityContext();
+        context.put("var", new TestClass());
+
+        assertEvaluate("org.xwiki.velocity.internal.DefaultVelocityEngineTest$TestClass name",
+            "$var.class.getName() $var.getName()", context);
     }
 }
