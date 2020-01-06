@@ -237,7 +237,7 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      *     <li>If the page name matches one of the regexes defined by the user as content pages then check that the
      *         default language is {@link #defaultLanguage}.</li>
      *     <li>If the page name matches one of the regexes defined by the user as technial pages then check that the
-     *         default language is empty. Matching technical pages have precedence over matching content pages.</li>
+     *         default language is empty. Matching content pages have precedence over matching technical pages.</li>
      *     <li>If there's no other translation of the file then consider default language to be empty to signify that
      *         it's a technical document. </li>
      *     <li>If there are other translations ("(prefix).(language).xml" format) then the default language should be
