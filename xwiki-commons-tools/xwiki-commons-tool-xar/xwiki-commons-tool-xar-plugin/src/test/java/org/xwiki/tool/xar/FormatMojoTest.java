@@ -48,10 +48,10 @@ public class FormatMojoTest
         FormatMojo mojo = new FormatMojo();
         mojo.defaultLanguage = "en";
 
-        File file = new File("Document.xml");
+        File file = new File("Some/Space/Document.xml");
         List<File> files = Arrays.asList(
-            new File("Document.xml"),
-            new File("Document.fr.xml"));
+            new File("Some/Space/Document.xml"),
+            new File("Some/Space/Document.fr.xml"));
 
         assertEquals("en", mojo.guessDefaultLanguage(file, files));
     }
@@ -62,7 +62,7 @@ public class FormatMojoTest
         FormatMojo mojo = new FormatMojo();
         mojo.defaultLanguage = "en";
 
-        File file = new File("Document.fr.xml");
+        File file = new File("Some/Space/Document.fr.xml");
         List<File> files = Collections.EMPTY_LIST;
 
         assertEquals("en", mojo.guessDefaultLanguage(file, files));
@@ -74,8 +74,26 @@ public class FormatMojoTest
         FormatMojo mojo = new FormatMojo();
         mojo.defaultLanguage = "en";
 
-        File file = new File("Document.xml");
-        List<File> files = Arrays.asList(new File("Other.xml"));
+        File file = new File("Some/Space/Document.xml");
+        List<File> files = Arrays.asList(new File("Some/OtherSpace/Other.xml"));
+
+        assertEquals("", mojo.guessDefaultLanguage(file, files));
+    }
+
+    /**
+     * Reproduces issues raised in <a href="https://jira.xwiki.org/browse/XCOMMONS-1833">XCOMMONS-1833</a>.
+     */
+    @Test
+    public void defaultLanguageForDocumentWhenNoTranslationButFileWithSameNameInOtherSpace()
+    {
+        FormatMojo mojo = new FormatMojo();
+        mojo.defaultLanguage = "en";
+
+        File file = new File("Space1/Document.xml");
+        // Simulate a page with the same name and with a translation but in a different space.
+        List<File> files = Arrays.asList(
+            new File("Space2/Document.xml"),
+            new File("Space2/Document.fr.xml"));
 
         assertEquals("", mojo.guessDefaultLanguage(file, files));
     }

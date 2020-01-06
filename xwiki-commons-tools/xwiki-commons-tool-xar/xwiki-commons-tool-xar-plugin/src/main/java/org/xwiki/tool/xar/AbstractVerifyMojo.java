@@ -276,11 +276,11 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
             language = this.defaultLanguage;
         } else {
             // We're not in a translation, check if there are translations. First get the doc name before the extension
-            String prefix = StringUtils.substringBeforeLast(fileName, EXTENSION);
+            String prefix = StringUtils.substringBeforeLast(file.getPath(), EXTENSION);
             // Check for a translation now
             Pattern translationPattern = Pattern.compile(String.format("%s\\..*\\.xml", Pattern.quote(prefix)));
             for (File xwikiXmlFile : xwikiXmlFiles) {
-                Matcher translationMatcher = translationPattern.matcher(xwikiXmlFile.getName());
+                Matcher translationMatcher = translationPattern.matcher(xwikiXmlFile.getPath());
                 if (translationMatcher.matches()) {
                     // Found a translation, use the default language
                     language = this.defaultLanguage;
