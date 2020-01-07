@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
@@ -54,6 +55,34 @@ public class FormatMojoTest
             new File("Some/Space/Document.fr.xml"));
 
         assertEquals("en", mojo.guessDefaultLanguage(file, files));
+    }
+
+    @Test
+    public void defaultLanguageForNonMatchingContentPage()
+    {
+        FormatMojo mojo = new FormatMojo();
+        mojo.defaultLanguage = "en";
+        mojo.contentPages = Arrays.asList("Document\\.xml");
+        mojo.titles = new Properties();
+        mojo.initializePatterns();
+
+        File file = new File("Some/Space/Document.xml");
+
+        assertEquals("", mojo.guessDefaultLanguage(file, Collections.EMPTY_LIST));
+    }
+
+    @Test
+    public void defaultLanguageForMatchingContentPage()
+    {
+        FormatMojo mojo = new FormatMojo();
+        mojo.defaultLanguage = "en";
+        mojo.contentPages = Arrays.asList(".*/Document\\.xml");
+        mojo.titles = new Properties();
+        mojo.initializePatterns();
+
+        File file = new File("Some/Space/Document.xml");
+
+        assertEquals("en", mojo.guessDefaultLanguage(file, Collections.EMPTY_LIST));
     }
 
     @Test

@@ -35,10 +35,12 @@
         <version>@project.version@</version>
         <configuration>
           <technicalPages>
-            <technicalPage>EditTranslations\.xml</technicalPage>
+            <!-- The EditTranslations page is not a Translation page and thus not a content page! -->
+            <technicalPage>.*/EditTranslations\.xml</technicalPage>
           </technicalPages>
           <contentPages>
-            <contentPage>.*Translations\.xml</contentPage>
+            <!-- Consider Translation pages as content pages (since they can have translations) -->
+            <contentPage>.*/.*Translations\.xml</contentPage>
           </contentPages>
         </configuration>
         <executions>

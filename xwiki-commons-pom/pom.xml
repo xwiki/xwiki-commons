@@ -317,10 +317,10 @@
             <!-- Consider all pages named *Translations as content pages (since they have translations) but also
                  as Technical pages since they need to be hidden. -->
             <contentPages>
-              <contentPage>.*Translations\.xml</contentPage>
+              <contentPage>.*/.*Translations\.xml</contentPage>
             </contentPages>
             <technicalPages>
-              <technicalPage>.*Translations\.xml</technicalPage>
+              <technicalPage>.*/.*Translations\.xml</technicalPage>
             </technicalPages>
             <titles>
               <!-- Verify that all WebPreferences pages have the same title for consistency -->

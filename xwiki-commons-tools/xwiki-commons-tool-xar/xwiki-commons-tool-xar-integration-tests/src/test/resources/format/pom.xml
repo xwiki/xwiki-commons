@@ -40,10 +40,10 @@
         <version>@project.version@</version>
         <configuration>
           <technicalPages>
-            <technicalPage>.*Translations\.xml</technicalPage>
+            <technicalPage>.*/.*Translations\.xml</technicalPage>
           </technicalPages>
           <contentPages>
-            <contentPage>.*Translations\.xml</contentPage>
+            <contentPage>.*/.*Translations\.xml</contentPage>
           </contentPages>
         </configuration>
       </plugin>

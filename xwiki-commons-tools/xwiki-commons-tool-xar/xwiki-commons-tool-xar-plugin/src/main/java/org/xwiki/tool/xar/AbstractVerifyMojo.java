@@ -132,7 +132,7 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      * @since 7.1M1
      */
     @Parameter(property = "xar.verify.contentPages")
-    private List<String> contentPages;
+    protected List<String> contentPages;
 
     /**
      * Explicitly define a list of pages (it's a regex) that should  be considered as technical pages. Any matching
@@ -141,7 +141,7 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      * @since 7.1M1
      */
     @Parameter(property = "xar.verify.technicalPages")
-    private List<String> technicalPages;
+    protected List<String> technicalPages;
 
     /**
      * The current Maven session.
@@ -250,19 +250,18 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      */
     protected String guessDefaultLanguage(File file, Collection<File> xwikiXmlFiles)
     {
-        String fileName = file.getName();
-
         // Note that we need to check for content pages before technical pages because some pages are both content
         // pages (Translation pages for example) and technical pages.
 
         // Is it in the list of defined content pages?
-        String language = guessDefaultLanguageForPatterns(fileName, this.contentPagePatterns, this.defaultLanguage);
+        String language =
+            guessDefaultLanguageForPatterns(file.getPath(), this.contentPagePatterns, this.defaultLanguage);
         if (language != null) {
             return language;
         }
 
         // Is it in the list of defined technical pages?
-        language = guessDefaultLanguageForPatterns(fileName, this.technicalPagePatterns, "");
+        language = guessDefaultLanguageForPatterns(file.getPath(), this.technicalPagePatterns, "");
         if (language != null) {
             return language;
         }
@@ -270,7 +269,7 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
         language = "";
 
         // Check if the doc is a translation
-        Matcher matcher = TRANSLATION_PATTERN.matcher(fileName);
+        Matcher matcher = TRANSLATION_PATTERN.matcher(file.getName());
         if (matcher.matches()) {
             // We're in a translation, use the default language
             language = this.defaultLanguage;
@@ -291,13 +290,13 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
         return language;
     }
 
-    private String guessDefaultLanguageForPatterns(String fileName, List<Pattern> patterns, String defaultLanguage)
+    private String guessDefaultLanguageForPatterns(String filePath, List<Pattern> patterns, String defaultLanguage)
     {
         String language = null;
 
         if (patterns != null) {
             for (Pattern pattern : patterns) {
-                if (pattern.matcher(fileName).matches()) {
+                if (pattern.matcher(filePath).matches()) {
                     return defaultLanguage;
                 }
             }
@@ -306,11 +305,11 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
         return language;
     }
 
-    protected boolean isTechnicalPage(String fileName)
+    protected boolean isTechnicalPage(String filePath)
     {
         if (this.technicalPagePatterns != null) {
             for (Pattern pattern : this.technicalPagePatterns) {
-                if (pattern.matcher(fileName).matches()) {
+                if (pattern.matcher(filePath).matches()) {
                     return true;
                 }
             }
