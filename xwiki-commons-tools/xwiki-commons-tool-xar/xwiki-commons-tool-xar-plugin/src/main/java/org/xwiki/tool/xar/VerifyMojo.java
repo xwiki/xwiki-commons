@@ -37,7 +37,7 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  * Perform various verifications of the XAR files in this project. Namely:
  * <ul>
  *   <li>ensure that the encoding is UTF8</li>
- *   <li>ensure that pages all have a parent (except for Main.WebHome)</li>
+ *   <li>(optional) ensure that pages all have a parent (except for Main.WebHome)</li>
  *   <li>ensure that the author/contentAuthor/creator/attachment authors are {@code xwiki:XWiki.Admin}</li>
  *   <li>ensure that the version is {@code 1.1}</li>
  *   <li>ensure that comment is empty</li>
@@ -79,6 +79,13 @@ public class VerifyMojo extends AbstractVerifyMojo
     @Parameter(property = "xar.verify.translationVisibility.skip", defaultValue = "false")
     private boolean translationVisibilitySkip;
 
+    /**
+     * Disables the empty parent check. This check is turned off by default since the parent concept has been
+     * replaced by the Nested Spaces one.
+     */
+    @Parameter(property = "xar.verify.emptyParent.skip", defaultValue = "true")
+    private boolean emptyParentSkip;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
@@ -119,7 +126,9 @@ public class VerifyMojo extends AbstractVerifyMojo
             verifyAttachmentAuthors(errors, xdoc.getAttachmentData());
 
             // Verification 3: Check for orphans, except for Main.WebHome since it's the topmost document
-            if (StringUtils.isEmpty(xdoc.getParent()) && !xdoc.getReference().equals("Main.WebHome")) {
+            if (!this.emptyParentSkip && StringUtils.isEmpty(xdoc.getParent())
+                && !xdoc.getReference().equals("Main.WebHome"))
+            {
                 errors.add("Parent must not be empty");
             }
 
