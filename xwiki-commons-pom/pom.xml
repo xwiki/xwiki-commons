@@ -329,6 +329,8 @@
                 <value>\$services\.localization\.render\('admin.preferences.title'\)</value>
               </property>
             </titles>
+            <!-- Check for empty parents since, even though this is deprecated, we still want to set it FTM -->
+            <emptyParentSkip>false</emptyParentSkip>
           </configuration>
         </plugin>
         <!-- Add archiving support for various XWiki specific formats in the dependency plugin -->

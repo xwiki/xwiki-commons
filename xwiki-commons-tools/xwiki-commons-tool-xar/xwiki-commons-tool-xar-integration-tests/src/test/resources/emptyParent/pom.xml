@@ -40,6 +40,9 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <emptyParentSkip>false</emptyParentSkip>
+        </configuration>
       </plugin>
     </plugins>
   </build>
