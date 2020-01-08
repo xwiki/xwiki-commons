@@ -82,6 +82,9 @@ public class VerifyMojo extends AbstractVerifyMojo
     /**
      * Disables the empty parent check. This check is turned off by default since the parent concept has been
      * replaced by the Nested Spaces one.
+     *
+     * @since 11.10.3
+     * @since 12.0RC1
      */
     @Parameter(property = "xar.verify.emptyParent.skip", defaultValue = "true")
     private boolean emptyParentSkip;
