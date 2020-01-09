@@ -62,8 +62,6 @@ public interface ConfigurationSource
      * @param defaultValue the value to use if the key isn't found
      * @return the property value is found or the default value if the key wasn't found.
      * @since 12.0RC1
-     * @since 11.10.3
-     * @since 11.3.7
      */
     @Unstable
     default <T> T getProperty(String key, Class<T> valueClass, T defaultValue)
