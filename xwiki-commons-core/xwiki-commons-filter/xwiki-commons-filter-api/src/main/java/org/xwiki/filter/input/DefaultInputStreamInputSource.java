@@ -22,8 +22,6 @@ package org.xwiki.filter.input;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.io.input.CloseShieldInputStream;
-
 /**
  * @version $Id$
  * @since 6.2M1
@@ -32,6 +30,8 @@ public class DefaultInputStreamInputSource implements InputStreamInputSource
 {
     private final InputStream inputStream;
 
+    private final boolean close;
+
     public DefaultInputStreamInputSource(InputStream inputStream)
     {
         this(inputStream, false);
@@ -39,11 +39,8 @@ public class DefaultInputStreamInputSource implements InputStreamInputSource
 
     public DefaultInputStreamInputSource(InputStream inputStream, boolean close)
     {
-        if (close) {
-            this.inputStream = inputStream;
-        } else {
-            this.inputStream = new CloseShieldInputStream(inputStream);
-        }
+        this.inputStream = inputStream;
+        this.close = close;
     }
 
     @Override
@@ -61,7 +58,9 @@ public class DefaultInputStreamInputSource implements InputStreamInputSource
     @Override
     public void close() throws IOException
     {
-        this.inputStream.close();
+        if (this.close) {
+            this.inputStream.close();
+        }
     }
 
     @Override

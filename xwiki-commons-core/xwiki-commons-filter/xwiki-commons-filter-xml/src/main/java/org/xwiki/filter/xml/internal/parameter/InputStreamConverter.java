@@ -52,16 +52,7 @@ public class InputStreamConverter implements Converter
     @Override
     public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context)
     {
-        write((InputStream) source, writer);
-    }
-
-    /**
-     * @param inpuStream the stream to write
-     * @param writer the writer in which to serialize the stream
-     * @since 12.0RC1
-     */
-    protected void write(InputStream inpuStream, HierarchicalStreamWriter writer)
-    {
+        InputStream inpuStream = (InputStream) source;
         byte[] buffer = new byte[4096];
         int readSize;
         do {
@@ -82,15 +73,6 @@ public class InputStreamConverter implements Converter
 
     @Override
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context)
-    {
-        return read(reader);
-    }
-
-    /**
-     * @param reader the reader used to access the data
-     * @return the new {@link InputStream} instance
-     */
-    protected InputStream read(HierarchicalStreamReader reader)
     {
         return new ByteArrayInputStream(BASE64.decode(reader.getValue()));
     }

@@ -19,13 +19,8 @@
  */
 package org.xwiki.extension.test;
 
-import java.lang.reflect.Field;
-
-import javax.inject.Inject;
-
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
-import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.test.mockito.MockitoComponentManager;
 
 public class MockitoRepositoryUtilsExtension implements TestInstancePostProcessor
@@ -33,17 +28,7 @@ public class MockitoRepositoryUtilsExtension implements TestInstancePostProcesso
     @Override
     public void postProcessTestInstance(Object testInstance, ExtensionContext context) throws Exception
     {
-        MockitoRepositoryUtils utils = new MockitoRepositoryUtils(loadComponentManager(context));
-
-        // Initialize the MockitoRepositoryUtils instance
-        utils.setup();
-
-        // Inject the MockitoRepositoryUtils instance
-        for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
-            if (field.getType() == MockitoRepositoryUtils.class && field.isAnnotationPresent(Inject.class)) {
-                ReflectionUtils.setFieldValue(testInstance, field.getName(), utils);
-            }
-        }
+        new MockitoRepositoryUtils(loadComponentManager(context)).setup();
     }
 
     protected MockitoComponentManager loadComponentManager(ExtensionContext context)
