@@ -19,6 +19,7 @@
  */
 package org.xwiki.velocity.internal;
 
+import java.util.List;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -74,6 +75,9 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
     @Inject
     protected ConfigurationSource configuration;
 
+    @Inject
+    protected List<DefaultToolsInitializer> toolsInitializers;
+
     /**
      * Default Tools.
      */
@@ -99,6 +103,9 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty("urltool", URLTool.class.getName());
         this.defaultTools.setProperty("exceptiontool", ExceptionUtils.class.getName());
         this.defaultTools.setProperty("niotool", NIOTool.class.getName());
+
+        // Extension point to inject other default tools
+        this.toolsInitializers.forEach(l -> l.initialize(this.defaultTools));
 
         // Default Velocity properties
         this.defaultProperties.setProperty(RuntimeConstants.VM_MAX_DEPTH, "100");
