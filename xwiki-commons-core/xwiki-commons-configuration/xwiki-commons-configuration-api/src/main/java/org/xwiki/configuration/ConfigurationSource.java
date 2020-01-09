@@ -22,6 +22,7 @@ package org.xwiki.configuration;
 import java.util.List;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
  * @version $Id$
@@ -53,6 +54,26 @@ public interface ConfigurationSource
      * @since 2.0M1
      */
     <T> T getProperty(String key, Class<T> valueClass);
+
+    /**
+     * @param <T> the value type
+     * @param key the property key for which we want the value
+     * @param valueClass the type of object that should be returned. The value is converted to the passed type.
+     * @param defaultValue the value to use if the key isn't found
+     * @return the property value is found or the default value if the key wasn't found.
+     * @since 12.0RC1
+     * @since 11.10.3
+     * @since 11.3.7
+     */
+    @Unstable
+    default <T> T getProperty(String key, Class<T> valueClass, T defaultValue)
+    {
+        if (containsKey(key)) {
+            return getProperty(key, valueClass);
+        } else {
+            return getProperty(key, defaultValue);
+        }
+    }
 
     /**
      * @param <T> the value type
