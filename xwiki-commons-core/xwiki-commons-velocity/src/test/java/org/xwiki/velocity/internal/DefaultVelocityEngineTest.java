@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
 @ComponentList(DefaultVelocityConfiguration.class)
 public class DefaultVelocityEngineTest
 {
-    private static class TestClass
+    public static class TestClass
     {
         public String getName()
         {
