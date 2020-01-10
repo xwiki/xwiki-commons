@@ -111,8 +111,6 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultProperties.setProperty(RuntimeConstants.VM_MAX_DEPTH, "100");
         this.defaultProperties.setProperty(RuntimeConstants.RESOURCE_MANAGER_LOGWHENFOUND, Boolean.FALSE.toString());
         this.defaultProperties.setProperty(RuntimeConstants.VM_PERM_INLINE_LOCAL, Boolean.TRUE.toString());
-        this.defaultProperties.setProperty(RuntimeConstants.VM_PERM_ALLOW_INLINE_REPLACE_GLOBAL,
-            Boolean.TRUE.toString());
         // [Retro compatibility] Make empty string #if evaluate to true
         this.defaultProperties.setProperty(RuntimeConstants.CHECK_EMPTY_OBJECTS, Boolean.FALSE.toString());
         // [Retro compatibility] Use Velocity 1.x Space Gobbling
