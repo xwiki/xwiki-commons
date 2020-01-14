@@ -54,13 +54,33 @@ import static org.mockito.Mockito.when;
 @ComponentList(DefaultVelocityConfiguration.class)
 public class DefaultVelocityEngineTest
 {
-    public static class TestClass
+    public class TestClass
     {
+        private Context context;
+
+        public TestClass()
+        {
+        }
+
+        public TestClass(Context context)
+        {
+            this.context = context;
+        }
+
         public String getName()
         {
             return "name";
         }
+
+        public String evaluate(String input) throws XWikiVelocityException
+        {
+            StringWriter writer = new StringWriter();
+            engine.evaluate(context, writer, DEFAULT_TEMPLATE_NAME, input);
+            return writer.toString();
+        }
     }
+
+    private static final String DEFAULT_TEMPLATE_NAME = "mytemplate";
 
     @RegisterExtension
     LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
@@ -89,7 +109,7 @@ public class DefaultVelocityEngineTest
 
     private void assertEvaluate(String expected, String content) throws XWikiVelocityException
     {
-        assertEvaluate(expected, content, "mytemplaye");
+        assertEvaluate(expected, content, DEFAULT_TEMPLATE_NAME);
     }
 
     private void assertEvaluate(String expected, String content, String template) throws XWikiVelocityException
@@ -99,7 +119,7 @@ public class DefaultVelocityEngineTest
 
     private void assertEvaluate(String expected, String content, Context context) throws XWikiVelocityException
     {
-        assertEvaluate(expected, content, "mytemplaye", context);
+        assertEvaluate(expected, content, DEFAULT_TEMPLATE_NAME, context);
     }
 
     private void assertEvaluate(String expected, String content, String template, Context context)
@@ -115,7 +135,7 @@ public class DefaultVelocityEngineTest
     {
         this.engine.initialize(new Properties());
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new XWikiVelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new XWikiVelocityContext(), writer, DEFAULT_TEMPLATE_NAME,
             new StringReader("#set($foo='hello')$foo World"));
         assertEquals("hello World", writer.toString());
     }
@@ -125,7 +145,7 @@ public class DefaultVelocityEngineTest
     {
         this.engine.initialize(new Properties());
 
-        assertEvaluate("hello World", "#set($foo='hello')$foo World", "mytemplate");
+        assertEvaluate("hello World", "#set($foo='hello')$foo World", DEFAULT_TEMPLATE_NAME);
     }
 
     /**
@@ -138,7 +158,7 @@ public class DefaultVelocityEngineTest
 
         String content = "#set($foo = 'test')#set($object = $foo.class.forName('java.util.ArrayList')"
             + ".newInstance())$object.size()";
-        assertEvaluate("$object.size()", content, "mytemplate");
+        assertEvaluate("$object.size()", content, DEFAULT_TEMPLATE_NAME);
 
         // Verify that we log a warning and verify the message.
         assertEquals(
@@ -161,14 +181,14 @@ public class DefaultVelocityEngineTest
         list.add(null);
         list.add("3");
         context.put("list", list);
-        this.engine.evaluate(context, writer, "mytemplate",
+        this.engine.evaluate(context, writer, DEFAULT_TEMPLATE_NAME,
             "#set($foo = true)${foo}#set($foo = $null)${foo}\n" + "#foreach($i in $list)${foreach.count}=$!{i} #end");
         assertEquals("true${foo}\n1=1 2= 3=3 ", writer.toString());
 
         String content =
             "#set($foo = true)${foo}#set($foo = $null)${foo}\n" + "#foreach($i in $list)${foreach.count}=$!{i} #end";
 
-        assertEvaluate("true${foo}\n1=1 2= 3=3 ", content, "mytemplate", context);
+        assertEvaluate("true${foo}\n1=1 2= 3=3 ", content, DEFAULT_TEMPLATE_NAME, context);
     }
 
     @Test
@@ -180,7 +200,7 @@ public class DefaultVelocityEngineTest
             "org.apache.velocity.util.introspection.UberspectImpl");
         this.engine.initialize(properties);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new XWikiVelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new XWikiVelocityContext(), writer, DEFAULT_TEMPLATE_NAME,
             "#set($foo = 'test')#set($object = $foo.class.forName('java.util.ArrayList')"
                 + ".newInstance())$object.size()");
         assertEquals("0", writer.toString());
@@ -292,7 +312,7 @@ public class DefaultVelocityEngineTest
     {
         this.engine.initialize(new Properties());
 
-        assertEvaluate("hello world", "hello world#stop", "mytemplate");
+        assertEvaluate("hello world", "hello world#stop", DEFAULT_TEMPLATE_NAME);
     }
 
     @Test
@@ -301,7 +321,7 @@ public class DefaultVelocityEngineTest
         this.engine.initialize(new Properties());
 
         assertEvaluate("1true2true3true4true5false", "#foreach($nb in [1,2,3,4,5])$velocityCount$velocityHasNext#end",
-            "mytemplate");
+            DEFAULT_TEMPLATE_NAME);
 
         assertEquals("Deprecated binding [$velocityCount] used in [mytemplate]", logCapture.getMessage(0));
         assertEquals("Deprecated binding [$velocityHasNext] used in [mytemplate]", logCapture.getMessage(1));
@@ -374,8 +394,8 @@ public class DefaultVelocityEngineTest
     {
         this.engine.initialize(new Properties());
 
-        assertEvaluate("#", "#set($var = \"#\")$var", "mytemplate");
-        assertEvaluate("test#", "#set($var = \"test#\")$var", "mytemplate");
+        assertEvaluate("#", "#set($var = \"#\")$var", DEFAULT_TEMPLATE_NAME);
+        assertEvaluate("test#", "#set($var = \"test#\")$var", DEFAULT_TEMPLATE_NAME);
     }
 
     @Test
@@ -383,8 +403,8 @@ public class DefaultVelocityEngineTest
     {
         this.engine.initialize(new Properties());
 
-        assertEvaluate("$", "#set($var = \"$\")$var", "mytemplate");
-        assertEvaluate("test$", "#set($var = \"test$\")$var", "mytemplate");
+        assertEvaluate("$", "#set($var = \"$\")$var", DEFAULT_TEMPLATE_NAME);
+        assertEvaluate("test$", "#set($var = \"test$\")$var", DEFAULT_TEMPLATE_NAME);
     }
 
     @Test
@@ -405,5 +425,20 @@ public class DefaultVelocityEngineTest
 
         assertEvaluate("org.xwiki.velocity.internal.DefaultVelocityEngineTest$TestClass name",
             "$var.class.getName() $var.getName()", context);
+    }
+
+    @Test
+    public void testSubEvaluate() throws XWikiVelocityException
+    {
+        this.engine.initialize(new Properties());
+
+        Context context = new XWikiVelocityContext();
+        context.put("test", new TestClass(context));
+
+        assertEvaluate("top", "#set($var = 'top')$test.evaluate('$var')", context);
+        assertEvaluate("sub", "$test.evaluate('#set($var = \"sub\")')$var", context);
+        assertEvaluate("sub", "#set($var = 'top')$test.evaluate('#set($var = \"sub\")')$var", context);
+        assertEvaluate("local",
+            "#macro(mymacro)#set($var = 'local')$test.evaluate('#set($var = \"global\")')$var#end#mymacro()", context);
     }
 }
