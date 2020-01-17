@@ -129,6 +129,10 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultProperties.setProperty(RuntimeConstants.EVENTHANDLER_INCLUDE,
             RestrictParseLocationEventHandler.class.getName());
 
+        // Allow to override global macros and to use properly skin macros.
+        this.defaultProperties.setProperty(RuntimeConstants.VM_PERM_ALLOW_INLINE_REPLACE_GLOBAL,
+            Boolean.TRUE.toString());
+
         // The uberspectors enabled by default
         initializeDefaultUberspectors();
     }
