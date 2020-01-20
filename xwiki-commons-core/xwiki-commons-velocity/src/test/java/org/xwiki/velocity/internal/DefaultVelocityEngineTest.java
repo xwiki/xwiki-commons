@@ -376,7 +376,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void testMacroReturn() throws Exception
+    public void testMacroParameters() throws Exception
     {
         this.engine.initialize(new Properties());
 
@@ -387,6 +387,14 @@ public class DefaultVelocityEngineTest
             "#macro (testMacro $called)#set($called = $NULL)$called#set($called = 'value')#end#set($caller = 'value')#testMacro($caller)");
         assertEvaluate("$caller$caller2$caller",
             "#macro(macro1 $called)$called#macro2($caller2)$called#end#macro(macro2 $called)$called#end#macro1($caller)");
+
+        Context context = new XWikiVelocityContext();
+        context.put("test", new TestClass(context));
+
+        // TODO: put back after 12.0RC1 is released or until
+        // https://issues.apache.org/jira/browse/VELOCITY-904?focusedCommentId=17019513&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-17019513
+        // is fixed
+        // assertEvaluate("name", "#macro (testMacro $test $name)$name#end#testMacro($other, $test.name)", context);
     }
 
     @Test
