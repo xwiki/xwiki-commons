@@ -2877,6 +2877,9 @@
       <name>XWiki External Repository</name>
       <layout>default</layout>
       <url>http://maven.xwiki.org/externals/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
