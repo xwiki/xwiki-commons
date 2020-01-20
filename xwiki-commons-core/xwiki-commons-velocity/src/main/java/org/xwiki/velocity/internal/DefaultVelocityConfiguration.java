@@ -27,6 +27,7 @@ import javax.inject.Singleton;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.tools.generic.LogTool;
 import org.apache.velocity.tools.generic.MathTool;
 import org.apache.velocity.tools.generic.NumberTool;
 import org.apache.velocity.util.introspection.DeprecatedCheckUberspector;
@@ -103,6 +104,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty("urltool", URLTool.class.getName());
         this.defaultTools.setProperty("exceptiontool", ExceptionUtils.class.getName());
         this.defaultTools.setProperty("niotool", NIOTool.class.getName());
+        this.defaultTools.setProperty("logtool", LogTool.class.getName());
 
         // Extension point to inject other default tools
         this.toolsInitializers.forEach(l -> l.initialize(this.defaultTools));
