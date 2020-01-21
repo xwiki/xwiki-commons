@@ -31,11 +31,13 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.RuntimeInstance;
 import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.runtime.directive.StopCommand;
+import org.apache.velocity.runtime.resource.Resource;
 import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
@@ -253,6 +255,14 @@ public class DefaultVelocityEngine implements VelocityEngine
                 + " You must call its initialize() method before you can use it.");
         }
 
+        // Save the current resource so that it's not broken by the currently executed one
+        Resource currentResource;
+        if (context instanceof VelocityContext) {
+            currentResource = ((VelocityContext) context).getCurrentResource();
+        } else {
+            currentResource = null;
+        }
+
         try {
             TemplateEntry templateEntry;
             if (StringUtils.isNotEmpty(namespace)) {
@@ -280,6 +290,11 @@ public class DefaultVelocityEngine implements VelocityEngine
         } finally {
             if (StringUtils.isNotEmpty(namespace)) {
                 stoppedUsingMacroNamespace(namespace);
+            }
+
+            // Restore the current resource
+            if (context instanceof VelocityContext) {
+                ((VelocityContext) context).setCurrentResource(currentResource);
             }
         }
     }

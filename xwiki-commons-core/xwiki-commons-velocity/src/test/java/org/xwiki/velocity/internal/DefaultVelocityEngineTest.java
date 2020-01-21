@@ -58,6 +58,8 @@ public class DefaultVelocityEngineTest
     {
         private Context context;
 
+        private String name = "name";
+
         public TestClass()
         {
         }
@@ -67,15 +69,26 @@ public class DefaultVelocityEngineTest
             this.context = context;
         }
 
+        public TestClass(Context context, String name)
+        {
+            this.context = context;
+            this.name = name;
+        }
+
         public String getName()
         {
-            return "name";
+            return this.name;
         }
 
         public String evaluate(String input) throws XWikiVelocityException
         {
+            return evaluate(input, DEFAULT_TEMPLATE_NAME);
+        }
+
+        public String evaluate(String input, String namespace) throws XWikiVelocityException
+        {
             StringWriter writer = new StringWriter();
-            engine.evaluate(context, writer, DEFAULT_TEMPLATE_NAME, input);
+            engine.evaluate(this.context, writer, namespace, input);
             return writer.toString();
         }
     }
@@ -125,9 +138,22 @@ public class DefaultVelocityEngineTest
     private void assertEvaluate(String expected, String content, String template, Context context)
         throws XWikiVelocityException
     {
+        String result = evaluate(content, template, context);
+
+        assertEquals(expected, result);
+    }
+
+    private String evaluate(String content, String template) throws XWikiVelocityException
+    {
+        return evaluate(content, template, new XWikiVelocityContext());
+    }
+
+    private String evaluate(String content, String template, Context context) throws XWikiVelocityException
+    {
         StringWriter writer = new StringWriter();
         this.engine.evaluate(context, writer, template, content);
-        assertEquals(expected, writer.toString());
+
+        return writer.toString();
     }
 
     @Test
@@ -268,6 +294,61 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
+    public void testUseGlobalMacroUseLocalMacro() throws XWikiVelocityException
+    {
+        this.engine.initialize(new Properties());
+
+        // Register a global macro
+        evaluate("#macro (globalMacro)#localMacro()#end", "");
+
+        // Can the global macro call local macros
+        assertEvaluate("locallocal", "#macro (localMacro)local#end#localMacro()#globalMacro()");
+    }
+
+    @Test
+    public void testGlobalMacroUseLocalMacroAfterInclude() throws XWikiVelocityException
+    {
+        this.engine.initialize(new Properties());
+
+        // Register a global macro
+        evaluate("#macro (globalMacro)#localMacro()#end", "");
+
+        Context context = new XWikiVelocityContext();
+        context.put("test", new TestClass(context));
+
+        // Can the global macro still call the local macro after executing another script in the same namespace
+        assertEvaluate("locallocallocal",
+            "#globalMacro()#macro (localMacro)local#end$test.evaluate('')#globalMacro()#localMacro()", context);
+    }
+
+    @Test
+    public void testIncludeMacro() throws XWikiVelocityException
+    {
+        this.engine.initialize(new Properties());
+
+        Context context = new XWikiVelocityContext();
+        context.put("test", new TestClass(context));
+
+        // Can the script use an included macro
+        assertEvaluate("included", "$test.evaluate('#macro(includedmacro)included#end')#includedmacro()", context);
+    }
+
+    @Test
+    public void testOverwriteIncludeMacro() throws XWikiVelocityException
+    {
+        this.engine.initialize(new Properties());
+
+        Context context = new XWikiVelocityContext();
+        context.put("test", new TestClass(context));
+
+        // Can the script overwrite an included macro
+        // No because macros are registered before executing the script (TODO: fix that)
+        assertEvaluate("included",
+            "$test.evaluate('#macro(includedmacro)included#end')#macro(includedmacro)ovewritten#end#includedmacro()",
+            context);
+    }
+
+    @Test
     public void testTemplateScope() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
@@ -371,6 +452,9 @@ public class DefaultVelocityEngineTest
 
         assertEvaluate("test2", "#mymacro", "namespace");
 
+        // Override in the same script
+        assertEvaluate("test4", "#macro(mymacro)test3#end#macro(mymacro)test4#end#mymacro", "namespace");
+
         // Mark namespace "namespace" as not used anymore
         this.engine.stoppedUsingMacroNamespace("namespace");
     }
@@ -390,11 +474,13 @@ public class DefaultVelocityEngineTest
 
         Context context = new XWikiVelocityContext();
         context.put("test", new TestClass(context));
+        context.put("other", new TestClass(context, "othername"));
 
         // TODO: put back after 12.0RC1 is released or until
         // https://issues.apache.org/jira/browse/VELOCITY-904?focusedCommentId=17019513&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-17019513
         // is fixed
-        // assertEvaluate("name", "#macro (testMacro $test $name)$name#end#testMacro($other, $test.name)", context);
+        // assertEvaluate("name", "#macro (testMacro $test $name)$name#end$test.name#testMacro($other, $test.name)",
+        // context);
     }
 
     @Test
@@ -448,7 +534,8 @@ public class DefaultVelocityEngineTest
         assertEvaluate("sub", "#set($var = 'top')$test.evaluate('#set($var = \"sub\")')$var", context);
 
         // TODO: update this test when a decision is taken in Velocity side regarding macro context behavior
-        // See https://mail-archives.apache.org/mod_mbox/velocity-dev/202001.mbox/%3cCAPnKnLHmL2oeYBNHvq3FHO1BmFW0DFjChk6sxXb9s+mwKhxirQ@mail.gmail.com%3e
+        // See
+        // https://mail-archives.apache.org/mod_mbox/velocity-dev/202001.mbox/%3cCAPnKnLHmL2oeYBNHvq3FHO1BmFW0DFjChk6sxXb9s+mwKhxirQ@mail.gmail.com%3e
         // assertEvaluate("local",
         // "#macro(mymacro)#set($var = 'local')$test.evaluate('#set($var = \"global\")')$var#end#mymacro()", context);
     }
