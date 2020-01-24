@@ -530,9 +530,9 @@ public class DefaultVelocityEngineTest
         assertEvaluate("sub", "$test.evaluate('#set($var = \"sub\")')$var", context);
         assertEvaluate("sub", "#set($var = 'top')$test.evaluate('#set($var = \"sub\")')$var", context);
 
-        assertEvaluate("global", "#macro(mymacro $var)#end#set($var = 'global')#mymacro()$test.evaluate('$var')",
+        assertEvaluate("global", "#macro(mymacro $var)#end#set($var = 'global')#mymacro()$var",
             context);
-        assertEvaluate("global", "#macro(mymacro $var)$test.evaluate('$var')#end#set($var = 'global')#mymacro()",
+        assertEvaluate("global", "#macro(mymacro $var)$var#end#set($var = 'global')#mymacro()",
             context);
 
         // TODO: update this test when a decision is taken in Velocity side regarding macro context behavior
