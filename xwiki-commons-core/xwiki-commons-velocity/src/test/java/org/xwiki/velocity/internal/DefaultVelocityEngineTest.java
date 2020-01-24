@@ -476,11 +476,8 @@ public class DefaultVelocityEngineTest
         context.put("test", new TestClass(context));
         context.put("other", new TestClass(context, "othername"));
 
-        // TODO: put back after 12.0RC1 is released or until
-        // https://issues.apache.org/jira/browse/VELOCITY-904?focusedCommentId=17019513&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-17019513
-        // is fixed
-        // assertEvaluate("name", "#macro (testMacro $test $name)$name#end$test.name#testMacro($other, $test.name)",
-        // context);
+        assertEvaluate("namename", "#macro (testMacro $test $name)$name#end$test.name#testMacro($other, $test.name)",
+            context);
     }
 
     @Test
@@ -538,5 +535,13 @@ public class DefaultVelocityEngineTest
         // https://mail-archives.apache.org/mod_mbox/velocity-dev/202001.mbox/%3cCAPnKnLHmL2oeYBNHvq3FHO1BmFW0DFjChk6sxXb9s+mwKhxirQ@mail.gmail.com%3e
         // assertEvaluate("local",
         // "#macro(mymacro)#set($var = 'local')$test.evaluate('#set($var = \"global\")')$var#end#mymacro()", context);
+    }
+
+    @Test
+    public void testSpaceGobling() throws Exception
+    {
+        this.engine.initialize(new Properties());
+
+        assertEvaluate("value\nvalueline", "#macro (testMacro)value#end#testMacro\n#testMacro()\nline");
     }
 }
