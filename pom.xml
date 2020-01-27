@@ -2876,7 +2876,7 @@
       <id>xwiki-external</id>
       <name>XWiki External Repository</name>
       <layout>default</layout>
-      <url>http://maven.xwiki.org/externals/</url>
+      <url>https://maven.xwiki.org/externals/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
