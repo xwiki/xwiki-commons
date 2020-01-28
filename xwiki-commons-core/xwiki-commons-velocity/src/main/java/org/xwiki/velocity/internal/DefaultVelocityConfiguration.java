@@ -113,14 +113,17 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultProperties.setProperty(RuntimeConstants.VM_MAX_DEPTH, "100");
         this.defaultProperties.setProperty(RuntimeConstants.RESOURCE_MANAGER_LOGWHENFOUND, Boolean.FALSE.toString());
         this.defaultProperties.setProperty(RuntimeConstants.VM_PERM_INLINE_LOCAL, Boolean.TRUE.toString());
-        // [Retro compatibility] Make empty string #if evaluate to true
+
+        // [Retro compatibility]
+        // * Make empty string #if evaluate to true
         this.defaultProperties.setProperty(RuntimeConstants.CHECK_EMPTY_OBJECTS, Boolean.FALSE.toString());
-        // [Retro compatibility] Use Velocity 1.x Space Gobbling
+        // * Use Velocity 1.x Space Gobbling
         this.defaultProperties.setProperty(RuntimeConstants.SPACE_GOBBLING, "bc");
-        // [Retro compatibility] Allow "-" in variables names
-        this.defaultProperties.setProperty(RuntimeConstants.PARSER_HYPHEN_ALLOWED, Boolean.TRUE.toString());
-        // [Retro compatibility] Keep original variable name when passing null parameter
-        this.defaultProperties.setProperty(RuntimeConstants.VM_PRESERVE_ARGUMENTS_LITERALS, Boolean.TRUE.toString());
+        // * Allow "-" in variables names
+        this.defaultProperties.setProperty(RuntimeConstants.PARSER_HYPHEN_ALLOWED, Boolean.TRUE.toString());        
+        // * Keep original variable name when passing null parameter
+        // * Use global context as default value for missing macro parameters
+        this.defaultProperties.setProperty(RuntimeConstants.VM_ENABLE_BC_MODE, Boolean.TRUE.toString());
 
         // Enable the extra scope variables $template and $macro, similar to $foreach
         this.defaultProperties.setProperty(RuntimeConstants.CONTEXT_SCOPE_CONTROL + ".template",
