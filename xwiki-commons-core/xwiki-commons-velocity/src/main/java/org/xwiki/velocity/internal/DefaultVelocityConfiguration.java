@@ -113,6 +113,9 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultProperties.setProperty(RuntimeConstants.VM_MAX_DEPTH, "100");
         this.defaultProperties.setProperty(RuntimeConstants.RESOURCE_MANAGER_LOGWHENFOUND, Boolean.FALSE.toString());
         this.defaultProperties.setProperty(RuntimeConstants.VM_PERM_INLINE_LOCAL, Boolean.TRUE.toString());
+        // Allow to override global macros and to use properly skin macros.
+        this.defaultProperties.setProperty(RuntimeConstants.VM_PERM_ALLOW_INLINE_REPLACE_GLOBAL,
+            Boolean.TRUE.toString());
 
         // [Retro compatibility]
         // * Make empty string #if evaluate to true
@@ -120,7 +123,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         // * Use Velocity 1.x Space Gobbling
         this.defaultProperties.setProperty(RuntimeConstants.SPACE_GOBBLING, "bc");
         // * Allow "-" in variables names
-        this.defaultProperties.setProperty(RuntimeConstants.PARSER_HYPHEN_ALLOWED, Boolean.TRUE.toString());        
+        this.defaultProperties.setProperty(RuntimeConstants.PARSER_HYPHEN_ALLOWED, Boolean.TRUE.toString());
         // * Keep original variable name when passing null parameter
         // * Use global context as default value for missing macro parameters
         this.defaultProperties.setProperty(RuntimeConstants.VM_ENABLE_BC_MODE, Boolean.TRUE.toString());
@@ -133,10 +136,6 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         // Prevents users from calling #parse on files outside the /templates/ directory
         this.defaultProperties.setProperty(RuntimeConstants.EVENTHANDLER_INCLUDE,
             RestrictParseLocationEventHandler.class.getName());
-
-        // Allow to override global macros and to use properly skin macros.
-        this.defaultProperties.setProperty(RuntimeConstants.VM_PERM_ALLOW_INLINE_REPLACE_GLOBAL,
-            Boolean.TRUE.toString());
 
         // The uberspectors enabled by default
         initializeDefaultUberspectors();
