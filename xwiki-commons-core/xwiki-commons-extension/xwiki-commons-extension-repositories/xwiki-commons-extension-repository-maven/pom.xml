@@ -183,7 +183,6 @@
                 <excludedTestClasses>
                   <param>org.xwiki.**.SystemHTTPProxyTest</param>
                 </excludedTestClasses>
-                <!--skip>true</skip-->
               </configuration>
             </execution>
           </executions>
