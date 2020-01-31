@@ -257,16 +257,18 @@
             <header>license.txt</header>
             <strictCheck>true</strictCheck>
             <headerDefinitions>
-              <!-- Our style for XML headers isn't standard so we need to define it in a custom manner.
+              <!-- Our styles for headers aren't standard so we need to define them in a custom manner.
                    See xwiki-commons-tool-verification-resources module -->
               <headerDefinition>license-xml-definition.xml</headerDefinition>
               <headerDefinition>license-script-definition.xml</headerDefinition>
               <headerDefinition>license-batch-definition.xml</headerDefinition>
+              <headerDefinition>license-vm-definition.xml</headerDefinition>
             </headerDefinitions>
-            <!-- Our Java and XML styles aren't the default so we need to change the mapping -->
+            <!-- Our Java, XML and VM styles aren't the default so we need to change the mapping -->
             <mapping>
               <java>SLASHSTAR_STYLE</java>
               <aj>SLASHSTAR_STYLE</aj>
+              <vm>SHARPSHARP_STYLE</vm>
             </mapping>
             <!-- We're only interested in checking our sources and our POMs -->
             <includes>
@@ -276,6 +278,7 @@
               <include>src/**/*.bat</include>
               <include>src/**/*.sh</include>
               <include>src/**/ApplicationResources.properties</include>
+              <include>src/**/*.vm</include>
             </includes>
             <excludes>
               <!-- At the moment we don't have a comment syntax for components.txt files so we need to exclude them
