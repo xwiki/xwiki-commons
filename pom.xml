@@ -2068,10 +2068,10 @@
           <version>2.8.2</version>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
+          <groupId>com.nickwongdev</groupId>
           <artifactId>aspectj-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.11</version>
+          <version>1.12.6</version>
           <configuration>
             <complianceLevel>${java.version}</complianceLevel>
             <source>${java.version}</source>
