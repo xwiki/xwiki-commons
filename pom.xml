@@ -88,7 +88,7 @@
 
           - xwiki-platform-mailsender
     -->
-    <pitest.version>1.4.10</pitest.version>
+    <pitest.version>1.4.11</pitest.version>
     <descartes.version>1.2.6</descartes.version>
 
     <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
@@ -2708,7 +2708,7 @@
               <dependency>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-junit5-plugin</artifactId>
-                <version>0.11</version>
+                <version>0.12</version>
               </dependency>
               <dependency>
                 <groupId>eu.stamp-project</groupId>
