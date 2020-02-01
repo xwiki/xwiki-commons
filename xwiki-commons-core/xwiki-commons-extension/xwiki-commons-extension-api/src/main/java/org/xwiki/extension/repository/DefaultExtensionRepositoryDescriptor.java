@@ -23,10 +23,9 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import com.google.common.base.Objects;
 
 /**
  * Default implementation of {@link ExtensionRepositoryDescriptor}.
@@ -150,9 +149,9 @@ public class DefaultExtensionRepositoryDescriptor implements ExtensionRepository
         if (obj instanceof ExtensionRepositoryDescriptor) {
             ExtensionRepositoryDescriptor repository = (ExtensionRepositoryDescriptor) obj;
 
-            return Objects.equal(getId(), repository.getId()) && Objects.equal(getType(), repository.getType())
-                && Objects.equal(getURI(), repository.getURI())
-                && Objects.equal(getProperties(), repository.getProperties());
+            return Objects.equals(getId(), repository.getId()) && Objects.equals(getType(), repository.getType())
+                && Objects.equals(getURI(), repository.getURI())
+                && Objects.equals(getProperties(), repository.getProperties());
         }
 
         return false;

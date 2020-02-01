@@ -22,6 +22,7 @@ package org.xwiki.extension;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -29,8 +30,6 @@ import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.extension.internal.converter.ExtensionIdConverter;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersion;
-
-import com.google.common.base.Objects;
 
 /**
  * The combination of properties which makes an extension unique.
@@ -115,7 +114,8 @@ public class ExtensionId implements Serializable, Comparable<ExtensionId>
         if (obj instanceof ExtensionId) {
             ExtensionId extensionId = (ExtensionId) obj;
 
-            return Objects.equal(extensionId.getId(), getId()) && Objects.equal(extensionId.getVersion(), getVersion());
+            return Objects.equals(extensionId.getId(), getId())
+                && Objects.equals(extensionId.getVersion(), getVersion());
         }
 
         return false;
@@ -166,9 +166,9 @@ public class ExtensionId implements Serializable, Comparable<ExtensionId>
      */
     public boolean matches(ExtensionId extensionId)
     {
-        if (Objects.equal(getId(), extensionId.getId())) {
+        if (Objects.equals(getId(), extensionId.getId())) {
             if (getVersion() == null || extensionId.getVersion() == null
-                || Objects.equal(getVersion(), extensionId.getVersion())) {
+                || Objects.equals(getVersion(), extensionId.getVersion())) {
                 return true;
             }
         }
