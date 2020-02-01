@@ -59,7 +59,7 @@ import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionReposito
 import org.xwiki.extension.repository.internal.core.ExtensionScanner;
 import org.xwiki.properties.ConverterManager;
 
-import com.google.common.base.Predicates;
+import static java.util.function.Predicate.isEqual;
 
 /**
  * Implementation of {@link ExtensionScanner} based on Maven pom.xml descriptors.
@@ -150,7 +150,7 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
         Reflections reflections = new Reflections(configurationBuilder);
 
         // We can get several pom.xml because the jar might embed several extensions
-        Set<String> descriptors = reflections.getResources(Predicates.equalTo("pom.xml"));
+        Set<String> descriptors = reflections.getResources(isEqual("pom.xml"));
 
         boolean found = false;
         for (String descriptor : descriptors) {

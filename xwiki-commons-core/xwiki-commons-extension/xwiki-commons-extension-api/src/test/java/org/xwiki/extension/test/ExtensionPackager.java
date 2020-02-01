@@ -47,7 +47,7 @@ import org.reflections.util.FilterBuilder;
 import org.reflections.vfs.Vfs;
 import org.xwiki.extension.ExtensionId;
 
-import com.google.common.base.Predicates;
+import static java.util.function.Predicate.isEqual;
 
 /**
  * Generate package based on information found in <code>packagefile.properties</code> files from the resources.
@@ -91,7 +91,7 @@ public class ExtensionPackager
             Reflections reflections = new Reflections(new ConfigurationBuilder().setScanners(new ResourcesScanner())
                 .setUrls(urls).filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(PACKAGEFILE_PACKAGE))));
 
-            Set<String> descriptors = reflections.getResources(Predicates.equalTo(PACKAGEFILE_DESCRIPTOR));
+            Set<String> descriptors = reflections.getResources(isEqual(PACKAGEFILE_DESCRIPTOR));
 
             for (String descriptor : descriptors) {
                 String classPackageFolder =
