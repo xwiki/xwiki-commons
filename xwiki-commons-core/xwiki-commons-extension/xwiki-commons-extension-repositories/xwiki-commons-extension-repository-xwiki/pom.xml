@@ -33,7 +33,9 @@
   <description>Allows accessing extensions located in an XWiki repository</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.18</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>19</xwiki.pitest.mutationThreshold>
+    <!-- TODO: remove once https://github.com/STAMP-project/pitest-descartes/issues/117 is fixed and put threshold of
+         19 -->
+    <xwiki.pitest.mutationThreshold>17</xwiki.pitest.mutationThreshold>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-repository-xwiki-handler,org.xwiki.commons:xwiki-commons-extension-repository-xwiki-handler</xwiki.extension.features>
     <!-- Name to display by the Extension Manager -->
@@ -97,6 +99,29 @@
         </executions>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+        <!-- Exclude tests breaking pitest, see https://github.com/STAMP-project/pitest-descartes/issues/117
+             TODO: remove when fixed -->
+        <plugin>
+          <groupId>org.pitest</groupId>
+          <artifactId>pitest-maven</artifactId>
+          <executions>
+            <execution>
+              <id>pitest-check</id>
+              <goals>
+                <goal>mutationCoverage</goal>
+              </goals>
+              <configuration>
+                <excludedTestClasses>
+                  <param>org.xwiki.**.SystemHTTPProxyTest</param>
+                </excludedTestClasses>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 </project>
        
