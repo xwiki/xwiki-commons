@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.collections4.IterableUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.extension.Extension;
@@ -41,6 +40,8 @@ import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersion;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
+
+import com.google.common.collect.Lists;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -137,7 +138,8 @@ public class DefaultExtensionRepositoryManagerTest
 
     private void assertResolveVersions(int offset, int nb, String... versions) throws ResolveException
     {
-        assertEquals(toVersionList(versions), IterableUtils.toList(this.manager.resolveVersions("id", offset, nb)));
+        assertEquals(toVersionList(versions),
+            Lists.newArrayList(this.manager.resolveVersions("id", offset, nb)));
     }
 
     private void assertSearch(int offset, int nb, Extension... extensions) throws SearchException
