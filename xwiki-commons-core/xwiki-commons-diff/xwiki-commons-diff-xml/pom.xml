@@ -33,10 +33,7 @@
   <description>XWiki Commons - Diff XML</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.96</xwiki.jacoco.instructionRatio>
-    <!-- TODO: The reported mutation score is wrong and it appears to be a bug in pitest,
-      see https://github.com/STAMP-project/pitest-descartes/issues/114 . Put back the correct value (96) after this
-      issue is fixed.  -->
-    <xwiki.pitest.mutationThreshold>60</xwiki.pitest.mutationThreshold>
+    <xwiki.pitest.mutationThreshold>98</xwiki.pitest.mutationThreshold>
   </properties>
   <dependencies>
     <dependency>
