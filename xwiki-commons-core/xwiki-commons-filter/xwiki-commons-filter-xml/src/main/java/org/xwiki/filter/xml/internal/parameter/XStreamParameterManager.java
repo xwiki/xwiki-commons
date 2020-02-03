@@ -95,6 +95,11 @@ public class XStreamParameterManager implements ParameterManager, Initializable
         this.xstream.registerConverter(new XMLFilterElementParametersConverter(this.xstream.getMapper()));
         this.xstream.registerConverter(new InputStreamConverter());
 
+        // XStream does not register converter for their associated interface
+        this.xstream.registerConverter(new MapConverter(this.xstream.getMapper()));
+        this.xstream.registerConverter(new CollectionConverter(this.xstream.getMapper()));
+        this.xstream.registerConverter(new ListConverter(this.xstream.getMapper()));
+
         this.xstream.alias("parameters", FilterEventParameters.class);
         this.xstream.alias("map", LinkedHashMap.class);
         this.xstream.alias("input-stream", InputStream.class);
