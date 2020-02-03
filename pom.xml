@@ -82,13 +82,15 @@
     <junit.vintage.version>${junit5.version}</junit.vintage.version>
 
     <!-- Pitest -->
-    <!-- TODO: The following modules have had their mutation score threshold lowered because of problems in the
-          versions of pitest/descartes that we use. When changing the version please review each of them and try to
-          put back the previous threshold values (check the comments in their pom.xml too).
+    <!-- TODO: The following modules have had their mutation score threshold lowered or ignored because of problems in
+         the versions of pitest/descartes that we use. When changing the version please review each of them and try to
+         put back the previous threshold values (check the comments in their pom.xml too).
 
-          - xwiki-platform-mailsender
+          - xwiki-commons-extension-repository-xwiki
+          - xwiki-commons-extension-repository-maven
+          - xwiki-platform-rendering-parser
     -->
-    <pitest.version>1.4.11</pitest.version>
+    <pitest.version>1.4.10</pitest.version>
     <descartes.version>1.2.6</descartes.version>
 
     <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
