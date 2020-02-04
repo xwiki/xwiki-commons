@@ -34,7 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Relocation;
 import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
@@ -501,6 +503,21 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         if (model == null) {
             throw new ResolveException("Failed to resolve artifact [" + artifact + "] descriptor");
+        }
+
+        // Relocation
+        DistributionManagement distributionManagement = model.getDistributionManagement();
+        if (distributionManagement != null) {
+            Relocation relocation = distributionManagement.getRelocation();
+            if (relocation != null) {
+                return resolveMaven(
+                    new DefaultArtifact(
+                        relocation.getGroupId() != null ? relocation.getGroupId() : artifact.getGroupId(),
+                        relocation.getArtifactId() != null ? relocation.getArtifactId() : artifact.getArtifactId(),
+                        artifact.getClassifier(), artifact.getExtension(),
+                        relocation.getVersion() != null ? relocation.getVersion() : artifact.getVersion()),
+                    artifactExtension, session);
+            }
         }
 
         // Set type
