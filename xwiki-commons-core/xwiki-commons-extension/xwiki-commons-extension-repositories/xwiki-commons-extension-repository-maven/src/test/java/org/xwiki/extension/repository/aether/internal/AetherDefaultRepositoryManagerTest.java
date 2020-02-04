@@ -374,6 +374,16 @@ public class AetherDefaultRepositoryManagerTest
     }
 
     @Test
+    public void testDownloadRelocation() throws ExtensionException, IOException
+    {
+        Extension extension = this.repositoryManager.resolve(new ExtensionId("groupid:relocation", "version"));
+
+        try (InputStream is = extension.getFile().openStream()) {
+            Assert.assertEquals("content", IOUtils.toString(is));
+        }
+    }
+
+    @Test
     public void testResolveVersions() throws ExtensionException
     {
         IterableResult<Version> versions = this.repositoryManager.resolveVersions(this.extensionId.getId(), 0, -1);
