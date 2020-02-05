@@ -63,6 +63,9 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
     {
         this.session = session;
         this.closable = false;
+
+        // Add various type descriptors
+        addTypes(session);
     }
 
     /**
@@ -93,8 +96,16 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
         wsession.setSystemProperty("groupId", null);
 
         // Add various type descriptors
+        addTypes(wsession);
+
+        // Fail when the pom is missing or invalid
+        wsession.setArtifactDescriptorPolicy(new SimpleArtifactDescriptorPolicy(false, false));
+    }
+
+    private void addTypes(RepositorySystemSession session)
+    {
         // TODO: Find them in extensions registered in pom files
-        ArtifactTypeRegistry artifactTypeRegistry = wsession.getArtifactTypeRegistry();
+        ArtifactTypeRegistry artifactTypeRegistry = session.getArtifactTypeRegistry();
         if (artifactTypeRegistry instanceof DefaultArtifactTypeRegistry) {
             DefaultArtifactTypeRegistry defaultArtifactTypeRegistry =
                 (DefaultArtifactTypeRegistry) artifactTypeRegistry;
@@ -105,9 +116,6 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
             defaultArtifactTypeRegistry
                 .add(new DefaultArtifactType("webjar", MavenUtils.JAR_EXTENSION, "", (String) null));
         }
-
-        // Fail when the pom is missing or invalid
-        wsession.setArtifactDescriptorPolicy(new SimpleArtifactDescriptorPolicy(false, false));
     }
 
     @Override
