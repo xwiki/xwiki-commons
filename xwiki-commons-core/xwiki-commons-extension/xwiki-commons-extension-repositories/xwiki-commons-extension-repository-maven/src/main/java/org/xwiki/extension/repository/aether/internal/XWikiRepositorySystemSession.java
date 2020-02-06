@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -32,6 +33,7 @@ import org.eclipse.aether.ConfigurationProperties;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.ArtifactType;
 import org.eclipse.aether.artifact.ArtifactTypeRegistry;
 import org.eclipse.aether.artifact.DefaultArtifactType;
 import org.eclipse.aether.repository.LocalRepository;
@@ -50,7 +52,27 @@ import org.xwiki.extension.maven.internal.MavenUtils;
  */
 public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySystemSession implements AutoCloseable
 {
+    /**
+     * The {@link ArtifactType} corresponding to a known type.
+     */
+    public static final Map<String, ArtifactType> TYPE_MAPPING = new HashMap();
+
     static final JreProxySelector JREPROXYSELECTOR = new JreProxySelector();
+
+    private static final String TYPE_BUNDLE = "bundle";
+
+    private static final String TYPE_ECLIPSE_PLUGIN = "eclipse-plugin";
+
+    private static final String TYPE_WEBJAR = "webjar";
+
+    static {
+        TYPE_MAPPING.put(TYPE_BUNDLE,
+            new DefaultArtifactType(TYPE_BUNDLE, MavenUtils.JAR_EXTENSION, "", MavenUtils.JAVA_LANGUAGE));
+        TYPE_MAPPING.put(TYPE_ECLIPSE_PLUGIN,
+            new DefaultArtifactType(TYPE_ECLIPSE_PLUGIN, MavenUtils.JAR_EXTENSION, "", MavenUtils.JAVA_LANGUAGE));
+        TYPE_MAPPING.put(TYPE_WEBJAR,
+            new DefaultArtifactType(TYPE_WEBJAR, MavenUtils.JAR_EXTENSION, "", (String) null));
+    }
 
     private final RepositorySystemSession session;
 
@@ -109,12 +131,10 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
         if (artifactTypeRegistry instanceof DefaultArtifactTypeRegistry) {
             DefaultArtifactTypeRegistry defaultArtifactTypeRegistry =
                 (DefaultArtifactTypeRegistry) artifactTypeRegistry;
-            defaultArtifactTypeRegistry
-                .add(new DefaultArtifactType("bundle", MavenUtils.JAR_EXTENSION, "", MavenUtils.JAVA_LANGUAGE));
-            defaultArtifactTypeRegistry
-                .add(new DefaultArtifactType("eclipse-plugin", MavenUtils.JAR_EXTENSION, "", MavenUtils.JAVA_LANGUAGE));
-            defaultArtifactTypeRegistry
-                .add(new DefaultArtifactType("webjar", MavenUtils.JAR_EXTENSION, "", (String) null));
+
+            TYPE_MAPPING.forEach((key, value) -> {
+                defaultArtifactTypeRegistry.add(value);
+            });
         }
     }
 

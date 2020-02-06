@@ -31,6 +31,8 @@ import org.apache.maven.execution.MavenSession;
 import org.codehaus.plexus.PlexusContainer;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.ArtifactType;
+import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResult;
@@ -102,7 +104,14 @@ public class MavenBuildExtensionRepository extends AetherExtensionRepository
 
         ArtifactRequest artifactRequest = new ArtifactRequest();
         artifactRequest.setRepositories(repositories);
-        artifactRequest.setArtifact(artifact);
+
+        ArtifactType artifactType = XWikiRepositorySystemSession.TYPE_MAPPING.get(artifact.getExtension());
+        if (artifactType == null) {
+            artifactRequest.setArtifact(artifact);
+        } else {
+            artifactRequest.setArtifact(new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(),
+                artifact.getClassifier(), artifactType.getExtension(), artifact.getVersion()));
+        }
 
         ArtifactResult artifactResult;
         try {
