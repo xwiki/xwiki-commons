@@ -27,6 +27,7 @@ import javax.inject.Singleton;
 import org.apache.velocity.tools.generic.ListTool;
 import org.apache.velocity.tools.generic.SortTool;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.velocity.tools.CollectionsTool;
 
 /**
  * Add legacy tools.
@@ -44,5 +45,6 @@ public class LegacyDefaultToolsInitializer implements DefaultToolsInitializer
     {
         defaultTools.setProperty("listtool", ListTool.class.getName());
         defaultTools.setProperty("sorttool", SortTool.class.getName());
+        defaultTools.setProperty("collectionstool", CollectionsTool.class.getName());
     }
 }

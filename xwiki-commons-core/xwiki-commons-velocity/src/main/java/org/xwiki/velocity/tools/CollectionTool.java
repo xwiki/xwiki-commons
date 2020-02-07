@@ -40,15 +40,14 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.velocity.tools.generic.CollectionTool;
 
 /**
  * Velocity Tool allowing to create various type of collections.
  *
  * @version $Id$
- * @since 4.0M1
+ * @since 12.1RC1
  */
-public class CollectionsTool extends CollectionTool
+public class CollectionTool extends org.apache.velocity.tools.generic.CollectionTool
 {
     /**
      * Create and return a new {@link ArrayList}, an unbounded list with constant access time and good performance for
@@ -60,7 +59,7 @@ public class CollectionsTool extends CollectionTool
      */
     public <E> List<E> getArrayList()
     {
-        return new ArrayList<E>();
+        return new ArrayList<>();
     }
 
     /**
@@ -72,7 +71,7 @@ public class CollectionsTool extends CollectionTool
      */
     public <E> List<E> getLinkedList()
     {
-        return new LinkedList<E>();
+        return new LinkedList<>();
     }
 
     /**
@@ -85,7 +84,7 @@ public class CollectionsTool extends CollectionTool
      */
     public <K, V> Map<K, V> getMap()
     {
-        return new HashMap<K, V>();
+        return new HashMap<>();
     }
 
     /**
@@ -98,7 +97,7 @@ public class CollectionsTool extends CollectionTool
      */
     public <K extends Comparable<K>, V> SortedMap<K, V> getSortedMap()
     {
-        return new TreeMap<K, V>();
+        return new TreeMap<>();
     }
 
     /**
@@ -111,7 +110,7 @@ public class CollectionsTool extends CollectionTool
      */
     public <K, V> Map<K, V> getOrderedMap()
     {
-        return new LinkedHashMap<K, V>();
+        return new LinkedHashMap<>();
     }
 
     /**
@@ -123,7 +122,7 @@ public class CollectionsTool extends CollectionTool
      */
     public <E> Set<E> getSet()
     {
-        return new HashSet<E>();
+        return new HashSet<>();
     }
 
     /**
@@ -135,7 +134,7 @@ public class CollectionsTool extends CollectionTool
      */
     public <E extends Comparable<E>> SortedSet<E> getSortedSet()
     {
-        return new TreeSet<E>();
+        return new TreeSet<>();
     }
 
     /**
@@ -147,7 +146,7 @@ public class CollectionsTool extends CollectionTool
      */
     public <E> Set<E> getOrderedSet()
     {
-        return new LinkedHashSet<E>();
+        return new LinkedHashSet<>();
     }
 
     /**
@@ -159,7 +158,7 @@ public class CollectionsTool extends CollectionTool
      */
     public <E> Queue<E> getQueue()
     {
-        return new LinkedList<E>();
+        return new LinkedList<>();
     }
 
     /**
@@ -171,7 +170,7 @@ public class CollectionsTool extends CollectionTool
      */
     public <E> BlockingQueue<E> getBlockingQueue()
     {
-        return new LinkedBlockingQueue<E>();
+        return new LinkedBlockingQueue<>();
     }
 
     /**
@@ -184,7 +183,7 @@ public class CollectionsTool extends CollectionTool
      */
     public <E extends Comparable<E>> Queue<E> getPriorityQueue()
     {
-        return new PriorityQueue<E>();
+        return new PriorityQueue<>();
     }
 
     /**
@@ -312,7 +311,7 @@ public class CollectionsTool extends CollectionTool
      * @param input the list to reverse
      * @return {@code true} if the list was successfully reversed, {@code false} otherwise
      */
-    public <E> boolean reverse(List<E> input)
+    public <E> boolean reverseModifiable(List<E> input)
     {
         if (input == null) {
             return false;
@@ -333,7 +332,7 @@ public class CollectionsTool extends CollectionTool
      * @param input the list to sort
      * @return {@code true} if the list was successfully sorted, {@code false} otherwise
      */
-    public <E extends Comparable<E>> boolean sort(List<E> input)
+    public <E extends Comparable<E>> boolean sortModifiable(List<E> input)
     {
         if (input == null) {
             return false;
