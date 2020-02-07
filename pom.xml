@@ -2711,7 +2711,9 @@
               <dependency>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-junit5-plugin</artifactId>
-                <version>0.12</version>
+                <!-- TODO: Upgrade to the latest version only when
+                     https://github.com/pitest/pitest-junit5-plugin/issues/48 is fixed -->
+                <version>0.10</version>
               </dependency>
               <dependency>
                 <groupId>eu.stamp-project</groupId>
