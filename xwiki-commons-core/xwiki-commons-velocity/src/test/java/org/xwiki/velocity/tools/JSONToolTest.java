@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.xwiki.test.LogLevel;
+import org.xwiki.test.junit5.LogCaptureExtension;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONNull;
@@ -47,6 +50,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class JSONToolTest
 {
+    @RegisterExtension
+    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
+
     public static class MockBean
     {
         public boolean isEnabled()
@@ -209,12 +215,18 @@ public class JSONToolTest
     public void parseEmptyString()
     {
         assertNull(this.tool.parse(""));
+
+        assertEquals("Tried to parse invalid JSON []. Root error: [JSONException: Invalid JSON String]",
+            this.logCapture.getMessage(0));
     }
 
     @Test
     public void parseInvalidJSON()
     {
         assertNull(this.tool.parse("This is not the JSON you are looking for..."));
+
+        assertEquals("Tried to parse invalid JSON [This is not the JSON you are ...]. "
+            + "Root error: [JSONException: Invalid JSON String]", this.logCapture.getMessage(0));
     }
 
     @Test
