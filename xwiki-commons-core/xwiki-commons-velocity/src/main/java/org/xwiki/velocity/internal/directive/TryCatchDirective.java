@@ -19,7 +19,6 @@
  */
 package org.xwiki.velocity.internal.directive;
 
-import java.io.IOException;
 import java.io.Writer;
 
 import org.apache.velocity.context.InternalContextAdapter;
@@ -65,7 +64,7 @@ public class TryCatchDirective extends Directive
 
     @Override
     public boolean render(InternalContextAdapter context, Writer writer, Node node)
-        throws IOException, ResourceNotFoundException, ParseErrorException, MethodInvocationException
+        throws ResourceNotFoundException, ParseErrorException, MethodInvocationException
     {
         boolean result = true;
 
