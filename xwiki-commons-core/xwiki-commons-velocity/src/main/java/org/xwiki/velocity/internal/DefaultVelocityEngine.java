@@ -252,7 +252,7 @@ public class DefaultVelocityEngine implements VelocityEngine
         // Ensure that initialization has been called
         if (this.runtimeInstance == null) {
             throw new XWikiVelocityException("This Velocity Engine has not yet been initialized. "
-                + " You must call its initialize() method before you can use it.");
+                + "You must call its initialize() method before you can use it.");
         }
 
         // Save the current resource so that it's not broken by the currently executed one

@@ -19,6 +19,7 @@
  */
 package org.xwiki.velocity.internal;
 
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ import org.xwiki.velocity.XWikiVelocityContext;
 import org.xwiki.velocity.XWikiVelocityException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 /**
@@ -551,5 +553,15 @@ public class DefaultVelocityEngineTest
         this.engine.initialize(new Properties());
 
         assertEvaluate("value\nvalueline", "#macro (testMacro)value#end#testMacro\n#testMacro()\nline");
+    }
+
+    @Test
+    public void evaluateWhenNotInitialized()
+    {
+        Throwable exception = assertThrows(XWikiVelocityException.class, () -> {
+            this.engine.evaluate(null, new StringWriter(), null, (Reader) null);
+        });
+        assertEquals("This Velocity Engine has not yet been initialized. "
+            + "You must call its initialize() method before you can use it.", exception.getMessage());
     }
 }
