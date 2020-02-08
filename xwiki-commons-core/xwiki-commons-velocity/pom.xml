@@ -32,8 +32,8 @@
   <packaging>jar</packaging>
   <description>APIs to evaluate content with Velocity</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.71</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>68</xwiki.pitest.mutationThreshold>
+    <xwiki.jacoco.instructionRatio>0.74</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>76</xwiki.pitest.mutationThreshold>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Velocity API</xwiki.extension.name>
   </properties>
