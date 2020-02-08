@@ -26,6 +26,9 @@ import java.util.LinkedHashMap;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.xwiki.test.LogLevel;
+import org.xwiki.test.junit5.LogCaptureExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -40,6 +43,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class EscapeToolTest
 {
+    @RegisterExtension
+    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
+
     /**
      * The tested tool.
      */
@@ -242,5 +248,8 @@ public class EscapeToolTest
 
         // Invalid character U+0000 (the exception must be caught)
         assertNull(this.tool.css("a\u0000b"));
+
+        assertEquals("Failed to escape CSS identifier. Root cause: [Invalid character: the input contains U+0000.]",
+            this.logCapture.getMessage(0));
     }
 }

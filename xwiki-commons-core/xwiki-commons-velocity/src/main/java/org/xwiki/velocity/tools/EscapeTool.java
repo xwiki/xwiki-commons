@@ -224,7 +224,7 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
         try {
             return new CSSIdentifierSerializer().serialize(identifier);
         } catch (IllegalArgumentException e) {
-            LOGGER.warn("Failed to escape CSS identifier. {}", e.getMessage());
+            LOGGER.warn("Failed to escape CSS identifier. Root cause: [{}]", e.getMessage());
             return null;
         }
     }

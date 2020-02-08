@@ -34,6 +34,8 @@
   <properties>
     <xwiki.jacoco.instructionRatio>0.71</xwiki.jacoco.instructionRatio>
     <xwiki.pitest.mutationThreshold>68</xwiki.pitest.mutationThreshold>
+    <!-- TODO: Remove once the tests have been fixed to not output anything to the console! -->
+    <xwiki.surefire.captureconsole.skip>true</xwiki.surefire.captureconsole.skip>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Velocity API</xwiki.extension.name>
   </properties>
