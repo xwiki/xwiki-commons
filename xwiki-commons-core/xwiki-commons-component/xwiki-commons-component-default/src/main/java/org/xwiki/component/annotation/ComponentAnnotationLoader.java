@@ -461,7 +461,7 @@ public class ComponentAnnotationLoader
      * @param location the name of the resources to look for
      * @return the list of component implementation class names
      * @throws IOException in case of an error loading the component list resource
-     * @since 3.3M1
+     * @since 12.1RC1
      */
     public List<ComponentDeclaration> getDeclaredComponents(ClassLoader classLoader, String location)
         throws IOException
