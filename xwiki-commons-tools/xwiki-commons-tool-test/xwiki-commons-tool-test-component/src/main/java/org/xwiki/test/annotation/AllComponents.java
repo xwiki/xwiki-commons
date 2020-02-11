@@ -40,4 +40,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Inherited
 public @interface AllComponents
 {
+    /**
+     * @return the list of component implementation types to exclude from being registered. Useful when we want to
+     *         register all except some components that we want to mock for example.
+     * @since 12.1RC1
+     */
+    Class<?>[] excludes() default { };
 }

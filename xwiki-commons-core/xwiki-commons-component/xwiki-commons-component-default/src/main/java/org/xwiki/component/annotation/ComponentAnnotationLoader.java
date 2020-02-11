@@ -463,7 +463,7 @@ public class ComponentAnnotationLoader
      * @throws IOException in case of an error loading the component list resource
      * @since 3.3M1
      */
-    private List<ComponentDeclaration> getDeclaredComponents(ClassLoader classLoader, String location)
+    public List<ComponentDeclaration> getDeclaredComponents(ClassLoader classLoader, String location)
         throws IOException
     {
         List<ComponentDeclaration> annotatedClassNames = new ArrayList<>();

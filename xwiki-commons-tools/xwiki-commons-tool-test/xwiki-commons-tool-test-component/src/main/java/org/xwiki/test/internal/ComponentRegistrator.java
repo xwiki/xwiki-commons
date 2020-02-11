@@ -19,6 +19,7 @@
  */
 package org.xwiki.test.internal;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -34,6 +35,8 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.annotation.ComponentList;
+
+import static org.xwiki.component.annotation.ComponentAnnotationLoader.COMPONENT_LIST;
 
 /**
  * Helper methods to configure components for testing.
@@ -126,16 +129,25 @@ public class ComponentRegistrator
      *
      * @param testClass the class containing the annotations
      * @param componentManager the component manager against which to register the components
+     * @throws IOException in case of an error loading the component list resource
      */
-    public void registerComponents(Class<?> testClass, ComponentManager componentManager)
+    public void registerComponents(Class<?> testClass, ComponentManager componentManager) throws IOException
     {
         AllComponents allComponentsAnnotation = testClass.getAnnotation(AllComponents.class);
         if (allComponentsAnnotation != null) {
-            this.loader.initialize(componentManager, testClass.getClassLoader());
+            // Exclude component types that are specified by the user when using the AllComponents annotation.
+            List<String> excludedComponentTypes = new ArrayList<>();
+            for (Type excludedComponentType : allComponentsAnnotation.excludes()) {
+                excludedComponentTypes.add(excludedComponentType.getTypeName());
+            }
+            List<ComponentDeclaration> componentDeclarations =
+                this.loader.getDeclaredComponents(testClass.getClassLoader(), COMPONENT_LIST);
+            componentDeclarations.removeIf(i -> excludedComponentTypes.contains(i.getImplementationClassName()));
+            this.loader.initialize(componentManager, testClass.getClassLoader(), componentDeclarations);
         } else {
             // Find all Annotations that are annotated with ComponentList to get the list of Component Declarations
             List<ComponentDeclaration> componentDeclarations =
-                getComponentDeclarationsFromAnnotation(testClass.getAnnotations(), new ArrayList<Annotation>());
+                getComponentDeclarationsFromAnnotation(testClass.getAnnotations(), new ArrayList<>());
             if (!componentDeclarations.isEmpty()) {
                 this.loader.initialize(componentManager, testClass.getClassLoader(), componentDeclarations);
             }
