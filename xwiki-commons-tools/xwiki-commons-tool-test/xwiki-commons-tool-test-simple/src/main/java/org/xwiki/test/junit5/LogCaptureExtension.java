@@ -23,7 +23,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.slf4j.LoggerFactory;
@@ -55,7 +57,7 @@ import ch.qos.logback.core.read.ListAppender;
  * @version $Id$
  * @since 10.4RC1
  */
-public class LogCaptureExtension implements BeforeEachCallback, AfterEachCallback
+public class LogCaptureExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback
 {
     /**
      * The log output is captured in a Logback ListAppender.
@@ -65,6 +67,10 @@ public class LogCaptureExtension implements BeforeEachCallback, AfterEachCallbac
     private final Set<Integer> assertedMessages = new HashSet<>();
 
     private LogLevel level;
+
+    private int assertionPosition;
+
+    private boolean isInitializedInBeforeAll;
 
     /**
      * @param level the logging level from which to start capturing logs (for example if {@link LogLevel#INFO} then
@@ -84,18 +90,40 @@ public class LogCaptureExtension implements BeforeEachCallback, AfterEachCallbac
     }
 
     @Override
-    public void beforeEach(ExtensionContext extensionContext) throws Exception
+    public void beforeAll(ExtensionContext extensionContext)
     {
         initializeLoggers();
         this.listAppender.start();
+        this.isInitializedInBeforeAll = true;
+    }
 
+    @Override
+    public void afterAll(ExtensionContext extensionContext) throws Exception
+    {
+        this.listAppender.stop();
+        uninitializeLogger();
+        verifyAssertedMessages();
+    }
+
+    @Override
+    public void beforeEach(ExtensionContext extensionContext)
+    {
+        if (!this.isInitializedInBeforeAll) {
+            initializeLoggers();
+            this.listAppender.start();
+        }
+        this.assertionPosition = this.listAppender.list.size() - 1;
     }
 
     @Override
     public void afterEach(ExtensionContext extensionContext) throws Exception
     {
-        this.listAppender.stop();
-        uninitializeLogger();
+        if (!this.isInitializedInBeforeAll) {
+            this.listAppender.stop();
+            uninitializeLogger();
+        }
+        verifyAssertedMessages();
+        this.assertionPosition = -1;
     }
 
     /**
@@ -180,15 +208,19 @@ public class LogCaptureExtension implements BeforeEachCallback, AfterEachCallbac
         ContextInitializer initializer = new ContextInitializer(context);
         initializer.autoConfig();
 
+    }
+
+    private void verifyAssertedMessages()
+    {
         // Verify that all appender list messages have been asserted.
-        if (this.listAppender.list.size() != this.assertedMessages.size()) {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < this.listAppender.list.size(); i++) {
-                // Has the message been asserted already?
-                if (!this.assertedMessages.contains(i)) {
-                    builder.append(getMessage(i)).append('\n');
-                }
+        StringBuilder builder = new StringBuilder();
+        for (int i = this.assertionPosition + 1; i < this.listAppender.list.size(); i++) {
+            // Has the message been asserted already?
+            if (!this.assertedMessages.contains(i)) {
+                builder.append(getMessage(i)).append('\n');
             }
+        }
+        if (builder.length() > 0) {
             throw new AssertionError(String.format("Following messages must be asserted: [%s]", builder.toString()));
         }
     }
