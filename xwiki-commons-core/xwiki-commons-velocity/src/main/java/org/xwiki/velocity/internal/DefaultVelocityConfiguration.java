@@ -45,6 +45,7 @@ import org.xwiki.velocity.tools.CollectionTool;
 import org.xwiki.velocity.tools.ComparisonDateTool;
 import org.xwiki.velocity.tools.EscapeTool;
 import org.xwiki.velocity.tools.JSONTool;
+import org.xwiki.velocity.tools.ObjectTool;
 import org.xwiki.velocity.tools.RegexTool;
 import org.xwiki.velocity.tools.URLTool;
 import org.xwiki.velocity.tools.nio.NIOTool;
@@ -105,6 +106,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty("exceptiontool", ExceptionUtils.class.getName());
         this.defaultTools.setProperty("niotool", NIOTool.class.getName());
         this.defaultTools.setProperty("logtool", LogTool.class.getName());
+        this.defaultTools.setProperty("objecttool", ObjectTool.class.getName());
 
         // Extension point to inject other default tools
         this.toolsInitializers.forEach(l -> l.initialize(this.defaultTools));
