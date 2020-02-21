@@ -79,7 +79,6 @@ public class XStreamUtils
     /**
      * @param field the field to serialize
      * @return true if the field is serializable
-     * @since 10.10RC1
      */
     public boolean isSerializable(Field field)
     {
@@ -89,7 +88,6 @@ public class XStreamUtils
     /**
      * @param itemClass the class of the object to serialize
      * @return true of the class describe serializable object
-     * @since 10.10RC1
      */
     public boolean isSerializable(Class<?> itemClass)
     {
