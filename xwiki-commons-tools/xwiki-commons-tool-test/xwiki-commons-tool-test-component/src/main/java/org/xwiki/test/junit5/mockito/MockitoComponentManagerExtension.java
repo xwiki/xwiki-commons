@@ -21,10 +21,12 @@ package org.xwiki.test.junit5.mockito;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
@@ -235,11 +237,19 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
                 throw new Exception(
                     String.format("The component under field [%s] is not implementing any role.", field.getName()));
             } else if (descriptors.size() > 1) {
-                // Force user to specify a role in case of several
-                throw new Exception(String.format(
-                    "The component under field [%s] is implementing several roles. "
-                        + "Please disambiguate by using the \"role\" parameter of the @%s annotation.",
-                    field.getName(), InjectMockComponents.class.getSimpleName()));
+                // Note that we can have several descriptors if the component has one role but several hints. In this
+                // case we can just take the first descriptor since it won't matter.
+                if (areRolesIdentical(descriptors)) {
+                    return descriptors.get(0);
+                } else {
+                    // Force user to specify a role in case of several
+                    throw new Exception(String.format(
+                        "The component under field [%s] is implementing several roles ([%s]). "
+                            + "Please disambiguate by using the \"role\" parameter of the @%s annotation.",
+                        field.getName(),
+                        StringUtils.join(descriptors, ','),
+                        InjectMockComponents.class.getSimpleName()));
+                }
             } else {
                 return descriptors.get(0);
             }
@@ -261,6 +271,21 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
                 "The role type specified in the @%s annotation for field [%s] isn't " + "implemented by the component.",
                 field.getName(), InjectMockComponents.class.getSimpleName()));
         }
+    }
+
+    private boolean areRolesIdentical(List<ComponentDescriptor> descriptors)
+    {
+        boolean areSame = true;
+        Type type = null;
+        for (ComponentDescriptor descriptor : descriptors) {
+            if (type != null && !type.equals(descriptor.getRoleType())) {
+                areSame = false;
+                break;
+            } else if (type == null) {
+                type = descriptor.getRoleType();
+            }
+        }
+        return areSame;
     }
 
     private boolean isRolePresent(Class<?> role)

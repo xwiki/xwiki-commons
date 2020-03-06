@@ -64,11 +64,23 @@ public class MockitoComponentManagerExtensionTest
     @InjectMockComponents
     private Component4Impl component4;
 
+    /**
+     * Test a component having several roles by explicitly picking one.
+     */
     @InjectMockComponents(role = Component2Role.class)
     private Component5Impl component5Role1;
 
+    /**
+     * Test a component having several roles by explicitly picking one.
+     */
     @InjectMockComponents(role = Component3Role.class)
     private Component5Impl component5Role2;
+
+    /**
+     * Test a component having several hints but the same role.
+     */
+    @InjectMockComponents
+    private Component6Impl component6;
 
     @InjectComponentManager
     private MockitoComponentManager componentManager;
