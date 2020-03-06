@@ -42,7 +42,7 @@ public class ForbiddenInvocationProcessor extends AbstractProcessor<CtInvocation
     @Override
     public void process(CtInvocation<?> element)
     {
-        if (methods == null) {
+        if (this.methods == null) {
             throw new SpoonException("Processor must be configured with a \"methods\" parameter of type "
                 + "\"Map<String, List<String>>\".");
         }
