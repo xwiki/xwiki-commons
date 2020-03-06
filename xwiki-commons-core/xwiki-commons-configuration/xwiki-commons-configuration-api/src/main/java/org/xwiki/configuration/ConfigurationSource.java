@@ -44,9 +44,9 @@ public interface ConfigurationSource
      * @param <T> the value type
      * @param key the property key for which we want the value
      * @param valueClass the type of object that should be returned. The value is converted to the passed type.
-     * @return the property value is found. If the key wasn't found the returned value depends on the passed valueClass:
+     * @return the property value is found. If the key wasn't found, null is returned except for the following special
+     *         cases:
      *         <ul>
-     *           <li>String: null</li>
      *           <li>List: empty List</li>
      *           <li>Properties: empty Properties</li>
      *         </ul>
