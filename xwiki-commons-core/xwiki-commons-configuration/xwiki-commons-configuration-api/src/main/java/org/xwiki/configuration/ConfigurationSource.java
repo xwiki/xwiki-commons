@@ -47,7 +47,6 @@ public interface ConfigurationSource
      * @return the property value is found. If the key wasn't found the returned value depends on the passed valueClass:
      *         <ul>
      *           <li>String: null</li>
-     *           <li>Boolean: false</li>
      *           <li>List: empty List</li>
      *           <li>Properties: empty Properties</li>
      *         </ul>
