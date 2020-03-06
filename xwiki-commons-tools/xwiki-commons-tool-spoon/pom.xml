@@ -33,7 +33,8 @@
   <packaging>jar</packaging>
   <description>Custom processor to use with spoon</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.0</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.92</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>100</xwiki.pitest.mutationThreshold>
     <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>true</xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
   </properties>
   <dependencies>
@@ -42,6 +43,13 @@
       <artifactId>spoon-core</artifactId>
       <version>${spoon.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <!-- Test Dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-tool-test-simple</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

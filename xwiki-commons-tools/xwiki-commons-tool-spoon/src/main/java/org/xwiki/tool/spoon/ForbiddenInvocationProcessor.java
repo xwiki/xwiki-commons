@@ -22,8 +22,6 @@ package org.xwiki.tool.spoon;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Level;
-
 import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Property;
@@ -44,6 +42,11 @@ public class ForbiddenInvocationProcessor extends AbstractProcessor<CtInvocation
     @Override
     public void process(CtInvocation<?> element)
     {
+        if (methods == null) {
+            throw new SpoonException("Processor must be configured with a \"methods\" parameter of type "
+                + "\"Map<String, List<String>>\".");
+        }
+
         CtExpression<?> target = element.getTarget();
 
         if (target != null && target.getType() != null) {
@@ -52,10 +55,9 @@ public class ForbiddenInvocationProcessor extends AbstractProcessor<CtInvocation
             if (methodList != null) {
                 String method = element.getExecutable().getSimpleName();
                 if (methodList.contains(method)) {
-                    String message = String.format("Forbidden call to [%s#%s]", type, method);
-                    getFactory().getEnvironment().report(this, Level.ERROR, element, message);
-
-                    // Forcing the build to stop
+                    String message = String.format("Forbidden call to [%s#%s] at %s", type, method,
+                        target.getPosition());
+                    // Force the build to stop
                     throw new SpoonException(message);
                 }
             }
