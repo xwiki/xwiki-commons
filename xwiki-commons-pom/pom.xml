@@ -200,7 +200,7 @@
           <!-- Contains custom Spoon processors -->
           <dependency>
             <groupId>org.xwiki.commons</groupId>
-            <artifactId>xwiki-commons-tool-spoon</artifactId>
+            <artifactId>xwiki-commons-tool-spoon-checks</artifactId>
             <version>12.2-SNAPSHOT</version>
           </dependency>
         </dependencies>

@@ -17,20 +17,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.tool.spoon.code;
+package org.xwiki.tool.spoon.component;
 
-import java.io.File;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.component.annotation.InstantiationStrategy;
+import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
+import org.xwiki.tool.spoon.ComponentAnnotationProcessor;
 
 /**
- * Test class for {@link org.xwiki.tool.spoon.ForbiddenInvocationProcessorTest}.
+ * Test class for {@link ComponentAnnotationProcessor}.
  *
  * @version $Id$
  */
-public class TestClass
+@Component
+@InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
+public class ComponentAnnotationWithInstantiationStrategyAndDeclared
 {
-    public void method() throws Exception
-    {
-        File file = new File("whatever");
-        file.deleteOnExit();
-    }
 }

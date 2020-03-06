@@ -31,8 +31,8 @@ import spoon.SpoonException;
 import spoon.processing.ProcessorProperties;
 import spoon.processing.ProcessorPropertiesImpl;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -48,11 +48,12 @@ public class ForbiddenInvocationProcessorTest
         Launcher launcher = new Launcher();
         launcher.getEnvironment().setNoClasspath(true);
         launcher.setArgs(new String[] {"--output-type", "nooutput" });
-        launcher.addInputResource("./src/test/java/org/xwiki/tool/spoon/code/");
+        launcher.addInputResource("./src/test/java/org/xwiki/tool/spoon/forbidden/");
 
         ForbiddenInvocationProcessor processor = new ForbiddenInvocationProcessor();
         Map<String, List<String>> methodMap = new HashMap<>();
         methodMap.put("java.io.File", Arrays.asList("deleteOnExit"));
+        methodMap.put("java.net.URL", Arrays.asList("equals"));
         ProcessorProperties properties = new ProcessorPropertiesImpl();
         properties.set("methods", methodMap);
         processor.initProperties(properties);
@@ -62,6 +63,9 @@ public class ForbiddenInvocationProcessorTest
         Throwable exception = assertThrows(SpoonException.class, () -> {
             launcher.run();
         });
-        assertThat(exception.getMessage(), containsString("Forbidden call to [java.io.File#deleteOnExit] at"));
+        assertThat(exception.getMessage(), matchesPattern("\\QThe following errors were found:\\E\n"
+            + "\\Q- Forbidden call to [java.io.File#deleteOnExit] at \\E(.*)\n"
+            + "\\Q- Forbidden call to [java.net.URL#equals] at \\E(.*)\n"
+        ));
     }
 }

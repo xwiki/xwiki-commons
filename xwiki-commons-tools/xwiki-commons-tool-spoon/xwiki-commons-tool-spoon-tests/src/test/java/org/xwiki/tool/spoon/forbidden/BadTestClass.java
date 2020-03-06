@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,22 +16,26 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.xwiki.tool.spoon.forbidden;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-tool-pom</artifactId>
-    <version>12.2-SNAPSHOT</version>
-    <relativePath>../xwiki-commons-tool-pom</relativePath>
-  </parent>
-  <artifactId>xwiki-commons-tool-spoon</artifactId>
-  <name>XWiki Commons - Tools - Spoon - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>Custom processors to use with Spoon</description>
-  <modules>
-    <module>xwiki-commons-tool-spoon-checks</module>
-    <module>xwiki-commons-tool-spoon-tests</module>
-  </modules>
-</project>
+import java.io.File;
+import java.net.URL;
+
+import org.xwiki.tool.spoon.ForbiddenInvocationProcessorTest;
+
+/**
+ * Test class for {@link ForbiddenInvocationProcessorTest}.
+ *
+ * @version $Id$
+ */
+public class BadTestClass
+{
+    public void method() throws Exception
+    {
+        File file = new File("whatever");
+        file.deleteOnExit();
+        URL url = new URL("whatever");
+        url.equals(url);
+    }
+}

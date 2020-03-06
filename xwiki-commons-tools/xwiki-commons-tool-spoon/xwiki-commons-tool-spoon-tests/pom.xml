@@ -24,16 +24,40 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-tool-pom</artifactId>
+    <artifactId>xwiki-commons-tool-spoon</artifactId>
     <version>12.2-SNAPSHOT</version>
-    <relativePath>../xwiki-commons-tool-pom</relativePath>
   </parent>
-  <artifactId>xwiki-commons-tool-spoon</artifactId>
-  <name>XWiki Commons - Tools - Spoon - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>Custom processors to use with Spoon</description>
-  <modules>
-    <module>xwiki-commons-tool-spoon-checks</module>
-    <module>xwiki-commons-tool-spoon-tests</module>
-  </modules>
+  <artifactId>xwiki-commons-tool-spoon-tests</artifactId>
+  <name>XWiki Commons - Tools - Spoon - Tests</name>
+  <packaging>jar</packaging>
+  <properties>
+    <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>true</xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
+  </properties>
+  <dependencies>
+    <!-- Test Dependencies -->
+    <dependency>
+      <groupId>fr.inria.gforge.spoon</groupId>
+      <artifactId>spoon-core</artifactId>
+      <version>${spoon.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-tool-spoon-checks</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-tool-test-simple</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-component-api</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

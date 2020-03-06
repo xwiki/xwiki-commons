@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import spoon.SpoonException;
-import spoon.processing.AbstractProcessor;
 import spoon.processing.Property;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
@@ -34,7 +33,7 @@ import spoon.reflect.code.CtInvocation;
  * @version $Id$
  * @since 9.9RC2
  */
-public class ForbiddenInvocationProcessor extends AbstractProcessor<CtInvocation<?>>
+public class ForbiddenInvocationProcessor extends AbstractXWikiProcessor<CtInvocation<?>>
 {
     @Property
     private Map<String, List<String>> methods;
@@ -57,8 +56,7 @@ public class ForbiddenInvocationProcessor extends AbstractProcessor<CtInvocation
                 if (methodList.contains(method)) {
                     String message = String.format("Forbidden call to [%s#%s] at %s", type, method,
                         target.getPosition());
-                    // Force the build to stop
-                    throw new SpoonException(message);
+                    registerError(message);
                 }
             }
         }
