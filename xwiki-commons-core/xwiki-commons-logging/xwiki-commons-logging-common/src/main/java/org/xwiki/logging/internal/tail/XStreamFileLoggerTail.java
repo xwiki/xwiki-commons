@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.logging.event.LogEvent;
@@ -38,6 +39,7 @@ import org.xwiki.xstream.internal.SafeXStream;
  * @since 11.9RC1
  */
 @Component(roles = XStreamFileLoggerTail.class)
+@Singleton
 public class XStreamFileLoggerTail extends AbstractTextFileLoggerTail
 {
     protected static final String FILE_EXTENSION = ".xml";
