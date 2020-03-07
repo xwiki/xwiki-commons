@@ -20,6 +20,7 @@
 package org.xwiki.tool.spoon;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -80,7 +81,7 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
         boolean isStaticRegistration = true;
         boolean hasInstantiationStrategyAnnotation = false;
         boolean hasSingletonAnnotation = false;
-        for (CtAnnotation annotation : ctClass.getAnnotations()) {
+        for (CtAnnotation annotation : getAnnotationsIncludingFromSuperclasses(ctClass)) {
             // Is it a Component annotation?
             if (COMPONENT_ANNOTATION.equals(annotation.getAnnotationType().getQualifiedName())) {
                 hasComponentAnnotation = true;
@@ -197,5 +198,17 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
     private String computeMavenModulePath(SourcePosition position)
     {
         return StringUtils.substringBefore(position.getFile().toString(), "/src/");
+    }
+
+    private List<CtAnnotation<? extends Annotation>> getAnnotationsIncludingFromSuperclasses(
+        CtClass ctClass)
+    {
+        List<CtAnnotation<? extends Annotation>> annotations = new ArrayList<>(ctClass.getAnnotations());
+        CtClass current = ctClass;
+        while (current.getSuperclass() != null) {
+            current = (CtClass) current.getSuperclass().getTypeDeclaration();
+            annotations.addAll(current.getAnnotations());
+        }
+        return annotations;
     }
 }
