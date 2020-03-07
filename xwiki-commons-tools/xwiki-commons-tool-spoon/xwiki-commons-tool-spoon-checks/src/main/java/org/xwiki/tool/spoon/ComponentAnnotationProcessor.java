@@ -27,8 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+
 import spoon.SpoonException;
 import spoon.processing.Property;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 
@@ -94,7 +97,7 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
         if (hasComponentAnnotation) {
             // Parse the components.txt if not already parsed for the current maven module
             if (this.registeredComponentNames == null) {
-                this.registeredComponentNames = parseComponentsTxtFile(qualifiedName);
+                this.registeredComponentNames = parseComponentsTxtFile(qualifiedName, ctClass.getPosition());
             }
             if (!isStaticRegistration) {
                 // This is check 2-B
@@ -141,12 +144,12 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
         }
     }
 
-    private List<String> parseComponentsTxtFile(String qualifiedName)
+    private List<String> parseComponentsTxtFile(String qualifiedName, SourcePosition position)
     {
         List<String> results = new ArrayList<>();
 
         // Get the components.txt file from the current directory, in target/META-INF/components.txt
-        Path path = getComponentsTxtPath();
+        Path path = getComponentsTxtPath(position);
         if (Files.exists(path)) {
             this.componentsDeclarationLocation = path.toString();
             try (Stream<String> stream = Files.lines(path)) {
@@ -176,18 +179,23 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
             throw new SpoonException(String.format(
                 "There is no [%s] file and thus Component [%s] isn't declared! Consider "
                     + "adding a components.txt file or if it is normal use the \"staticRegistration\" parameter as "
-                    + "in \"@Component(staticRegistration = false)\"", path, qualifiedName));
+                    + "in \"@Component(staticRegistration = false)\"", path.toAbsolutePath(), qualifiedName));
         }
 
         return results;
     }
 
-    private Path getComponentsTxtPath()
+    private Path getComponentsTxtPath(SourcePosition position)
     {
         String path = this.componentsTxtPath;
         if (path == null) {
             path = "target/classes/META-INF/components.txt";
         }
-        return Paths.get(path);
+        return Paths.get(computeMavenModulePath(position), path);
+    }
+
+    private String computeMavenModulePath(SourcePosition position)
+    {
+        return StringUtils.substringBefore(position.getFile().toString(), "/src/");
     }
 }
