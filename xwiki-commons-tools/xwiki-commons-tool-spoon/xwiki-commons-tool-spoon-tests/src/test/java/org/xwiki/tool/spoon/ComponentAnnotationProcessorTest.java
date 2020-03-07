@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Test;
 
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.processing.ProcessorProperties;
+import spoon.processing.ProcessorPropertiesImpl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.matchesPattern;
@@ -61,6 +63,9 @@ public class ComponentAnnotationProcessorTest
         launcher.setArgs(new String[] {"--output-type", "nooutput" });
         launcher.addInputResource("./src/test/java/org/xwiki/tool/spoon/component/");
         ComponentAnnotationProcessor processor = new ComponentAnnotationProcessor();
+        ProcessorProperties properties = new ProcessorPropertiesImpl();
+        properties.set("componentsTxtPath", "target/test-classes/META-INF/components.txt");
+        processor.initProperties(properties);
         launcher.addProcessor(processor);
         launcher.run();
     }

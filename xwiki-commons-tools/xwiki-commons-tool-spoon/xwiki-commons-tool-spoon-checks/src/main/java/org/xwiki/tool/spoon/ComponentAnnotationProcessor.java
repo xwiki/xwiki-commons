@@ -19,16 +19,16 @@
  */
 package org.xwiki.tool.spoon;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URL;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
+import java.util.stream.Stream;
 
 import spoon.SpoonException;
+import spoon.processing.Property;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 
@@ -55,8 +55,6 @@ import spoon.reflect.declaration.CtClass;
  */
 public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass<?>>
 {
-    private static final String COMPONENTS_TXT_LOCATION = "META-INF/components.txt";
-
     private static final String COMPONENT_ANNOTATION = "org.xwiki.component.annotation.Component";
 
     private static final String SINGLETON_ANNOTATION = "javax.inject.Singleton";
@@ -66,7 +64,10 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
 
     private List<String> registeredComponentNames;
 
-    private URL componentsDeclarationLocation;
+    private String componentsDeclarationLocation;
+
+    @Property
+    private String componentsTxtPath;
 
     @Override
     public void process(CtClass<?> ctClass)
@@ -144,62 +145,49 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
     {
         List<String> results = new ArrayList<>();
 
-        try {
-            Enumeration<URL> urls =
-                Thread.currentThread().getContextClassLoader().getResources(COMPONENTS_TXT_LOCATION);
-            while (urls.hasMoreElements()) {
-                URL url = urls.nextElement();
-                // We find the right components.txt by checking that the URL is using a "file" scheme (maven points
-                // to the target directory and the URLs for the current module are listed before dependency URLs).
-                if (url.getProtocol().equals("file")) {
-                    this.componentsDeclarationLocation = url;
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            throw new SpoonException(String.format("Failed to locate [%s]. Error [%s]", COMPONENTS_TXT_LOCATION,
-                getThrowableString(e)));
-        }
-
-        try (BufferedReader in = new BufferedReader(
-            new InputStreamReader(this.componentsDeclarationLocation.openStream())))
-        {
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                // Make sure we don't include empty lines
-                if (inputLine.trim().length() > 0) {
-                    try {
-                        String[] chunks = inputLine.split(":");
-                        if (chunks.length > 1) {
-                            results.add(chunks[1]);
-                        } else {
-                            results.add(chunks[0]);
+        // Get the components.txt file from the current directory, in target/META-INF/components.txt
+        Path path = getComponentsTxtPath();
+        if (Files.exists(path)) {
+            this.componentsDeclarationLocation = path.toString();
+            try (Stream<String> stream = Files.lines(path)) {
+                stream.forEach((line) -> {
+                    // Make sure we don't include empty lines
+                    if (line.trim().length() > 0) {
+                        try {
+                            String[] chunks = line.split(":");
+                            if (chunks.length > 1) {
+                                results.add(chunks[1]);
+                            } else {
+                                results.add(chunks[0]);
+                            }
+                        } catch (Exception e) {
+                            throw new SpoonException(String.format(
+                                "Invalid format [%s] in [%s]", line, path), e);
                         }
-                    } catch (Exception e) {
-                        throw new SpoonException(String.format(
-                            "Invalid format [%s] in [%s]", inputLine, this.componentsDeclarationLocation));
                     }
-                }
+                });
+            } catch (IOException e) {
+                throw new SpoonException(String.format("Failed to read the [%s] file", path), e);
             }
-        } catch (Exception e) {
+        } else {
             // Since this current method is called only if there's at least one @Component annotation with static
             // registration, report an error if the components.txt file cannot be found
             // This is check 1-A
             throw new SpoonException(String.format(
                 "There is no [%s] file and thus Component [%s] isn't declared! Consider "
                     + "adding a components.txt file or if it is normal use the \"staticRegistration\" parameter as "
-                    + "in \"@Component(staticRegistration = false)\"", this.componentsDeclarationLocation,
-                qualifiedName));
+                    + "in \"@Component(staticRegistration = false)\"", path, qualifiedName));
         }
 
         return results;
     }
 
-    private String getThrowableString(Throwable t)
+    private Path getComponentsTxtPath()
     {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw, true);
-        t.printStackTrace(pw);
-        return sw.getBuffer().toString();
+        String path = this.componentsTxtPath;
+        if (path == null) {
+            path = "target/classes/META-INF/components.txt";
+        }
+        return Paths.get(path);
     }
 }
