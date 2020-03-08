@@ -25,7 +25,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -200,15 +202,24 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
         return StringUtils.substringBefore(position.getFile().toString(), "/src/");
     }
 
-    private List<CtAnnotation<? extends Annotation>> getAnnotationsIncludingFromSuperclasses(
+    private Set<CtAnnotation<? extends Annotation>> getAnnotationsIncludingFromSuperclasses(
         CtClass ctClass)
     {
-        List<CtAnnotation<? extends Annotation>> annotations = new ArrayList<>(ctClass.getAnnotations());
+        Set<CtAnnotation<? extends Annotation>> annotations = new HashSet<>();
+        Set<String> annotationNames = new HashSet<>();
         CtClass current = ctClass;
-        while (current.getSuperclass() != null) {
-            current = (CtClass) current.getSuperclass().getTypeDeclaration();
-            annotations.addAll(current.getAnnotations());
-        }
+        do {
+            for (CtAnnotation ctAnnotation : current.getAnnotations()) {
+                String annotationName = ctAnnotation.getType().getSimpleName();
+                // Note: When they have the same name, we consider that the annotation in the extending class has
+                // priority over the the annotation in the super class.
+                if (!annotationNames.contains(annotationName)) {
+                    annotations.add(ctAnnotation);
+                    annotationNames.add(annotationName);
+                }
+            }
+            current = current.getSuperclass() == null ? null : (CtClass) current.getSuperclass().getTypeDeclaration();
+        } while (current != null);
         return annotations;
     }
 }

@@ -3,3 +3,4 @@ org.xwiki.tool.spoon.component.ComponentAnnotationWithSingletonAndDeclared
 org.xwiki.tool.spoon.component.ComponentAnnotationWithoutSingletonOrInstantationStrategyAndDeclared
 org.xwiki.tool.spoon.component.ComponentAnnotationWithoutStaticRegistrationAndDeclared
 org.xwiki.tool.spoon.component.ComponentAnnotationWithAnnotationInSuperClassAndDeclared
+org.xwiki.tool.spoon.component.ComponentAnnotationWithOverrideAndDeclared
