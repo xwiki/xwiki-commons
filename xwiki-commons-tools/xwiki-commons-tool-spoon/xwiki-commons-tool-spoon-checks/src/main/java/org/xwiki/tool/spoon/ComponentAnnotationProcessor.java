@@ -100,7 +100,8 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
         if (hasComponentAnnotation) {
             // Parse the components.txt if not already parsed for the current maven module
             if (this.registeredComponentNames == null) {
-                this.registeredComponentNames = parseComponentsTxtFile(qualifiedName, ctClass.getPosition());
+                this.registeredComponentNames =
+                    parseComponentsTxtFile(qualifiedName, ctClass.getPosition(), isStaticRegistration);
             }
             if (!isStaticRegistration) {
                 // This is check 2-B
@@ -147,7 +148,8 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
         }
     }
 
-    private List<String> parseComponentsTxtFile(String qualifiedName, SourcePosition position)
+    private List<String> parseComponentsTxtFile(String qualifiedName, SourcePosition position,
+        boolean isStaticRegistration)
     {
         List<String> results = new ArrayList<>();
 
@@ -176,13 +178,13 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
                 throw new SpoonException(String.format("Failed to read the [%s] file", path), e);
             }
         } else {
-            // Since this current method is called only if there's at least one @Component annotation with static
-            // registration, report an error if the components.txt file cannot be found
-            // This is check 1-A
-            throw new SpoonException(String.format(
-                "There is no [%s] file and thus Component [%s] isn't declared! Consider "
-                    + "adding a components.txt file or if it is normal use the \"staticRegistration\" parameter as "
-                    + "in \"@Component(staticRegistration = false)\"", path.toAbsolutePath(), qualifiedName));
+            // Check 1-A
+            if (isStaticRegistration) {
+                throw new SpoonException(String.format(
+                    "There is no [%s] file and thus Component [%s] isn't declared! Consider "
+                        + "adding a components.txt file or if it is normal use the \"staticRegistration\" parameter as "
+                        + "in \"@Component(staticRegistration = false)\"", path.toAbsolutePath(), qualifiedName));
+            }
         }
 
         return results;
