@@ -209,7 +209,7 @@ public class XWikiExtension extends AbstractRatingExtension
         ExtensionFactory factory) throws URISyntaxException
     {
         return factory.getExtensionRepositoryDescriptor(restRepository.getId(), restRepository.getType(),
-            new URI(restRepository.getUri()), null);
+            new URI(restRepository.getUri()));
     }
 
     @Override
