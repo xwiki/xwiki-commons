@@ -33,7 +33,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 public abstract class AbstractExtensionPattern implements ExtensionPattern
 {
     /**
-     * @see #getId()
+     * @see #getIdPattern()
      */
     protected final Pattern idPattern;
 
