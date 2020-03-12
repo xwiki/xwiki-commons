@@ -30,6 +30,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.version.VersionConstraint;
+import org.xwiki.stability.Unstable;
 
 /**
  * Base class for {@link ExtensionDependency} implementations.
@@ -48,6 +49,12 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
      * @see #getVersionConstraint()
      */
     protected VersionConstraint versionConstraint;
+
+    /**
+     * @see #getExclusions()
+     * @since 12.2RC1
+     */
+    protected List<ExtensionPattern> exclusions;
 
     /**
      * @see #getRepositories()
@@ -86,6 +93,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
         this(dependency.getId(), versionConstraint != null ? versionConstraint : dependency.getVersionConstraint(),
             dependency.isOptional(), dependency.getProperties());
 
+        setExclusions(dependency.getExclusions());
         setRepositories(dependency.getRepositories());
     }
 
@@ -170,9 +178,38 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
     }
 
     @Override
+    public Collection<ExtensionPattern> getExclusions()
+    {
+        return this.exclusions != null ? this.exclusions : Collections.emptyList();
+    }
+
+    /**
+     * @param exclusions the exclusions patterns to apply to transitive dependencies
+     * @since 12.2RC1
+     */
+    @Unstable
+    public void setExclusions(Collection<? extends ExtensionPattern> exclusions)
+    {
+        this.exclusions = exclusions != null ? Collections.unmodifiableList(new ArrayList<>(exclusions)) : null;
+    }
+
+    /**
+     * @param exclusion an exclusion pattern to apply to transitive dependencies
+     * @since 12.2RC1
+     */
+    @Unstable
+    public void addExclusion(ExtensionPattern exclusion)
+    {
+        List<ExtensionPattern> newexclusions = new ArrayList<>(getExclusions());
+        newexclusions.add(exclusion);
+
+        this.exclusions = Collections.unmodifiableList(newexclusions);
+    }
+
+    @Override
     public Collection<ExtensionRepositoryDescriptor> getRepositories()
     {
-        return this.repositories != null ? this.repositories : Collections.<ExtensionRepositoryDescriptor>emptyList();
+        return this.repositories != null ? this.repositories : Collections.emptyList();
     }
 
     /**
@@ -293,6 +330,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
         builder.append(getId());
         builder.append(getVersionConstraint());
         builder.append(isOptional());
+        builder.append(getExclusions());
         builder.append(getRepositories());
         builder.append(getProperties());
 
@@ -316,6 +354,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
             builder.append(getId(), otherDependency.getId());
             builder.append(getVersionConstraint(), otherDependency.getVersionConstraint());
             builder.append(isOptional(), otherDependency.isOptional());
+            builder.append(getExclusions(), otherDependency.getExclusions());
             builder.append(getRepositories(), otherDependency.getRepositories());
             builder.append(getProperties(), otherDependency.getProperties());
 

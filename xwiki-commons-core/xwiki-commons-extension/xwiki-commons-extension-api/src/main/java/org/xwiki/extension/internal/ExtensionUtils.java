@@ -37,6 +37,7 @@ import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionManagerConfiguration;
+import org.xwiki.extension.ExtensionPattern;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.MutableExtension;
@@ -84,41 +85,14 @@ public final class ExtensionUtils
                 recommendedVersionConstraint = dependency.getVersionConstraint().merge(recommendedVersionConstraint);
 
                 return factory.getExtensionDependency(dependency.getId(), recommendedVersionConstraint,
-                    dependency.isOptional(), dependency.getProperties());
+                    dependency.isOptional(), dependency.getExclusions(), dependency.getRepositories(),
+                    dependency.getProperties());
             } catch (IncompatibleVersionConstraintException e) {
                 // Not compatible, don't use the recommended version
             }
         }
 
         return null;
-    }
-
-    /**
-     * @param dependency the initial dependency
-     * @param managedDependencies the managed dependencies
-     * @param extension the extension with the passed dependency
-     * @return the actual dependency to resolve
-     */
-    public static ExtensionDependency getDependency(ExtensionDependency dependency,
-        Map<String, ExtensionDependency> managedDependencies, Extension extension)
-    {
-        ExtensionDependency managedDependency = managedDependencies.get(dependency.getId());
-
-        // If the dependency does not have any version try to find it in extension managed dependencies
-        if (managedDependency == null && dependency.getVersionConstraint() == null) {
-            for (ExtensionDependency extensionManagedDependency : extension.getManagedDependencies()) {
-                if (extensionManagedDependency.getId().equals(dependency.getId())) {
-                    managedDependency = extensionManagedDependency;
-                }
-            }
-        }
-
-        // If a managed dependency was found change the dependency version constraint
-        if (managedDependency != null) {
-            return new DefaultExtensionDependency(dependency, managedDependency.getVersionConstraint());
-        }
-
-        return dependency;
     }
 
     /**
@@ -137,6 +111,22 @@ public final class ExtensionUtils
         }
 
         return newManagedDependencies;
+    }
+
+    /**
+     * @param readonly the exclusions
+     * @param extension the extension for which to append extension exclusions
+     * @return the new map of managed dependencies
+     * @since 12.2RC1
+     */
+    public static List<ExtensionPattern> appendExclusions(List<ExtensionPattern> readonly,
+        ExtensionDependency dependency)
+    {
+        List<ExtensionPattern> writable = readonly != null ? new ArrayList<>(readonly) : new ArrayList<>();
+
+        writable.addAll(dependency.getExclusions());
+
+        return writable;
     }
 
     /**

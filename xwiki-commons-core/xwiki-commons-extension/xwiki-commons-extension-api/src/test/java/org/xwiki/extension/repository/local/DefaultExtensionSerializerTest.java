@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.AbstractExtensionTest;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
+import org.xwiki.extension.DefaultExtensionPattern;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.ExtensionId;
@@ -121,6 +122,8 @@ public class DefaultExtensionSerializerTest
 
         // Minimum extension with minimum dependency
         serializeAndUnserialize(extension);
+
+        AbstractExtensionTest.DEPENDENCY2.addExclusion(new DefaultExtensionPattern("pattern"));
 
         extension.addDependency(AbstractExtensionTest.DEPENDENCY2);
 

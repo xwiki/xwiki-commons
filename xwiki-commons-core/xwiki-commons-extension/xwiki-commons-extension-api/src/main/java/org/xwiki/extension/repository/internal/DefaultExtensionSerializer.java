@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -64,12 +66,14 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionIssueManagement;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
+import org.xwiki.extension.ExtensionPattern;
 import org.xwiki.extension.ExtensionScm;
 import org.xwiki.extension.ExtensionScmConnection;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.InvalidExtensionException;
 import org.xwiki.extension.MutableExtension;
 import org.xwiki.extension.internal.ExtensionFactory;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtension;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
@@ -121,7 +125,19 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private static final String ELEMENT_MANAGEDDEPENDENCIES = "manageddependencies";
 
+    private static final String ELEMENT_REPOSITORIES = "repositories";
+
+    private static final String ELEMENT_REPOSITORY = "repository";
+
+    private static final String ELEMENT_URI = "uri";
+
+    private static final String ELEMENT_RTYPE = "type";
+
     private static final String ELEMENT_DDEPENDENCY = "dependency";
+
+    private static final String ELEMENT_DEXCLUSIONS = "exclusions";
+
+    private static final String ELEMENT_EXTENIONPATTERN = "extensionpattern";
 
     private static final String ELEMENT_DDOPTIONAL = "optional";
 
@@ -434,6 +450,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     }
 
     private Collection<ExtensionDependency> loadDependencies(Element extensionElement, String dependenciesFiel)
+        throws InvalidExtensionException
     {
         Node dependenciesNode = getNode(extensionElement, dependenciesFiel);
         if (dependenciesNode != null) {
@@ -442,23 +459,100 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             List<ExtensionDependency> dependencies = new ArrayList<>(dependenciesNodeList.getLength());
 
             for (int i = 0; i < dependenciesNodeList.getLength(); ++i) {
-                Node dependency = dependenciesNodeList.item(i);
+                Node dependencyNode = dependenciesNodeList.item(i);
 
-                if (dependency.getNodeName().equals(ELEMENT_DDEPENDENCY)) {
-                    Node dependencyIdNode = getNode(dependency, ELEMENT_ID);
-                    Node dependencyVersionNode = getNode(dependency, ELEMENT_VERSION);
-                    Node dependencyOptionalNode = getNode(dependency, ELEMENT_DDOPTIONAL);
+                if (dependencyNode.getNodeName().equals(ELEMENT_DDEPENDENCY)) {
+                    ExtensionDependency dependency = loadDependency(dependencyNode);
 
-                    dependencies.add(this.factory.getExtensionDependency(dependencyIdNode.getTextContent(),
-                        dependencyVersionNode != null
-                            ? this.factory.getVersionConstraint(dependencyVersionNode.getTextContent()) : null,
-                        dependencyOptionalNode != null ? Boolean.valueOf(dependencyOptionalNode.getTextContent())
-                            : false,
-                        parseProperties((Element) dependency)));
+                    if (dependency != null) {
+                        dependencies.add(dependency);
+                    }
                 }
             }
 
             return dependencies;
+        }
+
+        return Collections.emptyList();
+    }
+
+    private ExtensionDependency loadDependency(Node dependencyNode) throws InvalidExtensionException
+    {
+        Node dependencyIdNode = getNode(dependencyNode, ELEMENT_ID);
+
+        if (dependencyIdNode != null) {
+            Node dependencyVersionNode = getNode(dependencyNode, ELEMENT_VERSION);
+            Node dependencyOptionalNode = getNode(dependencyNode, ELEMENT_DDOPTIONAL);
+            Map<String, Object> properties = parseProperties((Element) dependencyNode);
+
+            Collection<ExtensionRepositoryDescriptor> repositories = loadRepositories(dependencyNode);
+            Collection<ExtensionPattern> exclusions = loadExclusions(dependencyNode);
+
+            return this.factory.getExtensionDependency(dependencyIdNode.getTextContent(),
+                dependencyVersionNode != null
+                    ? this.factory.getVersionConstraint(dependencyVersionNode.getTextContent()) : null,
+                dependencyOptionalNode != null && Boolean.parseBoolean(dependencyOptionalNode.getTextContent()),
+                exclusions, repositories, properties);
+        }
+
+        return null;
+    }
+
+    private Collection<ExtensionRepositoryDescriptor> loadRepositories(Node parentElement)
+        throws InvalidExtensionException
+    {
+        Node repositoriesNode = getNode(parentElement, ELEMENT_REPOSITORIES);
+        if (repositoriesNode != null) {
+            NodeList repositoriesNodeList = repositoriesNode.getChildNodes();
+
+            List<ExtensionRepositoryDescriptor> repositories = new ArrayList<>(repositoriesNodeList.getLength());
+
+            for (int i = 0; i < repositoriesNodeList.getLength(); ++i) {
+                Node repository = repositoriesNodeList.item(i);
+
+                if (repository.getNodeName().equals(ELEMENT_REPOSITORY)) {
+                    Node repositoryIdNode = getNode(repository, ELEMENT_ID);
+                    Node repositoryTypeNode = getNode(repository, ELEMENT_RTYPE);
+                    Node repositoryURINode = getNode(repository, ELEMENT_URI);
+                    Map<String, String> properties = parseProperties((Element) repository);
+
+                    try {
+                        repositories.add(this.factory.getExtensionRepositoryDescriptor(
+                            repositoryIdNode.getTextContent(), repositoryTypeNode.getTextContent(),
+                            new URI(repositoryURINode.getTextContent()), properties));
+                    } catch (Exception e) {
+                        throw new InvalidExtensionException("Failed to read repository descriptor", e);
+                    }
+                }
+            }
+
+            return repositories;
+        }
+
+        return Collections.emptyList();
+    }
+
+    private Collection<ExtensionPattern> loadExclusions(Node dependencyNode)
+    {
+        Node exclusionsNode = getNode(dependencyNode, ELEMENT_DEXCLUSIONS);
+        if (exclusionsNode != null) {
+            NodeList exclusionsNodeList = exclusionsNode.getChildNodes();
+
+            List<ExtensionPattern> exclusions = new ArrayList<>(exclusionsNodeList.getLength());
+
+            for (int i = 0; i < exclusionsNodeList.getLength(); ++i) {
+                Node exclusion = exclusionsNodeList.item(i);
+
+                if (exclusion.getNodeName().equals(ELEMENT_EXTENIONPATTERN)) {
+                    Node dependencyIdNode = getNode(exclusion, ELEMENT_ID);
+
+                    Pattern patternString = dependencyIdNode != null ? Pattern.compile(dependencyIdNode.getTextContent()) : null;
+
+                    exclusions.add(this.factory.getExtensionPattern(patternString));
+                }
+            }
+
+            return exclusions;
         }
 
         return Collections.emptyList();
@@ -518,7 +612,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
         Node featuresNode = getNode(extensionElement, rootElement);
         if (featuresNode != null) {
-            list = new LinkedList<String>();
+            list = new LinkedList<>();
 
             NodeList features = featuresNode.getChildNodes();
             for (int i = 0; i < features.getLength(); ++i) {
@@ -535,19 +629,19 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         return list;
     }
 
-    private Map<String, Object> parseProperties(Element parentElement)
+    private <T> Map<String, T> parseProperties(Node parentElement)
     {
-        Map<String, Object> properties = null;
+        Map<String, T> properties = null;
 
         Node propertiesNode = getNode(parentElement, ELEMENT_PROPERTIES);
         if (propertiesNode != null) {
-            properties = new HashMap<String, Object>();
+            properties = new HashMap<>();
             NodeList propertyNodeList = propertiesNode.getChildNodes();
             for (int i = 0; i < propertyNodeList.getLength(); ++i) {
                 Node propertyNode = propertyNodeList.item(i);
 
                 if (propertyNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Object value =
+                    T value =
                         CollectionExtensionPropertySerializer.toValue((Element) propertyNode, this.serializerById);
 
                     if (value != null) {
@@ -608,6 +702,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
         addDependencies(document, extensionElement, extension);
         addManagedDependencies(document, extensionElement, extension);
+
+        addRepositories(document, extensionElement, extension.getRepositories());
 
         addProperties(document, extensionElement, extension.getProperties());
 
@@ -706,7 +802,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
                 String authorURL = author.getURLString();
                 if (authorURL != null) {
-                    addElement(document, authorElement, ELEMENT_AAURL, authorURL.toString());
+                    addElement(document, authorElement, ELEMENT_AAURL, authorURL);
                 }
             }
         }
@@ -762,13 +858,13 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     }
 
     private void addDependencies(Document document, Element parentElement, String fieldName,
-        Collection<ExtensionDependency> dependencies)
+        Collection<ExtensionDependency> exclusions)
     {
-        if (dependencies != null && !dependencies.isEmpty()) {
+        if (exclusions != null && !exclusions.isEmpty()) {
             Element dependenciesElement = document.createElement(fieldName);
             parentElement.appendChild(dependenciesElement);
 
-            for (ExtensionDependency dependency : dependencies) {
+            for (ExtensionDependency dependency : exclusions) {
                 Element dependencyElement = document.createElement(ELEMENT_DDEPENDENCY);
                 dependenciesElement.appendChild(dependencyElement);
 
@@ -776,17 +872,56 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                 addElement(document, dependencyElement, ELEMENT_VERSION, dependency.getVersionConstraint().getValue());
                 addElement(document, dependencyElement, ELEMENT_DDOPTIONAL, dependency.isOptional());
                 addProperties(document, dependencyElement, dependency.getProperties());
+
+                addDependencyExclusions(document, dependencyElement, dependency.getExclusions());
             }
         }
     }
 
-    private void addProperties(Document document, Element parentElement, Map<String, Object> properties)
+    private void addRepositories(Document document, Element parentElement,
+        Collection<ExtensionRepositoryDescriptor> repositories)
+    {
+        if (repositories != null && !repositories.isEmpty()) {
+            Element dependenciesElement = document.createElement(ELEMENT_REPOSITORIES);
+            parentElement.appendChild(dependenciesElement);
+
+            for (ExtensionRepositoryDescriptor repository : repositories) {
+                Element dependencyElement = document.createElement(ELEMENT_REPOSITORY);
+                dependenciesElement.appendChild(dependencyElement);
+
+                addElement(document, dependencyElement, ELEMENT_ID, repository.getId());
+                addElement(document, dependencyElement, ELEMENT_RTYPE, repository.getType());
+                addElement(document, dependencyElement, ELEMENT_URI, repository.getURI());
+                addProperties(document, dependencyElement, repository.getProperties());
+            }
+        }
+    }
+
+    private void addDependencyExclusions(Document document, Element parentElement,
+        Collection<ExtensionPattern> exclusions)
+    {
+        if (exclusions != null && !exclusions.isEmpty()) {
+            Element dependenciesElement = document.createElement(ELEMENT_DEXCLUSIONS);
+            parentElement.appendChild(dependenciesElement);
+
+            for (ExtensionPattern exclusion : exclusions) {
+                Element dependencyElement = document.createElement(ELEMENT_EXTENIONPATTERN);
+                dependenciesElement.appendChild(dependencyElement);
+
+                if (exclusion.getIdPattern() != null) {
+                    addElement(document, dependencyElement, ELEMENT_ID, exclusion.getIdPattern().pattern());
+                }
+            }
+        }
+    }
+
+    private void addProperties(Document document, Element parentElement, Map<String, ?> properties)
     {
         if (!properties.isEmpty()) {
             Element propertiesElement = document.createElement(ELEMENT_PROPERTIES);
             parentElement.appendChild(propertiesElement);
 
-            for (Map.Entry<String, Object> entry : properties.entrySet()) {
+            for (Map.Entry<String, ?> entry : properties.entrySet()) {
                 addElement(document, propertiesElement, entry.getKey(), entry.getValue());
             }
         }

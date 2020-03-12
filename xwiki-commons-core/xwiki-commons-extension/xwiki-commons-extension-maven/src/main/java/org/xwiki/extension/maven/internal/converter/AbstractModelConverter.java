@@ -29,17 +29,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Developer;
+import org.apache.maven.model.Exclusion;
 import org.apache.maven.model.IssueManagement;
 import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.Scm;
+import org.xwiki.extension.DefaultExtensionPattern;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
@@ -191,7 +194,7 @@ public class AbstractModelConverter<T> extends AbstractConverter<T>
                     try {
                         ExtensionRepositoryDescriptor repositoryDescriptor =
                             this.factory.getExtensionRepositoryDescriptor(mavenRepository.getId(), "maven",
-                                new URI(mavenRepository.getUrl()));
+                                new URI(mavenRepository.getUrl()), null);
 
                         repositories.add(repositoryDescriptor);
                     } catch (URISyntaxException e) {
@@ -251,6 +254,30 @@ public class AbstractModelConverter<T> extends AbstractConverter<T>
             new DefaultVersionConstraint(dependencyVersion), mavenDependency);
 
         dependency.setRepositories(repositories);
+
+        for (Exclusion exclusion : mavenDependency.getExclusions()) {
+            String exclusionGroupId = exclusion.getGroupId();
+            String exclusionArtifactId = exclusion.getArtifactId();
+
+            Pattern idPattern;
+            if (MavenUtils.WILDCARD.equals(exclusionGroupId)) {
+                if (MavenUtils.WILDCARD.equals(exclusionArtifactId)) {
+                    idPattern = null;
+                } else {
+                    idPattern =
+                        Pattern.compile(MavenUtils.toExtensionId("*", Pattern.quote(exclusionArtifactId), null));
+                }
+            } else {
+                if (MavenUtils.WILDCARD.equals(exclusionArtifactId)) {
+                    idPattern = Pattern.compile(MavenUtils.toExtensionId(Pattern.quote(exclusionGroupId), "*", null));
+                } else {
+                    idPattern = Pattern.compile(MavenUtils.toExtensionId(exclusionGroupId, exclusionArtifactId, null),
+                        Pattern.LITERAL);
+                }
+            }
+
+            dependency.addExclusion(new DefaultExtensionPattern(idPattern));
+        }
 
         return this.factory.getExtensionDependency(dependency);
     }

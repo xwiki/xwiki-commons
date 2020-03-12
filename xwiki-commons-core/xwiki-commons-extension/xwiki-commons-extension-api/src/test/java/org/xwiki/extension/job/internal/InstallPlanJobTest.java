@@ -28,7 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
-import org.xwiki.extension.LocalExtension;
+import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.TestResources;
 import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
@@ -114,6 +114,62 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
+    public void testInstallPlanWithRemoteTransitiveDependencyOnRoot() throws Throwable
+    {
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHRTDEPENDENCY_ID);
+
+        assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+
+        assertEquals(TestResources.REMOTE_WITHRTDEPENDENCY_ID, node.getAction().getExtension().getId());
+        assertEquals(Action.INSTALL, node.getAction().getAction());
+        assertNull(node.getAction().getPreviousExtension());
+        assertNull(node.getAction().getNamespace());
+        assertEquals(1, node.getChildren().size());
+
+        ExtensionPlanNode childnode = node.getChildren().iterator().next();
+        
+        assertEquals(TestResources.REMOTE_WITHRDEPENDENCY_ID, childnode.getAction().getExtension().getId());
+        assertEquals(Action.INSTALL, childnode.getAction().getAction());
+        assertNull(childnode.getAction().getPreviousExtension());
+        assertNull(childnode.getAction().getNamespace());
+        assertEquals(1, childnode.getChildren().size());
+
+        childnode = childnode.getChildren().iterator().next();
+
+        assertEquals(TestResources.REMOTE_SIMPLE_ID, childnode.getAction().getExtension().getId());
+        assertEquals(Action.INSTALL, node.getAction().getAction());
+        assertNull(childnode.getAction().getPreviousExtension());
+        assertNull(childnode.getAction().getNamespace());
+        assertTrue(childnode.getChildren().isEmpty());
+    }
+
+    @Test
+    public void testInstallPlanWithExcludedRemoteTransitiveDependencyOnRoot() throws Throwable
+    {
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHEXCLUDEDRTDEPENDENCY_ID);
+
+        assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+
+        assertEquals(TestResources.REMOTE_WITHEXCLUDEDRTDEPENDENCY_ID, node.getAction().getExtension().getId());
+        assertEquals(Action.INSTALL, node.getAction().getAction());
+        assertNull(node.getAction().getPreviousExtension());
+        assertNull(node.getAction().getNamespace());
+        assertEquals(1, node.getChildren().size());
+
+        ExtensionPlanNode childnode = node.getChildren().iterator().next();
+        
+        assertEquals(TestResources.REMOTE_WITHRDEPENDENCY_ID, childnode.getAction().getExtension().getId());
+        assertEquals(Action.INSTALL, childnode.getAction().getAction());
+        assertNull(childnode.getAction().getPreviousExtension());
+        assertNull(childnode.getAction().getNamespace());
+        assertTrue(childnode.getChildren().isEmpty());
+    }
+
+    @Test
     public void testInstallPlanWithCoreDependencyOnRoot() throws Throwable
     {
         ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHCDEPENDENCY_ID);
@@ -154,10 +210,28 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
 
         ExtensionPlanNode childnode = node.getChildren().iterator().next();
 
-        assertTrue(childnode.getAction().getExtension() instanceof LocalExtension);
+        assertTrue(childnode.getAction().getExtension() instanceof InstalledExtension);
         assertEquals(TestResources.INSTALLED_ID, childnode.getAction().getExtension().getId());
         assertEquals(Action.NONE, childnode.getAction().getAction());
-        assertNull(node.getAction().getPreviousExtension());
+        assertNull(childnode.getAction().getPreviousExtension());
+        assertEquals(2, childnode.getChildren().size());
+
+        Iterator<ExtensionPlanNode> it = childnode.getChildren().iterator();
+
+        childnode = it.next();
+
+        assertTrue(childnode.getAction().getExtension() instanceof InstalledExtension);
+        assertEquals(TestResources.INSTALLED_DEPENDENCY_ID, childnode.getAction().getExtension().getId());
+        assertEquals(Action.NONE, childnode.getAction().getAction());
+        assertNull(childnode.getAction().getPreviousExtension());
+        assertTrue(childnode.getChildren().isEmpty());
+
+        childnode = it.next();
+
+        assertTrue(childnode.getAction().getExtension() instanceof CoreExtension);
+        assertEquals(TestResources.CORE_ID, childnode.getAction().getExtension().getId());
+        assertEquals(Action.NONE, childnode.getAction().getAction());
+        assertNull(childnode.getAction().getPreviousExtension());
         assertTrue(childnode.getChildren().isEmpty());
     }
 

@@ -20,7 +20,9 @@
 package org.xwiki.extension.internal;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.inject.Singleton;
 
@@ -29,10 +31,12 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
+import org.xwiki.extension.DefaultExtensionPattern;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionAuthor;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionIssueManagement;
+import org.xwiki.extension.ExtensionPattern;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.version.Version;
@@ -51,6 +55,8 @@ import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 public class ExtensionFactory
 {
     private SoftCache<ExtensionDependency, ExtensionDependency> dependencies = new SoftCache<>();
+
+    private SoftCache<String, ExtensionPattern> patterns = new SoftCache<>();
 
     private SoftCache<ExtensionAuthor, ExtensionAuthor> authors = new SoftCache<>();
 
@@ -79,14 +85,42 @@ public class ExtensionFactory
      * @param id the id of the extension dependency
      * @param versionConstraint the version constraint of the extension dependency
      * @param optional true if the dependency is optional
+     * @param exclusions the exclusions patterns to apply to transitive dependencies
+     * @param repositories the custom repositories provided by the extension (usually to resolve dependencies)
      * @param properties the custom properties of the extension dependency
      * @return unique instance of {@link ExtensionDependency} equals to the passed one
-     * @since 9.6RC1
+     * @since 12.2RC1
      */
     public ExtensionDependency getExtensionDependency(String id, VersionConstraint versionConstraint, boolean optional,
+        Collection<ExtensionPattern> exclusions, Collection<ExtensionRepositoryDescriptor> repositories,
         Map<String, Object> properties)
     {
-        return getExtensionDependency(new DefaultExtensionDependency(id, versionConstraint, optional, properties));
+        DefaultExtensionDependency dependency =
+            new DefaultExtensionDependency(id, versionConstraint, optional, properties);
+        dependency.setRepositories(repositories);
+        dependency.setExclusions(exclusions);
+
+        return getExtensionDependency(dependency);
+    }
+
+    /**
+     * @param idPattern a regular expression matching all the ids to exclude
+     * @return unique instance of {@link ExtensionPattern} equals to the passed one
+     * @since 12.2RC1
+     */
+    public ExtensionPattern getExtensionPattern(Pattern idPattern)
+    {
+        String key = idPattern != null ? idPattern.pattern() : null;
+
+        ExtensionPattern pattern = this.patterns.get(key);
+
+        if (pattern == null) {
+            pattern = new DefaultExtensionPattern(idPattern);
+
+            this.patterns.put(key, pattern);
+        }
+
+        return pattern;
     }
 
     /**
@@ -129,11 +163,13 @@ public class ExtensionFactory
      * @param id the unique identifier
      * @param type the repository type (maven, xwiki, etc.)
      * @param uri the repository address
+     * @param properties the properties
      * @return unique instance of {@link ExtensionRepositoryDescriptor} equals to the passed one
      */
-    public ExtensionRepositoryDescriptor getExtensionRepositoryDescriptor(String id, String type, URI uri)
+    public ExtensionRepositoryDescriptor getExtensionRepositoryDescriptor(String id, String type, URI uri,
+        Map<String, String> properties)
     {
-        return getExtensionRepositoryDescriptor(new DefaultExtensionRepositoryDescriptor(id, type, uri));
+        return getExtensionRepositoryDescriptor(new DefaultExtensionRepositoryDescriptor(id, type, uri, properties));
     }
 
     /**

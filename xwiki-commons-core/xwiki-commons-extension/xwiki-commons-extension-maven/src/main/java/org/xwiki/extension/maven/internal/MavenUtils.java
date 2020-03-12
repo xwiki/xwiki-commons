@@ -71,6 +71,13 @@ public class MavenUtils
     public static final String UNKNOWN = "unknown";
 
     /**
+     * The wildcard supported by Maven in places like {@code <exclusions>}.
+     * 
+     * @since 12.2RC1
+     */
+    public static final String WILDCARD = "*";
+
+    /**
      * Parse a Maven scm URL to generate a {@link ExtensionScmConnection}.
      * 
      * @param connectionURL the connection URL

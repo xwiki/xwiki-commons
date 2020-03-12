@@ -73,6 +73,11 @@ public class TestResources
 
     public static final ExtensionId REMOTE_WITHRDEPENDENCY_ID = new ExtensionId("rwithrdependency", "version");
 
+    public static final ExtensionId REMOTE_WITHRTDEPENDENCY_ID = new ExtensionId("rwithrtdependency", "version");
+
+    public static final ExtensionId REMOTE_WITHEXCLUDEDRTDEPENDENCY_ID =
+        new ExtensionId("rwithexcludedrtdependency", "version");
+
     public static final ExtensionId REMOTE_WITHRDEPENDENCYFEATURE_ID =
         new ExtensionId("rwithrdependencyfeature", "version");
 

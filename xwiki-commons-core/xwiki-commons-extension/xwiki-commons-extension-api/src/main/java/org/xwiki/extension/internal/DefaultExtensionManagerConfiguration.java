@@ -258,7 +258,7 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
 
         if (matcher.matches()) {
             return this.extensionFactory.getExtensionRepositoryDescriptor(matcher.group(1), matcher.group(2),
-                new URI(matcher.group(3)));
+                new URI(matcher.group(3)), null);
         }
 
         throw new ExtensionManagerConfigurationException(

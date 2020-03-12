@@ -20,10 +20,12 @@
 package org.xwiki.extension;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.version.VersionConstraint;
+import org.xwiki.stability.Unstable;
 
 /**
  * An extension dependency.
@@ -42,6 +44,16 @@ public interface ExtensionDependency
      * @return the version constraint of the target extension
      */
     VersionConstraint getVersionConstraint();
+
+    /**
+     * @return the exclusions patterns to apply to transitive dependencies
+     * @since 12.2RC1
+     */
+    @Unstable
+    default Collection<ExtensionPattern> getExclusions()
+    {
+        return Collections.emptyList();
+    }
 
     /**
      * @return the custom repositories provided by the extension (usually to resolve dependencies)
