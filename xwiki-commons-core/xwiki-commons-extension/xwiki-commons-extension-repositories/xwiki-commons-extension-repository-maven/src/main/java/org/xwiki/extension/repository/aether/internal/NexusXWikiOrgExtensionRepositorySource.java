@@ -75,7 +75,7 @@ public class NexusXWikiOrgExtensionRepositorySource extends AbstractExtensionRep
         if (configuredRepositories == null) {
             try {
                 repositories.add(new DefaultExtensionRepositoryDescriptor("maven-xwiki", "maven",
-                    new URI("http://nexus.xwiki.org/nexus/content/groups/public")));
+                    new URI("https://nexus.xwiki.org/nexus/content/groups/public")));
             } catch (URISyntaxException e) {
                 // Should never happen
                 return Collections.emptyList();

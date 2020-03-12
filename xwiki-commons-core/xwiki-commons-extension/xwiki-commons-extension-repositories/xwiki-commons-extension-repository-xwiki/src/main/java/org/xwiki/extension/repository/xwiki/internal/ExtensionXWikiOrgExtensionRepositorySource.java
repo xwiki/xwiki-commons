@@ -76,7 +76,7 @@ public class ExtensionXWikiOrgExtensionRepositorySource extends AbstractExtensio
         if (configuredRepositories == null) {
             try {
                 repositories.add(new DefaultExtensionRepositoryDescriptor("extensions.xwiki.org", "xwiki",
-                    new URI("http://extensions.xwiki.org/xwiki/rest/")));
+                    new URI("https://extensions.xwiki.org/xwiki/rest/")));
             } catch (URISyntaxException e) {
                 // Should never happen
             }
