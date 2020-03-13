@@ -455,7 +455,8 @@ public class DefaultDiffManager implements DiffManager
 
     private <E> List<E> extractConflictPart(Delta<E> delta, List<E> previous, List<E> next, int chunkSize, int index)
     {
-        int previousChangeSize, remainingChunkSize;
+        int previousChangeSize;
+        int remainingChunkSize;
 
         switch (delta.getType()) {
             case DELETE:
@@ -486,7 +487,8 @@ public class DefaultDiffManager implements DiffManager
     private <E> void logConflict(DefaultMergeResult<E> mergeResult, Delta<E> deltaCurrent, Delta<E> deltaNext,
         List<E> previous, List<E> next, List<E> current, int index)
     {
-        Delta<E> conflictDeltaCurrent, conflictDeltaNext;
+        Delta<E> conflictDeltaCurrent;
+        Delta<E> conflictDeltaNext;
         int chunkSize;
         List<E> subsetPrevious;
 
