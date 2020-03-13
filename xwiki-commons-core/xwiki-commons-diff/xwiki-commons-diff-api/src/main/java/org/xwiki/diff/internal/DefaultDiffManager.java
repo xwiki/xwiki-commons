@@ -54,22 +54,22 @@ public class DefaultDiffManager implements DiffManager
     @Override
     public <E> DiffResult<E> diff(List<E> previous, List<E> next, DiffConfiguration<E> diff) throws DiffException
     {
-        DefaultDiffResult<E> result = new DefaultDiffResult<E>(previous, next);
+        DefaultDiffResult<E> result = new DefaultDiffResult<>(previous, next);
 
         // DiffUtils#diff does not support null
         Patch<E> patch;
         if (previous == null || previous.isEmpty()) {
-            patch = new DefaultPatch<E>();
+            patch = new DefaultPatch<>();
             if (next != null && !next.isEmpty()) {
-                patch.add(new InsertDelta<E>(new DefaultChunk<E>(0, Collections.<E>emptyList()),
-                    new DefaultChunk<E>(0, next)));
+                patch.add(new InsertDelta<>(new DefaultChunk<>(0, Collections.emptyList()),
+                    new DefaultChunk<>(0, next)));
             }
         } else if (next == null || next.isEmpty()) {
-            patch = new DefaultPatch<E>();
-            patch.add(new DeleteDelta<E>(new DefaultChunk<E>(0, previous),
-                new DefaultChunk<E>(0, Collections.<E>emptyList())));
+            patch = new DefaultPatch<>();
+            patch.add(new DeleteDelta<>(new DefaultChunk<>(0, previous),
+                new DefaultChunk<>(0, Collections.emptyList())));
         } else {
-            patch = new DefaultPatch<E>(DiffUtils.diff(previous, next));
+            patch = new DefaultPatch<>(DiffUtils.diff(previous, next));
         }
 
         result.setPatch(patch);
@@ -81,7 +81,7 @@ public class DefaultDiffManager implements DiffManager
     public <E> MergeResult<E> merge(List<E> commonAncestor, List<E> next, List<E> current,
         MergeConfiguration<E> configuration) throws MergeException
     {
-        DefaultMergeResult<E> mergeResult = new DefaultMergeResult<E>(commonAncestor, next, current);
+        DefaultMergeResult<E> mergeResult = new DefaultMergeResult<>(commonAncestor, next, current);
 
         // Get diff between common ancestor and next version
 
@@ -287,7 +287,7 @@ public class DefaultDiffManager implements DiffManager
         List<ConflictDecision<E>> conflictDecisions =
             (configuration != null) ? configuration.getConflictDecisionList() : Collections.emptyList();
         // Merge the two diffs
-        List<E> merged = new ArrayList<E>();
+        List<E> merged = new ArrayList<>();
 
         mergeResult.setMerged(merged);
 
@@ -429,7 +429,7 @@ public class DefaultDiffManager implements DiffManager
             throw new MergeException("Faile to diff between two versions", e);
         }
 
-        List<E> result = new ArrayList<E>(previous.size() + next.size());
+        List<E> result = new ArrayList<>(previous.size() + next.size());
         int index = 0;
         for (Delta<E> delta : diffCurrentResult.getPatch()) {
             if (delta.getPrevious().getIndex() > index) {
@@ -526,7 +526,7 @@ public class DefaultDiffManager implements DiffManager
         conflictDeltaCurrent = DeltaFactory.createDelta(previousChunk, currentChunk, Type.CHANGE);
         conflictDeltaNext = DeltaFactory.createDelta(previousChunk, nextChunk, Type.CHANGE);
         mergeResult.getLog().error("Conflict between [{}] and [{}]", conflictDeltaCurrent, conflictDeltaNext);
-        mergeResult.addConflict(new DefaultConflict<E>(index, conflictDeltaCurrent, conflictDeltaNext));
+        mergeResult.addConflict(new DefaultConflict<>(index, conflictDeltaCurrent, conflictDeltaNext));
     }
 
     private <E> int apply(Delta<E> delta, List<E> merged, int currentIndex)
@@ -567,7 +567,7 @@ public class DefaultDiffManager implements DiffManager
      */
     private <E> Delta<E> nextElement(List<Delta<E>> list, int index)
     {
-        Delta<E> result = null;
+        Delta<E> result;
         do {
             result = nextElement(list);
         } while (result != null && result.getPrevious().getLastIndex() <= index);
