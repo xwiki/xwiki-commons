@@ -547,18 +547,6 @@
         <artifactId>xml-apis</artifactId>
         <version>1.4.01</version>
       </dependency>
-      <!-- Used by several projects (HTMLCleaner, Formula renderer, etc.) directly or indirectly to do XPath and XSLT
-           transformations -->
-      <dependency>
-        <groupId>xalan</groupId>
-        <artifactId>xalan</artifactId>
-        <version>2.7.2</version>
-      </dependency>
-      <dependency>
-        <groupId>xalan</groupId>
-        <artifactId>serializer</artifactId>
-        <version>2.7.2</version>
-      </dependency>
       <dependency>
         <groupId>org.codehaus.woodstox</groupId>
         <artifactId>stax2-api</artifactId>
@@ -1765,10 +1753,14 @@
                   <message>
                     Found a dependency already included in in the minimum Java SE ${java.version}
                   </message>
+                  <!-- Make sure to keep this list in sync with default ignored extension dependencies -->
                   <excludes>
                     <exclude>stax:stax</exclude>
                     <exclude>javax.xml.stream:stax-api</exclude>
                     <exclude>stax:stax-api</exclude>
+                    <!-- Xalan is not in a very good shape compare to the default implementation -->
+                    <exclude>xalan:xalan</exclude>
+                    <exclude>xalan:serializer</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
