@@ -40,6 +40,7 @@ import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.InvalidExtensionException;
@@ -132,6 +133,9 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
      */
     @Inject
     private transient CoreExtensionRepository coreExtensionRepository;
+
+    @Inject
+    protected ExtensionManagerConfiguration configuration;
 
     /**
      * The installed extensions sorted by provided feature and namespace.
@@ -387,6 +391,11 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
         InvalidExtensionException dependencyException = null;
         for (ExtensionDependency dependency : localExtension.getDependencies()) {
             try {
+                // Is ignored
+                if (this.configuration.isIgnoredDependency(dependency)) {
+                    continue;
+                }
+
                 // Replace with managed dependency if any
                 dependency = ExtensionUtils.getDependency(dependency, managedDependencies, localExtension);
 

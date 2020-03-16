@@ -23,11 +23,14 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,8 +43,10 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.context.Execution;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.CoreExtension;
+import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.CoreExtensionRepository;
@@ -86,6 +91,11 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
      */
     private static final String CK_REPOSITORIES_PREFIX = CK_PREFIX + "repositories.";
 
+    private static final String CK_IGNORED_DEPENDENCIES = CK_PREFIX + "ignoredDependencies";
+
+    private static final Set<String> DEFAULT_IGNORED_DEPENDENCIES = new HashSet<>(
+        Arrays.asList("stax:stax", "javax.xml.stream:stax-api", "stax:stax-api", "xalan:xalan", "xalan:serializer"));
+
     /**
      * The logger to log.
      */
@@ -112,6 +122,9 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
 
     @Inject
     private ConverterManager converter;
+
+    @Inject
+    private Execution execution;
 
     // Cache
 
@@ -357,5 +370,14 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
         }
 
         return null;
+    }
+
+    @Override
+    public boolean isIgnoredDependency(ExtensionDependency dependency)
+    {
+        Set<String> ignoredDependencies =
+            this.configuration.get().getProperty(CK_IGNORED_DEPENDENCIES, DEFAULT_IGNORED_DEPENDENCIES);
+
+        return ignoredDependencies.contains(dependency.getId());
     }
 }
