@@ -1033,6 +1033,11 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                         continue;
                     }
 
+                    // Is ignored
+                    if (this.configuration.isIgnoredDependency(extensionDependency)) {
+                        continue;
+                    }
+
                     // Replace with managed dependency if any
                     extensionDependency = extensionContext.getDependency(extensionDependency, extension);
 

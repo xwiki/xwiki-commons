@@ -90,4 +90,13 @@ public interface ExtensionManagerConfiguration
     {
         return null;
     }
+
+    /**
+     * @param dependency the dependency
+     * @return true if the the extension dependency should be ignored (like those which are part of the JDK or known to
+     *         cause problems while not being needed)
+     * @since 11.10.4
+     * @since 12.2RC1
+     */
+    boolean isIgnoredDependency(ExtensionDependency dependency);
 }
