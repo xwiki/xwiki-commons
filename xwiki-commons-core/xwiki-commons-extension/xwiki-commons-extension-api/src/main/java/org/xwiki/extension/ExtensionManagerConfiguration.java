@@ -98,5 +98,8 @@ public interface ExtensionManagerConfiguration
      * @since 11.10.4
      * @since 12.2RC1
      */
-    boolean isIgnoredDependency(ExtensionDependency dependency);
+    default boolean isIgnoredDependency(ExtensionDependency dependency)
+    {
+        return false;
+    }
 }
