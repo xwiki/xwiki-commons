@@ -1751,7 +1751,7 @@
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
                   <message>
-                    Found a dependency already included in in the minimum Java SE ${java.version}
+                    Found a dependency already included in the minimum Java SE ${java.version}
                   </message>
                   <!-- Make sure to keep this list in sync with default ignored extension dependencies -->
                   <excludes>
