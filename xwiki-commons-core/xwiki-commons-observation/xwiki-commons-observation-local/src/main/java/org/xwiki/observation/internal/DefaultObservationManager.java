@@ -177,14 +177,14 @@ public class DefaultObservationManager implements ObservationManager
     public void addListener(EventListener eventListener)
     {
         try {
-            addListenerInernal(eventListener);
+            addListenerInternal(eventListener);
         } catch (Exception e) {
             // Protect against bad listeners which have their getName() methods throw some runtime exception.
-            this.logger.warn("Failed to add listener. Root cause: [{}]", ExceptionUtils.getRootCauseMessage(e));
+            this.logger.error("Failed to add listener", e);
         }
     }
 
-    private void addListenerInernal(EventListener eventListener)
+    private void addListenerInternal(EventListener eventListener)
     {
         Map<String, EventListener> listeners = getListenersByName();
 
@@ -197,8 +197,7 @@ public class DefaultObservationManager implements ObservationManager
                 "The [{}] listener is overwriting a previously "
                     + "registered listener [{}] since they both are registered under the same id [{}]. "
                     + "In the future consider removing a Listener first if you really want to register it again.",
-                new Object[] { eventListener.getClass().getName(), previousListener.getClass().getName(),
-                        eventListener.getName() });
+                eventListener.getClass().getName(), previousListener.getClass().getName(), eventListener.getName());
         }
 
         // Register the listener by name. If already registered, override it.
@@ -320,8 +319,8 @@ public class DefaultObservationManager implements ObservationManager
                         listener.listener.onEvent(event, source, data);
                     } catch (Exception e) {
                         // protect from bad listeners
-                        this.logger.error("Failed to send event [{}] to listener [{}]", new Object[] { event,
-                            listener.listener, e });
+                        this.logger.error("Failed to send event [{}] to listener [{}]",
+                            new Object[] {event, listener.listener, e});
                     }
 
                     // Only send the first matching event since the listener should only be called once per event.
@@ -389,9 +388,10 @@ public class DefaultObservationManager implements ObservationManager
                     eventListener.getName(), descriptor.getImplementation().getName());
             }
         } catch (ComponentLookupException e) {
-            this.logger.error("Failed to lookup the Event Listener [{}] corresponding to the Component registration "
-                + "event for [{}]. Ignoring the event", new Object[] { event.getRoleHint(),
-                    descriptor.getImplementation().getName(), e });
+            this.logger.error(
+                "Failed to lookup the Event Listener [{}] corresponding to the Component registration "
+                    + "event for [{}]. Ignoring the event",
+                new Object[] {event.getRoleHint(), descriptor.getImplementation().getName(), e});
         }
     }
 
