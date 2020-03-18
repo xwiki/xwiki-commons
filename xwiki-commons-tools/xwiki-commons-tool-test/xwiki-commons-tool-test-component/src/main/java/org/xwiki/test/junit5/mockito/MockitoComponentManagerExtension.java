@@ -28,12 +28,12 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
-import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 import org.mockito.MockitoAnnotations;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.descriptor.ComponentDescriptor;
@@ -93,23 +93,28 @@ import org.xwiki.test.mockito.MockitoComponentMocker;
  * @version $Id$
  * @since 10.3RC1
  */
-public class MockitoComponentManagerExtension implements TestInstancePostProcessor, AfterEachCallback, ParameterResolver
+public class MockitoComponentManagerExtension implements BeforeEachCallback, AfterEachCallback, ParameterResolver
 {
     private static final ComponentAnnotationLoader LOADER = new ComponentAnnotationLoader();
 
     @Override
-    public void postProcessTestInstance(Object testInstance, ExtensionContext context) throws Exception
+    public void beforeEach(ExtensionContext context) throws Exception
     {
+        Object testInstance = context.getTestInstance().get();
+
         // Make sure tests don't leak one on another
         removeComponentManager(context);
 
         // We initialize the CM in 4 steps:
         // - We create an empty instance of it
+        // - We inject the component manager in the @InjectComponentManager annotated fields
         // - We create mocks for all @MockComponent annotations.
         // - We initialize the CM. This handles in the following order:
         //   - @BeforeComponent
+        //   - @BeforeComponent("<testname>")
         //   - @ComponentList and @AllComponents
         //   - @AfterComponent
+        //   - @AfterComponent("<testname>")
         // - We inject @InjectMockComponents fields
         //
         // Note: We handle @MockComponent before @InjectMockComponents to allow the test to have methods annotated with
@@ -120,8 +125,8 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         // Note: We initialize the CM after handling @MockComponent so that it's possible use mocks injected with
         // @MockComponent inside @BeforeComponent and @AfterComponent methods.
 
-        MockitoComponentManager mcm = loadComponentManager(context);
-        mcm = new MockitoComponentManager();
+        loadComponentManager(context);
+        MockitoComponentManager mcm = new MockitoComponentManager();
         saveComponentManager(context, mcm);
 
         // Inject the Mockito Component Manager in all fields annotated with @InjectComponentManager
@@ -146,7 +151,7 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
             }
         }
 
-        initializeMockitoComponentManager(testInstance, mcm, context);
+        initializeMockitoComponentManager(mcm, context);
 
         // Create & register a component instance of all fields annotated with @InjectMockComponents with all its
         // @Inject-annotated fields injected with mocks or real implementations.
@@ -186,15 +191,14 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
     /**
      * To be overridden by extensions if they need to perform additional initializations.
      *
-     * @param testInstance the test instance object
      * @param mcm the already created (but not initialized) Mockito Component Manager
      * @param context the extension context
-     * @throws Exception if the intialization fails
+     * @throws Exception if the initialization fails
      */
-    protected void initializeMockitoComponentManager(Object testInstance, MockitoComponentManager mcm,
-        ExtensionContext context) throws Exception
+    protected void initializeMockitoComponentManager(MockitoComponentManager mcm, ExtensionContext context)
+        throws Exception
     {
-        mcm.initializeTest(testInstance, mcm);
+        mcm.initializeTest(context.getTestInstance().get(), context.getTestMethod().get(), mcm);
     }
 
     @Override

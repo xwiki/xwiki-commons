@@ -25,6 +25,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.internal.StackingComponentEventManager;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -116,11 +117,12 @@ public class TestComponentManager extends EmbeddableComponentManager
      * Also calls methods annotated with {@link BeforeComponent} and {@link AfterComponent}.
      *
      * @param testClassInstance the test instance on which the annotations are present
+     * @param test the test method being executed
      * @param parameterInstances the instances that will be passed as parameters to methods annotated with
      *        {@code @BeforeComponent} and {@code @AfterComponent}
      * @throws Exception if an error happens during initialization
      */
-    public void initializeTest(Object testClassInstance, Object... parameterInstances) throws Exception
+    public void initializeTest(Object testClassInstance, Method test, Object... parameterInstances) throws Exception
     {
         Class<?> testClass = testClassInstance.getClass();
 
@@ -128,7 +130,10 @@ public class TestComponentManager extends EmbeddableComponentManager
         // opportunity for the test to register some components *before* we register the other components below.
         for (Method declaredMethod : testClass.getMethods()) {
             if (declaredMethod.isAnnotationPresent(BeforeComponent.class)) {
-                invokeMethod(declaredMethod, testClassInstance, parameterInstances);
+                // Only apply if the annotation is not meant to be applied to a single test, or if the current test
+                // is the specified test
+                String target = declaredMethod.getAnnotation(BeforeComponent.class).value();
+                invokeMethod(test, target, declaredMethod, testClassInstance, parameterInstances);
             }
         }
 
@@ -138,15 +143,41 @@ public class TestComponentManager extends EmbeddableComponentManager
         // opportunity to override or modify some components *after* they are actually used.
         for (Method declaredMethod : testClass.getMethods()) {
             if (declaredMethod.isAnnotationPresent(AfterComponent.class)) {
-                invokeMethod(declaredMethod, testClassInstance, parameterInstances);
+                // Only apply if the annotation is not meant to be applied to a single test, or if the current test
+                // is the specified test
+                String target = declaredMethod.getAnnotation(AfterComponent.class).value();
+                invokeMethod(test, target, declaredMethod, testClassInstance, parameterInstances);
             }
         }
+    }
+
+    private void invokeMethod(Method test, String target, Method declaredMethod, Object testClassInstance,
+        Object... parameterInstances) throws Exception
+    {
+        if (test == null || StringUtils.isEmpty(target) || target.equalsIgnoreCase(test.getName())) {
+            invokeMethod(declaredMethod, testClassInstance, parameterInstances);
+        }
+    }
+
+    /**
+     * Initialize the test component manager by registering components based on the presence of
+     * {@link org.xwiki.test.annotation.AllComponents} and {@link org.xwiki.test.annotation.ComponentList} annotations.
+     * Also calls methods annotated with {@link BeforeComponent} and {@link AfterComponent}.
+     *
+     * @param testClassInstance the test instance on which the annotations are present
+     * @param parameterInstances the instances that will be passed as parameters to methods annotated with
+     *        {@code @BeforeComponent} and {@code @AfterComponent}
+     * @throws Exception if an error happens during initialization
+     */
+    public void initializeTest(Object testClassInstance, Object... parameterInstances) throws Exception
+    {
+        initializeTest(testClassInstance, null, parameterInstances);
     }
 
     private void invokeMethod(Method declaredMethod, Object testClassInstance, Object... parameterInstances)
         throws Exception
     {
-        // If parameters are of a type fund in parameterInstances, then call the method.
+        // If parameters are of a type found in parameterInstances, then call the method.
         List<Object> validatedParameterInstances = new ArrayList<>();
         boolean isSupported = true;
         for (Parameter parameter : declaredMethod.getParameters()) {

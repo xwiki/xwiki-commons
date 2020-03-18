@@ -23,16 +23,17 @@ import java.lang.reflect.Field;
 
 import javax.inject.Inject;
 
+import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.test.mockito.MockitoComponentManager;
 
-public class MockitoRepositoryUtilsExtension implements TestInstancePostProcessor
+public class MockitoRepositoryUtilsExtension implements BeforeEachCallback
 {
     @Override
-    public void postProcessTestInstance(Object testInstance, ExtensionContext context) throws Exception
+    public void beforeEach(ExtensionContext context) throws Exception
     {
+        Object testInstance = context.getTestInstance().get();
         MockitoRepositoryUtils utils = new MockitoRepositoryUtils(loadComponentManager(context));
 
         // Initialize the MockitoRepositoryUtils instance

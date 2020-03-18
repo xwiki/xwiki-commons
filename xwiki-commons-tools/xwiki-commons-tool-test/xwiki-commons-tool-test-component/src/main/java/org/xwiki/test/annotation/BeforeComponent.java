@@ -40,4 +40,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Inherited
 public @interface BeforeComponent
 {
+    /**
+     * @return the test name to which this annotation applies to. When empty it applies to all tests.
+     * @since 12.2RC1
+     */
+    String value() default "";
 }
