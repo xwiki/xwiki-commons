@@ -37,6 +37,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.PlexusContainer;
 import org.xwiki.extension.Extension;
+import org.xwiki.stability.Unstable;
+import org.xwiki.tool.extension.ComponentRepresentation;
 import org.xwiki.tool.extension.ExtensionOverride;
 import org.xwiki.tool.extension.internal.ExtensionMojoCoreExtensionRepository;
 
@@ -88,6 +90,15 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
 
     @Parameter(defaultValue = "${xwiki.extension.recommendedVersions}")
     protected String recommendedVersions;
+
+    /**
+     * The list of components to unregister.
+     *
+     * @since 12.2RC1
+     */
+    @Unstable
+    @Parameter
+    protected List<ComponentRepresentation> disabledComponents;
 
     protected ExtensionMojoHelper extensionHelper;
 
@@ -163,8 +174,8 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
 
         this.extensionHelper = ExtensionMojoHelper.create(this.project, this.permanentDirectory);
         this.extensionHelper.initalize(this.session, this.localRepository, this.container);
-
         this.extensionHelper.setExtensionOverrides(this.extensionOverrides);
+        this.extensionHelper.disableComponents(this.disabledComponents);
 
         getLog().info("Done initializing extension tools");
     }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -47,6 +48,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
@@ -76,6 +78,8 @@ import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
 import org.xwiki.extension.version.internal.DefaultVersion;
 import org.xwiki.job.Job;
 import org.xwiki.properties.converter.Converter;
+import org.xwiki.stability.Unstable;
+import org.xwiki.tool.extension.ComponentRepresentation;
 import org.xwiki.tool.extension.ExtensionOverride;
 import org.xwiki.tool.extension.internal.ExtensionMojoCoreExtensionRepository;
 import org.xwiki.tool.extension.internal.MavenBuildConfigurationSource;
@@ -187,6 +191,31 @@ public class ExtensionMojoHelper implements AutoCloseable
     public ExtensionMojoHelper()
     {
 
+    }
+
+    /**
+     * Allow to unregister the components given in the list.
+     *
+     * @param componentList the list of components to unregister.
+     * @throws MojoExecutionException in case of error when deserializing the component types.
+     * @since 12.2RC1
+     */
+    @Unstable
+    public void disableComponents(List<ComponentRepresentation> componentList) throws MojoExecutionException
+    {
+        if (componentList != null) {
+            for (ComponentRepresentation componentRepresentation : componentList) {
+                try {
+                    Type type = ReflectionUtils.unserializeType(componentRepresentation.getType(),
+                        getClass().getClassLoader());
+
+                    this.componentManager.unregisterComponent(type, componentRepresentation.getRole());
+                } catch (ClassNotFoundException e) {
+                    throw new MojoExecutionException(
+                        String.format("Cannot unserialize type [%s].", componentRepresentation.getType()), e);
+                }
+            }
+        }
     }
 
     public void initalize(MavenSession session, ArtifactRepository localRepository, PlexusContainer plexusContainer)
