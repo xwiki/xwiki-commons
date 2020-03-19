@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -128,27 +129,57 @@ public class TestComponentManager extends EmbeddableComponentManager
 
         // If there are methods annotated with the BeforeComponent annotation then call them. This gives an
         // opportunity for the test to register some components *before* we register the other components below.
-        for (Method declaredMethod : testClass.getMethods()) {
-            if (declaredMethod.isAnnotationPresent(BeforeComponent.class)) {
-                // Only apply if the annotation is not meant to be applied to a single test, or if the current test
-                // is the specified test
-                String target = declaredMethod.getAnnotation(BeforeComponent.class).value();
-                invokeMethod(test, target, declaredMethod, testClassInstance, parameterInstances);
-            }
+        for (Method method : getBeforeComponentAnnotatedMethods(testClass)) {
+            String target = method.getAnnotation(BeforeComponent.class).value();
+            invokeMethod(test, target, method, testClassInstance, parameterInstances);
         }
 
         this.componentRegistrator.registerComponents(testClass, this);
 
         // If there are methods annotated with the AfterComponent annotation then call them. This gives an
         // opportunity to override or modify some components *after* they are actually used.
-        for (Method declaredMethod : testClass.getMethods()) {
-            if (declaredMethod.isAnnotationPresent(AfterComponent.class)) {
-                // Only apply if the annotation is not meant to be applied to a single test, or if the current test
-                // is the specified test
-                String target = declaredMethod.getAnnotation(AfterComponent.class).value();
-                invokeMethod(test, target, declaredMethod, testClassInstance, parameterInstances);
+        for (Method method : getAfterComponentAnnotatedMethods(testClass)) {
+            String target = method.getAnnotation(AfterComponent.class).value();
+            invokeMethod(test, target, method, testClassInstance, parameterInstances);
+        }
+    }
+
+    private List<Method> getBeforeComponentAnnotatedMethods(Class<?> testClass)
+    {
+        LinkedList<Method> methods = new LinkedList<>();
+        for (Method method : testClass.getMethods()) {
+            if (method.isAnnotationPresent(BeforeComponent.class)) {
+                String target = method.getAnnotation(BeforeComponent.class).value();
+                // Add to the top if the method applies globally to all test and at the bottom if not so that we
+                // execute them in the right order! Indeed, test-specific BeforeComponent methods may require fixture
+                // defined in the global ones.
+                if (StringUtils.isEmpty(target)) {
+                    methods.addFirst(method);
+                } else {
+                    methods.addLast(method);
+                }
             }
         }
+        return methods;
+    }
+
+    private List<Method> getAfterComponentAnnotatedMethods(Class<?> testClass)
+    {
+        LinkedList<Method> methods = new LinkedList<>();
+        for (Method method : testClass.getMethods()) {
+            if (method.isAnnotationPresent(AfterComponent.class)) {
+                String target = method.getAnnotation(AfterComponent.class).value();
+                // Add to the top if the method applies globally to all test and at the bottom if not so that we
+                // execute them in the right order! Indeed, test-specific BeforeComponent methods may require fixture
+                // defined in the global ones.
+                if (StringUtils.isEmpty(target)) {
+                    methods.addFirst(method);
+                } else {
+                    methods.addLast(method);
+                }
+            }
+        }
+        return methods;
     }
 
     private void invokeMethod(Method test, String target, Method declaredMethod, Object testClassInstance,
