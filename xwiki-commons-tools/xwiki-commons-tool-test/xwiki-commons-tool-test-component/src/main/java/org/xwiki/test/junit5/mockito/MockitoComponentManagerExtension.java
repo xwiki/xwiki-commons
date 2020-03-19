@@ -100,8 +100,14 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
     @Override
     public void beforeEach(ExtensionContext context) throws Exception
     {
-        Object testInstance = context.getTestInstance().get();
+        // When there are nested tests then we need to initialize all instances (and not just the nested one).
+        for (Object testInstance : context.getTestInstances().get().getAllInstances()) {
+            initializeTestInstance(testInstance, context);
+        }
+    }
 
+    private void initializeTestInstance(Object testInstance, ExtensionContext context) throws Exception
+    {
         // Make sure tests don't leak one on another
         removeComponentManager(context);
 
@@ -151,7 +157,7 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
             }
         }
 
-        initializeMockitoComponentManager(mcm, context);
+        initializeMockitoComponentManager(testInstance, mcm, context);
 
         // Create & register a component instance of all fields annotated with @InjectMockComponents with all its
         // @Inject-annotated fields injected with mocks or real implementations.
@@ -191,14 +197,16 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
     /**
      * To be overridden by extensions if they need to perform additional initializations.
      *
+     * @param testInstance the test instance being initialized
      * @param mcm the already created (but not initialized) Mockito Component Manager
      * @param context the extension context
      * @throws Exception if the initialization fails
      */
-    protected void initializeMockitoComponentManager(MockitoComponentManager mcm, ExtensionContext context)
+    protected void initializeMockitoComponentManager(Object testInstance, MockitoComponentManager mcm,
+        ExtensionContext context)
         throws Exception
     {
-        mcm.initializeTest(context.getTestInstance().get(), context.getTestMethod().get(), mcm);
+        mcm.initializeTest(testInstance, context.getTestMethod().get(), mcm);
     }
 
     @Override
