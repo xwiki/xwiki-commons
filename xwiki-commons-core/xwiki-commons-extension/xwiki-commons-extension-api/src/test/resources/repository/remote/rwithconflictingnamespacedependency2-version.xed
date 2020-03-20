@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<extension>
+  <id>rwithconflictingnamespacedependency2</id>
+  <version>version</version>
+  <type>test</type>
+  <dependencies>
+    <dependency>
+      <id>rootextensionwithrdependency</id>
+      <version>version</version>
+    </dependency>
+    <dependency>
+      <id>rsimple</id>
+      <version>version</version>
+    </dependency>
+  </dependencies>
+</extension>

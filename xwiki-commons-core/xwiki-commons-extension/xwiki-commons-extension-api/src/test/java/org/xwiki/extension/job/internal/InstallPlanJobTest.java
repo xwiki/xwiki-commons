@@ -20,6 +20,7 @@
 package org.xwiki.extension.job.internal;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +49,11 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Validate {@link InstallPlanJob}.
+ * 
+ * @version $Id$
+ */
 @ComponentTest
 @ExtendWith(MockitoRepositoryUtilsExtension.class)
 public class InstallPlanJobTest extends AbstractExtensionHandlerTest
@@ -129,7 +135,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         assertEquals(1, node.getChildren().size());
 
         ExtensionPlanNode childnode = node.getChildren().iterator().next();
-        
+
         assertEquals(TestResources.REMOTE_WITHRDEPENDENCY_ID, childnode.getAction().getExtension().getId());
         assertEquals(Action.INSTALL, childnode.getAction().getAction());
         assertNull(childnode.getAction().getPreviousExtension());
@@ -161,7 +167,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         assertEquals(1, node.getChildren().size());
 
         ExtensionPlanNode childnode = node.getChildren().iterator().next();
-        
+
         assertEquals(TestResources.REMOTE_WITHRDEPENDENCY_ID, childnode.getAction().getExtension().getId());
         assertEquals(Action.INSTALL, childnode.getAction().getAction());
         assertNull(childnode.getAction().getPreviousExtension());
@@ -692,6 +698,165 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         assertEquals(TestResources.REMOTE_ROOTEXTENSION10_ID, action.getPreviousExtension().getId());
         assertNull(action.getNamespace());
         assertEquals(0, node.getChildren().size());
+    }
+
+    @Test
+    public void testInstallOnNameSpaceRootExtensionWithRDependency() throws Throwable
+    {
+        // Try to install remote extension with only root allowed dependency on namespace
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_ROOTEXTENSIONWITHRDEPENDENCY_ID, "namespace");
+
+        assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+        ExtensionPlanAction action = node.getAction();
+
+        assertEquals(TestResources.REMOTE_ROOTEXTENSIONWITHRDEPENDENCY_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertEquals(0, action.getPreviousExtensions().size());
+        assertNull(action.getNamespace());
+        assertEquals(1, node.getChildren().size());
+
+        node = node.getChildren().iterator().next();
+        action = node.getAction();
+
+        assertEquals(TestResources.REMOTE_SIMPLE_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertEquals(0, action.getPreviousExtensions().size());
+        assertNull(action.getNamespace());
+        assertEquals(0, node.getChildren().size());
+    }
+
+    @Test
+    public void testInstallOnNameSpaceWithConflictingNamespacesDependencies() throws Throwable
+    {
+        // Try to install remote extension with only root allowed dependency on namespace
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_RWITHCONFLICTINGNAMESPACEDEPENDENCY_ID, "namespace");
+
+        assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+        ExtensionPlanAction action = node.getAction();
+
+        assertEquals(TestResources.REMOTE_RWITHCONFLICTINGNAMESPACEDEPENDENCY_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertEquals("namespace", action.getNamespace());
+        assertEquals(2, node.getChildren().size());
+
+        Iterator<ExtensionPlanNode> iterator = node.getChildren().iterator();
+        node = iterator.next();
+        action = node.getAction();
+
+        assertEquals(TestResources.REMOTE_SIMPLE_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertNull(action.getNamespace());
+        assertEquals(0, node.getChildren().size());
+
+        node = iterator.next();
+        action = node.getAction();
+
+        assertEquals(TestResources.REMOTE_ROOTEXTENSIONWITHRDEPENDENCY_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertNull(action.getNamespace());
+        assertEquals(1, node.getChildren().size());
+
+        node = node.getChildren().iterator().next();
+        action = node.getAction();
+
+        assertEquals(TestResources.REMOTE_SIMPLE_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertNull(action.getNamespace());
+        assertEquals(0, node.getChildren().size());
+
+        // Actions
+
+        Collection<ExtensionPlanAction> actions = plan.getActions();
+        assertEquals(3, actions.size());
+        Iterator<ExtensionPlanAction> actionIterator = actions.iterator();
+
+        action = actionIterator.next();
+
+        assertEquals(TestResources.REMOTE_SIMPLE_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertNull(action.getNamespace());
+
+        action = actionIterator.next();
+
+        assertEquals(TestResources.REMOTE_ROOTEXTENSIONWITHRDEPENDENCY_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertNull(action.getNamespace());
+
+        action = actionIterator.next();
+
+        assertEquals(TestResources.REMOTE_RWITHCONFLICTINGNAMESPACEDEPENDENCY_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertEquals("namespace", action.getNamespace());
+    }
+
+    @Test
+    public void testInstallOnNameSpaceWithConflictingNamespacesDependencies2() throws Throwable
+    {
+        // Try to install remote extension with only root allowed dependency on namespace
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_RWITHCONFLICTINGNAMESPACEDEPENDENCY2_ID, "namespace");
+
+        assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+        ExtensionPlanAction action = node.getAction();
+
+        assertEquals(TestResources.REMOTE_RWITHCONFLICTINGNAMESPACEDEPENDENCY2_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertEquals("namespace", action.getNamespace());
+        assertEquals(2, node.getChildren().size());
+
+        Iterator<ExtensionPlanNode> iterator = node.getChildren().iterator();
+        node = iterator.next();
+        action = node.getAction();
+
+        assertEquals(TestResources.REMOTE_ROOTEXTENSIONWITHRDEPENDENCY_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertNull(action.getNamespace());
+        assertEquals(1, node.getChildren().size());
+
+        node = node.getChildren().iterator().next();
+        action = node.getAction();
+
+        assertEquals(TestResources.REMOTE_SIMPLE_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertNull(action.getNamespace());
+        assertEquals(0, node.getChildren().size());
+
+        node = iterator.next();
+        action = node.getAction();
+
+        assertEquals(TestResources.REMOTE_SIMPLE_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertNull(action.getNamespace());
+        assertEquals(0, node.getChildren().size());
+
+        // Actions
+
+        Collection<ExtensionPlanAction> actions = plan.getActions();
+        assertEquals(3, actions.size());
+        Iterator<ExtensionPlanAction> actionIterator = actions.iterator();
+
+        action = actionIterator.next();
+
+        assertEquals(TestResources.REMOTE_SIMPLE_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertNull(action.getNamespace());
+
+        action = actionIterator.next();
+
+        assertEquals(TestResources.REMOTE_ROOTEXTENSIONWITHRDEPENDENCY_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertNull(action.getNamespace());
+
+        action = actionIterator.next();
+
+        assertEquals(TestResources.REMOTE_RWITHCONFLICTINGNAMESPACEDEPENDENCY2_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertEquals("namespace", action.getNamespace());
     }
 
     @Test
