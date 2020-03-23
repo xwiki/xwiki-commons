@@ -143,4 +143,17 @@ public class DefaultExtensionDependencyTest
         assertEquals(Arrays.asList(AbstractExtensionTest.DESCRIPTOR1, AbstractExtensionTest.DESCRIPTOR2),
             dependency.getRepositories());
     }
+
+    @Test
+    public void addExclusion()
+    {
+        DefaultExtensionDependency dependency =
+            new DefaultExtensionDependency("id", new DefaultVersionConstraint("version"));
+
+        assertTrue(dependency.getExclusions().isEmpty());
+
+        dependency.addExclusion(new DefaultExtensionPattern("excludeddependency"));
+
+        assertEquals(1, dependency.getExclusions().size());
+    }
 }

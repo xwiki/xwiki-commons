@@ -22,6 +22,7 @@ package org.xwiki.extension;
 import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
+import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -51,6 +52,15 @@ public class DefaultExtensionPatternTest
 
         assertTrue(pattern.matches("abcd"));
         assertFalse(pattern.matches("abc"));
+    }
+
+    @Test
+    public void matchesDependency()
+    {
+        DefaultExtensionPattern pattern = new DefaultExtensionPattern("abcd");
+
+        assertTrue(pattern.matches(new DefaultExtensionDependency("abcd", new DefaultVersionConstraint("version"))));
+        assertFalse(pattern.matches(new DefaultExtensionDependency("abc", new DefaultVersionConstraint("version"))));
     }
 
     @Test
