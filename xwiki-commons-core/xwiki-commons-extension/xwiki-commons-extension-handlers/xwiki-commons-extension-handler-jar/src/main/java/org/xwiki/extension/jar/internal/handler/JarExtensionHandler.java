@@ -59,7 +59,7 @@ import org.xwiki.observation.ObservationManager;
  * @version $Id$
  * @since 4.0M1
  */
-@Component(hints = { JarExtensionHandler.JAR, JarExtensionHandler.WEBJAR })
+@Component(hints = {JarExtensionHandler.JAR, JarExtensionHandler.WEBJAR})
 @Singleton
 public class JarExtensionHandler extends AbstractExtensionHandler implements Initializable
 {
@@ -232,16 +232,20 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
             ComponentEventManager componentEventManager = componentManager.getComponentEventManager();
 
             // Make sure to send events only when the extension is fully ready
-            StackingComponentEventManager stackingComponentEventManager = null;
-            try {
-                if (componentEventManager instanceof StackingComponentEventManager) {
-                    stackingComponentEventManager = (StackingComponentEventManager) componentEventManager;
-                } else {
-                    stackingComponentEventManager = new StackingComponentEventManager();
-                    componentManager.setComponentEventManager(stackingComponentEventManager);
+            StackingComponentEventManager stackingComponentEventManager;
+            if (componentEventManager instanceof StackingComponentEventManager) {
+                stackingComponentEventManager = (StackingComponentEventManager) componentEventManager;
+                if (stackingComponentEventManager.isStacked()) {
+                    // If already stacked don't do anything (and more importantly don't disabled stacking)
+                    stackingComponentEventManager = null;
                 }
-                stackingComponentEventManager.shouldStack(true);
+            } else {
+                stackingComponentEventManager = new StackingComponentEventManager();
+                componentManager.setComponentEventManager(stackingComponentEventManager);
+            }
 
+            // Initialize the JAR
+            try {
                 this.jarLoader.initialize(componentManager, classLoader, componentDeclarations);
             } finally {
                 if (stackingComponentEventManager != null) {

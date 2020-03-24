@@ -94,11 +94,20 @@ public class StackingComponentEventManager implements ComponentEventManager
     }
 
     /**
-     * @param shouldStack indicate of the events received should be stacked
+     * @param shouldStack indicate if the events received should be stacked
      */
     public void shouldStack(boolean shouldStack)
     {
         this.shouldStack = shouldStack;
+    }
+
+    /**
+     * @return true if the events received should be stacked
+     * @since 12.2RC1
+     */
+    public boolean isStacked()
+    {
+        return this.shouldStack;
     }
 
     /**
