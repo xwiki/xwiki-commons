@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
  * An extension exclusion.
  *
  * @version $Id$
- * @since 12.2RC1
+ * @since 12.2
  */
 @Unstable
 public interface ExtensionPattern

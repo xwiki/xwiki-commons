@@ -103,7 +103,7 @@ public class StackingComponentEventManager implements ComponentEventManager
 
     /**
      * @return true if the events received should be stacked
-     * @since 12.2RC1
+     * @since 12.2
      */
     public boolean isStacked()
     {

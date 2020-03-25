@@ -33,7 +33,7 @@ import org.xwiki.extension.internal.ExtensionUtils;
  * Used to maintain a context during extension install plan.
  * 
  * @version $Id$
- * @since 12.2RC1
+ * @since 12.2
  */
 public class ExtensionPlanContext
 {

@@ -73,7 +73,7 @@ public class MavenUtils
     /**
      * The wildcard supported by Maven in places like {@code <exclusions>}.
      * 
-     * @since 12.2RC1
+     * @since 12.2
      */
     public static final String WILDCARD = "*";
 

@@ -117,7 +117,7 @@ public final class ExtensionUtils
      * @param readonly the exclusions
      * @param extension the extension for which to append extension exclusions
      * @return the new map of managed dependencies
-     * @since 12.2RC1
+     * @since 12.2
      */
     public static List<ExtensionPattern> appendExclusions(List<ExtensionPattern> readonly,
         ExtensionDependency dependency)

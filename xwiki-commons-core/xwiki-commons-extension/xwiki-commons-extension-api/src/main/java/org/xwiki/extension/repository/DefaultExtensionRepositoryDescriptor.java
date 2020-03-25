@@ -96,7 +96,7 @@ public class DefaultExtensionRepositoryDescriptor implements ExtensionRepository
      * @param type the repository type (maven, xwiki, etc.)
      * @param uri the repository address
      * @param properties the properties
-     * @since 12.2RC1
+     * @since 12.2
      */
     @Unstable
     public DefaultExtensionRepositoryDescriptor(String id, String type, URI uri, Map<String, String> properties)

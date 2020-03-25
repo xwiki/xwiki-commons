@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
  * A class to represent a {@link org.xwiki.component.descriptor.ComponentRole} with a serialized type.
  *
  * @version $Id$
- * @since 12.2RC1
+ * @since 12.2
  */
 @Unstable
 public class ComponentRepresentation

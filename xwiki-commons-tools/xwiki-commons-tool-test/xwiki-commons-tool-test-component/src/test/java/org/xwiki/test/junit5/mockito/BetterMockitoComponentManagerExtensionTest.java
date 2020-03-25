@@ -37,7 +37,7 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 /**
  * Unit tests for {@link MockitoComponentManagerExtension} using JUnit5's {@link Launcher}.
  *
- * @since 12.2RC1
+ * @since 12.2
  */
 public class BetterMockitoComponentManagerExtensionTest
 {

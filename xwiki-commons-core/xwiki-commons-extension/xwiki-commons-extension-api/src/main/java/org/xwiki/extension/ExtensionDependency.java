@@ -47,7 +47,7 @@ public interface ExtensionDependency
 
     /**
      * @return the exclusions patterns to apply to transitive dependencies
-     * @since 12.2RC1
+     * @since 12.2
      */
     @Unstable
     default Collection<ExtensionPattern> getExclusions()

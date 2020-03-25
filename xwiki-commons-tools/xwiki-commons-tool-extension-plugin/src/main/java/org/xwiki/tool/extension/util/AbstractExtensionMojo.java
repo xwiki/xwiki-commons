@@ -94,7 +94,7 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     /**
      * The list of components to unregister.
      *
-     * @since 12.2RC1
+     * @since 12.2
      */
     @Unstable
     @Parameter

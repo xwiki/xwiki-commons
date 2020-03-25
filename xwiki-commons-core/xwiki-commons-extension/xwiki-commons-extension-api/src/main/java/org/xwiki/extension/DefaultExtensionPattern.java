@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
  * Default implementation of {@link ExtensionPattern}.
  *
  * @version $Id$
- * @since 12.2RC1
+ * @since 12.2
  */
 @Unstable
 public class DefaultExtensionPattern extends AbstractExtensionPattern

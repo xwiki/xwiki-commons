@@ -52,7 +52,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
 
     /**
      * @see #getExclusions()
-     * @since 12.2RC1
+     * @since 12.2
      */
     protected List<ExtensionPattern> exclusions;
 
@@ -185,7 +185,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
 
     /**
      * @param exclusions the exclusions patterns to apply to transitive dependencies
-     * @since 12.2RC1
+     * @since 12.2
      */
     @Unstable
     public void setExclusions(Collection<? extends ExtensionPattern> exclusions)
@@ -195,7 +195,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
 
     /**
      * @param exclusion an exclusion pattern to apply to transitive dependencies
-     * @since 12.2RC1
+     * @since 12.2
      */
     @Unstable
     public void addExclusion(ExtensionPattern exclusion)

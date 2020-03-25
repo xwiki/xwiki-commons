@@ -96,7 +96,7 @@ public interface ExtensionManagerConfiguration
      * @return true if the the extension dependency should be ignored (like those which are part of the JDK or known to
      *         cause problems while not being needed)
      * @since 11.10.4
-     * @since 12.2RC1
+     * @since 12.2
      */
     default boolean isIgnoredDependency(ExtensionDependency dependency)
     {

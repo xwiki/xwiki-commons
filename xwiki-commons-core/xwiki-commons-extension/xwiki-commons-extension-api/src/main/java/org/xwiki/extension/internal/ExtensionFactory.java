@@ -89,7 +89,7 @@ public class ExtensionFactory
      * @param repositories the custom repositories provided by the extension (usually to resolve dependencies)
      * @param properties the custom properties of the extension dependency
      * @return unique instance of {@link ExtensionDependency} equals to the passed one
-     * @since 12.2RC1
+     * @since 12.2
      */
     public ExtensionDependency getExtensionDependency(String id, VersionConstraint versionConstraint, boolean optional,
         Collection<ExtensionPattern> exclusions, Collection<ExtensionRepositoryDescriptor> repositories,
@@ -106,7 +106,7 @@ public class ExtensionFactory
     /**
      * @param idPattern a regular expression matching all the ids to exclude
      * @return unique instance of {@link ExtensionPattern} equals to the passed one
-     * @since 12.2RC1
+     * @since 12.2
      */
     public ExtensionPattern getExtensionPattern(Pattern idPattern)
     {

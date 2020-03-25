@@ -198,7 +198,7 @@ public class ExtensionMojoHelper implements AutoCloseable
      *
      * @param componentList the list of components to unregister.
      * @throws MojoExecutionException in case of error when deserializing the component types.
-     * @since 12.2RC1
+     * @since 12.2
      */
     @Unstable
     public void disableComponents(List<ComponentRepresentation> componentList) throws MojoExecutionException
