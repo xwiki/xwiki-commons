@@ -238,6 +238,8 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
                 if (stackingComponentEventManager.isStacked()) {
                     // If already stacked don't do anything (and more importantly don't disabled stacking)
                     stackingComponentEventManager = null;
+                } else {
+                    stackingComponentEventManager.shouldStack(true);
                 }
             } else {
                 stackingComponentEventManager = new StackingComponentEventManager();
