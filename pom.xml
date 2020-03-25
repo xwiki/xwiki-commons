@@ -1960,8 +1960,11 @@
               <include>**/*Test.class</include>
             </includes>
             <systemProperties>
-              <!-- Used to automatically register JUnit5 Extenson using the service loader mechanism. For example this
-                   will enable our Extension checking that tests don't output content to stdout or stderr -->
+              <!-- Used to automatically register our custom JUnit5 Extensions using the service loader mechanism.
+                   We also need to have the JAR containing our extensions visible to JUnit5's ClassLoader. This is
+                   done in xwiki-comons-core/pom.xml and xwiki-platform/pom.xml as otherwise it would cause a cyclic
+                   dependency.
+              -->
               <property>
                 <name>junit.jupiter.extensions.autodetection.enabled</name>
                 <value>true</value>
@@ -1993,6 +1996,15 @@
                 <!-- See description of the "xwiki.test.verifyRunningXWikiAtStart" property above. -->
                 <name>xwiki.test.verifyRunningXWikiAtStart</name>
                 <value>${xwiki.test.verifyRunningXWikiAtStart}</value>
+              </property>
+              <!-- Used to automatically register our custom JUnit5 Extensions using the service loader mechanism.
+                   We also need to have the JAR containing our extensions visible to JUnit5's ClassLoader. This is
+                   done in xwiki-comons-core/pom.xml and xwiki-platform/pom.xml as otherwise it would cause a cyclic
+                   dependency.
+              -->
+              <property>
+                <name>junit.jupiter.extensions.autodetection.enabled</name>
+                <value>true</value>
               </property>
             </systemProperties>
           </configuration>
