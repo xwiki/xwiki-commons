@@ -122,7 +122,7 @@ public class CaptureConsoleExtension implements BeforeAllCallback, BeforeEachCal
         // Only throw an exception if the captured content has not already been reported
         if (this.collectingContentStream.containsKey(key)) {
             String outputContent = filteredString(this.collectingContentStream.remove(key).toString());
-            if (!outputContent.isEmpty()) {
+            if (!outputContent.trim().isEmpty()) {
                 throw new AssertionError(String.format("There should be no content output to the console by the test! "
                     + "Instead we got [%s]", outputContent));
             }
