@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-tool-xar</artifactId>
-    <version>12.2-SNAPSHOT</version>
+    <version>12.2</version>
   </parent>
   <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
   <name>XWiki Commons - Tools - XAR Tools - XAR Plugin</name>
