@@ -71,7 +71,9 @@ public class FailingTestDebuggingTestExecutionListenerTest
             assertEquals(1, summary.getTestsSucceededCount());
             assertEquals("error",
                 summary.getFailures().get(0).getException().getMessage());
-            assertEquals("Environment information to help debug the failing test:", this.logCapture.getMessage(0));
+            assertEquals("---- Start of environment debugging information", this.logCapture.getMessage(0));
+            assertEquals("---- End of environment debugging information",
+                this.logCapture.getMessage(this.logCapture.size() - 1));
             this.logCapture.ignoreAllMessages();
         } finally {
             System.setProperty("inCI", "false");

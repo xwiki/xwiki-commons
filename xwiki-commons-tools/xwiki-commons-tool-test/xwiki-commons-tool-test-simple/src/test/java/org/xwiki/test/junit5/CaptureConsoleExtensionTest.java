@@ -21,6 +21,7 @@ package org.xwiki.test.junit5;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
@@ -34,11 +35,12 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
-import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
+import static org.xwiki.test.junit5.FailingTestDebuggingTestExecutionListener.START_MESSAGE;
+import static org.xwiki.test.junit5.FailingTestDebuggingTestExecutionListener.STOP_MESSAGE;
 
 /**
  * Unit tests for {@link CaptureConsoleExtension}.
@@ -65,14 +67,26 @@ public class CaptureConsoleExtensionTest
         }
 
         @Test
+        @Order(1)
         void outputToConsole()
         {
             LOGGER.info("In test");
         }
 
         @Test
+        @Order(2)
         void dontOutputToConsole()
         {
+        }
+
+        @Test
+        @Order(3)
+        void skipOutputContent()
+        {
+            LOGGER.info(START_MESSAGE);
+            LOGGER.info("whatever");
+            LOGGER.info(STOP_MESSAGE);
+            LOGGER.info("after");
         }
     }
 
@@ -117,7 +131,7 @@ public class CaptureConsoleExtensionTest
         if (CaptureConsoleExtension.shouldSkip()) {
             assertEquals(0, summary.getFailures().size());
         } else {
-            assertEquals(3, summary.getFailures().size());
+            assertEquals(4, summary.getFailures().size());
             // Test outputToConsole() has 2 errors: one from the beforeEach and one from itself
             assertThat(summary.getFailures().get(0).getException().getMessage(), matchesPattern(
                 "There should be no content output to the console by the test! Instead we got \\[.* \\[main\\] "
@@ -132,6 +146,13 @@ public class CaptureConsoleExtensionTest
                     + "\\]"
             ));
             assertThat(summary.getFailures().get(2).getException().getMessage(), matchesPattern(
+                "There should be no content output to the console by the test! Instead we got \\[.* \\[main\\] "
+                    + "INFO  o\\.x\\.t\\.j\\.CaptureConsoleExtensionTest\\$SampleTestCase - In beforeEach\n"
+                    + ".* \\[main\\] "
+                    + "INFO  o\\.x\\.t\\.j\\.CaptureConsoleExtensionTest\\$SampleTestCase - after\n"
+                    + "\\]"
+            ));
+            assertThat(summary.getFailures().get(3).getException().getMessage(), matchesPattern(
                 "There should be no content output to the console by the test! Instead we got \\[.* \\[main\\] "
                     + "INFO  o\\.x\\.t\\.j\\.CaptureConsoleExtensionTest\\$SampleTestCase - In beforeAll\n"
                     + "\\]"

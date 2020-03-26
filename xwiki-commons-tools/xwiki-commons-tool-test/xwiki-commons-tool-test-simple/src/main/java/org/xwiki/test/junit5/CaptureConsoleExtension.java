@@ -25,6 +25,8 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.platform.engine.TestExecutionResult;
+import org.junit.platform.launcher.TestIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,12 +121,41 @@ public class CaptureConsoleExtension implements BeforeAllCallback, BeforeEachCal
 
         // Only throw an exception if the captured content has not already been reported
         if (this.collectingContentStream.containsKey(key)) {
-            String outputContent = this.collectingContentStream.remove(key).toString();
+            String outputContent = filteredString(this.collectingContentStream.remove(key).toString());
             if (!outputContent.isEmpty()) {
                 throw new AssertionError(String.format("There should be no content output to the console by the test! "
                     + "Instead we got [%s]", outputContent));
             }
         }
+    }
+
+    /**
+     * @see FailingTestDebuggingTestExecutionListener#executionFinished(TestIdentifier, TestExecutionResult)
+     */
+    private String filteredString(String outputContent)
+    {
+        StringBuilder builder = new StringBuilder();
+        boolean insideDebuggingInformation = false;
+        String[] lines = outputContent.split("\\r?\\n");
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            if (insideDebuggingInformation) {
+                if (line.contains(FailingTestDebuggingTestExecutionListener.STOP_MESSAGE)) {
+                    insideDebuggingInformation = false;
+                }
+            } else if (line.contains(FailingTestDebuggingTestExecutionListener.START_MESSAGE)) {
+                insideDebuggingInformation = true;
+            } else {
+                builder.append(line);
+                if (i < lines.length - 1) {
+                    builder.append('\n');
+                }
+            }
+        }
+        if (!outputContent.isEmpty()) {
+            builder.append('\n');
+        }
+        return builder.toString();
     }
 
     /**

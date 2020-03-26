@@ -36,17 +36,28 @@ import org.slf4j.LoggerFactory;
  */
 public class FailingTestDebuggingTestExecutionListener implements TestExecutionListener
 {
+    static final String START_MESSAGE = "---- Start of environment debugging information";
+
+    static final String STOP_MESSAGE = "---- End of environment debugging information";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(FailingTestDebuggingTestExecutionListener.class);
 
     @Override
     public void executionFinished(TestIdentifier testIdentifier, TestExecutionResult testExecutionResult)
     {
         if (testExecutionResult.getThrowable().isPresent() && isInCI()) {
-            LOGGER.info("Environment information to help debug the failing test:");
+            // We display a start and end message so that the CaptureConsoleExtension can filter out this information
+            // as we don't want it to fail when it's printed.
+            // Otherwise what can happen is (for example): LogCapture verifies that when some logs are not captured,
+            // the test fails with an exception but if it does then this debugging listener is triggered, and in turn
+            // it would trigger the CaptureConsoleExtension extension since this debugging listener prints something
+            // in the logs ;)
+            LOGGER.info(START_MESSAGE);
             LOGGER.info(RuntimeUtils.run("top -b -n 1"));
-            LOGGER.info(RuntimeUtils.run("lsof -i -P -n "));
+            LOGGER.info(RuntimeUtils.run("lsof -i -P -n"));
             LOGGER.info(RuntimeUtils.run("docker ps -a"));
             LOGGER.info(RuntimeUtils.run("docker events --since '15m' --until '0m'"));
+            LOGGER.info(STOP_MESSAGE);
         }
     }
 
