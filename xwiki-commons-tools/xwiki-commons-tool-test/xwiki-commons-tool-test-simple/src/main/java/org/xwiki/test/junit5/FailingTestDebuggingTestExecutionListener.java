@@ -52,6 +52,10 @@ public class FailingTestDebuggingTestExecutionListener implements TestExecutionL
 
     private boolean isInCI()
     {
-        return System.getenv("JENKINS_HOME") != null || Boolean.parseBoolean(System.getProperty("inCI"));
+        // On Jenkins Agents, when tests execute with the XWiki Jenkins Pipeline, the NODE_NAME environment variable
+        // is supposed to be set and this is how we consider we're running in the CI.
+        // We also support a system property ("inCI") so that we can trigger this listener manually from tests or
+        // from local machines.
+        return System.getenv("NODE_NAME") != null || Boolean.parseBoolean(System.getProperty("inCI"));
     }
 }
