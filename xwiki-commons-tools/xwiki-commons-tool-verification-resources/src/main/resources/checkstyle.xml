@@ -212,6 +212,7 @@
     </module>
 
     <module name="MissingJavadocMethod"/>
+    <module name="MissingJavadocType"/>
 
     <module name="JavadocStyle"/>
 
