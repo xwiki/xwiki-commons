@@ -201,7 +201,19 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
 
     private String computeMavenModulePath(SourcePosition position)
     {
-        return StringUtils.substringBefore(position.getFile().toString(), "/src/");
+        // Try to find the maven module base directory. Handle 2 cases:
+        // - Case 1: Normal standard case. The current source is located in .../src/main/java/...
+        //   In this case we get the directory parent of /src/.
+        // - Case 2: Clover case or any Maven plugin that instruments source code in the target directory. In this
+        //   case the /target/ string is present and thus  we get the directory parent of /target/.
+        // Note: We currently don't handle cases when maven was told to have a target directory located elsewhere since
+        // we don't use that feature in XWiki.
+        String path = position.getFile().toString();
+        String targetPath = StringUtils.substringBefore(position.getFile().toString(), "/target/");
+        if (targetPath.equals(path)) {
+            targetPath = StringUtils.substringBefore(position.getFile().toString(), "/src/");
+        }
+        return targetPath;
     }
 
     private Set<CtAnnotation<? extends Annotation>> getAnnotationsIncludingFromSuperclasses(
