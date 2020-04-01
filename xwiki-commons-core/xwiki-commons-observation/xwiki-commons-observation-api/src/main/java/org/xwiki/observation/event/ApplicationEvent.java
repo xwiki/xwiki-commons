@@ -24,7 +24,7 @@ package org.xwiki.observation.event;
  *
  * @version $id$ (return the application event id)
  */
-public interface ApplicationEvent
+public interface ApplicationEvent extends Event
 {
     /**
      * Creates a non-generic parent interface for ApplicationStartedEvent and ApplicationStoppedEvent
