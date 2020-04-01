@@ -25,7 +25,7 @@ package org.xwiki.observation.event;
  * @version $Id$
  * @since 2.0M1
  */
-public class ApplicationStoppedEvent implements Event
+public class ApplicationStoppedEvent implements ApplicationEvent
 {
     @Override
     public boolean matches(Object otherEvent)
