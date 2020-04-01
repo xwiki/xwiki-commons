@@ -22,7 +22,7 @@ package org.xwiki.observation.event;
 /**
  * All Event types must implement this interface.
  *
- * @version $id$
+ * @version $id$ (return the application event id)
  */
 public interface ApplicationEvent
 {
