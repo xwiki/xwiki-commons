@@ -58,7 +58,8 @@ public class XWikiDOMSerializer extends DomSerializer
      */
     public XWikiDOMSerializer(CleanerProperties props)
     {
-        super(props);
+        // We don't want the XML to be escaped in the produced Document.
+        super(props, false);
     }
 
     /**
@@ -131,7 +132,8 @@ public class XWikiDOMSerializer extends DomSerializer
             // Fix any invalid attribute names
             //
             if (!props.isAllowInvalidAttributeNames()) {
-                attrName = Utils.sanitizeXmlAttributeName(attrName, props.getInvalidXmlAttributeNamePrefix());
+                attrName = Utils.sanitizeXmlIdentifier(attrName, props.getInvalidXmlAttributeNamePrefix());
+                //attrName = Utils.sanitizeXmlAttributeName(attrName, props.getInvalidXmlAttributeNamePrefix());
             }
 
             if (attrName != null && (Utils.isValidXmlIdentifier(attrName) || props.isAllowInvalidAttributeNames())) {
