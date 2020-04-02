@@ -430,6 +430,18 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p>&Eacute;</p>", "&Eacute;");
         assertHTML("<p>&frac14;</p>", "&frac14;");
         assertHTML("<p>&amp;f!rac14;</p>", "&f!rac14;");
+        assertHTML("<p>&frac12;</p>", "&frac12;");
+    }
+
+    @Test
+    public void entitiesWithTranslation()
+    {
+        assertHTML("<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>", "<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>");
+        HTMLCleanerConfiguration htmlCleanerConfiguration = new DefaultHTMLCleanerConfiguration();
+        htmlCleanerConfiguration
+            .setParameters(Collections.singletonMap(HTMLCleanerConfiguration.TRANSLATE_SPECIAL_ENTITIES, "true"));
+        assertHTML("<p>1&gt;2&amp;3&#160;4&#189;5öüäăâîș</p>",
+            "<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>", htmlCleanerConfiguration);
     }
 
     @Test
@@ -518,6 +530,12 @@ public class DefaultHTMLCleanerTest
             HTMLUtils.toString(this.cleaner.clean(new StringReader(actual))));
     }
 
+    private void assertHTML(String expected, String actual, HTMLCleanerConfiguration configuration)
+    {
+        assertEquals(HEADER_FULL + expected + FOOTER,
+            HTMLUtils.toString(this.cleaner.clean(new StringReader(actual), configuration)));
+    }
+
     private void assertHTMLWithHeadContent(String expected, String actual)
     {
         assertEquals(HEADER + "<html><head>" + expected + "</head><body>" + FOOTER,
@@ -541,41 +559,4 @@ public class DefaultHTMLCleanerTest
             document.getElementsByTagName("img").item(0).getAttributes().getNamedItem("src").getTextContent();
         assertEquals("http://host.com/a.gif?a=foo&b=bar", textContent);
     }
-
-    @Test
-    public void parse() throws Exception
-    {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-
-        StringBuilder xmlStringBuilder = new StringBuilder();
-        xmlStringBuilder.append("<?xml version = \"1.0\"?><img src=\"http://xwiki.org?a=&amp;b\"/>");
-        ByteArrayInputStream input =  new ByteArrayInputStream(xmlStringBuilder.toString().getBytes("UTF-8"));
-        Document doc = builder.parse(input);
-        Element root = doc.getDocumentElement();
-        assertEquals("http://xwiki.org?a=&b", root.getAttribute("src"));
-
-        OutputFormat format = new OutputFormat(doc);
-        StringWriter writer = new StringWriter();
-        XMLSerializer serializer = new XMLSerializer(writer, format);
-        serializer.serialize(doc);
-        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<img src=\"http://xwiki.org?a=&amp;b\"/>", writer.toString());
-    }
-
-    @Test
-    public void parse2() throws Exception
-    {
-        String html = "<?xml version = \"1.0\"?><img src=\"http://xwiki.org?a=&amp;b\"/>";
-        final CleanerProperties cleanerProperties = new CleanerProperties();
-        final TagNode tagNode = new HtmlCleaner().clean(html);
-        final Document doc = new DomSerializer(cleanerProperties, true).createDOM(tagNode);
-        assertEquals("http://xwiki.org?a=&amp;b",
-            doc.getElementsByTagName("img").item(0).getAttributes().getNamedItem("src").getTextContent());
-        cleanerProperties.setOmitHtmlEnvelope(true);
-        String out = new SimpleXmlSerializer(cleanerProperties).getAsString(html);
-        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<img src=\"http://xwiki.org?a=&amp;b\" />",
-            out);
-    }
-
 }

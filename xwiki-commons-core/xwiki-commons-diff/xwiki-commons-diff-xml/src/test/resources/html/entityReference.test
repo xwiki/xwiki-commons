@@ -9,5 +9,5 @@
 ##--------------------
 ## expected-marker
 ##--------------------
-<p data-xwiki-html-diff-block="deleted">1<span data-xwiki-html-diff="deleted">></span>2<span data-xwiki-html-diff="deleted">&amp;</span>3<span data-xwiki-html-diff="deleted"> </span>4<span data-xwiki-html-diff="deleted">½</span>5öü<span data-xwiki-html-diff="deleted">äă</span>âî<span data-xwiki-html-diff="deleted">ș</span></p>
-<p data-xwiki-html-diff-block="inserted">1<span data-xwiki-html-diff="inserted"><</span>2<span data-xwiki-html-diff="inserted">'</span>3<span data-xwiki-html-diff="inserted">–</span>4<span data-xwiki-html-diff="inserted">¾</span>5öü<span data-xwiki-html-diff="inserted">ÄĂ</span>âî<span data-xwiki-html-diff="inserted">Ș</span></p>
+<p data-xwiki-html-diff-block="deleted">1<span data-xwiki-html-diff="deleted">&gt;</span>2<span data-xwiki-html-diff="deleted">&amp;</span>3<span data-xwiki-html-diff="deleted"> </span>4<span data-xwiki-html-diff="deleted">½</span>5öü<span data-xwiki-html-diff="deleted">äă</span>âî<span data-xwiki-html-diff="deleted">ș</span></p>
+<p data-xwiki-html-diff-block="inserted">1<span data-xwiki-html-diff="inserted">&lt;</span>2<span data-xwiki-html-diff="inserted">'</span>3<span data-xwiki-html-diff="inserted">–</span>4<span data-xwiki-html-diff="inserted">¾</span>5öü<span data-xwiki-html-diff="inserted">ÄĂ</span>âî<span data-xwiki-html-diff="inserted">Ș</span></p>

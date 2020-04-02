@@ -245,6 +245,10 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         // to be escaped when parsing. We escape what's needed during serialization.
         defaultProperties.setRecognizeUnicodeChars(false);
 
+        param = configuration.getParameters().get(HTMLCleanerConfiguration.TRANSLATE_SPECIAL_ENTITIES);
+        boolean translateSpecialEntities = (param != null) ? Boolean.parseBoolean(param) : false;
+        defaultProperties.setTranslateSpecialEntities(translateSpecialEntities);
+
         return defaultProperties;
     }
 

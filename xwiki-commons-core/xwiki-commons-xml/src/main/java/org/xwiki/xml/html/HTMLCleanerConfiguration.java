@@ -48,6 +48,11 @@ public interface HTMLCleanerConfiguration
      * references. This is useful if you need to parse the clean HTML as XML later.
      */
     String USE_CHARACTER_REFERENCES = "useCharacterReferences";
+    /**
+     * Cleaning property that transform special HTML entities to be recognized by an XML parser.
+     * @since 12.3RC1
+     */
+    String TRANSLATE_SPECIAL_ENTITIES = "translateSpecialEntities";
 
     /**
      * @return the ordered list of filters to use for cleaning the HTML content

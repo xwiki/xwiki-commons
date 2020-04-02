@@ -133,7 +133,6 @@ public class XWikiDOMSerializer extends DomSerializer
             //
             if (!props.isAllowInvalidAttributeNames()) {
                 attrName = Utils.sanitizeXmlIdentifier(attrName, props.getInvalidXmlAttributeNamePrefix());
-                //attrName = Utils.sanitizeXmlAttributeName(attrName, props.getInvalidXmlAttributeNamePrefix());
             }
 
             if (attrName != null && (Utils.isValidXmlIdentifier(attrName) || props.isAllowInvalidAttributeNames())) {
