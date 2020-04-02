@@ -20,7 +20,6 @@
 package org.xwiki.diff.xml.internal;
 
 import java.io.StringReader;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,16 +80,15 @@ public class UnifiedHTMLDiffManager implements XMLDiffManager, Initializable
     {
         try {
             this.lsImpl = (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS 3.0");
-
-            htmlCleanerParametersMap = new HashMap<>();
-            // We need to parse the clean HTML as XML later and we don't want to resolve the entity references from the DTD.
-            htmlCleanerParametersMap.put(HTMLCleanerConfiguration.USE_CHARACTER_REFERENCES, "true");
-
-            // We need to translate special entities to properly use the XML parser afterwards.
-            htmlCleanerParametersMap.put(HTMLCleanerConfiguration.TRANSLATE_SPECIAL_ENTITIES, "true");
         } catch (Exception exception) {
             throw new InitializationException("Failed to initialize DOM Level 3 Load and Save APIs.", exception);
         }
+        htmlCleanerParametersMap = new HashMap<>();
+        // We need to parse the clean HTML as XML later and we don't want to resolve the entity references from the DTD.
+        htmlCleanerParametersMap.put(HTMLCleanerConfiguration.USE_CHARACTER_REFERENCES, Boolean.toString(true));
+
+        // We need to translate special entities to properly use the XML parser afterwards.
+        htmlCleanerParametersMap.put(HTMLCleanerConfiguration.TRANSLATE_SPECIAL_ENTITIES, Boolean.toString(true));
     }
 
     @Override
