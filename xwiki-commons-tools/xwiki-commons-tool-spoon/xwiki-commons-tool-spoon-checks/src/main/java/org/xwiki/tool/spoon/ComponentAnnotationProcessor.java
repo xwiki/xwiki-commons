@@ -50,6 +50,10 @@ import spoon.reflect.declaration.CtClass;
  *       {@code staticRegistration = false"} annotation parameter is specified)</li>
  *     <li>B - Verify that if the {@code staticRegistration = false"} annotation parameter is specified then the
  *       Component must not be declared in {@code components.txt}</li>
+ *     <li>C - Verify that components listed in {@code components.txt} are not listed several times</li>
+ *     <li>D - Verify that all components listed in {@code components.txt} have been found in the current module.
+ *       Incidentally this also checks that any class declared in {@code components.txt} has a {@code @Component}
+ *       defined.</li>
  *   </ul></li>
  *   <li>Check 3<ul>
  *     <li>A - Verify that either {@code @Singleton} or {@code @InstantiationStrategy} are used on any class annotated
@@ -68,12 +72,19 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
     private static final String INSTANTIATION_STRATEGY_ANNOTATION =
         "org.xwiki.component.annotation.InstantiationStrategy";
 
+    private Path resolvedComponentsTxtPath;
+
     private List<String> registeredComponentNames;
+
+    private List<String> assertedComponentNames = new ArrayList<>();
 
     private String componentsDeclarationLocation;
 
     @Property
     private String componentsTxtPath;
+
+    @Property
+    private String skipForeignDeclarations;
 
     @Override
     public void process(CtClass<?> ctClass)
@@ -113,6 +124,34 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
 
             // This is check 3-A
             check3A(qualifiedName, hasInstantiationStrategyAnnotation, hasSingletonAnnotation);
+
+            this.assertedComponentNames.add(qualifiedName);
+        }
+    }
+
+    @Override
+    public void processingDone()
+    {
+        // Check 2-D
+        // Note: We have some legacy modules which merge the components.txt since they use AspectJ to weave a new JAR.
+        // We allow skipping the check for foreign declarations for them.
+        if (this.skipForeignDeclarations == null || !Boolean.valueOf(this.skipForeignDeclarations)) {
+            check2D();
+        }
+
+        super.processingDone();
+    }
+
+    private void check2D()
+    {
+        if (this.registeredComponentNames != null) {
+            for (String componentName : this.registeredComponentNames) {
+                if (!this.assertedComponentNames.contains(componentName)) {
+                    registerError(String.format("Component [%s] is declared in [%s] but it's missing a @Component "
+                            + "declaration or its source code wasn't found in the current Maven module", componentName,
+                        this.resolvedComponentsTxtPath));
+                }
+            }
         }
     }
 
@@ -154,28 +193,36 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
         List<String> results = new ArrayList<>();
 
         // Get the components.txt file from the current directory, in target/META-INF/components.txt
-        Path path = getComponentsTxtPath(position);
-        if (Files.exists(path)) {
-            this.componentsDeclarationLocation = path.toString();
-            try (Stream<String> stream = Files.lines(path)) {
+        this.resolvedComponentsTxtPath = getComponentsTxtPath(position);
+        if (Files.exists(this.resolvedComponentsTxtPath)) {
+            this.componentsDeclarationLocation = this.resolvedComponentsTxtPath.toString();
+            try (Stream<String> stream = Files.lines(this.resolvedComponentsTxtPath)) {
                 stream.forEach((line) -> {
                     // Make sure we don't include empty lines
                     if (line.trim().length() > 0) {
                         try {
                             String[] chunks = line.split(":");
+                            String componentName;
                             if (chunks.length > 1) {
-                                results.add(chunks[1]);
+                                componentName = chunks[1];
                             } else {
-                                results.add(chunks[0]);
+                                componentName = chunks[0];
                             }
+                            // Check 2-C
+                            if (results.contains(componentName)) {
+                                registerError(String.format("Component [%s] is registered several times in [%s]",
+                                    componentName, this.resolvedComponentsTxtPath.toAbsolutePath()));
+                            }
+                            results.add(componentName);
                         } catch (Exception e) {
                             throw new SpoonException(String.format(
-                                "Invalid format [%s] in [%s]", line, path), e);
+                                "Invalid format [%s] in [%s]", line, this.resolvedComponentsTxtPath), e);
                         }
                     }
                 });
             } catch (IOException e) {
-                throw new SpoonException(String.format("Failed to read the [%s] file", path), e);
+                throw new SpoonException(
+                    String.format("Failed to read the [%s] file", this.resolvedComponentsTxtPath), e);
             }
         } else {
             // Check 1-A
@@ -183,7 +230,8 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
                 throw new SpoonException(String.format(
                     "There is no [%s] file and thus Component [%s] isn't declared! Consider "
                         + "adding a components.txt file or if it is normal use the \"staticRegistration\" parameter as "
-                        + "in \"@Component(staticRegistration = false)\"", path.toAbsolutePath(), qualifiedName));
+                        + "in \"@Component(staticRegistration = false)\"",
+                        this.resolvedComponentsTxtPath.toAbsolutePath(), qualifiedName));
             }
         }
 

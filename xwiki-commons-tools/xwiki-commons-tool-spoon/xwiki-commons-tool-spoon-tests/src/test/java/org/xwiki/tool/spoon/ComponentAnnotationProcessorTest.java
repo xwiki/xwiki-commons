@@ -44,6 +44,8 @@ public class ComponentAnnotationProcessorTest
             run();
         });
         assertThat(exception.getMessage(), matchesPattern("\\QThe following errors were found:\\E\n"
+            + "\\Q- Component [org.xwiki.tool.spoon.component.ComponentAnnotationWithOverrideAndDeclared] is "
+                + "registered several times in [\\E.*\\Q]\\E\n"
             + "\\Q- Component class [org.xwiki.tool.spoon.component.ComponentAnnotationWithoutSingletonOrInstantation"
                 + "StrategyAndDeclared] must have either the [javax.inject.Singleton] or the "
                 + "[org.xwiki.component.annotation.InstantiationStrategy] annotation defined on it.\\E\n"
@@ -53,6 +55,13 @@ public class ComponentAnnotationProcessorTest
             + "\\Q- Component class [org.xwiki.tool.spoon.component.ComponentAnnotationWithoutStaticRegistrationAnd"
                 + "Declared] must have either the [javax.inject.Singleton] or the "
                 + "[org.xwiki.component.annotation.InstantiationStrategy] annotation defined on it.\\E\n"
+            + "\\Q- Component [some.component.class.NotInThisModule1] is declared in [\\E.*\\Q] but it's missing a "
+                + "@Component declaration or its source code wasn't found in the current Maven module\\E\n"
+            + "\\Q- Component [some.component.class.NotInThisModule2] is declared in [\\E.*\\Q] but it's missing a "
+                + "@Component declaration or its source code wasn't found in the current Maven module\\E\n"
+            + "\\Q- Component [org.xwiki.tool.spoon.component.ComponentDeclaredButMissingComponentAnnotation] is "
+                + "declared in [\\E.*\\Q] but it's missing a @Component declaration or its source code wasn't found "
+                + "in the current Maven module\\E\n"
         ));
     }
 

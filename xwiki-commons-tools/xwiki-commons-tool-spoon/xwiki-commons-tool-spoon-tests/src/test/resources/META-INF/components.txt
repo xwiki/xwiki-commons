@@ -1,6 +1,10 @@
+some.component.class.NotInThisModule1
 org.xwiki.tool.spoon.component.ComponentAnnotationWithInstantiationStrategyAndDeclared
 org.xwiki.tool.spoon.component.ComponentAnnotationWithSingletonAndDeclared
 org.xwiki.tool.spoon.component.ComponentAnnotationWithoutSingletonOrInstantationStrategyAndDeclared
 org.xwiki.tool.spoon.component.ComponentAnnotationWithoutStaticRegistrationAndDeclared
 org.xwiki.tool.spoon.component.ComponentAnnotationWithAnnotationInSuperClassAndDeclared
 org.xwiki.tool.spoon.component.ComponentAnnotationWithOverrideAndDeclared
+org.xwiki.tool.spoon.component.ComponentAnnotationWithOverrideAndDeclared
+some.component.class.NotInThisModule2
+org.xwiki.tool.spoon.component.ComponentDeclaredButMissingComponentAnnotation

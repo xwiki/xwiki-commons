@@ -17,35 +17,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.type;
+package org.xwiki.tool.spoon.component;
 
-import java.lang.reflect.Type;
-
-import javax.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
-import org.xwiki.filter.type.FilterStreamType;
-import org.xwiki.properties.converter.AbstractConverter;
+import org.xwiki.tool.spoon.ComponentAnnotationProcessor;
 
 /**
- * Convert a Filter type from a {@link String} to a {@link FilterStreamType} object and the other way around.
+ * Test class for {@link ComponentAnnotationProcessor}.
  *
  * @version $Id$
- * @since 6.2M1
  */
-@Component
-@Singleton
-public class FilterStreamTypeConverter extends AbstractConverter<FilterStreamType>
+public class ComponentDeclaredButMissingComponentAnnotation
 {
-    @Override
-    protected FilterStreamType convertToType(Type targetType, Object value)
-    {
-        return value == null ? null : FilterStreamType.unserialize(value.toString());
-    }
-
-    @Override
-    protected String convertToString(FilterStreamType value)
-    {
-        return value == null ? null : value.serialize();
-    }
 }
