@@ -196,6 +196,15 @@
                 </property>
               </properties>
             </processorProperty>
+            <processorProperty>
+              <name>org.xwiki.tool.spoon.ComponentAnnotationProcessor</name>
+              <properties>
+                <property>
+                  <name>skipForeignDeclarations</name>
+                  <value>false</value>
+                </property>
+              </properties>
+            </processorProperty>
           </processorProperties>
         </configuration>
         <dependencies>

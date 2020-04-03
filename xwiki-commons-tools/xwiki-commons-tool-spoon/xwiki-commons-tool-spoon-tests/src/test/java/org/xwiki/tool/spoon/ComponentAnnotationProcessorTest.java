@@ -40,9 +40,7 @@ public class ComponentAnnotationProcessorTest
     @Test
     void process()
     {
-        Throwable exception = assertThrows(SpoonException.class, () -> {
-            run();
-        });
+        Throwable exception = assertThrows(SpoonException.class, () -> run());
         assertThat(exception.getMessage(), matchesPattern("\\QThe following errors were found:\\E\n"
             + "\\Q- Component [org.xwiki.tool.spoon.component.ComponentAnnotationWithOverrideAndDeclared] is "
                 + "registered several times in [\\E.*\\Q]\\E\n"
@@ -74,6 +72,7 @@ public class ComponentAnnotationProcessorTest
         ComponentAnnotationProcessor processor = new ComponentAnnotationProcessor();
         ProcessorProperties properties = new ProcessorPropertiesImpl();
         properties.set("componentsTxtPath", "target/test-classes/META-INF/components.txt");
+        properties.set("skipForeignDeclarations", "false");
         processor.initProperties(properties);
         launcher.addProcessor(processor);
         launcher.run();
