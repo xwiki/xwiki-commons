@@ -20,8 +20,9 @@
 package org.xwiki.diff.xml.internal;
 
 import java.io.StringReader;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -72,6 +73,8 @@ public class UnifiedHTMLDiffManager implements XMLDiffManager, Initializable
      **/
     private DOMImplementationLS lsImpl;
 
+    private Map<String, String> htmlCleanerParametersMap;
+
     @Override
     public void initialize() throws InitializationException
     {
@@ -80,6 +83,12 @@ public class UnifiedHTMLDiffManager implements XMLDiffManager, Initializable
         } catch (Exception exception) {
             throw new InitializationException("Failed to initialize DOM Level 3 Load and Save APIs.", exception);
         }
+        htmlCleanerParametersMap = new HashMap<>();
+        // We need to parse the clean HTML as XML later and we don't want to resolve the entity references from the DTD.
+        htmlCleanerParametersMap.put(HTMLCleanerConfiguration.USE_CHARACTER_REFERENCES, Boolean.toString(true));
+
+        // We need to translate special entities to properly use the XML parser afterwards.
+        htmlCleanerParametersMap.put(HTMLCleanerConfiguration.TRANSLATE_SPECIAL_ENTITIES, Boolean.toString(true));
     }
 
     @Override
@@ -104,8 +113,7 @@ public class UnifiedHTMLDiffManager implements XMLDiffManager, Initializable
     private String cleanHTML(String html)
     {
         HTMLCleanerConfiguration config = this.htmlCleaner.getDefaultConfiguration();
-        // We need to parse the clean HTML as XML later and we don't want to resolve the entity references from the DTD.
-        config.setParameters(Collections.singletonMap(HTMLCleanerConfiguration.USE_CHARACTER_REFERENCES, "true"));
+        config.setParameters(htmlCleanerParametersMap);
         Document htmlDoc = this.htmlCleaner.clean(new StringReader(wrap(html)), config);
         // We serialize and parse again the HTML as XML because the HTML Cleaner doesn't handle entity and character
         // references very well: they all end up as plain text (they are included in the value returned by

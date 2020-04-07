@@ -19,15 +19,27 @@
  */
 package org.xwiki.xml.internal.html;
 
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.htmlcleaner.CleanerProperties;
+import org.htmlcleaner.DomSerializer;
+import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.SimpleXmlSerializer;
+import org.htmlcleaner.TagNode;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -43,6 +55,9 @@ import org.xwiki.xml.internal.html.filter.LinkFilter;
 import org.xwiki.xml.internal.html.filter.ListFilter;
 import org.xwiki.xml.internal.html.filter.ListItemFilter;
 import org.xwiki.xml.internal.html.filter.UniqueIdFilter;
+
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -92,10 +107,10 @@ public class DefaultHTMLCleanerTest
     {
         assertHTML("<p>&quot;&amp;**notbold**&lt;notag&gt;&nbsp;</p>",
             "<p>&quot;&amp;**notbold**&lt;notag&gt;&nbsp;</p>");
-        assertHTML("<p>&quot;&amp;</p>", "<p>\"&</p>");
+        assertHTML("<p>\"&amp;</p>", "<p>\"&</p>");
         assertHTML("<p><img src=\"http://host.com/a.gif?a=foo&amp;b=bar\" /></p>",
-            "<img src=\"http://host.com/a.gif?a=foo&b=bar\" />");
-        assertHTML("<p>\n</p>", "<p>&#xA;</p>");
+            "<img src=\"http://host.com/a.gif?a=foo&amp;b=bar\" />");
+        assertHTML("<p>&#xA;</p>", "<p>&#xA;</p>");
 
         // Verify that double quotes are escaped in attribute values
         assertHTML("<p value=\"script:&quot;&quot;\"></p>", "<p value='script:\"\"'");
@@ -258,13 +273,22 @@ public class DefaultHTMLCleanerTest
         parameters.putAll(configuration.getParameters());
         parameters.put("restricted", "true");
         configuration.setParameters(parameters);
+        Document document = this.cleaner.clean(new StringReader("<script>alert(\"foo\")</script>"), configuration);
 
-        String result = HTMLUtils.toString(this.cleaner.clean(
-            new StringReader("<script>alert(\"foo\")</script>"), configuration));
-        assertEquals(HEADER_FULL + "<pre>alert(&quot;foo&quot;)</pre>" + FOOTER, result);
+        String textContent =
+            document.getElementsByTagName("pre").item(0).getTextContent();
+        assertEquals("alert(\"foo\")", textContent);
 
-        result = HTMLUtils.toString(this.cleaner.clean(
-            new StringReader("<style>p {color:white;}</style>"), configuration));
+        String result = HTMLUtils.toString(document);
+        assertEquals(HEADER_FULL + "<pre>alert(\"foo\")</pre>" + FOOTER, result);
+
+        document = this.cleaner.clean(new StringReader("<style>p {color:white;}</style>"), configuration);
+
+        textContent =
+            document.getElementsByTagName("pre").item(0).getTextContent();
+        assertEquals("p {color:white;}", textContent);
+
+        result = HTMLUtils.toString(document);
         assertEquals(HEADER_FULL + "<pre>p {color:white;}</pre>" + FOOTER, result);
     }
 
@@ -406,6 +430,18 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p>&Eacute;</p>", "&Eacute;");
         assertHTML("<p>&frac14;</p>", "&frac14;");
         assertHTML("<p>&amp;f!rac14;</p>", "&f!rac14;");
+        assertHTML("<p>&frac12;</p>", "&frac12;");
+    }
+
+    @Test
+    public void entitiesWithTranslation()
+    {
+        assertHTML("<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>", "<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>");
+        HTMLCleanerConfiguration htmlCleanerConfiguration = new DefaultHTMLCleanerConfiguration();
+        htmlCleanerConfiguration
+            .setParameters(Collections.singletonMap(HTMLCleanerConfiguration.TRANSLATE_SPECIAL_ENTITIES, "true"));
+        assertHTML("<p>1&gt;2&amp;3&#160;4&#189;5öüäăâîș</p>",
+            "<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>", htmlCleanerConfiguration);
     }
 
     @Test
@@ -448,6 +484,20 @@ public class DefaultHTMLCleanerTest
     {
         // Note: single quotes are not escaped since they're valid chars in attribute values that are surrounded by
         // quotes. And HTMLCleaner will convert single quoted attributes into double-quoted ones.
+        String htmlInput = "<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff\">content</div>";
+        Document document = this.cleaner.clean(new StringReader(htmlInput));
+
+        String textContent =
+            document.getElementsByTagName("div").item(0).getAttributes().getNamedItem("foo").getTextContent();
+        assertEquals("aaa\"bbb&ccc>ddd<eee'fff", textContent);
+
+        htmlInput = "<div foo='aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff'>content</div>";
+        document = this.cleaner.clean(new StringReader(htmlInput));
+
+        textContent =
+            document.getElementsByTagName("div").item(0).getAttributes().getNamedItem("foo").getTextContent();
+        assertEquals("aaa\"bbb&ccc>ddd<eee'fff", textContent);
+
         assertHTML("<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee'fff\">content</div>",
             "<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff\">content</div>");
         assertHTML("<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee'fff\">content</div>",
@@ -457,8 +507,21 @@ public class DefaultHTMLCleanerTest
     @Test
     public void controlCharacters() throws Exception
     {
+        String htmlInput = "<p>\u0008</p>";
+        Document document = this.cleaner.clean(new StringReader(htmlInput));
+
+        String textContent =
+            document.getElementsByTagName("p").item(0).getTextContent();
+        assertEquals(" ", textContent);
         assertHTML(" ", "\u0008");
-        assertHTML(" ", "&#8;");
+
+        htmlInput = "<p>&#8;</p>";
+        document = this.cleaner.clean(new StringReader(htmlInput));
+
+        textContent =
+            document.getElementsByTagName("p").item(0).getTextContent();
+        assertEquals("&#8;", textContent);
+        assertHTML("<p>&#8;</p>", "&#8;");
     }
 
     private void assertHTML(String expected, String actual)
@@ -467,9 +530,33 @@ public class DefaultHTMLCleanerTest
             HTMLUtils.toString(this.cleaner.clean(new StringReader(actual))));
     }
 
+    private void assertHTML(String expected, String actual, HTMLCleanerConfiguration configuration)
+    {
+        assertEquals(HEADER_FULL + expected + FOOTER,
+            HTMLUtils.toString(this.cleaner.clean(new StringReader(actual), configuration)));
+    }
+
     private void assertHTMLWithHeadContent(String expected, String actual)
     {
         assertEquals(HEADER + "<html><head>" + expected + "</head><body>" + FOOTER,
             HTMLUtils.toString(this.cleaner.clean(new StringReader(actual))));
+    }
+
+    @Test
+    public void transformedDOMContent()
+    {
+        String htmlInput = "<img src=\"http://host.com/a.gif?a=foo&b=bar\" />";
+        Document document = this.cleaner.clean(new StringReader(htmlInput));
+
+        String textContent =
+            document.getElementsByTagName("img").item(0).getAttributes().getNamedItem("src").getTextContent();
+        assertEquals("http://host.com/a.gif?a=foo&b=bar", textContent);
+
+        htmlInput = "<img src=\"http://host.com/a.gif?a=foo&amp;b=bar\" />";
+        document = this.cleaner.clean(new StringReader(htmlInput));
+
+        textContent =
+            document.getElementsByTagName("img").item(0).getAttributes().getNamedItem("src").getTextContent();
+        assertEquals("http://host.com/a.gif?a=foo&b=bar", textContent);
     }
 }

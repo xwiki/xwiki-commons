@@ -241,6 +241,14 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         // See TrimAttributeCleanerTransformation for more information.
         defaultProperties.setTrimAttributeValues(false);
 
+        // This flag is used by HtmlCleaner to know if the XML should be escaped. In our case we never want it
+        // to be escaped when parsing. We escape what's needed during serialization.
+        defaultProperties.setRecognizeUnicodeChars(false);
+
+        param = configuration.getParameters().get(HTMLCleanerConfiguration.TRANSLATE_SPECIAL_ENTITIES);
+        boolean translateSpecialEntities = (param != null) ? Boolean.parseBoolean(param) : false;
+        defaultProperties.setTranslateSpecialEntities(translateSpecialEntities);
+
         return defaultProperties;
     }
 

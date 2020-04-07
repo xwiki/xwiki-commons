@@ -134,7 +134,7 @@ public final class HTMLUtils
                 }
             } else {
                 result = escapeAmpersand(text);
-                StringUtils.replaceEach(text, REPLACE_ELEMENTS_SEARCH, REPLACE_ELEMENTS_RESULT);
+                result = StringUtils.replaceEach(result, REPLACE_ELEMENTS_SEARCH, REPLACE_ELEMENTS_RESULT);
             }
 
             return result;
