@@ -1,0 +1,137 @@
+{{velocity}}
+{{html}}
+<form class="xform">
+  <div><input type="text" name="query" placeholder="Search..." value="$!request.query"/></div>
+  <div><input type="text" name="user" placeholder="User..." value="$!request.user"/></div>
+  <div>
+    <span class="buttonwrapper"><input type="submit" name="search" value="Search" class="button"/></span>
+    <span class="buttonwrapper"><input type="submit" name="showas" value="Show Activity Stream" class="button"/></span>
+    #if ("$!request.query" != '' || "$!request.user" != '')
+      <span class="buttonwrapper"><input type="submit" name="check" value="Check for Spam" class="button"/></span>
+      <span class="buttonwrapper"><input type="submit" name="delete" value="Delete" class="button"/></span>
+    #end
+    #if ("$!request.delete" != '')
+      <input class="btn btn-danger" type="submit" name="confirmDelete" value="Confirm Delete" class="button btn-danger"/>
+    #end
+  </div>
+</form>
+{{/html}}
+
+{{box cssClass="floatinginfobox" title="**Configuration**"}}
+* [[Spam Keywords>>Keywords]]
+* [[Space Excludes>>Excludes]]
+{{/box}}
+
+{{box cssClass="floatinginfobox" title="**Results**"}}
+* [[Banned IP Addresses>>IPAddresses]]
+* [[Disabled Spam Users>>DisabledUsers]]
+#if ($xwiki.exists('Logs'))
+  * [[Logs>>Logs]]
+#end
+{{/box}}
+
+#macro(displayReference $reference)
+  #if ("$!request.check" != '')
+    #set ($refDoc = $xwiki.getDocument($reference))
+    ## Note: We should use the following instead but it's currently too time-consuming:
+    ##   #set ($isSpam = $services.antispam.isSpam('simple', $refDoc, {}))
+    #set ($isSpam = $services.antispam.isSpam('simple', "${refDoc.fullName}\n${refDoc.title}\n${refDoc.content}", {}))
+    #if ($isSpam)
+      * (% style='color:green' %){{{$reference}}}
+    #else
+      * (% style='color:red' %){{{$reference}}} {{error}}Not spam content! You may need to add keywords!{{/error}}
+    #end
+  #else
+    * {{{$reference}}}
+  #end
+#end
+#macro(cleanDocument $documentReference $authorReferences)
+  #try()
+    #set ($discard = $services.antispam.cleanDocument($documentReference, $authorReferences, true))
+    ** Cleaned!
+  #end
+  #if ("$!exception" != '')
+    #displayException('Failed to remove spam from [${documentReference}]', $exception)
+  #end
+#end
+#if (("$!request.query" == '' && "$!request.user" == '') || "$!request.showas" != '')
+  == Latest Changes ==
+  #set ($events = $xwiki.activitystream.getEvents(false, 50, 0))
+  #foreach ($event in $events)
+    * {{{$event.getDisplayDate() - $event.getPage() - $event.getType() - $event.getUser()}}}
+  #end
+#end
+#set ($cleanedReferences = $collectionstool.set)
+#if ("$!request.query" != '')
+  == Matching Pages ==
+  ## Note: we make sure to surround the query string by quotes to avoid users deleting unwanted pages
+  ## (since searching for example for "mcafee phone" without the quotes will search for documents 
+  ## containing "mcafee" OR "phone").
+  #set ($result = $services.antispam.getMatchingDocuments("""$request.query""", 500, 0))
+  #set ($matchingDocumentReferences = $result.getLeft())
+  #set ($matchingAuthorReferences = $result.getRight())
+  #foreach ($matchingDocumentReference in $matchingDocumentReferences)
+    #displayReference($matchingDocumentReference)
+    #if ("$!request.confirmDelete" != '')
+      #cleanDocument($matchingDocumentReference, $matchingAuthorReferences, true)
+    #end
+    #set ($discard = $cleanedReferences.add($matchingDocumentReference))
+  #end
+  == Authors ==
+  #foreach ($matchingAuthorReference in $matchingAuthorReferences)
+    #if ($services.security.authorization.hasAccess('ADMIN', $matchingAuthorReference, $doc.documentReference))
+      * {{{$matchingAuthorReference}}} {{error}}Excluding for safety since it has Admin access to this page{{/error}}
+      #set ($discard = $matchingAuthorReferences.remove($matchingAuthorReference))
+    #else
+      * {{{$matchingAuthorReference}}}
+      #if ("$!request.confirmDelete" != '')
+        #set ($userDoc = $xwiki.getDocument($matchingAuthorReference))
+        #if (!$userDoc.isNew())
+          #set ($discard = $xwiki.getXWiki().deleteAllDocuments($userDoc.getDocument(), false, $xcontext.getContext()))
+          ** Deleted!
+        #else
+          ** Page already deleted!
+        #end
+      #end
+    #end
+  #end
+  == Pages created or modified by those Authors ==
+  #foreach ($matchingAuthorReference in $matchingAuthorReferences)
+    #set ($documentReferences = $services.antispam.getDocumentsForAuthor($matchingAuthorReference, 500, 0))
+    #foreach ($documentReference in $documentReferences)
+      ## Only handle pages that were not matching above as those have already been taken care of!
+      #if (!$cleanedReferences.contains($documentReference))
+        #displayReference($documentReference)
+        #if ("$!request.confirmDelete" != '')
+          #cleanDocument($documentReference, $matchingAuthorReferences, true)
+        #end
+      #end
+    #end
+  #end
+  == Activity Stream Events ==
+  #foreach ($matchingAuthorReference in $matchingAuthorReferences)
+    #set ($events = $xwiki.activitystream.getEventsForUser($services.model.serialize($matchingAuthorReference, 'default'), false, 500, 0))
+    #foreach ($event in $events)
+      * {{{$event.getDisplayDate() - $event.getPage() - $event.getType() - $event.getUser()}}}
+    #end
+    #if ("$!request.confirmDelete" != '')
+      #set ($discard = $xwiki.activitystream.deleteActivityEvents($events))
+      ** All events deleted for user $matchingAuthorReference
+    #end
+  #end
+#end
+#if ("$!request.user" != '')
+  == Pages modified by user: [$request.user] ==
+  #set ($userReference = $services.model.resolveDocument($request.user, 'user'))
+  #set ($documentReferences = $services.antispam.getDocumentsForAuthor($userReference, 500, 0))
+  #foreach ($documentReference in $documentReferences)
+    ## Only handle pages that were not matching above as those have already been taken care of!
+    #if (!$cleanedReferences.contains($documentReference))
+      #displayReference($documentReference)
+      #if ("$!request.confirmDelete" != '')
+        #cleanDocument($documentReference, [$userReference], true)
+      #end
+    #end
+  #end
+#end
+{{/velocity}}
