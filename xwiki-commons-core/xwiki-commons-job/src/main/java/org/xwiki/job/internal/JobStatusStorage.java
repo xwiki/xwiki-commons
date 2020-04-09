@@ -43,7 +43,7 @@ public interface JobStatusStorage
 
     /**
      * @param id the id of the job
-     * @return the job status
+     * @return the job status or null if there's no matching job id
      */
     JobStatus getJobStatus(List<String> id);
 
