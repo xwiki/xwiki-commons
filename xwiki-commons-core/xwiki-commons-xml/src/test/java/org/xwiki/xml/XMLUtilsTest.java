@@ -19,7 +19,10 @@
  */
 package org.xwiki.xml;
 
+import org.apache.html.dom.HTMLDocumentImpl;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Element;
+import org.w3c.dom.html.HTMLElement;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,6 +38,7 @@ public class XMLUtilsTest
     public void escapeXMLComment()
     {
         assertEquals("-\\- ", XMLUtils.escapeXMLComment("-- "));
+        assertEquals("\\\\", XMLUtils.escapeXMLComment("\\"));
         assertEquals("-\\", XMLUtils.escapeXMLComment("-"));
         assertEquals("-\\-\\-\\", XMLUtils.escapeXMLComment("---"));
         assertEquals("- ", XMLUtils.escapeXMLComment("- "));
@@ -190,5 +194,19 @@ public class XMLUtilsTest
     {
         // Nothing much that we can test here...
         assertNotNull(XMLUtils.createDOMDocument());
+    }
+
+    @Test
+    public void serializeNode()
+    {
+        HTMLDocumentImpl node = new HTMLDocumentImpl();
+        String serialize = XMLUtils.serialize(node, false);
+        assertEquals("", serialize);
+
+        Element body = node.createElement("body");
+        node.setBody((HTMLElement) body);
+        body.setAttribute("class", "toto");
+        serialize = XMLUtils.serialize(node, false);
+        assertEquals("<HTML><HEAD/><BODY class=\"toto\"/></HTML>", serialize);
     }
 }

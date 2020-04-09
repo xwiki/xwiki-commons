@@ -21,6 +21,7 @@ package org.xwiki.xml.html;
 
 import java.io.StringReader;
 
+import org.apache.xerces.dom.DocumentImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -84,6 +85,15 @@ public class HTMLUtilsTest
         Document document = this.cleaner.clean(new StringReader("<html><head /><body><p>test</p></body></html>"));
         HTMLUtils.stripFirstElementInside(document, "body", "p");
         assertEquals(DefaultHTMLCleanerTest.HEADER + "<html><head></head><body>test</body></html>\n",
+            HTMLUtils.toString(document));
+    }
+
+    @Test
+    public void testCornerCases() throws Exception
+    {
+        // ensures that the empty element does not lead to error
+        Document document = this.cleaner.clean(new StringReader("<html><head /><body foo=\"\"></body></html>"));
+        assertEquals(DefaultHTMLCleanerTest.HEADER + "<html><head></head><body foo=\"\"></body></html>\n",
             HTMLUtils.toString(document));
     }
 }
