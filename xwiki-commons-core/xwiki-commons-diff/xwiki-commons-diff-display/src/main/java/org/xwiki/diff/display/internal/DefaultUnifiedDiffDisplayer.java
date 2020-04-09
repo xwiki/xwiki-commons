@@ -226,7 +226,12 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
         int index = originalChunk.getIndex();
         int listIndex = 0;
 
-        // prefix chunk
+        // if the conflict is not about the current chunk we directly leave.
+        if (index + conflictSize < conflictIndex) {
+            return Collections.emptyList();
+        }
+
+        // prefix chunk.
         if (index < conflictIndex) {
             result.add(new DefaultChunk<>(index, elements.subList(0, conflictIndex - index)));
             index = conflictIndex;
