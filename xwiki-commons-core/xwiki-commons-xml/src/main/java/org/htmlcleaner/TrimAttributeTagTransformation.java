@@ -53,6 +53,8 @@ public class TrimAttributeTagTransformation extends TagTransformation
     public Map<String, String> applyTagTransformations(Map<String, String> attributes) {
         Map<String, String> result = super.applyTagTransformations(attributes);
 
+        // Note: We copy the entries in a HashSet to avoid any ConcurrentModificationException when modifying the result
+        // objects in the loop.
         for (Map.Entry<String, String> attributesEntry : new HashSet<>(result.entrySet())) {
             String attrName = attributesEntry.getKey();
             String attrValue = attributesEntry.getValue();
