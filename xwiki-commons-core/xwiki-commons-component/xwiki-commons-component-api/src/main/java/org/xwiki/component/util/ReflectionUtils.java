@@ -113,8 +113,8 @@ public final class ReflectionUtils
         }
 
         if (resultField == null) {
-            throw new NoSuchFieldException("No field named [" + fieldName + "] in class [" + clazz.getName()
-                + "] or superclasses");
+            throw new NoSuchFieldException(String.format("No field named [%s] in class [%s] or superclasses",
+                fieldName, clazz == null ? null : clazz.getName()));
         }
 
         return resultField;
