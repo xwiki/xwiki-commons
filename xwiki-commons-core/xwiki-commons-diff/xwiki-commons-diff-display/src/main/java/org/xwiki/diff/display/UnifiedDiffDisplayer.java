@@ -139,7 +139,8 @@ public interface UnifiedDiffDisplayer
      */
     @Unstable
     default <E, F> List<UnifiedDiffBlock<E, F>> display(DiffResult<E> diffResult, List<Conflict<E>> conflicts,
-        UnifiedDiffConfiguration<E, F> config) {
+        UnifiedDiffConfiguration<E, F> config)
+    {
         return display(diffResult, config);
     }
 }

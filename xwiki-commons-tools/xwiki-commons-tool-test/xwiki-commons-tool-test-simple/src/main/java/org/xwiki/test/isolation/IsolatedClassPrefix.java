@@ -17,7 +17,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.xwiki.test.isolation;
 
 import java.lang.annotation.ElementType;
@@ -35,7 +34,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-public @interface IsolatedClassPrefix {
+public @interface IsolatedClassPrefix
+{
     /**
      * @return the list of class name prefix that will be isolated for this test
      */

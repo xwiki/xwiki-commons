@@ -45,12 +45,14 @@ public class TrimAttributeTagTransformation extends TagTransformation
      * @param sourceTag Name of the tag to be transformed.
      * @param destTag Name of tag to which source tag is to be transformed.
      */
-    public TrimAttributeTagTransformation(String sourceTag, String destTag) {
+    public TrimAttributeTagTransformation(String sourceTag, String destTag)
+    {
         super(sourceTag, destTag);
     }
 
     @Override
-    public Map<String, String> applyTagTransformations(Map<String, String> attributes) {
+    public Map<String, String> applyTagTransformations(Map<String, String> attributes)
+    {
         Map<String, String> result = super.applyTagTransformations(attributes);
 
         // Note: We copy the entries in a HashSet to avoid any ConcurrentModificationException when modifying the result

@@ -81,7 +81,8 @@ public class BlameScriptService implements ScriptService
      *                 latest revision to start a new blame.
      * @return the updated annotated content.
      */
-    public <R, E> AnnotatedContent<R, E> blame(AnnotatedContent<R, E> content, R revision, List<E> previous) {
+    public <R, E> AnnotatedContent<R, E> blame(AnnotatedContent<R, E> content, R revision, List<E> previous)
+    {
         setError(null);
         try {
             return blameManager.blame(content, revision, previous);
@@ -102,7 +103,8 @@ public class BlameScriptService implements ScriptService
      *                 latest revision to start a new blame.
      * @return the updated annotated content.
      */
-    public <R> AnnotatedContent<R, String> blame(AnnotatedContent<R, String> content, R revision, String previous) {
+    public <R> AnnotatedContent<R, String> blame(AnnotatedContent<R, String> content, R revision, String previous)
+    {
         setError(null);
         try {
             return blameManager.blame(content, revision, lineSplitter.split(previous));

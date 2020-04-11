@@ -36,7 +36,8 @@ import org.xwiki.stability.Unstable;
 public class TrimAttributeCleanerTransformations extends CleanerTransformations
 {
     @Override
-    public TagTransformation getTransformation(String tagName) {
+    public TagTransformation getTransformation(String tagName)
+    {
         TagTransformation transformation = super.getTransformation(tagName);
         if (transformation == null) {
 
