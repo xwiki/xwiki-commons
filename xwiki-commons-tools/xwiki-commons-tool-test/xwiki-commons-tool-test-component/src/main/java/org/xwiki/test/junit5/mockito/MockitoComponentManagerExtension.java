@@ -214,7 +214,7 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
     }
 
     @Override
-    public void afterEach(ExtensionContext extensionContext)
+    public void afterEach(ExtensionContext extensionContext) throws Exception
     {
         MockitoComponentManager mcm = loadComponentManager(extensionContext);
         if (mcm != null) {
