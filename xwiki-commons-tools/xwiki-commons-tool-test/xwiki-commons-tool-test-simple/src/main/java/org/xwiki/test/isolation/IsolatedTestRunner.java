@@ -49,7 +49,7 @@ import org.junit.runners.model.InitializationError;
  *     }
  * ...
  * }
- * </pre>
+ * }</pre>
  *
  * The prefixes should at least include a prefix that match your test class, else the initialization will fail,
  * since your test would not be run in isolation properly.
@@ -68,7 +68,7 @@ import org.junit.runners.model.InitializationError;
  *         return false;
  *     }
  * }
- * </pre>
+ * }</pre>
  *
  * @version $Id$
  * @since 5.0M2
