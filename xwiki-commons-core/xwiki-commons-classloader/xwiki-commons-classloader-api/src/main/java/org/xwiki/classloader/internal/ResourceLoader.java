@@ -567,7 +567,7 @@ public class ResourceLoader
                 this.classPath = parseClassPath(jar, this.source);
 
                 indexes = parseJarIndex(this.source, jar);
-                indexes.remove(this.source.toExternalForm());
+                indexes.remove(this.source);
 
                 if (!indexes.isEmpty()) {
                     this.package2url = package2url(indexes);
