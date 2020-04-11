@@ -101,8 +101,10 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
     public void beforeEach(ExtensionContext context) throws Exception
     {
         // When there are nested tests then we need to initialize all instances (and not just the nested one).
-        for (Object testInstance : context.getTestInstances().get().getAllInstances()) {
-            initializeTestInstance(testInstance, context);
+        if (context.getTestInstances().isPresent()) {
+            for (Object testInstance : context.getTestInstances().get().getAllInstances()) {
+                initializeTestInstance(testInstance, context);
+            }
         }
     }
 
