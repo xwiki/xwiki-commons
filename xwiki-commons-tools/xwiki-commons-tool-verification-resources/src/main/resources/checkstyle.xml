@@ -229,7 +229,8 @@
 
     <module name="LeftCurly">
       <property name="option" value="nl"/>
-      <property name="tokens" value="CLASS_DEF,INTERFACE_DEF"/>
+      <property name="tokens"
+        value="ANNOTATION_DEF,CLASS_DEF,CTOR_DEF,ENUM_DEF,INTERFACE_DEF,METHOD_DEF"/>
     </module>
 
     <module name="LocalFinalVariableName"/>
