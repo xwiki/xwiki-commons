@@ -20,7 +20,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
@@ -30,7 +31,9 @@
   <artifactId>xwiki-commons-extension-repository-maven-snapshots</artifactId>
   <name>XWiki Commons - Extension - Repository - Maven - Snapshots Default Repository</name>
   <packaging>jar</packaging>
-  <description>Provides the XWiki snapshots repository as default maven repository (when no other repositories are set)</description>
+  <description>Provides the XWiki snapshots repository as default maven repository (when no other repositories are
+    set)
+  </description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
   </properties>

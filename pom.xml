@@ -18,7 +18,8 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.xwiki.commons</groupId>
   <artifactId>xwiki-commons</artifactId>
@@ -129,22 +130,30 @@
     <xwiki.jacoco.skip>false</xwiki.jacoco.skip>
     <xwiki.enforcer.skip>false</xwiki.enforcer.skip>
     <xwiki.enforcer.enforce-plugins.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-plugins.skip>
-    <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
+    <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}
+    </xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
     <xwiki.enforcer.enforce-glasshfish-jaxb.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glasshfish-jaxb.skip>
-    <xwiki.enforcer.enforce-jakarta.xml.bind-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.xml.bind-api.skip>
+    <xwiki.enforcer.enforce-jakarta.xml.bind-api.skip>${xwiki.enforcer.skip}
+    </xwiki.enforcer.enforce-jakarta.xml.bind-api.skip>
     <xwiki.enforcer.enforce-open-json.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-open-json.skip>
     <xwiki.enforcer.enforce-glassfish-el.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glassfish-el.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
-    <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
-    <xwiki.enforcer.enforce-jakarta.activation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.activation.skip>
+    <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}
+    </xwiki.enforcer.enforce-commons-configuration2.skip>
+    <xwiki.enforcer.enforce-jakarta.activation.skip>${xwiki.enforcer.skip}
+    </xwiki.enforcer.enforce-jakarta.activation.skip>
     <xwiki.enforcer.enforce-jakarta.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.mail.skip>
-    <xwiki.enforcer.enforce-jakarta.annotation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.annotation-api.skip>
+    <xwiki.enforcer.enforce-jakarta.annotation-api.skip>${xwiki.enforcer.skip}
+    </xwiki.enforcer.enforce-jakarta.annotation-api.skip>
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
     <xwiki.enforcer.enforce-jsr305.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jsr305.skip>
     <xwiki.enforcer.enforce-jta.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jta.skip>
-    <xwiki.enforcer.enforce-jboss-marshalling-osgi.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jboss-marshalling-osgi.skip>
-    <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
-    <xwiki.enforcer.enforce-velocity-engine-core.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-velocity-engine-core.skip>
+    <xwiki.enforcer.enforce-jboss-marshalling-osgi.skip>${xwiki.enforcer.skip}
+    </xwiki.enforcer.enforce-jboss-marshalling-osgi.skip>
+    <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}
+    </xwiki.enforcer.enforce-javase-dependencies.skip>
+    <xwiki.enforcer.enforce-velocity-engine-core.skip>${xwiki.enforcer.skip}
+    </xwiki.enforcer.enforce-velocity-engine-core.skip>
     <xwiki.enforcer.enforce-asm.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-asm.skip>
     <xwiki.enforcer.enforce-cglib.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-cglib.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
@@ -229,8 +238,10 @@
     <sisu.version>0.3.4</sisu.version>
 
     <!-- The recommended version of known extensions to use -->
-    <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]</xwiki.extension.recommendedVersions.commons>
-    <xwiki.extension.recommendedVersions>${xwiki.extension.recommendedVersion.commons}</xwiki.extension.recommendedVersions>
+    <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]
+    </xwiki.extension.recommendedVersions.commons>
+    <xwiki.extension.recommendedVersions>${xwiki.extension.recommendedVersion.commons}
+    </xwiki.extension.recommendedVersions>
 
     <!-- Control Nexus staging (release on Maven Central for xwiki-commons and xwiki-rendering) -->
     <xwiki.nexus.serverId>ossrh</xwiki.nexus.serverId>
@@ -442,28 +453,28 @@
       </dependency>
       <!-- Old version of Commons Configuration, just making sure we end up with the last one -->
       <dependency>
-       <groupId>commons-configuration</groupId>
-         <artifactId>commons-configuration</artifactId>
-         <version>1.10</version>
-         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
-         <exclusions>
-           <exclusion>
-             <groupId>commons-logging</groupId>
-             <artifactId>commons-logging</artifactId>
-           </exclusion>
-         </exclusions>
+        <groupId>commons-configuration</groupId>
+        <artifactId>commons-configuration</artifactId>
+        <version>1.10</version>
+        <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-configuration2</artifactId>
         <version>2.7</version>
-         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
-         <exclusions>
-           <exclusion>
-             <groupId>commons-logging</groupId>
-             <artifactId>commons-logging</artifactId>
-           </exclusion>
-         </exclusions>
+        <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -866,7 +877,6 @@
         </exclusions>
       </dependency>
 
-
       <!-- Make sure everyone use the same version of JBoss Logging -->
       <dependency>
         <groupId>org.jboss.logging</groupId>
@@ -1206,7 +1216,7 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-      <groupId>com.sun.activation</groupId>
+        <groupId>com.sun.activation</groupId>
         <artifactId>jakarta.activation</artifactId>
         <version>${jakarta.activation.version}</version>
       </dependency>
@@ -1322,10 +1332,10 @@
       </dependency>
       <!-- The maven remote resource plugin is also used as dependency -->
       <dependency>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-remote-resources-plugin</artifactId>
-          <version>${maven-remote-resources-plugin.version}</version>
-        </dependency>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <version>${maven-remote-resources-plugin.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <build>
@@ -1828,7 +1838,7 @@
             <configuration>
               <skip>${xwiki.enforcer.enforce-upper-bounds.skip}</skip>
               <rules>
-                <requireUpperBoundDeps />
+                <requireUpperBoundDeps/>
               </rules>
             </configuration>
           </execution>
@@ -2366,7 +2376,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore />
+                    <ignore/>
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -2381,7 +2391,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore />
+                    <ignore/>
                   </action>
                 </pluginExecution>
               </pluginExecutions>
@@ -2515,7 +2525,7 @@
                 <phase>generate-resources</phase>
                 <configuration>
                   <target>
-                    <mkdir dir="${project.build.directory}/apidocs" />
+                    <mkdir dir="${project.build.directory}/apidocs"/>
                   </target>
                 </configuration>
                 <goals>
@@ -2530,9 +2540,9 @@
             <artifactId>jira-maven-plugin</artifactId>
             <version>0.7</version>
             <configuration>
-            <skip>${xwiki.release.jira.skip}</skip>
-            <settingsKey>${xwiki.release.jira.settingsKey}</settingsKey>
-            <scope>${xwiki.release.jira.scope}</scope>
+              <skip>${xwiki.release.jira.skip}</skip>
+              <settingsKey>${xwiki.release.jira.settingsKey}</settingsKey>
+              <scope>${xwiki.release.jira.scope}</scope>
             </configuration>
             <executions>
               <execution>
@@ -2553,7 +2563,8 @@
               <serverId>${xwiki.nexus.serverId}</serverId>
               <nexusUrl>${xwiki.nexus.nexusUrl}</nexusUrl>
               <autoReleaseAfterClose>${xwiki.nexus.autoReleaseAfterClose}</autoReleaseAfterClose>
-              <keepStagingRepositoryOnCloseRuleFailure>${xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure}</keepStagingRepositoryOnCloseRuleFailure>
+              <keepStagingRepositoryOnCloseRuleFailure>${xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure}
+              </keepStagingRepositoryOnCloseRuleFailure>
               <skipLocalStaging>${xwiki.nexus.skipLocalStaging}</skipLocalStaging>
               <skipStaging>${xwiki.nexus.skipStaging}</skipStaging>
               <stagingProgressTimeoutMinutes>15</stagingProgressTimeoutMinutes>
@@ -2832,53 +2843,53 @@
     <module>xwiki-commons-tools</module>
   </modules>
   <reporting>
-  <plugins>
-    <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-project-info-reports-plugin</artifactId>
-      <version>2.4</version>
-      <configuration>
-        <!-- Since contacting the Maven Repositories can take a very long time, tell the plugin not to display
-             the repository locations of the dependencies in the report. -->
-        <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-      </configuration>
-      <reportSets>
-        <reportSet>
-          <reports>
-            <report>summary</report>
-            <report>index</report>
-            <report>dependencies</report>
-            <report>dependency-convergence</report>
-            <report>mailing-list</report>
-            <report>issue-tracking</report>
-            <report>scm</report>
-          </reports>
-        </reportSet>
-      </reportSets>
-    </plugin>
-    <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-javadoc-plugin</artifactId>
-      <configuration>
-        <!-- Always exclude the internal package since it's not user-public -->
-        <excludePackageNames>*.internal.*</excludePackageNames>
-        <!-- Make sure javadoc has enough memory -->
-        <maxmemory>300m</maxmemory>
-      </configuration>
-      <!-- Don't generate test javadoc -->
-      <reportSets>
-        <reportSet>
-          <reports>
-            <report>javadoc</report>
-          </reports>
-        </reportSet>
-      </reportSets>
-    </plugin>
-    <plugin>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>cobertura-maven-plugin</artifactId>
-      <version>2.5.1</version>
-    </plugin>
-  </plugins>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <!-- Since contacting the Maven Repositories can take a very long time, tell the plugin not to display
+               the repository locations of the dependencies in the report. -->
+          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>summary</report>
+              <report>index</report>
+              <report>dependencies</report>
+              <report>dependency-convergence</report>
+              <report>mailing-list</report>
+              <report>issue-tracking</report>
+              <report>scm</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <!-- Always exclude the internal package since it's not user-public -->
+          <excludePackageNames>*.internal.*</excludePackageNames>
+          <!-- Make sure javadoc has enough memory -->
+          <maxmemory>300m</maxmemory>
+        </configuration>
+        <!-- Don't generate test javadoc -->
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>javadoc</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.5.1</version>
+      </plugin>
+    </plugins>
   </reporting>
 </project>
