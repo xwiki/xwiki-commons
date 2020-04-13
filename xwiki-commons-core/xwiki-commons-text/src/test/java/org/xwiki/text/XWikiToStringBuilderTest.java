@@ -40,7 +40,7 @@ public class XWikiToStringBuilderTest
     {
         private String field1 = "value1";
         private Integer field2 = 100;
-        private Map<String, String> field3 = new LinkedHashMap<String, String>();
+        private Map<String, String> field3 = new LinkedHashMap<>();
         private List<String> field4 = Arrays.asList("value");
 
         public TestClass()

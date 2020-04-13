@@ -44,7 +44,7 @@ import org.xwiki.job.Request;
 @Singleton
 public class TestExtensionHandler extends AbstractExtensionHandler
 {
-    private Map<String, Set<LocalExtension>> extensions = new HashMap<String, Set<LocalExtension>>();
+    private Map<String, Set<LocalExtension>> extensions = new HashMap<>();
 
     public Map<String, Set<LocalExtension>> getExtensions()
     {
@@ -56,7 +56,7 @@ public class TestExtensionHandler extends AbstractExtensionHandler
     {
         Set<LocalExtension> namespaceExtensions = this.extensions.get(namespace);
         if (namespaceExtensions == null) {
-            namespaceExtensions = new HashSet<LocalExtension>();
+            namespaceExtensions = new HashSet<>();
             this.extensions.put(namespace, namespaceExtensions);
         }
 

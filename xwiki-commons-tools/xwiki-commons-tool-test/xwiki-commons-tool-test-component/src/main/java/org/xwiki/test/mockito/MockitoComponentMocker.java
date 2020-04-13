@@ -81,7 +81,7 @@ public class MockitoComponentMocker<T>
     /**
      * The list of component Roles that shouldn't be mocked.
      */
-    private List<Class<?>> excludedComponentRoleDependencies = new ArrayList<Class<?>>();
+    private List<Class<?>> excludedComponentRoleDependencies = new ArrayList<>();
 
     /**
      * @param componentManager the mockito component manager in which to register mock components
@@ -162,7 +162,7 @@ public class MockitoComponentMocker<T>
                 || this.componentRoleHint == null) {
                 registerMockDependencies(descriptor);
                 this.componentManager.registerComponent(descriptor);
-                return new RoleHint<T>(descriptor.getRoleType(), descriptor.getRoleHint());
+                return new RoleHint<>(descriptor.getRoleType(), descriptor.getRoleHint());
             }
         }
         return null;

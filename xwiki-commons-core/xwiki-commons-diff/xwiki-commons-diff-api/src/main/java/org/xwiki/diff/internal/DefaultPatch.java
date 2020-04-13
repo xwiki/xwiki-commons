@@ -82,7 +82,7 @@ public class DefaultPatch<E> extends LinkedList<Delta<E>> implements Patch<E>
     @Override
     public List<E> apply(List<E> target) throws PatchException
     {
-        List<E> result = new LinkedList<E>(target);
+        List<E> result = new LinkedList<>(target);
         ListIterator<Delta<E>> it = listIterator(size());
         while (it.hasPrevious()) {
             Delta<E> delta = it.previous();
@@ -95,7 +95,7 @@ public class DefaultPatch<E> extends LinkedList<Delta<E>> implements Patch<E>
     @Override
     public List<E> restore(List<E> target) throws PatchException
     {
-        List<E> result = new LinkedList<E>(target);
+        List<E> result = new LinkedList<>(target);
         ListIterator<Delta<E>> it = listIterator(size());
         while (it.hasPrevious()) {
             Delta<E> delta = it.previous();

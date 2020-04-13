@@ -55,14 +55,14 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
     /**
      * The cached extensions.
      */
-    protected transient Map<ExtensionId, E> extensions = new ConcurrentHashMap<ExtensionId, E>();
+    protected transient Map<ExtensionId, E> extensions = new ConcurrentHashMap<>();
 
     /**
      * The cached extensions grouped by ids and ordered by version DESC.
      * <p>
      * <extension id, extensions>
      */
-    protected Map<String, List<E>> extensionsVersions = new ConcurrentHashMap<String, List<E>>();
+    protected Map<String, List<E>> extensionsVersions = new ConcurrentHashMap<>();
 
     /**
      * Indicate features should be used map key at the same levels than the actual ids.
@@ -124,7 +124,7 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
         List<E> versions = this.extensionsVersions.get(feature);
 
         if (versions == null) {
-            versions = new ArrayList<E>();
+            versions = new ArrayList<>();
             this.extensionsVersions.put(feature, versions);
 
             versions.add(extension);
@@ -254,8 +254,8 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
     {
         Pattern patternMatcher = RepositoryUtils.createPatternMatcher(query.getQuery());
 
-        Set<Extension> set = new HashSet<Extension>();
-        List<Extension> result = new ArrayList<Extension>(this.extensionsVersions.size());
+        Set<Extension> set = new HashSet<>();
+        List<Extension> result = new ArrayList<>(this.extensionsVersions.size());
 
         for (List<E> versions : this.extensionsVersions.values()) {
             E extension = versions.get(0);

@@ -62,10 +62,10 @@ public final class XMLUtils
         DEFAULTS.put(long.class, 0L);
         DEFAULTS.put(float.class, 0f);
         DEFAULTS.put(double.class, 0d);
-        DEFAULTS.put(Map.class, new LinkedHashMap<Object, Object>());
-        DEFAULTS.put(Set.class, new LinkedHashSet<Object>());
-        DEFAULTS.put(List.class, new ArrayList<Object>());
-        DEFAULTS.put(Collection.class, new ArrayList<Object>());
+        DEFAULTS.put(Map.class, new LinkedHashMap<>());
+        DEFAULTS.put(Set.class, new LinkedHashSet<>());
+        DEFAULTS.put(List.class, new ArrayList<>());
+        DEFAULTS.put(Collection.class, new ArrayList<>());
         DEFAULTS.put(Locale.class, Locale.ROOT);
         DEFAULTS.put(URI.class, null);
         DEFAULTS.put(URL.class, null);

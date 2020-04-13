@@ -30,7 +30,7 @@ public class BcDesEdeCbcPaddedCipherFactoryTest extends AbstractSymmetricCipherF
 {
     @Rule
     public final MockitoComponentMockingRule<CipherFactory> mocker =
-        new MockitoComponentMockingRule<CipherFactory>(BcDesEdeCbcPaddedCipherFactory.class);
+        new MockitoComponentMockingRule<>(BcDesEdeCbcPaddedCipherFactory.class);
 
     {
         CIPHER_ALGO = "DESede/CBC/PKCS5Padding";

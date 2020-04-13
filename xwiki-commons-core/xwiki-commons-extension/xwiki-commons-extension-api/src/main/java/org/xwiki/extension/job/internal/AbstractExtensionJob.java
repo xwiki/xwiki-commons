@@ -178,7 +178,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
         List<ExtensionId> previousExtensionsIds;
 
         if (getRequest().isVerbose()) {
-            previousExtensionsIds = new ArrayList<ExtensionId>(previousExtensions.size());
+            previousExtensionsIds = new ArrayList<>(previousExtensions.size());
             for (InstalledExtension previousExtension : previousExtensions) {
                 previousExtensionsIds.add(previousExtension.getId());
             }

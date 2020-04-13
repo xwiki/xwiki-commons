@@ -48,7 +48,7 @@ public class FontFilter extends AbstractHTMLFilter
     private static final Map<String, String> FONT_SIZE_MAP;
 
     static {
-        FONT_SIZE_MAP = new HashMap<String, String>();
+        FONT_SIZE_MAP = new HashMap<>();
         FONT_SIZE_MAP.put("1", "0.6em");
         FONT_SIZE_MAP.put("2", "0.8em");
         FONT_SIZE_MAP.put("3", "1.0em");

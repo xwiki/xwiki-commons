@@ -47,7 +47,7 @@ public class StackingComponentEventManager implements ComponentEventManager
     /**
      * The event stacked before been given the order to send them.
      */
-    private Stack<ComponentEventEntry> events = new Stack<ComponentEventEntry>();
+    private Stack<ComponentEventEntry> events = new Stack<>();
 
     /**
      * Indicate if event should be retained to directly sent.

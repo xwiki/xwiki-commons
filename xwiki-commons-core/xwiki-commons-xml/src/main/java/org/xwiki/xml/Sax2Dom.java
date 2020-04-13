@@ -78,7 +78,7 @@ public class Sax2Dom implements ContentHandler, LexicalHandler
     /**
      * The current nodes.
      */
-    private final Stack<Node> nodes = new Stack<Node>();
+    private final Stack<Node> nodes = new Stack<>();
 
     /**
      * The namespaces declarations.
@@ -214,7 +214,7 @@ public class Sax2Dom implements ContentHandler, LexicalHandler
     public void startPrefixMapping(String prefix, String uri)
     {
         if (this.namespaceDecls == null) {
-            this.namespaceDecls = new ArrayList<String>(2);
+            this.namespaceDecls = new ArrayList<>(2);
         }
         this.namespaceDecls.add(prefix);
         this.namespaceDecls.add(uri);

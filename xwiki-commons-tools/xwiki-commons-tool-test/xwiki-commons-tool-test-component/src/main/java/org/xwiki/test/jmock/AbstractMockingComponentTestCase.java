@@ -88,9 +88,9 @@ public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockin
 
     private ComponentDescriptorFactory factory = new ComponentDescriptorFactory();
 
-    private Map<Class, Logger> mockLoggers = new HashMap<Class, Logger>();
+    private Map<Class, Logger> mockLoggers = new HashMap<>();
 
-    private Map<Class, RoleHint<T>> mockedComponents = new HashMap<Class, RoleHint<T>>();
+    private Map<Class, RoleHint<T>> mockedComponents = new HashMap<>();
 
     /**
      * Extend EmbeddableComponentManager in order to mock Loggers since they're handled specially and are not
@@ -98,7 +98,7 @@ public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockin
      */
     private class LogSpecificMockingComponentManager extends MockingComponentManager
     {
-        private List<Class<?>> mockedComponentClasses = new ArrayList<Class<?>>();
+        private List<Class<?>> mockedComponentClasses = new ArrayList<>();
 
         public void addMockedComponentClass(Class<?> mockedComponentClass)
         {
@@ -212,7 +212,7 @@ public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockin
                     // Save the mocked component information so that the test can get an instance of this component
                     // easily by calling getMockedComponent(...)
                     this.mockedComponents.put(mockingRequirement.value(),
-                        new RoleHint<T>(descriptor.getRoleType(), descriptor.getRoleHint()));
+                        new RoleHint<>(descriptor.getRoleType(), descriptor.getRoleHint()));
                     break;
                 }
             }
@@ -253,7 +253,7 @@ public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockin
         } else {
             ComponentList componentListAnnotation = this.getClass().getAnnotation(ComponentList.class);
             if (componentListAnnotation != null) {
-                List<ComponentDeclaration> componentDeclarations = new ArrayList<ComponentDeclaration>();
+                List<ComponentDeclaration> componentDeclarations = new ArrayList<>();
                 for (Class<?> componentClass : componentListAnnotation.value()) {
                     componentDeclarations.add(new ComponentDeclaration(componentClass.getName()));
                 }

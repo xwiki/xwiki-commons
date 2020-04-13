@@ -35,7 +35,7 @@ import org.apache.commons.io.FilenameUtils;
  */
 public final class FileAssert
 {
-    private final static Map<String, FileAssertComparator> COMPARATORS = new HashMap<String, FileAssertComparator>();
+    private final static Map<String, FileAssertComparator> COMPARATORS = new HashMap<>();
 
     private final static DefaultFileAssertComparator DEFAULT_COMPARATOR = new DefaultFileAssertComparator();
 

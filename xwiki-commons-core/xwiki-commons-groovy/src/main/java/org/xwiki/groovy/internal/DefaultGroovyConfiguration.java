@@ -76,7 +76,7 @@ public class DefaultGroovyConfiguration implements GroovyConfiguration
     @Override
     public List<CompilationCustomizer> getCompilationCustomizers()
     {
-        List<CompilationCustomizer> customizers = new ArrayList<CompilationCustomizer>();
+        List<CompilationCustomizer> customizers = new ArrayList<>();
         for (String customizerName : getCompilationCustomizerNames()) {
             try {
                 GroovyCompilationCustomizer customizer =

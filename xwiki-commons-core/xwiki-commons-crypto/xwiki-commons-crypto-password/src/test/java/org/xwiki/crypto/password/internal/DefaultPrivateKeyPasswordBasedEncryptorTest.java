@@ -101,7 +101,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
 
     @Rule
     public final MockitoComponentMockingRule<PrivateKeyPasswordBasedEncryptor> mocker =
-        new MockitoComponentMockingRule<PrivateKeyPasswordBasedEncryptor>(DefaultPrivateKeyPasswordBasedEncryptor.class);
+        new MockitoComponentMockingRule<>(DefaultPrivateKeyPasswordBasedEncryptor.class);
 
     PrivateKeyPasswordBasedEncryptor encryptor;
 

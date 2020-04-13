@@ -56,7 +56,7 @@ public class ValidateDependencyVersion extends AbstractPomCheck
     /**
      * List of checks to execute; they are configured in the pom.xml.
      */
-    private List<VersionCheck> checks = new ArrayList<VersionCheck>();
+    private List<VersionCheck> checks = new ArrayList<>();
 
     /**
      * Add a new dependency version check. Called automatically by the Maven framework when the following construct

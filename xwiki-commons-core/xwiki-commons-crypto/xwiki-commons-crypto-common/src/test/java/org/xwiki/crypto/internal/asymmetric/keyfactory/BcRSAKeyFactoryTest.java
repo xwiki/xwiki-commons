@@ -88,7 +88,7 @@ public class BcRSAKeyFactoryTest
 
     @Rule
     public final MockitoComponentMockingRule<AsymmetricKeyFactory> mocker =
-        new MockitoComponentMockingRule<AsymmetricKeyFactory>(BcRSAKeyFactory.class);
+        new MockitoComponentMockingRule<>(BcRSAKeyFactory.class);
 
     private AsymmetricKeyFactory factory;
 

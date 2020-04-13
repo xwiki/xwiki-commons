@@ -83,7 +83,7 @@ public class DefaultCMSSignedDataGenerator implements org.xwiki.crypto.signer.CM
         Collection<CMSSignerInfo> signersInfo = parameters.getSignatures();
         if (!signersInfo.isEmpty()) {
             // Add existing signatures
-            List<SignerInformation> signers = new ArrayList<SignerInformation>(parameters.getSignatures().size());
+            List<SignerInformation> signers = new ArrayList<>(parameters.getSignatures().size());
             for (CMSSignerInfo signerInfo : parameters.getSignatures()) {
                 if (!(signerInfo instanceof BcCMSSignerInfo)) {
                     throw new GeneralSecurityException("Incompatible pre-calculated signature for this signed data "

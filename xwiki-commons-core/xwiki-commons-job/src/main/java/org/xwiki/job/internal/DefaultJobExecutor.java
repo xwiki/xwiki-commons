@@ -74,7 +74,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
         JobGroupExecutor(JobGroupPath path)
         {
-            super(1, 36000L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+            super(1, 36000L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
             setThreadFactory(this);
 
@@ -173,9 +173,9 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     @Named("context")
     private Provider<ComponentManager> componentManager;
 
-    private final Map<List<String>, Queue<Job>> groupedJobs = new ConcurrentHashMap<List<String>, Queue<Job>>();
+    private final Map<List<String>, Queue<Job>> groupedJobs = new ConcurrentHashMap<>();
 
-    private final Map<List<String>, Job> jobs = new ConcurrentHashMap<List<String>, Job>();
+    private final Map<List<String>, Job> jobs = new ConcurrentHashMap<>();
 
     /**
      * Handle care of hierarchical locking for grouped jobs.
@@ -186,7 +186,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
      * Map<groupname, group executor>.
      */
     private final Map<JobGroupPath, JobGroupExecutor> groupExecutors =
-        new ConcurrentHashMap<JobGroupPath, JobGroupExecutor>();
+        new ConcurrentHashMap<>();
 
     /**
      * Execute non grouped jobs.
@@ -199,7 +199,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     public void initialize() throws InitializationException
     {
         this.jobExecutor =
-            new JobThreadExecutor(Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+            new JobThreadExecutor(Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
     }
 
     @Override
@@ -328,7 +328,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
                 synchronized (this.groupedJobs) {
                     Queue<Job> jobQueue = this.groupedJobs.get(jobId);
                     if (jobQueue == null) {
-                        jobQueue = new ConcurrentLinkedQueue<Job>();
+                        jobQueue = new ConcurrentLinkedQueue<>();
                         this.groupedJobs.put(jobId, jobQueue);
                     }
                     jobQueue.offer(job);

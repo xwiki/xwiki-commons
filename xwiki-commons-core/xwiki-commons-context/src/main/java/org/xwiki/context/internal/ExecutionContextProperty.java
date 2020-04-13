@@ -178,7 +178,7 @@ public class ExecutionContextProperty implements Cloneable
         if (isFinal() && isInherited()) {
             // We make this a weak reference, because we are only interested in it as long
             // as it is references by the current execution co
-            clone.clonedFrom = new WeakReference<ExecutionContextProperty>(this);
+            clone.clonedFrom = new WeakReference<>(this);
         }
 
         return clone;

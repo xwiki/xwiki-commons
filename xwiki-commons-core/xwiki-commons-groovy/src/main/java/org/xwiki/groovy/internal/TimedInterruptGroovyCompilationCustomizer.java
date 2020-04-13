@@ -55,7 +55,7 @@ public class TimedInterruptGroovyCompilationCustomizer implements GroovyCompilat
     @Override
     public CompilationCustomizer createCustomizer()
     {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("value", this.configuration.getTimeout());
         return new ASTTransformationCustomizer(parameters, TimedInterrupt.class);
     }

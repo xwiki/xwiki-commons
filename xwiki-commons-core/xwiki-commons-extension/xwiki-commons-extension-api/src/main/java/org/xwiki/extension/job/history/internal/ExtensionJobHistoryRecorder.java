@@ -112,7 +112,7 @@ public class ExtensionJobHistoryRecorder extends AbstractEventListener
 
         String jobId = StringUtils.join(job.getRequest().getId(), '/');
         if (jobId != null) {
-            this.answers.put(jobId, new HashMap<String, QuestionRecorder<Object>>());
+            this.answers.put(jobId, new HashMap<>());
         }
     }
 

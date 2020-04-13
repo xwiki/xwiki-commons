@@ -90,7 +90,7 @@ public class BcX509Extensions implements X509Extensions
     @Override
     public String[] getExtensionOID()
     {
-        List<String> oids = new ArrayList<String>();
+        List<String> oids = new ArrayList<>();
 
         @SuppressWarnings("unchecked")
         Enumeration<ASN1ObjectIdentifier> extOids = this.extensions.oids();

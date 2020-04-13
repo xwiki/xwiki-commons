@@ -202,10 +202,10 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
             } else {
                 putProperty(PKEY_ROOT_NAMESPACE, null);
                 Map<String, Map<String, Object>> installedNamespaces =
-                    new ConcurrentHashMap<String, Map<String, Object>>();
+                    new ConcurrentHashMap<>();
                 putProperty(PKEY_NAMESPACES, installedNamespaces);
                 for (String namespace : namespaces) {
-                    Map<String, Object> namespaceData = new HashMap<String, Object>();
+                    Map<String, Object> namespaceData = new HashMap<>();
                     namespaceData.put(PKEY_NAMESPACES_NAMESPACE, namespace);
                     installedNamespaces.put(namespace, namespaceData);
                 }
@@ -330,7 +330,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     public void setValid(String namespace, boolean valid)
     {
         Map<String, Boolean> validMap =
-            this.valid != null ? new HashMap<String, Boolean>(this.valid) : new HashMap<String, Boolean>();
+            this.valid != null ? new HashMap<>(this.valid) : new HashMap<>();
         validMap.put(namespace, valid);
 
         this.valid = validMap;
@@ -391,7 +391,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
             }
 
             // Create the map for the namespace
-            Map<String, Object> installedNamespace = new ConcurrentHashMap<String, Object>();
+            Map<String, Object> installedNamespace = new ConcurrentHashMap<>();
             newNamespaces.put(namespace, installedNamespace);
 
             // Set the new map of properties

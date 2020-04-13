@@ -460,7 +460,7 @@ public class DefaultUnifiedDiffDisplayerTest
      */
     static Collection<TestData> parametersData() throws IOException
     {
-        Collection<TestData> data = new ArrayList<TestData>();
+        Collection<TestData> data = new ArrayList<>();
 
         //
         // Add special tests.

@@ -42,7 +42,7 @@ public class DefaultExecution implements Execution
     /**
      * Isolate the execution context by thread.
      */
-    private ThreadLocal<Stack<ExecutionContext>> context = new ThreadLocal<Stack<ExecutionContext>>();
+    private ThreadLocal<Stack<ExecutionContext>> context = new ThreadLocal<>();
 
     @Override
     public void pushContext(ExecutionContext context)
@@ -82,7 +82,7 @@ public class DefaultExecution implements Execution
     {
         Stack<ExecutionContext> stack = this.context.get();
         if (stack == null) {
-            stack = new Stack<ExecutionContext>();
+            stack = new Stack<>();
             this.context.set(stack);
             stack.push(context);
         } else if (stack.isEmpty()) {

@@ -47,7 +47,7 @@ public class BcPKCS5S2KeyDerivationFunctionFactoryTest
 {
     @Rule
     public final MockitoComponentMockingRule<KeyDerivationFunctionFactory> mocker =
-        new MockitoComponentMockingRule<KeyDerivationFunctionFactory>(BcPKCS5S2KeyDerivationFunctionFactory.class);
+        new MockitoComponentMockingRule<>(BcPKCS5S2KeyDerivationFunctionFactory.class);
 
     KeyDerivationFunctionFactory factory;
 

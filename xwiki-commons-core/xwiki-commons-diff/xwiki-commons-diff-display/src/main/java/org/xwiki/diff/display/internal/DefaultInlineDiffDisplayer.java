@@ -45,7 +45,7 @@ public class DefaultInlineDiffDisplayer implements InlineDiffDisplayer
     public <E> List<InlineDiffChunk<E>> display(DiffResult<E> diffResult)
     {
         List<E> previous = diffResult.getPrevious();
-        List<InlineDiffChunk<E>> chunks = new ArrayList<InlineDiffChunk<E>>();
+        List<InlineDiffChunk<E>> chunks = new ArrayList<>();
 
         Delta<E> lastDelta = null;
         for (Delta<E> delta : diffResult.getPatch()) {
@@ -53,20 +53,20 @@ public class DefaultInlineDiffDisplayer implements InlineDiffDisplayer
             int contextStart = lastDelta == null ? 0 : lastDelta.getPrevious().getLastIndex() + 1;
             int contextEnd = delta.getPrevious().getIndex();
             if (contextStart < contextEnd) {
-                chunks.add(new InlineDiffChunk<E>(Type.UNMODIFIED, previous.subList(contextStart, contextEnd)));
+                chunks.add(new InlineDiffChunk<>(Type.UNMODIFIED, previous.subList(contextStart, contextEnd)));
             }
 
             // Add changed chunks.
             switch (delta.getType()) {
                 case CHANGE:
-                    chunks.add(new InlineDiffChunk<E>(Type.DELETED, delta.getPrevious().getElements()));
-                    chunks.add(new InlineDiffChunk<E>(Type.ADDED, delta.getNext().getElements()));
+                    chunks.add(new InlineDiffChunk<>(Type.DELETED, delta.getPrevious().getElements()));
+                    chunks.add(new InlineDiffChunk<>(Type.ADDED, delta.getNext().getElements()));
                     break;
                 case DELETE:
-                    chunks.add(new InlineDiffChunk<E>(Type.DELETED, delta.getPrevious().getElements()));
+                    chunks.add(new InlineDiffChunk<>(Type.DELETED, delta.getPrevious().getElements()));
                     break;
                 case INSERT:
-                    chunks.add(new InlineDiffChunk<E>(Type.ADDED, delta.getNext().getElements()));
+                    chunks.add(new InlineDiffChunk<>(Type.ADDED, delta.getNext().getElements()));
                     break;
                 default:
                     break;
@@ -78,7 +78,7 @@ public class DefaultInlineDiffDisplayer implements InlineDiffDisplayer
         // Add the final chunk with the unmodified elements after the last delta.
         int contextStart = lastDelta == null ? 0 : lastDelta.getPrevious().getLastIndex() + 1;
         if (contextStart < previous.size()) {
-            chunks.add(new InlineDiffChunk<E>(Type.UNMODIFIED, previous.subList(contextStart, previous.size())));
+            chunks.add(new InlineDiffChunk<>(Type.UNMODIFIED, previous.subList(contextStart, previous.size())));
         }
 
         return chunks;

@@ -42,7 +42,7 @@ public class DefaultScriptSafeProviderTest
 {
     @Rule
     public MockitoComponentMockingRule<ScriptSafeProvider> mocker =
-        new MockitoComponentMockingRule<ScriptSafeProvider>(DefaultScriptSafeProvider.class);
+        new MockitoComponentMockingRule<>(DefaultScriptSafeProvider.class);
 
     @Test
     public void testGetWithNoProvider() throws Exception

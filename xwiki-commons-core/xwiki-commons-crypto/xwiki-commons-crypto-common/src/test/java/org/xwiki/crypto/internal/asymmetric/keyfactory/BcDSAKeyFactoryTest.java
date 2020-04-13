@@ -69,7 +69,7 @@ public class BcDSAKeyFactoryTest
 
     @Rule
     public final MockitoComponentMockingRule<AsymmetricKeyFactory> mocker =
-        new MockitoComponentMockingRule<AsymmetricKeyFactory>(BcDSAKeyFactory.class);
+        new MockitoComponentMockingRule<>(BcDSAKeyFactory.class);
 
     private AsymmetricKeyFactory factory;
 

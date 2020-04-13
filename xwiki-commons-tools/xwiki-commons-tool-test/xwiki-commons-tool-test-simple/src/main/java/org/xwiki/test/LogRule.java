@@ -64,7 +64,7 @@ public class LogRule implements TestRule
     /**
      * The log output is captured in a Logback ListAppender.
      */
-    private final ListAppender<ILoggingEvent> listAppender = new ListAppender<ILoggingEvent>();
+    private final ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
 
     /**
      * The log level below which we do the capture. By default we capture everything.
@@ -75,17 +75,17 @@ public class LogRule implements TestRule
      * Saved logging levels for existing Loggers. We save them so that we can restore them at the end of the
      * test. This is important so that changes are not carried over from one unit test to another...
      */
-    private Map<Class<?>, Level> savedLevels = new HashMap<Class<?>, Level>();
+    private Map<Class<?>, Level> savedLevels = new HashMap<>();
 
     /**
      * Saved logger's additivities so that we can restore them at the end of the test.
      */
-    private Map<Class<?>, Boolean> savedAdditivities = new HashMap<Class<?>, Boolean>();
+    private Map<Class<?>, Boolean> savedAdditivities = new HashMap<>();
 
     /**
      * The Logger classes for which to capture logs.
      */
-    private final List<Class> loggingSources = new ArrayList<Class>();
+    private final List<Class> loggingSources = new ArrayList<>();
 
     /**
      * Helper class to represent Logging levels to capture.

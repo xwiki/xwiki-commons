@@ -106,7 +106,7 @@ public final class BcStoreUtils
             return null;
         }
 
-        Collection<X509CertificateHolder> certs = new ArrayList<X509CertificateHolder>(certificates.size());
+        Collection<X509CertificateHolder> certs = new ArrayList<>(certificates.size());
 
         for (CertifiedPublicKey cert : certificates) {
             certs.add(BcUtils.getX509CertificateHolder(cert));

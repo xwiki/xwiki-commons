@@ -78,7 +78,7 @@ public class ExecutionContextTest
     @Test
     public void setProperties()
     {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put("key1", "value1");
         properties.put("key2", "value2");
 

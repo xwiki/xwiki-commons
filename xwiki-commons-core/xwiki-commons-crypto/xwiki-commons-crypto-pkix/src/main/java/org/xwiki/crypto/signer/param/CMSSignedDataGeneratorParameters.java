@@ -34,11 +34,11 @@ import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
  */
 public class CMSSignedDataGeneratorParameters
 {
-    private Collection<CMSSignerInfo> signatures = new ArrayList<CMSSignerInfo>();
+    private Collection<CMSSignerInfo> signatures = new ArrayList<>();
 
-    private Collection<CertifyingSigner> signers = new ArrayList<CertifyingSigner>();
+    private Collection<CertifyingSigner> signers = new ArrayList<>();
 
-    private Collection<CertifiedPublicKey> certificates = new ArrayList<CertifiedPublicKey>();
+    private Collection<CertifiedPublicKey> certificates = new ArrayList<>();
 
     /**
      * Add existing signature.

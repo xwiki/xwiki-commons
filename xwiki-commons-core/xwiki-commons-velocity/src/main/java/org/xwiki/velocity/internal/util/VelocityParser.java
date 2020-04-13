@@ -35,27 +35,27 @@ public class VelocityParser
     /**
      * The directives which start a new level which will have to be close by a #end.
      */
-    public static final Set<String> VELOCITYDIRECTIVE_BEGIN = new HashSet<String>();
+    public static final Set<String> VELOCITYDIRECTIVE_BEGIN = new HashSet<>();
 
     /**
      * Close an opened level.
      */
-    public static final Set<String> VELOCITYDIRECTIVE_END = new HashSet<String>();
+    public static final Set<String> VELOCITYDIRECTIVE_END = new HashSet<>();
 
     /**
      * Reserved directive containing parameter(s) like #if.
      */
-    public static final Set<String> VELOCITYDIRECTIVE_PARAM = new HashSet<String>();
+    public static final Set<String> VELOCITYDIRECTIVE_PARAM = new HashSet<>();
 
     /**
      * Reserved directives without parameters like #else.
      */
-    public static final Set<String> VELOCITYDIRECTIVE_NOPARAM = new HashSet<String>();
+    public static final Set<String> VELOCITYDIRECTIVE_NOPARAM = new HashSet<>();
 
     /**
      * All the velocity reserved directives.
      */
-    public static final Set<String> VELOCITYDIRECTIVE_ALL = new HashSet<String>();
+    public static final Set<String> VELOCITYDIRECTIVE_ALL = new HashSet<>();
 
     /**
      * The Logger to use for logging.

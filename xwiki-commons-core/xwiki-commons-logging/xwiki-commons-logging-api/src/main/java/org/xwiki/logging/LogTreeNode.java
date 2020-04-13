@@ -153,7 +153,7 @@ public class LogTreeNode extends BeginLogEvent implements Iterable<LogEvent>, Se
     void add(LogEvent logEvent)
     {
         if (this.children == null) {
-            this.children = new ConcurrentLinkedQueue<LogEvent>();
+            this.children = new ConcurrentLinkedQueue<>();
         }
 
         this.children.add(logEvent);
@@ -168,7 +168,7 @@ public class LogTreeNode extends BeginLogEvent implements Iterable<LogEvent>, Se
      */
     public List<LogEvent> getLogs(LogLevel level, boolean recurse)
     {
-        List<LogEvent> levelLogs = new LinkedList<LogEvent>();
+        List<LogEvent> levelLogs = new LinkedList<>();
 
         for (LogEvent log : this) {
             if (log.getLevel() == level) {
@@ -192,7 +192,7 @@ public class LogTreeNode extends BeginLogEvent implements Iterable<LogEvent>, Se
      */
     public List<LogEvent> getLogsFrom(LogLevel level, boolean recurse)
     {
-        List<LogEvent> levelLogs = new LinkedList<LogEvent>();
+        List<LogEvent> levelLogs = new LinkedList<>();
 
         for (LogEvent log : this) {
             if (log.getLevel().compareTo(level) <= 0) {

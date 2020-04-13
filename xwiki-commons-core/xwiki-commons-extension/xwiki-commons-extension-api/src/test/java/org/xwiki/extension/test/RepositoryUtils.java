@@ -96,7 +96,7 @@ public class RepositoryUtils
         this.mavenUnknownRepositoryRoot = new File(testDirectory, "mavenunknown/");
         this.remoteRepositoryRoot = new File(testDirectory, "remote/");
 
-        Map<String, RepositorySerializer> repositories = new HashMap<String, RepositorySerializer>();
+        Map<String, RepositorySerializer> repositories = new HashMap<>();
         repositories.put(null, new DefaultRepositorySerializer(getRemoteRepository()));
         repositories.put("remote", repositories.get(null));
         repositories.put("local", new DefaultRepositorySerializer(getLocalRepository()));

@@ -75,7 +75,7 @@ public class DefaultExtensionLicenseManager implements ExtensionLicenseManager, 
     /**
      * The known licenses.
      */
-    private Map<String, ExtensionLicense> licenses = new ConcurrentHashMap<String, ExtensionLicense>();
+    private Map<String, ExtensionLicense> licenses = new ConcurrentHashMap<>();
 
     @Override
     public void initialize() throws InitializationException
@@ -100,7 +100,7 @@ public class DefaultExtensionLicenseManager implements ExtensionLicenseManager, 
                 try {
                     List<String> content = IOUtils.readLines(is);
 
-                    List<String> aliases = new ArrayList<String>();
+                    List<String> aliases = new ArrayList<>();
                     aliases.add(name);
 
                     for (String line : content) {
@@ -142,7 +142,7 @@ public class DefaultExtensionLicenseManager implements ExtensionLicenseManager, 
     @Override
     public List<ExtensionLicense> getLicenses()
     {
-        return new ArrayList<ExtensionLicense>(this.licenses.values());
+        return new ArrayList<>(this.licenses.values());
     }
 
     @Override

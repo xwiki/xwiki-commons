@@ -225,7 +225,7 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
             versions = Arrays.asList(extension.getId().getVersion());
         }
 
-        return new CollectionIterableResult<Version>(1, offset, versions);
+        return new CollectionIterableResult<>(1, offset, versions);
     }
 
     // CoreExtensionRepository
@@ -245,7 +245,7 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
     @Override
     public Collection<CoreExtension> getCoreExtensions()
     {
-        return new ArrayList<CoreExtension>(this.extensions.values());
+        return new ArrayList<>(this.extensions.values());
     }
 
     @Override

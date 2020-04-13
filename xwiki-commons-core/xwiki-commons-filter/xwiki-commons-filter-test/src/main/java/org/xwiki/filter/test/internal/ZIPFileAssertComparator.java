@@ -57,7 +57,7 @@ public class ZIPFileAssertComparator implements FileAssertComparator
 
     private static Map<String, byte[]> unzip(File filename) throws IOException
     {
-        Map<String, byte[]> zipContent = new HashMap<String, byte[]>();
+        Map<String, byte[]> zipContent = new HashMap<>();
 
         ZipFile zipFile = new ZipFile(filename);
 

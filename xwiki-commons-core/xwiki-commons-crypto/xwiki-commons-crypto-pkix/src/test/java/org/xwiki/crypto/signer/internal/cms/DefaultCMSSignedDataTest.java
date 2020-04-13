@@ -68,11 +68,11 @@ public class DefaultCMSSignedDataTest extends AbstractPKIXTest
 {
     @Rule
     public final MockitoComponentMockingRule<CMSSignedDataGenerator> generatorMocker =
-        new MockitoComponentMockingRule<CMSSignedDataGenerator>(DefaultCMSSignedDataGenerator.class);
+        new MockitoComponentMockingRule<>(DefaultCMSSignedDataGenerator.class);
 
     @Rule
     public final MockitoComponentMockingRule<CMSSignedDataVerifier> verifierMocker =
-        new MockitoComponentMockingRule<CMSSignedDataVerifier>(DefaultCMSSignedDataVerifier.class);
+        new MockitoComponentMockingRule<>(DefaultCMSSignedDataVerifier.class);
 
     private CMSSignedDataGenerator generator;
     private CMSSignedDataVerifier verifier;

@@ -57,11 +57,11 @@ public class StackingComponentEventManagerTest
     {
         this.eventManager = new StackingComponentEventManager();
 
-        this.descriptor1 = new DefaultComponentDescriptor<CharSequence>();
+        this.descriptor1 = new DefaultComponentDescriptor<>();
         this.descriptor1.setImplementation(String.class);
         this.descriptor1.setRoleType(CharSequence.class);
         this.descriptor1.setRoleHint("hint1");
-        this.descriptor2 = new DefaultComponentDescriptor<Collection>();
+        this.descriptor2 = new DefaultComponentDescriptor<>();
         this.descriptor2.setImplementation(ArrayList.class);
         this.descriptor2.setRoleType(Collection.class);
         this.descriptor2.setRoleHint("hint2");

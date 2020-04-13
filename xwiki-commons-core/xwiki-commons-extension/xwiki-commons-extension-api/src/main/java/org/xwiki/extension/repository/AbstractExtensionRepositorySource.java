@@ -39,7 +39,7 @@ public abstract class AbstractExtensionRepositorySource implements ExtensionRepo
     @Override
     public Collection<ExtensionRepositoryId> getExtensionRepositories()
     {
-        Collection<ExtensionRepositoryId> repositories = new ArrayList<ExtensionRepositoryId>();
+        Collection<ExtensionRepositoryId> repositories = new ArrayList<>();
 
         for (ExtensionRepositoryDescriptor descriptor : getExtensionRepositoryDescriptors()) {
             repositories.add(new ExtensionRepositoryId(descriptor));

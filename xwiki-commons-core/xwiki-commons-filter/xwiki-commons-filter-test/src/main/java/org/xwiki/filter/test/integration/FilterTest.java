@@ -80,7 +80,7 @@ public class FilterTest
         // Make sure to have a stable timezone during tests
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
-        Map<String, String> originalConfiguration = new HashMap<String, String>();
+        Map<String, String> originalConfiguration = new HashMap<>();
         if (this.configuration.configuration != null) {
             ConfigurationSource configurationSource = getComponentManager().getInstance(ConfigurationSource.class);
 

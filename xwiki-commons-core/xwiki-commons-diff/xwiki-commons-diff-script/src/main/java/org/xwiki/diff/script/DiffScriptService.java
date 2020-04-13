@@ -101,7 +101,7 @@ public class DiffScriptService implements ScriptService
         try {
             result = this.diffManager.diff(previous, next, configuration);
         } catch (DiffException e) {
-            result = new DefaultDiffResult<E>(previous, next);
+            result = new DefaultDiffResult<>(previous, next);
             result.getLog().error("Failed to execute diff", e);
         }
 
@@ -125,7 +125,7 @@ public class DiffScriptService implements ScriptService
         try {
             result = this.diffManager.merge(commonAncestor, next, current, configuration);
         } catch (MergeException e) {
-            result = new DefaultMergeResult<E>(commonAncestor, next, current);
+            result = new DefaultMergeResult<>(commonAncestor, next, current);
             result.getLog().error("Failed to execute merge", e);
         }
 

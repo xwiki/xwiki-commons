@@ -52,7 +52,7 @@ public class DefaultExtensionManagerTest
 {
     @Rule
     public final MockitoComponentMockingRule<ExtensionManager> mocker =
-        new MockitoComponentMockingRule<ExtensionManager>(DefaultExtensionManager.class);
+        new MockitoComponentMockingRule<>(DefaultExtensionManager.class);
 
     private CoreExtensionRepository coreExtensionRepository;
 

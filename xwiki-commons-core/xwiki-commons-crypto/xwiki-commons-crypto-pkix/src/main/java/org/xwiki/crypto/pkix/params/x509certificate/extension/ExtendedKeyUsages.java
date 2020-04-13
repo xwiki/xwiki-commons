@@ -58,7 +58,7 @@ public class ExtendedKeyUsages
     /** OCSP Signing { 1 3 6 1 5 5 7 3 9 }. */
     public static final String OCSP_SIGNING = "1.3.6.1.5.5.7.3.9";
 
-    private Set<String> usages = new HashSet<String>();
+    private Set<String> usages = new HashSet<>();
 
     /**
      * Constructor from string array.

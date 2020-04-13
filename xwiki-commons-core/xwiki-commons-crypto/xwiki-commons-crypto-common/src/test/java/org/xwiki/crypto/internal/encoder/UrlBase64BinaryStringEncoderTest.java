@@ -42,7 +42,7 @@ public class UrlBase64BinaryStringEncoderTest extends AbstractBinaryStringEncode
 
     @Rule
     public final MockitoComponentMockingRule<BinaryStringEncoder> mocker =
-        new MockitoComponentMockingRule<BinaryStringEncoder>(UrlBase64BinaryStringEncoder.class);
+        new MockitoComponentMockingRule<>(UrlBase64BinaryStringEncoder.class);
 
     @Before
     public void configure() throws Exception

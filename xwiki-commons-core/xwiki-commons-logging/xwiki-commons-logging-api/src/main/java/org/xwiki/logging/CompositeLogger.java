@@ -41,7 +41,7 @@ public class CompositeLogger implements Logger
      */
     public CompositeLogger(Collection<Logger> loggers)
     {
-        this.loggers = new ArrayList<Logger>(loggers);
+        this.loggers = new ArrayList<>(loggers);
     }
 
     /**
@@ -49,7 +49,7 @@ public class CompositeLogger implements Logger
      */
     public CompositeLogger(Logger... loggers)
     {
-        this.loggers = new ArrayList<Logger>(loggers.length);
+        this.loggers = new ArrayList<>(loggers.length);
 
         for (Logger logger : loggers) {
             this.loggers.add(logger);

@@ -83,7 +83,7 @@ public class UninstallPlanJob extends AbstractExtensionPlanJob<UninstallRequest>
                     } else if (installedExtension.getNamespaces() != null) {
                         // Duplicate the namespace list to avoid ConcurrentModificationException
                         uninstallExtension(installedExtension,
-                            new ArrayList<String>(installedExtension.getNamespaces()), this.extensionTree, true);
+                            new ArrayList<>(installedExtension.getNamespaces()), this.extensionTree, true);
                     } else {
                         uninstallExtension(installedExtension, (String) null, this.extensionTree, true);
                     }

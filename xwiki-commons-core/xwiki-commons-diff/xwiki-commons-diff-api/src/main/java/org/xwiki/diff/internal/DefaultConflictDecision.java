@@ -72,7 +72,7 @@ public class DefaultConflictDecision<E> implements ConflictDecision<E>
                 break;
 
             case CUSTOM:
-                this.chunk = new DefaultChunk<E>(conflict.getIndex(), Collections.emptyList());
+                this.chunk = new DefaultChunk<>(conflict.getIndex(), Collections.emptyList());
                 break;
 
             case UNDECIDED:
@@ -86,7 +86,7 @@ public class DefaultConflictDecision<E> implements ConflictDecision<E>
     public void setCustom(List<E> chunkElement)
     {
         this.type = DecisionType.CUSTOM;
-        this.chunk = new DefaultChunk<E>(conflict.getIndex(), chunkElement);
+        this.chunk = new DefaultChunk<>(conflict.getIndex(), chunkElement);
     }
 
     @Override

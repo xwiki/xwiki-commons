@@ -44,7 +44,7 @@ public abstract class AbstractHTMLFilter implements HTMLFilter, HTMLConstants
      */
     protected List<Element> filterChildren(Element parent, String tagName)
     {
-        List<Element> result = new ArrayList<Element>();
+        List<Element> result = new ArrayList<>();
         Node current = parent.getFirstChild();
         while (current != null) {
             if (current.getNodeName().equals(tagName)) {
@@ -64,7 +64,7 @@ public abstract class AbstractHTMLFilter implements HTMLFilter, HTMLConstants
      */
     protected List<Element> filterDescendants(Element parent, String[] tagNames)
     {
-        List<Element> result = new ArrayList<Element>();
+        List<Element> result = new ArrayList<>();
         for (String tagName : tagNames) {
             NodeList nodes = parent.getElementsByTagName(tagName);
             for (int i = 0; i < nodes.getLength(); i++) {
@@ -85,7 +85,7 @@ public abstract class AbstractHTMLFilter implements HTMLFilter, HTMLConstants
      */
     protected List<Element> filterDescendants(Element parent, String[] tagNames, ElementSelector elementSelector)
     {
-        List<Element> result = new ArrayList<Element>();
+        List<Element> result = new ArrayList<>();
         for (String tagName : tagNames) {
             NodeList nodes = parent.getElementsByTagName(tagName);
             for (int i = 0; i < nodes.getLength(); i++) {

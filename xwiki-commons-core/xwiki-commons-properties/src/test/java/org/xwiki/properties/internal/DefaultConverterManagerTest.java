@@ -39,7 +39,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 public class DefaultConverterManagerTest
 {
     @Rule
-    public MockitoComponentMockingRule<ConverterManager> mocker = new MockitoComponentMockingRule<ConverterManager>(
+    public MockitoComponentMockingRule<ConverterManager> mocker = new MockitoComponentMockingRule<>(
         DefaultConverterManager.class);
 
     public enum TestEnum

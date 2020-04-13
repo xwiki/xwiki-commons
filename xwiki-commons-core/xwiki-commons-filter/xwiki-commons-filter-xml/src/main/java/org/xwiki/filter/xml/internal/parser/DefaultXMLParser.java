@@ -93,7 +93,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
         public boolean beginSent = false;
 
-        public List<Object> parameters = new ArrayList<Object>();
+        public List<Object> parameters = new ArrayList<>();
 
         public FilterEventParameters namedParameters = new FilterEventParameters();
 

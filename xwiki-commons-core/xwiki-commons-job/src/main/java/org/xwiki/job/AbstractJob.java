@@ -356,7 +356,7 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
     {
         Job currentJob = this.jobContext.getCurrentJob();
         JobStatus currentJobStatus = currentJob != null ? currentJob.getStatus() : null;
-        return (S) new DefaultJobStatus<R>(getType(), request, currentJobStatus, this.observationManager,
+        return (S) new DefaultJobStatus<>(getType(), request, currentJobStatus, this.observationManager,
             this.loggerManager);
     }
 

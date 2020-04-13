@@ -97,7 +97,7 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
     /**
      * The standard repositories.
      */
-    private Map<String, ExtensionRepository> standardRepositories = new HashMap<String, ExtensionRepository>(3);
+    private Map<String, ExtensionRepository> standardRepositories = new HashMap<>(3);
 
     @Override
     public void initialize() throws InitializationException

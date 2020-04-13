@@ -71,7 +71,7 @@ public class ExtensionXWikiOrgExtensionRepositorySource extends AbstractExtensio
         Collection<ExtensionRepositoryDescriptor> configuredRepositories =
             this.configuration.getExtensionRepositoryDescriptors();
 
-        Collection<ExtensionRepositoryDescriptor> repositories = new ArrayList<ExtensionRepositoryDescriptor>();
+        Collection<ExtensionRepositoryDescriptor> repositories = new ArrayList<>();
 
         if (configuredRepositories == null) {
             try {

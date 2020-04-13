@@ -30,7 +30,7 @@ public class BcBlowfishCbcPaddedCipherFactoryTest extends AbstractSymmetricCiphe
 {
     @Rule
     public final MockitoComponentMockingRule<CipherFactory> mocker =
-        new MockitoComponentMockingRule<CipherFactory>(BcBlowfishCbcPaddedCipherFactory.class);
+        new MockitoComponentMockingRule<>(BcBlowfishCbcPaddedCipherFactory.class);
 
     {
         CIPHER_ALGO = "Blowfish/CBC/PKCS5Padding";

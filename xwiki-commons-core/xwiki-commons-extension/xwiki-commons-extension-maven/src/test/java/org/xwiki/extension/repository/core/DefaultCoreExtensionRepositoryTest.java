@@ -34,7 +34,7 @@ public class DefaultCoreExtensionRepositoryTest
 {
     @Rule
     public MockitoComponentMockingRule<CoreExtensionRepository> mocker =
-        new MockitoComponentMockingRule<CoreExtensionRepository>(DefaultCoreExtensionRepository.class);
+        new MockitoComponentMockingRule<>(DefaultCoreExtensionRepository.class);
 
     private CoreExtensionRepository coreExtensionRepository;
 

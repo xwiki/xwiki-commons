@@ -105,7 +105,7 @@ public abstract class AbstractContainerMarker implements ContainerMarker
 
         if (!reference.contains(this)) {
             if (this.references == null) {
-                this.references = new LinkedHashSet<Marker>();
+                this.references = new LinkedHashSet<>();
             }
 
             this.references.add(reference);

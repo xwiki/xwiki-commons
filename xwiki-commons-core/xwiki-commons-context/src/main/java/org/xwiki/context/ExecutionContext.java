@@ -41,7 +41,7 @@ public class ExecutionContext
     /**
      * @see #getProperty(String)
      */
-    private Map<String, ExecutionContextProperty> properties = new HashMap<String, ExecutionContextProperty>();
+    private Map<String, ExecutionContextProperty> properties = new HashMap<>();
 
     /**
      * @param key the key under which is stored the property to retrieve
@@ -83,7 +83,7 @@ public class ExecutionContext
      */
     public Map<String, Object> getProperties()
     {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
 
         for (Map.Entry<String, ExecutionContextProperty> entry : this.properties.entrySet()) {
             map.put(entry.getKey(), entry.getValue().getValue());

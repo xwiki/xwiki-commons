@@ -320,18 +320,18 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         }
 
         if (nb == 0 || offset >= versions.size()) {
-            return new CollectionIterableResult<Version>(versions.size(), offset, Collections.<Version>emptyList());
+            return new CollectionIterableResult<>(versions.size(), offset, Collections.<Version>emptyList());
         }
 
         int fromId = offset < 0 ? 0 : offset;
         int toId = offset + nb > versions.size() || nb < 0 ? versions.size() : offset + nb;
 
-        List<Version> result = new ArrayList<Version>(toId - fromId);
+        List<Version> result = new ArrayList<>(toId - fromId);
         for (int i = fromId; i < toId; ++i) {
             result.add(new DefaultVersion(versions.get(i).toString()));
         }
 
-        return new CollectionIterableResult<Version>(versions.size(), offset, result);
+        return new CollectionIterableResult<>(versions.size(), offset, result);
     }
 
     private org.eclipse.aether.version.Version resolveVersionConstraint(String id, VersionConstraint versionConstraint,
@@ -585,7 +585,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         Artifact artifact = new DefaultArtifact(dependency.getGroupId(), dependency.getArtifactId(),
             dependency.getClassifier(), null, dependency.getVersion(), props, stereotype);
 
-        List<Exclusion> exclusions = new ArrayList<Exclusion>(dependency.getExclusions().size());
+        List<Exclusion> exclusions = new ArrayList<>(dependency.getExclusions().size());
         for (org.apache.maven.model.Exclusion exclusion : dependency.getExclusions()) {
             exclusions.add(convert(exclusion));
         }

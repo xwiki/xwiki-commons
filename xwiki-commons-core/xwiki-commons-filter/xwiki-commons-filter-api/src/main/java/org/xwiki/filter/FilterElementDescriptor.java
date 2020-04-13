@@ -53,7 +53,7 @@ public class FilterElementDescriptor
     /**
      * Used to find parameter index by name.
      */
-    private Map<String, Integer> parametersIndex = new HashMap<String, Integer>();
+    private Map<String, Integer> parametersIndex = new HashMap<>();
 
     /**
      * @see #getBeginMethod()

@@ -43,7 +43,7 @@ public class BcDSAwithSHA1SignerFactoryTest
 {
     @Rule
     public final MockitoComponentMockingRule<SignerFactory> mocker =
-        new MockitoComponentMockingRule<SignerFactory>(BcDSAwithSHA1SignerFactory.class);
+        new MockitoComponentMockingRule<>(BcDSAwithSHA1SignerFactory.class);
 
     private static final String PRIVATE_KEY = "MIIBTAIBADCCASwGByqGSM44BAEwggEfAoGBANQ9Oa1j9sWAhdXNyqz8HL/bA/e"
         + "d2VrBw6TPkgMyV1Upix58RSjOHMQNrgemSGkb80dRcLqVDYbI3ObnIJh83Zx6ze"

@@ -14,7 +14,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 @ComponentList({ DefaultSecureRandomProvider.class })
 public class AmplDefaultKeyGeneratorTest {
     @Rule
-    public final MockitoComponentMockingRule<KeyGenerator> mocker = new MockitoComponentMockingRule<KeyGenerator>(DefaultKeyGenerator.class);
+    public final MockitoComponentMockingRule<KeyGenerator> mocker =
+        new MockitoComponentMockingRule<>(DefaultKeyGenerator.class);
 
     private KeyGenerator generator;
 

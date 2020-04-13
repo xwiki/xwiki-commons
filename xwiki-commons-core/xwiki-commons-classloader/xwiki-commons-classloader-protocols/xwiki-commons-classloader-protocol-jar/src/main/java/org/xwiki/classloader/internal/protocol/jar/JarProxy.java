@@ -62,7 +62,7 @@ import edu.emory.mathcs.util.io.RedirectingInputStream;
  */
 public class JarProxy implements JarURLConnection.JarOpener
 {
-    private final Map<URL, CachedJarFile> cache = new HashMap<URL, CachedJarFile>();
+    private final Map<URL, CachedJarFile> cache = new HashMap<>();
 
     @SuppressWarnings("resource")
     @Override
@@ -168,7 +168,7 @@ public class JarProxy implements JarURLConnection.JarOpener
     {
         Map<URL, CachedJarFile> cache;
         synchronized (this.cache) {
-            cache = new HashMap<URL, CachedJarFile>(this.cache);
+            cache = new HashMap<>(this.cache);
             this.cache.clear();
         }
         for (CachedJarFile jfile : cache.values()) {

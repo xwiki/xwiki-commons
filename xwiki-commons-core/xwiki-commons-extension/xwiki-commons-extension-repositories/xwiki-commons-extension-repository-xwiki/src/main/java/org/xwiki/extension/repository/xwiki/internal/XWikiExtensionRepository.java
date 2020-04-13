@@ -418,12 +418,12 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
     {
         ExtensionVersions restExtensions = resolveExtensionVersions(id, null, offset, nb, true);
 
-        List<Version> versions = new ArrayList<Version>(restExtensions.getExtensionVersionSummaries().size());
+        List<Version> versions = new ArrayList<>(restExtensions.getExtensionVersionSummaries().size());
         for (ExtensionVersionSummary restExtension : restExtensions.getExtensionVersionSummaries()) {
             versions.add(new DefaultVersion(restExtension.getVersion()));
         }
 
-        return new CollectionIterableResult<Version>(restExtensions.getTotalHits(), restExtensions.getOffset(),
+        return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(),
             versions);
     }
 
@@ -447,12 +447,12 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             throw new SearchException("Failed to search extensions based on pattern [" + pattern + "]", e);
         }
 
-        List<Extension> extensions = new ArrayList<Extension>(restExtensions.getExtensions().size());
+        List<Extension> extensions = new ArrayList<>(restExtensions.getExtensions().size());
         for (ExtensionVersion restExtension : restExtensions.getExtensions()) {
             extensions.add(new XWikiExtension(this, restExtension, this.licenseManager, this.factory));
         }
 
-        return new CollectionIterableResult<Extension>(restExtensions.getTotalHits(), restExtensions.getOffset(),
+        return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(),
             extensions);
     }
 
@@ -492,12 +492,12 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             throw new SearchException("Failed to search extensions based on pattern [" + query.getQuery() + "]", e);
         }
 
-        List<Extension> extensions = new ArrayList<Extension>(restExtensions.getExtensions().size());
+        List<Extension> extensions = new ArrayList<>(restExtensions.getExtensions().size());
         for (ExtensionVersion restExtension : restExtensions.getExtensions()) {
             extensions.add(new XWikiExtension(this, restExtension, this.licenseManager, this.factory));
         }
 
-        return new CollectionIterableResult<Extension>(restExtensions.getTotalHits(), restExtensions.getOffset(),
+        return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(),
             extensions);
     }
 

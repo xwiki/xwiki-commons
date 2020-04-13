@@ -63,7 +63,7 @@ public class DefaultClassLoaderManager implements ClassLoaderManager, Initializa
      * The classloaders stored by namespace.
      */
     private Map<String, NamespaceURLClassLoader> wikiClassLoaderMap =
-        new ConcurrentHashMap<String, NamespaceURLClassLoader>();
+        new ConcurrentHashMap<>();
 
     @Override
     public void initialize() throws InitializationException

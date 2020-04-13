@@ -45,7 +45,7 @@ public class UniqueIdFilter extends AbstractHTMLFilter
     @Override
     public void filter(Document document, Map<String, String> cleaningParameters)
     {
-        Map<String, Integer> idCount = new HashMap<String, Integer>();
+        Map<String, Integer> idCount = new HashMap<>();
         NodeList elements = document.getElementsByTagName("*");
         for (int i = 0; i < elements.getLength(); i++) {
             Element element = (Element) elements.item(i);

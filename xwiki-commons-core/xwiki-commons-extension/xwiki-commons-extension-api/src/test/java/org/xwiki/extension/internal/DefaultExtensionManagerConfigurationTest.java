@@ -80,7 +80,7 @@ public class DefaultExtensionManagerConfigurationTest
 
         Assert.assertEquals(
             Arrays.asList(new DefaultExtensionRepositoryDescriptor("id", "type", new URI("http://url"))),
-            new ArrayList<ExtensionRepositoryDescriptor>(this.configuration.getExtensionRepositoryDescriptors()));
+            new ArrayList<>(this.configuration.getExtensionRepositoryDescriptors()));
         Assert.assertEquals(1, this.log.size());
         Assert.assertEquals("Ignoring invalid repository configuration [invalid]. Root cause "
             + "[ExtensionManagerConfigurationException: Invalid repository configuration format for [invalid]. Should "

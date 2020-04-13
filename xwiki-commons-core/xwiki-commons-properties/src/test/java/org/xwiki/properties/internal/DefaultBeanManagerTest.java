@@ -73,7 +73,7 @@ public class DefaultBeanManagerTest
     {
         TestBean beanTest = new TestBean();
 
-        Map<String, String> values = new HashMap<String, String>();
+        Map<String, String> values = new HashMap<>();
 
         values.put("lowerprop", "lowerpropvalue");
         values.put("upperprop", "upperPropvalue");
@@ -103,7 +103,7 @@ public class DefaultBeanManagerTest
     @Test
     public void testPopulateRawProperties() throws PropertyException
     {
-        Map<String, Object> values = new HashMap<String, Object>();
+        Map<String, Object> values = new HashMap<>();
 
         values.put("pro1", "value1");
         values.put("prop2", 2);

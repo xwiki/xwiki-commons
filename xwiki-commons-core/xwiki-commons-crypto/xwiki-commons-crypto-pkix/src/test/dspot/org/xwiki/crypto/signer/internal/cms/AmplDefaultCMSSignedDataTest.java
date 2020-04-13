@@ -45,10 +45,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ComponentList({ Base64BinaryStringEncoder.class, BcRSAKeyFactory.class, BcDSAKeyFactory.class, DefaultDigestFactory.class, BcSHA1DigestFactory.class, BcSHA1withRsaSignerFactory.class, BcDSAwithSHA1SignerFactory.class, DefaultSignerFactory.class, BcX509CertificateFactory.class, DefaultBcContentVerifierProviderBuilder.class, BcStoreX509CertificateProvider.class, BcX509CertificateChainBuilder.class })
 public class AmplDefaultCMSSignedDataTest extends AbstractPKIXTest {
     @Rule
-    public final MockitoComponentMockingRule<CMSSignedDataGenerator> generatorMocker = new MockitoComponentMockingRule<CMSSignedDataGenerator>(DefaultCMSSignedDataGenerator.class);
+    public final MockitoComponentMockingRule<CMSSignedDataGenerator> generatorMocker =
+        new MockitoComponentMockingRule<>(DefaultCMSSignedDataGenerator.class);
 
     @Rule
-    public final MockitoComponentMockingRule<CMSSignedDataVerifier> verifierMocker = new MockitoComponentMockingRule<CMSSignedDataVerifier>(DefaultCMSSignedDataVerifier.class);
+    public final MockitoComponentMockingRule<CMSSignedDataVerifier> verifierMocker =
+        new MockitoComponentMockingRule<>(DefaultCMSSignedDataVerifier.class);
 
     private CMSSignedDataGenerator generator;
 

@@ -41,7 +41,7 @@ public class LogTree extends LogTreeNode implements Logger
      */
     private static final long serialVersionUID = 1L;
 
-    private Stack<LogTreeNode> currentNode = new Stack<LogTreeNode>();
+    private Stack<LogTreeNode> currentNode = new Stack<>();
 
     /**
      * Default constructor.

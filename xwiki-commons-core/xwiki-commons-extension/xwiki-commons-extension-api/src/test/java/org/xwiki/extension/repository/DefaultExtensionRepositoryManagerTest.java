@@ -149,7 +149,7 @@ public class DefaultExtensionRepositoryManagerTest
 
         Collection<ExtensionRepository> repositorties = this.manager.getRepositories();
 
-        assertEquals(Arrays.asList(this.testRepository), new ArrayList<ExtensionRepository>(repositorties));
+        assertEquals(Arrays.asList(this.testRepository), new ArrayList<>(repositorties));
     }
 
     @Test

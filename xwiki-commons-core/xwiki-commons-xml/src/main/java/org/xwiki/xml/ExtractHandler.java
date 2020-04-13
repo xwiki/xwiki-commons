@@ -111,7 +111,7 @@ public class ExtractHandler extends DefaultHandler
      * The stack of open tags; when the lower bound is reached all the tags in the stack must be opened; when the upper
      * bound is reached all the tags in the stack must be closed.
      */
-    private Stack<XMLTag> openedTags = new Stack<XMLTag>();
+    private Stack<XMLTag> openedTags = new Stack<>();
 
     /**
      * The fragment that is extracted during the parsing process.

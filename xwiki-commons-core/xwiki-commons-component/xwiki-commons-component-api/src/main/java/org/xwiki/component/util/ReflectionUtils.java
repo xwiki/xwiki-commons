@@ -65,7 +65,7 @@ public final class ReflectionUtils
     public static Collection<Field> getAllFields(Class<?> clazz)
     {
         // Note: use a linked hash map to keep the same order as the one used to declare the fields.
-        Map<String, Field> fields = new LinkedHashMap<String, Field>();
+        Map<String, Field> fields = new LinkedHashMap<>();
         Class<?> targetClass = clazz;
         while (targetClass != null) {
             Field[] targetClassFields;
@@ -311,7 +311,7 @@ public final class ReflectionUtils
         if (childParameters != null) {
             TypeVariable<Class>[] declaredChildParameters = childClass.getTypeParameters();
 
-            typeMapping = new HashMap<TypeVariable, Type>();
+            typeMapping = new HashMap<>();
             for (int i = 0; i < declaredChildParameters.length; ++i) {
                 typeMapping.put(declaredChildParameters[i], childParameters[i]);
             }
@@ -503,7 +503,7 @@ public final class ReflectionUtils
             int lastSuperior = sType.lastIndexOf(CLOSE_GENERIC);
             String rawType = sType.substring(0, firstInferior);
             String sArguments = sType.substring(firstInferior + 1, lastSuperior);
-            List<Type> argumentTypes = new ArrayList<Type>();
+            List<Type> argumentTypes = new ArrayList<>();
             int nestedArgsDepth = 0;
             int previousSplit = 0;
             // We'll go through all the Type arguments and they will be unserialized, since arguments can be
@@ -578,7 +578,7 @@ public final class ReflectionUtils
             return Collections.emptyList();
         }
 
-        List<Type> types = new LinkedList<Type>();
+        List<Type> types = new LinkedList<>();
 
         for (Type interfaceType : clazz.getGenericInterfaces()) {
             types.add(resolveType(interfaceType, type));

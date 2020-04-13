@@ -114,7 +114,7 @@ public class XWikiExtensionRepositoryTest
         // The result must take the offset and total hits number from the REST response.
         assertEquals(5, result.getOffset());
         assertEquals(7, result.getTotalHits());
-        List<Version> versions = new ArrayList<Version>();
+        List<Version> versions = new ArrayList<>();
         Iterators.addAll(versions, result.iterator());
         assertEquals(Arrays.asList(new DefaultVersion("1.3"), new DefaultVersion("2.4.1")), versions);
     }

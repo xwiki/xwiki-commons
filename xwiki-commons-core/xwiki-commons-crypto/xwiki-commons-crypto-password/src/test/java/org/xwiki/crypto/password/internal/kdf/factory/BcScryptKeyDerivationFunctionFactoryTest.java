@@ -42,7 +42,7 @@ public class BcScryptKeyDerivationFunctionFactoryTest
 {
     @Rule
     public final MockitoComponentMockingRule<KeyDerivationFunctionFactory> mocker =
-        new MockitoComponentMockingRule<KeyDerivationFunctionFactory>(BcScryptKeyDerivationFunctionFactory.class);
+        new MockitoComponentMockingRule<>(BcScryptKeyDerivationFunctionFactory.class);
 
     KeyDerivationFunctionFactory factory;
 

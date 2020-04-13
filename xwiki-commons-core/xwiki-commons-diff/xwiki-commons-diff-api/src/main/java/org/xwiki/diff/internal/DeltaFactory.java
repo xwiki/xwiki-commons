@@ -50,13 +50,13 @@ public final class DeltaFactory
         switch (type)
         {
             case CHANGE:
-                return new ChangeDelta<E>(previous, next);
+                return new ChangeDelta<>(previous, next);
 
             case DELETE:
-                return new DeleteDelta<E>(previous, next);
+                return new DeleteDelta<>(previous, next);
 
             case INSERT:
-                return new InsertDelta<E>(previous, next);
+                return new InsertDelta<>(previous, next);
 
             default:
                 throw new IllegalArgumentException(String.format(ERROR_MESSAGE, type));
@@ -77,13 +77,13 @@ public final class DeltaFactory
         switch (type)
         {
             case CHANGE:
-                return new ChangeDelta<E>(original, revised);
+                return new ChangeDelta<>(original, revised);
 
             case DELETE:
-                return new DeleteDelta<E>(original, revised);
+                return new DeleteDelta<>(original, revised);
 
             case INSERT:
-                return new InsertDelta<E>(original, revised);
+                return new InsertDelta<>(original, revised);
 
             default:
                 throw new IllegalArgumentException(String.format(ERROR_MESSAGE, type));

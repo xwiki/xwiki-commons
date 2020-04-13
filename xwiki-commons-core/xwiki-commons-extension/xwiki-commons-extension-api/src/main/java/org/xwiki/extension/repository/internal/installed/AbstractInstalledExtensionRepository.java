@@ -73,7 +73,7 @@ public abstract class AbstractInstalledExtensionRepository<E extends InstalledEx
     @Override
     public Collection<InstalledExtension> getInstalledExtensions(String namespace)
     {
-        List<InstalledExtension> installedExtensions = new ArrayList<InstalledExtension>(extensions.size());
+        List<InstalledExtension> installedExtensions = new ArrayList<>(extensions.size());
         for (InstalledExtension localExtension : this.extensions.values()) {
             if (localExtension.isInstalled(namespace)) {
                 installedExtensions.add(localExtension);

@@ -68,8 +68,8 @@ public abstract class AbstractDelta<E> implements Delta<E>
     public AbstractDelta(difflib.Chunk<E> original, difflib.Chunk<E> revised, Type type)
     {
         this.type = type;
-        this.previous = new DefaultChunk<E>(original);
-        this.next = new DefaultChunk<E>(revised);
+        this.previous = new DefaultChunk<>(original);
+        this.next = new DefaultChunk<>(revised);
     }
 
     @Override

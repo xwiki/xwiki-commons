@@ -32,9 +32,9 @@ public class TestResourceData
 {
     public String resourceName;
 
-    public List<InputTestConfiguration> inputs = new LinkedList<InputTestConfiguration>();
+    public List<InputTestConfiguration> inputs = new LinkedList<>();
 
-    public List<ExpectTestConfiguration> expects = new LinkedList<ExpectTestConfiguration>();
+    public List<ExpectTestConfiguration> expects = new LinkedList<>();
 
-    public Map<String, String> configuration = new LinkedHashMap<String, String>();
+    public Map<String, String> configuration = new LinkedHashMap<>();
 }

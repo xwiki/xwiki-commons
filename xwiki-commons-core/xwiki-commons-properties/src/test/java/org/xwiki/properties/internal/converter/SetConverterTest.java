@@ -61,21 +61,21 @@ public class SetConverterTest
     @Test
     void convert() throws Exception
     {
-        assertEquals(new LinkedHashSet<String>(Arrays.asList("1", "2", "3")),
+        assertEquals(new LinkedHashSet<>(Arrays.asList("1", "2", "3")),
             this.converterManager.convert(Set.class, "1, 2, 3"));
 
-        assertEquals(new LinkedHashSet<String>(Arrays.asList("1", "\n", "2", "\n", "3")),
+        assertEquals(new LinkedHashSet<>(Arrays.asList("1", "\n", "2", "\n", "3")),
             this.converterManager.convert(Set.class, "1,\n 2,\n 3"));
 
         assertEquals(
-            new LinkedHashSet<Integer>(Arrays.asList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3))),
+            new LinkedHashSet<>(Arrays.asList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3))),
             this.converterManager.convert(SetConverterTest.class.getField("setField1").getGenericType(), "1, 2, 3"));
 
         assertEquals(
-            new LinkedHashSet<Set<Integer>>(Arrays.asList(new LinkedHashSet<Integer>(Arrays.asList(1, 2, 3)),
-                new LinkedHashSet<Integer>(Arrays.asList(4, 5, 6)))), this.converterManager.convert(
+            new LinkedHashSet<Set<Integer>>(Arrays.asList(new LinkedHashSet<>(Arrays.asList(1, 2, 3)),
+                new LinkedHashSet<>(Arrays.asList(4, 5, 6)))), this.converterManager.convert(
                 SetConverterTest.class.getField("setField2").getGenericType(), "'\\'1\\', 2, 3', \"4, 5, 6\""));
 
-        assertEquals(new HashSet<String>(Arrays.asList("1:2")), this.converterManager.convert(Set.class, "1:2"));
+        assertEquals(new HashSet<>(Arrays.asList("1:2")), this.converterManager.convert(Set.class, "1:2"));
     }
 }

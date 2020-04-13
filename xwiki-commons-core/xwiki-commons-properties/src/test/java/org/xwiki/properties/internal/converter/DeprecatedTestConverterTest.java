@@ -33,7 +33,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 public class DeprecatedTestConverterTest
 {
     @Rule
-    public MockitoComponentMockingRule<ConverterManager> mocker = new MockitoComponentMockingRule<ConverterManager>(
+    public MockitoComponentMockingRule<ConverterManager> mocker = new MockitoComponentMockingRule<>(
         DefaultConverterManager.class);
 
     @Test

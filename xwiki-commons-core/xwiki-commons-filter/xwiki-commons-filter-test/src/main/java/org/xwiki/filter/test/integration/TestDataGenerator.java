@@ -47,7 +47,7 @@ public class TestDataGenerator
                 .setUrls(ClasspathHelper.forPackage(""))
                 .filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(testPackage))));
 
-        Collection<TestConfiguration> data = new ArrayList<TestConfiguration>();
+        Collection<TestConfiguration> data = new ArrayList<>();
         for (String testResourceName : reflections.getResources(Pattern.compile(pattern))) {
             data.addAll(parseSingleResource(testResourceName));
         }
@@ -69,7 +69,7 @@ public class TestDataGenerator
             throw new RuntimeException("Failed to read test data from [" + resourceName + "]", e);
         }
 
-        Collection<TestConfiguration> result = new ArrayList<TestConfiguration>();
+        Collection<TestConfiguration> result = new ArrayList<>();
         for (InputTestConfiguration inputConfiguration : data.inputs) {
             for (ExpectTestConfiguration expectConfiguration : data.expects) {
                 TestConfiguration testConfiguration = new TestConfiguration();

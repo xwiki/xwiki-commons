@@ -81,7 +81,7 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     /**
      * The descriptors.
      */
-    private Map<Class<?>, FilterDescriptor> descriptors = new ConcurrentHashMap<Class<?>, FilterDescriptor>();
+    private Map<Class<?>, FilterDescriptor> descriptors = new ConcurrentHashMap<>();
 
     /**
      * Used to convert default values from {@link String}.
@@ -304,7 +304,7 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
             defaultValue = null;
         }
 
-        return new FilterElementParameterDescriptor<Object>(index, name, type, defaultValue);
+        return new FilterElementParameterDescriptor<>(index, name, type, defaultValue);
     }
 
     /**
@@ -362,7 +362,7 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     @Override
     public <F> F createCompositeFilter(ClassLoader loader, Object... filters)
     {
-        Set<Class<?>> interfaces = new HashSet<Class<?>>();
+        Set<Class<?>> interfaces = new HashSet<>();
         for (Object filter : filters) {
             interfaces.addAll(ClassUtils.getAllInterfaces(filter.getClass()));
         }

@@ -144,7 +144,7 @@ public class DefaultJobProgressStep implements JobProgressStep
         assertModifiable();
 
         if (this.children == null) {
-            this.children = new ArrayList<DefaultJobProgressStep>();
+            this.children = new ArrayList<>();
         }
 
         DefaultJobProgressStep step = new DefaultJobProgressStep(stepMessage, newStepSource, this);

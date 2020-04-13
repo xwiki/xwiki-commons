@@ -56,7 +56,7 @@ public class BcX509CertificateChainBuilder implements CertificateChainBuilder
             return null;
         }
 
-        Deque<CertifiedPublicKey> result = new ArrayDeque<CertifiedPublicKey>();
+        Deque<CertifiedPublicKey> result = new ArrayDeque<>();
         build(result, certificate, provider);
         return result;
     }

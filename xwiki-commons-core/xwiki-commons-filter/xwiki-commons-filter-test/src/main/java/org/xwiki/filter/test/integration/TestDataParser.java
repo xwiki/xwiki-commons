@@ -115,7 +115,7 @@ public class TestDataParser
                         // Reset buffer
                         buffer.setLength(0);
                         // Reset configuration
-                        configuration = new HashMap<String, String>();
+                        configuration = new HashMap<>();
 
                         // Parse the directive line starting with "." and with "|" separators.
                         // For example ".input|xwiki/2.0|skip" or ".expect|xhtml"

@@ -98,12 +98,12 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJo
     public Collection<ExtensionPlanAction> getActions()
     {
         if (getState() != State.FINISHED) {
-            Set<ExtensionPlanAction> extensions = new LinkedHashSet<ExtensionPlanAction>();
+            Set<ExtensionPlanAction> extensions = new LinkedHashSet<>();
             fillExtensionActions(extensions, this.tree);
 
             return extensions;
         } else {
-            Set<ExtensionPlanAction> actionsCache = new LinkedHashSet<ExtensionPlanAction>();
+            Set<ExtensionPlanAction> actionsCache = new LinkedHashSet<>();
             fillExtensionActions(actionsCache, this.tree);
 
             return actionsCache;

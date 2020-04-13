@@ -34,7 +34,7 @@ import org.xwiki.job.JobGroupPath;
  */
 public class JobGroupPathLockTree
 {
-    private final Map<JobGroupPath, ReadWriteLock> tree = new ConcurrentHashMap<JobGroupPath, ReadWriteLock>();
+    private final Map<JobGroupPath, ReadWriteLock> tree = new ConcurrentHashMap<>();
 
     private synchronized ReadWriteLock getLock(JobGroupPath key)
     {

@@ -59,7 +59,7 @@ public final class ExtendedMessageFormatter
             return Arrays.asList(messagePattern);
         }
 
-        List<String> messageList = new ArrayList<String>(arguments.length + 1);
+        List<String> messageList = new ArrayList<>(arguments.length + 1);
 
         MessageParser parser = new MessageParser(messagePattern, false);
 

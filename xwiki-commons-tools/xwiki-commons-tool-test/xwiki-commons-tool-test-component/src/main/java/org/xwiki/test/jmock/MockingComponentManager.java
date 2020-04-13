@@ -150,7 +150,7 @@ public class MockingComponentManager extends EmbeddableComponentManager
      */
     private <T> DefaultComponentDescriptor<T> createComponentDescriptor(Type role)
     {
-        DefaultComponentDescriptor<T> descriptor = new DefaultComponentDescriptor<T>();
+        DefaultComponentDescriptor<T> descriptor = new DefaultComponentDescriptor<>();
         descriptor.setRoleType(role);
 
         return descriptor;

@@ -38,7 +38,7 @@ public class BcDESedeKeyGeneratorTest
 {
     @Rule
     public final MockitoComponentMockingRule<KeyGenerator> mocker =
-        new MockitoComponentMockingRule<KeyGenerator>(BcDESedeKeyGenerator.class);
+        new MockitoComponentMockingRule<>(BcDESedeKeyGenerator.class);
 
     private KeyGenerator generator;
 

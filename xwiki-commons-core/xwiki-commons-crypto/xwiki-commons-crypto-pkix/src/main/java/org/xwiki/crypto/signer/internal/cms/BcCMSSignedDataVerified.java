@@ -36,9 +36,9 @@ import org.xwiki.crypto.signer.param.CMSSignerVerifiedInformation;
  */
 public class BcCMSSignedDataVerified implements CMSSignedDataVerified
 {
-    private final Collection<CMSSignerVerifiedInformation> signatures = new ArrayList<CMSSignerVerifiedInformation>();
+    private final Collection<CMSSignerVerifiedInformation> signatures = new ArrayList<>();
 
-    private final Collection<CertifiedPublicKey> certificates = new ArrayList<CertifiedPublicKey>();
+    private final Collection<CertifiedPublicKey> certificates = new ArrayList<>();
 
     private final String contentType;
 

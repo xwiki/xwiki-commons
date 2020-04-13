@@ -80,7 +80,7 @@ public class GenericProvider<T> implements Provider<T>
                 } catch (ComponentLookupException e) {
                     // Inject a default Provider
                     component =
-                        (T) new GenericProvider<Object>(this.componentManager, new RoleHint<Object>(
+                        (T) new GenericProvider<>(this.componentManager, new RoleHint<>(
                             ReflectionUtils.getLastTypeGenericArgument(this.roleHint.getRoleType()),
                             this.roleHint.getHint()));
                 }

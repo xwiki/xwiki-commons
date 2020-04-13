@@ -40,13 +40,13 @@ public class AmplProviderTest
             EmbeddableComponentManager cm = new EmbeddableComponentManager();
             // Register components for the list and map
             DefaultComponentDescriptor<EmbeddableComponentManagerTest.Role> cd1 =
-                new DefaultComponentDescriptor<EmbeddableComponentManagerTest.Role>();
+                new DefaultComponentDescriptor<>();
             cd1.setRoleType(EmbeddableComponentManagerTest.Role.class);
             cd1.setRoleHint("hint");
             cd1.setImplementation(EmbeddableComponentManagerTest.RoleImpl.class);
             cm.registerComponent(cd1);
             DefaultComponentDescriptor<EmbeddableComponentManagerTest.Role> cd2 =
-                new DefaultComponentDescriptor<EmbeddableComponentManagerTest.Role>();
+                new DefaultComponentDescriptor<>();
             cd2.setRoleType(EmbeddableComponentManagerTest.Role.class);
             cd2.setRoleHint("hint2");
             cm.registerComponent(cd2);

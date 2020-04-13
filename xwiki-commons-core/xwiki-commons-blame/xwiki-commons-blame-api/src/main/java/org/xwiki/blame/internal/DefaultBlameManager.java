@@ -45,7 +45,7 @@ public class DefaultBlameManager implements BlameManager
             if (previous == null || revision == null) {
                 return null;
             }
-            return new DefaultAnnotatedContent<R, E>(revision, previous);
+            return new DefaultAnnotatedContent<>(revision, previous);
         }
 
         if (!(content instanceof DefaultAnnotatedContent)) {

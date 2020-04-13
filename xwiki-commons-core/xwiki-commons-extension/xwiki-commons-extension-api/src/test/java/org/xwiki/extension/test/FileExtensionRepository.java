@@ -157,7 +157,7 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
     private List<Version> getVersions(String id) throws ResolveException
     {
 
-        List<Version> versions = new LinkedList<Version>();
+        List<Version> versions = new LinkedList<>();
 
         try {
             for (File file : this.directory.listFiles(new FilenameFilter()
@@ -202,6 +202,6 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
             throw new ExtensionNotFoundException("Extension [" + id + "] not found");
         }
 
-        return new CollectionIterableResult<Version>(0, offset, versions);
+        return new CollectionIterableResult<>(0, offset, versions);
     }
 }

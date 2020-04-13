@@ -200,7 +200,7 @@ public class InfinispanCache<T> extends AbstractCache<T>
     private void cacheEntryInserted(String key, T value)
     {
         InfinispanCacheEntryEvent<T> event =
-            new InfinispanCacheEntryEvent<>(new InfinispanCacheEntry<T>(this, key, value));
+            new InfinispanCacheEntryEvent<>(new InfinispanCacheEntry<>(this, key, value));
 
         T previousValue = this.preEventData.get(key);
 
@@ -224,7 +224,7 @@ public class InfinispanCache<T> extends AbstractCache<T>
     private void cacheEntryRemoved(String key, T value)
     {
         InfinispanCacheEntryEvent<T> event =
-            new InfinispanCacheEntryEvent<>(new InfinispanCacheEntry<T>(this, key, value));
+            new InfinispanCacheEntryEvent<>(new InfinispanCacheEntry<>(this, key, value));
 
         sendEntryRemovedEvent(event);
     }

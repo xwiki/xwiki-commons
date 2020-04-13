@@ -75,7 +75,7 @@ public class DefaultDiffManagerTest
         List<Character> characters;
 
         if (str != null) {
-            characters = new ArrayList<Character>(str.length());
+            characters = new ArrayList<>(str.length());
 
             for (char c : str.toCharArray()) {
                 characters.add(c);
@@ -1650,13 +1650,13 @@ public class DefaultDiffManagerTest
     {
         switch (type) {
             case CHANGE:
-                return new ChangeDelta<E>(previous, next);
+                return new ChangeDelta<>(previous, next);
 
             case INSERT:
-                return new InsertDelta<E>(previous, next);
+                return new InsertDelta<>(previous, next);
 
             case DELETE:
-                return new DeleteDelta<E>(previous, next);
+                return new DeleteDelta<>(previous, next);
 
             default:
                 throw new UnsupportedOperationException();

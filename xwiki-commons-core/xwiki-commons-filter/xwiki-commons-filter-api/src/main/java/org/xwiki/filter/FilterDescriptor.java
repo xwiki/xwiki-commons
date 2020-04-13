@@ -33,7 +33,7 @@ public class FilterDescriptor
     /**
      * @see #getElements()
      */
-    private Map<String, FilterElementDescriptor> elements = new HashMap<String, FilterElementDescriptor>();
+    private Map<String, FilterElementDescriptor> elements = new HashMap<>();
 
     /**
      * @return the filter elements

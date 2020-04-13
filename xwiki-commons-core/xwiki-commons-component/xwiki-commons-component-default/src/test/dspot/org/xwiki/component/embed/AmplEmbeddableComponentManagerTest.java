@@ -118,7 +118,7 @@ public class AmplEmbeddableComponentManagerTest
         Assert.assertNull(((EmbeddableComponentManager) (ecm)).getComponentEventManager());
         Assert.assertNull(((EmbeddableComponentManager) (ecm)).getNamespace());
         DefaultComponentDescriptor<AmplEmbeddableComponentManagerTest.Role> d1 =
-            new DefaultComponentDescriptor<AmplEmbeddableComponentManagerTest.Role>();
+            new DefaultComponentDescriptor<>();
         d1.setRoleType(AmplEmbeddableComponentManagerTest.Role.class);
         d1.setRoleHint("default");
         ecm.registerComponent(d1);
@@ -137,7 +137,7 @@ public class AmplEmbeddableComponentManagerTest
     {
         EmbeddableComponentManager parent = new EmbeddableComponentManager();
         DefaultComponentDescriptor<AmplEmbeddableComponentManagerTest.Role> cd =
-            new DefaultComponentDescriptor<AmplEmbeddableComponentManagerTest.Role>();
+            new DefaultComponentDescriptor<>();
         cd.setRoleType(AmplEmbeddableComponentManagerTest.Role.class);
         cd.setImplementation(AmplEmbeddableComponentManagerTest.RoleImpl.class);
         if (hint != null) {
@@ -155,7 +155,7 @@ public class AmplEmbeddableComponentManagerTest
         Assert.assertNull(((EmbeddableComponentManager) (ecm)).getComponentEventManager());
         Assert.assertNull(((EmbeddableComponentManager) (ecm)).getNamespace());
         final DefaultComponentDescriptor<AmplEmbeddableComponentManagerTest.Role> cd =
-            new DefaultComponentDescriptor<AmplEmbeddableComponentManagerTest.Role>();
+            new DefaultComponentDescriptor<>();
         cd.setRoleType(AmplEmbeddableComponentManagerTest.Role.class);
         cd.setImplementation(AmplEmbeddableComponentManagerTest.RoleImpl.class);
         AmplEmbeddableComponentManagerTest.Role roleImpl = new AmplEmbeddableComponentManagerTest.RoleImpl();

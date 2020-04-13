@@ -88,7 +88,7 @@ public class BcRsaOaepCipherFactoryTest
 
     @Rule
     public final MockitoComponentMockingRule<CipherFactory> mocker =
-        new MockitoComponentMockingRule<CipherFactory>(BcRsaOaepCipherFactory.class);
+        new MockitoComponentMockingRule<>(BcRsaOaepCipherFactory.class);
 
     private CipherFactory factory;
 

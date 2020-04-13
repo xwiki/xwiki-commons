@@ -68,7 +68,7 @@ public class InstallPlanJob extends AbstractInstallPlanJob<InstallRequest>
     protected void runInternal() throws Exception
     {
         Map<ExtensionId, Collection<String>> extensionsByNamespace =
-            new LinkedHashMap<ExtensionId, Collection<String>>();
+            new LinkedHashMap<>();
 
         Collection<ExtensionId> extensions = getRequest().getExtensions();
 

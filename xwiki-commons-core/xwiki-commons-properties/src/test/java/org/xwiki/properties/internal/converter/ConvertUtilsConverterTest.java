@@ -38,7 +38,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 public class ConvertUtilsConverterTest
 {
     @Rule
-    public MockitoComponentMockingRule<ConverterManager> mocker = new MockitoComponentMockingRule<ConverterManager>(
+    public MockitoComponentMockingRule<ConverterManager> mocker = new MockitoComponentMockingRule<>(
         DefaultConverterManager.class);
 
     public Integer[] field;

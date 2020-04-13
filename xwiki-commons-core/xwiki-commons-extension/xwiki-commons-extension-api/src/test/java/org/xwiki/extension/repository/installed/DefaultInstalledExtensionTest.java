@@ -147,16 +147,16 @@ public class DefaultInstalledExtensionTest
 
         this.installedExtension.setInstalled(true, "namespace1");
 
-        assertEquals(Arrays.asList("namespace1"), new ArrayList<String>(this.installedExtension.getNamespaces()));
+        assertEquals(Arrays.asList("namespace1"), new ArrayList<>(this.installedExtension.getNamespaces()));
 
         this.installedExtension.setInstalled(true, "namespace2");
 
-        assertEquals(new HashSet<String>(Arrays.asList("namespace1", "namespace2")),
-            new HashSet<String>(this.installedExtension.getNamespaces()));
+        assertEquals(new HashSet<>(Arrays.asList("namespace1", "namespace2")),
+            new HashSet<>(this.installedExtension.getNamespaces()));
 
         this.installedExtension.setNamespaces(Arrays.asList("namespace3"));
 
-        assertEquals(Arrays.asList("namespace3"), new ArrayList<String>(this.installedExtension.getNamespaces()));
+        assertEquals(Arrays.asList("namespace3"), new ArrayList<>(this.installedExtension.getNamespaces()));
 
     }
 

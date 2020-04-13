@@ -48,7 +48,7 @@ public class SystemHTTPProxyTest
 
     @Rule
     public MockitoComponentMockingRule<ExtensionRepositoryFactory> repositoryFactory =
-        new MockitoComponentMockingRule<ExtensionRepositoryFactory>(XWikiExtensionRepositoryFactory.class);
+        new MockitoComponentMockingRule<>(XWikiExtensionRepositoryFactory.class);
 
     @Test
     public void testProxy() throws ExtensionRepositoryException, ComponentLookupException, URISyntaxException

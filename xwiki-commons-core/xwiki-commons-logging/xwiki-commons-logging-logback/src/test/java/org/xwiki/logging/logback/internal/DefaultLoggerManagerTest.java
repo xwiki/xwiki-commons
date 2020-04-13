@@ -64,7 +64,7 @@ public class DefaultLoggerManagerTest
 {
     @Rule
     public final MockitoComponentMockingRule<DefaultLoggerManager> mocker =
-        new MockitoComponentMockingRule<DefaultLoggerManager>(DefaultLoggerManager.class);
+        new MockitoComponentMockingRule<>(DefaultLoggerManager.class);
 
     private DefaultLoggerManager loggerManager;
 
@@ -99,7 +99,7 @@ public class DefaultLoggerManagerTest
         }
 
         // Add appender
-        this.listAppender = new ListAppender<ILoggingEvent>();
+        this.listAppender = new ListAppender<>();
         this.listAppender.start();
         rootLogger.addAppender(this.listAppender);
 

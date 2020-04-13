@@ -106,7 +106,7 @@ public class JSONToolTest
     @Test
     public void serializeMap()
     {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("bool", false);
         map.put("int", 13);
         map.put("double", 0.78);

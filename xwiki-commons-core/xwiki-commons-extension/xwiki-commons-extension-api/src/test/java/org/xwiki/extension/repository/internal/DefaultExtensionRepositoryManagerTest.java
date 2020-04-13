@@ -101,7 +101,7 @@ public class DefaultExtensionRepositoryManagerTest
 
     private List<Version> toVersionList(String... versions)
     {
-        List<Version> versionList = new ArrayList<Version>(versions.length);
+        List<Version> versionList = new ArrayList<>(versions.length);
 
         for (String version : versions) {
             versionList.add(new DefaultVersion(version));
@@ -114,12 +114,12 @@ public class DefaultExtensionRepositoryManagerTest
     {
         List<Version> versionList = toVersionList(versions);
 
-        return new CollectionIterableResult<Version>(versionList.size(), 0, versionList);
+        return new CollectionIterableResult<>(versionList.size(), 0, versionList);
     }
 
     private IterableResult<Extension> toIterableExtensions(Extension... extensions)
     {
-        return new CollectionIterableResult<Extension>(extensions.length, 0, Arrays.asList(extensions));
+        return new CollectionIterableResult<>(extensions.length, 0, Arrays.asList(extensions));
     }
 
     private void assertSameElements(Iterable<?> it1, Iterable<?> it2)

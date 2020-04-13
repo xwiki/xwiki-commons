@@ -91,7 +91,7 @@ public class ObservationContextListener extends AbstractEventListener
             Stack<BeginEvent> events = (Stack<BeginEvent>) context.getProperty(DefaultObservationContext.KEY_EVENTS);
 
             if (events == null) {
-                events = new Stack<BeginEvent>();
+                events = new Stack<>();
                 context.setProperty(DefaultObservationContext.KEY_EVENTS, events);
             }
 

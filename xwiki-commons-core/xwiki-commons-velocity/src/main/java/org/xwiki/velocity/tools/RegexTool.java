@@ -99,7 +99,7 @@ public class RegexTool
      */
     public List<RegexResult> find(String content, String regex)
     {
-        List<RegexResult> result = new ArrayList<RegexResult>();
+        List<RegexResult> result = new ArrayList<>();
         Matcher matcher = Pattern.compile(regex, Pattern.MULTILINE).matcher(content);
         if (matcher.find()) {
             for (int i = 0; i < matcher.groupCount() + 1; i++) {

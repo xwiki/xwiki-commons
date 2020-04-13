@@ -92,27 +92,27 @@ public class BcPBES2CipherFactoryTest
 
     @Rule
     public final MockitoComponentMockingRule<PasswordBasedCipherFactory> mocker =
-        new MockitoComponentMockingRule<PasswordBasedCipherFactory>(BcPBES2CipherFactory.class);
+        new MockitoComponentMockingRule<>(BcPBES2CipherFactory.class);
 
     @Rule
     public final MockitoComponentMockingRule<PasswordBasedCipherFactory> desMocker =
-        new MockitoComponentMockingRule<PasswordBasedCipherFactory>(BcPBES2DesCipherFactory.class);
+        new MockitoComponentMockingRule<>(BcPBES2DesCipherFactory.class);
 
     @Rule
     public final MockitoComponentMockingRule<PasswordBasedCipherFactory> desEdeMocker =
-        new MockitoComponentMockingRule<PasswordBasedCipherFactory>(BcPBES2DesEdeCipherFactory.class);
+        new MockitoComponentMockingRule<>(BcPBES2DesEdeCipherFactory.class);
 
     @Rule
     public final MockitoComponentMockingRule<PasswordBasedCipherFactory> rc2Mocker =
-        new MockitoComponentMockingRule<PasswordBasedCipherFactory>(BcPBES2Rc2CipherFactory.class);
+        new MockitoComponentMockingRule<>(BcPBES2Rc2CipherFactory.class);
 
     @Rule
     public final MockitoComponentMockingRule<PasswordBasedCipherFactory> blowfishMocker =
-        new MockitoComponentMockingRule<PasswordBasedCipherFactory>(BcPBES2BlowfishCipherFactory.class);
+        new MockitoComponentMockingRule<>(BcPBES2BlowfishCipherFactory.class);
 
     @Rule
     public final MockitoComponentMockingRule<PasswordBasedCipherFactory> aesMocker =
-        new MockitoComponentMockingRule<PasswordBasedCipherFactory>(BcPBES2AesCipherFactory.class);
+        new MockitoComponentMockingRule<>(BcPBES2AesCipherFactory.class);
 
     PasswordBasedCipherFactory factory;
 

@@ -204,7 +204,7 @@ public class DefaultVelocityEngineTest
         StringWriter writer = new StringWriter();
         Context context = new XWikiVelocityContext();
         context.put("null", null);
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.add("1");
         list.add(null);
         list.add("3");

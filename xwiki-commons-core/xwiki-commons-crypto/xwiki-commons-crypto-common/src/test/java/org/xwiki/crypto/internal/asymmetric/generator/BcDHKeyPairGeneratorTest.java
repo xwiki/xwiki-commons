@@ -54,7 +54,7 @@ public class BcDHKeyPairGeneratorTest
 {
     @Rule
     public final MockitoComponentMockingRule<KeyPairGenerator> mocker =
-        new MockitoComponentMockingRule<KeyPairGenerator>(BcDHKeyPairGenerator.class);
+        new MockitoComponentMockingRule<>(BcDHKeyPairGenerator.class);
 
     private KeyPairGenerator generator;
     private KeyParametersGenerator parameterGenerator;

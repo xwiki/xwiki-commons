@@ -44,7 +44,7 @@ public class HexBinaryStringEncoderTest extends AbstractBinaryStringEncoderTest
 
     @Rule
     public final MockitoComponentMockingRule<BinaryStringEncoder> mocker =
-        new MockitoComponentMockingRule<BinaryStringEncoder>(HexBinaryStringEncoder.class);
+        new MockitoComponentMockingRule<>(HexBinaryStringEncoder.class);
 
     @Before
     public void configure() throws Exception

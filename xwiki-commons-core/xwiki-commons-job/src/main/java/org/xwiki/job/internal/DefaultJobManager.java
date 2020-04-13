@@ -91,7 +91,7 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
     /**
      * The queue of jobs to execute.
      */
-    private BlockingQueue<Job> jobQueue = new LinkedBlockingQueue<Job>();
+    private BlockingQueue<Job> jobQueue = new LinkedBlockingQueue<>();
 
     /**
      * The thread on which the job manager is running.

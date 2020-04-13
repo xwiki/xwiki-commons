@@ -247,7 +247,7 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     @Override
     public Collection<ExtensionRepositoryId> getRepositories()
     {
-        Collection<ExtensionRepositoryId> repositories = new ArrayList<ExtensionRepositoryId>();
+        Collection<ExtensionRepositoryId> repositories = new ArrayList<>();
 
         for (ExtensionRepositoryDescriptor descriptor : getExtensionRepositoryDescriptors()) {
             repositories.add(new ExtensionRepositoryId(descriptor));

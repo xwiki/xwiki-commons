@@ -83,7 +83,7 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
         this.extension = extension;
         this.rewrittenExtension = rewrittenExtension;
 
-        this.previousExtensions = previousExtensions != null ? new LinkedHashSet<InstalledExtension>(previousExtensions)
+        this.previousExtensions = previousExtensions != null ? new LinkedHashSet<>(previousExtensions)
             : Collections.<InstalledExtension>emptyList();
         this.action = action;
         this.namespace = namespace;

@@ -42,7 +42,7 @@ public class DefaultKeyDerivationFunctionFactoryTest
 {
     @Rule
     public final MockitoComponentMockingRule<KeyDerivationFunctionFactory> mocker =
-        new MockitoComponentMockingRule<KeyDerivationFunctionFactory>(DefaultKeyDerivationFunctionFactory.class);
+        new MockitoComponentMockingRule<>(DefaultKeyDerivationFunctionFactory.class);
 
     KeyDerivationFunctionFactory factory;
 

@@ -140,7 +140,7 @@ public class DefaultInlineDiffDisplayerTest
         DiffManager diffManager = this.componentManager.getInstance(DiffManager.class);
         DiffResult<Character> diffResult = diffManager.diff(previousChars, nextChars, null);
 
-        Map<Type, String> separators = new HashMap<Type, String>();
+        Map<Type, String> separators = new HashMap<>();
         separators.put(Type.ADDED, "+");
         separators.put(Type.DELETED, "-");
         separators.put(Type.UNMODIFIED, "");

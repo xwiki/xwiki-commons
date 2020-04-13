@@ -162,7 +162,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             File file = new File(folder, INDEX_FILE);
 
             FileBasedConfigurationBuilder<PropertiesConfiguration> builder =
-                new FileBasedConfigurationBuilder<PropertiesConfiguration>(PropertiesConfiguration.class, null, true)
+                new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class, null, true)
                     .configure(new Parameters().properties().setFile(file));
             PropertiesConfiguration properties = builder.getConfiguration();
             int version = properties.getInt(INDEX_FILE_VERSION, 0);
@@ -180,7 +180,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         BasicThreadFactory threadFactory = new BasicThreadFactory.Builder().namingPattern("Job status serializer")
             .daemon(true).priority(Thread.MIN_PRIORITY).build();
         this.executorService =
-            new ThreadPoolExecutor(0, 10, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), threadFactory);
+            new ThreadPoolExecutor(0, 10, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(), threadFactory);
 
         // Initialize cache
         LRUCacheConfiguration cacheConfiguration =

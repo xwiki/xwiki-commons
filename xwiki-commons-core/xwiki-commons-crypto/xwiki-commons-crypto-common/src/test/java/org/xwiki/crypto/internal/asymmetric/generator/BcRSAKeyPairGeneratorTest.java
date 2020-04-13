@@ -50,7 +50,7 @@ public class BcRSAKeyPairGeneratorTest
 {
     @Rule
     public final MockitoComponentMockingRule<KeyPairGenerator> mocker =
-        new MockitoComponentMockingRule<KeyPairGenerator>(BcRSAKeyPairGenerator.class);
+        new MockitoComponentMockingRule<>(BcRSAKeyPairGenerator.class);
 
     private KeyPairGenerator generator;
 

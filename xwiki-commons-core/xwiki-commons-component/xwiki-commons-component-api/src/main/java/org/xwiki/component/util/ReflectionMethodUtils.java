@@ -57,7 +57,7 @@ public final class ReflectionMethodUtils
 
         Annotation[] parameterAnnotations = parametersAnnotations[index];
 
-        List<A> foundAnnotations = new ArrayList<A>();
+        List<A> foundAnnotations = new ArrayList<>();
         for (Annotation annotation : parameterAnnotations) {
             if (annotationClass.isInstance(annotation)) {
                 foundAnnotations.add((A) annotation);

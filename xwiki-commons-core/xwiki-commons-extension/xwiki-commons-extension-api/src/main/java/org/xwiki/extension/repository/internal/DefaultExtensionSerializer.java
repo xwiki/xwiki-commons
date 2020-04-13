@@ -205,8 +205,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     {
         {
-            this.serializerById = new HashMap<String, ExtensionPropertySerializer>();
-            this.serializerByClass = new LinkedHashMap<Class<?>, ExtensionPropertySerializer>();
+            this.serializerById = new HashMap<>();
+            this.serializerByClass = new LinkedHashMap<>();
 
             StringExtensionPropertySerializer stringSerializer = new StringExtensionPropertySerializer();
             IntegerExtensionPropertySerializer integerSerializer = new IntegerExtensionPropertySerializer();

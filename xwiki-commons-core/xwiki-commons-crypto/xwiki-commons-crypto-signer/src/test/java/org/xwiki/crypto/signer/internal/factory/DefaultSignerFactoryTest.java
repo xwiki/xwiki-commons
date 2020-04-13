@@ -48,35 +48,35 @@ public class DefaultSignerFactoryTest extends AbstractRsaSignerFactoryTest
 {
     @Rule
     public final MockitoComponentMockingRule<SignerFactory> mocker =
-        new MockitoComponentMockingRule<SignerFactory>(DefaultSignerFactory.class);
+        new MockitoComponentMockingRule<>(DefaultSignerFactory.class);
 
     @Rule
     public final MockitoComponentMockingRule<SignerFactory> mockerPss =
-        new MockitoComponentMockingRule<SignerFactory>(BcRsaSsaPssSignerFactory.class);
+        new MockitoComponentMockingRule<>(BcRsaSsaPssSignerFactory.class);
 
     @Rule
     public final MockitoComponentMockingRule<SignerFactory> mockerSha1 =
-        new MockitoComponentMockingRule<SignerFactory>(BcSHA1withRsaSignerFactory.class);
+        new MockitoComponentMockingRule<>(BcSHA1withRsaSignerFactory.class);
 
     @Rule
     public final MockitoComponentMockingRule<SignerFactory> mockerSha224 =
-        new MockitoComponentMockingRule<SignerFactory>(BcSHA224withRsaSignerFactory.class);
+        new MockitoComponentMockingRule<>(BcSHA224withRsaSignerFactory.class);
 
     @Rule
     public final MockitoComponentMockingRule<SignerFactory> mockerSha256 =
-        new MockitoComponentMockingRule<SignerFactory>(BcSHA256withRsaSignerFactory.class);
+        new MockitoComponentMockingRule<>(BcSHA256withRsaSignerFactory.class);
 
     @Rule
     public final MockitoComponentMockingRule<SignerFactory> mockerSha384 =
-        new MockitoComponentMockingRule<SignerFactory>(BcSHA384withRsaSignerFactory.class);
+        new MockitoComponentMockingRule<>(BcSHA384withRsaSignerFactory.class);
 
     @Rule
     public final MockitoComponentMockingRule<SignerFactory> mockerSha512 =
-        new MockitoComponentMockingRule<SignerFactory>(BcSHA512withRsaSignerFactory.class);
+        new MockitoComponentMockingRule<>(BcSHA512withRsaSignerFactory.class);
 
     @Rule
     public final MockitoComponentMockingRule<SignerFactory> mockerMD5 =
-        new MockitoComponentMockingRule<SignerFactory>(BcMD5withRsaSignerFactory.class);
+        new MockitoComponentMockingRule<>(BcMD5withRsaSignerFactory.class);
 
     private SignerFactory factory;
 

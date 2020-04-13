@@ -288,7 +288,7 @@ public class DefaultInstalledExtensionRepositoryTest
         assertEquals(TestResources.INSTALLED_ID, extension.getId());
         assertEquals("test", extension.getType());
         assertEquals(Arrays.asList(TestResources.INSTALLED_ID.getId() + "-feature"),
-            new ArrayList<String>(extension.getFeatures()));
+            new ArrayList<>(extension.getFeatures()));
 
         ExtensionDependency dependency = extension.getDependencies().iterator().next();
         assertEquals(TestResources.INSTALLED_DEPENDENCY_ID.getId(), dependency.getId());
@@ -460,16 +460,16 @@ public class DefaultInstalledExtensionRepositoryTest
     public void testBackwardDependenciesWithExtensionAndDepOnRoot() throws ResolveException
     {
         assertEquals(Arrays.asList(this.resources.installed),
-            new ArrayList<InstalledExtension>(this.installedExtensionRepository
+            new ArrayList<>(this.installedExtensionRepository
                 .getBackwardDependencies(TestResources.INSTALLED_DEPENDENCY_ID.getId(), null)));
 
-        assertEquals(Arrays.asList(), new ArrayList<InstalledExtension>(this.installedExtensionRepository
+        assertEquals(Arrays.asList(), new ArrayList<>(this.installedExtensionRepository
             .getBackwardDependencies(TestResources.INSTALLED_DEPENDENCY_ID.getId(), "namespace")));
 
-        assertEquals(Arrays.asList(this.resources.installedwithfeatureasdependency), new ArrayList<InstalledExtension>(
+        assertEquals(Arrays.asList(this.resources.installedwithfeatureasdependency), new ArrayList<>(
             this.installedExtensionRepository.getBackwardDependencies(TestResources.INSTALLED_ID.getId(), null)));
 
-        Map<String, Collection<InstalledExtension>> map = new HashMap<String, Collection<InstalledExtension>>();
+        Map<String, Collection<InstalledExtension>> map = new HashMap<>();
         map.put(null, Arrays.asList(this.resources.installed));
 
         assertEquals(map,

@@ -103,7 +103,7 @@ public class DefaultBeanManager implements BeanManager
     @Override
     public void populate(Object bean, Map<String, ?> values) throws PropertyException
     {
-        Map<String, Object> remainingValues = new HashMap<String, Object>(values);
+        Map<String, Object> remainingValues = new HashMap<>(values);
 
         // Populate
         populateBean(bean, remainingValues);
@@ -134,7 +134,7 @@ public class DefaultBeanManager implements BeanManager
         BeanDescriptor beanDescriptor = getBeanDescriptor(bean.getClass());
 
         // Lower case provided properties to easily ignore properties name case
-        Map<String, String> lowerKeyMap = new HashMap<String, String>(values.size());
+        Map<String, String> lowerKeyMap = new HashMap<>(values.size());
         for (Map.Entry<String, ?> entry : values.entrySet()) {
             lowerKeyMap.put(entry.getKey().toLowerCase(), entry.getKey());
         }

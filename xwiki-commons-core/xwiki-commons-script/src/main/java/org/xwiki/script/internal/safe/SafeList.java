@@ -92,13 +92,13 @@ public class SafeList<E, L extends List<E>> extends SafeCollection<E, L> impleme
     @Override
     public ListIterator<E> listIterator()
     {
-        return new SafeListIterator<E>(getWrapped().listIterator(), this.safeProvider, this.safeConstructor);
+        return new SafeListIterator<>(getWrapped().listIterator(), this.safeProvider, this.safeConstructor);
     }
 
     @Override
     public ListIterator<E> listIterator(int index)
     {
-        return new SafeListIterator<E>(getWrapped().listIterator(index), this.safeProvider, this.safeConstructor);
+        return new SafeListIterator<>(getWrapped().listIterator(index), this.safeProvider, this.safeConstructor);
     }
 
     @Override
@@ -106,7 +106,7 @@ public class SafeList<E, L extends List<E>> extends SafeCollection<E, L> impleme
     {
         List<E> list = getWrapped().subList(fromIndex, toIndex);
 
-        List<E> safeList = new ArrayList<E>(list.size());
+        List<E> safeList = new ArrayList<>(list.size());
         for (E element : list) {
             safeList.add(safeElement(element));
         }

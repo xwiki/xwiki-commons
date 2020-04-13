@@ -39,7 +39,7 @@ public class ForbiddenThreadsFilter extends Filter<ILoggingEvent>
     /**
      * The forbidden thread.
      */
-    private Set<Thread> threads = Collections.newSetFromMap(new ConcurrentHashMap<Thread, Boolean>());
+    private Set<Thread> threads = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     @Override
     public FilterReply decide(ILoggingEvent event)

@@ -93,7 +93,7 @@ public class FilterStreamConverterJobRequest extends AbstractRequest implements 
         this.outputProperties = outputProperties;
         this.eventsFolded = eventsFolded;
 
-        List<String> jobId = new ArrayList<String>();
+        List<String> jobId = new ArrayList<>();
         jobId.add(JOBID_PREFIX);
         jobId.add("converter");
         jobId.add(inputType.serialize());

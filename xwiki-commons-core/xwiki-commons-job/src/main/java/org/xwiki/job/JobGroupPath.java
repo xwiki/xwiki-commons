@@ -43,7 +43,7 @@ public class JobGroupPath
      */
     public JobGroupPath(Collection<String> path)
     {
-        this.path = Collections.unmodifiableList(new ArrayList<String>(path));
+        this.path = Collections.unmodifiableList(new ArrayList<>(path));
 
         // Build parent
         if (this.path.size() > 1) {
@@ -64,9 +64,9 @@ public class JobGroupPath
         // Build path
         List<String> list;
         if (parent == null) {
-            list = new ArrayList<String>(1);
+            list = new ArrayList<>(1);
         } else {
-            list = new ArrayList<String>(parent.getPath().size() + 1);
+            list = new ArrayList<>(parent.getPath().size() + 1);
             list.addAll(parent.getPath());
         }
 

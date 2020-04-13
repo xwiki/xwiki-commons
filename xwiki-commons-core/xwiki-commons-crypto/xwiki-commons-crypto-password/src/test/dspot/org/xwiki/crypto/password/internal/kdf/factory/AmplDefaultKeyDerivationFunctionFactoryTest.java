@@ -24,7 +24,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 @ComponentList({ BcScryptKeyDerivationFunctionFactory.class, BcPKCS5S2KeyDerivationFunctionFactory.class })
 public class AmplDefaultKeyDerivationFunctionFactoryTest {
     @Rule
-    public final MockitoComponentMockingRule<KeyDerivationFunctionFactory> mocker = new MockitoComponentMockingRule<KeyDerivationFunctionFactory>(DefaultKeyDerivationFunctionFactory.class);
+    public final MockitoComponentMockingRule<KeyDerivationFunctionFactory> mocker =
+        new MockitoComponentMockingRule<>(DefaultKeyDerivationFunctionFactory.class);
 
     KeyDerivationFunctionFactory factory;
 

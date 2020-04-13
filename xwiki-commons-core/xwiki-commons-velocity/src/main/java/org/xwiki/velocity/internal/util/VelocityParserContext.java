@@ -38,7 +38,7 @@ public class VelocityParserContext
     /**
      * The current blocks.
      */
-    private Stack<VelocityBlock> blocks = new Stack<VelocityBlock>();
+    private Stack<VelocityBlock> blocks = new Stack<>();
 
     /**
      * @param type the type of found velocity block.

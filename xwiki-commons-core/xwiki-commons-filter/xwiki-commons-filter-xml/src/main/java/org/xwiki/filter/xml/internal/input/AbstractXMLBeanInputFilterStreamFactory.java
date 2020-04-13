@@ -46,7 +46,7 @@ public abstract class AbstractXMLBeanInputFilterStreamFactory<P extends XMLInput
     @Override
     public BeanInputFilterStream<P> createInputFilterStream(P properties) throws FilterException
     {
-        return new DefaultXMLInputFilterStream<P, F>(this, properties, this.xmlFactory);
+        return new DefaultXMLInputFilterStream<>(this, properties, this.xmlFactory);
     }
 
     protected abstract XMLEventWriter createXMLEventWriter(Object filter, P parameters);

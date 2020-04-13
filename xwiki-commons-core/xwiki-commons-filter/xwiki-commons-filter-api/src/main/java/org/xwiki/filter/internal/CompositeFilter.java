@@ -61,7 +61,7 @@ public class CompositeFilter implements InvocationHandler
     {
         this.filterManager = filterManager;
 
-        this.filters = new ArrayList<SubFilter>(filters.length);
+        this.filters = new ArrayList<>(filters.length);
         for (Object filter : filters) {
             this.filters.add(new SubFilter(filter, this.filterManager.getFilterDescriptor(filter.getClass())));
         }

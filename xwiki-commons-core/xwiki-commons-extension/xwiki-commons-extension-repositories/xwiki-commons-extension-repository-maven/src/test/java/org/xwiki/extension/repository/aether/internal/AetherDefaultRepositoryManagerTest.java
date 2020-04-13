@@ -135,15 +135,15 @@ public class AetherDefaultRepositoryManagerTest
         Assert.assertEquals("http://website", extension.getWebSite());
         Assert.assertEquals("category", extension.getCategory());
         Assert.assertEquals(Arrays.asList(new DefaultExtensionAuthor("Full Name", "http://profile")),
-            new ArrayList<ExtensionAuthor>(extension.getAuthors()));
-        Assert.assertEquals(new HashSet<String>(Arrays.asList("groupid1:feature1", "groupid2:feature2")),
-            new HashSet<String>(extension.getFeatures()));
+            new ArrayList<>(extension.getAuthors()));
+        Assert.assertEquals(new HashSet<>(Arrays.asList("groupid1:feature1", "groupid2:feature2")),
+            new HashSet<>(extension.getFeatures()));
         Assert.assertEquals(
-            new HashSet<ExtensionId>(Arrays.asList(new ExtensionId("groupid1:feature1", this.extensionId.getVersion()),
+            new HashSet<>(Arrays.asList(new ExtensionId("groupid1:feature1", this.extensionId.getVersion()),
                 new ExtensionId("groupid2:feature2", "42"))),
-            new HashSet<ExtensionId>(extension.getExtensionFeatures()));
-        Assert.assertEquals(new HashSet<String>(Arrays.asList("namespace1", "{root}")),
-            new HashSet<String>(extension.getAllowedNamespaces()));
+            new HashSet<>(extension.getExtensionFeatures()));
+        Assert.assertEquals(new HashSet<>(Arrays.asList("namespace1", "{root}")),
+            new HashSet<>(extension.getAllowedNamespaces()));
         Assert.assertSame(this.extensionLicenseManager.getLicense("GNU Lesser General Public License 2.1"),
             extension.getLicenses().iterator().next());
 

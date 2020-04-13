@@ -475,7 +475,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         removeComponentWithoutException(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint());
 
         // Register new component
-        addComponent(new DefaultComponentDescriptor<T>(componentDescriptor), componentInstance);
+        addComponent(new DefaultComponentDescriptor<>(componentDescriptor), componentInstance);
     }
 
     private <T> void addComponent(ComponentDescriptor<T> descriptor, T instance)

@@ -90,7 +90,7 @@ public class SafeCollection<E, C extends Collection<E>> extends AbstractSafeObje
     @Override
     public Iterator<E> iterator()
     {
-        return new SafeIterator<E, Iterator<E>>(getWrapped().iterator(), this.safeProvider, this.safeConstructor);
+        return new SafeIterator<>(getWrapped().iterator(), this.safeProvider, this.safeConstructor);
     }
 
     @Override

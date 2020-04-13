@@ -52,7 +52,7 @@ public class DefaultFilterStreamBeanDescriptor extends AbstractFilterStreamDescr
     {
         for (PropertyDescriptor propertyDescriptor : this.propertiesBeanDescriptor.getProperties()) {
             DefaultFilterStreamBeanParameterDescriptor<?> desc =
-                new DefaultFilterStreamBeanParameterDescriptor<Object>(propertyDescriptor);
+                new DefaultFilterStreamBeanParameterDescriptor<>(propertyDescriptor);
             this.parameterDescriptorMap.put(desc.getId().toLowerCase(), desc);
         }
     }

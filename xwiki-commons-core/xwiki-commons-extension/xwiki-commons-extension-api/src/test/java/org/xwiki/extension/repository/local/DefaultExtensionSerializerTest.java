@@ -145,7 +145,7 @@ public class DefaultExtensionSerializerTest
         extension.putProperty("key3", false);
         extension.putProperty("key4", 42);
         extension.putProperty("key5", Arrays.asList("list1", "list2"));
-        extension.putProperty("key6", new HashSet<String>(Arrays.asList("list1", "list2")));
+        extension.putProperty("key6", new HashSet<>(Arrays.asList("list1", "list2")));
         extension.putProperty("key7", Collections.singletonMap("key", "value"));
         extension.putProperty("key8", Collections.singletonMap("key", Collections.singletonMap("subkey", "subvalue")));
         extension.putProperty("key9", new Date(0));

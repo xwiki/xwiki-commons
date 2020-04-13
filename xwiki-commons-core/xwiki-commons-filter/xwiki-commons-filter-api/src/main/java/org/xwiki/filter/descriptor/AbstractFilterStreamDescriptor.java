@@ -47,7 +47,7 @@ public abstract class AbstractFilterStreamDescriptor implements FilterStreamDesc
      * use {@link FilterStreamPropertyDescriptor#getName()}.
      */
     protected Map<String, FilterStreamPropertyDescriptor<?>> parameterDescriptorMap =
-        new LinkedHashMap<String, FilterStreamPropertyDescriptor<?>>();
+        new LinkedHashMap<>();
 
     /**
      * @param name human readable name of filter input source type.

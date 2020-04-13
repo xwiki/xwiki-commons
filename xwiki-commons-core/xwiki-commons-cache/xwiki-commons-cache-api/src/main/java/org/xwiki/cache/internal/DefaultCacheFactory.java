@@ -39,6 +39,6 @@ public class DefaultCacheFactory implements CacheFactory
     @Override
     public <T> Cache<T> newCache(CacheConfiguration config) throws CacheException
     {
-        return new DefaultCache<T>();
+        return new DefaultCache<>();
     }
 }

@@ -50,7 +50,7 @@ public class SystemHTTPProxyTest
 
     @Rule
     public MockitoComponentMockingRule<ExtensionRepositoryFactory> repositoryFactory =
-        new MockitoComponentMockingRule<ExtensionRepositoryFactory>(AetherExtensionRepositoryFactory.class);
+        new MockitoComponentMockingRule<>(AetherExtensionRepositoryFactory.class);
 
     @Test
     public void testProxy() throws ClientProtocolException, IOException, ExtensionRepositoryException,

@@ -67,7 +67,7 @@ public final class BcExtensionUtils
         }
 
         GeneralName[] names = genNames.getNames();
-        List<X509GeneralName> x509names = new ArrayList<X509GeneralName>(names.length);
+        List<X509GeneralName> x509names = new ArrayList<>(names.length);
 
         for (GeneralName name : names) {
             switch (name.getTagNo()) {
@@ -107,7 +107,7 @@ public final class BcExtensionUtils
             return null;
         }
 
-        Collection<KeyUsage> usages = new ArrayList<KeyUsage>();
+        Collection<KeyUsage> usages = new ArrayList<>();
 
         for (KeyUsage usage : KeyUsage.values()) {
             if ((((DERBitString) keyUsage.toASN1Primitive()).intValue() & usage.value()) > 0) {
@@ -129,7 +129,7 @@ public final class BcExtensionUtils
             return null;
         }
 
-        List<String> usageStr = new ArrayList<String>();
+        List<String> usageStr = new ArrayList<>();
 
         for (KeyPurposeId keyPurposeId : usages.getUsages()) {
             usageStr.add(keyPurposeId.getId());

@@ -58,7 +58,7 @@ public class DefaultVersionRangeCollection implements VersionRangeCollection
     /**
      * @see #getRanges()
      */
-    private List<VersionRange> ranges = new ArrayList<VersionRange>();
+    private List<VersionRange> ranges = new ArrayList<>();
 
     /**
      * String representation of this range.

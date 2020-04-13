@@ -135,12 +135,12 @@ public class ProviderTest
         EmbeddableComponentManager cm = new EmbeddableComponentManager();
 
         // Register components for the list and map
-        DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<Role>();
+        DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<>();
         cd1.setRoleType(Role.class);
         cd1.setRoleHint("hint1");
         cd1.setImplementation(RoleImpl.class);
         cm.registerComponent(cd1);
-        DefaultComponentDescriptor<Role> cd2 = new DefaultComponentDescriptor<Role>();
+        DefaultComponentDescriptor<Role> cd2 = new DefaultComponentDescriptor<>();
         cd2.setRoleType(Role.class);
         cd2.setRoleHint("hint2");
         cd2.setImplementation(RoleImpl.class);

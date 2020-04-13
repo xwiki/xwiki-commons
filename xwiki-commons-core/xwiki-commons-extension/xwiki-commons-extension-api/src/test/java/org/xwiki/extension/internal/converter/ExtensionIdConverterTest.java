@@ -41,7 +41,7 @@ public class ExtensionIdConverterTest
 {
     @Rule
     public MockitoComponentMockingRule<ConverterManager> mocker =
-        new MockitoComponentMockingRule<ConverterManager>(DefaultConverterManager.class);
+        new MockitoComponentMockingRule<>(DefaultConverterManager.class);
 
     @Test
     public void testConvertFromString() throws ComponentLookupException

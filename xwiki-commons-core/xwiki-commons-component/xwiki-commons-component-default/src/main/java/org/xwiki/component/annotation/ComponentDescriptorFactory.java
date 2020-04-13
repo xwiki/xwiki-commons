@@ -78,7 +78,7 @@ public class ComponentDescriptorFactory
      */
     public List<ComponentDescriptor> createComponentDescriptors(Class<?> componentClass, Type componentRoleType)
     {
-        List<ComponentDescriptor> descriptors = new ArrayList<ComponentDescriptor>();
+        List<ComponentDescriptor> descriptors = new ArrayList<>();
 
         // If there's a @Named annotation, use it and ignore hints specified in the @Component annotation.
         String[] hints;

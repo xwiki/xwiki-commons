@@ -64,7 +64,7 @@ public class ExtensionPackager
 
     private Map<String, RepositorySerializer> repositories;
 
-    private Map<ExtensionId, File> extensionsFiles = new HashMap<ExtensionId, File>();
+    private Map<ExtensionId, File> extensionsFiles = new HashMap<>();
 
     public ExtensionPackager(File workingDirectory, File repository)
     {

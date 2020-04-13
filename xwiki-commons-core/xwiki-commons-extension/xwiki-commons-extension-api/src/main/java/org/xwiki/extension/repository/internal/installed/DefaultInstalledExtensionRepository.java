@@ -870,7 +870,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
                         // copy the list to allow use cases like uninstalling all backward dependencies without getting
                         // a concurrent issue on the list
                         result.put(festureExtension.root.namespace,
-                            new ArrayList<InstalledExtension>(backwardDependencies));
+                            new ArrayList<>(backwardDependencies));
                     }
                 }
             }

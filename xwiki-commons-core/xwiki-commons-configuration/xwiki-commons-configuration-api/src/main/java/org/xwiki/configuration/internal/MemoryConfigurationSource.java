@@ -46,7 +46,7 @@ public class MemoryConfigurationSource extends AbstractConfigurationSource
     /**
      * The properties.
      */
-    private Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
+    private Map<String, Object> properties = new ConcurrentHashMap<>();
 
     /**
      * @param key the key for the value to add to the configuration
@@ -112,7 +112,7 @@ public class MemoryConfigurationSource extends AbstractConfigurationSource
     @Override
     public List<String> getKeys()
     {
-        return new ArrayList<String>(this.properties.keySet());
+        return new ArrayList<>(this.properties.keySet());
     }
 
     @Override

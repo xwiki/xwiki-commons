@@ -116,7 +116,7 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
      */
     public MockitoComponentMockingRule(Class<? extends T> componentImplementationClass)
     {
-        this.mocker = new MockitoComponentMocker<T>(this, componentImplementationClass);
+        this.mocker = new MockitoComponentMocker<>(this, componentImplementationClass);
     }
 
     /**
@@ -127,7 +127,7 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
         List<? extends Class<?>> excludedComponentRoleDependencies)
     {
         this.mocker =
-            new MockitoComponentMocker<T>(this, componentImplementationClass, excludedComponentRoleDependencies);
+            new MockitoComponentMocker<>(this, componentImplementationClass, excludedComponentRoleDependencies);
     }
 
     /**
@@ -139,7 +139,7 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
     public MockitoComponentMockingRule(Class<? extends T> componentImplementationClass, Type componentRoleType,
         String componentRoleHint, List<? extends Class<?>> excludedComponentRoleDependencies)
     {
-        this.mocker = new MockitoComponentMocker<T>(this, componentImplementationClass, componentRoleType,
+        this.mocker = new MockitoComponentMocker<>(this, componentImplementationClass, componentRoleType,
             componentRoleHint, excludedComponentRoleDependencies);
     }
 
@@ -162,7 +162,7 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
     public MockitoComponentMockingRule(Class<? extends T> componentImplementationClass, Type componentRoleType,
         String componentRoleHint)
     {
-        this.mocker = new MockitoComponentMocker<T>(this, componentImplementationClass, componentRoleType,
+        this.mocker = new MockitoComponentMocker<>(this, componentImplementationClass, componentRoleType,
             componentRoleHint);
     }
 

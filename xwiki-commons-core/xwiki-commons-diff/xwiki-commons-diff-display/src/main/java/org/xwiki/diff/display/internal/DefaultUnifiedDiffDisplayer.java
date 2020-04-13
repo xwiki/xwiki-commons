@@ -73,7 +73,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
         /**
          * The collection of unified diff blocks build so far.
          */
-        private final Stack<UnifiedDiffBlock<E, F>> blocks = new Stack<UnifiedDiffBlock<E, F>>();
+        private final Stack<UnifiedDiffBlock<E, F>> blocks = new Stack<>();
 
         /**
          * The previous version, used to take the unmodified elements from.
@@ -167,7 +167,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
     @Override
     public <E, F> UnifiedDiffConfiguration<E, F> getDefaultConfiguration()
     {
-        return new UnifiedDiffConfiguration<E, F>();
+        return new UnifiedDiffConfiguration<>();
     }
 
     @Override
@@ -356,7 +356,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
     public <E, F> List<UnifiedDiffBlock<E, F>> display(DiffResult<E> diffResult, List<Conflict<E>> conflicts,
         UnifiedDiffConfiguration<E, F> config)
     {
-        State<E, F> state = new State<E, F>(diffResult.getPrevious());
+        State<E, F> state = new State<>(diffResult.getPrevious());
 
         // We use a new array list of conflicts here, since the conflicts will be consumed during the creation of the
         // map later.
@@ -420,7 +420,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
             || state.getLastDelta() == null
             || state.getLastDelta().getPrevious().getLastIndex() < delta.getPrevious().getIndex() - contextSize * 2) {
             maybeEndBlock(state, contextSize, false);
-            state.getBlocks().push(new UnifiedDiffBlock<E, F>());
+            state.getBlocks().push(new UnifiedDiffBlock<>());
         }
 
         // Add the unmodified elements before the given delta.
@@ -455,7 +455,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
     private <E, F> List<UnifiedDiffElement<E, F>> getModifiedElements(Delta<E> delta,
         UnifiedDiffConfiguration<E, F> config)
     {
-        List<UnifiedDiffElement<E, F>> elements = new ArrayList<UnifiedDiffElement<E, F>>();
+        List<UnifiedDiffElement<E, F>> elements = new ArrayList<>();
         elements.addAll(this.<E, F>getElements(delta.getPrevious(), Type.DELETED));
         elements.addAll(this.<E, F>getElements(delta.getNext(), Type.ADDED));
 
@@ -481,9 +481,9 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
     private <E, F> List<UnifiedDiffElement<E, F>> getElements(Chunk<E> chunk, Type changeType)
     {
         int index = chunk.getIndex();
-        List<UnifiedDiffElement<E, F>> elements = new ArrayList<UnifiedDiffElement<E, F>>();
+        List<UnifiedDiffElement<E, F>> elements = new ArrayList<>();
         for (E element : chunk.getElements()) {
-            elements.add(new UnifiedDiffElement<E, F>(index++, changeType, element));
+            elements.add(new UnifiedDiffElement<>(index++, changeType, element));
         }
         return elements;
     }
@@ -499,9 +499,9 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
      */
     private <E, F> List<UnifiedDiffElement<E, F>> getUnmodifiedElements(List<E> previous, int start, int end)
     {
-        List<UnifiedDiffElement<E, F>> unmodifiedElements = new ArrayList<UnifiedDiffElement<E, F>>();
+        List<UnifiedDiffElement<E, F>> unmodifiedElements = new ArrayList<>();
         for (int i = start; i < end; i++) {
-            unmodifiedElements.add(new UnifiedDiffElement<E, F>(i, Type.CONTEXT, previous.get(i)));
+            unmodifiedElements.add(new UnifiedDiffElement<>(i, Type.CONTEXT, previous.get(i)));
         }
         return unmodifiedElements;
     }
@@ -552,8 +552,8 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
             DiffResult<F> diffResult = this.diffManager.diff(previousSubElements, nextSubElements, config);
 
             List<InlineDiffChunk<F>> chunks = this.inlineDisplayer.display(diffResult);
-            previous.setChunks(new ArrayList<InlineDiffChunk<F>>());
-            next.setChunks(new ArrayList<InlineDiffChunk<F>>());
+            previous.setChunks(new ArrayList<>());
+            next.setChunks(new ArrayList<>());
             for (InlineDiffChunk<F> chunk : chunks) {
                 if (!chunk.isAdded()) {
                     previous.getChunks().add(chunk);

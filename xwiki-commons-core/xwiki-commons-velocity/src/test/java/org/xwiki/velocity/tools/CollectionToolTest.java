@@ -154,7 +154,7 @@ public class CollectionToolTest
 
         // Check that the set is indeed ordered
         Random r = new Random();
-        List<Double> values = new ArrayList<Double>(150);
+        List<Double> values = new ArrayList<>(150);
         for (int i = 0; i < 100; ++i) {
             Double d = r.nextDouble();
             result.add(d);

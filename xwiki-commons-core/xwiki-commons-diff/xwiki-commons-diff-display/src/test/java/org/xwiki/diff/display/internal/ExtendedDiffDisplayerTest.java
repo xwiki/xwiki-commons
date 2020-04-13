@@ -126,7 +126,7 @@ public class ExtendedDiffDisplayerTest
         UnifiedDiffConfiguration<String, Character> config = unifiedDiffDisplayer.getDefaultConfiguration();
         config.setSplitter(charSplitter);
 
-        Map<Type, String> separators = new HashMap<Type, String>();
+        Map<Type, String> separators = new HashMap<>();
         separators.put(Type.ADDED, "+");
         separators.put(Type.DELETED, "-");
         separators.put(Type.UNMODIFIED, "");

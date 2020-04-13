@@ -282,7 +282,7 @@ public abstract class AbstractExtension implements MutableExtension
     @Deprecated
     public void setFeatures(Collection<String> features)
     {
-        List<ExtensionId> extensionFeatures = new ArrayList<ExtensionId>(features.size());
+        List<ExtensionId> extensionFeatures = new ArrayList<>(features.size());
         for (String feature : features) {
             extensionFeatures.add(new ExtensionId(feature, getId().getVersion()));
         }
@@ -342,7 +342,7 @@ public abstract class AbstractExtension implements MutableExtension
     public void addExtensionFeature(ExtensionId feature)
     {
         Map<String, ExtensionId> map = this.featuresMap != null
-            ? new LinkedHashMap<String, ExtensionId>(this.featuresMap) : new LinkedHashMap<String, ExtensionId>();
+            ? new LinkedHashMap<>(this.featuresMap) : new LinkedHashMap<>();
         map.put(feature.getId(), feature);
 
         setFeatureMap(map);
@@ -353,7 +353,7 @@ public abstract class AbstractExtension implements MutableExtension
         this.featuresMap = Collections.unmodifiableMap(map);
 
         // Retro compatibility
-        Set<String> list = new LinkedHashSet<String>(this.featuresMap.size());
+        Set<String> list = new LinkedHashSet<>(this.featuresMap.size());
         for (ExtensionId extensionId : this.featuresMap.values()) {
             list.add(extensionId.getId());
         }
@@ -396,13 +396,13 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public void setLicenses(Collection<ExtensionLicense> licenses)
     {
-        this.licenses = Collections.unmodifiableList(new ArrayList<ExtensionLicense>(licenses));
+        this.licenses = Collections.unmodifiableList(new ArrayList<>(licenses));
     }
 
     @Override
     public void addLicense(ExtensionLicense license)
     {
-        List<ExtensionLicense> newLicenses = new ArrayList<ExtensionLicense>(getLicenses());
+        List<ExtensionLicense> newLicenses = new ArrayList<>(getLicenses());
         newLicenses.add(license);
 
         this.licenses = Collections.unmodifiableList(newLicenses);
@@ -447,7 +447,7 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public void addAuthor(ExtensionAuthor author)
     {
-        List<ExtensionAuthor> newAuthors = new ArrayList<ExtensionAuthor>(getAuthors());
+        List<ExtensionAuthor> newAuthors = new ArrayList<>(getAuthors());
         newAuthors.add(author);
 
         this.authors = Collections.unmodifiableList(newAuthors);
@@ -477,8 +477,8 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public void addAllowedNamespace(String namespace)
     {
-        Set<String> newNamespaces = this.allowedNamespaces != null ? new LinkedHashSet<String>(this.allowedNamespaces)
-            : new LinkedHashSet<String>();
+        Set<String> newNamespaces = this.allowedNamespaces != null ? new LinkedHashSet<>(this.allowedNamespaces)
+            : new LinkedHashSet<>();
         newNamespaces.add(namespace);
 
         this.allowedNamespaces = Collections.unmodifiableSet(newNamespaces);
@@ -497,7 +497,7 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public void addDependency(ExtensionDependency dependency)
     {
-        List<ExtensionDependency> newDependencies = new ArrayList<ExtensionDependency>(getDependencies());
+        List<ExtensionDependency> newDependencies = new ArrayList<>(getDependencies());
         newDependencies.add(dependency);
 
         this.dependencies = Collections.unmodifiableList(newDependencies);
@@ -522,7 +522,7 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public void addManagedDependency(ExtensionDependency managedDependency)
     {
-        List<ExtensionDependency> newManagedDependencies = new ArrayList<ExtensionDependency>(getManagedDependencies());
+        List<ExtensionDependency> newManagedDependencies = new ArrayList<>(getManagedDependencies());
         newManagedDependencies.add(managedDependency);
 
         this.managedDependencies = Collections.unmodifiableList(newManagedDependencies);
@@ -638,7 +638,7 @@ public abstract class AbstractExtension implements MutableExtension
     public void addRepository(ExtensionRepositoryDescriptor repository)
     {
         List<ExtensionRepositoryDescriptor> newrepositories =
-            new ArrayList<ExtensionRepositoryDescriptor>(getRepositories());
+            new ArrayList<>(getRepositories());
         newrepositories.add(repository);
 
         this.repositories = Collections.unmodifiableList(newrepositories);
@@ -666,7 +666,7 @@ public abstract class AbstractExtension implements MutableExtension
     public void putProperty(String key, Object value)
     {
         synchronized (this.propertiesLock) {
-            Map<String, Object> newProperties = new LinkedHashMap<String, Object>(getProperties());
+            Map<String, Object> newProperties = new LinkedHashMap<>(getProperties());
             newProperties.put(key, value);
 
             this.properties = Collections.unmodifiableMap(newProperties);
@@ -676,7 +676,7 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public void setProperties(Map<String, Object> properties)
     {
-        this.properties = Collections.unmodifiableMap(new LinkedHashMap<String, Object>(properties));
+        this.properties = Collections.unmodifiableMap(new LinkedHashMap<>(properties));
     }
 
     /**
@@ -688,7 +688,7 @@ public abstract class AbstractExtension implements MutableExtension
         T previous;
 
         synchronized (this.propertiesLock) {
-            Map<String, Object> newProperties = new LinkedHashMap<String, Object>(getProperties());
+            Map<String, Object> newProperties = new LinkedHashMap<>(getProperties());
             previous = (T) newProperties.remove(key);
 
             this.properties = Collections.unmodifiableMap(newProperties);

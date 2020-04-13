@@ -243,7 +243,7 @@ public interface Extension extends Comparable<Extension>
     default Collection<ExtensionId> getExtensionFeatures()
     {
         Collection<String> features = getFeatures();
-        List<ExtensionId> extensionFeatures = new ArrayList<ExtensionId>(features.size());
+        List<ExtensionId> extensionFeatures = new ArrayList<>(features.size());
         for (String feature : features) {
             extensionFeatures.add(new ExtensionId(feature, getId().getVersion()));
         }

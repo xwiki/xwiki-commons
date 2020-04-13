@@ -63,7 +63,7 @@ public class ModelConverterTest
 
     @Rule
     public MockitoComponentMockingRule<ConverterManager> mocker =
-        new MockitoComponentMockingRule<ConverterManager>(DefaultConverterManager.class);
+        new MockitoComponentMockingRule<>(DefaultConverterManager.class);
 
     @BeforeComponent
     public void beforeComponent() throws Exception

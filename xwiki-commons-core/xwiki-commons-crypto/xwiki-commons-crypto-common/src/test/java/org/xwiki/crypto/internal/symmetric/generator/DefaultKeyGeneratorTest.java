@@ -38,7 +38,7 @@ public class DefaultKeyGeneratorTest
 {
     @Rule
     public final MockitoComponentMockingRule<KeyGenerator> mocker =
-        new MockitoComponentMockingRule<KeyGenerator>(DefaultKeyGenerator.class);
+        new MockitoComponentMockingRule<>(DefaultKeyGenerator.class);
 
     private KeyGenerator generator;
 

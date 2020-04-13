@@ -61,7 +61,7 @@ public class AttributeFilter extends AbstractHTMLFilter
     /**
      * The map between HTML attribute names and the corresponding CSS property name.
      */
-    private static final Map<String, String> ATTRIBUTE_TO_CSS_PROPERTY = new HashMap<String, String>();
+    private static final Map<String, String> ATTRIBUTE_TO_CSS_PROPERTY = new HashMap<>();
 
     /**
      * The 'vertical-align' CSS property.
