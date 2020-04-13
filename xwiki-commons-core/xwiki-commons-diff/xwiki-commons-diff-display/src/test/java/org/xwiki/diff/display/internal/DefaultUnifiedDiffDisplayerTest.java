@@ -57,10 +57,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  * @since 4.1M2
  */
+@ComponentTest
 @ComponentList({
     DefaultDiffManager.class
 })
-@ComponentTest
 public class DefaultUnifiedDiffDisplayerTest
 {
     @InjectMockComponents
@@ -102,7 +102,7 @@ public class DefaultUnifiedDiffDisplayerTest
      */
     @ParameterizedTest
     @MethodSource("parametersData")
-    public void display(TestData data) throws Exception
+    void display(TestData data) throws Exception
     {
         List<UnifiedDiffBlock<String, Object>> blocks =
             unifiedDiffDisplayer.display(getDiffManager().diff(data.previous, data.next, null));
@@ -115,7 +115,7 @@ public class DefaultUnifiedDiffDisplayerTest
     }
 
     @Test
-    public void displayWithConflicts() throws Exception
+    void displayWithConflicts() throws Exception
     {
         List<String> previous = readLines("previous.txt");
         List<String> current = readLines("twoContexts.txt");
@@ -157,7 +157,7 @@ public class DefaultUnifiedDiffDisplayerTest
     }
 
     @Test
-    public void displayWithConflictsMultipleLines() throws Exception
+    void displayWithConflictsMultipleLines() throws Exception
     {
         //  Test1: whole blocks are in conflicts
         List<String> previous = Arrays.asList(

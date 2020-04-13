@@ -25,17 +25,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
 import org.xwiki.diff.display.InlineDiffChunk;
 import org.xwiki.diff.display.InlineDiffChunk.Type;
 import org.xwiki.diff.display.InlineDiffDisplayer;
 import org.xwiki.diff.internal.DefaultDiffManager;
-import org.xwiki.test.ComponentManagerRule;
 import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit tests for {@link DefaultInlineDiffDisplayer}.
@@ -43,83 +45,84 @@ import org.xwiki.test.annotation.ComponentList;
  * @version $Id$
  * @since 4.1M2
  */
+@ComponentTest
 @ComponentList({
     DefaultDiffManager.class,
     DefaultInlineDiffDisplayer.class
 })
 public class DefaultInlineDiffDisplayerTest
 {
-    @Rule
-    public final ComponentManagerRule componentManager = new ComponentManagerRule();
-
+    @InjectComponentManager
+    private ComponentManager componentManager;
+    
     @Test
-    public void testBothEmpty() throws Exception
+    void displayBothEmpty() throws Exception
     {
         execute("", "", "");
     }
 
     @Test
-    public void testNoChange() throws Exception
+    void displayNoChange() throws Exception
     {
         execute("xwiki", "xwiki", "xwiki");
     }
 
     @Test
-    public void testOriginalEmpty() throws Exception
+    void displayOriginalEmpty() throws Exception
     {
         execute("", "xwiki", "+xwiki+");
     }
 
     @Test
-    public void testRevisedEmpty() throws Exception
+    void displayRevisedEmpty() throws Exception
     {
         execute("xwiki", "", "-xwiki-");
     }
 
     @Test
-    public void testAddCharacter() throws Exception
+    void displayAddCharacter() throws Exception
     {
         execute("xwki", "xwiki", "xw+i+ki");
     }
 
     @Test
-    public void testRemoveCharacter() throws Exception
+    void displayRemoveCharacter() throws Exception
     {
         execute("xwiki", "xwki", "xw-i-ki");
     }
 
     @Test
-    public void testChangeCharacter() throws Exception
+    void displayChangeCharacter() throws Exception
     {
         execute("xwiki", "xwIki", "xw-i-+I+ki");
     }
 
     @Test
-    public void testEndPoints() throws Exception
+    void displayEndPoints() throws Exception
     {
         execute("wiki", "xwik", "+x+wik-i-");
     }
 
     @Test
-    public void testAddWord() throws Exception
+    void displayAddWord() throws Exception
     {
         execute("123abc", "123XYZabc", "123+XYZ+abc");
     }
 
     @Test
-    public void testRemoveWord() throws Exception
+    void displayRemoveWord() throws Exception
     {
         execute("123xyzABC", "123ABC", "123-xyz-ABC");
     }
 
     @Test
-    public void testChangeWord() throws Exception
+    void displayChangeWord() throws Exception
     {
         execute("123 xyz abc", "123 XYZ abc", "123 -xyz-+XYZ+ abc");
     }
 
     @Test
-    public void testChangeWords() throws Exception
+    void displayChangeWords() throws Exception
     {
         execute("123 456 789", "abc 456 xyz", "-123-+abc+ 456 -789-+xyz+");
     }
@@ -152,6 +155,6 @@ public class DefaultInlineDiffDisplayerTest
             actual.append(separator).append(chunk).append(separator);
         }
 
-        Assert.assertEquals(expected, actual.toString());
+        assertEquals(expected, actual.toString());
     }
 }

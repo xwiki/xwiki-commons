@@ -23,8 +23,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.junit.jupiter.api.Test;
 import org.xwiki.diff.DiffConfiguration;
 import org.xwiki.diff.DiffManager;
@@ -60,7 +58,7 @@ public class DefaultUnifiedDiffDisplayerIntegrationTest
     private MockitoComponentManager componentManager;
 
     @Test
-    public void display() throws Exception
+    void display() throws Exception
     {
         List<String> previous = Files.readAllLines(new File("src/test/resources/integration1/previous.txt").toPath());
         List<String> current = Files.readAllLines(new File("src/test/resources/integration1/current.txt").toPath());

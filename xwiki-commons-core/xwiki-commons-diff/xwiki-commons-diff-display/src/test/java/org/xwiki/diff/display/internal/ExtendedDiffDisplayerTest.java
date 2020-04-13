@@ -24,9 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
@@ -38,8 +37,11 @@ import org.xwiki.diff.display.UnifiedDiffConfiguration;
 import org.xwiki.diff.display.UnifiedDiffDisplayer;
 import org.xwiki.diff.display.UnifiedDiffElement;
 import org.xwiki.diff.internal.DefaultDiffManager;
-import org.xwiki.test.ComponentManagerRule;
 import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests how the unified and inline diff displayers can be mixed to generate a diff both at line (unified) and character
@@ -48,6 +50,7 @@ import org.xwiki.test.annotation.ComponentList;
  * @version $Id$
  * @since 4.1M2
  */
+@ComponentTest
 @ComponentList({
     LineSplitter.class,
     CharSplitter.class,
@@ -57,35 +60,35 @@ import org.xwiki.test.annotation.ComponentList;
 })
 public class ExtendedDiffDisplayerTest
 {
-    @Rule
-    public final ComponentManagerRule componentManager = new ComponentManagerRule();
+    @InjectComponentManager
+    private ComponentManager componentManager;
 
     @Test
-    public void testLineAdded() throws Exception
+    void displayLineAdded() throws Exception
     {
         execute("one\nthree", "one\ntwo\nthree", "@@ -1,2 +1,3 @@\n one\n+two\n three\n");
     }
 
     @Test
-    public void testLineRemoved() throws Exception
+    void displayLineRemoved() throws Exception
     {
         execute("one\ntwo\nthree", "one\nthree", "@@ -1,3 +1,2 @@\n one\n-two\n three\n");
     }
 
     @Test
-    public void testLineChanged() throws Exception
+    void displayLineChanged() throws Exception
     {
         execute("one\ntwo\nthree", "one\ntWo\nthree", "@@ -1,3 +1,3 @@\n one\n-t-w-o\n+t+W+o\n three\n");
     }
 
     @Test
-    public void testLineReplaced() throws Exception
+    void displayLineReplaced() throws Exception
     {
         execute("one\ntwo\nthree", "one\ntWo\nextra\nthree", "@@ -1,3 +1,4 @@\n one\n-two\n+tWo\n+extra\n three\n");
     }
 
     @Test
-    public void testLinesChanges() throws Exception
+    void displayLinesChanges() throws Exception
     {
         execute("one\ntwo\nthree\nfour", "one\ntWo\nthrEE\nfour",
             "@@ -1,4 +1,4 @@\n one\n-t-w-o\n-thr-ee-\n+t+W+o\n+thr+EE+\n four\n");
@@ -94,7 +97,7 @@ public class ExtendedDiffDisplayerTest
     }
 
     @Test
-    public void testNullInput() throws Exception
+    void displayNullInput() throws Exception
     {
         execute(null, null, "");
     }
@@ -148,6 +151,6 @@ public class ExtendedDiffDisplayerTest
                 }
             }
         }
-        Assert.assertEquals(expected, actual.toString());
+        assertEquals(expected, actual.toString());
     }
 }
