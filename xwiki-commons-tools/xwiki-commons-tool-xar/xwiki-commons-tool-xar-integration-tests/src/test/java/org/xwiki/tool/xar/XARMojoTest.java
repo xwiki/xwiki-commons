@@ -39,10 +39,10 @@ import org.dom4j.io.SAXReader;
 import org.junit.jupiter.api.Test;
 import org.xwiki.tool.xar.internal.XWikiDocument;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -209,8 +209,8 @@ public class XARMojoTest extends AbstractMojoTest
         assertEquals("This page will gather my blog.", document.selectSingleNode("/xwikidoc/content").getText().trim(),
             "Insertion of content did not happen?");
 
-        assertTrue("Insertion of attachment did not happen?",
-            document.selectSingleNode("/xwikidoc/attachment/content") != null);
+        assertTrue(document.selectSingleNode("/xwikidoc/attachment/content") != null,
+            "Insertion of attachment did not happen?");
     }
 
     @Test
