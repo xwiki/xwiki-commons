@@ -50,7 +50,8 @@ public class JUnit5Junit4ProcessorTest
             launcher.run();
         });
         assertThat(exception.getMessage(), matchesPattern("\\QThe following errors were found:\\E\n"
-            + "\\Q- There's a mix of JUnit4 and JUnit5 APIs at \\E(.*)\n"
+            + "\\Q- There's a mix of JUnit4 and JUnit5 APIs at \\E(.*BadTest1.*)\n"
+            + "\\Q- There's a mix of JUnit4 and JUnit5 APIs at \\E(.*BadTest2.*)\n"
         ));
     }
 }

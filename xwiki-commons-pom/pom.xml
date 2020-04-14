@@ -165,60 +165,76 @@
         <artifactId>spoon-maven-plugin</artifactId>
         <executions>
           <execution>
+            <id>spoon-main</id>
             <goals>
               <goal>check</goal>
             </goals>
+            <configuration>
+              <processors>
+                <processor>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</processor>
+                <processor>org.xwiki.tool.spoon.ComponentAnnotationProcessor</processor>
+              </processors>
+              <processorProperties>
+                <processorProperty>
+                  <name>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</name>
+                  <properties>
+                    <property>
+                      <name>methods</name>
+                      <value>
+                        {
+                        <!-- Does not make any sense in the context of an application server and it can cause memory
+                             leaks -->
+                        "java.io.File": ["deleteOnExit"],
+                        <!-- The URL#equals implementation is insane (it actually tries to access the host with HTTP URLs
+                             for example) -->
+                        "java.net.URL": ["equals"]
+                        }
+                      </value>
+                    </property>
+                  </properties>
+                </processorProperty>
+                <processorProperty>
+                  <name>org.xwiki.tool.spoon.ComponentAnnotationProcessor</name>
+                  <properties>
+                    <!-- TODO: Remove when Spoon is fixed and doesn't emit the following warning when this property is not
+                         specified:
+                           warning: No value found for property 'componentsTxtPath' in processor ...
+                           org.xwiki.tool.spoon.JUnit5JUnit4Processor
+                           end of processing:
+                           1 warning
+                    -->
+                    <property>
+                      <name>componentsTxtPath</name>
+                      <value>target/classes/META-INF/components.txt</value>
+                    </property>
+                    <property>
+                      <name>skipForeignDeclarations</name>
+                      <value>false</value>
+                    </property>
+                  </properties>
+                </processorProperty>
+              </processorProperties>
+            </configuration>
           </execution>
+          <!-- TODO: Disabled FTM since spoon doesn't seem able to execute a process or test source roots ATM, see
+               https://github.com/INRIA/spoon/issues/3326
+          <execution>
+            <id>spoon-test</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <srcFolder>src/test/java</srcFolder>
+              <processors>
+                <processor>org.xwiki.tool.spoon.JUnit5JUnit4Processor</processor>
+              </processors>
+            </configuration>
+          </execution-->
         </executions>
         <configuration>
           <skip>${xwiki.spoon.skip}</skip>
           <!-- Don't fail in case of missing sources -->
           <skipSpoonErrors>true</skipSpoonErrors>
-          <processors>
-            <processor>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</processor>
-            <processor>org.xwiki.tool.spoon.ComponentAnnotationProcessor</processor>
-            <processor>org.xwiki.tool.spoon.JUnit5JUnit4Processor</processor>
-          </processors>
-          <processorProperties>
-            <processorProperty>
-              <name>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</name>
-              <properties>
-                <property>
-                  <name>methods</name>
-                  <value>
-                    {
-                      <!-- Does not make any sense in the context of an application server and it can cause memory
-                           leaks -->
-                      "java.io.File": ["deleteOnExit"],
-                      <!-- The URL#equals implementation is insane (it actually tries to access the host with HTTP URLs
-                           for example) -->
-                      "java.net.URL": ["equals"]
-                    }
-                  </value>
-                </property>
-              </properties>
-            </processorProperty>
-            <processorProperty>
-              <name>org.xwiki.tool.spoon.ComponentAnnotationProcessor</name>
-              <properties>
-                <!-- TODO: Remove when Spoon is fixed and doesn't emit the following warning when this property is not
-                     specified:
-                       warning: No value found for property 'componentsTxtPath' in processor ...
-                       org.xwiki.tool.spoon.JUnit5JUnit4Processor
-                       end of processing:
-                       1 warning
-                -->
-                <property>
-                  <name>componentsTxtPath</name>
-                  <value>target/classes/META-INF/components.txt</value>
-                </property>
-                <property>
-                  <name>skipForeignDeclarations</name>
-                  <value>false</value>
-                </property>
-              </properties>
-            </processorProperty>
-          </processorProperties>
         </configuration>
         <dependencies>
           <!-- Contains custom Spoon processors -->

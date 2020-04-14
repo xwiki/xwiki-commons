@@ -19,9 +19,8 @@
  */
 package org.xwiki.tool.spoon;
 
-import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.reference.CtTypeReference;
 
 /**
  * Verifies that we don't mix JUnit4 and JUnit5 APIs.
@@ -35,18 +34,16 @@ public class JUnit5JUnit4Processor extends AbstractXWikiProcessor<CtClass<?>>
     {
         boolean hasJunit5Types = false;
         boolean hasJunit4Types = false;
-        for (CtTypeMember typeMember : ctClass.getTypeMembers()) {
-            for (CtAnnotation annotation : typeMember.getAnnotations()) {
-                if (annotation.getAnnotationType().getQualifiedName().startsWith("org.junit.jupiter")) {
-                    hasJunit5Types = true;
-                    if (hasJunit4Types) {
-                        break;
-                    }
-                } else if (annotation.getAnnotationType().getQualifiedName().startsWith("org.junit")) {
-                    hasJunit4Types = true;
-                    if (hasJunit5Types) {
-                        break;
-                    }
+        for (CtTypeReference<?> typeReference : ctClass.getReferencedTypes()) {
+            if (typeReference.getQualifiedName().startsWith("org.junit.jupiter")) {
+                hasJunit5Types = true;
+                if (hasJunit4Types) {
+                    break;
+                }
+            } else if (typeReference.getQualifiedName().startsWith("org.junit")) {
+                hasJunit4Types = true;
+                if (hasJunit5Types) {
+                    break;
                 }
             }
         }
