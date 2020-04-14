@@ -21,16 +21,19 @@
 // WARNING: NOT WORKING, WORK IN PROGRESS. USE THE MAVEN BUILD WHICH IS THE XWIKI OFFICIAL BUILD TOOL.
 
 ext {
-    junit4Version = '4.12'
-    junit5Version = '5.2.0'
-    slf4jVersion =  '1.7.25'
-    commonsLang3Version = '3.7'
-    mockitoVersion= '2.18.3'
+    junit4Version = '4.13'
+    junit5Version = '5.6.2'
+    junitPlatformVersion = '1.6.2'
+    slf4jVersion =  '1.7.30'
+    commonsLang3Version = '3.10'
+    commonsIoVersion = '2.6'
+    mockitoVersion= '3.3.3'
+    logbackVersion = '1.2.3'
 }
 
 allprojects {
     group = 'org.xwiki.commons'
-    version = '10.5-SNAPSHOT'
+    version = '12.3-SNAPSHOT'
 
     apply plugin: 'java'
     apply plugin: 'java-library'
@@ -41,6 +44,10 @@ allprojects {
 
     repositories {
         mavenCentral()
+    }
+
+    test {
+        useJUnitPlatform()
     }
 
     dependencies {
