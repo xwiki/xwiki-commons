@@ -180,16 +180,18 @@
                   <properties>
                     <property>
                       <name>methods</name>
-                      <value>
+                      <!--
+                        - File#deleteOnExit: Does not make any sense in the context of an application server and it can
+                          cause memory leaks
+                        - URL#equals: The URL#equals implementation is insane (it actually tries to access the host
+                          with HTTP URLs for example)
+                      -->
+                      <value><![CDATA[
                         {
-                        <!-- Does not make any sense in the context of an application server and it can cause memory
-                             leaks -->
-                        "java.io.File": ["deleteOnExit"],
-                        <!-- The URL#equals implementation is insane (it actually tries to access the host with HTTP URLs
-                             for example) -->
-                        "java.net.URL": ["equals"]
+                          "java.io.File": ["deleteOnExit"],
+                          "java.net.URL": ["equals"]
                         }
-                      </value>
+                      ]]></value>
                     </property>
                   </properties>
                 </processorProperty>
