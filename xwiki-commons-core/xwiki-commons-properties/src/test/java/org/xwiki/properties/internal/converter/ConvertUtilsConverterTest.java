@@ -19,15 +19,20 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.properties.internal.DefaultConverterManager;
 import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Validate {@link ConvertUtilsConverter} component.
@@ -35,41 +40,42 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
  * @version $Id$
  */
 @AllComponents
+@ComponentTest
 public class ConvertUtilsConverterTest
 {
-    @Rule
-    public MockitoComponentMockingRule<ConverterManager> mocker = new MockitoComponentMockingRule<>(
-        DefaultConverterManager.class);
+    @InjectMockComponents
+    private DefaultConverterManager converter;
 
     public Integer[] field;
 
     @Test
-    public void testConvert() throws SecurityException, ComponentLookupException
+    public void convert() throws SecurityException, ComponentLookupException
     {
-        Assert.assertEquals(Integer.valueOf(42), this.mocker.getComponentUnderTest().convert(Integer.class, "42"));
+        assertEquals(Integer.valueOf(42), this.converter.convert(Integer.class, "42"));
     }
 
     @Test
-    public void testConvertArrays() throws SecurityException, NoSuchFieldException, ComponentLookupException
+    public void convertArrays() throws SecurityException, NoSuchFieldException, ComponentLookupException
     {
-        Assert.assertArrayEquals(new int[] { 1, 2, 3 }, this.mocker.getComponentUnderTest().<int[]>convert(int[].class, "1, 2, 3"));
+        assertArrayEquals(new int[] {1, 2, 3}, this.converter.<int[]>convert(int[].class, "1, 2, 3"));
 
-        Assert.assertArrayEquals(new Integer[] { 1, 2, 3 },
-            this.mocker.getComponentUnderTest().<Integer[]>convert(Integer[].class, "1, 2, 3"));
+        assertArrayEquals(new Integer[] {1, 2, 3}, this.converter.<Integer[]>convert(Integer[].class, "1, 2, 3"));
 
-        Assert.assertArrayEquals(new Integer[] { 1, 2, 3 }, this.mocker.getComponentUnderTest().<Integer[]>convert(
-            ConvertUtilsConverterTest.class.getField("field").getGenericType(), "1, 2, 3"));
+        assertArrayEquals(new Integer[] {1, 2, 3}, this.converter
+            .<Integer[]>convert(ConvertUtilsConverterTest.class.getField("field").getGenericType(), "1, 2, 3"));
     }
 
     @Test
-    public void testConvertWhenNoConverterAvailable() throws ComponentLookupException
+    public void convertWhenNoConverterAvailable() throws ComponentLookupException
     {
-        try {
-            this.mocker.getComponentUnderTest().convert(ConvertUtilsConverter.class, "");
-            Assert.fail("Should have thrown an exception here");
-        } catch (ConversionException expected) {
-            Assert.assertEquals("Failed to find a Converter to convert from [java.lang.String] to " + "["
-                + ConvertUtilsConverter.class.getName() + "]", expected.getMessage());
-        }
+        assertThrows(ConversionException.class, () -> this.converter.convert(ConvertUtilsConverter.class, ""),
+            "Failed to find a Converter to convert from [java.lang.String] to " + "["
+                + ConvertUtilsConverter.class.getName() + "]");
+    }
+
+    @Test
+    public void convertNull()
+    {
+        assertNull(this.converter.convert(String.class, null));
     }
 }
