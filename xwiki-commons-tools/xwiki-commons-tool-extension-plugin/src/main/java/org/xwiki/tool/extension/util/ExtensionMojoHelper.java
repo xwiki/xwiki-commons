@@ -98,7 +98,7 @@ public class ExtensionMojoHelper implements AutoCloseable
     private ExtensionSerializer extensionSerializer;
 
     @Inject
-    private CoreExtensionRepository coreExtensionReposirory;
+    private CoreExtensionRepository coreExtensionRepository;
 
     @Inject
     private ExtensionRepositoryManager repositories;
@@ -301,7 +301,7 @@ public class ExtensionMojoHelper implements AutoCloseable
 
     public ExtensionMojoCoreExtensionRepository getExtensionMojoCoreExtensionRepository()
     {
-        return (ExtensionMojoCoreExtensionRepository) this.coreExtensionReposirory;
+        return (ExtensionMojoCoreExtensionRepository) this.coreExtensionRepository;
     }
 
     public MavenProject getMavenProject(Artifact artifact) throws MojoExecutionException
