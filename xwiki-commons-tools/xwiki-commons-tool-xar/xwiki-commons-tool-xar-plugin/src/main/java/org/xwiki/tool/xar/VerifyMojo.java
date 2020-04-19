@@ -22,8 +22,11 @@ package org.xwiki.tool.xar;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -37,12 +40,13 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  * Perform various verifications of the XAR files in this project. Namely:
  * <ul>
  *   <li>ensure that the encoding is UTF8</li>
- *   <li>(optional) ensure that pages all have a parent (except for Main.WebHome)</li>
+ *   <li>(optional) ensure that all pages have a parent (except for {@code Main.WebHome})</li>
  *   <li>ensure that the author/contentAuthor/creator/attachment authors are {@code xwiki:XWiki.Admin}</li>
  *   <li>ensure that the version is {@code 1.1}</li>
  *   <li>ensure that comment is empty</li>
  *   <li>ensure that minor edit is false</li>
- *   <li>ensure that technical pages are hidden</li>
+ *   <li>ensure that technical pages are hidden. We consider by default that all pages are technical unless specified
+ *     otherwise</li>
  *   <li>ensure that the default language is set properly</li>
  *   <li>ensure titles follow any defined rules (when defined by the user)</li>
  *   <li>ensure that Translations pages are using the plain/1.0 syntax</li>
@@ -88,6 +92,16 @@ public class VerifyMojo extends AbstractVerifyMojo
      */
     @Parameter(property = "xar.verify.emptyParent.skip", defaultValue = "true")
     private boolean emptyParentSkip;
+
+    /**
+     * Defines expectations for the Title field of pages.
+     *
+     * @since 7.3RC1
+     */
+    @Parameter(property = "xar.verify.titles")
+    private Properties titles;
+
+    private Map<Pattern, Pattern> titlePatterns;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
@@ -157,8 +171,8 @@ public class VerifyMojo extends AbstractVerifyMojo
                     xdoc.getDefaultLanguage()));
             }
 
-            // Verification 8: Verify that all technical pages are hidden
-            if (isTechnicalPage(file.getPath()) && !xdoc.isHidden()) {
+            // Verification 8: Verify that all technical pages are hidden (except for visible technical pages).
+            if (!isContentPage(file.getPath()) && !isVisibleTechnicalPage(file.getPath()) && !xdoc.isHidden()) {
                 errors.add("Technical documents must be hidden");
             }
 
@@ -216,6 +230,29 @@ public class VerifyMojo extends AbstractVerifyMojo
         }
     }
 
+    @Override
+    protected void initializePatterns()
+    {
+        super.initializePatterns();
+
+        // Transform title expectations into Patterns
+        Map<Pattern, Pattern> patterns = new HashMap<>();
+        for (String key : this.titles.stringPropertyNames()) {
+            patterns.put(Pattern.compile(key), Pattern.compile(this.titles.getProperty(key)));
+        }
+        this.titlePatterns = patterns;
+    }
+
+    private String getTitlePatternRuleforPage(String documentReference)
+    {
+        for (Map.Entry<Pattern, Pattern> entry : this.titlePatterns.entrySet()) {
+            if (entry.getKey().matcher(documentReference).matches()) {
+                return entry.getValue().pattern();
+            }
+        }
+        return null;
+    }
+
     private void verifyDateFields(List<String> errors, XWikiDocument xdoc)
     {
         if (!skipDatesDocumentList.contains(xdoc.getReference())) {
@@ -261,4 +298,15 @@ public class VerifyMojo extends AbstractVerifyMojo
             }
         }
     }
+
+    private boolean isTitlesMatching(String documentReference, String title)
+    {
+        for (Map.Entry<Pattern, Pattern> entry : this.titlePatterns.entrySet()) {
+            if (entry.getKey().matcher(documentReference).matches() && !entry.getValue().matcher(title).matches()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

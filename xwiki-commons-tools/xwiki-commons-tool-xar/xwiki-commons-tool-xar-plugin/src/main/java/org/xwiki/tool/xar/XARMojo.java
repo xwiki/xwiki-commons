@@ -36,7 +36,6 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -67,7 +66,7 @@ public class XARMojo extends AbstractXARMojo
     /**
      * Indicate if XAR dependencies should be included in the produced XAR package.
      */
-    @Parameter(property = "includeDependencies", defaultValue = "false")
+    @Parameter(property = "xar.includeDependencies", defaultValue = "false")
     private boolean includeDependencies;
 
     /**

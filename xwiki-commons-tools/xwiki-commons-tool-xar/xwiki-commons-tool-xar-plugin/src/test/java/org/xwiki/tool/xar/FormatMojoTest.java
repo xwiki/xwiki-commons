@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
@@ -63,7 +62,6 @@ public class FormatMojoTest
         FormatMojo mojo = new FormatMojo();
         mojo.defaultLanguage = "en";
         mojo.contentPages = Arrays.asList("Document\\.xml");
-        mojo.titles = new Properties();
         mojo.initializePatterns();
 
         File file = new File("Some/Space/Document.xml");
@@ -77,7 +75,6 @@ public class FormatMojoTest
         FormatMojo mojo = new FormatMojo();
         mojo.defaultLanguage = "en";
         mojo.contentPages = Arrays.asList(".*/Document\\.xml");
-        mojo.titles = new Properties();
         mojo.initializePatterns();
 
         File file = new File("Some/Space/Document.xml");

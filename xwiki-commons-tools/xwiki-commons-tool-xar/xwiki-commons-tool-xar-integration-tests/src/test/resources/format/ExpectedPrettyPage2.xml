@@ -24,7 +24,7 @@
   <web>Pretty</web>
   <name>Page2</name>
   <language/>
-  <defaultLanguage/>
+  <defaultLanguage>en</defaultLanguage>
   <translation>0</translation>
   <parent>Main.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>

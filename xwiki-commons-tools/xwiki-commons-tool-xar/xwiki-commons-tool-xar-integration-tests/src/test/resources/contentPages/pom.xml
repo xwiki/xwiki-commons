@@ -34,21 +34,17 @@
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
         <version>@project.version@</version>
-        <configuration>
-          <technicalPages>
-            <!-- The EditTranslations page is not a Translation page and thus not a content page! -->
-            <technicalPage>.*/EditTranslations\.xml</technicalPage>
-          </technicalPages>
-          <contentPages>
-            <!-- Consider Translation pages as content pages (since they can have translations) -->
-            <contentPage>.*/.*Translations\.xml</contentPage>
-          </contentPages>
-        </configuration>
         <executions>
           <execution>
             <goals>
               <goal>verify</goal>
             </goals>
+            <configuration>
+              <contentPages>
+                <contentPage>.*/Main/WebHome\.xml</contentPage>
+                <contentPage>.*/Space/WebHome\.xml</contentPage>
+              </contentPages>
+            </configuration>
           </execution>
         </executions>
       </plugin>

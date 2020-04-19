@@ -98,6 +98,14 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
+    public void executeWithVisibleTechnicalPages() throws Exception
+    {
+        Verifier verifier = createVerifier("/visibleTechnicalPages");
+        verifier.executeGoal("install");
+        verifier.verifyErrorFreeLog();
+    }
+
+    @Test
     public void executeWithNotEmptyDefaultLanguage() throws Exception
     {
         verifyExecution("/notEmptyDefaultLanguage", "Verifying [Space/WebHome.xml]... errors",
@@ -124,17 +132,33 @@ public class VerifyMojoTest extends AbstractMojoTest
     public void executeWithMissingLicenseHeader() throws Exception
     {
         Verifier verifier = createVerifier("/missingLicense");
-        verifier.addCliOption("-DformatLicense=true");
-        verifier.addCliOption("-Dcommons.version=" + System.getProperty("commons.version"));
+        verifier.addCliOption("-Dxar.formatLicense=true");
+        verifier.addCliOption("-Dxar.commons.version=" + System.getProperty("commons.version"));
         verifyExecution(verifier, "Missing header in");
     }
 
     @Test
-    public void executeContentAndTechnicalPages() throws Exception
+    public void executeWithTranslationPages() throws Exception
+    {
+        Verifier verifier = createVerifier("/translations");
+        verifier.executeGoal("install");
+        verifier.verifyErrorFreeLog();
+    }
+
+    @Test
+    public void executeWithTranslationOverrides() throws Exception
+    {
+        Verifier verifier = createVerifier("/translationOverrides");
+        verifier.executeGoal("install");
+        verifier.verifyErrorFreeLog();
+    }
+
+    @Test
+    public void executeWithWrongTranslationPages() throws Exception
     {
         // @formatter:off
-        verifyExecution("/contentAndTechnical",
-            "Verifying [Main/EditTranslations.xml]... errors",
+        verifyExecution("/wrongTranslations",
+            "Verifying [Main/SomeTranslations.xml]... errors",
             "- Technical documents must be hidden",
             "Verifying [Main/Translations.xml]... errors",
             "- Default Language should have been [en] but was []");
@@ -142,9 +166,9 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeOk() throws Exception
+    public void executeWhenContentPages() throws Exception
     {
-        Verifier verifier = createVerifier("/allOk");
+        Verifier verifier = createVerifier("/contentPages");
         verifier.executeGoal("install");
         verifier.verifyErrorFreeLog();
     }

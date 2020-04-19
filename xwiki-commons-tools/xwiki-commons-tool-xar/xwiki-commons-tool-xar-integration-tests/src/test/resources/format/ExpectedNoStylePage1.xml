@@ -44,7 +44,7 @@ line2
 <comment/>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
-<hidden>false</hidden>
+<hidden>true</hidden>
 <content>line 1
 line 2
   line with unicode chars: Вики функционирует

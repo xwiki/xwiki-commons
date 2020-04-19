@@ -23,11 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,34 +74,26 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     /**
      * If true then don't check if the packaging is XAR before running mojos.
      */
-    @Parameter(property = "force", readonly = true)
+    @Parameter(property = "xar.force", readonly = true)
     protected boolean force;
 
     /**
      * The language in which non-translated documents are written in.
      */
-    @Parameter(property = "defaultLanguage", defaultValue = "en")
+    @Parameter(property = "xar.defaultLanguage", defaultValue = "en")
     protected String defaultLanguage;
 
     /**
-     * If true then add license header to XML files.
+     * If true then check for cliense and add a license header to XML files.
      */
-    @Parameter(property = "formatLicense", readonly = true)
+    @Parameter(property = "xar.formatLicense", readonly = true)
     protected boolean formatLicense;
 
     /**
      * The Commons version to be used by this mojo.
      */
-    @Parameter(property = "commons.version")
+    @Parameter(property = "xar.commons.version")
     protected String commonsVersion;
-
-    /**
-     * Defines expectations for the Title field of pages.
-     *
-     * @since 7.3RC1
-     */
-    @Parameter(property = "xar.verify.titles")
-    protected Properties titles;
 
     /**
      * Disables the check for the existence of the date fields.
@@ -124,24 +113,32 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
 
     /**
      * Explicitly define a list of pages (it's a regex) that should be considered as content pages (rather than
-     * technical pages). Note that content pages must have a non empty default language specified and note that if a
-     * page is not in this list and it doesn't have any translation then it's considered by default to be a technical
-     * page for the default language check. Thus this configuration property is useful for pages such as Translations
-     * pages (even though they may not have any translations at first).
+     * technical pages which is the default). Note that content pages must have a non-empty default language specified.
      *
      * @since 7.1M1
      */
-    @Parameter(property = "xar.verify.contentPages")
+    @Parameter(property = "xar.contentPages")
     protected List<String> contentPages;
 
     /**
-     * Explicitly define a list of pages (it's a regex) that should  be considered as technical pages. Any matching
-     * page defined in this list has precedence over pages matching {@link #contentPages}.
+     * Explicitly define a list of pages (it's a regex) that can have translations and thus which must have a default
+     * language not empty. If not defined then defaults to considering that {@code *Translations.xml} pages are
+     * translated pages.
      *
-     * @since 7.1M1
+     * @since 12.3RC1
      */
-    @Parameter(property = "xar.verify.technicalPages")
-    protected List<String> technicalPages;
+    @Parameter(property = "xar.translatablePages", defaultValue = ".*/.*Translations\\.xml")
+    protected List<String> translatablePages;
+
+    /**
+     * Explicitly define a list of pages (it's a regex) that are technical pages but that should be visible (not
+     * hidden). For example, home pages of applications. These pages must have their default langue set to empty so
+     * that a search in a given language doesn't return them as they're not content.
+     *
+     * @since 12.3RC1
+     */
+    @Parameter(property = "xar.visibleTechnicalPages")
+    protected List<String> visibleTechnicalPages;
 
     /**
      * The current Maven session.
@@ -157,9 +154,9 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
 
     private List<Pattern> contentPagePatterns;
 
-    private List<Pattern> technicalPagePatterns;
+    private List<Pattern> translatablePagePatterns;
 
-    private Map<Pattern, Pattern> titlePatterns;
+    private List<Pattern> visibleTechnicalPagePatterns;
 
     /**
      * Initialize regex Patterns for performance reasons.
@@ -167,14 +164,8 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     protected void initializePatterns()
     {
         this.contentPagePatterns = initializationPagePatterns(this.contentPages);
-        this.technicalPagePatterns = initializationPagePatterns(this.technicalPages);
-
-        // Transform title expectations into Patterns
-        Map<Pattern, Pattern> patterns = new HashMap<>();
-        for (String key : this.titles.stringPropertyNames()) {
-            patterns.put(Pattern.compile(key), Pattern.compile(this.titles.getProperty(key)));
-        }
-        this.titlePatterns = patterns;
+        this.translatablePagePatterns = initializationPagePatterns(this.translatablePages);
+        this.visibleTechnicalPagePatterns = initializationPagePatterns(this.visibleTechnicalPages);
     }
 
     private List<Pattern> initializationPagePatterns(List<String> pageRegexes)
@@ -234,14 +225,14 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     /**
      * Guess the {@code &lt;defaultLanguage&gt;} value to use for the passed file using the following algorithm:
      * <ul>
-     *     <li>If the page name matches one of the regexes defined by the user as content pages then check that the
-     *         default language is {@link #defaultLanguage}.</li>
-     *     <li>If the page name matches one of the regexes defined by the user as technial pages then check that the
-     *         default language is empty. Matching content pages have precedence over matching technical pages.</li>
-     *     <li>If there's no other translation of the file then consider default language to be empty to signify that
-     *         it's a technical document. </li>
-     *     <li>If there are other translations ("(prefix).(language).xml" format) then the default language should be
-     *         {@link #defaultLanguage}</li>
+     *   <li>If the page name matches one of the regexes defined by the user as a translated page, then check that
+     *     the default language is {@link #defaultLanguage}.</li>
+     *   <li>Otherwise, if the page name matches one of the regexes defined by the user as a content page, then check
+     *     that the default language is {@link #defaultLanguage}.</li>
+     *   <li>Otherwise, if there's no other translation of the file then check that the default language is empty
+     *     since it's a technical page.</li>
+     *   <li>Otherwise, if there are other translations ("(prefix).(language).xml" format) then check that the default
+     *     language should is {@link #defaultLanguage}</li>
      * </ul>
      * @param file the XML file for which to guess the default language that it should have
      * @param xwikiXmlFiles the list of all XML files that is used to check for translations of the passed XML file
@@ -250,23 +241,11 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      */
     protected String guessDefaultLanguage(File file, Collection<File> xwikiXmlFiles)
     {
-        // Note that we need to check for content pages before technical pages because some pages are both content
-        // pages (Translation pages for example) and technical pages.
-
-        // Is it in the list of defined content pages?
-        String language =
-            guessDefaultLanguageForPatterns(file.getPath(), this.contentPagePatterns, this.defaultLanguage);
-        if (language != null) {
-            return language;
+        if (isTranslatablePage(file.getPath()) || isContentPage(file.getPath())) {
+            return this.defaultLanguage;
         }
 
-        // Is it in the list of defined technical pages?
-        language = guessDefaultLanguageForPatterns(file.getPath(), this.technicalPagePatterns, "");
-        if (language != null) {
-            return language;
-        }
-
-        language = "";
+        String language = "";
 
         // Check if the doc is a translation
         Matcher matcher = TRANSLATION_PATTERN.matcher(file.getName());
@@ -290,51 +269,31 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
         return language;
     }
 
-    private String guessDefaultLanguageForPatterns(String filePath, List<Pattern> patterns, String defaultLanguage)
+    protected boolean isContentPage(String filePath)
     {
-        String language = null;
-
-        if (patterns != null) {
-            for (Pattern pattern : patterns) {
-                if (pattern.matcher(filePath).matches()) {
-                    return defaultLanguage;
-                }
-            }
-        }
-
-        return language;
+        return isMatchingPage(filePath, this.contentPagePatterns);
     }
 
-    protected boolean isTechnicalPage(String filePath)
+    protected boolean isTranslatablePage(String filePath)
     {
-        if (this.technicalPagePatterns != null) {
-            for (Pattern pattern : this.technicalPagePatterns) {
+        return isMatchingPage(filePath, this.translatablePagePatterns);
+    }
+
+    protected boolean isVisibleTechnicalPage(String filePath)
+    {
+        return isMatchingPage(filePath, this.visibleTechnicalPagePatterns);
+    }
+
+    private boolean isMatchingPage(String filePath, List<Pattern> patterns)
+    {
+        if (patterns != null) {
+            for (Pattern pattern : patterns) {
                 if (pattern.matcher(filePath).matches()) {
                     return true;
                 }
             }
         }
         return false;
-    }
-
-    protected boolean isTitlesMatching(String documentReference, String title)
-    {
-        for (Map.Entry<Pattern, Pattern> entry : this.titlePatterns.entrySet()) {
-            if (entry.getKey().matcher(documentReference).matches() && !entry.getValue().matcher(title).matches()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    protected String getTitlePatternRuleforPage(String documentReference)
-    {
-        for (Map.Entry<Pattern, Pattern> entry : this.titlePatterns.entrySet()) {
-            if (entry.getKey().matcher(documentReference).matches()) {
-                return entry.getValue().pattern();
-            }
-        }
-        return null;
     }
 
     /**

@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xwikidoc>
-<web>Space</web>
+<web>Main</web>
 <name>WebHome</name>
-<language></language>
-<defaultLanguage></defaultLanguage>
+<defaultLanguage>en</defaultLanguage>
 <translation>0</translation>
-<parent>Main.WebHome</parent>
+<parent></parent>
 <creator>xwiki:XWiki.Admin</creator>
 <author>xwiki:XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-<creationDate>1320655345000</creationDate>
-<date>1320656877000</date>
-<contentUpdateDate>1320656877000</contentUpdateDate>
 <version>1.1</version>
 <title></title>
 <template></template>
@@ -22,6 +18,6 @@
 <comment></comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
-<hidden>true</hidden>
+<hidden>false</hidden>
 <content></content>
 </xwikidoc>

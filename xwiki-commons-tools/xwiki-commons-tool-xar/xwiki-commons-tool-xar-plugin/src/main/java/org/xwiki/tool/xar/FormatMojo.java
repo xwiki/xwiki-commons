@@ -55,7 +55,7 @@ public class FormatMojo extends AbstractVerifyMojo
     /**
      * If false then don't pretty print the XML.
      */
-    @Parameter(property = "pretty", readonly = true)
+    @Parameter(property = "xar.pretty", readonly = true)
     private boolean pretty = true;
 
     @Override
@@ -170,9 +170,9 @@ public class FormatMojo extends AbstractVerifyMojo
             removeContent(element);
         }
 
-        // If the page is technical, make sure it's hidedn
+        // If the page is technical and not a visible technical page, make sure it's hidden
         element = (Element) domdoc.selectSingleNode("xwikidoc/hidden");
-        if (isTechnicalPage(filePath)) {
+        if (!isContentPage(filePath) && !isVisibleTechnicalPage(filePath)) {
             element.setText("true");
         }
 

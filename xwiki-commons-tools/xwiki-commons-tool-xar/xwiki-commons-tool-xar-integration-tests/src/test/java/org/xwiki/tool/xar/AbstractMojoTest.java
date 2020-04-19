@@ -53,7 +53,7 @@ public abstract class AbstractMojoTest
                 String.format("-javaagent:%s=destfile=%s", jacocoAgentJarPath, jacocoDestFile));
         }
 
-        verifier.addCliOption("-Dforce=true");
+        verifier.addCliOption("-Dxar.force=true");
 
         return verifier;
     }

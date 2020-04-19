@@ -18,6 +18,6 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
-  <hidden>false</hidden>
+  <hidden>true</hidden>
   <content>content 1.nestde1.nested2.b.page</content>
 </xwikidoc>

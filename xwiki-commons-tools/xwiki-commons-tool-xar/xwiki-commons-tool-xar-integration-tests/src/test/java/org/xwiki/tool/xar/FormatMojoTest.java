@@ -42,9 +42,9 @@ public class FormatMojoTest extends AbstractMojoTest
     {
         Verifier verifier = createVerifier("/format");
         verifier.addCliOption("-Dincludes=**/NoStyle/*.xml");
-        verifier.addCliOption("-Dpretty=false");
-        verifier.addCliOption("-DformatLicense=true");
-        verifier.addCliOption("-Dcommons.version=" + System.getProperty("commons.version"));
+        verifier.addCliOption("-Dxar.pretty=false");
+        verifier.addCliOption("-Dxar.formatLicense=true");
+        verifier.addCliOption("-Dxar.commons.version=" + System.getProperty("commons.version"));
         verifier.executeGoal("xar:format");
         verifier.verifyErrorFreeLog();
 
@@ -86,7 +86,7 @@ public class FormatMojoTest extends AbstractMojoTest
     {
         Verifier verifier = createVerifier("/format");
         verifier.addCliOption("-Dincludes=**/Pretty/*.xml");
-        verifier.addCliOption("-DformatLicense=true");
+        verifier.addCliOption("-Dxar.formatLicense=true");
         verifier.executeGoal("xar:format");
         verifier.verifyErrorFreeLog();
 

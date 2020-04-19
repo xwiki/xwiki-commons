@@ -23,11 +23,6 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons</artifactId>
-    <version>@project.version@</version>
-  </parent>
   <groupId>org.xwiki.commons</groupId>
   <artifactId>xwiki-commons-tool-xar-plugin-test</artifactId>
   <version>1.0</version>
@@ -39,37 +34,20 @@
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
         <version>@project.version@</version>
-        <configuration>
-          <contentPages>
-            <contentPage>.*/.*Page2\.xml</contentPage>
-          </contentPages>
-        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <translatablePages>
+                <translatablePage>.*/Translations\.xml</translatablePage>
+                <translatablePage>.*/CustomTranslationPage\.xml</translatablePage>
+              </translatablePages>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>com.mycila</groupId>
-          <artifactId>license-maven-plugin</artifactId>
-          <configuration>
-            <strictCheck>true</strictCheck>
-            <headerDefinitions>
-              <headerDefinition>license-xml-definition.xml</headerDefinition>
-            </headerDefinitions>
-            <includes>
-              <include>src/**</include>
-            </includes>
-          </configuration>
-          <!-- Add a dependency since this is where the license-maven-plugin plugin will find the license.txt file -->
-          <dependencies>
-            <dependency>
-              <groupId>org.xwiki.commons</groupId>
-              <artifactId>xwiki-commons-tool-verification-resources</artifactId>
-              <version>@project.version@</version>
-            </dependency>
-          </dependencies>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 </project>
