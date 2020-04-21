@@ -257,7 +257,7 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
         // Note: We currently don't handle cases when maven was told to have a target directory located elsewhere since
         // we don't use that feature in XWiki.
         String path = position.getFile().toString();
-        String targetPath = StringUtils.substringBefore(position.getFile().toString(), "/target/");
+        String targetPath = StringUtils.substringBeforeLast(position.getFile().toString(), "/target/");
         if (targetPath.equals(path)) {
             targetPath = StringUtils.substringBefore(position.getFile().toString(), "/src/");
         }
