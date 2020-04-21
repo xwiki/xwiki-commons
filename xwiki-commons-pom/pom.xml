@@ -198,12 +198,10 @@
                 <processorProperty>
                   <name>org.xwiki.tool.spoon.ComponentAnnotationProcessor</name>
                   <properties>
-                    <!-- TODO: Remove when Spoon is fixed and doesn't emit the following warning when this property is not
-                         specified:
+                    <!-- TODO: Remove when Spoon is fixed and doesn't emit the following warning when this property is
+                         not specified:
                            warning: No value found for property 'componentsTxtPath' in processor ...
-                           org.xwiki.tool.spoon.JUnit5JUnit4Processor
-                           end of processing:
-                           1 warning
+                         See https://github.com/INRIA/spoon/issues/3339
                     -->
                     <property>
                       <name>componentsTxtPath</name>
