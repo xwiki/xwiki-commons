@@ -19,6 +19,7 @@
  */
 package org.xwiki.tool.spoon;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.nio.file.Files;
@@ -34,7 +35,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import spoon.SpoonException;
 import spoon.processing.Property;
-import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 
@@ -112,7 +112,7 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
             // Parse the components.txt if not already parsed for the current maven module
             if (this.registeredComponentNames == null) {
                 this.registeredComponentNames =
-                    parseComponentsTxtFile(qualifiedName, ctClass.getPosition(), isStaticRegistration);
+                    parseComponentsTxtFile(qualifiedName, ctClass, isStaticRegistration);
             }
             if (!isStaticRegistration) {
                 // This is check 2-B
@@ -187,13 +187,12 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
         }
     }
 
-    private List<String> parseComponentsTxtFile(String qualifiedName, SourcePosition position,
-        boolean isStaticRegistration)
+    private List<String> parseComponentsTxtFile(String qualifiedName, CtClass<?> ctClass, boolean isStaticRegistration)
     {
         List<String> results = new ArrayList<>();
 
         // Get the components.txt file from the current directory, in target/META-INF/components.txt
-        this.resolvedComponentsTxtPath = getComponentsTxtPath(position);
+        this.resolvedComponentsTxtPath = getComponentsTxtPath(ctClass);
         if (Files.exists(this.resolvedComponentsTxtPath)) {
             this.componentsDeclarationLocation = this.resolvedComponentsTxtPath.toString();
             try (Stream<String> stream = Files.lines(this.resolvedComponentsTxtPath)) {
@@ -238,30 +237,30 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
         return results;
     }
 
-    private Path getComponentsTxtPath(SourcePosition position)
+    private Path getComponentsTxtPath(CtClass<?> ctClass)
     {
         String path = this.componentsTxtPath;
         if (path == null) {
             path = "target/classes/META-INF/components.txt";
         }
-        return Paths.get(computeMavenModulePath(position), path);
+        return Paths.get(computeMavenModulePath(ctClass), path);
     }
 
-    private String computeMavenModulePath(SourcePosition position)
+    private String computeMavenModulePath(CtClass<?> ctClass)
     {
-        // Try to find the maven module base directory. Handle 2 cases:
-        // - Case 1: Normal standard case. The current source is located in .../src/main/java/...
-        //   In this case we get the directory parent of /src/.
-        // - Case 2: Clover case or any Maven plugin that instruments source code in the target directory. In this
-        //   case the /target/ string is present and thus  we get the directory parent of /target/.
-        // Note: We currently don't handle cases when maven was told to have a target directory located elsewhere since
-        // we don't use that feature in XWiki.
-        String path = position.getFile().toString();
-        String targetPath = StringUtils.substringBeforeLast(position.getFile().toString(), "/target/");
-        if (targetPath.equals(path)) {
-            targetPath = StringUtils.substringBefore(position.getFile().toString(), "/src/");
+        // Try to find the maven module base directory.
+
+        // Find how may packages there are in the source class FQN (+1 for the parent).
+        int levels = StringUtils.countMatches(ctClass.getQualifiedName(), ".") + 1;
+
+        // Go up as many times as there are levels in the source path + 3 levels
+        // (for "src/main/java" or "src/test/java").
+        File sourcePath = ctClass.getPosition().getFile();
+        for (int i = 0; i < levels + 3; i++) {
+            sourcePath = sourcePath.getParentFile();
         }
-        return targetPath;
+
+        return sourcePath.getPath();
     }
 
     private Set<CtAnnotation<? extends Annotation>> getAnnotationsIncludingFromSuperclasses(
