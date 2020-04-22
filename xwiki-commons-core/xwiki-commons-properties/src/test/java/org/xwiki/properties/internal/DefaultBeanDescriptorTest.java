@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DefaultBeanDescriptorTest
 {
     @RegisterExtension
-    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.ERROR);
+    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
     private DefaultBeanDescriptor beanDescriptor;
 
@@ -262,8 +262,9 @@ public class DefaultBeanDescriptorTest
     public void propertyDescriptorErrorTest()
     {
         new DefaultBeanDescriptor(TestBeanError.class);
-        assertEquals("Failed to load bean descriptor for class class org.xwiki.properties.test.TestBeanError",
-                logCapture.getMessage(0));
+        assertEquals("Failed to load bean descriptor for class [org.xwiki.properties.test.TestBeanError]. Ignoring it. "
+            + "Root cause: [RuntimeException: Property [prop2] has overridden a feature (previous: [feature1], new: "
+            + "[feature2])]", this.logCapture.getMessage(0));
     }
 
     @Test

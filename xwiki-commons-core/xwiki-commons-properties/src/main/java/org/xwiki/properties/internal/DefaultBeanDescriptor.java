@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.util.DefaultParameterizedType;
@@ -100,8 +101,8 @@ public class DefaultBeanDescriptor implements BeanDescriptor
         try {
             defaultInstance = getBeanClass().newInstance();
         } catch (Exception e) {
-            LOGGER.debug("Failed to create a new default instance for class " + this.beanClass
-                    + ". The BeanDescriptor will not contains any default value information.", e);
+            LOGGER.debug("Failed to create a new default instance for class [{}]. The BeanDescriptor will not "
+                + "contains any default value information.", this.beanClass.getName(), e);
         }
 
         try {
@@ -127,7 +128,8 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("Failed to load bean descriptor for class " + this.beanClass, e);
+            LOGGER.warn("Failed to load bean descriptor for class [{}]. Ignoring it. Root cause: [{}]",
+                this.beanClass.getName(), ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -187,10 +189,9 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                     try {
                         desc.setDefaultValue(readMethod.invoke(defaultInstance));
                     } catch (Exception e) {
-                        LOGGER.error(MessageFormat.format(
-                                "Failed to get default property value from getter {0} in class {1}",
-                                readMethod.getName(),
-                                this.beanClass), e);
+                        LOGGER.warn(MessageFormat.format("Failed to get default property value from getter [%s] in "
+                            + "class [%s]. Ignoring it. Root cause [{}]", readMethod.getName(), this.beanClass,
+                            ExceptionUtils.getRootCauseMessage(e)));
                     }
                 }
 
@@ -246,9 +247,9 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                 try {
                     desc.setDefaultValue(field.get(defaultInstance));
                 } catch (Exception e) {
-                    LOGGER.error(
-                            MessageFormat.format("Failed to get default property value from field {0} in class {1}",
-                                    field.getName(), this.beanClass), e);
+                    LOGGER.warn(MessageFormat.format("Failed to get default property value from field [%s] in class "
+                        + "[%s]. Ignoring it. Root cause: [%s]", field.getName(), this.beanClass,
+                        ExceptionUtils.getRootCauseMessage(e)));
                 }
             }
 
@@ -280,9 +281,8 @@ public class DefaultBeanDescriptor implements BeanDescriptor
         PropertyFeature parameterFeature = (PropertyFeature) annotations.get(PropertyFeature.class);
         if (parameterFeature != null) {
             if (group.getFeature() != null) {
-                throw new RuntimeException(
-                        "Property [" + desc.getId() + "] has overriden a feature. (previous: [" + group.getFeature()
-                                + "], new: [" + parameterFeature.value() + "]");
+                throw new RuntimeException(String.format("Property [%s] has overridden a feature "
+                    + "(previous: [%s], new: [%s])", desc.getId(), group.getFeature(), parameterFeature.value()));
             }
             group.setFeature(parameterFeature.value());
         }
