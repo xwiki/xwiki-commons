@@ -218,7 +218,13 @@ public class LogEvent extends Message implements Event
     @Override
     public String toString()
     {
-        return getLevel().toString() + ':' + super.toString();
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(getLevel());
+        builder.append(':');
+        builder.append(super.toString());
+
+        return builder.toString();
     }
 
     @Override
