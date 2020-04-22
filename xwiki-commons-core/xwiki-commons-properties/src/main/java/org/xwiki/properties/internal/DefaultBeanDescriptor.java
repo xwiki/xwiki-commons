@@ -261,7 +261,6 @@ public class DefaultBeanDescriptor implements BeanDescriptor
 
     private void setCommonProperties(DefaultPropertyDescriptor desc, Map<Class, Annotation> annotations)
     {
-
         desc.setMandatory(annotations.get(PropertyMandatory.class) != null);
         desc.setDeprecated(annotations.get(Deprecated.class) != null);
         desc.setAdvanced(annotations.get(PropertyAdvanced.class) != null);
@@ -286,7 +285,6 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             }
             group.setFeature(parameterFeature.value());
         }
-
 
         PropertyDisplayType displayTypeAnnotation = (PropertyDisplayType) annotations.get(PropertyDisplayType.class);
         Type displayType;
