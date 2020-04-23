@@ -386,9 +386,8 @@ public class DefaultObservationManager implements ObservationManager
             if (existingListener != eventListener) {
                 addListener(eventListener);
             } else {
-                this.logger.warn("An Event Listener named [{}] already exists ({}), ignoring the [{}] component",
-                    eventListener.getName(), existingListener.getClass().getName(),
-                    descriptor.getImplementation().getName());
+                this.logger.warn("The listener [{}] with name [{}] already been added", existingListener.getClass(),
+                    eventListener.getName());
             }
         } catch (ComponentLookupException e) {
             this.logger.error(
