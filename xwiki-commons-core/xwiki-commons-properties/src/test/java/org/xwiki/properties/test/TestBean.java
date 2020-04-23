@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Triple;
 import org.xwiki.properties.annotation.PropertyAdvanced;
 import org.xwiki.properties.annotation.PropertyDescription;
+import org.xwiki.properties.annotation.PropertyDisplayHidden;
 import org.xwiki.properties.annotation.PropertyDisplayType;
 import org.xwiki.properties.annotation.PropertyFeature;
 import org.xwiki.properties.annotation.PropertyGroup;
@@ -59,6 +60,8 @@ public class TestBean
     private String displayTypeParameter;
 
     private String displayTypeParameter2;
+
+    private boolean displayHiddenParameter;
 
     @PropertyName("Public Field")
     @PropertyDescription("a public field")
@@ -203,5 +206,16 @@ public class TestBean
     public void setDisplayTypeParameter2(String displayTypeParameter2)
     {
         this.displayTypeParameter2 = displayTypeParameter2;
+    }
+
+    public void setDisplayHiddenParameter(boolean displayHiddenParameter)
+    {
+        this.displayHiddenParameter = displayHiddenParameter;
+    }
+
+    @PropertyDisplayHidden
+    public boolean getDisplayHiddenParameter()
+    {
+        return this.displayHiddenParameter;
     }
 }

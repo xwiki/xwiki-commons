@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 
 import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.PropertyGroupDescriptor;
+import org.xwiki.stability.Unstable;
 
 /**
  * Default implementation for {@link PropertyDescriptor}.
@@ -101,6 +102,11 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
      * @see #getDisplayType()
      */
     private Type displayType;
+
+    /**
+     * @see #isDisplayHidden()
+     */
+    private boolean isDisplayHidden;
 
     @Override
     public String getId()
@@ -324,5 +330,21 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     public void setDisplayType(Type displayType)
     {
         this.displayType = displayType;
+    }
+
+    @Override
+    public boolean isDisplayHidden()
+    {
+        return this.isDisplayHidden;
+    }
+
+    /**
+     * @param isDisplayHidden see {@link #isDisplayHidden()}
+     * @since 12.4RC1
+     */
+    @Unstable
+    public void setDisplayHidden(boolean isDisplayHidden)
+    {
+        this.isDisplayHidden = isDisplayHidden;
     }
 }

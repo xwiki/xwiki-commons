@@ -99,6 +99,9 @@ public class DefaultBeanDescriptorTest
 
         PropertyDescriptor displayTypeDescriptor2 = this.beanDescriptor.getProperty("displayTypeParameter2");
         assertEquals(Boolean.class, displayTypeDescriptor2.getDisplayType());
+
+        PropertyDescriptor displayHiddenDescriptor = this.beanDescriptor.getProperty("displayHiddenParameter");
+        assertTrue(displayHiddenDescriptor.isDisplayHidden());
     }
 
     @Test

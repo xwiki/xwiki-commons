@@ -43,6 +43,7 @@ import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.PropertyGroupDescriptor;
 import org.xwiki.properties.annotation.PropertyAdvanced;
 import org.xwiki.properties.annotation.PropertyDescription;
+import org.xwiki.properties.annotation.PropertyDisplayHidden;
 import org.xwiki.properties.annotation.PropertyDisplayType;
 import org.xwiki.properties.annotation.PropertyFeature;
 import org.xwiki.properties.annotation.PropertyGroup;
@@ -65,8 +66,8 @@ public class DefaultBeanDescriptor implements BeanDescriptor
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultBeanDescriptor.class);
 
     private static final List<Class<? extends Annotation>> COMMON_ANNOTATION_CLASSES = Arrays.asList(
-            PropertyMandatory.class, Deprecated.class, PropertyAdvanced.class, PropertyGroup.class,
-            PropertyFeature.class, PropertyDisplayType.class);
+        PropertyMandatory.class, Deprecated.class, PropertyAdvanced.class, PropertyGroup.class,
+        PropertyFeature.class, PropertyDisplayType.class, PropertyDisplayHidden.class);
 
     /**
      * @see #getBeanClass()
@@ -262,7 +263,14 @@ public class DefaultBeanDescriptor implements BeanDescriptor
         desc.setMandatory(annotations.get(PropertyMandatory.class) != null);
         desc.setDeprecated(annotations.get(Deprecated.class) != null);
         desc.setAdvanced(annotations.get(PropertyAdvanced.class) != null);
+        handlePropertyFeatureAndGroupAnnotations(desc, annotations);
+        handlePropertyDisplayTypeAnnotation(desc, annotations);
+        desc.setDisplayHidden(annotations.get(PropertyDisplayHidden.class) != null);
+    }
 
+    private void handlePropertyFeatureAndGroupAnnotations(DefaultPropertyDescriptor desc, Map<Class,
+        Annotation> annotations)
+    {
         PropertyGroup parameterGroup = (PropertyGroup) annotations.get(PropertyGroup.class);
         PropertyGroupDescriptor group = this.groups.get(parameterGroup);
         if (group == null && parameterGroup != null) {
@@ -283,7 +291,10 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             }
             group.setFeature(parameterFeature.value());
         }
+    }
 
+    private void handlePropertyDisplayTypeAnnotation(DefaultPropertyDescriptor desc, Map<Class, Annotation> annotations)
+    {
         PropertyDisplayType displayTypeAnnotation = (PropertyDisplayType) annotations.get(PropertyDisplayType.class);
         Type displayType;
         if (displayTypeAnnotation != null && displayTypeAnnotation.value().length > 0) {

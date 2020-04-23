@@ -132,4 +132,15 @@ public interface PropertyDescriptor
     {
         return getPropertyType();
     }
+
+    /**
+     * @return whether the property should be displayed in UIs or not. For example the WYSIWYG editor
+     *         uses it to decide whether to display or not a Macro property in the Macro editor UI.
+     * @since 12.4RC1
+     */
+    @Unstable
+    default boolean isDisplayHidden()
+    {
+        return false;
+    }
 }
