@@ -382,16 +382,19 @@ public class DefaultObservationManager implements ObservationManager
         try {
             EventListener eventListener = componentManager.getInstance(EventListener.class, event.getRoleHint());
 
-            if (getListener(eventListener.getName()) != eventListener) {
+            EventListener existingListener = getListener(eventListener.getName());
+            if (existingListener != eventListener) {
                 addListener(eventListener);
             } else {
-                this.logger.warn("An Event Listener named [{}] already exists, ignoring the [{}] component",
-                    eventListener.getName(), descriptor.getImplementation().getName());
+                this.logger.warn("An Event Listener named [{}] already exists ({}), ignoring the [{}] component",
+                    eventListener.getName(), existingListener.getClass().getName(),
+                    descriptor.getImplementation().getName());
             }
         } catch (ComponentLookupException e) {
-            this.logger.error("Failed to lookup the Event Listener [{}] corresponding to the Component registration "
-                + "event for [{}]. Ignoring the event", new Object[] { event.getRoleHint(),
-                    descriptor.getImplementation().getName(), e });
+            this.logger.error(
+                "Failed to lookup the Event Listener [{}] corresponding to the Component registration "
+                    + "event for [{}]. Ignoring the event",
+                event.getRoleHint(), descriptor.getImplementation().getName(), e);
         }
     }
 
