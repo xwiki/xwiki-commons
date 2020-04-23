@@ -197,8 +197,8 @@ public class DefaultObservationManager implements ObservationManager
                 "The [{}] listener is overwriting a previously "
                     + "registered listener [{}] since they both are registered under the same id [{}]. "
                     + "In the future consider removing a Listener first if you really want to register it again.",
-                new Object[] { eventListener.getClass().getName(), previousListener.getClass().getName(),
-                        eventListener.getName() });
+                new Object[] {eventListener.getClass().getName(), previousListener.getClass().getName(),
+                    eventListener.getName()});
         }
 
         // Register the listener by name. If already registered, override it.
@@ -320,8 +320,8 @@ public class DefaultObservationManager implements ObservationManager
                         listener.listener.onEvent(event, source, data);
                     } catch (Exception e) {
                         // protect from bad listeners
-                        this.logger.error("Failed to send event [{}] to listener [{}]", new Object[] { event,
-                            listener.listener, e });
+                        this.logger.error("Failed to send event [{}] to listener [{}]",
+                            new Object[] {event, listener.listener, e});
                     }
 
                     // Only send the first matching event since the listener should only be called once per event.
@@ -383,11 +383,13 @@ public class DefaultObservationManager implements ObservationManager
             EventListener eventListener = componentManager.getInstance(EventListener.class, event.getRoleHint());
 
             EventListener existingListener = getListener(eventListener.getName());
+
+            // No reason to re-add the exact same listener.
+            // No reason to complain about this (for example root installed extensions are both available when
+            // initializing DefaultObservationManager to not miss anything and produce ComponentDescriptorAddedEvent
+            // events which can be used for other needs).
             if (existingListener != eventListener) {
                 addListener(eventListener);
-            } else {
-                this.logger.warn("The listener [{}] with name [{}] already been added", existingListener.getClass(),
-                    eventListener.getName());
             }
         } catch (ComponentLookupException e) {
             this.logger.error(
