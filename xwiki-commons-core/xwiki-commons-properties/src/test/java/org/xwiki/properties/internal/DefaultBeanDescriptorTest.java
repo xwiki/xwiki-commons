@@ -53,13 +53,13 @@ public class DefaultBeanDescriptorTest
     private DefaultBeanDescriptor beanDescriptor;
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
         this.beanDescriptor = new DefaultBeanDescriptor(TestBean.class);
     }
 
     @Test
-    public void propertyDescriptorTest()
+    void propertyDescriptorTest()
     {
         assertNull(this.beanDescriptor.getProperty("hiddenProperty"));
 
@@ -102,7 +102,7 @@ public class DefaultBeanDescriptorTest
     }
 
     @Test
-    public void propertyDescriptorWithUpperCaseTest()
+    void propertyDescriptorWithUpperCaseTest()
     {
         PropertyDescriptor upperPropertyDescriptor = this.beanDescriptor.getProperty("upperProp");
 
@@ -118,7 +118,7 @@ public class DefaultBeanDescriptorTest
     }
 
     @Test
-    public void propertyDescriptorPublicFieldTest()
+    void propertyDescriptorPublicFieldTest()
     {
         PropertyDescriptor publicFieldPropertyDescriptor = this.beanDescriptor.getProperty("publicField");
 
@@ -134,13 +134,13 @@ public class DefaultBeanDescriptorTest
     }
 
     @Test
-    public void propertyDescriptorPublicStaticFieldTest()
+    void propertyDescriptorPublicStaticFieldTest()
     {
         assertNull(this.beanDescriptor.getProperty("STATICFIELD"));
     }
 
     @Test
-    public void propertyDescriptorWithDescriptionTest()
+    void propertyDescriptorWithDescriptionTest()
     {
         PropertyDescriptor prop1Descriptor = this.beanDescriptor.getProperty("prop1");
 
@@ -155,7 +155,7 @@ public class DefaultBeanDescriptorTest
     }
 
     @Test
-    public void propertyDescriptorWithDescriptionAndMandatoryTest()
+    void propertyDescriptorWithDescriptionAndMandatoryTest()
     {
         PropertyDescriptor prop2Descriptor = this.beanDescriptor.getProperty("prop2");
 
@@ -170,7 +170,7 @@ public class DefaultBeanDescriptorTest
     }
 
     @Test
-    public void propertyDescriptorWithDescriptionAndMandatoryOnSetterTest()
+    void propertyDescriptorWithDescriptionAndMandatoryOnSetterTest()
     {
         PropertyDescriptor prop3Descriptor = this.beanDescriptor.getProperty("prop3");
 
@@ -185,7 +185,7 @@ public class DefaultBeanDescriptorTest
     }
 
     @Test
-    public void propertyDescriptorGenericTest()
+    void propertyDescriptorGenericTest()
     {
         PropertyDescriptor genericPropertyDescriptor = this.beanDescriptor.getProperty("genericProp");
 
@@ -208,7 +208,7 @@ public class DefaultBeanDescriptorTest
     }
 
     @Test
-    public void propertyDescriptorGenericFieldTest()
+    void propertyDescriptorGenericFieldTest()
     {
         PropertyDescriptor genericFieldPropertyDescriptor = this.beanDescriptor.getProperty("genericField");
 
@@ -227,7 +227,7 @@ public class DefaultBeanDescriptorTest
     }
 
     @Test
-    public void propertyDescriptorFieldWithDifferentIdTest()
+    void propertyDescriptorFieldWithDifferentIdTest()
     {
         PropertyDescriptor propertyDescriptor = this.beanDescriptor.getProperty("impossible.field.name");
 
@@ -243,7 +243,7 @@ public class DefaultBeanDescriptorTest
     }
 
     @Test
-    public void propertyDescriptorMethodWithDifferentIdTest()
+    void propertyDescriptorMethodWithDifferentIdTest()
     {
         PropertyDescriptor propertyDescriptor = this.beanDescriptor.getProperty("impossible.method.name");
 
@@ -259,7 +259,7 @@ public class DefaultBeanDescriptorTest
     }
 
     @Test
-    public void propertyDescriptorErrorTest()
+    void propertyDescriptorErrorTest()
     {
         new DefaultBeanDescriptor(TestBeanError.class);
         assertEquals("Failed to load bean descriptor for class [org.xwiki.properties.test.TestBeanError]. Ignoring it. "
@@ -268,7 +268,7 @@ public class DefaultBeanDescriptorTest
     }
 
     @Test
-    public void propertyDescriptorbackwardCompatible()
+    void propertyDescriptorbackwardCompatible()
     {
         PropertyDescriptor propertyDescriptor =
                 new BackwardCompatiblePropertyDescriptor(this.beanDescriptor.getProperty("lowerprop"));
