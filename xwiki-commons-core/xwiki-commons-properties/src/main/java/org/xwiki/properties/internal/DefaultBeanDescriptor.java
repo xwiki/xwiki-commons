@@ -26,7 +26,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -189,9 +188,9 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                     try {
                         desc.setDefaultValue(readMethod.invoke(defaultInstance));
                     } catch (Exception e) {
-                        LOGGER.warn(MessageFormat.format("Failed to get default property value from getter [%s] in "
-                            + "class [%s]. Ignoring it. Root cause [{}]", readMethod.getName(), this.beanClass,
-                            ExceptionUtils.getRootCauseMessage(e)));
+                        LOGGER.warn("Failed to get default property value from getter [{}] in class [{}]. Ignoring it. "
+                            + "Root cause [{}]", readMethod.getName(), this.beanClass,
+                            ExceptionUtils.getRootCauseMessage(e));
                     }
                 }
 
@@ -247,9 +246,8 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                 try {
                     desc.setDefaultValue(field.get(defaultInstance));
                 } catch (Exception e) {
-                    LOGGER.warn(MessageFormat.format("Failed to get default property value from field [%s] in class "
-                        + "[%s]. Ignoring it. Root cause: [%s]", field.getName(), this.beanClass,
-                        ExceptionUtils.getRootCauseMessage(e)));
+                    LOGGER.warn("Failed to get default property value from field [{}] in class [{}]. Ignoring it. "
+                        + "Root cause: [{}]", field.getName(), this.beanClass, ExceptionUtils.getRootCauseMessage(e));
                 }
             }
 
