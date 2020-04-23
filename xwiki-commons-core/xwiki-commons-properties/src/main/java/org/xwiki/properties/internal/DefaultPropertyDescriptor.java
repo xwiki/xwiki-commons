@@ -106,7 +106,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     /**
      * @see #isDisplayHidden()
      */
-    private boolean isDisplayHidden;
+    private boolean displayHidden;
 
     @Override
     public String getId()
@@ -335,7 +335,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     @Override
     public boolean isDisplayHidden()
     {
-        return this.isDisplayHidden;
+        return this.displayHidden;
     }
 
     /**
@@ -345,6 +345,6 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     @Unstable
     public void setDisplayHidden(boolean isDisplayHidden)
     {
-        this.isDisplayHidden = isDisplayHidden;
+        this.displayHidden = isDisplayHidden;
     }
 }
