@@ -24,6 +24,7 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Properties;
 
 import org.apache.velocity.VelocityContext;
@@ -94,6 +95,11 @@ public class MethodArgumentUberspectorTest
         {
             return "inner";
         }
+
+        public Optional<String> methodReturningOptional(String value)
+        {
+            return Optional.ofNullable(value);
+        }
     }
 
     public class ExtendingClass extends InnerClass
@@ -143,6 +149,22 @@ public class MethodArgumentUberspectorTest
         if (this.writer != null) {
             this.writer.close();
         }
+    }
+
+    @Test
+    void getMethodReturningOptionalWhenNotNull() throws Exception
+    {
+        this.engine.evaluate(this.context, this.writer, "template",
+            new StringReader("$var.methodReturningOptional('value')"));
+        assertEquals("value", writer.toString());
+    }
+
+    @Test
+    void getMethodReturningOptionalWhenNull() throws Exception
+    {
+        this.engine.evaluate(this.context, this.writer, "template",
+            new StringReader("$var.methodReturningOptional($NULL)"));
+        assertEquals("$var.methodReturningOptional($NULL)", writer.toString());
     }
 
     @Test

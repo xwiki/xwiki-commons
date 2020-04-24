@@ -34,6 +34,8 @@ import org.apache.velocity.util.introspection.VelMethod;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.properties.ConverterManager;
+import org.xwiki.velocity.internal.inrospection.OptionalSupportVelMethod;
+import org.xwiki.velocity.internal.inrospection.WrappingVelMethod;
 
 /**
  * Chainable Velocity Uberspector that tries to convert method arguments to formal parameter types when the passed
@@ -48,6 +50,8 @@ import org.xwiki.properties.ConverterManager;
  * // if obj has someMethod(SomeEnum) and not someMethod(String)}
  * </pre>
  * <p>
+ *
+ * Also handle Optional return values and unwraps them.
  *
  * @since 4.1M2
  * @version $Id$
@@ -119,6 +123,11 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
                 }
             }
         }
+        
+        // Handle Java's Optional
+        if (velMethod != null) {
+            velMethod = new OptionalSupportVelMethod(velMethod);
+        }
 
         return velMethod;
     }
@@ -185,49 +194,17 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
      *
      * @version $Id$
      */
-    private class ConvertingVelMethod implements VelMethod
+    private class ConvertingVelMethod extends WrappingVelMethod
     {
-        /** The real method that performs the actual call. */
-        private VelMethod innerMethod;
-
-        /**
-         * Constructor.
-         *
-         * @param realMethod the real method to wrap
-         */
         ConvertingVelMethod(VelMethod realMethod)
         {
-            this.innerMethod = realMethod;
+            super(realMethod);
         }
 
         @Override
         public Object invoke(Object o, Object[] params) throws IllegalAccessException, InvocationTargetException
         {
-            return this.innerMethod.invoke(o, convertArguments(o, this.innerMethod.getMethodName(), params));
-        }
-
-        @Override
-        public boolean isCacheable()
-        {
-            return this.innerMethod.isCacheable();
-        }
-
-        @Override
-        public String getMethodName()
-        {
-            return this.innerMethod.getMethodName();
-        }
-
-        @Override
-        public Class<?> getReturnType()
-        {
-            return this.innerMethod.getReturnType();
-        }
-
-        @Override
-        public Method getMethod()
-        {
-            return this.innerMethod.getMethod();
+            return getWrappedVelMethod().invoke(o, convertArguments(o, getWrappedVelMethod().getMethodName(), params));
         }
     }
 }
