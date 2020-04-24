@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.util.RuntimeServicesAware;
@@ -69,7 +70,9 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
         try {
             this.converterManager = componentManager.getInstance(ConverterManager.class);
         } catch (ComponentLookupException e) {
-            this.log.warn("Failed to initialize " + this.getClass().getSimpleName(), e);
+            this.log.warn("Failed to find an implementation for [{}]. Working in degraded mode without Velocity "
+                + "parameter conversion. Root cause: [{}]", ConverterManager.class.getName(),
+                ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
