@@ -23,11 +23,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.internal.ContextComponentManagerProvider;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.properties.BeanManager;
 import org.xwiki.properties.PropertyException;
 import org.xwiki.properties.PropertyMandatoryException;
@@ -36,16 +36,31 @@ import org.xwiki.properties.internal.converter.ConvertUtilsConverter;
 import org.xwiki.properties.internal.converter.EnumConverter;
 import org.xwiki.properties.test.GenericTestConverter;
 import org.xwiki.properties.test.TestBean;
-import org.xwiki.test.ComponentManagerRule;
 import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link DefaultBeanManager}.
  *
  * @version $Id$
  */
-@ComponentList({ DefaultBeanManager.class, DefaultConverterManager.class, EnumConverter.class,
-    ConvertUtilsConverter.class, ContextComponentManagerProvider.class, GenericTestConverter.class })
+@ComponentTest
+// @formatter:off
+@ComponentList({
+    DefaultBeanManager.class,
+    DefaultConverterManager.class,
+    EnumConverter.class,
+    ConvertUtilsConverter.class,
+    ContextComponentManagerProvider.class,
+    GenericTestConverter.class
+})
+// @formatter:on
 public class DefaultBeanManagerTest
 {
     public static class RawPropertiesTest extends HashMap<String, Object> implements RawProperties
@@ -57,19 +72,19 @@ public class DefaultBeanManagerTest
         }
     }
 
-    @Rule
-    public final ComponentManagerRule componentManager = new ComponentManagerRule();
+    @InjectComponentManager
+    private ComponentManager componentManager;
 
     private BeanManager defaultBeanManager;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         this.defaultBeanManager = this.componentManager.getInstance(BeanManager.class);
     }
 
     @Test
-    public void testPopulate() throws PropertyException
+    void populate() throws PropertyException
     {
         TestBean beanTest = new TestBean();
 
@@ -85,23 +100,25 @@ public class DefaultBeanManagerTest
 
         this.defaultBeanManager.populate(beanTest, values);
 
-        Assert.assertEquals("lowerpropvalue", beanTest.getLowerprop());
-        Assert.assertEquals("upperPropvalue", beanTest.getUpperProp());
-        Assert.assertEquals(42, beanTest.getProp2());
-        Assert.assertTrue(beanTest.getProp3());
-        Assert.assertNull(beanTest.getHiddenProperty());
-        Assert.assertEquals("publicFieldvalue", beanTest.publicField);
-        Assert.assertEquals(Arrays.asList(1, 2), beanTest.getGenericProp());
-    }
-
-    @Test(expected = PropertyMandatoryException.class)
-    public void testPopulateWhenMissingMandatoryProperty() throws PropertyException
-    {
-        this.defaultBeanManager.populate(new TestBean(), new HashMap<String, String>());
+        assertEquals("lowerpropvalue", beanTest.getLowerprop());
+        assertEquals("upperPropvalue", beanTest.getUpperProp());
+        assertEquals(42, beanTest.getProp2());
+        assertTrue(beanTest.getProp3());
+        assertNull(beanTest.getHiddenProperty());
+        assertEquals("publicFieldvalue", beanTest.publicField);
+        assertEquals(Arrays.asList(1, 2), beanTest.getGenericProp());
     }
 
     @Test
-    public void testPopulateRawProperties() throws PropertyException
+    void populateWhenMissingMandatoryProperty()
+    {
+        Throwable exception = assertThrows(PropertyMandatoryException.class,
+            () -> this.defaultBeanManager.populate(new TestBean(), new HashMap<String, String>()));
+        assertEquals("Property [prop2] mandatory", exception.getMessage());
+    }
+
+    @Test
+    void populateRawProperties() throws PropertyException
     {
         Map<String, Object> values = new HashMap<>();
 
@@ -112,6 +129,6 @@ public class DefaultBeanManagerTest
 
         this.defaultBeanManager.populate(bean, values);
 
-        Assert.assertEquals(values, bean);
+        assertEquals(values, bean);
     }
 }

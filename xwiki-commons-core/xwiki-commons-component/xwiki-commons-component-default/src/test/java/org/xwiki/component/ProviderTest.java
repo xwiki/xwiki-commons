@@ -27,8 +27,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
@@ -40,6 +39,9 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentRepositoryException;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Validate loading and injection of Providers in a real use case.
@@ -151,36 +153,33 @@ public class ProviderTest
 
         TestComponentWithProviders component = cm.getInstance(TestComponentRole.class);
 
-        Assert.assertEquals("value", component.provider1.get());
-        Assert.assertEquals("another value", component.provider12.get());
-        Assert.assertEquals(Integer.valueOf(1), component.provider2.get());
+        assertEquals("value", component.provider1.get());
+        assertEquals("another value", component.provider12.get());
+        assertEquals(Integer.valueOf(1), component.provider2.get());
 
-        Assert.assertEquals(2, component.providerList.get().size());
-        Assert.assertEquals(2, component.providerMap.get().size());
+        assertEquals(2, component.providerList.get().size());
+        assertEquals(2, component.providerMap.get().size());
     }
 
     /**
      * Verify that an exception is raised when a Provider implementing {@link Initializable} fails to initialize.
      */
     @Test
-    public void loadAndInjectProviderWhenExceptionInInitialize() throws Exception
+    public void loadAndInjectProviderWhenExceptionInInitialize()
     {
         EmbeddableComponentManager cm = new EmbeddableComponentManager();
         cm.initialize(getClass().getClassLoader());
 
-        try {
-            cm.getInstance(TestComponentRole.class, "exception");
-            Assert.fail("Should have thrown an exception");
-        } catch (ComponentLookupException expected) {
-            Assert.assertEquals("Failed to lookup component "
-                + "[org.xwiki.component.ProviderTest$TestComponentWithProviderInException] identified by "
-                + "type [interface org.xwiki.component.ProviderTest$TestComponentRole] and hint [exception]",
-                expected.getMessage());
-            Assert.assertEquals("Failed to lookup component "
-                + "[org.xwiki.component.ProviderTest$TestProviderWithExceptionInInitialize] identified by "
-                + "type [javax.inject.Provider<java.lang.String>] and hint [exception]",
-                expected.getCause().getMessage());
-            Assert.assertEquals("Some error in init", expected.getCause().getCause().getMessage());
-        }
+        Throwable exception = assertThrows(ComponentLookupException.class,
+            () -> cm.getInstance(TestComponentRole.class, "exception"));
+        assertEquals("Failed to lookup component "
+            + "[org.xwiki.component.ProviderTest$TestComponentWithProviderInException] identified by "
+            + "type [interface org.xwiki.component.ProviderTest$TestComponentRole] and hint [exception]",
+            exception.getMessage());
+        assertEquals("Failed to lookup component "
+            + "[org.xwiki.component.ProviderTest$TestProviderWithExceptionInInitialize] identified by "
+            + "type [javax.inject.Provider<java.lang.String>] and hint [exception]",
+            exception.getCause().getMessage());
+        assertEquals("Some error in init", exception.getCause().getCause().getMessage());
     }
 }

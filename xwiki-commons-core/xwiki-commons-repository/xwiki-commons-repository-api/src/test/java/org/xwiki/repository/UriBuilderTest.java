@@ -19,8 +19,10 @@
  */
 package org.xwiki.repository;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Validate {@link UriBuilder}.
@@ -30,50 +32,50 @@ import org.junit.Test;
 public class UriBuilderTest
 {
     @Test
-    public void testBuildWithTwoElements()
+    void buildWithTwoElements()
     {
         UriBuilder uriBuilder = new UriBuilder("http://base", "{key}/{key2}");
 
-        Assert.assertEquals("http://base/1/2", uriBuilder.build("1", "2").toString());
+        assertEquals("http://base/1/2", uriBuilder.build("1", "2").toString());
     }
 
     @Test
-    public void testBuildWithNoElements()
+    public void buildWithNoElements()
     {
         UriBuilder uriBuilder = new UriBuilder("http://base", "");
 
-        Assert.assertEquals("http://base/", uriBuilder.build().toString());
+        assertEquals("http://base/", uriBuilder.build().toString());
     }
 
     @Test
-    public void testBuildWithParam()
+    public void buildWithParam()
     {
         UriBuilder uriBuilder = new UriBuilder("http://base", "element/");
 
         uriBuilder.queryParam("param", "value");
 
-        Assert.assertEquals("http://base/element/?param=value", uriBuilder.build().toString());
+        assertEquals("http://base/element/?param=value", uriBuilder.build().toString());
     }
 
     @Test
-    public void testBuildWithcompleteBase()
+    public void buildWithcompleteBase()
     {
         UriBuilder uriBuilder = new UriBuilder("http://host:1111/base?baseparam=basevalue#basefragment", "element/");
 
         uriBuilder.queryParam("param", "value");
 
-        Assert.assertEquals("http://host:1111/base/element/?baseparam=basevalue&param=value#basefragment", uriBuilder
+        assertEquals("http://host:1111/base/element/?baseparam=basevalue&param=value#basefragment", uriBuilder
             .build().toString());
     }
 
     @Test
-    public void testBuildWithUTF8()
+    public void buildWithUTF8()
     {
         UriBuilder uriBuilder = new UriBuilder("http://base", "{key}");
 
         uriBuilder.queryParam("param", "\u00e9");
 
-        Assert.assertEquals("http://base/%C3%A9?param=%C3%A9", uriBuilder.build("\u00e9").toString());
+        assertEquals("http://base/%C3%A9?param=%C3%A9", uriBuilder.build("\u00e9").toString());
     }
 
     @Test
@@ -83,6 +85,6 @@ public class UriBuilderTest
 
         UriBuilder clonedUriBuilder = uriBuilder.clone();
 
-        Assert.assertNotNull(clonedUriBuilder);
+        assertNotNull(clonedUriBuilder);
     }
 }

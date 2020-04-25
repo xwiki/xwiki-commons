@@ -19,11 +19,13 @@
  */
 package org.xwiki.logging.logback.internal;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.ILoggerFactory;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link LogbackUtils}.
@@ -34,13 +36,13 @@ import static org.mockito.Mockito.*;
 public class LogBackUtilsTest
 {
     @Test
-    public void getLoggerContextIsNullWhenLogbackNotPresent()
+    void getLoggerContextIsNullWhenLogbackNotPresent()
     {
         // Simulate that LogbackUtils.getLoggerFactory() returns a non LoggerContext instance.
         LogbackUtils utils = spy(new LogbackUtils());
         ILoggerFactory loggerFactory = mock(ILoggerFactory.class);
         when(utils.getLoggerFactory()).thenReturn(loggerFactory);
 
-        Assert.assertNull(utils.getLoggerContext());
+        assertNull(utils.getLoggerContext());
     }
 }
