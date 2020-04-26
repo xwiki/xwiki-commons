@@ -25,10 +25,9 @@ import java.security.PublicKey;
 import org.bouncycastle.crypto.params.DSAKeyParameters;
 import org.bouncycastle.crypto.params.DSAPrivateKeyParameters;
 import org.bouncycastle.crypto.params.DSAPublicKeyParameters;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.xwiki.crypto.AsymmetricKeyFactory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.crypto.BinaryStringEncoder;
 import org.xwiki.crypto.internal.DefaultSecureRandomProvider;
 import org.xwiki.crypto.internal.asymmetric.BcAsymmetricKeyParameters;
@@ -36,15 +35,29 @@ import org.xwiki.crypto.internal.encoder.Base64BinaryStringEncoder;
 import org.xwiki.crypto.params.cipher.asymmetric.PrivateKeyParameters;
 import org.xwiki.crypto.params.cipher.asymmetric.PublicKeyParameters;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@ComponentList({Base64BinaryStringEncoder.class, BcDSAKeyFactory.class, DefaultSecureRandomProvider.class})
+/**
+ * Unit tests for {@link BcDSAKeyFactory}.
+ *
+ * @version $Id$
+ */
+@ComponentTest
+// @formatter:off
+@ComponentList({
+    Base64BinaryStringEncoder.class,
+    BcDSAKeyFactory.class,
+    DefaultSecureRandomProvider.class
+})
+// @formatter:on
 public class BcDSAKeyFactoryTest
 {
     private static final String PRIVATE_KEY = "MIIBTAIBADCCASwGByqGSM44BAEwggEfAoGBANQ9Oa1j9sWAhdXNyqz8HL/bA/e"
@@ -67,30 +80,28 @@ public class BcDSAKeyFactoryTest
         + "DyiO++72IiGUluc6yHg6m9cQ53eeJt9i44LJfTOw1S3YMU1ST7alokSnJRTICp5W"
         + "By0m1scwheuTo0E=";
 
-    @Rule
-    public final MockitoComponentMockingRule<AsymmetricKeyFactory> mocker =
-        new MockitoComponentMockingRule<>(BcDSAKeyFactory.class);
+    @InjectMockComponents
+    private BcDSAKeyFactory factory;
 
-    private AsymmetricKeyFactory factory;
+    @InjectComponentManager
+    private ComponentManager componentManager;
 
     private static byte[] privateKey;
     private static byte[] publicKey;
 
-    @Before
-    public void configure() throws Exception
+    @BeforeEach
+    void configure() throws Exception
     {
-        factory = mocker.getComponentUnderTest();
-
         // Decode keys once for all tests.
         if (privateKey == null) {
-            BinaryStringEncoder base64encoder = mocker.getInstance(BinaryStringEncoder.class, "Base64");
+            BinaryStringEncoder base64encoder = this.componentManager.getInstance(BinaryStringEncoder.class, "Base64");
             privateKey = base64encoder.decode(PRIVATE_KEY);
             publicKey = base64encoder.decode(PUBLIC_KEY);
         }
     }
 
     @Test
-    public void testPrivateKeyFromPKCS8() throws Exception
+    void privateKeyFromPKCS8() throws Exception
     {
         PrivateKeyParameters key = factory.fromPKCS8(privateKey);
 
@@ -102,7 +113,7 @@ public class BcDSAKeyFactoryTest
     }
 
     @Test
-    public void testPublicKeyFromX509() throws Exception
+    void publicKeyFromX509() throws Exception
     {
         PublicKeyParameters key = factory.fromX509(publicKey);
 
@@ -113,7 +124,7 @@ public class BcDSAKeyFactoryTest
     }
 
     @Test
-    public void testPrivateKeyFromToKey() throws Exception
+    void privateKeyFromToKey() throws Exception
     {
         PrivateKeyParameters key1 = factory.fromPKCS8(privateKey);
         PrivateKey pk = factory.toKey(key1);
@@ -124,7 +135,7 @@ public class BcDSAKeyFactoryTest
     }
 
     @Test
-    public void testPublicKeyFromToKey() throws Exception
+    void publicKeyFromToKey() throws Exception
     {
         PublicKeyParameters key1 = factory.fromX509(publicKey);
         PublicKey pk = factory.toKey(key1);

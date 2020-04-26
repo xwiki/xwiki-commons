@@ -19,39 +19,37 @@
  */
 package org.xwiki.extension.repository.core;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.environment.Environment;
-import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
 import org.xwiki.test.annotation.AllComponents;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.junit5.mockito.MockComponent;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * Unit tests for {@link DefaultCoreExtensionRepository}.
+ *
+ * @version $Id$
+ */
+@ComponentTest
 @AllComponents
 public class DefaultCoreExtensionRepositoryTest
 {
-    @Rule
-    public MockitoComponentMockingRule<CoreExtensionRepository> mocker =
-        new MockitoComponentMockingRule<>(DefaultCoreExtensionRepository.class);
+    @InjectMockComponents
+    private DefaultCoreExtensionRepository coreExtensionRepository;
 
-    private CoreExtensionRepository coreExtensionRepository;
-
-    @Before
-    public void before() throws Exception
-    {
-        this.mocker.registerMockComponent(Environment.class);
-
-        this.coreExtensionRepository = this.mocker.getInstance(CoreExtensionRepository.class);
-    }
+    @MockComponent
+    private Environment environment;
 
     /**
      * Validate core extension loading and others initializations.
      */
     @Test
-    public void init()
+    void init()
     {
-        Assert.assertTrue(this.coreExtensionRepository.countExtensions() > 0);
+        assertTrue(this.coreExtensionRepository.countExtensions() > 0);
     }
 }
