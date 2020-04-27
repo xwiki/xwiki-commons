@@ -20,6 +20,7 @@
 package org.xwiki.configuration;
 
 import java.util.List;
+import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
@@ -95,4 +96,15 @@ public interface ConfigurationSource
      * @return true if the configuration source doesn't have any key or false otherwise
      */
     boolean isEmpty();
+
+    /**
+     * @param properties the set of properties to persist
+     * @throws ConfigurationSaveException when an error occurs during persistence
+     * @since 12.4RC1
+     */
+    @Unstable
+    default void setProperties(Map<String, Object> properties) throws ConfigurationSaveException
+    {
+        throw new UnsupportedOperationException("Set operation not supported");
+    }
 }
