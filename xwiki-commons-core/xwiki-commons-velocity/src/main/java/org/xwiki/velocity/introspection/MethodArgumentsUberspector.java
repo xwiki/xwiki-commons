@@ -34,7 +34,6 @@ import org.apache.velocity.util.introspection.VelMethod;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.properties.ConverterManager;
-import org.xwiki.velocity.internal.inrospection.OptionalSupportVelMethod;
 import org.xwiki.velocity.internal.inrospection.WrappingVelMethod;
 
 /**
@@ -122,11 +121,6 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
                     velMethod = initialVelMethod;
                 }
             }
-        }
-        
-        // Handle Java's Optional
-        if (velMethod != null) {
-            velMethod = new OptionalSupportVelMethod(velMethod);
         }
 
         return velMethod;

@@ -152,22 +152,6 @@ public class MethodArgumentUberspectorTest
     }
 
     @Test
-    void getMethodReturningOptionalWhenNotNull() throws Exception
-    {
-        this.engine.evaluate(this.context, this.writer, "template",
-            new StringReader("$var.methodReturningOptional('value')"));
-        assertEquals("value", writer.toString());
-    }
-
-    @Test
-    void getMethodReturningOptionalWhenNull() throws Exception
-    {
-        this.engine.evaluate(this.context, this.writer, "template",
-            new StringReader("$var.methodReturningOptional($NULL)"));
-        assertEquals("$var.methodReturningOptional($NULL)", writer.toString());
-    }
-
-    @Test
     public void getMethodWhenVarargsWithNoConversionAndNoVarargParamPassed() throws Exception
     {
         this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.methodWithVararg(10)"));
