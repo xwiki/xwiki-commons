@@ -44,9 +44,13 @@ public class AetherExtension extends AbstractMavenExtension
         super(repository, mavenExtension);
 
         setId(AetherUtils.createExtensionId(artifact, factory));
-        setType(artifact.getExtension());
 
-        setFile(new AetherExtensionFile(artifact, repository));
+        // pom type does not have any file associated
+        if (!artifact.getExtension().equals("pom")) {
+            setType(artifact.getExtension());
+
+            setFile(new AetherExtensionFile(artifact, repository));
+        }
 
         // Make sure we remember the extension repository (Extension#getRepository() will be the local extension
         // repository when the extension is downloaded)

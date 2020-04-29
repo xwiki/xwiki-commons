@@ -17,16 +17,13 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.handler.internal;
+package org.xwiki.extension.internal;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import javax.inject.Singleton;
 
-import org.slf4j.Logger;
+import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionException;
 import org.xwiki.extension.InstallException;
@@ -34,77 +31,75 @@ import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.ExtensionHandler;
-import org.xwiki.extension.handler.ExtensionValidator;
 import org.xwiki.job.Request;
 
 /**
- * Base class for {@link ExtensionHandler} implementations.
- *
+ * The default extension handler (not doing much since it's for extensions without an associated file).
+ * 
  * @version $Id$
- * @since 4.0M1
+ * @since 12.4RC1
  */
-public abstract class AbstractExtensionHandler implements ExtensionHandler
+@Component
+@Singleton
+public class DefaultExtensionHandler implements ExtensionHandler
 {
-    /**
-     * The logger to log.
-     */
-    @Inject
-    protected Logger logger;
-
-    /**
-     * Used to check if it is possible to install/uninstall a given extension.
-     */
-    @Inject
-    private Provider<ExtensionValidator> defaultValidatorProvider;
-
-    // ExtensionHandler
-
     @Override
-    @Deprecated
-    public void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException
+    public void install(LocalExtension localExtension, String namespace, Request request) throws InstallException
     {
-        uninstall((InstalledExtension) localExtension, namespace, request);
+        // Nothing to do
     }
 
     @Override
-    @Deprecated
+    public void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException
+    {
+        // Nothing to do
+    }
+
+    @Override
+    public void uninstall(InstalledExtension localExtension, String namespace, Request request)
+        throws UninstallException
+    {
+        // Nothing to do
+    }
+
+    @Override
     public void upgrade(LocalExtension previousLocalExtension, LocalExtension newLocalExtension, String namespace,
         Request request) throws InstallException
     {
-        upgrade(previousLocalExtension != null ? Arrays.asList((InstalledExtension) previousLocalExtension)
-            : Collections.<InstalledExtension>emptyList(), newLocalExtension, namespace, request);
+        // Nothing to do
     }
 
     @Override
-    public void upgrade(Collection<InstalledExtension> previousInstalledExtensions, LocalExtension newLocalExtension,
+    public void upgrade(Collection<InstalledExtension> previousLocalExtensions, LocalExtension newLocalExtension,
         String namespace, Request request) throws InstallException
     {
-        for (InstalledExtension previousExtension : previousInstalledExtensions) {
-            try {
-                uninstall(previousExtension, namespace, request);
-            } catch (UninstallException e) {
-                throw new InstallException("Failed to uninstall previous extension [" + previousExtension + "]", e);
-            }
-        }
-        install(newLocalExtension, namespace, null);
+
+        // Nothing to do
     }
 
     @Override
     public void initialize(LocalExtension localExtension, String namespace) throws ExtensionException
     {
-        // do nothing by default
+
+        // Nothing to do
     }
 
     @Override
     public void checkInstall(Extension extension, String namespace, Request request) throws InstallException
     {
-        this.defaultValidatorProvider.get().checkInstall(extension, namespace, request);
+        // Always allowed
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.extension.handler.ExtensionHandler#checkUninstall(org.xwiki.extension.InstalledExtension,
+     *      java.lang.String, org.xwiki.job.Request)
+     */
     @Override
     public void checkUninstall(InstalledExtension extension, String namespace, Request request)
         throws UninstallException
     {
-        this.defaultValidatorProvider.get().checkUninstall(extension, namespace, request);
+        // Always allowed
     }
 }

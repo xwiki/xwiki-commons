@@ -19,6 +19,7 @@
  */
 package org.xwiki.extension.test;
 
+import org.apache.commons.lang3.StringUtils;
 import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.ExtensionId;
 
@@ -28,6 +29,8 @@ public class EmptyExtension extends AbstractExtension
     {
         super(null, id, type);
 
-        setFile(new EmptyLocalExtensionFile());
+        if (StringUtils.isNotEmpty(type)) {
+            setFile(new EmptyLocalExtensionFile());
+        }
     }
 }

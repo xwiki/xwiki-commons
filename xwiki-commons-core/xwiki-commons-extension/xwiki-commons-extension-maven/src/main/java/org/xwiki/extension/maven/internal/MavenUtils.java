@@ -162,6 +162,11 @@ public class MavenUtils
             return "jar";
         }
 
+        // pom packaging does not have any associated extension file
+        if (packaging.contentEquals("pom")) {
+            return null;
+        }
+
         return packaging;
     }
 

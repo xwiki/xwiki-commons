@@ -86,6 +86,21 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
+    public void testInstallNoType() throws Throwable
+    {
+        install(TestResources.REMOTE_NOTYPE_ID);
+
+        // Is extension installed
+        InstalledExtension installedExtension = this.installedExtensionRepository
+            .getInstalledExtension(TestResources.REMOTE_NOTYPE_ID.getId(), null);
+        assertNotNull(installedExtension);
+        assertNotNull(this.installedExtensionRepository
+            .getInstalledExtension(TestResources.REMOTE_NOTYPE_ID.getId(), "namespace"));
+        assertNull(installedExtension.getType());
+        assertNull(installedExtension.getFile());
+    }
+
+    @Test
     public void testInstallRemoteOnNamespace() throws Throwable
     {
         install(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID, "namespace");

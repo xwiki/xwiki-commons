@@ -300,9 +300,9 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private String getExtensionType(Element extensionElement)
     {
-        Node typeNode = extensionElement.getElementsByTagName(ELEMENT_TYPE).item(0);
+        NodeList nodeList = extensionElement.getElementsByTagName(ELEMENT_TYPE);
 
-        return typeNode.getTextContent();
+        return nodeList.getLength() > 0 ? nodeList.item(0).getTextContent() : null;
     }
 
     private void loadExtensionDescriptor(MutableExtension extension, Element extensionElement)
@@ -546,7 +546,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                 if (exclusion.getNodeName().equals(ELEMENT_EXTENIONPATTERN)) {
                     Node dependencyIdNode = getNode(exclusion, ELEMENT_ID);
 
-                    Pattern patternString = dependencyIdNode != null ? Pattern.compile(dependencyIdNode.getTextContent()) : null;
+                    Pattern patternString =
+                        dependencyIdNode != null ? Pattern.compile(dependencyIdNode.getTextContent()) : null;
 
                     exclusions.add(this.factory.getExtensionPattern(patternString));
                 }

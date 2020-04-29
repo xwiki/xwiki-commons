@@ -30,6 +30,7 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Validate {@link ModelConverter} component.
@@ -53,24 +54,36 @@ public class ArtifactModelConverterTest
         model.setGroupId("groupid");
         model.setArtifactId("artifactid");
         model.setVersion("version");
-        model.setPackaging("pom");
+        model.setPackaging("jar");
 
         this.artifactModel = new ArtifactModel(model);
     }
 
+    // Tests
+
     @Test
-    public void testConvertWithClassifier() throws SecurityException
+    void testConvertWithClassifier() throws SecurityException
     {
         this.artifactModel.setClassifier("classifier");
 
         Extension extension = this.converter.convert(Extension.class, artifactModel);
 
         assertEquals("groupid:artifactid:classifier", extension.getId().getId());
-        assertEquals("pom", extension.getType());
+        assertEquals("jar", extension.getType());
     }
 
     @Test
-    public void testConvertWithType() throws SecurityException
+    void testConvertPom() throws SecurityException
+    {
+        this.artifactModel.setType("pom");
+
+        Extension extension = this.converter.convert(Extension.class, artifactModel);
+
+        assertNull(extension.getType());
+    }
+
+    @Test
+    void testConvertWithType() throws SecurityException
     {
         this.artifactModel.setType("type");
 
@@ -81,7 +94,7 @@ public class ArtifactModelConverterTest
     }
 
     @Test
-    public void testConvertWithClassifierAndType() throws SecurityException
+    void testConvertWithClassifierAndType() throws SecurityException
     {
         this.artifactModel.setClassifier("classifier");
         this.artifactModel.setType("type");
@@ -91,5 +104,4 @@ public class ArtifactModelConverterTest
         assertEquals("groupid:artifactid:classifier", extension.getId().getId());
         assertEquals("type", extension.getType());
     }
-
 }

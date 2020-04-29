@@ -41,7 +41,6 @@ import org.junit.Test;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.ExtensionAuthor;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionException;
 import org.xwiki.extension.ExtensionId;
@@ -57,6 +56,8 @@ import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.annotation.AllComponents;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @AllComponents
@@ -186,6 +187,15 @@ public class AetherDefaultRepositoryManagerTest
             .replace("<description>summary</description>", "<description>modified summary</description>"), "UTF-8");
         extension = this.repositoryManager.resolve(this.extensionId);
         Assert.assertEquals("modified summary", extension.getSummary());
+    }
+
+    @Test
+    public void testResolvePOM() throws ResolveException, IOException
+    {
+        Extension extension = this.repositoryManager.resolve(new ExtensionId("groupid:pom", "version"));
+
+        assertNotNull(extension);
+        assertNull(extension.getType());
     }
 
     @Test

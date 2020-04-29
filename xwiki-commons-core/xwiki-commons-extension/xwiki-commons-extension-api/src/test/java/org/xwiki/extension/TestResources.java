@@ -71,6 +71,8 @@ public class TestResources
 
     public static final ExtensionId REMOTE_SIMPLE_ID = new ExtensionId("rsimple", "version");
 
+    public static final ExtensionId REMOTE_NOTYPE_ID = new ExtensionId("rnotype", "version");
+
     public static final ExtensionId REMOTE_WITHRDEPENDENCY_ID = new ExtensionId("rwithrdependency", "version");
 
     public static final ExtensionId REMOTE_WITHRTDEPENDENCY_ID = new ExtensionId("rwithrtdependency", "version");

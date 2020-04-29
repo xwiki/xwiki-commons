@@ -21,6 +21,7 @@ package org.xwiki.extension.test;
 
 import java.io.UnsupportedEncodingException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtensionFile;
@@ -31,7 +32,9 @@ public class FileExtension extends AbstractExtension
     {
         super(repository, extension);
 
-        setFile(new DefaultLocalExtensionFile(getFileExtensionRepository().getFile(getId(), getType())));
+        if (StringUtils.isNotEmpty(getType())) {
+            setFile(new DefaultLocalExtensionFile(getFileExtensionRepository().getFile(getId(), getType())));
+        }
     }
 
     private FileExtensionRepository getFileExtensionRepository()

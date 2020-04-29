@@ -28,6 +28,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -170,11 +171,15 @@ public class LocalExtensionStorage
                 this.extensionSerializer.loadLocalExtensionDescriptor(this.repository, fis);
 
             localExtension.setDescriptorFile(descriptor);
-            localExtension.setFile(getFile(descriptor, DESCRIPTOR_EXT, localExtension.getType()));
 
-            if (!localExtension.getFile().getFile().exists()) {
-                throw new InvalidExtensionException("Failed to load local extension [" + descriptor + "]: ["
-                    + localExtension.getFile() + "] file does not exists");
+            File extensionFile = getFile(descriptor, DESCRIPTOR_EXT, localExtension.getType());
+            if (extensionFile != null) {
+                localExtension.setFile(extensionFile);
+
+                if (!localExtension.getFile().getFile().exists()) {
+                    throw new InvalidExtensionException("Failed to load local extension [" + descriptor + "]: ["
+                        + localExtension.getFile() + "] file does not exists");
+                }
             }
 
             return localExtension;
@@ -195,8 +200,8 @@ public class LocalExtensionStorage
      * @throws TransformerException error when trying to save the descriptor
      * @throws IOException error when trying to save the descriptor
      */
-    public void saveDescriptor(DefaultLocalExtension extension) throws ParserConfigurationException,
-        TransformerException, IOException
+    public void saveDescriptor(DefaultLocalExtension extension)
+        throws ParserConfigurationException, TransformerException, IOException
     {
         File file = extension.getDescriptorFile();
 
@@ -204,6 +209,9 @@ public class LocalExtensionStorage
             file = getNewDescriptorFile(extension.getId());
             extension.setDescriptorFile(file);
         }
+
+        // Make sure the folder exist
+        file.getParentFile().mkdirs();
 
         FileOutputStream fos = new FileOutputStream(file);
 
@@ -241,6 +249,10 @@ public class LocalExtensionStorage
      */
     private File getFile(File baseFile, String baseType, String type)
     {
+        if (StringUtils.isEmpty(type)) {
+            return null;
+        }
+
         String baseName = getBaseName(baseFile.getName(), baseType);
 
         return new File(baseFile.getParent(), baseName + '.' + PathUtils.encode(type));
@@ -291,6 +303,8 @@ public class LocalExtensionStorage
 
         DefaultLocalExtensionFile extensionFile = extension.getFile();
 
-        extensionFile.getFile().delete();
+        if (extensionFile != null) {
+            extensionFile.getFile().delete();
+        }
     }
 }

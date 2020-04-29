@@ -25,23 +25,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Named;
+
 import org.apache.commons.collections4.ListUtils;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Repository;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionFeaturesInjector;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
-import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.internal.DefaultConverterManager;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.annotation.BeforeComponent;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.junit5.mockito.MockComponent;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -55,27 +57,30 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  */
 @AllComponents
+@ComponentTest
 public class ModelConverterTest
 {
     private static final List<ExtensionId> INJECTED_FEATURES =
         Arrays.asList(new ExtensionId("injectedfeature1", "injectedversion1"),
             new ExtensionId("injectedfeature2", "injectedversion2"));
 
-    @Rule
-    public MockitoComponentMockingRule<ConverterManager> mocker =
-        new MockitoComponentMockingRule<>(DefaultConverterManager.class);
+    @MockComponent
+    @Named("test")
+    private ExtensionFeaturesInjector featureProvider;
+
+    @InjectMockComponents
+    private DefaultConverterManager converter;
 
     @BeforeComponent
     public void beforeComponent() throws Exception
     {
-        ExtensionFeaturesInjector featureProvider =
-            this.mocker.registerMockComponent(ExtensionFeaturesInjector.class, "test");
-
-        when(featureProvider.getFeatures(any(Extension.class))).thenReturn(INJECTED_FEATURES);
+        when(this.featureProvider.getFeatures(any(Extension.class))).thenReturn(INJECTED_FEATURES);
     }
 
+    // Tests
+
     @Test
-    public void testConvertFromExtension() throws SecurityException, ComponentLookupException, URISyntaxException
+    void convertToExtension() throws SecurityException, ComponentLookupException, URISyntaxException
     {
         Model model = new Model();
 
@@ -97,10 +102,11 @@ public class ModelConverterTest
         dependency.setOptional(false);
         model.addDependency(dependency);
 
-        Extension extension = this.mocker.getComponentUnderTest().convert(Extension.class, model);
+        Extension extension = this.converter.convert(Extension.class, model);
 
         assertEquals(model.getGroupId() + ':' + model.getArtifactId(), extension.getId().getId());
         assertEquals(model.getVersion(), extension.getId().getVersion().getValue());
+        assertEquals(model.getPackaging(), extension.getType());
         assertEquals(ListUtils.union(Arrays.asList(new ExtensionId("feature1", "1.0")), INJECTED_FEATURES),
             new ArrayList<>(extension.getExtensionFeatures()));
         assertEquals("category", extension.getCategory());
@@ -115,7 +121,22 @@ public class ModelConverterTest
     }
 
     @Test
-    public void testConvertFromExtensionWithIncludedOptionalDependencies()
+    void convertPomToExtension() throws SecurityException, ComponentLookupException, URISyntaxException
+    {
+        Model model = new Model();
+
+        model.setGroupId("groupid");
+        model.setArtifactId("artifactid");
+        model.setVersion("version");
+        model.setPackaging("pom");
+
+        Extension extension = this.converter.convert(Extension.class, model);
+
+        assertNull(extension.getType());
+    }
+
+    @Test
+    void convertToExtensionWithIncludedOptionalDependencies()
         throws SecurityException, ComponentLookupException, URISyntaxException
     {
         Model model = new Model();
@@ -139,7 +160,7 @@ public class ModelConverterTest
         dependency.setOptional(true);
         model.addDependency(dependency);
 
-        Extension extension = this.mocker.getComponentUnderTest().convert(Extension.class, model);
+        Extension extension = this.converter.convert(Extension.class, model);
 
         assertEquals(model.getGroupId() + ':' + model.getArtifactId(), extension.getId().getId());
         assertEquals(model.getVersion(), extension.getId().getVersion().getValue());
@@ -159,7 +180,7 @@ public class ModelConverterTest
     }
 
     @Test
-    public void testConvertFromXWikiExtensionWithOptionalDependencies()
+    void convertToXWikiExtensionWithOptionalDependencies()
         throws SecurityException, ComponentLookupException, URISyntaxException
     {
         Model model = new Model();
@@ -182,7 +203,7 @@ public class ModelConverterTest
         dependency.setOptional(true);
         model.addDependency(dependency);
 
-        Extension extension = this.mocker.getComponentUnderTest().convert(Extension.class, model);
+        Extension extension = this.converter.convert(Extension.class, model);
 
         assertEquals(model.getGroupId() + ':' + model.getArtifactId(), extension.getId().getId());
         assertEquals(model.getVersion(), extension.getId().getVersion().getValue());
@@ -202,7 +223,7 @@ public class ModelConverterTest
     }
 
     @Test
-    public void testConvertFromExtensionAllowedOnRoot() throws SecurityException, ComponentLookupException
+    void convertToExtensionAllowedOnRoot() throws SecurityException, ComponentLookupException
     {
         Model model = new Model();
 
@@ -211,7 +232,7 @@ public class ModelConverterTest
         model.setVersion("version");
         model.addProperty(Extension.IKEYPREFIX + Extension.FIELD_NAMESPACES, "{root}");
 
-        Extension extension = this.mocker.getComponentUnderTest().convert(Extension.class, model);
+        Extension extension = this.converter.convert(Extension.class, model);
 
         assertEquals(Arrays.asList("{root}"), new ArrayList<>(extension.getAllowedNamespaces()));
     }
