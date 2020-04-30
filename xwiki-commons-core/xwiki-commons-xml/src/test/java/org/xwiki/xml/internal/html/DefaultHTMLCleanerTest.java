@@ -26,9 +26,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.htmlcleaner.CleanerProperties;
+import org.htmlcleaner.DomSerializer;
+import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.TagNode;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -477,18 +482,18 @@ public class DefaultHTMLCleanerTest
 
         String textContent =
             document.getElementsByTagName("div").item(0).getAttributes().getNamedItem("foo").getTextContent();
-        assertEquals("aaa\"bbb&ccc>ddd<eee'fff", textContent);
+        assertEquals("aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff", textContent);
 
         htmlInput = "<div foo='aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff'>content</div>";
         document = this.cleaner.clean(new StringReader(htmlInput));
 
         textContent =
             document.getElementsByTagName("div").item(0).getAttributes().getNamedItem("foo").getTextContent();
-        assertEquals("aaa\"bbb&ccc>ddd<eee'fff", textContent);
+        assertEquals("aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff", textContent);
 
-        assertHTML("<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee'fff\">content</div>",
+        assertHTML("<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff\">content</div>",
             "<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff\">content</div>");
-        assertHTML("<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee'fff\">content</div>",
+        assertHTML("<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff\">content</div>",
             "<div foo='aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff'>content</div>");
     }
 
@@ -545,6 +550,32 @@ public class DefaultHTMLCleanerTest
 
         textContent =
             document.getElementsByTagName("img").item(0).getAttributes().getNamedItem("src").getTextContent();
-        assertEquals("http://host.com/a.gif?a=foo&b=bar", textContent);
+        assertEquals("http://host.com/a.gif?a=foo&amp;b=bar", textContent);
+    }
+
+    @Test
+    public void preserveDoubleEscapingInAttributes() throws Exception
+    {
+        CleanerProperties cleanerProperties = new CleanerProperties();
+        cleanerProperties.setDeserializeEntities(false);
+        HtmlCleaner cleaner = new HtmlCleaner(cleanerProperties);
+        TagNode tagNode = cleaner.clean("<?xml version = \"1.0\"?><div foo=\"&amp;quot;\">&amp;quot;</div>");
+        List<? extends TagNode> divList = tagNode.getElementListByName("div", true);
+        assertEquals(1, divList.size());
+        assertEquals("&amp;quot;", divList.get(0).getText().toString());
+        // This assert is failing: the attribute is deserialized to contain ".
+        assertEquals("&amp;quot;", divList.get(0).getAttributeByName("foo"));
+
+        DomSerializer domSerializer = new DomSerializer(cleanerProperties, false);
+        Document document = domSerializer.createDOM(tagNode);
+
+        NodeList nodeList = document.getElementsByTagName("div");
+        assertEquals(1, nodeList.getLength());
+        assertEquals("&amp;quot;", nodeList.item(0).getTextContent());
+        // We can never retrieve the expected value here since the encoded &amp; has been lost earlier.
+        assertEquals("&amp;quot;", nodeList.item(0).getAttributes().getNamedItem("foo").getTextContent());
+
+        assertHTML("<div foo=\"&amp;quot;\">content</div>",
+            "<div foo=\"&amp;quot;\">content</div>");
     }
 }
