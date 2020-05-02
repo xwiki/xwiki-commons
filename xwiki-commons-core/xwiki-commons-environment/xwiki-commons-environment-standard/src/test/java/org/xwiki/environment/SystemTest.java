@@ -21,11 +21,15 @@ package org.xwiki.environment;
 
 import java.io.File;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.helpers.NOPLogger;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for {@link org.xwiki.environment.System}.
@@ -38,10 +42,10 @@ public class SystemTest
     private static final File TMPDIR = new File(java.lang.System.getProperty("java.io.tmpdir"), "xwiki-temp");
 
     @Test
-    public void testInitializeWithNoParameter() throws Exception
+    void initializeWithNoParameter() throws Exception
     {
         ComponentManager componentManager = System.initialize();
-        Assert.assertNotNull(componentManager);
+        assertNotNull(componentManager);
 
         Environment environment = componentManager.getInstance(Environment.class);
 
@@ -49,15 +53,15 @@ public class SystemTest
         ReflectionUtils.setFieldValue(environment, "logger", NOPLogger.NOP_LOGGER);
 
         // Verify that the temporary directory is `java.io.tmpdir`/xwiki-temp/
-        Assert.assertEquals(TMPDIR, environment.getTemporaryDirectory());
+        assertEquals(TMPDIR, environment.getTemporaryDirectory());
 
         // Verify that the Permanent directory is java.io.tmpdir
-        Assert.assertEquals(new File(java.lang.System.getProperty("java.io.tmpdir")),
+        assertEquals(new File(java.lang.System.getProperty("java.io.tmpdir")),
             environment.getPermanentDirectory());
     }
 
     @Test
-    public void testInitializeWithAllDirectoriesSet() throws Exception
+    void initializeWithAllDirectoriesSet() throws Exception
     {
         File permanentDirectory = new File("/permanent");
         File temporaryDirectory = new File("/temporary");
@@ -65,28 +69,28 @@ public class SystemTest
 
         ComponentManager componentManager =
             System.initialize(permanentDirectory, resourceDirectory, temporaryDirectory);
-        Assert.assertNotNull(componentManager);
+        assertNotNull(componentManager);
 
         Environment environment = componentManager.getInstance(Environment.class);
 
         // Verify the temporary directory
-        Assert.assertEquals(temporaryDirectory, environment.getTemporaryDirectory());
+        assertEquals(temporaryDirectory, environment.getTemporaryDirectory());
 
         // Verify the Permanent directory
-        Assert.assertEquals(permanentDirectory, environment.getPermanentDirectory());
+        assertEquals(permanentDirectory, environment.getPermanentDirectory());
     }
 
     @Test
-    public void testDispose() throws Exception
+    void dispose() throws Exception
     {
         ComponentManager componentManager = System.initialize();
 
         TestComponent testComponent = componentManager.getInstance(TestRole.class);
 
-        Assert.assertFalse(testComponent.isDisposed());
+        assertFalse(testComponent.isDisposed());
 
         System.dispose(componentManager);
 
-        Assert.assertTrue(testComponent.isDisposed());
+        assertTrue(testComponent.isDisposed());
     }
 }

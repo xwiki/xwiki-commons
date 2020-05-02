@@ -25,36 +25,45 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
-import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
-import org.xwiki.test.AllLogRule;
+import org.xwiki.test.LogLevel;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.LogCaptureExtension;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.mockito.MockitoComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit test for {@link DefaultExtensionManagerConfiguration}.
  *
  * @version $Id$
  */
-@ComponentList({ ExtensionFactory.class })
+@ComponentTest
+// @formatter:off
+@ComponentList({
+    ExtensionFactory.class 
+})
+// @formatter:on
 public class DefaultExtensionManagerConfigurationTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<ExtensionManagerConfiguration> componentManager =
-        new MockitoComponentMockingRule<>(DefaultExtensionManagerConfiguration.class, Arrays.asList(Logger.class));
+    @RegisterExtension
+    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
-    @Rule
-    public AllLogRule log = new AllLogRule();
+    @InjectMockComponents
+    private DefaultExtensionManagerConfiguration configuration;
 
-    private ExtensionManagerConfiguration configuration;
+    @InjectComponentManager
+    private MockitoComponentManager componentManager;
 
     private MemoryConfigurationSource source;
 
@@ -65,37 +74,31 @@ public class DefaultExtensionManagerConfigurationTest
         this.source = this.componentManager.registerMemoryConfigurationSource();
     }
 
-    @Before
-    public void setUp() throws Exception
-    {
-        this.configuration = this.componentManager.getComponentUnderTest();
-    }
-
     @Test
-    public void testGetRepositoriesWithInvalid() throws Exception
+    void getRepositoriesWithInvalid() throws Exception
     {
         // We define 2 repositories: a valid one and an invalid one.
         // The goal is to verify that the invalid one is ignored but a warning is reported in the logs.
         this.source.setProperty("extension.repositories", Arrays.asList("id:type:http://url", "invalid"));
 
-        Assert.assertEquals(
+        assertEquals(
             Arrays.asList(new DefaultExtensionRepositoryDescriptor("id", "type", new URI("http://url"))),
             new ArrayList<>(this.configuration.getExtensionRepositoryDescriptors()));
-        Assert.assertEquals(1, this.log.size());
-        Assert.assertEquals("Ignoring invalid repository configuration [invalid]. Root cause "
+        assertEquals(1, this.logCapture.size());
+        assertEquals("Ignoring invalid repository configuration [invalid]. Root cause "
             + "[ExtensionManagerConfigurationException: Invalid repository configuration format for [invalid]. Should "
-            + "have been matching [([^:]+):([^:]+):(.+)].]", this.log.getMessage(0));
+            + "have been matching [([^:]+):([^:]+):(.+)].]", this.logCapture.getMessage(0));
     }
 
     @Test
-    public void testGetExtensionRepositoryDescriptorsEmpty()
+    void getExtensionRepositoryDescriptorsEmpty()
     {
-        Assert.assertNull(this.configuration.getExtensionRepositoryDescriptors());
-        Assert.assertEquals(0, this.log.size());
+        assertNull(this.configuration.getExtensionRepositoryDescriptors());
+        assertEquals(0, this.logCapture.size());
     }
 
     @Test
-    public void testGetExtensionRepositoryDescriptorsWithProperties() throws URISyntaxException
+    void getExtensionRepositoryDescriptorsWithProperties() throws URISyntaxException
     {
         this.source.setProperty("extension.repositories", Arrays.asList("id:type:http://url"));
         this.source.setProperty("extension.repositories.id.property", "value");
@@ -103,15 +106,15 @@ public class DefaultExtensionManagerConfigurationTest
 
         Collection<ExtensionRepositoryDescriptor> descriptors = this.configuration.getExtensionRepositoryDescriptors();
 
-        Assert.assertFalse(descriptors.isEmpty());
+        assertFalse(descriptors.isEmpty());
 
         ExtensionRepositoryDescriptor descriptor = descriptors.iterator().next();
 
-        Assert.assertEquals("id", descriptor.getId());
-        Assert.assertEquals("type", descriptor.getType());
-        Assert.assertEquals(new URI("http://url"), descriptor.getURI());
-        Assert.assertEquals("value", descriptor.getProperty("property"));
-        Assert.assertEquals("other value", descriptor.getProperty("property.with.dots"));
-        Assert.assertEquals(0, this.log.size());
+        assertEquals("id", descriptor.getId());
+        assertEquals("type", descriptor.getType());
+        assertEquals(new URI("http://url"), descriptor.getURI());
+        assertEquals("value", descriptor.getProperty("property"));
+        assertEquals("other value", descriptor.getProperty("property.with.dots"));
+        assertEquals(0, this.logCapture.size());
     }
 }

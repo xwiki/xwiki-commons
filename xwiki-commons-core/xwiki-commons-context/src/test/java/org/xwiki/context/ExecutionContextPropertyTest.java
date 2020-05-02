@@ -22,9 +22,15 @@ package org.xwiki.context;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.context.internal.ExecutionContextProperty;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @version $Id$
@@ -53,27 +59,27 @@ public class ExecutionContextPropertyTest
     }
 
     @Test
-    public void defaultValues() throws Exception
+    void defaultValues() throws Exception
     {
         final String key = "test";
 
         ExecutionContext context = new ExecutionContext();
         context.newProperty(key).declare();
 
-        Assert.assertFalse(fetch(context, key).isFinal());
-        Assert.assertEquals(key, fetch(context, key).getKey());
-        Assert.assertNull(fetch(context, key).getValue());
-        Assert.assertFalse(fetch(context, key).isInherited());
+        assertFalse(fetch(context, key).isFinal());
+        assertEquals(key, fetch(context, key).getKey());
+        assertNull(fetch(context, key).getValue());
+        assertFalse(fetch(context, key).isInherited());
 
         Object o = new Object();
         context.setProperty(key, o);
-        Assert.assertSame(fetch(context, key).getValue(), o);
+        assertSame(fetch(context, key).getValue(), o);
         context.setProperty(key, null);
-        Assert.assertNull(fetch(context, key).getValue());
+        assertNull(fetch(context, key).getValue());
     }
 
     @Test
-    public void cloning() throws Exception
+    void cloning() throws Exception
     {
         final String k1 = "test1";
         final String k2 = "test2";
@@ -85,45 +91,50 @@ public class ExecutionContextPropertyTest
 
         context.newProperty(k1).initial(value).declare();
 
-        Assert.assertSame(value, fetch(context, k1).clone().getValue());
+        assertSame(value, fetch(context, k1).clone().getValue());
 
         context.newProperty(k2).initial(value).cloneValue().declare();
 
         TestCloneable clonedValue = (TestCloneable) fetch(context, k2).clone().getValue();
 
-        Assert.assertTrue(value != clonedValue && clonedValue.value.equals("clone"));
+        assertTrue(value != clonedValue && clonedValue.value.equals("clone"));
 
         context.newProperty(k3).initial(value).cloneValue().makeFinal().inherited().declare();
 
-        Assert.assertTrue(fetch(context, k3).clone().isClonedFrom(fetch(context, k3)));
+        assertTrue(fetch(context, k3).clone().isClonedFrom(fetch(context, k3)));
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void cloningNonPublicCloneMethod() throws Exception
+    @Test
+    void cloningNonPublicCloneMethod()
     {
         ExecutionContext context = new ExecutionContext();
 
-        final String key = "test";
+        String key = "test";
 
         TestNonpublicClone value = new TestNonpublicClone();
 
         context.newProperty(key).cloneValue().initial(value).declare();
 
-        fetch(context, key).clone();
+        Throwable exception = assertThrows(IllegalStateException.class, () -> fetch(context, key).clone());
+        assertEquals("cloneValue attribute was set on property [test], but the value had class "
+            + "[org.xwiki.context.ExecutionContextPropertyTest$TestNonpublicClone] which has no public clone method",
+            exception.getMessage());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void nonNullCheck()
+    @Test
+    void nonNullCheck()
     {
         ExecutionContext context = new ExecutionContext();
 
         final String key = "test";
 
-        context.newProperty(key).nonNull().initial(null).declare();
+        Throwable exception = assertThrows(IllegalArgumentException.class,
+            () -> context.newProperty(key).nonNull().initial(null).declare());
+        assertEquals("The property [test] may not be null!", exception.getMessage());
     }
 
     @Test
-    public void typeChecking()
+    void typeChecking()
     {
         ExecutionContext context = new ExecutionContext();
 
@@ -135,8 +146,8 @@ public class ExecutionContextPropertyTest
         context.setProperty(key, new SomeSubClass());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void typeCheckingMismatch()
+    @Test
+    void typeCheckingMismatch()
     {
         ExecutionContext context = new ExecutionContext();
 
@@ -144,7 +155,11 @@ public class ExecutionContextPropertyTest
 
         context.newProperty(key).type(SomeSubClass.class).declare();
 
-        context.setProperty(key, new SomeClass());
+        Throwable exception = assertThrows(IllegalArgumentException.class,
+            () ->  context.setProperty(key, new SomeClass()));
+        assertEquals("The value of property [test] must be of type "
+            + "[class org.xwiki.context.ExecutionContextPropertyTest$SomeSubClass], but was "
+            + "[class org.xwiki.context.ExecutionContextPropertyTest$SomeClass]", exception.getMessage());
     }
 
     public static class TestCloneable implements Cloneable

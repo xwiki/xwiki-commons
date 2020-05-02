@@ -188,7 +188,7 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
         Collection<ExtensionRepositoryDescriptor> repositories;
 
         List<String> repositoryStrings =
-            this.configuration.get().getProperty(CK_PREFIX + "repositories", Collections.<String>emptyList());
+            this.configuration.get().getProperty(CK_PREFIX + "repositories", Collections.emptyList());
 
         if (repositoryStrings.isEmpty()) {
             repositories = null;

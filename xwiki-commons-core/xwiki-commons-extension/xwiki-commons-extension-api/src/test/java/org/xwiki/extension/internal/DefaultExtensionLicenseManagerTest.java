@@ -24,37 +24,51 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
-import org.xwiki.test.ComponentManagerRule;
 import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
 
-@ComponentList({ DefaultExtensionLicenseManager.class })
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * Unit tests for {@link DefaultExtensionLicenseManager}.
+ *
+ * @version $Id$
+ */
+@ComponentTest
+// @formatter:off
+@ComponentList({
+    DefaultExtensionLicenseManager.class
+})
+// @formatter:on
 public class DefaultExtensionLicenseManagerTest
 {
-    @Rule
-    public final ComponentManagerRule componentManager = new ComponentManagerRule();
+    @InjectComponentManager
+    private ComponentManager componentManager;
 
     private ExtensionLicenseManager licenseManager;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         this.licenseManager = this.componentManager.getInstance(ExtensionLicenseManager.class);
     }
 
     @Test
-    public void testGetLicenses()
+    void getLicenses()
     {
-        Assert.assertTrue(this.licenseManager.getLicenses().size() > 0);
+        assertTrue(this.licenseManager.getLicenses().size() > 0);
     }
 
     @Test
-    public void testGetLicense() throws IOException
+    void getLicense() throws IOException
     {
         ExtensionLicense license = this.licenseManager.getLicense("Apache License 2.0");
 
@@ -62,14 +76,14 @@ public class DefaultExtensionLicenseManagerTest
             getClass().getResourceAsStream("/extension/licenses/Apache License 2.0.license"), StandardCharsets.UTF_8);
         content = content.subList(8, content.size());
 
-        Assert.assertNotNull(license);
-        Assert.assertEquals("Apache License 2.0", license.getName());
-        Assert.assertEquals(content, license.getContent());
+        assertNotNull(license);
+        assertEquals("Apache License 2.0", license.getName());
+        assertEquals(content, license.getContent());
 
         license = this.licenseManager.getLicense("ASL");
 
-        Assert.assertNotNull(license);
-        Assert.assertEquals("Apache License 2.0", license.getName());
-        Assert.assertEquals(content, license.getContent());
+        assertNotNull(license);
+        assertEquals("Apache License 2.0", license.getName());
+        assertEquals(content, license.getContent());
     }
 }

@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -35,25 +33,33 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.filter.test.ExtendedTestData;
 import org.xwiki.filter.test.TestFilter;
 import org.xwiki.filter.xml.parser.XMLParserFactory;
 import org.xwiki.filter.xml.serializer.XMLSerializerFactory;
 import org.xwiki.test.annotation.AllComponents;
-import org.xwiki.test.mockito.MockitoComponentManagerRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+/**
+ * Unit tests for {@link XMLSerializerFactory}.
+ *
+ * @version $Id$
+ */
+@ComponentTest
 @AllComponents
-public class XMLFilterTest
+public class XMLSerializerFactoryTest
 {
-    @Rule
-    public MockitoComponentManagerRule componentManager = new MockitoComponentManagerRule();
+    @InjectComponentManager
+    public ComponentManager componentManager;
 
     private StringWriter stringWriter;
 
@@ -110,37 +116,35 @@ public class XMLFilterTest
 
     private void assertSerialized(String expect)
     {
-        Assert.assertEquals(expect, this.stringWriter.toString());
+        assertEquals(expect, this.stringWriter.toString());
     }
 
-    // Tests
-
     @Test
-    public void testContainer() throws Exception
+    void container() throws Exception
     {
         assertParseAndSerialize("<container/>");
     }
 
     @Test
-    public void testContainerAndChild() throws Exception
+    void containerAndChild() throws Exception
     {
         assertParseAndSerialize("<container><child/></container>");
     }
 
     @Test
-    public void testContainerWithParameters() throws Exception
+    void containerWithParameters() throws Exception
     {
         assertParseAndSerialize("<containerWithParameters param0=\"value0\" param1=\"1\"/>");
     }
 
     @Test
-    public void testContainerWithNamedParameters() throws Exception
+    void containerWithNamedParameters() throws Exception
     {
         assertParseAndSerialize("<containerWithNamedParameters namedParam=\"value0\" param1=\"1\"/>");
     }
 
     @Test
-    public void testContainerWithMap() throws Exception
+    void containerWithMap() throws Exception
     {
         assertParseAndSerialize(
             "<containerWithMap><p><map><entry><string>key</string><int>1</int></entry></map></p></containerWithMap>");
@@ -150,22 +154,20 @@ public class XMLFilterTest
     }
 
     @Test
-    public void testCustomData() throws Exception
+    void customData() throws Exception
     {
         assertParseAndSerializeFromSAX("<customData><p><custom><field1>5</field1></custom></p></customData>");
         assertParseAndSerializeFromSAX("<customData/>");
     }
 
     @Test
-    public void testFromSAX() throws Exception
+    void fromSAX() throws Exception
     {
         assertParseAndSerializeFromSAX("<containerWithNamedParameters namedParam=\"value0\" param1=\"1\"/>");
     }
 
-    // Serialize
-
     @Test
-    public void testSerializeExtendedTestData()
+    void serializeExtendedTestData()
         throws ComponentLookupException, XMLStreamException, FactoryConfigurationError, IOException
     {
         TestFilter testFilter = createFilter();
@@ -181,7 +183,7 @@ public class XMLFilterTest
     }
 
     @Test
-    public void testSerializeWithDefaultValue()
+    void serializeWithDefaultValue()
         throws ComponentLookupException, XMLStreamException, FactoryConfigurationError, IOException
     {
         TestFilter testFilter = createFilter();
@@ -194,7 +196,7 @@ public class XMLFilterTest
     }
 
     @Test
-    public void testSerializeWithNamedChild()
+    void serializeWithNamedChild()
         throws ComponentLookupException, XMLStreamException, FactoryConfigurationError, IOException
     {
         TestFilter testFilter = createFilter();

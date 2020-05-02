@@ -1,8 +1,3 @@
-package org.xwiki.filter.test.integration;
-import org.junit.Assert;
-import org.junit.Test;
-import org.xwiki.filter.test.integration.TestDataParser;
-
 /*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,17 +17,27 @@ import org.xwiki.filter.test.integration.TestDataParser;
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.xwiki.filter.test.integration;
 
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+/**
+ * Unit tests for {@link TestDataParser}.
+ *
+ * @version $Id$
+ */
 public class TestDataParserTest
 {
     @Test
-    public void testInterpret()
+    void interpret()
     {
         System.setProperty("key", "value");
 
-        Assert.assertEquals("test", TestDataParser.interpret("test"));
-        Assert.assertEquals("value", TestDataParser.interpret("${{{key}}}"));
-        Assert.assertEquals("testvaluetest", TestDataParser.interpret("test${{{key}}}test"));
-        Assert.assertEquals("test${{{key}}}", TestDataParser.interpret("test\\${{{key}}}"));
+        assertEquals("test", TestDataParser.interpret("test"));
+        assertEquals("value", TestDataParser.interpret("${{{key}}}"));
+        assertEquals("testvaluetest", TestDataParser.interpret("test${{{key}}}test"));
+        assertEquals("test${{{key}}}", TestDataParser.interpret("test\\${{{key}}}"));
     }
 }
