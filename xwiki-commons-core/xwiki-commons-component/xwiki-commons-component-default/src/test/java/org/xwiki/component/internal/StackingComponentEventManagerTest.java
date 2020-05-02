@@ -22,16 +22,19 @@ package org.xwiki.component.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.event.ComponentDescriptorAddedEvent;
 import org.xwiki.component.event.ComponentDescriptorRemovedEvent;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.observation.ObservationManager;
+
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test {@link StackingComponentEventManager}.
@@ -46,14 +49,12 @@ public class StackingComponentEventManagerTest
 
     private DefaultComponentDescriptor<Collection> descriptor2;
 
-    private ObservationManager mockObservationManager;
+    private ObservationManager observationManager;
 
-    private ComponentManager mockComponentManager;
+    private ComponentManager componentManager;
 
-    private Mockery mockery;
-
-    @Before
-    public void setUp()
+    @BeforeEach
+    void setUp()
     {
         this.eventManager = new StackingComponentEventManager();
 
@@ -66,51 +67,34 @@ public class StackingComponentEventManagerTest
         this.descriptor2.setRoleType(Collection.class);
         this.descriptor2.setRoleHint("hint2");
 
-        this.mockery = new Mockery();
+        this.observationManager = mock(ObservationManager.class);
+        this.componentManager = mock(ComponentManager.class);
 
-        this.mockObservationManager = this.mockery.mock(ObservationManager.class);
-        this.mockComponentManager = this.mockery.mock(ComponentManager.class);
-
-        this.eventManager.setObservationManager(this.mockObservationManager);
+        this.eventManager.setObservationManager(this.observationManager);
     }
-
-    @After
-    public void tearDown()
-    {
-        this.mockery.assertIsSatisfied();
-    }
-
-    // Tests
 
     @Test
-    public void flushEvents()
+    void flushEvents()
     {
         this.eventManager.shouldStack(true);
 
         this.eventManager.notifyComponentRegistered(this.descriptor1);
-        this.eventManager.notifyComponentRegistered(this.descriptor1, this.mockComponentManager);
+        this.eventManager.notifyComponentRegistered(this.descriptor1, this.componentManager);
         this.eventManager.notifyComponentUnregistered(this.descriptor2);
-        this.eventManager.notifyComponentUnregistered(this.descriptor2, this.mockComponentManager);
+        this.eventManager.notifyComponentUnregistered(this.descriptor2, this.componentManager);
 
-        final ComponentDescriptorAddedEvent addedEvent =
+        ComponentDescriptorAddedEvent addedEvent =
             new ComponentDescriptorAddedEvent(this.descriptor1.getRoleType(), this.descriptor1.getRoleHint());
-        final ComponentDescriptorRemovedEvent removedEvent =
+        ComponentDescriptorRemovedEvent removedEvent =
             new ComponentDescriptorRemovedEvent(this.descriptor2.getRoleType(), this.descriptor2.getRoleHint());
 
-        this.mockery.checking(new Expectations()
-        {
-            {
-                oneOf(mockObservationManager).notify(with(equal(addedEvent)), with(same(mockComponentManager)),
-                    with(same(descriptor1)));
-                oneOf(mockObservationManager).notify(with(equal(addedEvent)), with(aNull(Object.class)),
-                    with(same(descriptor1)));
-                oneOf(mockObservationManager).notify(with(equal(removedEvent)), with(same(mockComponentManager)),
-                    with(same(descriptor2)));
-                oneOf(mockObservationManager).notify(with(equal(removedEvent)), with(aNull(Object.class)),
-                    with(same(descriptor2)));
-            }
-        });
-
         this.eventManager.flushEvents();
+
+        verify(this.observationManager, times(1)).notify(eq(addedEvent), same(this.componentManager),
+            same(this.descriptor1));
+        verify(this.observationManager, times(1)).notify(eq(addedEvent), eq(null), same(this.descriptor1));
+        verify(this.observationManager, times(1)).notify(eq(removedEvent), same(this.componentManager),
+            same(this.descriptor2));
+        verify(this.observationManager, times(1)).notify(eq(removedEvent), eq(null), same(this.descriptor2));
     }
 }

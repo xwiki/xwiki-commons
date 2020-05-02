@@ -24,8 +24,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.Component;
@@ -38,6 +37,8 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 
 import static com.google.inject.matcher.Matchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Verifies that XWiki components using JSR330 annotation can be used with Guice, thus demonstrating that we're kind of
@@ -155,18 +156,18 @@ public class GuiceCompatibilityTest
     }
 
     @Test
-    public void testGuice()
+    void guiceInjection()
     {
         Injector injector = Guice.createInjector(new TestModule());
 
         RoleImpl impl1 = injector.getInstance(RoleImpl.class);
-        Assert.assertEquals(FieldRoleImpl1.class.getName(), impl1.getFieldRole1().getClass().getName());
-        Assert.assertEquals(FieldRoleImpl2.class.getName(), impl1.getFieldRole2().getClass().getName());
-        Assert.assertEquals(GenericFieldRoleImpl.class.getName(), impl1.getGenericFieldRole().getClass().getName());
-        Assert.assertEquals(RoleImpl.class.getName(), impl1.getLogger().getName());
+        assertEquals(FieldRoleImpl1.class.getName(), impl1.getFieldRole1().getClass().getName());
+        assertEquals(FieldRoleImpl2.class.getName(), impl1.getFieldRole2().getClass().getName());
+        assertEquals(GenericFieldRoleImpl.class.getName(), impl1.getGenericFieldRole().getClass().getName());
+        assertEquals(RoleImpl.class.getName(), impl1.getLogger().getName());
 
         // Test that FieldRole impl is a singleton
         RoleImpl impl2 = injector.getInstance(RoleImpl.class);
-        Assert.assertSame(impl1.getFieldRole1(), impl2.getFieldRole1());
+        assertSame(impl1.getFieldRole1(), impl2.getFieldRole1());
     }
 }

@@ -26,12 +26,8 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.jmock.Expectations;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.xwiki.component.ProviderTest;
 import org.xwiki.component.descriptor.ComponentDescriptor;
@@ -42,7 +38,12 @@ import org.xwiki.component.internal.multi.DefaultComponentManagerManager;
 import org.xwiki.component.internal.namespace.DefaultNamespaceValidator;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
-import org.xwiki.test.jmock.JMockRule;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests for {@link ComponentAnnotationLoader}.
@@ -52,9 +53,6 @@ import org.xwiki.test.jmock.JMockRule;
  */
 public class ComponentAnnotationLoaderTest
 {
-    @Rule
-    public final JMockRule mockery = new JMockRule();
-
     @SuppressWarnings("deprecation")
     @ComponentRole
     public interface NotGenericRole<T>
@@ -174,18 +172,12 @@ public class ComponentAnnotationLoaderTest
         }
     }
 
-    @Before
-    public void setupLogger() throws Exception
+    @BeforeEach
+    void setupLogger()
     {
         // Note: we don't define any expectation on the Logger since we want to be sure that the tests below don't
         // generate any logging at all.
-        this.loader = new TestableComponentAnnotationLoader(this.mockery.mock(Logger.class));
-    }
-
-    @After
-    public void tearDown() throws Exception
-    {
-        this.mockery.assertIsSatisfied();
+        this.loader = new TestableComponentAnnotationLoader(mock(Logger.class));
     }
 
     /**
@@ -194,63 +186,58 @@ public class ComponentAnnotationLoaderTest
      */
     @Test
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void testPriorities() throws Exception
+    void priorities() throws Exception
     {
-        final ComponentManager mockManager = this.mockery.mock(ComponentManager.class);
+        ComponentManager componentManager = mock(ComponentManager.class);
 
-        final ComponentDescriptor descriptor1 =
+        ComponentDescriptor descriptor1 =
             this.loader.getComponentsDescriptors(DeprecatedOverrideRole.class).get(0);
-        final ComponentDescriptor descriptor2 =
+        ComponentDescriptor descriptor2 =
             this.loader.getComponentsDescriptors(RootComponentManager.class).get(0);
-        final ComponentDescriptor descriptor3 = this.loader.getComponentsDescriptors(OverrideRole.class).get(0);
-        final ComponentDescriptor descriptor4 =
+        ComponentDescriptor descriptor3 = this.loader.getComponentsDescriptors(OverrideRole.class).get(0);
+        ComponentDescriptor descriptor4 =
             this.loader.getComponentsDescriptors(EmbeddableComponentManagerFactory.class).get(0);
-        final ComponentDescriptor descriptor5 =
+        ComponentDescriptor descriptor5 =
             this.loader.getComponentsDescriptors(DefaultComponentManagerManager.class).get(0);
-        final ComponentDescriptor descriptor6 =
+        ComponentDescriptor descriptor6 =
             this.loader.getComponentsDescriptors(ContextComponentManagerProvider.class).get(0);
-        final ComponentDescriptor descriptor7 =
+        ComponentDescriptor descriptor7 =
             this.loader.getComponentsDescriptors(DefaultNamespaceValidator.class).get(0);
 
-        final ComponentDescriptor descriptor8 =
+        ComponentDescriptor descriptor8 =
             this.loader.getComponentsDescriptors(ProviderTest.TestProvider1.class).get(0);
-        final ComponentDescriptor descriptor9 =
+        ComponentDescriptor descriptor9 =
             this.loader.getComponentsDescriptors(ProviderTest.TestProvider12.class).get(0);
-        final ComponentDescriptor descriptor10 =
+        ComponentDescriptor descriptor10 =
             this.loader.getComponentsDescriptors(ProviderTest.TestProvider2.class).get(0);
-        final ComponentDescriptor descriptor11 =
+        ComponentDescriptor descriptor11 =
             this.loader.getComponentsDescriptors(ProviderTest.TestComponentWithProviders.class).get(0);
-        final ComponentDescriptor descriptor12 =
+        ComponentDescriptor descriptor12 =
             this.loader.getComponentsDescriptors(ProviderTest.TestProviderWithExceptionInInitialize.class).get(0);
-        final ComponentDescriptor descriptor13 =
+        ComponentDescriptor descriptor13 =
             this.loader.getComponentsDescriptors(ProviderTest.TestComponentWithProviderInException.class).get(0);
+
+        this.loader.initialize(componentManager, this.getClass().getClassLoader());
 
         // This is the test, we verify that registerComponent() is called for each of the descriptor we're expecting
         // to be discovered through annotations by the call to initialize() below.
-        this.mockery.checking(new Expectations()
-        {
-            {
-                oneOf(mockManager).registerComponent(descriptor1);
-                oneOf(mockManager).registerComponent(descriptor2);
-                oneOf(mockManager).registerComponent(descriptor3);
-                oneOf(mockManager).registerComponent(descriptor4);
-                oneOf(mockManager).registerComponent(descriptor5);
-                oneOf(mockManager).registerComponent(descriptor6);
-                oneOf(mockManager).registerComponent(descriptor7);
-                oneOf(mockManager).registerComponent(descriptor8);
-                oneOf(mockManager).registerComponent(descriptor9);
-                oneOf(mockManager).registerComponent(descriptor10);
-                oneOf(mockManager).registerComponent(descriptor11);
-                oneOf(mockManager).registerComponent(descriptor12);
-                oneOf(mockManager).registerComponent(descriptor13);
-            }
-        });
-
-        this.loader.initialize(mockManager, this.getClass().getClassLoader());
+        verify(componentManager, times(1)).registerComponent(descriptor1);
+        verify(componentManager, times(1)).registerComponent(descriptor2);
+        verify(componentManager, times(1)).registerComponent(descriptor3);
+        verify(componentManager, times(1)).registerComponent(descriptor4);
+        verify(componentManager, times(1)).registerComponent(descriptor5);
+        verify(componentManager, times(1)).registerComponent(descriptor6);
+        verify(componentManager, times(1)).registerComponent(descriptor7);
+        verify(componentManager, times(1)).registerComponent(descriptor8);
+        verify(componentManager, times(1)).registerComponent(descriptor9);
+        verify(componentManager, times(1)).registerComponent(descriptor10);
+        verify(componentManager, times(1)).registerComponent(descriptor11);
+        verify(componentManager, times(1)).registerComponent(descriptor12);
+        verify(componentManager, times(1)).registerComponent(descriptor13);
     }
 
     @Test
-    public void testFindComponentRoleTypes()
+    void findComponentRoleTypes()
     {
         assertComponentRoleTypes(RoleImpl.class);
     }
@@ -259,7 +246,7 @@ public class ComponentAnnotationLoaderTest
      * Verify that we get the same result when we use a class that extends another class (i.e. inheritance works).
      */
     @Test
-    public void testFindComponentRoleTypesWhenClassExtension()
+    void findComponentRoleTypesWhenClassExtension()
     {
         assertComponentRoleTypes(SuperRoleImpl.class);
     }
@@ -267,56 +254,56 @@ public class ComponentAnnotationLoaderTest
     private void assertComponentRoleTypes(Class<?> componentClass)
     {
         Set<Type> type = this.loader.findComponentRoleTypes(componentClass);
-        Assert.assertEquals(2, type.size());
-        Assert.assertTrue(type.contains(NotGenericRole.class));
-        Assert.assertTrue(type.contains(ExtendedRole.class));
+        assertEquals(2, type.size());
+        assertTrue(type.contains(NotGenericRole.class));
+        assertTrue(type.contains(ExtendedRole.class));
     }
 
     @Test
-    public void testFindComponentRoleTypesForProvider()
+    void findComponentRoleTypesForProvider()
     {
         Set<Type> types = this.loader.findComponentRoleTypes(ProviderImpl.class);
 
-        Assert.assertEquals(1, types.size());
-        Assert.assertEquals(new DefaultParameterizedType(null, Provider.class, new DefaultParameterizedType(
+        assertEquals(1, types.size());
+        assertEquals(new DefaultParameterizedType(null, Provider.class, new DefaultParameterizedType(
             ComponentAnnotationLoaderTest.class, NotGenericRole.class, String.class)), types.iterator().next());
     }
 
     @Test
-    public void testFindComponentRoleTypesWithGenericRole()
+    void findComponentRoleTypesWithGenericRole()
     {
         Set<Type> types = this.loader.findComponentRoleTypes(GenericComponent.class);
 
-        Assert.assertEquals(1, types.size());
-        Assert.assertEquals(new DefaultParameterizedType(ComponentAnnotationLoaderTest.class, GenericRole.class,
+        assertEquals(1, types.size());
+        assertEquals(new DefaultParameterizedType(ComponentAnnotationLoaderTest.class, GenericRole.class,
             String.class), types.iterator().next());
     }
 
     @Test
-    public void testFindComponentRoleTypesWithGenericRoleAndNonGenericComponent()
+    void findComponentRoleTypesWithGenericRoleAndNonGenericComponent()
     {
         Set<Type> types = this.loader.findComponentRoleTypes(NonGenericComponent.class);
 
-        Assert.assertEquals(1, types.size());
-        Assert.assertEquals(GenericRole.class, types.iterator().next());
+        assertEquals(1, types.size());
+        assertEquals(GenericRole.class, types.iterator().next());
     }
 
     @Test
-    public void testFindComponentRoleTypesWithExtendingGenericRole()
+    void findComponentRoleTypesWithExtendingGenericRole()
     {
         Set<Type> types = this.loader.findComponentRoleTypes(ExtendingGenericComponent.class);
 
-        Assert.assertEquals(1, types.size());
-        Assert.assertEquals(new DefaultParameterizedType(ComponentAnnotationLoaderTest.class, GenericRole.class,
+        assertEquals(1, types.size());
+        assertEquals(new DefaultParameterizedType(ComponentAnnotationLoaderTest.class, GenericRole.class,
             String.class), types.iterator().next());
     }
 
     @Test
-    public void testFindComponentRoleTypesWithExtendingNonGenericRole()
+    void findComponentRoleTypesWithExtendingNonGenericRole()
     {
         Set<Type> types = this.loader.findComponentRoleTypes(ExtendingNonGenericComponent.class);
 
-        Assert.assertEquals(1, types.size());
-        Assert.assertEquals(GenericRole.class, types.iterator().next());
+        assertEquals(1, types.size());
+        assertEquals(GenericRole.class, types.iterator().next());
     }
 }
