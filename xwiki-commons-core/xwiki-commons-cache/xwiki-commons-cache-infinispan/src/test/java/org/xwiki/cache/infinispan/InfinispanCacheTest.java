@@ -35,12 +35,14 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
  * @version $Id$
  */
 @ComponentTest
+// @formatter:off
 @ComponentList({
     InfinispanCacheFactory.class,
     DefaultCacheManager.class,
     DefaultCacheFactory.class,
     DefaultCacheManagerConfiguration.class
 })
+// @formatter:off
 public class InfinispanCacheTest extends AbstractEvictionGenericTestCache
 {
     public InfinispanCacheTest()

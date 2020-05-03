@@ -50,12 +50,14 @@ import static org.mockito.Mockito.when;
  * @since 3.4M1
  */
 @ComponentTest
+// @formatter:off
 @ComponentList({
     InfinispanCacheFactory.class,
     DefaultCacheManager.class,
     DefaultCacheFactory.class,
     DefaultCacheManagerConfiguration.class
 })
+// @formatter:on
 public class InfinispanConfigTest extends AbstractTestCache
 {
     private Environment environment;
