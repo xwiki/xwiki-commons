@@ -309,7 +309,9 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
                     dependency = ((MavenExtensionDependency) extensionDependency).getMavenDependency();
                 } else {
                     dependency = toMavenDependency(extensionDependency.getId(),
-                        extensionDependency.getVersionConstraint().getValue(), null);
+                        extensionDependency.getVersionConstraint().getValue(),
+                        DefaultMavenExtensionDependency.getType(extensionDependency),
+                        DefaultMavenExtensionDependency.getScope(extensionDependency));
                 }
 
                 String dependencyId = dependency.getGroupId() + ':' + dependency.getArtifactId();
@@ -347,7 +349,7 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
         }
     }
 
-    private Dependency toMavenDependency(String id, String version, String type) throws ResolveException
+    private Dependency toMavenDependency(String id, String version, String type, String scope) throws ResolveException
     {
         Matcher matcher = MavenUtils.PARSER_ID.matcher(id);
         if (!matcher.matches()) {
@@ -362,9 +364,8 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
             dependency.setClassifier(StringUtils.defaultString(matcher.group(4), ""));
         }
 
-        if (version != null) {
-            dependency.setVersion(version);
-        }
+        dependency.setVersion(version);
+        dependency.setScope(scope);
 
         if (type != null) {
             dependency.setType(type);

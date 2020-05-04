@@ -19,7 +19,10 @@
  */
 package org.xwiki.extension.maven.internal;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -76,6 +79,13 @@ public class MavenUtils
      * @since 12.2
      */
     public static final String WILDCARD = "*";
+
+    /**
+     * Maven types known to be JARs.
+     * 
+     * @since 12.4RC1
+     */
+    public static final Set<String> JAR_TYPES = new HashSet<>(Arrays.asList("bundle", null));
 
     /**
      * Parse a Maven scm URL to generate a {@link ExtensionScmConnection}.
@@ -158,12 +168,12 @@ public class MavenUtils
     public static String packagingToType(String packaging)
     {
         // support bundle packaging
-        if (packaging.equals("bundle")) {
+        if (JAR_TYPES.contains(packaging)) {
             return "jar";
         }
 
         // pom packaging does not have any associated extension file
-        if (packaging.contentEquals("pom")) {
+        if (packaging.equals("pom")) {
             return null;
         }
 

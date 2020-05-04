@@ -85,6 +85,7 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.internal.ExtensionFactory;
+import org.xwiki.extension.maven.internal.DefaultMavenExtensionDependency;
 import org.xwiki.extension.maven.internal.MavenExtensionDependency;
 import org.xwiki.extension.maven.internal.converter.ModelConverter;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
@@ -448,7 +449,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             } else {
                 artifact = AetherUtils.createArtifact(extensionDependency.getId(),
                     extensionDependency.getVersionConstraint().getValue());
-                artifactExtension = null;
+                artifactExtension = DefaultMavenExtensionDependency.getType(extensionDependency);
 
                 // Find the right version
                 if (!extensionDependency.getVersionConstraint().getRanges().isEmpty()) {

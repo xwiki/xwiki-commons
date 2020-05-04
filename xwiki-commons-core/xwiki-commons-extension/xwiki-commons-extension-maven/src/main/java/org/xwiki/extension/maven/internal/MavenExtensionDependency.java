@@ -40,4 +40,10 @@ public interface MavenExtensionDependency extends ExtensionDependency
      * @since 8.1M1
      */
     String getScope();
+
+    /**
+     * @return the type in case it's different from the default type of the extension
+     * @since 12.4RC1
+     */
+    String getMavenType();
 }

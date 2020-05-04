@@ -45,6 +45,13 @@ public class DefaultMavenExtensionDependency extends DefaultExtensionDependency 
     public static final String PKEY_MAVEN_DEPENDENCY_SCOPE = "maven.dependency.scope";
 
     /**
+     * The type associated to the Maven dependency object.
+     * 
+     * @since 12.4RC1
+     */
+    public static final String PKEY_MAVEN_DEPENDENCY_TYPE = "maven.dependency.type";
+
+    /**
      * Create new instance by cloning the provided one.
      *
      * @param dependency the extension dependency to copy
@@ -65,8 +72,10 @@ public class DefaultMavenExtensionDependency extends DefaultExtensionDependency 
 
         // custom properties lost when saving
         putProperty(PKEY_MAVEN_DEPENDENCY, mavenDependency);
+
         // custom properties to remember
         putProperty(PKEY_MAVEN_DEPENDENCY_SCOPE, mavenDependency.getScope());
+        putProperty(PKEY_MAVEN_DEPENDENCY_TYPE, mavenDependency.getType());
     }
 
     /**
@@ -79,6 +88,16 @@ public class DefaultMavenExtensionDependency extends DefaultExtensionDependency 
         return (String) dependency.getProperty(PKEY_MAVEN_DEPENDENCY_SCOPE);
     }
 
+    /**
+     * @param dependency the generic dependency
+     * @return the type of dependency
+     * @since 12.4RC1
+     */
+    public static String getType(ExtensionDependency dependency)
+    {
+        return (String) dependency.getProperty(PKEY_MAVEN_DEPENDENCY_TYPE);
+    }
+
     @Override
     public Dependency getMavenDependency()
     {
@@ -89,5 +108,11 @@ public class DefaultMavenExtensionDependency extends DefaultExtensionDependency 
     public String getScope()
     {
         return getScope(this);
+    }
+
+    @Override
+    public String getMavenType()
+    {
+        return getType(this);
     }
 }
