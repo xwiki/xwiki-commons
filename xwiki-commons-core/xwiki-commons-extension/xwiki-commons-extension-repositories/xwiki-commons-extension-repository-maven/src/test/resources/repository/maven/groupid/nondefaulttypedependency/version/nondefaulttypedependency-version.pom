@@ -23,23 +23,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>eugroupid</groupId>
-  <artifactId>euartifactid</artifactId>
+  <groupId>groupid</groupId>
+  <artifactId>nondefaulttypedependency</artifactId>
   <version>version</version>
   <packaging>type</packaging>
-
   <dependencies>
     <dependency>
-      <groupId>ugroupid</groupId>
-      <artifactId>uartifactid</artifactId>
+      <groupId>groupid</groupId>
+      <artifactId>artifactid</artifactId>
       <version>version</version>
-      <type>pom</type>
+      <type>othertype</type>
     </dependency>
   </dependencies>
-
-  <repositories>
-    <repository>
-      <url>${{extension.repository.mavenunknown}}</url>
-    </repository>
-  </repositories>
 </project>

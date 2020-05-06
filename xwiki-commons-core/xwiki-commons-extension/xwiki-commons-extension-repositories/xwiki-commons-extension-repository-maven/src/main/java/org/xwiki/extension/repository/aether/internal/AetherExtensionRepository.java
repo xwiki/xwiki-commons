@@ -435,12 +435,12 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     private AetherExtension resolveMaven(ExtensionDependency extensionDependency) throws ResolveException
     {
         Artifact artifact;
-        String artifactExtension;
+        String targetMavenType;
         try (XWikiRepositorySystemSession session = createRepositorySystemSession()) {
             if (extensionDependency instanceof AetherExtensionDependency) {
                 artifact = ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact();
-                artifactExtension = ((AetherExtensionDependency) extensionDependency).getAetherDependency()
-                    .getArtifact().getExtension();
+                targetMavenType = ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact()
+                    .getExtension();
 
                 // Find the right version
                 if (!extensionDependency.getVersionConstraint().getRanges().isEmpty()) {
@@ -449,7 +449,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             } else {
                 artifact = AetherUtils.createArtifact(extensionDependency.getId(),
                     extensionDependency.getVersionConstraint().getValue());
-                artifactExtension = DefaultMavenExtensionDependency.getType(extensionDependency);
+                targetMavenType = DefaultMavenExtensionDependency.getType(extensionDependency);
 
                 // Find the right version
                 if (!extensionDependency.getVersionConstraint().getRanges().isEmpty()) {
@@ -459,7 +459,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             }
         }
 
-        return resolveMaven(artifact, artifactExtension);
+        return resolveMaven(artifact, targetMavenType);
     }
 
     private AetherExtension resolveMaven(ExtensionId extensionId) throws ResolveException
@@ -469,15 +469,15 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return resolveMaven(artifact, null);
     }
 
-    private AetherExtension resolveMaven(Artifact artifact, String artifactExtension) throws ResolveException
+    private AetherExtension resolveMaven(Artifact artifact, String targetMavenExtension) throws ResolveException
     {
         try (XWikiRepositorySystemSession session = createRepositorySystemSession()) {
-            return resolveMaven(artifact, artifactExtension, session);
+            return resolveMaven(artifact, targetMavenExtension, session);
         }
     }
 
-    private AetherExtension resolveMaven(Artifact artifact, String artifactExtension, RepositorySystemSession session)
-        throws ResolveException
+    private AetherExtension resolveMaven(Artifact artifact, String targetMavenExtension,
+        RepositorySystemSession session) throws ResolveException
     {
         // Get Maven descriptor
 
@@ -517,13 +517,14 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
                         relocation.getArtifactId() != null ? relocation.getArtifactId() : artifact.getArtifactId(),
                         artifact.getClassifier(), artifact.getExtension(),
                         relocation.getVersion() != null ? relocation.getVersion() : artifact.getVersion()),
-                    artifactExtension, session);
+                    targetMavenExtension, session);
             }
         }
 
         // Set type
 
-        if (artifactExtension == null) {
+        String artifactExtension;
+        if (targetMavenExtension == null) {
             // Resolve extension from the pom packaging
             ArtifactType artifactType = session.getArtifactTypeRegistry().get(model.getPackaging());
             if (artifactType != null) {
@@ -531,6 +532,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             } else {
                 artifactExtension = model.getPackaging();
             }
+        } else {
+            artifactExtension = targetMavenExtension;
         }
 
         Extension mavenExtension = this.extensionConverter.convert(Extension.class, model);
@@ -538,7 +541,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         Artifact fileArtifact = new DefaultArtifact(pomArtifact.getGroupId(), pomArtifact.getArtifactId(),
             artifact.getClassifier(), artifactExtension, pomArtifact.getVersion());
 
-        AetherExtension extension = new AetherExtension(mavenExtension, fileArtifact, this, factory);
+        AetherExtension extension = new AetherExtension(mavenExtension, fileArtifact, this, this.factory);
 
         // Convert Maven dependencies to Aether dependencies
         extension.setDependencies(toAetherDependencies(mavenExtension.getDependencies(), session));

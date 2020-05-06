@@ -88,6 +88,13 @@ public class MavenUtils
     public static final Set<String> JAR_TYPES = new HashSet<>(Arrays.asList("bundle", null));
 
     /**
+     * The name of the Model property containing the target file type.
+     * 
+     * @since 12.4RC1
+     */
+    public static final String MODEL_PROPERTY_TARGETTYPE = "xwiki.maven.type";
+
+    /**
      * Parse a Maven scm URL to generate a {@link ExtensionScmConnection}.
      * 
      * @param connectionURL the connection URL
@@ -112,6 +119,22 @@ public class MavenUtils
      */
     public static String toExtensionId(String groupId, String artifactId, String classifier)
     {
+        return toXWikiExtensionIdentifier(groupId, artifactId, classifier, null);
+    }
+
+    /**
+     * Create a extension identifier from Maven artifact identifier elements.
+     * 
+     * @param groupId the group id
+     * @param artifactId the artifact id
+     * @param classifier the classifier
+     * @param mavenType the type of the extension when different from the default one
+     * @return the extension identifier
+     * @since 12.4RC1
+     */
+    public static String toXWikiExtensionIdentifier(String groupId, String artifactId, String classifier,
+        String mavenType)
+    {
         StringBuilder builder = new StringBuilder();
 
         builder.append(groupId);
@@ -120,6 +143,12 @@ public class MavenUtils
         if (StringUtils.isNotEmpty(classifier)) {
             builder.append(':');
             builder.append(classifier);
+        } else if (mavenType != null) {
+            builder.append(':');
+        }
+        if (mavenType != null) {
+            builder.append(':');
+            builder.append(mavenType);
         }
 
         return builder.toString();
@@ -163,7 +192,7 @@ public class MavenUtils
      * Get the extension type from maven packaging.
      *
      * @param packaging the maven packaging
-     * @return the extension type
+     * @return the XWiki extension type
      */
     public static String packagingToType(String packaging)
     {

@@ -61,8 +61,16 @@ public final class AetherUtils
      */
     public static ExtensionId createExtensionId(Artifact artifact, ExtensionFactory factory)
     {
-        String extensionId =
-            MavenUtils.toExtensionId(artifact.getGroupId(), artifact.getArtifactId(), artifact.getClassifier());
+        return createExtensionId(artifact, false, factory);
+    }
+
+    /**
+     * @since 12.4RC1
+     */
+    public static ExtensionId createExtensionId(Artifact artifact, boolean includeExtension, ExtensionFactory factory)
+    {
+        String extensionId = MavenUtils.toXWikiExtensionIdentifier(artifact.getGroupId(), artifact.getArtifactId(),
+            artifact.getClassifier(), includeExtension ? artifact.getExtension() : null);
 
         return new ExtensionId(extensionId, factory != null ? factory.getVersion(artifact.getBaseVersion())
             : new DefaultVersion(artifact.getBaseVersion()));

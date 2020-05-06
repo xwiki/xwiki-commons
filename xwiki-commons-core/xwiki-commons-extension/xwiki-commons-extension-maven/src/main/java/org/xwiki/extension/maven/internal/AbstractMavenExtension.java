@@ -55,6 +55,11 @@ public abstract class AbstractMavenExtension extends AbstractExtension implement
     public static final String PKEY_MAVEN_GROUPID = PKEY_MAVENPRFIX + "groupid";
 
     /**
+     * The name of the property containing the type.
+     */
+    public static final String PKEY_MAVEN_TYPE = PKEY_MAVENPRFIX + "type";
+
+    /**
      * The name of the property containing the classifier.
      * 
      * @since 10.9

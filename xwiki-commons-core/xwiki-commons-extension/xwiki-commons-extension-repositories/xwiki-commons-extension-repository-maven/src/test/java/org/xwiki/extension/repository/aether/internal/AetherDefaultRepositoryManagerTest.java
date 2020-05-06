@@ -199,6 +199,21 @@ public class AetherDefaultRepositoryManagerTest
     }
 
     @Test
+    public void testResolveNonDefaultTypeDependency() throws ResolveException, IOException
+    {
+        Extension extension =
+            this.repositoryManager.resolve(new ExtensionId("groupid:nondefaulttypedependency", "version"));
+
+        ExtensionDependency dependency = extension.getDependencies().iterator().next();
+
+        Extension dependencyExtension = this.repositoryManager.resolve(dependency);
+
+        assertEquals("groupid:artifactid::othertype", dependencyExtension.getId().getId());
+        assertEquals("version", dependencyExtension.getId().getVersion().getValue());
+        assertEquals("othertype", dependencyExtension.getType());
+    }
+
+    @Test
     public void testResolveWebjar() throws ResolveException, IOException
     {
         Extension webjar = this.repositoryManager.resolve(new ExtensionId("wgroupid:wartifactid", "wversion"));
@@ -454,14 +469,14 @@ public class AetherDefaultRepositoryManagerTest
 
         Extension extension = this.repositoryManager.resolve(new ExtensionId("eugroupid:euartifactid", "version"));
 
-        ExtensionDependency extensionDependency = extension.getDependencies().iterator().next();
+        ExtensionDependency dependency = extension.getDependencies().iterator().next();
 
-        Extension dependency = this.repositoryManager.resolve(extensionDependency);
+        Extension dependencyExtension = this.repositoryManager.resolve(dependency);
 
-        assertEquals("ugroupid:uartifactid", dependency.getId().getId());
-        assertEquals("version", dependency.getId().getVersion().getValue());
+        assertEquals("ugroupid:uartifactid", dependencyExtension.getId().getId());
+        assertEquals("version", dependencyExtension.getId().getVersion().getValue());
 
-        assertEquals(extensionDependency.getId(), dependency.getId().getId());
+        assertEquals(dependency.getId(), dependencyExtension.getId().getId());
     }
 
     // Failures
