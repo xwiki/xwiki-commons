@@ -17,19 +17,14 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.tool.spoon.inject;
+package org.xwiki.tool.spoon.inject.internal;
 
 import javax.inject.Inject;
 
-public class ComponentUsageOk
+public class InjectWrongLocation
 {
     @Inject
-    private ComponentInterface component;
-
-    @Inject
-    private ImplementationClass implementationClass;
-
-    private class ImplementationClass
+    public InjectWrongLocation()
     {
     }
 }

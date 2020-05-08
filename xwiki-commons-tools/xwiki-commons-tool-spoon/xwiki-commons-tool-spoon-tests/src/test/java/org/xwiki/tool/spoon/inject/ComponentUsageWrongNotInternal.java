@@ -21,8 +21,10 @@ package org.xwiki.tool.spoon.inject;
 
 import javax.inject.Inject;
 
-public class ComponentUsageWrong
+import org.xwiki.tool.spoon.inject.internal.ComponentAndInterface;
+
+public class ComponentUsageWrongNotInternal
 {
     @Inject
-    private ComponentImplementation component;
+    private ComponentAndInterface componentAndInterface;
 }

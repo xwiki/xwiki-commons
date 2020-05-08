@@ -33,7 +33,9 @@ import spoon.reflect.declaration.CtField;
  * <ul>
  *   <li>the field type is excluded by the user</li>
  *   <li>the field type points to a Component implementation that defines its role as itself using the "roles"
- *       attribute of the {@code @Component} annotation</li>
+ *       attribute of the {@code @Component} annotation. However we support this only for the "internal" package
+ *       as we consider it a bad practice to do so for a public class (it might expose public methods that are not
+ *       supposed to be exposed for example).</li>
  * </ul>
  *
  * @version $Id$
@@ -51,14 +53,8 @@ public class InjectAnnotationProcessor extends AbstractXWikiProcessor<CtAnnotati
             CtElement element = ctAnnotation.getAnnotatedElement();
             if (element instanceof CtField) {
                 CtField<?> ctField = (CtField<?>) element;
-                // We need to handle the special case when we use the same class as both the component interface and
-                // component implementation, using for ex: "@Component(roles = ComponentAndInterface.class)".
-                if (!isExcluded(ctField) && ctField.getType().isClass()
-                    && !isInterfaceAndImplementationCombined(ctField))
-                {
-                    registerError(String.format("Only interfaces should have the @Inject annotation but got [%s] which "
-                        + "is a class. Problem at [%s]", ctField.getType().getTypeDeclaration().getQualifiedName(),
-                        ctAnnotation.getPosition()));
+                if (!isExcluded(ctField)) {
+                    process(ctAnnotation, ctField);
                 }
             } else {
                 registerError(String.format("Only fields should use the @Inject annotation. Problem at [%s]",
@@ -67,21 +63,52 @@ public class InjectAnnotationProcessor extends AbstractXWikiProcessor<CtAnnotati
         }
     }
 
-    private boolean isExcluded(CtField<?> ctField)
+    private void process(CtAnnotation<? extends Annotation> ctAnnotation, CtField<?> ctField)
     {
-        return this.excludedFieldTypes == null ? false
-            : this.excludedFieldTypes.contains(ctField.getType().getQualifiedName());
+        if (ctField.getType().isClass()) {
+            // We need to handle the special case when we use the same class as both the component interface
+            // and component implementation, using for ex:
+            //   "@Component(roles = ComponentAndInterface.class)".
+            if (isInterfaceAndImplementationCombined(ctField)) {
+                // But only allow it in the internal package.
+                if (!isInternal(ctField)) {
+                    registerError(
+                        String.format("You must separate the interface and the implementation for the "
+                                + "component [%s]. This is public code. Problem at [%s]",
+                            ctField.getType().getTypeDeclaration().getQualifiedName(),
+                            ctAnnotation.getPosition()));
+                }
+            } else {
+                registerError(
+                    String.format("Only interfaces should have the @Inject annotation but got [%s] "
+                            + "which is a class. Problem at [%s]",
+                        ctField.getType().getTypeDeclaration().getQualifiedName(),
+                        ctAnnotation.getPosition()));
+            }
+        }
     }
 
-    private boolean isInterfaceAndImplementationCombined(CtField<?> field)
+    private boolean isExcluded(CtField<?> ctField)
+    {
+        return this.excludedFieldTypes != null
+            && this.excludedFieldTypes.contains(ctField.getType().getQualifiedName());
+    }
+
+    private boolean isInternal(CtField<?> ctField)
+    {
+        // If we're not in an "internal" package, consider this pattern to be a bad practice and report it.
+        return ctField.getDeclaringType().getQualifiedName().contains(".internal.");
+    }
+
+    private boolean isInterfaceAndImplementationCombined(CtField<?> ctField)
     {
         boolean isValid = false;
-        if (field.getType().getTypeDeclaration() instanceof CtClass<?>) {
-            CtClass<?> ctClass = (CtClass<?>) field.getType().getTypeDeclaration();
+        if (ctField.getType().getTypeDeclaration() instanceof CtClass<?>) {
+            CtClass<?> ctClass = (CtClass<?>) ctField.getType().getTypeDeclaration();
             CtAnnotation<? extends Annotation> componentAnnotation = getComponentAnnotation(ctClass);
             if (componentAnnotation != null) {
                 CtElement ctElement = componentAnnotation.getValue("roles");
-                if (ctElement != null && ctElement.getReferencedTypes().contains(field.getType())) {
+                if (ctElement != null && ctElement.getReferencedTypes().contains(ctField.getType())) {
                     isValid = true;
                 }
             }
