@@ -172,7 +172,6 @@
               <processors>
                 <processor>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</processor>
                 <processor>org.xwiki.tool.spoon.ComponentAnnotationProcessor</processor>
-                <processor>org.xwiki.tool.spoon.InjectAnnotationProcessor</processor>
               </processors>
               <processorProperties>
                 <processorProperty>
