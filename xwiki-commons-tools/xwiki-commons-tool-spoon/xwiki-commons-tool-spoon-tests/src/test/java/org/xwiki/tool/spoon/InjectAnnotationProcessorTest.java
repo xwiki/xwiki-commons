@@ -19,10 +19,14 @@
  */
 package org.xwiki.tool.spoon;
 
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Test;
 
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.processing.ProcessorProperties;
+import spoon.processing.ProcessorPropertiesImpl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.matchesPattern;
@@ -45,13 +49,20 @@ public class InjectAnnotationProcessorTest
         launcher.addInputResource("./src/test/java/org/xwiki/tool/spoon/inject/");
 
         InjectAnnotationProcessor processor = new InjectAnnotationProcessor();
+        ProcessorProperties properties = new ProcessorPropertiesImpl();
+        properties.set("excludedFieldTypes",
+            Arrays.asList("org.xwiki.tool.spoon.inject.ComponentUsageOk$ImplementationClass"));
+        processor.initProperties(properties);
+
         launcher.addProcessor(processor);
 
         Throwable exception = assertThrows(SpoonException.class, () -> {
             launcher.run();
         });
         assertThat(exception.getMessage(), matchesPattern("\\QThe following errors were found:\\E\n"
-            + "\\Q- Only interfaces should have the @Inject annotation. Problem at \\E(.*ComponentUsageWrong.*)\n"
+            + "\\Q- Only interfaces should have the @Inject annotation but got "
+                + "[org.xwiki.tool.spoon.inject.ComponentImplementation] which is a class. "
+                + "Problem at \\E(.*ComponentUsageWrong.*)\n"
             + "\\Q- Only fields should use the @Inject annotation. Problem at \\E(.*InjectWrongLocation.*)\n"
         ));
     }

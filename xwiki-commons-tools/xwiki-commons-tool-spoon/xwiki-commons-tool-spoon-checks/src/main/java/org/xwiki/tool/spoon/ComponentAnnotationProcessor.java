@@ -21,14 +21,11 @@ package org.xwiki.tool.spoon;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -94,7 +91,7 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
         boolean isStaticRegistration = true;
         boolean hasInstantiationStrategyAnnotation = false;
         boolean hasSingletonAnnotation = false;
-        for (CtAnnotation annotation : getAnnotationsIncludingFromSuperclasses(ctClass)) {
+        for (CtAnnotation annotation : SpoonUtils.getAnnotationsIncludingFromSuperclasses(ctClass)) {
             // Is it a Component annotation?
             if (COMPONENT_ANNOTATION.equals(annotation.getAnnotationType().getQualifiedName())) {
                 hasComponentAnnotation = true;
@@ -261,26 +258,5 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
         }
 
         return sourcePath.getPath();
-    }
-
-    private Set<CtAnnotation<? extends Annotation>> getAnnotationsIncludingFromSuperclasses(
-        CtClass ctClass)
-    {
-        Set<CtAnnotation<? extends Annotation>> annotations = new HashSet<>();
-        Set<String> annotationNames = new HashSet<>();
-        CtClass current = ctClass;
-        do {
-            for (CtAnnotation ctAnnotation : current.getAnnotations()) {
-                String annotationName = ctAnnotation.getType().getSimpleName();
-                // Note: When they have the same name, we consider that the annotation in the extending class has
-                // priority over the the annotation in the super class.
-                if (!annotationNames.contains(annotationName)) {
-                    annotations.add(ctAnnotation);
-                    annotationNames.add(annotationName);
-                }
-            }
-            current = current.getSuperclass() == null ? null : (CtClass) current.getSuperclass().getTypeDeclaration();
-        } while (current != null);
-        return annotations;
     }
 }

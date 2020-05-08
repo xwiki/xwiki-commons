@@ -21,15 +21,16 @@ package org.xwiki.tool.spoon.inject;
 
 import javax.inject.Inject;
 
-public class ComponentUsageOk
+import org.xwiki.tool.spoon.injectoutside.ComponentAndInterface2;
+
+public class ComponentAndInterfaceUsage
 {
     @Inject
-    private ComponentInterface component;
+    private ComponentAndInterface componentAndInterface;
 
+    /**
+     * Type that is not in the analyzed sources.
+     */
     @Inject
-    private ImplementationClass implementationClass;
-
-    private class ImplementationClass
-    {
-    }
+    private ComponentAndInterface2 componentAndInterface2;
 }

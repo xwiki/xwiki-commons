@@ -17,19 +17,16 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.tool.spoon.inject;
+package org.xwiki.tool.spoon.injectoutside;
 
-import javax.inject.Inject;
+import org.xwiki.component.annotation.Component;
 
-public class ComponentUsageOk
+/**
+ * Defines a component that is not in the analyzed Spoon sources for the
+ * {@link org.xwiki.tool.spoon.InjectAnnotationProcessorTest} test (the analyzed sources are in the {@code inject}
+ * package).
+ */
+@Component(roles = ComponentAndInterface2.class)
+public class ComponentAndInterface2
 {
-    @Inject
-    private ComponentInterface component;
-
-    @Inject
-    private ImplementationClass implementationClass;
-
-    private class ImplementationClass
-    {
-    }
 }
