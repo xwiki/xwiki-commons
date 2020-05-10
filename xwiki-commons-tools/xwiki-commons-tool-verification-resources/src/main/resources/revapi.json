@@ -1,6 +1,7 @@
-{
-  "revapi": {
-    "java": {
+[
+  {
+    "extension": "revapi.java",
+    "configuration": {
       "filter": {
         "packages": {
           "regex": true,
@@ -19,8 +20,11 @@
           ]
         }
       }
-    },
-    "ignore": [
+    }
+  },
+  {
+    "extension": "revapi.ignore",
+    "configuration": [
       {
         "code": "java.annotation.removed",
         "annotationType": "org.xwiki.stability.Unstable",
@@ -58,4 +62,4 @@
       }
     ]
   }
-}
+]
