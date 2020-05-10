@@ -61,5 +61,11 @@
         "justification": "Dragging of other XWiki types to the API is OK."
       }
     ]
+  },
+  {
+    "extension": "revapi.java.filter.annotated",
+    "configuration": {
+      "exclude": ["@org.xwiki.stability.Unstable"]
+    }
   }
 ]
