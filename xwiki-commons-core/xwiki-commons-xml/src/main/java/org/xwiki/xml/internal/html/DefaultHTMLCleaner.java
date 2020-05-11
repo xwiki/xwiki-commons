@@ -249,6 +249,8 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         boolean translateSpecialEntities = (param != null) && Boolean.parseBoolean(param);
         defaultProperties.setTranslateSpecialEntities(translateSpecialEntities);
 
+        defaultProperties.setDeserializeEntities(true);
+
         return defaultProperties;
     }
 

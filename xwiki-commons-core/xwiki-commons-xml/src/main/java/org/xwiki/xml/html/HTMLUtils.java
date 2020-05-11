@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jdom.DocType;
 import org.jdom.Element;
 import org.jdom.input.DOMBuilder;
@@ -54,10 +53,10 @@ public final class HTMLUtils
         "area", "base", "br", "col", "hr", "img", "input", "link", "meta", "param");
 
     /**
-     * JDOM's XMLOutputter class converts reserved XML characters ({@code <, >, ' , &, \r and \n}) into their entity
-     * format {@code &lt;, &gt; &apos; &amp; &#xD; and \r\n}. However since we're using HTML Cleaner
-     * (http://htmlcleaner.sourceforge.net/) and since it's buggy for character escapes we have turned off character
-     * escaping for it and thus we need to perform selective escaping here.
+     * JDOM's XMLOutputter class converts reserved XML character ({@code &}) into its entity
+     * format {@code &amp;}. However since we're using HTML Cleaner
+     * (http://htmlcleaner.sourceforge.net/) and since it's buggy for unicode character escapes we have turned off
+     * character escaping for it and thus we need to perform selective escaping here.
      * <p>
      * Moreover, since we support HTML5, we need to
      * expand empty elements on some elements and not on the others. For example: {@code <span></span>} is valid
@@ -71,30 +70,20 @@ public final class HTMLUtils
     public static class XWikiXMLOutputter extends XMLOutputter
     {
         /**
-         * Regex for a named entity reference as defined in:
-         * https://www.w3.org/TR/WD-xml-lang-970630#dt-entref and https://www.w3.org/TR/WD-xml-lang-970630#NT-Name.
-         */
-        private static final String NAMED_ENTITY_REFERENCE = "&[a-zA-Z_:][a-zA-Z0-9.-_:]*;";
-
-        /**
          * Regex for a character reference as defined in:
          * https://www.w3.org/TR/WD-xml-lang-970630#dt-charref.
          */
-        private static final String CHARACTER_REFERENCE = "&#[0-9]+;|&#x[0-9a-fA-F]+;";
+        private static final String CHARACTER_REFERENCE = "&amp;#[0-9]+;|&amp;#x[0-9a-fA-F]+;";
 
         /**
-         * Regex to recognize a XML Entity.
+         * Regex to recognize a character reference Entity.
          */
-        private static final Pattern ENTITY = Pattern.compile(NAMED_ENTITY_REFERENCE + "|" + CHARACTER_REFERENCE);
+        private static final Pattern CHARACTER_REFERENCE_PATTERN = Pattern.compile(CHARACTER_REFERENCE);
 
         /**
-         * Ampersand character.
+         * Escaped ampersand character.
          */
-        private static final String AMPERSAND = "&";
-
-        private static final String[] REPLACE_ELEMENTS_SEARCH = new String[] { "<", ">" };
-
-        private static final String[] REPLACE_ELEMENTS_RESULT = new String[] { "&lt;", "&gt;" };
+        private static final String AMPERSAND = "&amp;";
 
         /**
          * Whether to omit the document type when printing the W3C Document or not.
@@ -115,62 +104,39 @@ public final class HTMLUtils
         @Override
         public String escapeElementEntities(String text)
         {
-            if (text.length() == 0) {
-                return text;
-            }
+            String result = super.escapeElementEntities(text);
 
-            String result;
-            int pos1 = text.indexOf("<![CDATA[");
-            if (pos1 > -1) {
-                int pos2 = text.indexOf("]]>", pos1 + 9);
-                if (pos2 + 3 == text.length()) {
-                    return text;
-                }
-                result = escapeElementEntities(text.substring(0, pos1));
-                if (pos2 + 3 == text.length()) {
-                    result = result + text.substring(pos1);
-                } else {
-                    result = result + text.substring(pos1, pos2 + 3) + escapeElementEntities(text.substring(pos2 + 3));
-                }
-            } else {
-                result = escapeAmpersand(text);
-                result = StringUtils.replaceEach(result, REPLACE_ELEMENTS_SEARCH, REPLACE_ELEMENTS_RESULT);
-            }
-
-            return result;
+            // "\r" characters are automatically transformed in &#xD; but we want to keep the original \r there.
+            return cleanAmpersandEscape(result).replaceAll("&#xD;", "\r");
         }
 
         @Override
         public String escapeAttributeEntities(String text)
         {
-            String result = escapeElementEntities(text);
-
-            // Attribute values must have quotes escaped since attributes are defined with quotes...
-            result = StringUtils.replace(result, "\"", "&quot;");
-
-            return result;
+            String result = super.escapeAttributeEntities(text);
+            return cleanAmpersandEscape(result);
         }
 
         /**
-         * Escape ampersand when it's not defining an entity.
+         * Remove ampersand escapes when it's not needed (i.e. on character entities).
          *
-         * @param text the text to escape
-         * @return the escaped text
+         * @param text the text escaped.
+         * @return the text cleaned
          */
-        private String escapeAmpersand(String text)
+        private String cleanAmpersandEscape(String text)
         {
             StringBuilder buffer = new StringBuilder(text);
             // find all occurrences of &
             int pos = buffer.indexOf(AMPERSAND);
             while (pos > -1 && pos < buffer.length()) {
-                // Check if the & is an entity
-                Matcher matcher = ENTITY.matcher(buffer.substring(pos));
+                // Check if the & is a character entity
+                Matcher matcher = CHARACTER_REFERENCE_PATTERN.matcher(buffer.substring(pos));
                 if (matcher.lookingAt()) {
-                    // We've found an entity, don't do anything, just skip it
+                    // We've found an entity, replace the "&amp;" by a single "&"
+                    buffer.replace(pos, pos + 5, "&");
                     pos = pos + matcher.end() - matcher.start();
                 } else {
-                    // No entity, escape the &
-                    buffer.replace(pos, pos + 1, "&amp;");
+                    // don't do anything, just move on.
                     pos += 5;
                 }
                 pos = buffer.indexOf(AMPERSAND, pos);
