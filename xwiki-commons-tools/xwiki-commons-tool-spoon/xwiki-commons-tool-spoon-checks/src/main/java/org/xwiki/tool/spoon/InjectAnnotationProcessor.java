@@ -97,7 +97,9 @@ public class InjectAnnotationProcessor extends AbstractXWikiProcessor<CtAnnotati
     private boolean isInternal(CtField<?> ctField)
     {
         // If we're not in an "internal" package, consider this pattern to be a bad practice and report it.
-        return ctField.getDeclaringType().getQualifiedName().contains(".internal.");
+        // Also consider it's internal if it starts with "com.xpn" and contains a ".impl." package.
+        String fqn = ctField.getType().getQualifiedName();
+        return fqn.contains(".internal.") || (fqn.startsWith("com.xpn") && fqn.contains(".impl."));
     }
 
     private boolean isInterfaceAndImplementationCombined(CtField<?> ctField)

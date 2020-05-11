@@ -60,13 +60,13 @@ public class InjectAnnotationProcessorTest
             launcher.run();
         });
         assertThat(exception.getMessage(), matchesPattern("\\QThe following errors were found:\\E\n"
+            + "\\Q- You must separate the interface and the implementation for the component "
+                + "[org.xwiki.tool.spoon.injectoutside.ComponentAndInterface2]. This is public code. "
+                + "Problem at \\E(.*ComponentAndInterfaceUsage.*)\n"
             + "\\Q- Only interfaces should have the @Inject annotation but got "
             + "[org.xwiki.tool.spoon.inject.internal.ComponentImplementation] which is a class. "
-            + "Problem at \\E(.*ComponentUsageWrong.*)\n"
+                + "Problem at \\E(.*ComponentUsageWrong.*)\n"
             + "\\Q- Only fields should use the @Inject annotation. Problem at \\E(.*InjectWrongLocation.*)\n"
-            + "\\Q- You must separate the interface and the implementation for the component "
-                + "[org.xwiki.tool.spoon.inject.internal.ComponentAndInterface]. This is public code. "
-                + "Problem at \\E(.*ComponentUsageWrongNotInternal.*)\n"
         ));
     }
 }
