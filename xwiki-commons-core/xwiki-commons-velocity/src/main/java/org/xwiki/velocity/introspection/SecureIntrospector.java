@@ -67,6 +67,7 @@ public class SecureIntrospector extends SecureIntrospectorImpl
         this.secureClassMethods.add("isPrimitive");
         this.secureClassMethods.add("issynthetic");
         this.secureClassMethods.add("isSynthetic");
+        this.secureClassMethods.add("getEnumConstants");
 
         // TODO: add more when needed
     }
