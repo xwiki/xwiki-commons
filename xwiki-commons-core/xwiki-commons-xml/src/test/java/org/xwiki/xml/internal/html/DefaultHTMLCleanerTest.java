@@ -535,6 +535,7 @@ public class DefaultHTMLCleanerTest
         // HtmlCleaner currently doesn't handle properly unicode characters: asking it to recognize them
         // involves that all entities will be escaped during the parsing and that's not what we want. So we
         // keep them encoded.
+        // See https://sourceforge.net/p/htmlcleaner/bugs/221/
         textContent =
             document.getElementsByTagName("p").item(0).getTextContent();
         assertEquals("&#8;", textContent);
@@ -618,5 +619,50 @@ public class DefaultHTMLCleanerTest
 
         assertHTML("<div foo=\"&amp;quot;\">content</div>",
             "<div foo=\"&amp;quot;\">content</div>");
+    }
+
+    @Test
+    @Disabled("See https://sourceforge.net/p/htmlcleaner/bugs/221/")
+    public void parseWithUnicodeChars() throws Exception
+    {
+        CleanerProperties cleanerProperties = new CleanerProperties();
+
+        cleanerProperties.setDeserializeEntities(true);
+        cleanerProperties.setRecognizeUnicodeChars(true);
+        cleanerProperties.setTranslateSpecialEntities(false);
+
+        HtmlCleaner cleaner = new HtmlCleaner(cleanerProperties);
+        TagNode tagNode = cleaner.clean("<?xml version = \"1.0\"?>"
+            + "<div foo=\"&#169;\">&#169;</div>"
+            + "<div foo=\"baz&gt;buz\">baz&gt;buz</div>"
+            + "<div foo=\"baz&buz\">baz&buz</div>");
+        List<? extends TagNode> divList = tagNode.getElementListByName("div", true);
+        assertEquals(3, divList.size());
+
+        assertEquals("©", divList.get(0).getText().toString());
+        assertEquals("©", divList.get(0).getAttributeByName("foo"));
+
+        assertEquals("baz>buz", divList.get(1).getText().toString());
+        assertEquals("baz>buz", divList.get(1).getAttributeByName("foo"));
+
+        assertEquals("baz&buz", divList.get(2).getText().toString());
+        assertEquals("baz&buz", divList.get(2).getAttributeByName("foo"));
+
+        DomSerializer domSerializer = new DomSerializer(cleanerProperties, false);
+        Document document = domSerializer.createDOM(tagNode);
+
+        NodeList nodeList = document.getElementsByTagName("div");
+        assertEquals(3, nodeList.getLength());
+        assertEquals("©", nodeList.item(0).getTextContent());
+        assertEquals("©", nodeList.item(0).getAttributes().getNamedItem("foo").getTextContent());
+
+        assertEquals("baz>buz", nodeList.item(1).getAttributes().getNamedItem("foo").getTextContent());
+
+        assertEquals("baz&buz", nodeList.item(2).getAttributes().getNamedItem("foo").getTextContent());
+
+        // BUG: This is failing with baz&gt;buz
+        assertEquals("baz>buz", nodeList.item(1).getTextContent());
+        // BUG: This is failing with baz&amp;buz
+        assertEquals("baz&buz", nodeList.item(2).getTextContent());
     }
 }
