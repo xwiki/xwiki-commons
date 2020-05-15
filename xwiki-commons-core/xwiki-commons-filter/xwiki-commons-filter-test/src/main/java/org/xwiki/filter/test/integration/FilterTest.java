@@ -30,7 +30,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.filter.FilterException;
@@ -52,6 +51,10 @@ import org.xwiki.filter.output.StringWriterOutputTarget;
 import org.xwiki.filter.test.internal.FileAssert;
 import org.xwiki.filter.utils.FilterStreamConstants;
 import org.xwiki.test.internal.MockConfigurationSource;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * A generic JUnit Test used by {@link FilterTestSuite} to parse some passed content and verify it matches some passed
@@ -267,7 +270,7 @@ public class FilterTest
     private void assertExpectedResult(String typeId, InputSource expected, OutputTarget actual) throws IOException
     {
         if (actual instanceof StringWriterOutputTarget) {
-            Assertions.assertEquals(expected.toString(), actual.toString());
+            assertEquals(expected.toString(), actual.toString());
         } else if (actual instanceof ByteArrayOutputTarget) {
             byte[] actualBytes = ((ByteArrayOutputTarget) actual).toByteArray();
 
@@ -277,15 +280,15 @@ public class FilterTest
                 byte[] expectedBytes = IOUtils.toByteArray(((InputStreamInputSource) expected).getInputStream());
                 expected.close();
 
-                Assertions.assertArrayEquals(expectedBytes, actualBytes);
+                assertArrayEquals(expectedBytes, actualBytes);
             }
         } else {
             // No idea how to compare that
-            Assertions.fail("Output target type [" + actual.getClass() + "] is not supported");
+            fail("Output target type [" + actual.getClass() + "] is not supported");
         }
     }
 
-    public ComponentManager getComponentManager() throws Exception
+    public ComponentManager getComponentManager()
     {
         return this.componentManager;
     }

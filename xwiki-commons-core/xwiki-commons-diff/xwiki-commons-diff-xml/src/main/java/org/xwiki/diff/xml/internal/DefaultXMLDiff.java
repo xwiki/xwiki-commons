@@ -61,6 +61,11 @@ import difflib.DiffUtils;
 @Singleton
 public class DefaultXMLDiff implements XMLDiff
 {
+    @Override public void xxx()
+    {
+        //ggg
+    }
+
     @Override
     public Map<Node, Patch<?>> diff(Node left, Node right, XMLDiffConfiguration config) throws DiffException
     {

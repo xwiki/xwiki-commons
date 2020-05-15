@@ -44,10 +44,11 @@ import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.read.ListAppender;
 import ch.qos.logback.core.spi.FilterReply;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -113,7 +114,7 @@ public class DefaultLoggerManagerTest
         this.logger.error("[test] before push");
 
         // Make sure the log has been sent to the logback appender
-        Assert.assertEquals("[test] before push", this.listAppender.list.get(0).getMessage());
+        assertEquals("[test] before push", this.listAppender.list.get(0).getMessage());
 
         LogQueue queue = new LogQueue();
 
@@ -122,10 +123,10 @@ public class DefaultLoggerManagerTest
         this.logger.error("[test] after push");
 
         // Make sure the log has been added to the queue
-        Assert.assertEquals("[test] after push", queue.poll().getMessage());
+        assertEquals("[test] after push", queue.poll().getMessage());
 
         // Make sure the log has not been sent to the logback appender
-        Assert.assertEquals(1, this.listAppender.list.size());
+        assertEquals(1, this.listAppender.list.size());
 
         Thread thread = new Thread(new Runnable()
         {
@@ -139,21 +140,21 @@ public class DefaultLoggerManagerTest
         thread.join();
 
         // Make sure the log has been sent to the logback appender
-        Assert.assertEquals("[test] other thread", this.listAppender.list.get(1).getMessage());
+        assertEquals("[test] other thread", this.listAppender.list.get(1).getMessage());
 
         this.logger.error(org.xwiki.logging.Logger.ROOT_MARKER, "[test] root log");
 
         // Make sure the log has been added to the queue
-        Assert.assertEquals("[test] root log", queue.poll().getMessage());
+        assertEquals("[test] root log", queue.poll().getMessage());
         // Make sure the log also been sent to the logback appender
-        Assert.assertEquals("[test] root log", this.listAppender.list.get(2).getMessage());
+        assertEquals("[test] root log", this.listAppender.list.get(2).getMessage());
 
         this.loggerManager.popLogListener();
 
         this.logger.error("[test] after pop");
 
-        Assert.assertTrue(queue.isEmpty());
-        Assert.assertEquals("[test] after pop", this.listAppender.list.get(3).getMessage());
+        assertTrue(queue.isEmpty());
+        assertEquals("[test] after pop", this.listAppender.list.get(3).getMessage());
     }
 
     @Test
@@ -162,7 +163,7 @@ public class DefaultLoggerManagerTest
         this.logger.error("[test] before push");
 
         // Make sure the log has been sent to the logback appender
-        Assert.assertEquals("[test] before push", this.listAppender.list.get(0).getMessage());
+        assertEquals("[test] before push", this.listAppender.list.get(0).getMessage());
 
         LogQueue queue1 = new LogQueue();
 
@@ -175,17 +176,17 @@ public class DefaultLoggerManagerTest
         this.logger.error("[test] log queue2");
 
         // Make sure the log has not been sent to the stacked listener
-        Assert.assertTrue(queue1.isEmpty());
+        assertTrue(queue1.isEmpty());
 
         // Make sure the log has been sent to the current listener
-        Assert.assertEquals("[test] log queue2", queue2.poll().getMessage());
+        assertEquals("[test] log queue2", queue2.poll().getMessage());
 
         this.loggerManager.popLogListener();
 
         this.logger.error("[test] log queue1");
 
         // Make sure the log has been sent to the current listener
-        Assert.assertEquals("[test] log queue1", queue1.poll().getMessage());
+        assertEquals("[test] log queue1", queue1.poll().getMessage());
 
         this.loggerManager.popLogListener();
     }
@@ -196,21 +197,21 @@ public class DefaultLoggerManagerTest
         this.logger.error("[test] before push");
 
         // Make sure the log has been sent to the logback appender
-        Assert.assertEquals("[test] before push", this.listAppender.list.get(0).getMessage());
+        assertEquals("[test] before push", this.listAppender.list.get(0).getMessage());
 
         this.loggerManager.pushLogListener(null);
 
         this.logger.error("[test] log to null");
 
         // Make sure the log has not been sent to the logback appender
-        Assert.assertEquals(1, this.listAppender.list.size());
+        assertEquals(1, this.listAppender.list.size());
 
         this.loggerManager.popLogListener();
 
         this.logger.error("[test] after pop");
 
         // Make sure the log has been sent to the logback appender
-        Assert.assertEquals("[test] after pop", this.listAppender.list.get(1).getMessage());
+        assertEquals("[test] after pop", this.listAppender.list.get(1).getMessage());
     }
 
     @Test
@@ -269,7 +270,7 @@ public class DefaultLoggerManagerTest
         DefaultLoggerManager spyLoggerManager = spy(this.loggerManager);
         when(spyLoggerManager.getLoggerContext()).thenReturn(null);
 
-        Assert.assertNull(spyLoggerManager.getLoggerLevel("whatever"));
+        assertNull(spyLoggerManager.getLoggerLevel("whatever"));
     }
 
     @Test
@@ -279,12 +280,11 @@ public class DefaultLoggerManagerTest
 
         File logFile = new File(XWikiTempDirUtil.createTemporaryDirectory(), "log");
 
-        Assert.assertTrue(
+        assertTrue(
             !(this.loggerManager.createLoggerTail(logFile.toPath(), true) instanceof XStreamFileLoggerTail));
 
-        Assert
-            .assertTrue(this.loggerManager.createLoggerTail(logFile.toPath(), false) instanceof XStreamFileLoggerTail);
+        assertTrue(this.loggerManager.createLoggerTail(logFile.toPath(), false) instanceof XStreamFileLoggerTail);
 
-        Assert.assertTrue(this.loggerManager.createLoggerTail(logFile.toPath(), true) instanceof XStreamFileLoggerTail);
+        assertTrue(this.loggerManager.createLoggerTail(logFile.toPath(), true) instanceof XStreamFileLoggerTail);
     }
 }

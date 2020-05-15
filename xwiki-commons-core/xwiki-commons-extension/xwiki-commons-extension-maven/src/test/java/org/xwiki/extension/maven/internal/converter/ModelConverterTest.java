@@ -45,9 +45,9 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -72,15 +72,13 @@ public class ModelConverterTest
     private DefaultConverterManager converter;
 
     @BeforeComponent
-    public void beforeComponent() throws Exception
+    public void beforeComponent()
     {
         when(this.featureProvider.getFeatures(any(Extension.class))).thenReturn(INJECTED_FEATURES);
     }
 
-    // Tests
-
     @Test
-    void convertToExtension() throws SecurityException, ComponentLookupException, URISyntaxException
+    void convertToExtension() throws SecurityException, URISyntaxException
     {
         Model model = new Model();
 
@@ -121,7 +119,7 @@ public class ModelConverterTest
     }
 
     @Test
-    void convertPomToExtension() throws SecurityException, ComponentLookupException, URISyntaxException
+    void convertPomToExtension() throws SecurityException
     {
         Model model = new Model();
 
@@ -136,8 +134,7 @@ public class ModelConverterTest
     }
 
     @Test
-    void convertToExtensionWithIncludedOptionalDependencies()
-        throws SecurityException, ComponentLookupException, URISyntaxException
+    void convertToExtensionWithIncludedOptionalDependencies() throws SecurityException, URISyntaxException
     {
         Model model = new Model();
 
@@ -180,8 +177,7 @@ public class ModelConverterTest
     }
 
     @Test
-    void convertToXWikiExtensionWithOptionalDependencies()
-        throws SecurityException, ComponentLookupException, URISyntaxException
+    void convertToXWikiExtensionWithOptionalDependencies() throws SecurityException, URISyntaxException
     {
         Model model = new Model();
 
@@ -223,7 +219,7 @@ public class ModelConverterTest
     }
 
     @Test
-    void convertToExtensionAllowedOnRoot() throws SecurityException, ComponentLookupException
+    void convertToExtensionAllowedOnRoot() throws SecurityException
     {
         Model model = new Model();
 
