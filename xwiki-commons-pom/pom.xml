@@ -172,10 +172,7 @@
               <processors>
                 <processor>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</processor>
                 <processor>org.xwiki.tool.spoon.ComponentAnnotationProcessor</processor>
-                <!-- TODO: Uncomment when https://jira.xwiki.org/browse/XCOMMONS-1939 is closed and the check has
-                     been rewritten as 2 separate checks
                 <processor>org.xwiki.tool.spoon.InjectAnnotationProcessor</processor>
-                -->
               </processors>
               <processorProperties>
                 <processorProperty>
@@ -216,8 +213,6 @@
                     </property>
                   </properties>
                 </processorProperty>
-                <!-- TODO: Uncomment when https://jira.xwiki.org/browse/XCOMMONS-1939 is closed and the check has
-                     been rewritten as 2 separate checks
                 <processorProperty>
                   <name>org.xwiki.tool.spoon.InjectAnnotationProcessor</name>
                   <properties>
@@ -228,7 +223,7 @@
                       ]]></value>
                     </property>
                   </properties>
-                </processorProperty-->
+                </processorProperty>
               </processorProperties>
             </configuration>
           </execution>

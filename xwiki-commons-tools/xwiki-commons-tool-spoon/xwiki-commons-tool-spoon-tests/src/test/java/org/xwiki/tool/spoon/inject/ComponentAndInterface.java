@@ -17,20 +17,11 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.tool.spoon.inject.internal;
+package org.xwiki.tool.spoon.inject;
 
-import javax.inject.Inject;
+import org.xwiki.component.annotation.Component;
 
-import org.xwiki.tool.spoon.injectoutside.ComponentAndInterface2;
-
-public class ComponentAndInterfaceUsage
+@Component(roles = { ComponentInterface.class, ComponentAndInterface.class})
+public class ComponentAndInterface
 {
-    @Inject
-    private ComponentAndInterface componentAndInterface;
-
-    /**
-     * Type that is not in the analyzed sources.
-     */
-    @Inject
-    private ComponentAndInterface2 componentAndInterface2;
 }

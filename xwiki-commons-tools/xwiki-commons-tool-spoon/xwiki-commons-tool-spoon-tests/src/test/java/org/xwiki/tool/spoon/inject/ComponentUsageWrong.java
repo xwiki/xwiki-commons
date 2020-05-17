@@ -17,11 +17,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.tool.spoon.inject.internal;
+package org.xwiki.tool.spoon.inject;
 
-import org.xwiki.component.annotation.Component;
+import javax.inject.Inject;
 
-@Component(roles = {ComponentInterface.class, ComponentAndInterface.class})
-public class ComponentAndInterface
+public class ComponentUsageWrong
 {
+    @Inject
+    private ComponentImplementation componentImplementation;
+
+    @Inject
+    private ComponentAndInterface2 componentAndInterface2;
 }

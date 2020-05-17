@@ -21,21 +21,20 @@ package org.xwiki.tool.spoon;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Optional;
 
 import spoon.processing.Property;
 import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.reference.CtTypeReference;
 
 /**
- * Verifies that the {@code @Inject} annotation is only used with interfaces, except for 2 cases. They are:
+ * Performs the following checks.
  * <ul>
- *   <li>the field type is excluded by the user</li>
- *   <li>the field type points to a Component implementation that defines its role as itself using the "roles"
- *       attribute of the {@code @Component} annotation. However we support this only for the "internal" package
- *       as we consider it a bad practice to do so for a public class (it might expose public methods that are not
- *       supposed to be exposed for example).</li>
+ *   <li>The {@code @Inject} annotation is only used with component roles. This is to prevent errors when we
+ *       inject the component implementation class instead of the role.</li>
+ *   <li>Only fields can use the {@code @Inject} annotation.</li>
  * </ul>
  *
  * @version $Id$
@@ -57,34 +56,21 @@ public class InjectAnnotationProcessor extends AbstractXWikiProcessor<CtAnnotati
                     process(ctAnnotation, ctField);
                 }
             } else {
-                registerError(String.format("Only fields should use the @Inject annotation. Problem at [%s]",
-                    ctAnnotation.getPosition()));
+                registerError(String.format("Only fields should use the @Inject annotation. Problem at %s",
+                    element.getPosition()));
             }
         }
     }
 
     private void process(CtAnnotation<? extends Annotation> ctAnnotation, CtField<?> ctField)
     {
-        if (ctField.getType().isClass()) {
-            // We need to handle the special case when we use the same class as both the component interface
-            // and component implementation, using for ex:
-            //   "@Component(roles = ComponentAndInterface.class)".
-            if (isInterfaceAndImplementationCombined(ctField)) {
-                // But only allow it in the internal package.
-                if (!isInternal(ctField)) {
-                    registerError(
-                        String.format("You must separate the interface and the implementation for the "
-                                + "component [%s]. This is public code. Problem at [%s]",
-                            ctField.getType().getTypeDeclaration().getQualifiedName(),
-                            ctAnnotation.getPosition()));
-                }
-            } else {
-                registerError(
-                    String.format("Only interfaces should have the @Inject annotation but got [%s] "
-                            + "which is a class. Problem at [%s]",
-                        ctField.getType().getTypeDeclaration().getQualifiedName(),
-                        ctAnnotation.getPosition()));
-            }
+        // The following 2 cases are supported:
+        // - The field refers to an interface that has the @Role annotation
+        // - The field refers to a class that has the @Component annotation but with a role specifying the field class
+        if (!isValidInterface(ctField.getType()) && !isComponentAnnotationWithRoleToSelf(ctField.getType())) {
+            registerError(
+                String.format("You must inject a component role. Got [%s] at %s", ctField.getType(),
+                    ctField.getPosition()));
         }
     }
 
@@ -94,41 +80,27 @@ public class InjectAnnotationProcessor extends AbstractXWikiProcessor<CtAnnotati
             && this.excludedFieldTypes.contains(ctField.getType().getQualifiedName());
     }
 
-    private boolean isInternal(CtField<?> ctField)
+    private boolean isValidInterface(CtTypeReference<?> ctTypeReference)
     {
-        // If we're not in an "internal" package, consider this pattern to be a bad practice and report it.
-        // Also consider it's internal if it starts with "com.xpn" and contains a ".impl." package.
-        String fqn = ctField.getType().getQualifiedName();
-        return fqn.contains(".internal.") || (fqn.startsWith("com.xpn") && fqn.contains(".impl."));
+        return ctTypeReference.isInterface() && hasRoleAnnotation(ctTypeReference);
     }
 
-    private boolean isInterfaceAndImplementationCombined(CtField<?> ctField)
+    private boolean isComponentAnnotationWithRoleToSelf(CtTypeReference<?> ctTypeReference)
     {
-        boolean isValid = false;
-        if (ctField.getType().getTypeDeclaration() instanceof CtClass<?>) {
-            CtClass<?> ctClass = (CtClass<?>) ctField.getType().getTypeDeclaration();
-            CtAnnotation<? extends Annotation> componentAnnotation = getComponentAnnotation(ctClass);
-            if (componentAnnotation != null) {
-                CtElement ctElement = componentAnnotation.getValue("roles");
-                if (ctElement != null && ctElement.getReferencedTypes().contains(ctField.getType())) {
-                    isValid = true;
-                }
-            }
-        }
-        return isValid;
-    }
-
-    private CtAnnotation<? extends Annotation> getComponentAnnotation(CtClass<?> ctClass)
-    {
-        CtAnnotation<? extends Annotation> result = null;
-        for (CtAnnotation<? extends Annotation> ctAnnotation
-            : SpoonUtils.getAnnotationsIncludingFromSuperclasses(ctClass))
-        {
-            if (ctAnnotation.getType().getQualifiedName().equals("org.xwiki.component.annotation.Component")) {
-                result = ctAnnotation;
-                break;
+        boolean result = false;
+        Optional<CtAnnotation<? extends Annotation>> ctAnnotation =
+            SpoonUtils.getAnnotation(ctTypeReference, "org.xwiki.component.annotation.Component");
+        if (ctAnnotation.isPresent()) {
+            CtElement ctElement = ctAnnotation.get().getValue("roles");
+            if (ctElement != null && ctElement.getReferencedTypes().contains(ctTypeReference)) {
+                result = true;
             }
         }
         return result;
+    }
+
+    private boolean hasRoleAnnotation(CtTypeReference<?> ctTypeReference)
+    {
+        return SpoonUtils.hasAnnotation(ctTypeReference, "org.xwiki.component.annotation.Role");
     }
 }

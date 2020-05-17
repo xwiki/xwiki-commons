@@ -21,10 +21,16 @@ package org.xwiki.tool.spoon.inject;
 
 import javax.inject.Inject;
 
-import org.xwiki.tool.spoon.inject.internal.ComponentAndInterface;
+import org.xwiki.tool.spoon.injectoutside.ComponentAndInterface2;
 
-public class ComponentUsageWrongNotInternal
+public class ComponentAndInterfaceUsage
 {
     @Inject
     private ComponentAndInterface componentAndInterface;
+
+    /**
+     * Type that is not in the analyzed sources.
+     */
+    @Inject
+    private ComponentAndInterface2 componentAndInterface2;
 }

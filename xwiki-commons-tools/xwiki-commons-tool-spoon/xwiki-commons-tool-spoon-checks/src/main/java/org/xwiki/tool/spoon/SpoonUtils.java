@@ -21,10 +21,12 @@ package org.xwiki.tool.spoon;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.reference.CtTypeReference;
 
 /**
  * Help methods for Spoon.
@@ -63,5 +65,33 @@ public final class SpoonUtils
                 : (CtClass<?>) current.getSuperclass().getTypeDeclaration();
         } while (current != null);
         return annotations;
+    }
+
+    /**
+     * @param ctTypeReference the type for which to find the annotation for
+     * @param annotationFQN the FQN class name of the annotation
+     * @return true if the annotation exists on the type, false otherwise
+     */
+    public static boolean hasAnnotation(CtTypeReference<?> ctTypeReference, String annotationFQN)
+    {
+        return getAnnotation(ctTypeReference, annotationFQN) != null;
+    }
+
+    /**
+     * @param ctTypeReference the type for which to find the annotation for
+     * @param annotationFQN the FQN class name of the annotation
+     * @return the annotation
+     */
+    public static Optional<CtAnnotation<? extends Annotation>> getAnnotation(CtTypeReference<?> ctTypeReference,
+        String annotationFQN)
+    {
+        CtAnnotation<? extends Annotation> result = null;
+        for (CtAnnotation<? extends Annotation> ctAnnotation : ctTypeReference.getTypeDeclaration().getAnnotations()) {
+            if (ctAnnotation.getType().getQualifiedName().equals(annotationFQN)) {
+                result = ctAnnotation;
+                break;
+            }
+        }
+        return Optional.ofNullable(result);
     }
 }
