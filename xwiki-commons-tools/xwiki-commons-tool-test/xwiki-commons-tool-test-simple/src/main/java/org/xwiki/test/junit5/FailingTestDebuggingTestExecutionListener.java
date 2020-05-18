@@ -56,6 +56,8 @@ public class FailingTestDebuggingTestExecutionListener implements TestExecutionL
             LOGGER.info(RuntimeUtils.run("top -b -n 1"));
             LOGGER.info(RuntimeUtils.run("lsof -i -P -n"));
             LOGGER.info(RuntimeUtils.run("docker ps -a"));
+            LOGGER.info(RuntimeUtils.run("docker run --cap-add=NET_ADMIN --network=host --rm --entrypoint \"/bin/sh\" "
+                + "vimagick/iptables -c \"/sbin/iptables -S\""));
             LOGGER.info(RuntimeUtils.run("docker events --since '15m' --until '0m'"));
             LOGGER.info(STOP_MESSAGE);
         }
