@@ -153,20 +153,17 @@
         <groupId>org.revapi</groupId>
         <artifactId>revapi-maven-plugin</artifactId>
         <configuration>
-          <analysisConfiguration><![CDATA[
-            {
-              "revapi": {
-                "ignore" : [
-                  {
-                    "code": "java.class.removed",
-                    "old": "class org.xwiki.velocity.tools.CollectionsTool",
-                    "justification": "Not a Breakage. Moved to Legacy."
-                  }
-                  // Add more ignores below...
-                ]
-              }
-            }
-          ]]></analysisConfiguration>
+          <analysisConfiguration>
+            <revapi.ignore>
+              <!-- Add ignores here using the following syntax:
+              <item>
+                <code>java.class.removed</code>
+                <old>class org.xwiki.velocity.tools.CollectionsTool</old>
+                <justification>Not a Breakage. Moved to Legacy</justification>
+              </item>
+              -->
+            </revapi.ignore>
+          </analysisConfiguration>
         </configuration>
       </plugin>
       <!-- Used to automatically register our custom JUnit5 Extensions using the service loader mechanism.
