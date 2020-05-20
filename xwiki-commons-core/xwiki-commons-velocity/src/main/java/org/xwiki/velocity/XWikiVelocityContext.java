@@ -40,11 +40,14 @@ public class XWikiVelocityContext extends VelocityContext
 
     private static final String VELOCITYHASNEXT = "velocityHasNext";
 
+    private final boolean logDeprecated;
+
     /**
      * Creates a new instance (with no inner context).
      */
     public XWikiVelocityContext()
     {
+        this.logDeprecated = true;
     }
 
     /**
@@ -55,7 +58,21 @@ public class XWikiVelocityContext extends VelocityContext
      */
     public XWikiVelocityContext(Context innerContext)
     {
+        this(innerContext, true);
+    }
+
+    /**
+     * Chaining constructor, used when you want to wrap a context in another. The inner context will be 'read only' -
+     * put() calls to the wrapping context will only effect the outermost context
+     *
+     * @param innerContext The <code>Context</code> implementation to wrap.
+     * @param logDprecated true if use of deprecated binding should be logged
+     */
+    public XWikiVelocityContext(Context innerContext, boolean logDprecated)
+    {
         super(innerContext);
+
+        this.logDeprecated = logDprecated;
     }
 
     private ForeachScope getForeachScope()
@@ -87,7 +104,9 @@ public class XWikiVelocityContext extends VelocityContext
 
     private void warnDeprecatedBinding(String binding, ForeachScope foreachScope)
     {
-        LOGGER.warn("Deprecated binding [${}] used in [{}]", binding, foreachScope.getInfo().getTemplate());
+        if (this.logDeprecated) {
+            LOGGER.warn("Deprecated binding [${}] used in [{}]", binding, foreachScope.getInfo().getTemplate());
+        }
     }
 
     @Override

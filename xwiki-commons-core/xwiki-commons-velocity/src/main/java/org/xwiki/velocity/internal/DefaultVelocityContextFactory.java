@@ -33,6 +33,7 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.logging.LoggerConfiguration;
 import org.xwiki.velocity.XWikiVelocityContext;
 import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.VelocityContextFactory;
@@ -60,6 +61,9 @@ public class DefaultVelocityContextFactory implements VelocityContextFactory, In
      */
     @Inject
     private VelocityConfiguration velocityConfiguration;
+
+    @Inject
+    private LoggerConfiguration loggerConfiguration;
 
     /**
      * The logger to use for logging.
@@ -104,7 +108,8 @@ public class DefaultVelocityContextFactory implements VelocityContextFactory, In
     public VelocityContext createContext() throws XWikiVelocityException
     {
         // Note: This constructor uses the passed context as an internal read-only context.
-        VelocityContext context = new XWikiVelocityContext(this.toolsContext);
+        VelocityContext context =
+            new XWikiVelocityContext(this.toolsContext, this.loggerConfiguration.isDeprecatedLogEnabled());
 
         // Call all components implementing the VelocityContextInitializer's role.
         try {
