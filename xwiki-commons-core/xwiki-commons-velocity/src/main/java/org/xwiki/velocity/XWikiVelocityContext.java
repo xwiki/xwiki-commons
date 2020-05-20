@@ -66,13 +66,15 @@ public class XWikiVelocityContext extends VelocityContext
      * put() calls to the wrapping context will only effect the outermost context
      *
      * @param innerContext The <code>Context</code> implementation to wrap.
-     * @param logDprecated true if use of deprecated binding should be logged
+     * @param logDeprecated true if use of deprecated binding should be logged
+     * @since 12.4
+     * @since 11.10.6
      */
-    public XWikiVelocityContext(Context innerContext, boolean logDprecated)
+    public XWikiVelocityContext(Context innerContext, boolean logDeprecated)
     {
         super(innerContext);
 
-        this.logDeprecated = logDprecated;
+        this.logDeprecated = logDeprecated;
     }
 
     private ForeachScope getForeachScope()
