@@ -45,12 +45,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  * @since 12.1RC1
  */
-public class CollectionToolTest
+class CollectionToolTest
 {
     private CollectionTool tool = new CollectionTool();
 
     @Test
-    public void getMap()
+    void getMap()
     {
         Map<String, String> result = this.tool.getMap();
         assertNotNull(result, "Returned null instead of a map");
@@ -74,7 +74,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void getSortedMap()
+    void getSortedMap()
     {
         SortedMap<Double, Integer> result = this.tool.getSortedMap();
         assertNotNull(result, "Returned null instead of a map");
@@ -93,7 +93,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void getOrderedMap()
+    void getOrderedMap()
     {
         Map<Double, Integer> result = this.tool.getOrderedMap();
         assertNotNull(result, "Returned null instead of a map");
@@ -111,7 +111,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void getSet()
+    void getSet()
     {
         Set<String> result = this.tool.getSet();
         assertNotNull(result, "Returned null instead of a set");
@@ -127,7 +127,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void getSortedSet()
+    void getSortedSet()
     {
         SortedSet<Double> result = this.tool.getSortedSet();
         assertNotNull(result, "Returned null instead of a set");
@@ -146,7 +146,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void getOrderedSet()
+    void getOrderedSet()
     {
         Set<Double> result = this.tool.getOrderedSet();
         assertNotNull(result, "Returned null instead of a set");
@@ -167,7 +167,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void getArrayList()
+    void getArrayList()
     {
         List<String> result = this.tool.getArrayList();
         assertNotNull(result, "Returned null instead of a list");
@@ -175,7 +175,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void getLinkedList()
+    void getLinkedList()
     {
         List<String> result = this.tool.getLinkedList();
         assertNotNull(result, "Returned null instead of a list");
@@ -183,7 +183,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void getQueue()
+    void getQueue()
     {
         Queue<String> result = this.tool.getQueue();
         assertNotNull(result, "Returned null instead of a queue");
@@ -192,7 +192,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void getBlockingQueue()
+    void getBlockingQueue()
     {
         BlockingQueue<String> result = this.tool.getBlockingQueue();
         assertNotNull(result, "Returned null instead of a queue");
@@ -200,7 +200,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void getPriorityQueue()
+    void getPriorityQueue()
     {
         Queue<Double> result = this.tool.getPriorityQueue();
         assertNotNull(result, "Returned null instead of a queue");
@@ -220,7 +220,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void unmodifiableList()
+    void unmodifiableList()
     {
         List<String> original = this.tool.getLinkedList();
         original.add("one");
@@ -250,7 +250,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void unmodifiableMap()
+    void unmodifiableMap()
     {
         Map<String, Integer> original = this.tool.getMap();
         original.put("one", 1);
@@ -272,7 +272,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void unmodifiableSet()
+    void unmodifiableSet()
     {
         SortedSet<Integer> original = this.tool.getSortedSet();
         for (int i = 0; i < 100; ++i) {
@@ -298,7 +298,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void unmodifiableCollection()
+    void unmodifiableCollection()
     {
         Collection<Integer> original = this.tool.getPriorityQueue();
         for (int i = 0; i < 100; ++i) {
@@ -324,7 +324,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void nullUnmodifiable()
+    void nullUnmodifiable()
     {
         assertNull(this.tool.unmodifiable((List<Object>) null));
         assertNull(this.tool.unmodifiable((Set<Object>) null));
@@ -333,7 +333,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void setUnion()
+    void setUnion()
     {
         Set<String> set1 = this.tool.getSet();
         set1.add("one");
@@ -352,7 +352,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void listUnion()
+    void listUnion()
     {
         List<String> list1 = this.tool.getLinkedList();
         list1.add("one");
@@ -374,7 +374,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void nullUnion()
+    void nullUnion()
     {
         List<String> list = this.tool.getLinkedList();
         list.add("one");
@@ -386,7 +386,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void setIntersection()
+    void setIntersection()
     {
         Set<String> set1 = this.tool.getSet();
         set1.add("one");
@@ -404,7 +404,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void listIntersection()
+    void listIntersection()
     {
         List<String> list1 = this.tool.getLinkedList();
         list1.add("one");
@@ -428,7 +428,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void nullIntersection()
+    void nullIntersection()
     {
         List<String> list = this.tool.getLinkedList();
         list.add("one");
@@ -440,7 +440,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void setDisjunction()
+    void setDisjunction()
     {
         Set<String> set1 = this.tool.getSet();
         set1.add("one");
@@ -462,7 +462,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void listDisjunction()
+    void listDisjunction()
     {
         List<String> list1 = this.tool.getLinkedList();
         list1.add("one");
@@ -488,7 +488,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void nullDisjunction()
+    void nullDisjunction()
     {
         List<String> list = this.tool.getLinkedList();
         list.add("one");
@@ -500,7 +500,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void reverseModifiable()
+    void reverseModifiable()
     {
         List<String> list = this.tool.getLinkedList();
         list.add("one");
@@ -517,7 +517,7 @@ public class CollectionToolTest
     }
 
     @Test
-    public void testSortModifiable()
+    void testSortModifiable()
     {
         List<String> list = this.tool.getLinkedList();
         list.add("one");

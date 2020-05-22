@@ -36,12 +36,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  * @since 6.3M1
  */
-public class URLToolTest
+class URLToolTest
 {
     private URLTool tool = new URLTool();
 
     @Test
-    public void testSimpleUrlParse()
+    void parseQuerySimple()
     {
         Map<String, ?> query = tool.parseQuery("a=b%26c");
         assertEquals(Collections.singleton("a"), query.keySet(), "should have one parameter");
@@ -49,7 +49,7 @@ public class URLToolTest
     }
 
     @Test
-    public void testUrlParseMultipleValues()
+    void parseQueryMultipleValues()
     {
         Map<String, ?> query = tool.parseQuery("a=b+c&a=b%3Dc&ab=a+%26+b");
         assertEquals(2, query.size(), "should have two parameter");
@@ -59,7 +59,7 @@ public class URLToolTest
     }
 
     @Test
-    public void testInvalidUrlParse()
+    void parseQueryWhenInvalidURL()
     {
         Map<String, ?> query = tool.parseQuery("a=b ' onclick='foo");
         assertEquals(Collections.singleton("a"), query.keySet(), "should have one parameter");
@@ -67,7 +67,7 @@ public class URLToolTest
     }
 
     @Test
-    public void testHandleNull()
+    void parseQueryWhenNull()
     {
         Map<String, ?> query = tool.parseQuery(null);
         assertNotNull(query, "null query results in empty map");
@@ -75,7 +75,7 @@ public class URLToolTest
     }
 
     @Test
-    public void preserveParameterOrder()
+    void preserveParameterOrder()
     {
         EscapeTool escapeTool = new EscapeTool();
         String queryString = "x=5&x=4&r=3&a=2";

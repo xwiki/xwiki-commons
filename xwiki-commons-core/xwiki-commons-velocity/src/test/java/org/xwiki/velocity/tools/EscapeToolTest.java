@@ -32,6 +32,7 @@ import org.xwiki.test.junit5.LogCaptureExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -41,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  * @since 2.7RC1
  */
-public class EscapeToolTest
+class EscapeToolTest
 {
     @RegisterExtension
     LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
@@ -55,13 +56,13 @@ public class EscapeToolTest
      * Initialize the tested tool.
      */
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         this.tool = new EscapeTool();
     }
 
     @Test
-    public void escapeSimpleXML()
+    void escapeSimpleXML()
     {
         String escapedText = this.tool.xml("a < a' && a' < a\" => a < a\"");
 
@@ -73,25 +74,25 @@ public class EscapeToolTest
     }
 
     @Test
-    public void escapeXMLApos()
+    void escapeXMLApos()
     {
-        assertFalse(this.tool.xml("'").equals("&apos;"), "' wrongly escaped to non-HTML &apos;");
+        assertNotEquals("&apos;", this.tool.xml("'"), "' wrongly escaped to non-HTML &apos;");
     }
 
     @Test
-    public void escapeXMLWithNull()
+    void escapeXMLWithNull()
     {
         assertNull(this.tool.xml(null), "null should be null");
     }
 
     @Test
-    public void escapeXMLNonAscii()
+    void escapeXMLNonAscii()
     {
         assertEquals("\u0123", this.tool.xml("\u0123"), "Non-ASCII characters shouldn't be escaped");
     }
 
     @Test
-    public void escapeJSON()
+    void escapeJSON()
     {
         String escapedText = this.tool.json("\"'\\/\b\f\n\r\t\u1234 plain  text");
 
@@ -109,13 +110,13 @@ public class EscapeToolTest
     }
 
     @Test
-    public void escapeJSONWithNullInput()
+    void escapeJSONWithNullInput()
     {
         assertNull(this.tool.json(null), "Unexpected non-null output for null input");
     }
 
     @Test
-    public void escapeJSONWithNonStringInput()
+    void escapeJSONWithNonStringInput()
     {
         assertEquals("true", this.tool.json(true));
         assertEquals("42", this.tool.json(42));
@@ -123,79 +124,79 @@ public class EscapeToolTest
     }
 
     @Test
-    public void quotedPrintableWithSimpleText()
+    void quotedPrintableWithSimpleText()
     {
         assertEquals("Hello World", this.tool.quotedPrintable("Hello World"));
     }
 
     @Test
-    public void quotedPrintableWithSpecialChars()
+    void quotedPrintableWithSpecialChars()
     {
         assertEquals("a=3Db=0A", this.tool.quotedPrintable("a=b\n"));
     }
 
     @Test
-    public void quotedPrintableWithNonAsciiChars()
+    void quotedPrintableWithNonAsciiChars()
     {
         assertEquals("=C4=A3", this.tool.quotedPrintable("\u0123"));
     }
 
     @Test
-    public void quotedPrintableWithNull()
+    void quotedPrintableWithNull()
     {
         assertNull(this.tool.quotedPrintable(null));
     }
 
     @Test
-    public void qWithSimpleText()
+    void qWithSimpleText()
     {
         assertEquals("=?UTF-8?Q?Hello_World?=", this.tool.q("Hello World"));
     }
 
     @Test
-    public void qWithSpecialChars()
+    void qWithSpecialChars()
     {
         assertEquals("=?UTF-8?Q?a=3Db=3F=5F=0A?=", this.tool.q("a=b?_\n"));
     }
 
     @Test
-    public void qWithNonAsciiChars()
+    void qWithNonAsciiChars()
     {
         assertEquals("=?UTF-8?Q?=C4=A3?=", this.tool.q("\u0123"));
     }
 
     @Test
-    public void qWithNull()
+    void qWithNull()
     {
         assertNull(this.tool.q(null));
     }
 
     @Test
-    public void bWithSimpleText()
+    void bWithSimpleText()
     {
         assertEquals("=?UTF-8?B?SGVsbG8gV29ybGQ=?=", this.tool.b("Hello World"));
     }
 
     @Test
-    public void bWithSpecialChars()
+    void bWithSpecialChars()
     {
         assertEquals("=?UTF-8?B?YT1iPwo=?=", this.tool.b("a=b?\n"));
     }
 
     @Test
-    public void bWithNonAsciiChars()
+    void bWithNonAsciiChars()
     {
         assertEquals("=?UTF-8?B?xKM=?=", this.tool.b("\u0123"));
     }
 
     @Test
-    public void bWithNull()
+    void bWithNull()
     {
         assertNull(this.tool.b(null));
     }
 
     @Test
-    public void url()
+    void url()
     {
         HashMap<String, String> map = new LinkedHashMap<>();
         map.put("hello", "world");
@@ -206,7 +207,7 @@ public class EscapeToolTest
     }
 
     @Test
-    public void urlWithDouble()
+    void urlWithDouble()
     {
         HashMap<String, Double> map = new LinkedHashMap<>();
         map.put("A&A", 1.5);
@@ -215,7 +216,7 @@ public class EscapeToolTest
     }
 
     @Test
-    public void urlWithArray()
+    void urlWithArray()
     {
         HashMap<String, String[]> map = new HashMap<>();
         String[] array = {"M&M", null, "Astronomy&Astrophysics"};
@@ -224,7 +225,7 @@ public class EscapeToolTest
     }
 
     @Test
-    public void urlWithCollection()
+    void urlWithCollection()
     {
         HashMap<String, ArrayList<String>> map = new HashMap<>();
         ArrayList<String> collection1 = new ArrayList<>();
@@ -242,9 +243,9 @@ public class EscapeToolTest
      * @see <a href="https://drafts.csswg.org/cssom/#serialize-an-identifier">serialize-an-identifier</a>
      */
     @Test
-    public void css()
+    void css()
     {
-        assertEquals(this.tool.css("a#b.c d[e=f]g{h:i;j}k"), "a\\#b\\.c\\ d\\[e\\=f\\]g\\{h\\:i\\;j\\}k");
+        assertEquals("a\\#b\\.c\\ d\\[e\\=f\\]g\\{h\\:i\\;j\\}k", this.tool.css("a#b.c d[e=f]g{h:i;j}k"));
 
         // Invalid character U+0000 (the exception must be caught)
         assertNull(this.tool.css("a\u0000b"));

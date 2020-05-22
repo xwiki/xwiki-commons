@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * 
  * @version $Id$
  */
-public class CSSIdentifierSerializerTest
+class CSSIdentifierSerializerTest
 {
     private CSSIdentifierSerializer cssIdentifierSerializer = new CSSIdentifierSerializer();
 
@@ -45,7 +45,7 @@ public class CSSIdentifierSerializerTest
      */
     @Test
     @DisplayName("Various CSS serialization tests")
-    public void serialize()
+    void serialize()
     {
         assertCssThrowsException("\u0000");
         assertCssThrowsException("a\u0000");

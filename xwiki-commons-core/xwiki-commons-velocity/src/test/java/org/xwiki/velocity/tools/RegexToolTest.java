@@ -38,10 +38,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  * @since 2.0RC1
  */
-public class RegexToolTest
+class RegexToolTest
 {
     @Test
-    public void find()
+    void find()
     {
         RegexTool tool = new RegexTool();
         List<RegexResult> result =
@@ -57,7 +57,7 @@ public class RegexToolTest
     }
 
     @Test
-    public void findWithoutMatches()
+    void findWithoutMatches()
     {
         RegexTool tool = new RegexTool();
         List<RegexResult> result = tool.find("nothing here", "something");
@@ -66,7 +66,7 @@ public class RegexToolTest
     }
 
     @Test
-    public void findAll()
+    void findAll()
     {
         RegexTool tool = new RegexTool();
         List<List<RegexResult>> result =
@@ -86,7 +86,7 @@ public class RegexToolTest
     }
 
     @Test
-    public void findAllNoMatch()
+    void findAllNoMatch()
     {
         RegexTool tool = new RegexTool();
         List<List<RegexResult>> result = tool.findAll("nothing here", "something");
@@ -98,7 +98,7 @@ public class RegexToolTest
      * Compiling a valid regular expression should work.
      */
     @Test
-    public void testCompileValidRegex()
+    void testCompileValidRegex()
     {
         RegexTool tool = new RegexTool();
         Pattern p = tool.compile("ab?");
@@ -118,7 +118,7 @@ public class RegexToolTest
      * Compiling a valid regular expression with internal flags should work.
      */
     @Test
-    public void compileRegexWithFlags()
+    void compileRegexWithFlags()
     {
         RegexTool tool = new RegexTool();
         Pattern p = tool.compile("(?im)^ab?$");
@@ -138,7 +138,7 @@ public class RegexToolTest
      * Compiling an invalid regular expression should return null, and not throw an exception.
      */
     @Test
-    public void compileInvalidRegex()
+    void compileInvalidRegex()
     {
         RegexTool tool = new RegexTool();
         Pattern p = tool.compile("*");
@@ -149,14 +149,14 @@ public class RegexToolTest
      * Escaping a string containing regex syntax characters.
      */
     @Test
-    public void quote()
+    void quote()
     {
         RegexTool tool = new RegexTool();
         assertEquals(Pattern.quote("^(\\)[]"), tool.quote("^(\\)[]"));
     }
 
     @Test
-    public void quoteReplacement()
+    void quoteReplacement()
     {
         RegexTool tool = new RegexTool();
         assertEquals(Matcher.quoteReplacement("$1 \\$2"), tool.quoteReplacement("$1 \\$2"));

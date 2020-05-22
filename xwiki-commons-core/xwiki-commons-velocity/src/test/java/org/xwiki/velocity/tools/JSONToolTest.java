@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  * @since 4.0M2
  */
-public class JSONToolTest
+class JSONToolTest
 {
     @RegisterExtension
     LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
@@ -98,13 +98,13 @@ public class JSONToolTest
     private JSONTool tool = new JSONTool();
 
     @Test
-    public void serializeNull()
+    void serializeNull()
     {
         assertEquals("null", this.tool.serialize(null));
     }
 
     @Test
-    public void serializeMap()
+    void serializeMap()
     {
         Map<String, Object> map = new HashMap<>();
         map.put("bool", false);
@@ -129,34 +129,34 @@ public class JSONToolTest
     }
 
     @Test
-    public void serializeList()
+    void serializeList()
     {
         assertEquals("[1,2]", this.tool.serialize(Arrays.asList(1, 2)));
         assertEquals("[1.3,2.4]", this.tool.serialize(new double[] { 1.3, 2.4 }));
     }
 
     @Test
-    public void serializeNumber()
+    void serializeNumber()
     {
         assertEquals("27", this.tool.serialize(27));
         assertEquals("2.7", this.tool.serialize(2.7));
     }
 
     @Test
-    public void serializeBoolean()
+    void serializeBoolean()
     {
         assertEquals("false", this.tool.serialize(false));
         assertEquals("true", this.tool.serialize(true));
     }
 
     @Test
-    public void serializeString()
+    void serializeString()
     {
         assertEquals("\"\\\"te'st\\\"\"", this.tool.serialize("\"te'st\""));
     }
 
     @Test
-    public void serializeBean()
+    void serializeBean()
     {
         String json = this.tool.serialize(new MockBean());
         // We can't predict the order in the map.
@@ -170,7 +170,7 @@ public class JSONToolTest
     }
 
     @Test
-    public void parseArray()
+    void parseArray()
     {
         JSON json = this.tool.parse("[1,2,3]");
         assertTrue(json.isArray());
@@ -178,7 +178,7 @@ public class JSONToolTest
     }
 
     @Test
-    public void parseEmptyArray()
+    void parseEmptyArray()
     {
         JSON json = this.tool.parse("[]");
         assertTrue(json.isArray());
@@ -187,7 +187,7 @@ public class JSONToolTest
     }
 
     @Test
-    public void parseMap()
+    void parseMap()
     {
         JSONObject json = (JSONObject) this.tool.parse("{\"a\" : 1, \"b\": [1], \"c\": true}");
         assertFalse(json.isArray());
@@ -197,7 +197,7 @@ public class JSONToolTest
     }
 
     @Test
-    public void parseEmptyMap()
+    void parseEmptyMap()
     {
         JSONObject json = (JSONObject) this.tool.parse("{}");
         assertFalse(json.isArray());
@@ -206,13 +206,13 @@ public class JSONToolTest
     }
 
     @Test
-    public void parseNull()
+    void parseNull()
     {
         assertTrue(this.tool.parse(null) instanceof JSONNull);
     }
 
     @Test
-    public void parseEmptyString()
+    void parseEmptyString()
     {
         assertNull(this.tool.parse(""));
 
@@ -221,7 +221,7 @@ public class JSONToolTest
     }
 
     @Test
-    public void parseInvalidJSON()
+    void parseInvalidJSON()
     {
         assertNull(this.tool.parse("This is not the JSON you are looking for..."));
 
@@ -230,19 +230,19 @@ public class JSONToolTest
     }
 
     @Test
-    public void fromStringArray()
+    void fromStringArray()
     {
         assertEquals(Arrays.asList(1, 2, 3), this.tool.fromString("[1,2,3]"));
     }
 
     @Test
-    public void fromStringEmptyArray()
+    void fromStringEmptyArray()
     {
         assertEquals(new ArrayList<>(), this.tool.fromString("[]"));
     }
 
     @Test
-    public void fromStringMap()
+    void fromStringMap()
     {
         Map<?, ?> map = (Map) this.tool.fromString("{\"a\" : 1, \"b\": [1], \"c\": true}");
 
@@ -253,31 +253,31 @@ public class JSONToolTest
     }
 
     @Test
-    public void fromStringEmptyMap()
+    void fromStringEmptyMap()
     {
         assertEquals(new HashMap(), this.tool.fromString("{}"));
     }
 
     @Test
-    public void fromStringNull()
+    void fromStringNull()
     {
         assertNull(this.tool.fromString(null));
     }
 
     @Test
-    public void fromStringEmptyString()
+    void fromStringEmptyString()
     {
         assertNull(this.tool.fromString(""));
     }
 
     @Test
-    public void fromStringInvalidJSON()
+    void fromStringInvalidJSON()
     {
         assertNull(this.tool.fromString("This is not the JSON you are looking for..."));
     }
 
     @Test
-    public void serializeOrgJsonObjectWorks()
+    void serializeOrgJsonObjectWorks()
     {
         List<String> variants = new ArrayList<>(2);
         variants.add("{\"a\":\"b\",\"c\":true}");
@@ -290,7 +290,7 @@ public class JSONToolTest
     }
 
     @Test
-    public void serializeNestedOrgJsonObjectWorks()
+    void serializeNestedOrgJsonObjectWorks()
     {
         List<String> variants = new ArrayList<>(2);
         variants.add("{\"before\":[\"nothing\"],\"json\":{\"a\":\"b\",\"c\":true},\"after\":42}");
@@ -307,7 +307,7 @@ public class JSONToolTest
     }
 
     @Test
-    public void serializeOrgJsonArrayWorks()
+    void serializeOrgJsonArrayWorks()
     {
         org.json.JSONArray array = new org.json.JSONArray();
         array.put("a");
@@ -317,7 +317,7 @@ public class JSONToolTest
     }
 
     @Test
-    public void serializeNestedOrgJsonArrayWorks()
+    void serializeNestedOrgJsonArrayWorks()
     {
         org.json.JSONArray array = new org.json.JSONArray();
         array.put("a");
