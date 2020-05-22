@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @version $Id$
  * @since 4.0M2
  */
-public class XWikiToStringBuilderTest
+class XWikiToStringBuilderTest
 {
     public class TestClass
     {
@@ -62,7 +62,7 @@ public class XWikiToStringBuilderTest
     }
 
     @Test
-    public void toStringBuilder()
+    void toStringBuilder()
     {
         assertEquals("field1 = [value1], field2 = [100], field3 = [[key1] = [value1], [key2] = [value2]], "
             + "field4 = [[value]]", new TestClass().toString());
