@@ -59,18 +59,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
     DefaultHTMLCleaner.class,
     DefaultExecution.class
 })
-public class HTMLUtilsTest
+class HTMLUtilsTest
 {
     private HTMLCleaner cleaner;
 
     @BeforeEach
-    public void setUp(ComponentManager componentManager) throws Exception
+    void setUp(ComponentManager componentManager) throws Exception
     {
         this.cleaner = componentManager.getInstance(HTMLCleaner.class);
     }
 
     @Test
-    public void stripHTMLEnvelope() throws Exception
+    void stripHTMLEnvelope()
     {
         Document document =
             this.cleaner.clean(new StringReader("<html><head><body><p>test1</p><p>test2</p></body></html>"));
@@ -80,7 +80,7 @@ public class HTMLUtilsTest
     }
 
     @Test
-    public void stripTopLevelParagraph() throws Exception
+    void stripTopLevelParagraph()
     {
         Document document = this.cleaner.clean(new StringReader("<html><head /><body><p>test</p></body></html>"));
         HTMLUtils.stripFirstElementInside(document, "body", "p");
@@ -89,7 +89,7 @@ public class HTMLUtilsTest
     }
 
     @Test
-    public void testCornerCases() throws Exception
+    void testCornerCases()
     {
         // ensures that the empty element does not lead to error
         Document document = this.cleaner.clean(new StringReader("<html><head /><body foo=\"\"></body></html>"));

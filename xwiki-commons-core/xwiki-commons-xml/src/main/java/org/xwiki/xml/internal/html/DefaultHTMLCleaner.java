@@ -216,7 +216,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner
 
         // If the caller has defined NAMESPACE_AWARE configuration property then use it, otherwise use our default.
         String param = configuration.getParameters().get(HTMLCleanerConfiguration.NAMESPACES_AWARE);
-        boolean namespacesAware = (param != null) ? Boolean.parseBoolean(param) : true;
+        boolean namespacesAware = (param == null) || Boolean.parseBoolean(param);
         defaultProperties.setNamespacesAware(namespacesAware);
 
         // Set Cleaner transformations
@@ -228,7 +228,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         // Use character references rather than entity references if needed (for instance if you need to parse the
         // output as XML)
         param = configuration.getParameters().get(HTMLCleanerConfiguration.USE_CHARACTER_REFERENCES);
-        boolean useCharacterReferences = (param != null) ? Boolean.parseBoolean(param) : false;
+        boolean useCharacterReferences = (param != null) && Boolean.parseBoolean(param);
         defaultProperties.setTransResCharsToNCR(useCharacterReferences);
 
         // By default, we are cleaning XHTML 1.0 code, not HTML 5.
@@ -246,7 +246,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         defaultProperties.setRecognizeUnicodeChars(false);
 
         param = configuration.getParameters().get(HTMLCleanerConfiguration.TRANSLATE_SPECIAL_ENTITIES);
-        boolean translateSpecialEntities = (param != null) ? Boolean.parseBoolean(param) : false;
+        boolean translateSpecialEntities = (param != null) && Boolean.parseBoolean(param);
         defaultProperties.setTranslateSpecialEntities(translateSpecialEntities);
 
         return defaultProperties;

@@ -112,13 +112,13 @@ public abstract class AbstractHTMLFilter implements HTMLFilter, HTMLConstants
         boolean hasAttribute = true;
         if (!checkValue) {
             for (Element e : elements) {
-                hasAttribute = e.hasAttribute(attributeName) ? hasAttribute : false;
+                hasAttribute = e.hasAttribute(attributeName) && hasAttribute;
             }
         } else {
             String attributeValue = null;
             for (Element e : elements) {
                 attributeValue = attributeValue == null ? e.getAttribute(attributeName) : attributeValue;
-                hasAttribute = e.getAttribute(attributeName).equals(attributeValue) ? hasAttribute : false;
+                hasAttribute = e.getAttribute(attributeName).equals(attributeValue) && hasAttribute;
             }
         }
         return hasAttribute;

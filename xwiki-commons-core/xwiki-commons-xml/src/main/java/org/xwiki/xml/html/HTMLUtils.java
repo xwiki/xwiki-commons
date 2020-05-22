@@ -254,9 +254,8 @@ public final class HTMLUtils
         format.setOmitDeclaration(omitDeclaration);
 
         XMLOutputter outputter = new XWikiXMLOutputter(format, omitDoctype);
-        String result = outputter.outputString(jdomDoc);
 
-        return result;
+        return outputter.outputString(jdomDoc);
     }
 
     /**
