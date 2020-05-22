@@ -54,6 +54,7 @@ public class ExecutionContextTest
         assertEquals("shadowed", context.getProperty("shadowed"));
     }
 
+    @Test
     public void illegalInheritance()
     {
         ExecutionContext context = new ExecutionContext();
