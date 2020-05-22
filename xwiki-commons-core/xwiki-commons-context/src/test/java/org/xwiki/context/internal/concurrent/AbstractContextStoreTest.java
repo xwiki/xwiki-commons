@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * @version $Id$
  */
-public class AbstractContextStoreTest
+class AbstractContextStoreTest
 {
     private AbstractContextStore component = new AbstractContextStore("entry1", "entry2")
     {
@@ -59,7 +59,7 @@ public class AbstractContextStoreTest
     // Tests
 
     @Test
-    public void get()
+    void get()
     {
         Map<String, Serializable> contextStore = new HashMap<>();
 
@@ -71,7 +71,7 @@ public class AbstractContextStoreTest
     }
 
     @Test
-    public void save()
+    void save()
     {
         Map<String, Serializable> contextStore = new HashMap<>();
 
@@ -86,7 +86,7 @@ public class AbstractContextStoreTest
     }
 
     @Test
-    public void saveSubContext()
+    void saveSubContext()
     {
         SubContextStore subStore = mock(SubContextStore.class);
 

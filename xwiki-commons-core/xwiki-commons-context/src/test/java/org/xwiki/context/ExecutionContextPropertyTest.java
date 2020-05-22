@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  * @since 4.3M1
  */
-public class ExecutionContextPropertyTest
+class ExecutionContextPropertyTest
 {
     /**
      * Access the properties via reflection. This method requires ReflectPermission suppressAccessChecks.
@@ -105,7 +105,7 @@ public class ExecutionContextPropertyTest
     }
 
     @Test
-    void cloningNonPublicCloneMethod()
+    void cloningNonPublicCloneMethod() throws Exception
     {
         ExecutionContext context = new ExecutionContext();
 
@@ -115,7 +115,8 @@ public class ExecutionContextPropertyTest
 
         context.newProperty(key).cloneValue().initial(value).declare();
 
-        Throwable exception = assertThrows(IllegalStateException.class, () -> fetch(context, key).clone());
+        ExecutionContextProperty ecp = fetch(context, key);
+        Throwable exception = assertThrows(IllegalStateException.class, () -> ecp.clone());
         assertEquals("cloneValue attribute was set on property [test], but the value had class "
             + "[org.xwiki.context.ExecutionContextPropertyTest$TestNonpublicClone] which has no public clone method",
             exception.getMessage());
@@ -128,13 +129,13 @@ public class ExecutionContextPropertyTest
 
         final String key = "test";
 
-        Throwable exception = assertThrows(IllegalArgumentException.class,
-            () -> context.newProperty(key).nonNull().initial(null).declare());
+        ExecutionContext.DeclarationBuilder db = context.newProperty(key).nonNull().initial(null);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> db.declare());
         assertEquals("The property [test] may not be null!", exception.getMessage());
     }
 
     @Test
-    void typeChecking()
+    void typeCheckingOk()
     {
         ExecutionContext context = new ExecutionContext();
 
@@ -155,8 +156,9 @@ public class ExecutionContextPropertyTest
 
         context.newProperty(key).type(SomeSubClass.class).declare();
 
+        Object value = new SomeClass();
         Throwable exception = assertThrows(IllegalArgumentException.class,
-            () ->  context.setProperty(key, new SomeClass()));
+            () ->  context.setProperty(key, value));
         assertEquals("The value of property [test] must be of type "
             + "[class org.xwiki.context.ExecutionContextPropertyTest$SomeSubClass], but was "
             + "[class org.xwiki.context.ExecutionContextPropertyTest$SomeClass]", exception.getMessage());
@@ -164,7 +166,6 @@ public class ExecutionContextPropertyTest
 
     public static class TestCloneable implements Cloneable
     {
-
         public String value = "original";
 
         @Override

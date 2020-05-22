@@ -52,7 +52,7 @@ import static org.mockito.Mockito.when;
  * 
  * @version $Id$
  */
-public class DefaultContextStoreManagerTest
+class DefaultContextStoreManagerTest
 {
     private ComponentManager componentManager;
 
@@ -65,7 +65,7 @@ public class DefaultContextStoreManagerTest
     private ContextStore store2;
 
     @BeforeEach
-    public void beforeEach() throws IllegalAccessException
+    void beforeEach() throws IllegalAccessException
     {
         this.componentManager = mock(ComponentManager.class);
         this.manager = new DefaultContextStoreManager();
@@ -137,7 +137,7 @@ public class DefaultContextStoreManagerTest
     // Tests
 
     @Test
-    public void getSupportedEntries() throws ComponentLookupException
+    void getSupportedEntries() throws ComponentLookupException
     {
         assertTrue(this.manager.getSupportedEntries().isEmpty());
 
@@ -155,7 +155,7 @@ public class DefaultContextStoreManagerTest
     }
 
     @Test
-    public void save() throws ComponentLookupException
+    void save() throws ComponentLookupException
     {
         assertTrue(this.manager.save(toSet()).isEmpty());
         assertTrue(this.manager.save(toSet("noentry")).isEmpty());
@@ -186,7 +186,7 @@ public class DefaultContextStoreManagerTest
     }
 
     @Test
-    public void restore() throws ComponentLookupException
+    void restore() throws ComponentLookupException
     {
         this.manager.restore(null);
         this.manager.restore(toMap());

@@ -48,14 +48,14 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * @since 1.8RC3
  */
 @SuppressWarnings("unchecked")
-public class DefaultExecutionContextManagerTest
+class DefaultExecutionContextManagerTest
 {
     Execution execution = new DefaultExecution();
 
     DefaultExecutionContextManager contextManager = new DefaultExecutionContextManager();
 
     @BeforeEach
-    public void beforeEach()
+    void beforeEach()
     {
         ReflectionUtils.setFieldValue(contextManager, "execution", execution);
 
@@ -84,7 +84,7 @@ public class DefaultExecutionContextManagerTest
      * Verify we have different objects in the Execution Context after the clone.
      */
     @Test
-    public void cloneExecutionContext() throws Exception
+    void cloneExecutionContext() throws Exception
     {
         ExecutionContext context = new ExecutionContext();
         this.execution.setContext(context);
@@ -103,7 +103,7 @@ public class DefaultExecutionContextManagerTest
     }
 
     @Test
-    public void pushContext() throws ExecutionContextException
+    void pushContext() throws ExecutionContextException
     {
         ReflectionUtils.setFieldValue(contextManager, "execution", execution);
 

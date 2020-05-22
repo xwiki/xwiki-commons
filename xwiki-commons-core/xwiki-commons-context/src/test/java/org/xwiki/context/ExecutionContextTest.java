@@ -34,10 +34,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  * @since 4.3M1
  */
-public class ExecutionContextTest
+class ExecutionContextTest
 {
     @Test
-    public void inheritance()
+    void inheritance()
     {
         ExecutionContext context = new ExecutionContext();
         ExecutionContext parent = new ExecutionContext();
@@ -55,7 +55,7 @@ public class ExecutionContextTest
     }
 
     @Test
-    public void illegalInheritance()
+    void illegalInheritance()
     {
         ExecutionContext context = new ExecutionContext();
         ExecutionContext parent = new ExecutionContext();
@@ -67,7 +67,7 @@ public class ExecutionContextTest
     }
 
     @Test
-    public void getProperties()
+    void getProperties()
     {
         ExecutionContext context = new ExecutionContext();
         context.setProperty("key", "value");
@@ -77,7 +77,7 @@ public class ExecutionContextTest
     }
 
     @Test
-    public void setProperties()
+    void setProperties()
     {
         Map<String, Object> properties = new HashMap<>();
         properties.put("key1", "value1");
@@ -91,7 +91,7 @@ public class ExecutionContextTest
     }
 
     @Test
-    public void removeProperty()
+    void removeProperty()
     {
         ExecutionContext context = new ExecutionContext();
         context.setProperty("key", "value");
@@ -104,7 +104,7 @@ public class ExecutionContextTest
     }
 
     @Test
-    public void removeFinalProperty()
+    void removeFinalProperty()
     {
         ExecutionContext context = new ExecutionContext();
         context.newProperty("key").makeFinal().initial("value").declare();
@@ -115,14 +115,14 @@ public class ExecutionContextTest
     }
 
     @Test
-    public void removeUnexistingProperty()
+    void removeUnexistingProperty()
     {
         ExecutionContext context = new ExecutionContext();
         context.removeProperty("doesnotexist");
     }
 
     @Test
-    public void setFinalProperty()
+    void setFinalProperty()
     {
         ExecutionContext context = new ExecutionContext();
         context.newProperty("key").makeFinal().initial("value").declare();
@@ -133,17 +133,17 @@ public class ExecutionContextTest
     }
 
     @Test
-    public void declareExistingProperty()
+    void declareExistingProperty()
     {
         ExecutionContext context = new ExecutionContext();
         context.setProperty("key", "value");
 
-        assertThrows(PropertyAlreadyExistsException.class,
-            () -> context.newProperty("key").declare());
+        ExecutionContext.DeclarationBuilder db = context.newProperty("key");
+        assertThrows(PropertyAlreadyExistsException.class, () -> db.declare());
     }
 
     @Test
-    public void hasProperty()
+    void hasProperty()
     {
         ExecutionContext context = new ExecutionContext();
 

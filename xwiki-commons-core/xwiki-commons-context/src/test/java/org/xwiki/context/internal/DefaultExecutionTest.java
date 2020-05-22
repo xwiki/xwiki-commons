@@ -32,10 +32,10 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  *
  * @version $Id$
  */
-public class DefaultExecutionTest
+class DefaultExecutionTest
 {
     @Test
-    public void setContext() throws Exception
+    void setContext()
     {
         Execution execution = new DefaultExecution();
 
@@ -77,7 +77,7 @@ public class DefaultExecutionTest
     }
 
     @Test
-    public void removeContext() throws Exception
+    void removeContext()
     {
         Execution execution = new DefaultExecution();
 
@@ -91,7 +91,7 @@ public class DefaultExecutionTest
     }
 
     @Test
-    public void pushContext()
+    void pushContext()
     {
         Execution execution = new DefaultExecution();
 
