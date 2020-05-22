@@ -29,7 +29,7 @@ import javax.inject.Singleton;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
-import org.xwiki.component.ProviderTest;
+import org.xwiki.component.ProviderIntegrationTest;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.internal.ContextComponentManagerProvider;
 import org.xwiki.component.internal.RootComponentManager;
@@ -205,17 +205,17 @@ public class ComponentAnnotationLoaderTest
             this.loader.getComponentsDescriptors(DefaultNamespaceValidator.class).get(0);
 
         ComponentDescriptor descriptor8 =
-            this.loader.getComponentsDescriptors(ProviderTest.TestProvider1.class).get(0);
+            this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestProvider1.class).get(0);
         ComponentDescriptor descriptor9 =
-            this.loader.getComponentsDescriptors(ProviderTest.TestProvider12.class).get(0);
+            this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestProvider12.class).get(0);
         ComponentDescriptor descriptor10 =
-            this.loader.getComponentsDescriptors(ProviderTest.TestProvider2.class).get(0);
+            this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestProvider2.class).get(0);
         ComponentDescriptor descriptor11 =
-            this.loader.getComponentsDescriptors(ProviderTest.TestComponentWithProviders.class).get(0);
+            this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestComponentWithProviders.class).get(0);
         ComponentDescriptor descriptor12 =
-            this.loader.getComponentsDescriptors(ProviderTest.TestProviderWithExceptionInInitialize.class).get(0);
+            this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestProviderWithExceptionInInitialize.class).get(0);
         ComponentDescriptor descriptor13 =
-            this.loader.getComponentsDescriptors(ProviderTest.TestComponentWithProviderInException.class).get(0);
+            this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestComponentWithProviderInException.class).get(0);
 
         this.loader.initialize(componentManager, this.getClass().getClassLoader());
 

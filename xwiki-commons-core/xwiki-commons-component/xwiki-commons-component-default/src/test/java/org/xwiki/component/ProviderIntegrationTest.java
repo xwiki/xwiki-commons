@@ -27,12 +27,12 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.embed.EmbeddableComponentManager;
-import org.xwiki.component.embed.EmbeddableComponentManagerTest;
 import org.xwiki.component.embed.EmbeddableComponentManagerTest.Role;
 import org.xwiki.component.embed.EmbeddableComponentManagerTest.RoleImpl;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -48,10 +48,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  *
  * @version $Id$
  */
-public class ProviderTest
+public class ProviderIntegrationTest
 {
     @ComponentRole
-    public static interface TestComponentRole
+    public interface TestComponentRole
     {
 
     }
@@ -71,10 +71,10 @@ public class ProviderTest
         public Provider<Integer> provider2;
 
         @Inject
-        public Provider<List<EmbeddableComponentManagerTest.Role>> providerList;
+        public Provider<List<Role>> providerList;
 
         @Inject
-        public Provider<Map<String, EmbeddableComponentManagerTest.Role>> providerMap;
+        public Provider<Map<String, Role>> providerMap;
     }
 
     public static class TestProvider1 implements Provider<String>
@@ -132,7 +132,7 @@ public class ProviderTest
     }
 
     @Test
-    public void loadAndInjectProviders() throws ComponentLookupException, ComponentRepositoryException
+    void loadAndInjectProviders() throws ComponentLookupException, ComponentRepositoryException
     {
         EmbeddableComponentManager cm = new EmbeddableComponentManager();
 
@@ -165,7 +165,7 @@ public class ProviderTest
      * Verify that an exception is raised when a Provider implementing {@link Initializable} fails to initialize.
      */
     @Test
-    public void loadAndInjectProviderWhenExceptionInInitialize()
+    void loadAndInjectProviderWhenExceptionInInitialize()
     {
         EmbeddableComponentManager cm = new EmbeddableComponentManager();
         cm.initialize(getClass().getClassLoader());
@@ -173,13 +173,34 @@ public class ProviderTest
         Throwable exception = assertThrows(ComponentLookupException.class,
             () -> cm.getInstance(TestComponentRole.class, "exception"));
         assertEquals("Failed to lookup component "
-            + "[org.xwiki.component.ProviderTest$TestComponentWithProviderInException] identified by "
-            + "type [interface org.xwiki.component.ProviderTest$TestComponentRole] and hint [exception]",
+            + "[org.xwiki.component.ProviderIntegrationTest$TestComponentWithProviderInException] identified by "
+            + "type [interface org.xwiki.component.ProviderIntegrationTest$TestComponentRole] and hint [exception]",
             exception.getMessage());
         assertEquals("Failed to lookup component "
-            + "[org.xwiki.component.ProviderTest$TestProviderWithExceptionInInitialize] identified by "
+            + "[org.xwiki.component.ProviderIntegrationTest$TestProviderWithExceptionInInitialize] identified by "
             + "type [javax.inject.Provider<java.lang.String>] and hint [exception]",
             exception.getCause().getMessage());
         assertEquals("Some error in init", exception.getCause().getCause().getMessage());
+    }
+
+    @Test
+    void loadAndInjectProviderWhenNoImplementationFound() throws Exception
+    {
+        EmbeddableComponentManager cm = new EmbeddableComponentManager();
+
+        // Register a bad descriptor (missing an implementation class) to force an error.
+        DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<>();
+        cd.setRoleType(Role.class);
+        cd.setRoleHint("hint1");
+        cm.registerComponent(cd);
+
+        cm.initialize(getClass().getClassLoader());
+
+        TestComponentWithProviders component = cm.getInstance(TestComponentRole.class);
+        Throwable exception = assertThrows(RuntimeException.class,
+            () -> component.providerList.get());
+        assertEquals("Failed to get [role = "
+            + "[java.util.List<org.xwiki.component.embed.EmbeddableComponentManagerTest$Role>] hint = [default]]",
+            exception.getMessage());
     }
 }

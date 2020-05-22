@@ -46,7 +46,6 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Disposable;
 import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
 import org.xwiki.component.util.DefaultParameterizedType;
 
 /**
@@ -57,7 +56,7 @@ import org.xwiki.component.util.DefaultParameterizedType;
  */
 public class EmbeddableComponentManagerTest
 {
-    public static interface Role
+    public interface Role
     {
     }
 
@@ -76,7 +75,7 @@ public class EmbeddableComponentManagerTest
         private boolean initialized = false;
 
         @Override
-        public void initialize() throws InitializationException
+        public void initialize()
         {
             this.initialized = true;
         }
@@ -133,7 +132,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void lookupThisComponentManager() throws ComponentLookupException
+    void lookupThisComponentManager() throws ComponentLookupException
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -141,7 +140,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void getComponentDescriptorList() throws Exception
+    void getComponentDescriptorList() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -162,7 +161,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void getComponentDescriptorListInParent() throws Exception
+    void getComponentDescriptorListInParent() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
         ecm.setParent(createParentComponentManager());
@@ -172,7 +171,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void getComponentDescriptorInParent() throws Exception
+    void getComponentDescriptorInParent() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
         ecm.setParent(createParentComponentManager("somehint"));
@@ -183,7 +182,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void getComponentDescriptorWhenSomeComponentsInParent() throws Exception
+    void getComponentDescriptorWhenSomeComponentsInParent() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
         ecm.setParent(createParentComponentManager());
@@ -210,7 +209,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void registerComponentOverExistingOne() throws Exception
+    void registerComponentOverExistingOne() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -232,7 +231,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void registerComponentInstance() throws Exception
+    void registerComponentInstance() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -246,7 +245,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void unregisterComponent() throws Exception
+    void unregisterComponent() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -269,7 +268,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void getInstanceWhenComponentInParent() throws Exception
+    void getInstanceWhenComponentInParent() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
         ecm.setParent(createParentComponentManager());
@@ -279,7 +278,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void getInstanceListAndMapWhenSomeComponentsInParent() throws Exception
+    void getInstanceListAndMapWhenSomeComponentsInParent() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
         ecm.setParent(createParentComponentManager());
@@ -311,7 +310,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void hasComponent() throws Exception
+    void hasComponent() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -325,7 +324,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void hasComponentWhenComponentInParent() throws Exception
+    void hasComponentWhenComponentInParent() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
         ecm.setParent(createParentComponentManager());
@@ -335,7 +334,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void loggingInjection() throws Exception
+    void loggingInjection() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -373,7 +372,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void registerInitializableComponent() throws Exception
+    void registerInitializableComponent() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -387,7 +386,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void unregisterDisposableSingletonComponent() throws Exception
+    void unregisterDisposableSingletonComponent() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -407,7 +406,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void unregisterDisposableSingletonComponentWithInstance()
+    void unregisterDisposableSingletonComponentWithInstance()
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -426,7 +425,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void release() throws Exception
+    void release() throws Exception
     {
         final EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -449,7 +448,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void releaseDisposableComponent() throws Exception
+    void releaseDisposableComponent() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -469,7 +468,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void registerComponentNotification() throws Exception
+    void registerComponentNotification() throws Exception
     {
         final EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -486,7 +485,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void unregisterComponentNotification() throws Exception
+    void unregisterComponentNotification() throws Exception
     {
         final EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -504,7 +503,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void registerComponentNotificationOnSecondRegistration() throws Exception
+    void registerComponentNotificationOnSecondRegistration() throws Exception
     {
         final EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -527,7 +526,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void dispose() throws Exception
+    void dispose() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -572,7 +571,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void diposeWhenImplementationIsECM()
+    void diposeWhenImplementationIsECM()
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -598,7 +597,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void componentDescriptorInjection() throws Exception
+    void componentDescriptorInjection() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -616,5 +615,12 @@ public class EmbeddableComponentManagerTest
 
         ComponentDescriptorRoleImpl impl = ecm.getInstance(Role.class);
         assertNotNull(impl.getComponentDescriptor());
+    }
+    
+    @Test
+    void constructorWithNameSpace()
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager("namespace");
+        assertEquals("namespace", ecm.getNamespace());
     }
 }
