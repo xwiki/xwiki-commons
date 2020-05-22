@@ -86,7 +86,7 @@ public final class NamespaceUtils
                     if (typeBuilder == null) {
                         typeBuilder = new StringBuilder();
                         if (i > 0) {
-                            typeBuilder.append(namespace.substring(0, i));
+                            typeBuilder.append(namespace, 0, i);
                         }
                     }
                     escaped = true;
@@ -97,7 +97,7 @@ public final class NamespaceUtils
                     } else {
                         type = namespace.substring(0, i);
                     }
-                    return new Namespace(type, namespace.substring(i + 1, namespace.length()));
+                    return new Namespace(type, namespace.substring(i + 1));
                 } else if (typeBuilder != null) {
                     typeBuilder.append(c);
                 }
