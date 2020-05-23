@@ -19,23 +19,29 @@
  */
 package ${package};
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+
 import ${package}.internal.DefaultHelloWorld;
 import ${package}.HelloWorld;
-import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
-import org.xwiki.test.jmock.annotation.MockingRequirement;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Tests for the {@link HelloWorld} component.
+ * Unit tests for the {@link HelloWorld} component.
+ *
+ * @version $Id$
  */
-@MockingRequirement(DefaultHelloWorld.class)
-public class HelloWorldTest extends AbstractMockingComponentTestCase<HelloWorld>
+@ComponentTest
+class HelloWorldTest
 {
+    @InjectMockComponents
+    private DefaultHelloWorld helloWorld;
+
     @Test
-    public void testSayHello() throws Exception
+    void sayHello() throws Exception
     {
-        Assert.assertEquals("Hello", getMockedComponent().sayHello());
+        assertEquals("Hello", this.helloWorld.sayHello());
     }
 }

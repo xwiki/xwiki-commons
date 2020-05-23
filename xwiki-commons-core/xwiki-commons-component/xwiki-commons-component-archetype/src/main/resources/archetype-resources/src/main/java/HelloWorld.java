@@ -23,6 +23,8 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Interface (aka Role) of the Component
+ *
+ * @version $Id$
  */
 @Role
 public interface HelloWorld

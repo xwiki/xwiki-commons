@@ -26,6 +26,8 @@ import javax.inject.Singleton;
 
 /**
  * Implementation of a <tt>HelloWorld</tt> component.
+ *
+ * @version $Id$
  */
 @Component
 @Singleton

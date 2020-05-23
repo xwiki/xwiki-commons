@@ -30,6 +30,8 @@ import javax.inject.Singleton;
 
 /**
  * Make the HelloWorld API available to scripting.
+ *
+ * @version $Id$
  */
 @Component
 @Named("hello")
