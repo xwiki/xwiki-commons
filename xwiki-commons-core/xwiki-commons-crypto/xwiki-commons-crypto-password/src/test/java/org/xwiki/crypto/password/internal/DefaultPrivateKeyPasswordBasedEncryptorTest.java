@@ -23,9 +23,8 @@ import javax.crypto.EncryptedPrivateKeyInfo;
 
 import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.encoders.Hex;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.AsymmetricKeyFactory;
 import org.xwiki.crypto.cipher.internal.symmetric.factory.BcAesCbcPaddedCipherFactory;
 import org.xwiki.crypto.cipher.internal.symmetric.factory.BcBlowfishCbcPaddedCipherFactory;
@@ -38,7 +37,6 @@ import org.xwiki.crypto.internal.asymmetric.keyfactory.DefaultKeyFactory;
 import org.xwiki.crypto.params.cipher.asymmetric.PrivateKeyParameters;
 import org.xwiki.crypto.params.cipher.symmetric.KeyWithIVParameters;
 import org.xwiki.crypto.password.PasswordToByteConverter;
-import org.xwiki.crypto.password.PrivateKeyPasswordBasedEncryptor;
 import org.xwiki.crypto.password.internal.kdf.factory.BcPKCS5S2KeyDerivationFunctionFactory;
 import org.xwiki.crypto.password.internal.kdf.factory.BcScryptKeyDerivationFunctionFactory;
 import org.xwiki.crypto.password.internal.kdf.factory.DefaultKeyDerivationFunctionFactory;
@@ -50,19 +48,37 @@ import org.xwiki.crypto.password.internal.pbe.factory.BcPBES2DesEdeCipherFactory
 import org.xwiki.crypto.password.internal.pbe.factory.BcPBES2Rc2CipherFactory;
 import org.xwiki.crypto.password.params.PBKDF2Parameters;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@ComponentList({DefaultKeyDerivationFunctionFactory.class, BcPKCS5S2KeyDerivationFunctionFactory.class,
-    BcPBES2Rc2CipherFactory.class, BcRc2CbcPaddedCipherFactory.class,
-    BcPBES2DesCipherFactory.class, BcDesCbcPaddedCipherFactory.class,
-    BcPBES2DesEdeCipherFactory.class, BcDesEdeCbcPaddedCipherFactory.class,
-    BcPBES2BlowfishCipherFactory.class, BcBlowfishCbcPaddedCipherFactory.class,
-    BcPBES2AesCipherFactory.class, BcAesCbcPaddedCipherFactory.class, BcScryptKeyDerivationFunctionFactory.class,
-    BcPBES2CipherFactory.class, BcRSAKeyFactory.class, DefaultKeyFactory.class, DefaultSecureRandomProvider.class})
-public class DefaultPrivateKeyPasswordBasedEncryptorTest
+@ComponentTest
+// @formatter:off
+@ComponentList({
+    DefaultKeyDerivationFunctionFactory.class,
+    BcPKCS5S2KeyDerivationFunctionFactory.class,
+    BcPBES2Rc2CipherFactory.class,
+    BcRc2CbcPaddedCipherFactory.class,
+    BcPBES2DesCipherFactory.class,
+    BcDesCbcPaddedCipherFactory.class,
+    BcPBES2DesEdeCipherFactory.class,
+    BcDesEdeCbcPaddedCipherFactory.class,
+    BcPBES2BlowfishCipherFactory.class,
+    BcBlowfishCbcPaddedCipherFactory.class,
+    BcPBES2AesCipherFactory.class,
+    BcAesCbcPaddedCipherFactory.class,
+    BcScryptKeyDerivationFunctionFactory.class,
+    BcPBES2CipherFactory.class,
+    BcRSAKeyFactory.class,
+    DefaultKeyFactory.class,
+    DefaultSecureRandomProvider.class
+})
+// @formatter:on
+class DefaultPrivateKeyPasswordBasedEncryptorTest
 {
     private static final boolean IS_JRE_8 = System.getProperty("java.specification.version").equals("1.8");
     private static final byte[] PASSWORD = PasswordToByteConverter.convert("changeit");
@@ -99,20 +115,19 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
             + "zYoZ7nCUo4TmVXxgCjiEWglg3b/R3xjQr1dAABhTeI8bXMv5r/tMUsnS79uKqwGD"
             + "2Gc1syc3+055K4qcfZHH0XWu");
 
-    @Rule
-    public final MockitoComponentMockingRule<PrivateKeyPasswordBasedEncryptor> mocker =
-        new MockitoComponentMockingRule<>(DefaultPrivateKeyPasswordBasedEncryptor.class);
+    @InjectMockComponents
+    private DefaultPrivateKeyPasswordBasedEncryptor encryptor;
 
-    PrivateKeyPasswordBasedEncryptor encryptor;
+    @InjectComponentManager
+    private MockitoComponentManager componentManager;
 
     PrivateKeyParameters keyParameters;
 
-    @Before
+    @BeforeEach
     public void configure() throws Exception
     {
-        this.encryptor = this.mocker.getComponentUnderTest();
         this.keyParameters =
-            ((AsymmetricKeyFactory) this.mocker.getInstance(AsymmetricKeyFactory.class)).fromPKCS8(RSAKEY);
+            ((AsymmetricKeyFactory) this.componentManager.getInstance(AsymmetricKeyFactory.class)).fromPKCS8(RSAKEY);
     }
 
     private void runTestPBES2Conformance(String hint, String iv, int keySize, String salt, byte[] data) throws Exception
@@ -134,7 +149,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
     }
 
     @Test
-    public void testPBES2ConformanceTestDes() throws Exception
+    void pbes2ConformanceTestDes() throws Exception
     {
         byte[] data = Base64.decode(
             // Link to decoded ASN.1: http://goo.gl/QntPCq
@@ -170,7 +185,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
     }
 
     @Test
-    public void testPBES2ConformanceTestDesEde3() throws Exception
+    void pbes2ConformanceTestDesEde3() throws Exception
     {
         byte[] data = Base64.decode(
             // Link to decoded ASN.1: http://goo.gl/K0OByU
@@ -207,7 +222,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
     }
 
     @Test
-    public void testPBES2ConformanceTestRC2() throws Exception
+    void pbes2ConformanceTestRC2() throws Exception
     {
         byte[] data = Base64.decode(
             // Link to decoded ASN.1: http://goo.gl/ILq0Ml
@@ -244,7 +259,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
     }
 
     @Test
-    public void testPBES2ConformanceTestBlowfish() throws Exception
+    void pbes2ConformanceTestBlowfish() throws Exception
     {
         byte[] data = Base64.decode(
             // Link to decoded ASN.1: http://goo.gl/HusnVz
@@ -281,7 +296,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
     }
 
     @Test
-    public void testPBES2ConformanceTestAES128() throws Exception
+    void pbes2ConformanceTestAES128() throws Exception
     {
         byte[] data = Base64.decode(
             // Link to decoded ASN.1: http://goo.gl/ab79VG
@@ -318,7 +333,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
     }
 
     @Test
-    public void testEncryptDecryptPBES2AES() throws Exception
+    void encryptDecryptPBES2AES() throws Exception
     {
         assertThat(this.encryptor.decrypt(PASSWORD,
             this.encryptor.encrypt("PBES2-AES-CBC-Pad", PASSWORD, new PBKDF2Parameters(), this.keyParameters)
@@ -326,7 +341,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
     }
 
     @Test
-    public void testEncryptDecryptDefault() throws Exception
+    void encryptDecryptDefault() throws Exception
     {
         assertThat(this.encryptor.decrypt(PASSWORD, this.encryptor.encrypt(PASSWORD, this.keyParameters)).getEncoded(),
             equalTo(RSAKEY));

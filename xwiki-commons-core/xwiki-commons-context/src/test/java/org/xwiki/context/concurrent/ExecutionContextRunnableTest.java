@@ -19,7 +19,7 @@
  */
 package org.xwiki.context.concurrent;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -29,6 +29,7 @@ import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextManager;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
 /**
  * Validate {@link ExecutionContextRunnable}.
@@ -57,8 +58,8 @@ public class ExecutionContextRunnableTest
 
         thread.join(10000);
 
-        Mockito.verify(executionContextManagerMock).initialize(any(ExecutionContext.class));
-        Mockito.verify(executionMock).removeContext();
-        Mockito.verify(runnableMock).run();
+        verify(executionContextManagerMock).initialize(any(ExecutionContext.class));
+        verify(executionMock).removeContext();
+        verify(runnableMock).run();
     }
 }
