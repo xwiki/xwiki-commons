@@ -23,18 +23,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.properties.converter.Converter;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.mockito.MockitoComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Validate {@link ColorConverter} component.
  * 
  * @version $Id$
  */
-public class DeprecatedListConverterTest extends AbstractComponentTestCase
+@ComponentTest
+@AllComponents
+class DeprecatedListConverterTest
 {
     private Converter listConverter;
 
@@ -42,32 +47,29 @@ public class DeprecatedListConverterTest extends AbstractComponentTestCase
 
     public List<List<Integer>> field2;
 
-    @Before
-    @Override
-    public void setUp() throws Exception
+    @BeforeEach
+    void setUp(MockitoComponentManager componentManager) throws Exception
     {
-        super.setUp();
-
-        this.listConverter = getComponentManager().getInstance(Converter.class, List.class.getName());
+        this.listConverter = componentManager.getInstance(Converter.class, List.class.getName());
     }
 
     @Test
-    public void testConvert() throws SecurityException, NoSuchFieldException
+    void convert() throws SecurityException, NoSuchFieldException
     {
-        Assert.assertEquals(new ArrayList<>(Arrays.asList("1", "2", "3")),
+        assertEquals(new ArrayList<>(Arrays.asList("1", "2", "3")),
             this.listConverter.convert(List.class, "1, 2, 3"));
 
-        Assert.assertEquals(new ArrayList<>(Arrays.asList("1", "\n", "2", "\n", "3")),
+        assertEquals(new ArrayList<>(Arrays.asList("1", "\n", "2", "\n", "3")),
             this.listConverter.convert(List.class, "1,\n 2,\n 3"));
 
-        Assert.assertEquals(
+        assertEquals(
             new ArrayList<>(Arrays.asList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3))),
             this.listConverter.convert(DeprecatedListConverterTest.class.getField("field1").getGenericType(), "1, 2, 3"));
 
-        Assert.assertEquals(new ArrayList(Arrays.asList(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6))),
+        assertEquals(new ArrayList(Arrays.asList(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6))),
             this.listConverter.convert(DeprecatedListConverterTest.class.getField("field2").getGenericType(),
                 "'\\'1\\', 2, 3', \"4, 5, 6\""));
 
-        Assert.assertEquals(new ArrayList<>(Arrays.asList("1:2")), this.listConverter.convert(List.class, "1:2"));
+        assertEquals(new ArrayList<>(Arrays.asList("1:2")), this.listConverter.convert(List.class, "1:2"));
     }
 }

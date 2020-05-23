@@ -21,39 +21,41 @@ package org.xwiki.properties.internal.converter;
 
 import java.util.Locale;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.properties.converter.Converter;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.mockito.MockitoComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Validate {@link LocaleConverter} component.
  * 
  * @version $Id$
  */
-public class DeprecatedLocaleConverterTest extends AbstractComponentTestCase
+@ComponentTest
+@AllComponents
+class DeprecatedLocaleConverterTest
 {
     private Converter localeConverter;
 
-    @Before
-    @Override
-    public void setUp() throws Exception
+    @BeforeEach
+    void setUp(MockitoComponentManager componentManager) throws Exception
     {
-        super.setUp();
-
-        this.localeConverter = getComponentManager().getInstance(Converter.class, Locale.class.getName());
+        this.localeConverter = componentManager.getInstance(Converter.class, Locale.class.getName());
     }
 
     @Test
-    public void testConvertToLocale()
+    void convertToLocale()
     {
-        Assert.assertEquals(Locale.US, this.localeConverter.convert(Locale.class, Locale.US.toString()));
+        assertEquals(Locale.US, this.localeConverter.convert(Locale.class, Locale.US.toString()));
     }
 
     @Test
-    public void testConvertToString()
+    void convertToString()
     {
-        Assert.assertEquals(Locale.US.toString(), this.localeConverter.convert(String.class, Locale.US));
+        assertEquals(Locale.US.toString(), this.localeConverter.convert(String.class, Locale.US));
     }
 }

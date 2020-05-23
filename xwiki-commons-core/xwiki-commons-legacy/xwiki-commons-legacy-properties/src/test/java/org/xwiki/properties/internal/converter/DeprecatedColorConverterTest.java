@@ -21,52 +21,52 @@ package org.xwiki.properties.internal.converter;
 
 import java.awt.Color;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.properties.converter.Converter;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.mockito.MockitoComponentManager;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Validate {@link ColorConverter} component.
  * 
  * @version $Id$
  */
-public class DeprecatedColorConverterTest extends AbstractComponentTestCase
+@ComponentTest
+@AllComponents
+class DeprecatedColorConverterTest
 {
     private Converter colorConverter;
 
-    @Before
-    @Override
-    public void setUp() throws Exception
+    @BeforeEach
+    void setUp(MockitoComponentManager componentManager) throws Exception
     {
-        super.setUp();
-
-        this.colorConverter = getComponentManager().getInstance(Converter.class, Color.class.getName());
+        this.colorConverter = componentManager.getInstance(Converter.class, Color.class.getName());
     }
 
     @Test
-    public void testConvertRGB()
+    void convertRGB()
     {
-        Assert.assertEquals(Color.WHITE, this.colorConverter.convert(Color.class, "255 , 255 , 255"));
+        assertEquals(Color.WHITE, this.colorConverter.convert(Color.class, "255 , 255 , 255"));
     }
 
     @Test
-    public void testConvertHTML()
+    void convertHTML()
     {
-        Assert.assertEquals(Color.WHITE, this.colorConverter.convert(Color.class, "#ffffff"));
-        Assert.assertEquals(Color.WHITE, this.colorConverter.convert(Color.class, "#FFFFFF"));
+        assertEquals(Color.WHITE, this.colorConverter.convert(Color.class, "#ffffff"));
+        assertEquals(Color.WHITE, this.colorConverter.convert(Color.class, "#FFFFFF"));
     }
 
     @Test
-    public void testConvertInvalid()
+    void convertInvalid()
     {
-        try {
-            Assert.assertEquals(Color.WHITE, this.colorConverter.convert(Color.class, "wrongformat"));
-            Assert.fail("Should have thrown a ConversionException exception");
-        } catch (ConversionException expected) {
-            // expected
-        }
+        Throwable exception = assertThrows(ConversionException.class,
+            () -> this.colorConverter.convert(Color.class, "wrongformat"));
+        assertEquals("Color value should be in the form of '#xxxxxx' or 'r,g,b'", exception.getMessage());
     }
 }
