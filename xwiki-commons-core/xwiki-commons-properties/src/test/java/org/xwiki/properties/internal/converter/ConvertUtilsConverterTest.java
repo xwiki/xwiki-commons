@@ -21,13 +21,11 @@ package org.xwiki.properties.internal.converter;
 
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.properties.internal.DefaultConverterManager;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,9 +37,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  *
  * @version $Id$
  */
-@AllComponents
 @ComponentTest
-public class ConvertUtilsConverterTest
+@AllComponents
+class ConvertUtilsConverterTest
 {
     @InjectMockComponents
     private DefaultConverterManager converter;
@@ -49,13 +47,13 @@ public class ConvertUtilsConverterTest
     public Integer[] field;
 
     @Test
-    public void convert() throws SecurityException, ComponentLookupException
+    void convert() throws SecurityException
     {
         assertEquals(Integer.valueOf(42), this.converter.convert(Integer.class, "42"));
     }
 
     @Test
-    public void convertArrays() throws SecurityException, NoSuchFieldException, ComponentLookupException
+    void convertArrays() throws SecurityException, NoSuchFieldException
     {
         assertArrayEquals(new int[] {1, 2, 3}, this.converter.<int[]>convert(int[].class, "1, 2, 3"));
 
@@ -66,7 +64,7 @@ public class ConvertUtilsConverterTest
     }
 
     @Test
-    public void convertWhenNoConverterAvailable() throws ComponentLookupException
+    void convertWhenNoConverterAvailable()
     {
         assertThrows(ConversionException.class, () -> this.converter.convert(ConvertUtilsConverter.class, ""),
             "Failed to find a Converter to convert from [java.lang.String] to " + "["
@@ -74,7 +72,7 @@ public class ConvertUtilsConverterTest
     }
 
     @Test
-    public void convertNull()
+    void convertNull()
     {
         assertNull(this.converter.convert(String.class, null));
     }

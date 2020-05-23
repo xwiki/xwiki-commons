@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  */
 @ComponentTest
 @AllComponents
-public class ListConverterTest
+class ListConverterTest
 {
     @InjectComponentManager
     MockitoComponentManager componentManager;

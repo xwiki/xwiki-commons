@@ -21,26 +21,27 @@ package org.xwiki.properties.internal;
 
 import java.awt.Color;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.properties.ConverterManager;
+import org.junit.jupiter.api.Test;
 import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.test.annotation.AllComponents;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Validate {@link DefaultConverterManager}.
  *
  * @version $Id$
  */
+@ComponentTest
 @AllComponents
-public class DefaultConverterManagerTest
+class DefaultConverterManagerTest
 {
-    @Rule
-    public MockitoComponentMockingRule<ConverterManager> mocker = new MockitoComponentMockingRule<>(
-        DefaultConverterManager.class);
+    @InjectMockComponents
+    private DefaultConverterManager converterManager;
 
     public enum TestEnum
     {
@@ -48,33 +49,35 @@ public class DefaultConverterManagerTest
     }
 
     @Test
-    public void testConvert() throws ComponentLookupException
+    void convert()
     {
-        Assert.assertEquals(Integer.valueOf(42), this.mocker.getComponentUnderTest().convert(Integer.class, "42"));
+        assertEquals(Integer.valueOf(42), this.converterManager.convert(Integer.class, "42"));
     }
 
     @Test
-    public void testConvertEnum() throws ComponentLookupException
+    void convertEnum()
     {
-        Assert.assertEquals(TestEnum.ENUMVALUE, this.mocker.getComponentUnderTest()
-            .convert(TestEnum.class, "ENUMVALUE"));
+        assertEquals(TestEnum.ENUMVALUE, this.converterManager.convert(TestEnum.class, "ENUMVALUE"));
     }
 
     @Test
-    public void testConvertColor() throws ComponentLookupException
+    void convertColor()
     {
-        Assert.assertEquals(Color.WHITE, this.mocker.getComponentUnderTest().convert(Color.class, "#ffffff"));
-    }
-
-    @Test(expected = ConversionException.class)
-    public void testConvertUnsupportedType() throws ComponentLookupException
-    {
-        this.mocker.getComponentUnderTest().convert(DefaultConverterManagerTest.class, "#ffffff");
+        assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "#ffffff"));
     }
 
     @Test
-    public void testConvertSame() throws ComponentLookupException
+    void convertUnsupportedType()
     {
-        Assert.assertSame(Color.WHITE, this.mocker.getComponentUnderTest().convert(Color.class, Color.WHITE));
+        Throwable exception = assertThrows(ConversionException.class,
+            () -> this.converterManager.convert(DefaultConverterManagerTest.class, "#ffffff"));
+        assertEquals("Failed to find a Converter to convert from [java.lang.String] to "
+            + "[org.xwiki.properties.internal.DefaultConverterManagerTest]", exception.getMessage());
+    }
+
+    @Test
+    void convertSame()
+    {
+        assertSame(Color.WHITE, this.converterManager.convert(Color.class, Color.WHITE));
     }
 }

@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 @ComponentTest
 @AllComponents
-public class SetConverterTest
+class SetConverterTest
 {
     @InjectComponentManager
     MockitoComponentManager componentManager;

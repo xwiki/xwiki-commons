@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  */
 @ComponentTest
 @AllComponents
-public class HashSetConverterTest
+class HashSetConverterTest
 {
     @InjectComponentManager
     MockitoComponentManager componentManager;

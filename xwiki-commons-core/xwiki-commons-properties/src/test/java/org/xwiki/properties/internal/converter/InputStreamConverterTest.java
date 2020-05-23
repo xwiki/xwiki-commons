@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @ComponentTest
 @AllComponents
-public class InputStreamConverterTest
+class InputStreamConverterTest
 {
     @InjectComponentManager
     MockitoComponentManager componentManager;

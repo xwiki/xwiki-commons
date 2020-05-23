@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @ComponentTest
 @AllComponents
-public class ColorConverterTest
+class ColorConverterTest
 {
     @InjectComponentManager
     MockitoComponentManager componentManager;

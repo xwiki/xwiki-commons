@@ -39,20 +39,20 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  */
 @ComponentTest
 @AllComponents
-public class ArrayListConverterTest
+class ArrayListConverterTest
 {
     @InjectMockComponents
     private DefaultConverterManager converterManager;
 
     @Test
-    public void testConvertToString()
+    void testConvertToString()
     {
         assertEquals("1, 2, 3",
             this.converterManager.convert(String.class, new ArrayList<>(Arrays.asList("1", "2", "3"))));
     }
 
     @Test
-    public void testConvertFromArrayList()
+    void testConvertFromArrayList()
     {
         ArrayList<String> expect = new ArrayList<>(Arrays.asList("1", "2", "3"));
 
@@ -60,7 +60,7 @@ public class ArrayListConverterTest
     }
 
     @Test
-    public void testConvertFromBoolean()
+    void testConvertFromBoolean()
     {
         assertEquals(Collections.singletonList("false"),
             this.converterManager.convert(ArrayList.class, false));

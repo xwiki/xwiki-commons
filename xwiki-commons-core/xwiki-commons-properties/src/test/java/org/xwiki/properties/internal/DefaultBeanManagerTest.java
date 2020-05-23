@@ -61,7 +61,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     GenericTestConverter.class
 })
 // @formatter:on
-public class DefaultBeanManagerTest
+class DefaultBeanManagerTest
 {
     public static class RawPropertiesTest extends HashMap<String, Object> implements RawProperties
     {

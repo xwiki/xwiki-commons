@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class DefaultBeanDescriptorTest
+class DefaultBeanDescriptorTest
 {
     @RegisterExtension
     LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
@@ -53,7 +53,7 @@ public class DefaultBeanDescriptorTest
     private DefaultBeanDescriptor beanDescriptor;
 
     @BeforeEach
-    void setUp() throws Exception
+    void setUp()
     {
         this.beanDescriptor = new DefaultBeanDescriptor(TestBean.class);
     }

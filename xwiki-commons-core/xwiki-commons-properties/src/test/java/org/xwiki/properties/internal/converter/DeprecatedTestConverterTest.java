@@ -19,26 +19,25 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.properties.ConverterManager;
+import org.junit.jupiter.api.Test;
 import org.xwiki.properties.internal.DefaultConverterManager;
 import org.xwiki.properties.test.TestClass;
 import org.xwiki.test.annotation.AllComponents;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@ComponentTest
 @AllComponents
-public class DeprecatedTestConverterTest
+class DeprecatedTestConverterTest
 {
-    @Rule
-    public MockitoComponentMockingRule<ConverterManager> mocker = new MockitoComponentMockingRule<>(
-        DefaultConverterManager.class);
+    @InjectMockComponents
+    private DefaultConverterManager converterManager;
 
     @Test
-    public void testConvert() throws SecurityException, ComponentLookupException
+    void convert() throws SecurityException
     {
-        Assert.assertEquals(new TestClass("value"), this.mocker.getComponentUnderTest().convert(TestClass.class, "value"));
+        assertEquals(new TestClass("value"), this.converterManager.convert(TestClass.class, "value"));
     }
 }

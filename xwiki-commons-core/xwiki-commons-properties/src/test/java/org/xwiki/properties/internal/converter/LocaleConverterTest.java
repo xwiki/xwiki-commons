@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 @ComponentTest
 @AllComponents
-public class LocaleConverterTest
+class LocaleConverterTest
 {
     @InjectComponentManager
     MockitoComponentManager componentManager;

@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  */
 @ComponentTest
 @AllComponents
-public class LinkedHashSetConverterTest
+class LinkedHashSetConverterTest
 {
     @InjectComponentManager
     MockitoComponentManager componentManager;

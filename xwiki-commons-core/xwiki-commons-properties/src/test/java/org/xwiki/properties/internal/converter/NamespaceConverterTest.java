@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 @ComponentTest
 @AllComponents
-public class NamespaceConverterTest
+class NamespaceConverterTest
 {
     @InjectComponentManager
     MockitoComponentManager componentManager;

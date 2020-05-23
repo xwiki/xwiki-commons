@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @ComponentTest
 @AllComponents
-public class EnumConverterTest
+class EnumConverterTest
 {
     @InjectComponentManager
     MockitoComponentManager componentManager;
