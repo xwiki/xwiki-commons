@@ -19,8 +19,9 @@
  */
 package org.xwiki.component.logging;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit tests for {@link org.xwiki.component.logging.AbstractLogEnabled}.
@@ -30,12 +31,12 @@ import org.junit.Test;
  * @deprecated starting with 3.1M2 use {@link javax.inject.Inject} annotation to get injected a SLF4J Logger instead
  */
 @Deprecated
-public class LoggerTest
+class LoggerTest
 {
     @Test
-    public void testDefaultVoidLogger()
+    void defaultVoidLogger()
     {
         AbstractLogEnabled component = new AbstractLogEnabled() {};
-        Assert.assertEquals(VoidLogger.class.getName(), component.getLogger().getClass().getName());
+        assertEquals(VoidLogger.class.getName(), component.getLogger().getClass().getName());
     }
 }

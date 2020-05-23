@@ -19,12 +19,14 @@
  */
 package org.xwiki.component;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.manager.ComponentManager;
 
-import org.junit.Assert;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test to prove that we keep backward compatibility for the {@link EmbeddableComponentManager} class.
@@ -32,7 +34,7 @@ import org.junit.Assert;
  * @version $Id$
  * @since 4.1M1
  */
-public class EmbeddableComponentManagerTest
+class EmbeddableComponentManagerTest
 {
     public static interface Role
     {
@@ -43,7 +45,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void lookupComponent() throws Exception
+    void lookupComponent() throws Exception
     {
         ComponentManager cm = new EmbeddableComponentManager();
 
@@ -61,15 +63,15 @@ public class EmbeddableComponentManagerTest
         cm.registerComponent(cd2);
 
         // Here are the tests, calling deprecated APIs
-        Assert.assertNotNull(cm.lookup(Role.class));
-        Assert.assertNotNull(cm.lookup(Role.class, "hint"));
-        Assert.assertEquals(2, cm.lookupList(Role.class).size());
-        Assert.assertEquals(2, cm.lookupMap(Role.class).size());
-        Assert.assertTrue(cm.hasComponent(Role.class));
-        Assert.assertTrue(cm.hasComponent(Role.class, "hint"));
-        Assert.assertEquals(cd2, cm.getComponentDescriptor(Role.class, "hint"));
+        assertNotNull(cm.lookup(Role.class));
+        assertNotNull(cm.lookup(Role.class, "hint"));
+        assertEquals(2, cm.lookupList(Role.class).size());
+        assertEquals(2, cm.lookupMap(Role.class).size());
+        assertTrue(cm.hasComponent(Role.class));
+        assertTrue(cm.hasComponent(Role.class, "hint"));
+        assertEquals(cd2, cm.getComponentDescriptor(Role.class, "hint"));
 
         cm.unregisterComponent(Role.class, "hint");
-        Assert.assertEquals(1, cm.lookupList(Role.class).size());
+        assertEquals(1, cm.lookupList(Role.class).size());
     }
 }
