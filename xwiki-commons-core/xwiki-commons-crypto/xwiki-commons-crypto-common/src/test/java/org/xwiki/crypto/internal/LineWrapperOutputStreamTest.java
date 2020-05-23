@@ -21,18 +21,18 @@ package org.xwiki.crypto.internal;
 
 import java.io.ByteArrayOutputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-public class LineWrapperOutputStreamTest
+class LineWrapperOutputStreamTest
 {
     /** New line bytes used to wrap lines */
     private static final String NEWLINE = System.getProperty("line.separator", "\n");
 
     @Test
-    public void testAvoidWrapping() throws Exception
+    void avoidWrapping() throws Exception
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         LineWrapperOutputStream lwos = new LineWrapperOutputStream(baos, 10);
@@ -43,7 +43,7 @@ public class LineWrapperOutputStreamTest
     }
 
     @Test
-    public void testExactWrapping() throws Exception
+    void exactWrapping() throws Exception
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         LineWrapperOutputStream lwos = new LineWrapperOutputStream(baos, 10);
@@ -54,7 +54,7 @@ public class LineWrapperOutputStreamTest
     }
 
     @Test
-    public void testMultilineWrapping() throws Exception
+    void multilineWrapping() throws Exception
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         LineWrapperOutputStream lwos = new LineWrapperOutputStream(baos, 10);
@@ -66,7 +66,7 @@ public class LineWrapperOutputStreamTest
     }
 
     @Test
-    public void testOnByteWrapping() throws Exception
+    void onByteWrapping() throws Exception
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         LineWrapperOutputStream lwos = new LineWrapperOutputStream(baos, 10);

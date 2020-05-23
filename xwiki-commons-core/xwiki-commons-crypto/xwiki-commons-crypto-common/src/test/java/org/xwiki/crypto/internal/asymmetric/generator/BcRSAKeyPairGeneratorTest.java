@@ -26,49 +26,54 @@ import javax.inject.Provider;
 
 import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.util.DefaultParameterizedType;
-import org.xwiki.crypto.KeyPairGenerator;
 import org.xwiki.crypto.internal.FixedSecureRandomProvider;
 import org.xwiki.crypto.internal.asymmetric.BcAsymmetricKeyParameters;
 import org.xwiki.crypto.internal.asymmetric.keyfactory.BcRSAKeyFactory;
 import org.xwiki.crypto.params.cipher.asymmetric.AsymmetricKeyPair;
 import org.xwiki.crypto.params.generator.asymmetric.RSAKeyGenerationParameters;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@ComponentList({BcRSAKeyFactory.class, FixedSecureRandomProvider.class})
-public class BcRSAKeyPairGeneratorTest
+@ComponentTest
+// @formatter:off
+@ComponentList({
+    BcRSAKeyFactory.class,
+    FixedSecureRandomProvider.class
+})
+// @formatter:on
+class BcRSAKeyPairGeneratorTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<KeyPairGenerator> mocker =
-        new MockitoComponentMockingRule<>(BcRSAKeyPairGenerator.class);
+    @InjectMockComponents
+    private BcRSAKeyPairGenerator generator;
 
-    private KeyPairGenerator generator;
+    @InjectComponentManager
+    private MockitoComponentManager componentManager;
 
-    @Before
-    public void configure() throws Exception
+    @BeforeEach
+    void configure() throws Exception
     {
-        generator = mocker.getComponentUnderTest();
-
         // Reinitialize the random source
         Provider<SecureRandom> rndprov =
-            mocker.getInstance(new DefaultParameterizedType(null, Provider.class, SecureRandom.class));
+            this.componentManager.getInstance(new DefaultParameterizedType(null, Provider.class, SecureRandom.class));
         if (rndprov instanceof FixedSecureRandomProvider) {
             ((FixedSecureRandomProvider) rndprov).initialize();
         }
     }
 
     @Test
-    public void testGenerateWithoutArgument() throws Exception
+    void generateWithoutArgument()
     {
         AsymmetricKeyPair kp1 = generator.generate();
         AsymmetricKeyPair kp2 = generator.generate();
@@ -85,18 +90,30 @@ public class BcRSAKeyPairGeneratorTest
             RSAPrivateCrtKeyParameters.class));
         assertThat(((BcAsymmetricKeyParameters) kp1.getPublic()).getParameters(), instanceOf(RSAKeyParameters.class));
         assertThat(((BcAsymmetricKeyParameters) kp2.getPublic()).getParameters(), instanceOf(RSAKeyParameters.class));
-        assertThat(((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp1.getPrivate()).getParameters()).getModulus().bitLength(), equalTo(2048));
-        assertThat(((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp1.getPublic()).getParameters()).getModulus().bitLength(), equalTo(2048));
-        assertThat(((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp2.getPrivate()).getParameters()).getModulus().bitLength(), equalTo(2048));
-        assertThat(((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp2.getPublic()).getParameters()).getModulus().bitLength(), equalTo(2048));
-        assertThat(((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp1.getPrivate()).getParameters()).getPublicExponent(), equalTo(BigInteger.valueOf(0x10001)));
-        assertThat(((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp1.getPublic()).getParameters()).getExponent(), equalTo(BigInteger.valueOf(0x10001)));
-        assertThat(((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp2.getPrivate()).getParameters()).getPublicExponent(), equalTo(BigInteger.valueOf(0x10001)));
-        assertThat(((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp2.getPublic()).getParameters()).getExponent(), equalTo(BigInteger.valueOf(0x10001)));
+        assertThat(
+            ((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp1.getPrivate()).getParameters()).getModulus()
+                .bitLength(), equalTo(2048));
+        assertThat(
+            ((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp1.getPublic()).getParameters()).getModulus().bitLength(),
+            equalTo(2048));
+        assertThat(
+            ((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp2.getPrivate()).getParameters()).getModulus()
+                .bitLength(), equalTo(2048));
+        assertThat(
+            ((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp2.getPublic()).getParameters()).getModulus().bitLength(),
+            equalTo(2048));
+        assertThat(((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp1.getPrivate()).getParameters())
+            .getPublicExponent(), equalTo(BigInteger.valueOf(0x10001)));
+        assertThat(((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp1.getPublic()).getParameters()).getExponent(),
+            equalTo(BigInteger.valueOf(0x10001)));
+        assertThat(((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp2.getPrivate()).getParameters())
+            .getPublicExponent(), equalTo(BigInteger.valueOf(0x10001)));
+        assertThat(((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp2.getPublic()).getParameters()).getExponent(),
+            equalTo(BigInteger.valueOf(0x10001)));
     }
 
     @Test
-    public void testGenerateWithStrengthParameter() throws Exception
+    void generateWithStrengthParameter()
     {
         AsymmetricKeyPair kp = generator.generate(new RSAKeyGenerationParameters(64));
 
@@ -106,10 +123,16 @@ public class BcRSAKeyPairGeneratorTest
         assertThat(((BcAsymmetricKeyParameters) kp.getPrivate()).getParameters(), instanceOf(
             RSAPrivateCrtKeyParameters.class));
         assertThat(((BcAsymmetricKeyParameters) kp.getPublic()).getParameters(), instanceOf(RSAKeyParameters.class));
-        assertThat(((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp.getPrivate()).getParameters()).getModulus().bitLength(), equalTo(512));
-        assertThat(((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp.getPublic()).getParameters()).getModulus().bitLength(), equalTo(512));
-        assertThat(((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp.getPrivate()).getParameters()).getPublicExponent(), equalTo(BigInteger.valueOf(0x10001)));
-        assertThat(((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp.getPublic()).getParameters()).getExponent(), equalTo(BigInteger.valueOf(0x10001)));
+        assertThat(
+            ((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp.getPrivate()).getParameters()).getModulus()
+                .bitLength(), equalTo(512));
+        assertThat(
+            ((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp.getPublic()).getParameters()).getModulus().bitLength(),
+            equalTo(512));
+        assertThat(((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp.getPrivate()).getParameters())
+            .getPublicExponent(), equalTo(BigInteger.valueOf(0x10001)));
+        assertThat(((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp.getPublic()).getParameters()).getExponent(),
+            equalTo(BigInteger.valueOf(0x10001)));
 
         kp = generator.generate(new RSAKeyGenerationParameters(128));
 
@@ -119,14 +142,20 @@ public class BcRSAKeyPairGeneratorTest
         assertThat(((BcAsymmetricKeyParameters) kp.getPrivate()).getParameters(), instanceOf(
             RSAPrivateCrtKeyParameters.class));
         assertThat(((BcAsymmetricKeyParameters) kp.getPublic()).getParameters(), instanceOf(RSAKeyParameters.class));
-        assertThat(((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp.getPrivate()).getParameters()).getModulus().bitLength(), equalTo(1024));
-        assertThat(((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp.getPublic()).getParameters()).getModulus().bitLength(), equalTo(1024));
-        assertThat(((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp.getPrivate()).getParameters()).getPublicExponent(), equalTo(BigInteger.valueOf(0x10001)));
-        assertThat(((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp.getPublic()).getParameters()).getExponent(), equalTo(BigInteger.valueOf(0x10001)));
+        assertThat(
+            ((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp.getPrivate()).getParameters()).getModulus()
+                .bitLength(), equalTo(1024));
+        assertThat(
+            ((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp.getPublic()).getParameters()).getModulus().bitLength(),
+            equalTo(1024));
+        assertThat(((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp.getPrivate()).getParameters())
+            .getPublicExponent(), equalTo(BigInteger.valueOf(0x10001)));
+        assertThat(((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp.getPublic()).getParameters()).getExponent(),
+            equalTo(BigInteger.valueOf(0x10001)));
     }
 
     @Test
-    public void testGenerateWithPublicExponentParameter() throws Exception
+    void generateWithPublicExponentParameter()
     {
         AsymmetricKeyPair kp = generator.generate(new RSAKeyGenerationParameters(64, BigInteger.valueOf(0x11)));
 
@@ -136,20 +165,22 @@ public class BcRSAKeyPairGeneratorTest
         assertThat(((BcAsymmetricKeyParameters) kp.getPrivate()).getParameters(), instanceOf(
             RSAPrivateCrtKeyParameters.class));
         assertThat(((BcAsymmetricKeyParameters) kp.getPublic()).getParameters(), instanceOf(RSAKeyParameters.class));
-        assertThat(((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp.getPrivate()).getParameters()).getPublicExponent(), equalTo(BigInteger.valueOf(0x11)));
-        assertThat(((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp.getPublic()).getParameters()).getExponent(), equalTo(BigInteger.valueOf(0x11)));
-
+        assertThat(((RSAPrivateCrtKeyParameters) ((BcAsymmetricKeyParameters) kp.getPrivate()).getParameters())
+            .getPublicExponent(), equalTo(BigInteger.valueOf(0x11)));
+        assertThat(((RSAKeyParameters) ((BcAsymmetricKeyParameters) kp.getPublic()).getParameters()).getExponent(),
+            equalTo(BigInteger.valueOf(0x11)));
     }
 
     @Test
-    public void testGenerateWithCertaintyParameter() throws Exception
+    void generateWithCertaintyParameter()
     {
         AsymmetricKeyPair kp = generator.generate(new RSAKeyGenerationParameters(64, 1));
 
         assertThat(kp, not(nullValue()));
         assertThat(kp.getPrivate(), instanceOf(BcAsymmetricKeyParameters.class));
         assertThat(kp.getPublic(), instanceOf(BcAsymmetricKeyParameters.class));
-        assertThat(((BcAsymmetricKeyParameters) kp.getPrivate()).getParameters(), instanceOf(RSAPrivateCrtKeyParameters.class));
+        assertThat(((BcAsymmetricKeyParameters) kp.getPrivate()).getParameters(),
+            instanceOf(RSAPrivateCrtKeyParameters.class));
         assertThat(((BcAsymmetricKeyParameters) kp.getPublic()).getParameters(), instanceOf(RSAKeyParameters.class));
     }
 }

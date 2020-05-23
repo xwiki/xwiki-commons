@@ -19,11 +19,11 @@
  */
 package org.xwiki.crypto.internal.encoder;
 
-import org.junit.Before;
-import org.junit.Rule;
 import org.xwiki.crypto.BinaryStringEncoder;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
+@ComponentTest
 public class HexBinaryStringEncoderTest extends AbstractBinaryStringEncoderTest
 {
     {
@@ -42,13 +42,12 @@ public class HexBinaryStringEncoderTest extends AbstractBinaryStringEncoderTest
                 + "7363686cc3bc7373656c756e6720766f6e20496e666f726d6174696f6e656e2e" + '\n';
     }
 
-    @Rule
-    public final MockitoComponentMockingRule<BinaryStringEncoder> mocker =
-        new MockitoComponentMockingRule<>(HexBinaryStringEncoder.class);
+    @InjectMockComponents
+    private HexBinaryStringEncoder encoder;
 
-    @Before
-    public void configure() throws Exception
+    @Override
+    protected BinaryStringEncoder getEncoder()
     {
-        encoder = mocker.getComponentUnderTest();
+        return this.encoder;
     }
 }

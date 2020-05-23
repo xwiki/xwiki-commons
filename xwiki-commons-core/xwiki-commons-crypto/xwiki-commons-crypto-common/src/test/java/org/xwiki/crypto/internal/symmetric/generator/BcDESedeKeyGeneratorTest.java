@@ -19,37 +19,31 @@
  */
 package org.xwiki.crypto.internal.symmetric.generator;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.xwiki.crypto.KeyGenerator;
+import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.internal.DefaultSecureRandomProvider;
 import org.xwiki.crypto.params.generator.KeyGenerationParameters;
 import org.xwiki.crypto.params.generator.symmetric.GenericKeyGenerationParameters;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@ComponentList({DefaultSecureRandomProvider.class})
-public class BcDESedeKeyGeneratorTest
+@ComponentTest
+// @formatter:off
+@ComponentList({
+    DefaultSecureRandomProvider.class
+})
+// @formatter:on
+class BcDESedeKeyGeneratorTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<KeyGenerator> mocker =
-        new MockitoComponentMockingRule<>(BcDESedeKeyGenerator.class);
-
-    private KeyGenerator generator;
-
-    @Before
-    public void configure() throws Exception
-    {
-        generator = mocker.getComponentUnderTest();
-    }
+    @InjectMockComponents
+    private BcDESedeKeyGenerator generator;
 
     @Test
-    public void testGenerateWithoutArgument() throws Exception
+    void generateWithoutArgument()
     {
         byte[] key = generator.generate();
 
@@ -58,7 +52,7 @@ public class BcDESedeKeyGeneratorTest
     }
 
     @Test
-    public void testGenerateWithStrengthParameter() throws Exception
+    void generateWithStrengthParameter()
     {
         KeyGenerationParameters params = new GenericKeyGenerationParameters(24);
         byte[] key = generator.generate(params);

@@ -29,9 +29,8 @@ import javax.inject.Provider;
 
 import org.bouncycastle.crypto.prng.FixedSecureRandom;
 import org.bouncycastle.util.encoders.Base64;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.crypto.KeyPairGenerator;
 import org.xwiki.crypto.KeyParametersGenerator;
@@ -45,7 +44,10 @@ import org.xwiki.crypto.internal.digest.factory.BcSHA224DigestFactory;
 import org.xwiki.crypto.params.generator.asymmetric.DSAKeyParametersGenerationParameters;
 import org.xwiki.crypto.params.generator.asymmetric.RSAKeyGenerationParameters;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
 /**
  * THIS IS NOT A TEST, BUT A TOOL.
@@ -64,32 +66,41 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
  * However, your IDE may do, you should be careful. Putting @Ignore is not an option since maven will not
  * allow running it from the command-line.
  */
-@ComponentList({BcRSAKeyFactory.class, FixedSecureRandomProvider.class, BcDSAKeyParameterGenerator.class,
-    BcDSAKeyPairGenerator.class, BcDSAKeyFactory.class, BcSHA1DigestFactory.class, BcSHA224DigestFactory.class})
-public class FindEntropyForSecureRandomProvider
+// @formatter:off
+@ComponentTest
+@ComponentList({
+    BcRSAKeyFactory.class,
+    FixedSecureRandomProvider.class,
+    BcDSAKeyParameterGenerator.class,
+    BcDSAKeyPairGenerator.class,
+    BcDSAKeyFactory.class,
+    BcSHA1DigestFactory.class,
+    BcSHA224DigestFactory.class
+})
+// @formatter:on
+class FindEntropyForSecureRandomProvider
 {
-    @Rule
-    public final MockitoComponentMockingRule<KeyPairGenerator> mocker =
-        new MockitoComponentMockingRule<>(BcRSAKeyPairGenerator.class);
+    @InjectMockComponents
+    private BcRSAKeyPairGenerator rsaGenerator;
 
-    private KeyPairGenerator rsaGenerator;
+    @InjectComponentManager
+    private MockitoComponentManager componentManager;
+
     private KeyPairGenerator dsaGenerator;
     private KeyParametersGenerator dsaParameterGenerator;
 
-
-    @Before
-    public void configure() throws Exception
+    @BeforeEach
+    void configure() throws Exception
     {
-        rsaGenerator = mocker.getComponentUnderTest();
-        dsaGenerator = mocker.getInstance(KeyPairGenerator.class, "DSA");;
-        dsaParameterGenerator = mocker.getInstance(KeyParametersGenerator.class, "DSA");
+        dsaGenerator = this.componentManager.getInstance(KeyPairGenerator.class, "DSA");;
+        dsaParameterGenerator = this.componentManager.getInstance(KeyParametersGenerator.class, "DSA");
     }
 
     @Test
-    public void testFindGoodEntropySource() throws Exception
+    void findGoodEntropySource() throws Exception
     {
         FixedSecureRandomProvider rndprov =
-            mocker.getInstance(new DefaultParameterizedType(null, Provider.class, SecureRandom.class));
+            this.componentManager.getInstance(new DefaultParameterizedType(null, Provider.class, SecureRandom.class));
 
         RecordingSecureRandom rnd = new RecordingSecureRandom();
 

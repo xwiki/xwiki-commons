@@ -19,11 +19,11 @@
  */
 package org.xwiki.crypto.internal.encoder;
 
-import org.junit.Before;
-import org.junit.Rule;
 import org.xwiki.crypto.BinaryStringEncoder;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
+@ComponentTest
 public class Base64BinaryStringEncoderTest extends AbstractBinaryStringEncoderTest
 {
     {
@@ -40,13 +40,12 @@ public class Base64BinaryStringEncoderTest extends AbstractBinaryStringEncoderTe
             + "biBJbmZvcm1hdGlvbmVuLg==";
     }
 
-    @Rule
-    public final MockitoComponentMockingRule<BinaryStringEncoder> mocker =
-        new MockitoComponentMockingRule<>(Base64BinaryStringEncoder.class);
+    @InjectMockComponents
+    private Base64BinaryStringEncoder encoder;
 
-    @Before
-    public void configure() throws Exception
+    @Override
+    protected BinaryStringEncoder getEncoder()
     {
-        encoder = mocker.getComponentUnderTest();
+        return this.encoder;
     }
 }

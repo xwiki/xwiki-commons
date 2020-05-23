@@ -25,12 +25,10 @@ import javax.inject.Provider;
 
 import org.bouncycastle.crypto.params.DHPrivateKeyParameters;
 import org.bouncycastle.crypto.params.DHPublicKeyParameters;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.util.DefaultParameterizedType;
-import org.xwiki.crypto.KeyPairGenerator;
 import org.xwiki.crypto.KeyParametersGenerator;
 import org.xwiki.crypto.internal.DefaultSecureRandomProvider;
 import org.xwiki.crypto.internal.FixedSecureRandomProvider;
@@ -39,43 +37,52 @@ import org.xwiki.crypto.internal.asymmetric.keyfactory.BcDHKeyFactory;
 import org.xwiki.crypto.params.cipher.asymmetric.AsymmetricKeyPair;
 import org.xwiki.crypto.params.generator.asymmetric.DHKeyGenerationParameters;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 // Skipping since this could be very long or blocking due to the amount of entropy needed, DH support is AS IS.
-@Ignore
-@ComponentList({BcDHKeyParameterGenerator.class, BcDHKeyFactory.class, DefaultSecureRandomProvider.class})
-public class BcDHKeyPairGeneratorTest
+@Disabled
+@ComponentTest
+// @formatter:off
+@ComponentList({
+    BcDHKeyParameterGenerator.class,
+    BcDHKeyFactory.class,
+    DefaultSecureRandomProvider.class
+})
+// @formatter:on
+class BcDHKeyPairGeneratorTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<KeyPairGenerator> mocker =
-        new MockitoComponentMockingRule<>(BcDHKeyPairGenerator.class);
+    @InjectMockComponents
+    private BcDHKeyPairGenerator generator;
 
-    private KeyPairGenerator generator;
+    @InjectComponentManager
+    private MockitoComponentManager componentManager;
+
     private KeyParametersGenerator parameterGenerator;
 
-    @Before
-    public void configure() throws Exception
+    @BeforeEach
+    void configure() throws Exception
     {
-        generator = mocker.getComponentUnderTest();
-        parameterGenerator = mocker.getInstance(KeyParametersGenerator.class, "DH");
+        parameterGenerator = this.componentManager.getInstance(KeyParametersGenerator.class, "DH");
 
         // Reinitialize the random source
         Provider<SecureRandom> rndprov =
-            mocker.getInstance(new DefaultParameterizedType(null, Provider.class, SecureRandom.class));
+            this.componentManager.getInstance(new DefaultParameterizedType(null, Provider.class, SecureRandom.class));
         if (rndprov instanceof FixedSecureRandomProvider) {
             ((FixedSecureRandomProvider) rndprov).initialize();
         }
     }
 
     @Test
-    // Skipping since this could be very long or blocking due to the amount of entropy needed, DH support is AS IS.
-    public void testGenerateWithoutArgument() throws Exception
+    void generateWithoutArgument()
     {
         AsymmetricKeyPair kp1 = generator.generate();
         AsymmetricKeyPair kp2 = generator.generate();
@@ -97,7 +104,7 @@ public class BcDHKeyPairGeneratorTest
     }
 
     @Test
-    public void testGenerateWithDefaultParameters() throws Exception
+    void generateWithDefaultParameters()
     {
         DHKeyGenerationParameters params = (DHKeyGenerationParameters) parameterGenerator.generate();
 
@@ -108,8 +115,10 @@ public class BcDHKeyPairGeneratorTest
         assertThat(kp1, not(nullValue()));
         assertThat(kp1.getPrivate(), instanceOf(BcAsymmetricKeyParameters.class));
         assertThat(kp1.getPublic(), instanceOf(BcAsymmetricKeyParameters.class));
-        assertThat(((BcAsymmetricKeyParameters) kp1.getPrivate()).getParameters(), instanceOf(DHPrivateKeyParameters.class));
-        assertThat(((BcAsymmetricKeyParameters) kp1.getPublic()).getParameters(), instanceOf(DHPublicKeyParameters.class));
+        assertThat(((BcAsymmetricKeyParameters) kp1.getPrivate()).getParameters(),
+            instanceOf(DHPrivateKeyParameters.class));
+        assertThat(((BcAsymmetricKeyParameters) kp1.getPublic()).getParameters(),
+            instanceOf(DHPublicKeyParameters.class));
 
         AsymmetricKeyPair kp2 = generator.generate(params);
 

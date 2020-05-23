@@ -1306,7 +1306,7 @@ public class FixedSecureRandomProvider implements Provider<SecureRandom>, Initia
     }
 
     @Override
-    public void initialize() throws InitializationException
+    public void initialize()
     {
         random = new FixedSecureRandom(RANDOM_DATA);
     }

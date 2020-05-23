@@ -19,43 +19,41 @@
  */
 package org.xwiki.crypto.internal.symmetric.generator;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.xwiki.crypto.KeyGenerator;
+import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.internal.DefaultSecureRandomProvider;
 import org.xwiki.crypto.params.generator.symmetric.GenericKeyGenerationParameters;
 import org.xwiki.crypto.params.generator.KeyGenerationParameters;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ComponentList({DefaultSecureRandomProvider.class})
-public class DefaultKeyGeneratorTest
+@ComponentTest
+// @formatter:off
+@ComponentList({
+    DefaultSecureRandomProvider.class
+})
+// @formatter:on
+class DefaultKeyGeneratorTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<KeyGenerator> mocker =
-        new MockitoComponentMockingRule<>(DefaultKeyGenerator.class);
+    @InjectMockComponents
+    private DefaultKeyGenerator generator;
 
-    private KeyGenerator generator;
-
-    @Before
-    public void configure() throws Exception
+    @Test
+    void generateWithoutArgument()
     {
-        generator = mocker.getComponentUnderTest();
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testGenerateWithoutArgument() throws Exception
-    {
-        generator.generate();
+        Throwable exception = assertThrows(UnsupportedOperationException.class,
+            () -> generator.generate());
+        assertEquals("Knowing the key strength is required to generate a key.", exception.getMessage());
     }
 
     @Test
-    public void testGenerateWithStrengthParameter() throws Exception
+    void generateWithStrengthParameter()
     {
         KeyGenerationParameters params = new GenericKeyGenerationParameters(128);
         byte[] key = generator.generate(params);
