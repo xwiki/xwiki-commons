@@ -22,7 +22,6 @@ package org.xwiki.groovy.internal;
 import java.util.Arrays;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
@@ -31,14 +30,18 @@ import org.codehaus.groovy.classgen.GeneratorContext;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
-import org.jmock.Expectations;
-import org.jmock.lib.legacy.ClassImposteriser;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.groovy.GroovyConfiguration;
-import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
-import org.xwiki.test.jmock.annotation.MockingRequirement;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.junit5.mockito.MockComponent;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test Groovy Execution with some Compilation Customizers. This test also tests the {@link GroovyScriptEngineFactory}
@@ -47,46 +50,33 @@ import org.xwiki.test.jmock.annotation.MockingRequirement;
  * @version $Id$
  * @since 4.1M1
  */
-@MockingRequirement(GroovyScriptEngineFactory.class)
-public class GroovyExecutionTest extends AbstractMockingComponentTestCase<ScriptEngineFactory>
+@ComponentTest
+class GroovyExecutionTest
 {
-    @Before
-    public void configure() throws Exception
-    {
-        getMockery().setImposteriser(ClassImposteriser.INSTANCE);
-    }
+    @InjectMockComponents
+    private GroovyScriptEngineFactory factory;
+
+    @MockComponent
+    private GroovyConfiguration configuration;
 
     @Test
-    public void execute() throws Exception
+    void execute()
     {
-        final GroovyConfiguration configuration = getComponentManager().getInstance(GroovyConfiguration.class);
-        final CompilationCustomizer customizer = getMockery().mock(CompilationCustomizer.class);
-
-        getMockery().checking(new Expectations()
-        {{
-                oneOf(configuration).getCompilationCustomizers();
-                will(returnValue(Arrays.asList(customizer)));
-
-                // Simulate a Compilation Customizer that throws an error. This would happend for example with a Secure
-                // Customizer that would prevent executing some statements for example.
-                oneOf(customizer).getPhase();
-                will(returnValue(CompilePhase.CANONICALIZATION));
-                oneOf(customizer).needSortedInput();
-                will(returnValue(false));
-                oneOf(customizer).call(with(any(SourceUnit.class)), with(any(GeneratorContext.class)),
-                        with(any(ClassNode.class)));
-                will(throwException(new SecurityException("test exception")));
-            }});
+        CompilationCustomizer customizer = mock(CompilationCustomizer.class);
+        when(this.configuration.getCompilationCustomizers()).thenReturn(Arrays.asList(customizer));
+        // Simulate a Compilation Customizer that throws an error. This would happen for example with a Secure
+        // Customizer that would prevent executing some statements for example.
+        when(customizer.getPhase()).thenReturn(CompilePhase.CANONICALIZATION);
+        when(customizer.needSortedInput()).thenReturn(false);
+        doThrow(new SecurityException("test exception")).when(customizer).call(any(SourceUnit.class),
+            any(GeneratorContext.class), any(ClassNode.class));
 
         ScriptEngineManager manager = new ScriptEngineManager();
-        manager.registerEngineName("groovy", getMockedComponent());
+        manager.registerEngineName("groovy", this.factory);
 
         ScriptEngine engine = manager.getEngineByName("groovy");
 
-        try {
-            engine.eval("def dummy");
-        } catch (ScriptException expected) {
-            Assert.assertTrue(expected.getMessage().contains("test exception"));
-        }
+        Throwable exception = assertThrows(ScriptException.class, () -> engine.eval("def dummy"));
+        assertTrue(exception.getMessage().contains("test exception"));
     }
 }

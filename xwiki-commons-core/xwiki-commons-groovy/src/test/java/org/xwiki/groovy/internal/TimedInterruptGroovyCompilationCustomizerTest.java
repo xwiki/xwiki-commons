@@ -27,11 +27,18 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.jmock.Expectations;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.ConfigurationSource;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.MockComponent;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link TimedInterruptGroovyCompilationCustomizer}.
@@ -39,35 +46,38 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
  * @version $Id$
  * @since 4.1M1
  */
-public class TimedInterruptGroovyCompilationCustomizerTest extends AbstractComponentTestCase
+@ComponentTest
+@AllComponents
+class TimedInterruptGroovyCompilationCustomizerTest
 {
-    // Ensure that the test will fail after 10 seconds
-    @Test(timeout = 10000)
-    public void executeWithTimedInterruptCustomizer() throws Exception
-    {
-        final ConfigurationSource source = registerMockComponent(ConfigurationSource.class);
+    @MockComponent
+    private ConfigurationSource source;
 
-        getMockery().checking(new Expectations()
-        {{
-            oneOf(source).getProperty("groovy.compilationCustomizers", Collections.emptyList());
-                will(returnValue(Arrays.asList("timedInterrupt")));
-            oneOf(source).getProperty("groovy.customizer.timedInterrupt.timeout", 60L);
-                will(returnValue(1L));
-        }});
+    @InjectComponentManager
+    private ComponentManager componentManager;
+
+    @Test
+    // Ensure that the test will fail after 10 seconds
+    @Timeout(value = 10)
+    void executeWithTimedInterruptCustomizer() throws Exception
+    {
+        when(source.getProperty("groovy.compilationCustomizers", Collections.emptyList())).thenReturn(
+            Arrays.asList("timedInterrupt"));
+        when(source.getProperty("groovy.customizer.timedInterrupt.timeout", 60L)).thenReturn(1L);
 
         ScriptEngineManager manager = new ScriptEngineManager();
         ScriptEngineFactory groovyScriptEngineFactory =
-            getComponentManager().getInstance(ScriptEngineFactory.class, "groovy");
+            this.componentManager.getInstance(ScriptEngineFactory.class, "groovy");
         manager.registerEngineName("groovy", groovyScriptEngineFactory);
 
-        final ScriptEngine engine = manager.getEngineByName("groovy");
+        ScriptEngine engine = manager.getEngineByName("groovy");
 
         // Simulate an infinite loop to verify that we timeout after 1 second
         try {
             engine.eval("while (true) {}");
-            Assert.fail("Should have thrown an exception here");
+            fail("Should have thrown an exception here");
         } catch (ScriptException e) {
-            Assert.assertTrue(e.getMessage().contains("Execution timed out after 1 seconds."));
+            assertTrue(e.getMessage().contains("Execution timed out after 1 seconds."));
         }
     }
 }

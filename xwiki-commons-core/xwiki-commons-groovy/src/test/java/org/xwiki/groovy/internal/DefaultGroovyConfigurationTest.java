@@ -23,21 +23,24 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Named;
+
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.classgen.GeneratorContext;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
-import org.jmock.Expectations;
-import org.junit.Assert;
-import org.junit.Test;
-import org.xwiki.component.manager.ComponentManager;
+import org.junit.jupiter.api.Test;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.groovy.GroovyCompilationCustomizer;
-import org.xwiki.groovy.GroovyConfiguration;
-import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
-import org.xwiki.test.jmock.annotation.MockingRequirement;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.junit5.mockito.MockComponent;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link DefaultGroovyConfiguration}.
@@ -45,47 +48,46 @@ import org.xwiki.test.jmock.annotation.MockingRequirement;
  * @version $Id$
  * @since 4.1M1
  */
-@MockingRequirement(DefaultGroovyConfiguration.class)
-public class DefaultGroovyConfigurationTest extends AbstractMockingComponentTestCase<GroovyConfiguration>
+@ComponentTest
+class DefaultGroovyConfigurationTest
 {
-    @Test
-    public void getCustomizersWhenNoCustomizersDeclared() throws Exception
-    {
-        final ConfigurationSource source = getComponentManager().getInstance(ConfigurationSource.class);
-        getMockery().checking(new Expectations() {{
-            oneOf(source).getProperty("groovy.compilationCustomizers", Collections.emptyList());
-            will(returnValue(Collections.emptyList()));
-        }});
+    @InjectMockComponents
+    private DefaultGroovyConfiguration configuration;
 
-        List<CompilationCustomizer> customizers = getMockedComponent().getCompilationCustomizers();
-        Assert.assertEquals(0, customizers.size());
+    @MockComponent
+    private ConfigurationSource source;
+
+    @MockComponent
+    @Named("mycustomizer")
+    private GroovyCompilationCustomizer customizer;
+
+    @Test
+    void getCustomizersWhenNoCustomizersDeclared()
+    {
+        when(this.source.getProperty("groovy.compilationCustomizers", Collections.emptyList())).thenReturn(
+            Collections.emptyList());
+
+        List<CompilationCustomizer> customizers = this.configuration.getCompilationCustomizers();
+        assertEquals(0, customizers.size());
     }
 
     @Test
-    public void getCustomizersWhenCustomizersDeclared() throws Exception
+    void getCustomizersWhenCustomizersDeclared()
     {
-        final ConfigurationSource source = getComponentManager().getInstance(ConfigurationSource.class);
-        final ComponentManager componentManager = getComponentManager().getInstance(ComponentManager.class);
-        final GroovyCompilationCustomizer customizer = getMockery().mock(GroovyCompilationCustomizer.class);
+        when(this.source.getProperty("groovy.compilationCustomizers", Collections.emptyList())).thenReturn(
+            Arrays.asList("mycustomizer"));
+        when(this.customizer.createCustomizer()).thenReturn(new CompilationCustomizer(CompilePhase.PARSING)
+        {
+            @Override
+            public void call(SourceUnit source, GeneratorContext context, ClassNode classNode)
+                throws CompilationFailedException
+            {
+                // Stub for testing, do nothing.
+            }
+        });
 
-        getMockery().checking(new Expectations() {{
-            oneOf(source).getProperty("groovy.compilationCustomizers", Collections.emptyList());
-                will(returnValue(Arrays.asList("mycustomizer")));
-            oneOf(componentManager).getInstance(GroovyCompilationCustomizer.class, "mycustomizer");
-                will(returnValue(customizer));
-            oneOf(customizer).createCustomizer();
-                will(returnValue(new CompilationCustomizer(CompilePhase.PARSING)
-                {
-                    @Override public void call(SourceUnit source, GeneratorContext context, ClassNode classNode)
-                        throws CompilationFailedException
-                    {
-                        // Stub for testing, do nothing.
-                    }
-                }));
-        }});
-
-        List<CompilationCustomizer> customizers = getMockedComponent().getCompilationCustomizers();
-        Assert.assertEquals(1, customizers.size());
-        Assert.assertTrue(customizers.get(0) instanceof CompilationCustomizer);
+        List<CompilationCustomizer> customizers = this.configuration.getCompilationCustomizers();
+        assertEquals(1, customizers.size());
+        assertTrue(customizers.get(0) instanceof CompilationCustomizer);
     }
 }
