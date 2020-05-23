@@ -27,59 +27,64 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.xwiki.script.internal.safe.CollectionScriptSafeProvider;
-import org.xwiki.script.internal.safe.DefaultScriptSafeProvider;
-import org.xwiki.script.internal.safe.MapScriptSafeProvider;
-import org.xwiki.script.internal.safe.ScriptSafeProvider;
+import org.junit.jupiter.api.Test;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
-@ComponentList({ CollectionScriptSafeProvider.class, MapScriptSafeProvider.class })
-public class DefaultScriptSafeProviderTest
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@ComponentTest
+// @formatter:off
+@ComponentList({ 
+    CollectionScriptSafeProvider.class, 
+    MapScriptSafeProvider.class 
+})
+// @formatter:on
+class DefaultScriptSafeProviderTest
 {
-    @Rule
-    public MockitoComponentMockingRule<ScriptSafeProvider> mocker =
-        new MockitoComponentMockingRule<>(DefaultScriptSafeProvider.class);
+    @InjectMockComponents
+    private DefaultScriptSafeProvider scriptSafeProvider;
 
     @Test
-    public void testGetWithNoProvider() throws Exception
+    void getWithNoProvider()
     {
         Object safe = "";
 
-        Assert.assertSame(safe, this.mocker.getComponentUnderTest().get(safe));
+        assertSame(safe, this.scriptSafeProvider.get(safe));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
-    public void testGetCollection() throws Exception
+    void getCollection()
     {
         // List
 
         Collection unsafe = Arrays.asList("1", "2");
-        Collection safe = (Collection) this.mocker.getComponentUnderTest().get(unsafe);
+        Collection safe = (Collection) this.scriptSafeProvider.get(unsafe);
 
-        Assert.assertNotSame(unsafe, safe);
-        Assert.assertTrue(safe instanceof List);
-        Assert.assertEquals(unsafe, safe);
+        assertNotSame(unsafe, safe);
+        assertTrue(safe instanceof List);
+        assertEquals(unsafe, safe);
 
         // Set
 
         unsafe = new LinkedHashSet(Arrays.asList("1", "2", "3", "4", "5"));
-        safe = (Collection) this.mocker.getComponentUnderTest().get(unsafe);
+        safe = (Collection) this.scriptSafeProvider.get(unsafe);
 
-        Assert.assertNotSame(unsafe, safe);
-        Assert.assertTrue(safe instanceof Set);
-        Assert.assertEquals(unsafe, safe);
+        assertNotSame(unsafe, safe);
+        assertTrue(safe instanceof Set);
+        assertEquals(unsafe, safe);
         // Make sure order is kept
-        Assert.assertEquals(unsafe.toString(), safe.toString());
+        assertEquals(unsafe.toString(), safe.toString());
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked", "cast" })
     @Test
-    public void testGetMap() throws Exception
+    void getMap()
     {
         Map unsafe = new LinkedHashMap(5);
         unsafe.put("1", "1");
@@ -87,12 +92,12 @@ public class DefaultScriptSafeProviderTest
         unsafe.put("3", "3");
         unsafe.put("4", "4");
         unsafe.put("5", "5");
-        Map safe = (Map) this.mocker.getComponentUnderTest().get(unsafe);
+        Map safe = (Map) this.scriptSafeProvider.get(unsafe);
 
-        Assert.assertNotSame(unsafe, safe);
-        Assert.assertTrue(safe instanceof Map);
-        Assert.assertEquals(unsafe, safe);
+        assertNotSame(unsafe, safe);
+        assertTrue(safe instanceof Map);
+        assertEquals(unsafe, safe);
         // Make sure order is kept
-        Assert.assertEquals(unsafe.toString(), safe.toString());
+        assertEquals(unsafe.toString(), safe.toString());
     }
 }

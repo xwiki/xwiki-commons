@@ -32,10 +32,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * 
  * @version $Id$
  */
-public class CloneableSimpleScriptContextTest
+class CloneableSimpleScriptContextTest
 {
     @Test
-    public void testClone() throws CloneNotSupportedException
+    void testClone() throws CloneNotSupportedException
     {
         CloneableSimpleScriptContext context = new CloneableSimpleScriptContext();
 
