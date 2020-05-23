@@ -17,9 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.xwiki.crypto;
-
 
 public abstract class AbstractPKIXTest
 {
@@ -228,5 +226,4 @@ public abstract class AbstractPKIXTest
         + "prohibiting the free exercise thereof; or abridging the freedom of speech, "
         + "or of the press; or the right of the people peaceably to assemble, and to "
         + "petition the Government for a redress of grievances.";
-
 }

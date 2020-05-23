@@ -17,23 +17,22 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.xwiki.crypto.pkix.params.x509certificate;
 
 import java.io.IOException;
 
 import org.bouncycastle.asn1.x500.X500Name;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.pkix.params.PrincipalIndentifier;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-public class DistinguishedNameTest
+class DistinguishedNameTest
 {
     @Test
-    public void testEquality() throws Exception
+    void equality()
     {
         PrincipalIndentifier john = new DistinguishedName("CN=John Doe");
         PrincipalIndentifier jane = new DistinguishedName("CN=Jane Doe");
