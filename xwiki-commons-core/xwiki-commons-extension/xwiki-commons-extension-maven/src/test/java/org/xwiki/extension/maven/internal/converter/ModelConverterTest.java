@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
  */
 @AllComponents
 @ComponentTest
-public class ModelConverterTest
+class ModelConverterTest
 {
     private static final List<ExtensionId> INJECTED_FEATURES =
         Arrays.asList(new ExtensionId("injectedfeature1", "injectedversion1"),
@@ -72,7 +72,7 @@ public class ModelConverterTest
     private DefaultConverterManager converter;
 
     @BeforeComponent
-    public void beforeComponent()
+    void beforeComponent()
     {
         when(this.featureProvider.getFeatures(any(Extension.class))).thenReturn(INJECTED_FEATURES);
     }

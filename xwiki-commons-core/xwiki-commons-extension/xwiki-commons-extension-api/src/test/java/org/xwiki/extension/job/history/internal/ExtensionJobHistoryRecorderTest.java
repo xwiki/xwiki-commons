@@ -26,7 +26,6 @@ import java.util.Date;
 
 import javax.inject.Provider;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.xwiki.component.manager.ComponentManager;
@@ -60,7 +59,7 @@ import static org.mockito.Mockito.when;
  * @since 7.1RC1
  */
 @ComponentTest
-public class ExtensionJobHistoryRecorderTest
+class ExtensionJobHistoryRecorderTest
 {
     @InjectMockComponents
     private ExtensionJobHistoryRecorder recorder;
@@ -72,7 +71,7 @@ public class ExtensionJobHistoryRecorderTest
     private MockitoComponentManager componentManager;
 
     @BeforeComponent
-    public void configure() throws Exception
+    void configure() throws Exception
     {
         Provider<ComponentManager> componentManagerProvider =
             this.componentManager.registerMockComponent(
@@ -81,7 +80,7 @@ public class ExtensionJobHistoryRecorderTest
     }
 
     @Test
-    public void record() throws Exception
+    void record() throws Exception
     {
         ExtensionRequest request = mock(ExtensionRequest.class);
         when(request.getId()).thenReturn(Arrays.asList("job", "id"));

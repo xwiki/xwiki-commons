@@ -54,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
     ExtensionFactory.class 
 })
 // @formatter:on
-public class DefaultExtensionManagerConfigurationTest
+class DefaultExtensionManagerConfigurationTest
 {
     @RegisterExtension
     LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
@@ -68,7 +68,7 @@ public class DefaultExtensionManagerConfigurationTest
     private MemoryConfigurationSource source;
 
     @BeforeComponent
-    public void registerComponents() throws Exception
+    void registerComponents() throws Exception
     {
         // Register some in-memory Configuration Source for the test
         this.source = this.componentManager.registerMemoryConfigurationSource();

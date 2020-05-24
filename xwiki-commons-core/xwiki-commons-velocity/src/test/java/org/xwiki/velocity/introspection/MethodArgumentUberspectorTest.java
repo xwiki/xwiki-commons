@@ -57,12 +57,14 @@ import static org.mockito.Mockito.when;
  * @since 6.4M3
  */
 @ComponentTest
+// @formatter:off
 @ComponentList({
     DefaultVelocityEngine.class,
     DefaultVelocityConfiguration.class,
     DefaultVelocityContextFactory.class
 })
-public class MethodArgumentUberspectorTest
+// @formatter:on
+class MethodArgumentUberspectorTest
 {
     @InjectComponentManager
     MockitoComponentManager componentManager;
@@ -80,7 +82,7 @@ public class MethodArgumentUberspectorTest
     private VelocityContext context;
 
     @BeforeComponent
-    public void setUpComponents() throws Exception
+    void setUpComponents() throws Exception
     {
         this.componentManager.registerMemoryConfigurationSource();
 
@@ -134,7 +136,7 @@ public class MethodArgumentUberspectorTest
     }
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
         this.engine = this.componentManager.getInstance(VelocityEngine.class);
         this.engine.initialize(new Properties());
@@ -144,7 +146,7 @@ public class MethodArgumentUberspectorTest
     }
 
     @AfterEach
-    public void tearDown() throws Exception
+    void tearDown() throws Exception
     {
         if (this.writer != null) {
             this.writer.close();
@@ -152,14 +154,14 @@ public class MethodArgumentUberspectorTest
     }
 
     @Test
-    public void getMethodWhenVarargsWithNoConversionAndNoVarargParamPassed() throws Exception
+    void getMethodWhenVarargsWithNoConversionAndNoVarargParamPassed() throws Exception
     {
         this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.methodWithVararg(10)"));
         assertEquals("success", writer.toString());
     }
 
     @Test
-    public void getMethodWhenVarargsWithNoConversionAndOneVarargParamPassed() throws Exception
+    void getMethodWhenVarargsWithNoConversionAndOneVarargParamPassed() throws Exception
     {
         this.engine.evaluate(this.context, this.writer, "template",
             new StringReader("$var.methodWithVararg(10, 10.0)"));
@@ -167,7 +169,7 @@ public class MethodArgumentUberspectorTest
     }
 
     @Test
-    public void getMethodWhenVarargsWithNoConversionAndTwoVarargParamsPassed() throws Exception
+    void getMethodWhenVarargsWithNoConversionAndTwoVarargParamsPassed() throws Exception
     {
         this.engine.evaluate(this.context, this.writer, "template",
             new StringReader("$var.methodWithVararg(10, 10.0, 10.0)"));
@@ -175,7 +177,7 @@ public class MethodArgumentUberspectorTest
     }
 
     @Test
-    public void getMethodWhenVarargsWithConversionAndNoVarargParamPassed() throws Exception
+    void getMethodWhenVarargsWithConversionAndNoVarargParamPassed() throws Exception
     {
         when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
         this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.methodWithVararg('10')"));
@@ -183,7 +185,7 @@ public class MethodArgumentUberspectorTest
     }
 
     @Test
-    public void getMethodWhenVarargsWithConversionAndOneVarargParamPassed() throws Exception
+    void getMethodWhenVarargsWithConversionAndOneVarargParamPassed() throws Exception
     {
         when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
         this.engine.evaluate(this.context, this.writer, "template",
@@ -192,7 +194,7 @@ public class MethodArgumentUberspectorTest
     }
 
     @Test
-    public void getMethodWhenVarargsWithConversionAndTwoVarargParamsPassed() throws Exception
+    void getMethodWhenVarargsWithConversionAndTwoVarargParamsPassed() throws Exception
     {
         when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
         this.engine.evaluate(this.context, this.writer, "template",
@@ -201,7 +203,7 @@ public class MethodArgumentUberspectorTest
     }
 
     @Test
-    public void getMethodWhenVarargsWithConversionAndVarargParamPassedNeedingConversion() throws Exception
+    void getMethodWhenVarargsWithConversionAndVarargParamPassedNeedingConversion() throws Exception
     {
         when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
         when(this.converterManager.convert(Double.class, "10.0")).thenReturn(10.0);
@@ -214,7 +216,7 @@ public class MethodArgumentUberspectorTest
      * This used to fail, see <a href="https://jira.xwiki.org/browse/XCOMMONS-710">XCOMMONS-710</a>.
      */
     @Test
-    public void getMethodWhenAddingSameMethodNameToExtendingClassAndConversion() throws Exception
+    void getMethodWhenAddingSameMethodNameToExtendingClassAndConversion() throws Exception
     {
         when(this.converterManager.convert(List.class, "test")).thenReturn(Arrays.asList("converted"));
         this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.method('test')"));
@@ -222,28 +224,28 @@ public class MethodArgumentUberspectorTest
     }
 
     @Test
-    public void getMethodWhenInnerMethodAndNoConversion() throws Exception
+    void getMethodWhenInnerMethodAndNoConversion() throws Exception
     {
         this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.method()"));
         assertEquals("inner", this.writer.toString());
     }
 
     @Test
-    public void getMethodWhenNoConversion() throws Exception
+    void getMethodWhenNoConversion() throws Exception
     {
         this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.method(['converted'])"));
         assertEquals("success", this.writer.toString());
     }
 
     @Test
-    public void getMethodWhenNoMatchingMethod() throws Exception
+    void getMethodWhenNoMatchingMethod() throws Exception
     {
         this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.notexisting()"));
         assertEquals("$var.notexisting()", this.writer.toString());
     }
 
     @Test
-    public void getMethodWithGeneric() throws Exception
+    void getMethodWithGeneric() throws Exception
     {
         when(this.converterManager.convert(new DefaultParameterizedType(null, List.class, Locale.class), "en, fr"))
             .thenReturn(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));

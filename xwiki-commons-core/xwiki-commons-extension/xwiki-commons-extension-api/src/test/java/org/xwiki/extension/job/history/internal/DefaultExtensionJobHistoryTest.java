@@ -47,7 +47,7 @@ import static org.mockito.Mockito.*;
  * @since 7.1RC1
  */
 @ComponentTest
-public class DefaultExtensionJobHistoryTest
+class DefaultExtensionJobHistoryTest
 {
     @XWikiTempDir
     private static File TMP_DIRECTORY;
@@ -59,14 +59,14 @@ public class DefaultExtensionJobHistoryTest
     private ExtensionJobHistoryConfiguration configuration;
 
     @BeforeComponent
-    public void setupConfiguration()
+    void setupConfiguration()
     {
         // Needed in @BeforeComponent because it's used in the DefaultExtensionJobHistory initialize() method.
         when(this.configuration.getStorage()).thenReturn(TMP_DIRECTORY);
     }
 
     @Test
-    public void addGetRecords()
+    void addGetRecords()
     {
         long now = new Date().getTime();
         ExtensionJobHistoryRecord firstRecord =
