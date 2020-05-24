@@ -19,43 +19,41 @@
  */
 package org.xwiki.extension.internal.converter;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.xwiki.component.manager.ComponentLookupException;
+import org.junit.jupiter.api.Test;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.version.internal.DefaultVersion;
-import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.internal.DefaultConverterManager;
 import org.xwiki.test.annotation.AllComponents;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Validate {@link ExtensionIdConverter} component.
  *
  * @version $Id$
  */
+@ComponentTest
 @AllComponents
-public class ExtensionIdConverterTest
+class ExtensionIdConverterTest
 {
-    @Rule
-    public MockitoComponentMockingRule<ConverterManager> mocker =
-        new MockitoComponentMockingRule<>(DefaultConverterManager.class);
+    @InjectMockComponents
+    private DefaultConverterManager manager;
 
     @Test
-    public void testConvertFromString() throws ComponentLookupException
+    void convertFromString()
     {
-        assertEquals(new ExtensionId("id"), this.mocker.getComponentUnderTest().convert(ExtensionId.class, "id"));
+        assertEquals(new ExtensionId("id"), this.manager.convert(ExtensionId.class, "id"));
         assertEquals(new ExtensionId("id", new DefaultVersion("1.0")),
-            this.mocker.getComponentUnderTest().convert(ExtensionId.class, "id/1.0"));
+            this.manager.convert(ExtensionId.class, "id/1.0"));
         assertEquals(new ExtensionId("id\\", new DefaultVersion("1.0")),
-            this.mocker.getComponentUnderTest().convert(ExtensionId.class, "id\\\\/1.0"));
+            this.manager.convert(ExtensionId.class, "id\\\\/1.0"));
 
         assertEquals(new ExtensionId("id/1.0"),
-            this.mocker.getComponentUnderTest().convert(ExtensionId.class, "id\\/1.0"));
-        assertEquals(new ExtensionId("/1.0"), this.mocker.getComponentUnderTest().convert(ExtensionId.class, "\\/1.0"));
+            this.manager.convert(ExtensionId.class, "id\\/1.0"));
+        assertEquals(new ExtensionId("/1.0"), this.manager.convert(ExtensionId.class, "\\/1.0"));
         assertEquals(new ExtensionId("id\\/1.0"),
-            this.mocker.getComponentUnderTest().convert(ExtensionId.class, "id\\\\\\/1.0"));
+            this.manager.convert(ExtensionId.class, "id\\\\\\/1.0"));
     }
 }

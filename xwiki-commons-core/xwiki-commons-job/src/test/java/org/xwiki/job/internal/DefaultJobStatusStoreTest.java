@@ -79,9 +79,16 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  */
 @ComponentTest
-@ComponentList({ SafeXStream.class, XStreamUtils.class, SerializableXStreamChecker.class, JobStatusSerializer.class,
-XStreamFileLoggerTail.class })
-public class DefaultJobStatusStoreTest
+// @formatter:off
+@ComponentList({
+    SafeXStream.class,
+    XStreamUtils.class,
+    SerializableXStreamChecker.class,
+    JobStatusSerializer.class,
+    XStreamFileLoggerTail.class
+})
+// @formatter:on
+class DefaultJobStatusStoreTest
 {
     private static final List<String> ID = Arrays.asList("test");
 
@@ -285,7 +292,7 @@ public class DefaultJobStatusStoreTest
     // Tests
 
     @Test
-    public void getJobStatusWithNullId()
+    void getJobStatusWithNullId()
     {
         JobStatus jobStatus = this.store.getJobStatus(null);
 
@@ -297,7 +304,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void getJobStatusWithMultipleId()
+    void getJobStatusWithMultipleId()
     {
         JobStatus jobStatus = this.store.getJobStatus(Arrays.asList("id1", "id2"));
 
@@ -309,7 +316,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void getJobStatusInOldPlace()
+    void getJobStatusInOldPlace()
     {
         JobStatus jobStatus = this.store.getJobStatus(Arrays.asList("id1", "id2", "id3"));
 
@@ -319,7 +326,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void getJobStatusInWrongPlaceAndWithInvalidLogArgument()
+    void getJobStatusInWrongPlaceAndWithInvalidLogArgument()
     {
         JobStatus jobStatus = this.store.getJobStatus(Arrays.asList("invalidlogargument"));
 
@@ -328,7 +335,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void getJobStatusThatDoesNotExist()
+    void getJobStatusThatDoesNotExist()
     {
         JobStatus jobStatus = this.store.getJobStatus(Arrays.asList("nostatus"));
 
@@ -344,7 +351,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void removeJobStatus()
+    void removeJobStatus()
     {
         List<String> id = null;
 
@@ -362,19 +369,19 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void removeNotExistingJobStatus()
+    void removeNotExistingJobStatus()
     {
         this.store.remove(Arrays.asList("notexist"));
     }
 
     @Test
-    public void storeNullJobStatus()
+    void storeNullJobStatus()
     {
         this.store.store(null);
     }
 
     @Test
-    public void storeJobStatusWithNullRequest()
+    void storeJobStatusWithNullRequest()
     {
         JobStatus jobStatus = new DefaultJobStatus("type", null, null, null, null);
 
@@ -382,7 +389,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void storeJobStatusWithNullId()
+    void storeJobStatusWithNullId()
     {
         JobStatus jobStatus = new DefaultJobStatus("type", new DefaultRequest(), null, null, null);
 
@@ -390,7 +397,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void storeUnserializableJobStatus()
+    void storeUnserializableJobStatus()
     {
         List<String> id = Arrays.asList("test");
         DefaultRequest request = new DefaultRequest();
@@ -405,7 +412,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void storeUnserializedJobStatus()
+    void storeUnserializedJobStatus()
     {
         List<String> id = Arrays.asList("test");
         DefaultRequest request = new DefaultRequest();
@@ -421,7 +428,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void storeJobStatusWhenSerializable()
+    void storeJobStatusWhenSerializable()
     {
         List<String> id = Arrays.asList("newstatus");
 
@@ -439,7 +446,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogMessage() throws Exception
+    void serializeUnserializeWhenLogMessage() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -452,7 +459,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogMarker() throws Exception
+    void serializeUnserializeWhenLogMarker() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -466,7 +473,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithException() throws Exception
+    void serializeUnserializeWhenLogWithException() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -483,7 +490,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithArguments() throws Exception
+    void serializeUnserializeWhenLogWithArguments() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -498,7 +505,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithNullArguments() throws Exception
+    void serializeUnserializeWhenLogWithNullArguments() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -514,7 +521,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithComponentArgument() throws Exception
+    void serializeUnserializeWhenLogWithComponentArgument() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -528,7 +535,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithStandaloneComponentArgument() throws Exception
+    void serializeUnserializeWhenLogWithStandaloneComponentArgument() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -542,7 +549,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithSerializableStandaloneComponentArgument() throws Exception
+    void serializeUnserializeWhenLogWithSerializableStandaloneComponentArgument() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -556,7 +563,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithCrossReference() throws Exception
+    void serializeUnserializeWhenLogWithCrossReference() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -571,7 +578,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithComponentField() throws Exception
+    void serializeUnserializeWhenLogWithComponentField() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -584,7 +591,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithStandaloneComponentField() throws Exception
+    void serializeUnserializeWhenLogWithStandaloneComponentField() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -597,7 +604,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithLoggerField() throws Exception
+    void serializeUnserializeWhenLogWithLoggerField() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -610,7 +617,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithProviderField() throws Exception
+    void serializeUnserializeWhenLogWithProviderField() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -623,7 +630,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithComponentManagerField() throws Exception
+    void serializeUnserializeWhenLogWithComponentManagerField() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -636,7 +643,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithSerializableProviderField() throws Exception
+    void serializeUnserializeWhenLogWithSerializableProviderField() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -651,7 +658,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithSerializableImplementationProviderField() throws Exception
+    void serializeUnserializeWhenLogWithSerializableImplementationProviderField() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -667,7 +674,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithCustomObjectArgument() throws Exception
+    void serializeUnserializeWhenLogWithCustomObjectArgument() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -681,7 +688,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithSerializableCustomObjectArgument() throws Exception
+    void serializeUnserializeWhenLogWithSerializableCustomObjectArgument() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -695,7 +702,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWhenLogWithNotSerializableCustomObjectArgument() throws Exception
+    void serializeUnserializeWhenLogWithNotSerializableCustomObjectArgument() throws Exception
     {
         DefaultJobStatus<Request> status = createStatus();
 
@@ -709,7 +716,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void serializeUnserializeWithLogQueue() throws Exception
+    void serializeUnserializeWithLogQueue() throws Exception
     {
         JobStatus status = createStatus(false);
 
@@ -724,7 +731,7 @@ public class DefaultJobStatusStoreTest
     }
 
     @Test
-    public void createLoggerTailWithNullId()
+    void createLoggerTailWithNullId()
     {
         assertNotNull(this.store.createLoggerTail(null, true));
     }

@@ -228,7 +228,14 @@ public class TestComponentManager extends EmbeddableComponentManager
         }
 
         if (isSupported) {
-            declaredMethod.invoke(testClassInstance, validatedParameterInstances.toArray());
+            boolean isAccessible = declaredMethod.isAccessible();
+            try {
+                // Allow calling methods located in package-private classes.
+                declaredMethod.setAccessible(true);
+                declaredMethod.invoke(testClassInstance, validatedParameterInstances.toArray());
+            } finally {
+                declaredMethod.setAccessible(isAccessible);
+            }
         }
     }
 
