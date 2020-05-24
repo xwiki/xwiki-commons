@@ -228,7 +228,7 @@ class DefaultJobStatusStoreTest
     private File storeDirectory;
 
     @BeforeComponent
-    public void before() throws Exception
+    void before() throws Exception
     {
         this.storeDirectory = XWikiTempDirUtil.createTemporaryDirectory();
 

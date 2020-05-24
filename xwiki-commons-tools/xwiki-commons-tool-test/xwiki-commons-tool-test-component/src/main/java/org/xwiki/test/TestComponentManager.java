@@ -147,7 +147,7 @@ public class TestComponentManager extends EmbeddableComponentManager
     private List<Method> getBeforeComponentAnnotatedMethods(Class<?> testClass)
     {
         LinkedList<Method> methods = new LinkedList<>();
-        for (Method method : testClass.getMethods()) {
+        for (Method method : testClass.getDeclaredMethods()) {
             if (method.isAnnotationPresent(BeforeComponent.class)) {
                 String target = method.getAnnotation(BeforeComponent.class).value();
                 // Add to the top if the method applies globally to all test and at the bottom if not so that we
@@ -166,7 +166,7 @@ public class TestComponentManager extends EmbeddableComponentManager
     private List<Method> getAfterComponentAnnotatedMethods(Class<?> testClass)
     {
         LinkedList<Method> methods = new LinkedList<>();
-        for (Method method : testClass.getMethods()) {
+        for (Method method : testClass.getDeclaredMethods()) {
             if (method.isAnnotationPresent(AfterComponent.class)) {
                 String target = method.getAnnotation(AfterComponent.class).value();
                 // Add to the top if the method applies globally to all test and at the bottom if not so that we
