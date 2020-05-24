@@ -48,12 +48,16 @@ public abstract class AbstractDigestFactoryTest extends AbstractDigestFactoryTes
     protected static Digest digest;
 
     protected String digestAlgo;
+
     protected AlgorithmIdentifier digestAlgId;
+
     protected int digestSize;
+
     protected byte[] digestResult;
 
     @BeforeAll
-    public static void cleanUpCaches() {
+    public static void cleanUpCaches()
+    {
         digest = null;
     }
 
@@ -66,14 +70,14 @@ public abstract class AbstractDigestFactoryTest extends AbstractDigestFactoryTes
     }
 
     @Test
-    public void digestFactoryProperties()
+    void digestFactoryProperties()
     {
         assertThat(factory.getDigestAlgorithmName(), equalTo(digestAlgo));
         assertThat(factory.getDigestSize(), equalTo(digestSize));
     }
 
     @Test
-    public void digestProperties() throws Exception
+    void digestProperties() throws Exception
     {
         assertThat(getDigestInstance().getAlgorithmName(), equalTo(digestAlgo));
         assertThat(getDigestInstance().getDigestSize(), equalTo(digestSize));
@@ -81,14 +85,14 @@ public abstract class AbstractDigestFactoryTest extends AbstractDigestFactoryTes
     }
 
     @Test
-    public void digestOneShot()
+    void digestOneShot()
     {
         assertThat(getDigestInstance().digest(BYTES), equalTo(digestResult));
         assertThat(getDigestInstance().digest(BYTES, 10, 20), not(equalTo(digestResult)));
     }
 
     @Test
-    public void tdigestMultiplePart()
+    void tdigestMultiplePart()
     {
         Digest dig = getDigestInstance();
         byte[] b = BYTES;
@@ -103,7 +107,7 @@ public abstract class AbstractDigestFactoryTest extends AbstractDigestFactoryTes
     }
 
     @Test
-    public void digestOutputStream() throws Exception
+    void digestOutputStream() throws Exception
     {
         OutputStream os = getDigestInstance().getOutputStream();
         os.write(BYTES);
@@ -114,7 +118,7 @@ public abstract class AbstractDigestFactoryTest extends AbstractDigestFactoryTes
     {
         int readLen, len = 0;
         int blen = 17;
-        while( blen > 0 && (readLen = is.read(out, len, blen)) > 0 ) {
+        while (blen > 0 && (readLen = is.read(out, len, blen)) > 0) {
             len += readLen;
             if (len + blen > out.length) {
                 blen = out.length - len;
@@ -125,7 +129,7 @@ public abstract class AbstractDigestFactoryTest extends AbstractDigestFactoryTes
     }
 
     @Test
-    public void digestInputStream() throws Exception
+    void digestInputStream() throws Exception
     {
         ByteArrayInputStream bais = new ByteArrayInputStream(BYTES);
         InputStream is = getDigestInstance().getInputStream(bais);

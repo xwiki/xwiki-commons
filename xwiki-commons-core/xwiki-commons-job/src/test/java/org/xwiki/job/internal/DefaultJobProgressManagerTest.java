@@ -35,7 +35,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Validate {@link DefaultJobProgressManager}.
- * 
+ *
  * @version $Id$
  */
 @ComponentTest
@@ -48,7 +48,7 @@ public class DefaultJobProgressManagerTest
     private ObservationManager observation;
 
     @Test
-    public void pushLevelProgress()
+    void pushLevelProgress()
     {
         this.progress.pushLevelProgress(this);
 
@@ -60,7 +60,7 @@ public class DefaultJobProgressManagerTest
     }
 
     @Test
-    public void startStep()
+    void startStep()
     {
         this.progress.startStep(this);
 
@@ -81,7 +81,7 @@ public class DefaultJobProgressManagerTest
     }
 
     @Test
-    public void endStep()
+    void endStep()
     {
         this.progress.endStep(this);
 
@@ -89,7 +89,7 @@ public class DefaultJobProgressManagerTest
     }
 
     @Test
-    public void popLevelProgress()
+    void popLevelProgress()
     {
         this.progress.popLevelProgress(this);
 

@@ -38,7 +38,7 @@ public class HTMLDisplayerTest
     private DefaultHTMLDisplayer defaultHTMLDisplayer;
 
     @Test
-    public void getHTMLDisplayerTest() throws Exception
+    void getHTMLDisplayerTest() throws Exception
     {
         assertEquals("test", defaultHTMLDisplayer.display(String.class, "test"));
         assertEquals("", defaultHTMLDisplayer.display(String.class, null));

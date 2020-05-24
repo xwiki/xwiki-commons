@@ -84,8 +84,8 @@ public class HTMLDisplayerManagerTest
             String attributes = "";
             if (i.getArguments().length > 2) {
                 attributes = i.<Map<String, String>>getArgument(2).entrySet().stream()
-                        .map(entry -> entry.getKey() + "='" + entry.getValue() + "'")
-                        .collect(Collectors.joining(" "));
+                    .map(entry -> entry.getKey() + "='" + entry.getValue() + "'")
+                    .collect(Collectors.joining(" "));
             }
             return "<input " + attributes + ">" + i.getArgument(1) + "</input>";
         };
@@ -94,15 +94,14 @@ public class HTMLDisplayerManagerTest
             String mode = "";
             if (i.getArguments().length > 2) {
                 parameters = i.<Map<String, String>>getArgument(2).entrySet().stream()
-                        .map(entry -> entry.getKey() + ":" + entry.getValue())
-                        .collect(Collectors.joining(", "));
+                    .map(entry -> entry.getKey() + ":" + entry.getValue())
+                    .collect(Collectors.joining(", "));
             }
             if (i.getArguments().length > 3) {
                 mode = i.getArgument(3);
             }
             return "Value[" + i.getArgument(1) + "]; Parameters: [" + parameters + "]" + "; Mode:[" + mode + "]";
         };
-
 
         when(this.stringHTMLDisplayer.display(any(), any())).thenAnswer(answer1);
         when(this.stringHTMLDisplayer.display(any(), any(), anyMap())).thenAnswer(answer1);
@@ -114,14 +113,14 @@ public class HTMLDisplayerManagerTest
     }
 
     @Test
-    public void getHTMLDisplayerTest() throws Exception
+    void getHTMLDisplayerTest() throws Exception
     {
         assertEquals(this.stringHTMLDisplayer, this.defaultDisplayerManager.getHTMLDisplayer(String.class));
 
         assertEquals(this.listStringHTMLDisplayer, this.defaultDisplayerManager
-                .getHTMLDisplayer(new DefaultParameterizedType(null, List.class, String.class)));
+            .getHTMLDisplayer(new DefaultParameterizedType(null, List.class, String.class)));
         assertEquals(this.defaultHTMLDisplayer, this.defaultDisplayerManager
-                .getHTMLDisplayer(new DefaultParameterizedType(null, Collections.class, String.class)));
+            .getHTMLDisplayer(new DefaultParameterizedType(null, Collections.class, String.class)));
 
         assertEquals(this.defaultHTMLDisplayer, this.defaultDisplayerManager.getHTMLDisplayer(Boolean.class));
         assertEquals(this.booleanHTMLDisplayer, this.defaultDisplayerManager.getHTMLDisplayer(Boolean.class, "test"));
@@ -135,49 +134,49 @@ public class HTMLDisplayerManagerTest
     }
 
     @Test
-    public void displayWithoutParametersTest() throws Exception
+    void displayWithoutParametersTest() throws Exception
     {
         assertEquals("Value[null]; Parameters: []; Mode:[]",
-                this.defaultDisplayerManager.display(null, null));
+            this.defaultDisplayerManager.display(null, null));
         assertEquals("<input >null</input>",
-                this.defaultDisplayerManager.display(String.class, null));
+            this.defaultDisplayerManager.display(String.class, null));
         assertEquals("<input >test</input>",
-                this.defaultDisplayerManager.display(null, "test"));
+            this.defaultDisplayerManager.display(null, "test"));
         assertEquals("<input >test</input>",
-                this.defaultDisplayerManager.display(String.class, "test"));
+            this.defaultDisplayerManager.display(String.class, "test"));
     }
 
     @Test
-    public void displayWithParametersTest() throws Exception
+    void displayWithParametersTest() throws Exception
     {
         Map<String, String> parameters = new LinkedHashMap<>();
         parameters.put("id", "testid");
         parameters.put("class", "testclass");
 
         assertEquals("Value[null]; Parameters: [id:testid, class:testclass]; Mode:[]",
-                this.defaultDisplayerManager.display(null, null, parameters));
+            this.defaultDisplayerManager.display(null, null, parameters));
         assertEquals("<input id='testid' class='testclass'>null</input>",
-                this.defaultDisplayerManager.display(String.class, null, parameters));
+            this.defaultDisplayerManager.display(String.class, null, parameters));
         assertEquals("<input id='testid' class='testclass'>test</input>",
-                this.defaultDisplayerManager.display(null, "test", parameters));
+            this.defaultDisplayerManager.display(null, "test", parameters));
         assertEquals("<input id='testid' class='testclass'>test</input>",
-                this.defaultDisplayerManager.display(String.class, "test", parameters));
+            this.defaultDisplayerManager.display(String.class, "test", parameters));
     }
 
     @Test
-    public void displayWithModeTest() throws Exception
+    void displayWithModeTest() throws Exception
     {
         Map<String, String> parameters = new LinkedHashMap<>();
         parameters.put("id", "testid");
         parameters.put("class", "testclass");
 
         assertEquals("Value[null]; Parameters: [id:testid, class:testclass]; Mode:[view]",
-                this.defaultDisplayerManager.display(null, null, parameters, "view"));
+            this.defaultDisplayerManager.display(null, null, parameters, "view"));
         assertEquals("<input id='testid' class='testclass'>null</input>",
-                this.defaultDisplayerManager.display(String.class, null, parameters, "view"));
+            this.defaultDisplayerManager.display(String.class, null, parameters, "view"));
         assertEquals("<input id='testid' class='testclass'>test</input>",
-                this.defaultDisplayerManager.display(null, "test", parameters, "view"));
+            this.defaultDisplayerManager.display(null, "test", parameters, "view"));
         assertEquals("<input id='testid' class='testclass'>test</input>",
-                this.defaultDisplayerManager.display(String.class, "test", parameters, "view"));
+            this.defaultDisplayerManager.display(String.class, "test", parameters, "view"));
     }
 }

@@ -54,7 +54,7 @@ public class DefaultVelocityFactoryTest
     private MockitoComponentManager componentManager;
 
     @Test
-    public void createVelocityEngine() throws Exception
+    void createVelocityEngine() throws Exception
     {
         assertNull(this.velocityFactory.getVelocityEngine("somekey"));
         assertFalse(this.velocityFactory.hasVelocityEngine("somekey"));
@@ -70,7 +70,7 @@ public class DefaultVelocityFactoryTest
     }
 
     @Test
-    public void removeVelocityEngine() throws Exception
+    void removeVelocityEngine() throws Exception
     {
         // Try to remove non-existing engine and verify it doesn't throw any error
         this.velocityFactory.removeVelocityEngine("somekey");
@@ -87,7 +87,7 @@ public class DefaultVelocityFactoryTest
     }
 
     @Test
-    public void createVelocityEngineWhenFailing()
+    void createVelocityEngineWhenFailing()
     {
         Throwable exception = assertThrows(XWikiVelocityException.class, () -> {
             this.velocityFactory.createVelocityEngine("somekey", new Properties());
@@ -95,7 +95,7 @@ public class DefaultVelocityFactoryTest
         assertEquals("Failed to create Velocity Engine", exception.getMessage());
         // Verify that the nested exception is there
         assertEquals("ComponentLookupException: Can't find descriptor for the component with type "
-            + "[interface org.xwiki.velocity.VelocityEngine] and hint [null]",
+                + "[interface org.xwiki.velocity.VelocityEngine] and hint [null]",
             ExceptionUtils.getRootCauseMessage(exception));
     }
 }

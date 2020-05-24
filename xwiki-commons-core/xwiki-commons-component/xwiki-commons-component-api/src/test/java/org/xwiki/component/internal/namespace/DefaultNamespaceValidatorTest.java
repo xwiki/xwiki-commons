@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link DefaultNamespaceValidator}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultNamespaceValidatorTest
@@ -39,7 +39,7 @@ public class DefaultNamespaceValidatorTest
     private DefaultNamespaceValidator validator = new DefaultNamespaceValidator();
 
     @Test
-    public void isAllowed()
+    void isAllowed()
     {
         assertTrue(this.validator.isAllowed(Arrays.asList("namespace"), "namespace"));
         assertTrue(this.validator.isAllowed(Arrays.asList("{root}"), null));
@@ -54,13 +54,13 @@ public class DefaultNamespaceValidatorTest
     }
 
     @Test
-    public void checkAllowed() throws NamespaceNotAllowedException
+    void checkAllowed() throws NamespaceNotAllowedException
     {
         this.validator.checkAllowed(Arrays.asList("namespace"), "namespace");
     }
 
     @Test
-    public void checkNoAllowed()
+    void checkNoAllowed()
     {
         Throwable exception = assertThrows(NamespaceNotAllowedException.class, () -> {
             this.validator.checkAllowed(Arrays.asList("namespace"), "wrong");

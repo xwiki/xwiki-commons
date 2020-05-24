@@ -33,7 +33,7 @@ public class WrappedThreadEventListenerTest
     private EventListener listenermock = Mockito.mock(EventListener.class);
 
     @Test
-    public void testWrapp()
+    void testWrapp()
     {
         WrappedThreadEventListener wrapper = new WrappedThreadEventListener(this.listenermock);
 
@@ -45,7 +45,7 @@ public class WrappedThreadEventListenerTest
     }
 
     @Test
-    public void testOnEventOnCurrentThread() throws InterruptedException
+    void testOnEventOnCurrentThread() throws InterruptedException
     {
         final WrappedThreadEventListener wrapper = new WrappedThreadEventListener(this.listenermock);
 
@@ -73,7 +73,7 @@ public class WrappedThreadEventListenerTest
     }
 
     @Test
-    public void testOnEventOnPassedThread() throws InterruptedException
+    void testOnEventOnPassedThread() throws InterruptedException
     {
         final WrappedThreadEventListener wrapper =
             new WrappedThreadEventListener(this.listenermock, Thread.currentThread());

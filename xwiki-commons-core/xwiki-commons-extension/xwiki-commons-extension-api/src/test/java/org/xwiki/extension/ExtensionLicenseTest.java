@@ -28,13 +28,13 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * Validate {@link ExtensionLicense}.
- * 
+ *
  * @version $Id$
  */
 public class ExtensionLicenseTest
 {
     @Test
-    public void equals()
+    void equals()
     {
         assertEquals(new ExtensionLicense("name", Arrays.asList("content")),
             new ExtensionLicense("name", Arrays.asList("content")));

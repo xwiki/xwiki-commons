@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Unit tests for {@link org.xwiki.tool.xar.FormatMojo}.
+ * Unit tests for {@link FormatMojo}.
  *
  * @version $Id$
  * @since 5.4.1
@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class FormatMojoTest
 {
     @Test
-    public void defaultLanguageForDefaultDocumentWhenTranslation()
+    void defaultLanguageForDefaultDocumentWhenTranslation()
     {
         FormatMojo mojo = new FormatMojo();
         mojo.defaultLanguage = "en";
@@ -57,7 +57,7 @@ public class FormatMojoTest
     }
 
     @Test
-    public void defaultLanguageForNonMatchingContentPage()
+    void defaultLanguageForNonMatchingContentPage()
     {
         FormatMojo mojo = new FormatMojo();
         mojo.defaultLanguage = "en";
@@ -70,7 +70,7 @@ public class FormatMojoTest
     }
 
     @Test
-    public void defaultLanguageForMatchingContentPage()
+    void defaultLanguageForMatchingContentPage()
     {
         FormatMojo mojo = new FormatMojo();
         mojo.defaultLanguage = "en";
@@ -83,7 +83,7 @@ public class FormatMojoTest
     }
 
     @Test
-    public void defaultLanguageForTranslatedDocument()
+    void defaultLanguageForTranslatedDocument()
     {
         FormatMojo mojo = new FormatMojo();
         mojo.defaultLanguage = "en";
@@ -95,7 +95,7 @@ public class FormatMojoTest
     }
 
     @Test
-    public void defaultLanguageForDocumentWhenNoTranslation()
+    void defaultLanguageForDocumentWhenNoTranslation()
     {
         FormatMojo mojo = new FormatMojo();
         mojo.defaultLanguage = "en";
@@ -110,7 +110,7 @@ public class FormatMojoTest
      * Reproduces issues raised in <a href="https://jira.xwiki.org/browse/XCOMMONS-1833">XCOMMONS-1833</a>.
      */
     @Test
-    public void defaultLanguageForDocumentWhenNoTranslationButFileWithSameNameInOtherSpace()
+    void defaultLanguageForDocumentWhenNoTranslationButFileWithSameNameInOtherSpace()
     {
         FormatMojo mojo = new FormatMojo();
         mojo.defaultLanguage = "en";
@@ -128,7 +128,7 @@ public class FormatMojoTest
      * Reproduces issue raised in <a href="https://jira.xwiki.org/browse/XCOMMONS-1373">XCOMMONS-1373</a>.
      */
     @Test
-    public void formatSpecialContentFailingWithXercesFromJDK8() throws Exception
+    void formatSpecialContentFailingWithXercesFromJDK8() throws Exception
     {
         SAXReader reader = new SAXReader();
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("XWikiSyntaxLinks.it.xml");

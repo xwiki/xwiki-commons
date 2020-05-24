@@ -74,7 +74,7 @@ public class DefaultVelocityContextFactoryTest
      * contexts. Also verifies that Velocity Context Initializers are called.
      */
     @Test
-    public void createDifferentContext() throws Exception
+    void createDifferentContext() throws Exception
     {
         // We also verify that the VelocityContextInitializers are called.
         VelocityContextInitializer mockInitializer = mock(VelocityContextInitializer.class);

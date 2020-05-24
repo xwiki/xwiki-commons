@@ -62,7 +62,7 @@ import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Unit tests for {@link org.xwiki.xml.internal.html.DefaultHTMLCleaner}.
+ * Unit tests for {@link DefaultHTMLCleaner}.
  *
  * @version $Id$
  * @since 1.6M1
@@ -93,7 +93,7 @@ public class DefaultHTMLCleanerTest
     private DefaultHTMLCleaner cleaner;
 
     @Test
-    public void elementExpansion()
+    void elementExpansion()
     {
         assertHTML("<p><textarea></textarea></p>", "<textarea/>");
 
@@ -103,7 +103,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void specialCharacters()
+    void specialCharacters()
     {
         assertHTML("<p>&quot;&amp;**notbold**&lt;notag&gt;&nbsp;</p>",
             "<p>&quot;&amp;**notbold**&lt;notag&gt;&nbsp;</p>");
@@ -117,13 +117,13 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void closeUnbalancedTags()
+    void closeUnbalancedTags()
     {
         assertHTML("<hr /><p>hello</p>", "<hr><p>hello");
     }
 
     @Test
-    public void conversionsFromHTML()
+    void conversionsFromHTML()
     {
         assertHTML("<p>this <strong>is</strong> bold</p>", "this <b>is</b> bold");
         assertHTML("<p><em>italic</em></p>", "<i>italic</i>");
@@ -140,7 +140,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void convertImageAlignment()
+    void convertImageAlignment()
     {
         assertHTML("<p><img style=\"float:left\" /></p>", "<img align=\"left\"/>");
         assertHTML("<p><img style=\"float:right\" /></p>", "<img align=\"right\"/>");
@@ -150,7 +150,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void convertImplicitParagraphs()
+    void convertImplicitParagraphs()
     {
         assertHTML("<p>word1</p><p>word2</p><p>word3</p><hr /><p>word4</p>", "word1<p>word2</p>word3<hr />word4");
 
@@ -170,7 +170,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void cleanNonXHTMLLists()
+    void cleanNonXHTMLLists()
     {
         // Fixing invalid list item.
         assertHTML("<ul><li>item</li></ul>", "<li>item</li>");
@@ -200,7 +200,7 @@ public class DefaultHTMLCleanerTest
      * Verify that scripts are not cleaned and that we can have a CDATA section inside. Also verify CDATA behaviors.
      */
     @Test
-    public void scriptAndCData()
+    void scriptAndCData()
     {
         assertHTML("<script type=\"text/javascript\">/*<![CDATA[*/\nalert(\"Hello World\")\n/*]]>*/</script>",
             "<script type=\"text/javascript\"><![CDATA[\nalert(\"Hello World\")\n]]></script>");
@@ -233,7 +233,7 @@ public class DefaultHTMLCleanerTest
      * Verify that inline style elements are not cleaned and that we can have a CDATA section inside.
      */
     @Test
-    public void styleAndCData()
+    void styleAndCData()
     {
         assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>",
             "<style type=\"text/css\"><![CDATA[\na { color: red; }\n]]></style>");
@@ -252,7 +252,7 @@ public class DefaultHTMLCleanerTest
      * Verify that we can control what filters are used for cleaning.
      */
     @Test
-    public void explicitFilterList()
+    void explicitFilterList()
     {
         HTMLCleanerConfiguration configuration = this.cleaner.getDefaultConfiguration();
         configuration.setFilters(Collections.emptyList());
@@ -266,7 +266,7 @@ public class DefaultHTMLCleanerTest
      * Verify that the restricted parameter works.
      */
     @Test
-    public void restrictedHtml()
+    void restrictedHtml()
     {
         HTMLCleanerConfiguration configuration = this.cleaner.getDefaultConfiguration();
         Map<String, String> parameters = new HashMap<>();
@@ -296,7 +296,7 @@ public class DefaultHTMLCleanerTest
      * Verify that passing a fully-formed XHTML header works fine.
      */
     @Test
-    public void fullXHTMLHeader()
+    void fullXHTMLHeader()
     {
         assertHTML("<p>test</p>", HEADER_FULL + "<p>test</p>" + FOOTER);
     }
@@ -322,7 +322,7 @@ public class DefaultHTMLCleanerTest
      * href="https://jira.xwiki.org/browse/XWIKI-9753">XWIKI-9753</a>).
      */
     @Test
-    public void cleanSVGTags() throws Exception
+    void cleanSVGTags() throws Exception
     {
         String input =
             "<p>before</p>\n" + "<p><svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
@@ -333,12 +333,13 @@ public class DefaultHTMLCleanerTest
 
     /**
      * Test that cleaning works when there's a TITLE element in the body (but with a namespace). The issue was that
-     * HTMLCleaner would consider it a duplicate of the TITLE element in the HEAD even though it's namespaced. (see also
+     * HTMLCleaner would consider it a duplicate of the TITLE element in the HEAD even though it's namespaced. (see
+     * also
      * <a href="https://jira.xwiki.org/browse/XWIKI-9753">XWIKI-9753</a>).
      */
-    @Test
     @Disabled("See https://jira.xwiki.org/browse/XWIKI-9753")
-    public void cleanTitleWithNamespace()
+    @Test
+    void cleanTitleWithNamespace()
     {
         // Test with TITLE in HEAD
         String input =
@@ -358,11 +359,11 @@ public class DefaultHTMLCleanerTest
     }
 
     /**
-     * Verify that a xmlns namespace set on the HTML element is not removed by default and it's removed if
-     * {@link HTMLCleanerConfiguration#NAMESPACES_AWARE} is set to false.
+     * Verify that a xmlns namespace set on the HTML element is not removed by default and it's removed if {@link
+     * HTMLCleanerConfiguration#NAMESPACES_AWARE} is set to false.
      */
     @Test
-    public void cleanHTMLTagWithNamespace()
+    void cleanHTMLTagWithNamespace()
     {
         String input = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body>";
 
@@ -378,54 +379,53 @@ public class DefaultHTMLCleanerTest
     }
 
     /**
-     * Test that cleaning an empty DIV works (it used to fail, see <a
-     * href="https://jira.xwiki.org/browse/XWIKI-4007">XWIKI-4007</a>).
+     * Test that cleaning an empty DIV works (it used to fail, see <a href="https://jira.xwiki.org/browse/XWIKI-4007">XWIKI-4007</a>).
      */
     @Test
-    public void cleanEmptyDIV()
+    void cleanEmptyDIV()
     {
         String input = "<div id=\"y\"></div><div id=\"z\">something</div>";
         assertHTML(input, HEADER_FULL + input + FOOTER);
     }
 
     @Test
-    public void verifyLegendTagNotStripped()
+    void verifyLegendTagNotStripped()
     {
         String input = "<fieldset><legend>test</legend><div>content</div></fieldset>";
         assertHTML(input, HEADER_FULL + input + FOOTER);
     }
 
     @Test
-    public void verifySpanIsExpanded()
+    void verifySpanIsExpanded()
     {
         assertHTML("<p><span class=\"fa fa-icon\"></span></p>", "<span class=\"fa fa-icon\" />");
     }
 
     @Test
-    public void verifyExternalLinksAreSecure()
+    void verifyExternalLinksAreSecure()
     {
         assertHTML("<p><a href=\"relativeLink\" target=\"_blank\">label</a></p>",
-                "<a href=\"relativeLink\" target=\"_blank\">label</a>");
+            "<a href=\"relativeLink\" target=\"_blank\">label</a>");
         assertHTML("<p><a href=\"http://xwiki.org\" rel=\" noopener noreferrer\" target=\"_blank\">label</a></p>",
-                "<a href=\"http://xwiki.org\" target=\"_blank\">label</a>");
+            "<a href=\"http://xwiki.org\" target=\"_blank\">label</a>");
         assertHTML("<p><a href=\"http://xwiki.org\" rel=\" noopener noreferrer\" target=\"someframe\">label</a></p>",
-                "<a href=\"http://xwiki.org\" target=\"someframe\">label</a>");
+            "<a href=\"http://xwiki.org\" target=\"someframe\">label</a>");
         assertHTML("<p><a href=\"http://xwiki.org\" target=\"_top\">label</a></p>",
-                "<a href=\"http://xwiki.org\" target=\"_top\">label</a>");
+            "<a href=\"http://xwiki.org\" target=\"_top\">label</a>");
         assertHTML("<p><a href=\"http://xwiki.org\" target=\"_parent\">label</a></p>",
-                "<a href=\"http://xwiki.org\" target=\"_parent\">label</a>");
+            "<a href=\"http://xwiki.org\" target=\"_parent\">label</a>");
         assertHTML("<p><a href=\"http://xwiki.org\" target=\"_self\">label</a></p>",
-                "<a href=\"http://xwiki.org\" target=\"_self\">label</a>");
+            "<a href=\"http://xwiki.org\" target=\"_self\">label</a>");
         assertHTML("<p><a href=\"http://xwiki.org\" rel=\"noopener noreferrer\" target=\"_blank\">label</a></p>",
-                "<a href=\"http://xwiki.org\" target=\"_blank\" rel=\"noopener\">label</a>");
+            "<a href=\"http://xwiki.org\" target=\"_blank\" rel=\"noopener\">label</a>");
         assertHTML("<p><a href=\"http://xwiki.org\" rel=\"noreferrer noopener\" target=\"_blank\">label</a></p>",
-                "<a href=\"http://xwiki.org\" target=\"_blank\" rel=\"noreferrer\">label</a>");
+            "<a href=\"http://xwiki.org\" target=\"_blank\" rel=\"noreferrer\">label</a>");
         assertHTML("<p><a href=\"http://xwiki.org\" rel=\"hello noopener noreferrer\" target=\"_blank\">label</a></p>",
-                "<a href=\"http://xwiki.org\" target=\"_blank\" rel=\"hello\">label</a>");
+            "<a href=\"http://xwiki.org\" target=\"_blank\" rel=\"hello\">label</a>");
     }
 
     @Test
-    public void verifyEntitiesAreNotBroken()
+    void verifyEntitiesAreNotBroken()
     {
         assertHTML("<p>&Eacute;</p>", "&Eacute;");
         assertHTML("<p>&frac14;</p>", "&frac14;");
@@ -434,7 +434,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void entitiesWithTranslation()
+    void entitiesWithTranslation()
     {
         assertHTML("<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>", "<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>");
         HTMLCleanerConfiguration htmlCleanerConfiguration = new DefaultHTMLCleanerConfiguration();
@@ -445,7 +445,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void verifyLeadingSpacesAreKeptOnlyInInputValue()
+    void verifyLeadingSpacesAreKeptOnlyInInputValue()
     {
         assertHTML("<p><input type=\"hidden\" value=\"  fff\" /></p>", "<input type=\"hidden\" value=\"  fff\" />");
         assertHTML("<p><input type=\"hidden\" value=\"foo\" /></p>", "<input type=\"hidden\" value=\"foo\" />");
@@ -461,7 +461,7 @@ public class DefaultHTMLCleanerTest
      * @see <a href="https://jira.xwiki.org/browse/XCOMMONS-1293">XCOMMONS-1293</a>
      */
     @Test
-    public void verifyIFRAMECleaning() throws Exception
+    void verifyIFRAMECleaning() throws Exception
     {
         // TODO: these 2 lines need to be changed to the following when https://jira.xwiki.org/browse/XCOMMONS-1292 is
         // fixed:
@@ -480,7 +480,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void escapeHTMLCharsInAttributes() throws Exception
+    void escapeHTMLCharsInAttributes() throws Exception
     {
         // Note: single quotes are not escaped since they're valid chars in attribute values that are surrounded by
         // quotes. And HTMLCleaner will convert single quoted attributes into double-quoted ones.
@@ -505,7 +505,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void controlCharacters() throws Exception
+    void controlCharacters() throws Exception
     {
         String htmlInput = "<p>\u0008</p>";
         Document document = this.cleaner.clean(new StringReader(htmlInput));
@@ -543,7 +543,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void transformedDOMContent()
+    void transformedDOMContent()
     {
         String htmlInput = "<img src=\"http://host.com/a.gif?a=foo&b=bar\" />";
         Document document = this.cleaner.clean(new StringReader(htmlInput));

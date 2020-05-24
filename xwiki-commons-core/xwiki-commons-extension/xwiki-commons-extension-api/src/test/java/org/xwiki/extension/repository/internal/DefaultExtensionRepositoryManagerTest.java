@@ -147,10 +147,8 @@ public class DefaultExtensionRepositoryManagerTest
         assertSameElements(Arrays.asList(extensions), this.manager.search("id", offset, nb));
     }
 
-    // Tests
-
     @Test
-    public void resolveVersions() throws ResolveException
+    void resolveVersions() throws ResolveException
     {
         when(this.mockRepository1.resolveVersions("id", 0, -1)).thenReturn(toIterableVersions("1.0", "2.0"));
         when(this.mockRepository2.resolveVersions("id", 0, -1)).thenReturn(toIterableVersions("3.0", "2.0", "4.0"));
@@ -161,7 +159,7 @@ public class DefaultExtensionRepositoryManagerTest
     }
 
     @Test
-    public void search() throws SearchException
+    void search() throws SearchException
     {
         when(this.mockSearchableRepository1.search("pattern", 0, -1))
             .thenReturn(toIterableExtensions(this.extension1, this.extension2));

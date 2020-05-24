@@ -75,13 +75,13 @@ public class StandardEnvironmentTest
     }
 
     @Test
-    public void getResourceWhenResourceDirNotSet()
+    void getResourceWhenResourceDirNotSet()
     {
         assertNull(this.environment.getResource("doesntexist"));
     }
 
     @Test
-    public void getResourceOk()
+    void getResourceOk()
     {
         // Make sure our resource really exists on the file system...
         // TODO: find a better way...
@@ -94,14 +94,14 @@ public class StandardEnvironmentTest
     }
 
     @Test
-    public void getResourceWhenResourceDirNotSetButResourceAvailableInDefaultClassLoader()
+    void getResourceWhenResourceDirNotSetButResourceAvailableInDefaultClassLoader()
     {
         URL resource = this.environment.getResource("test");
         assertNotNull(resource);
     }
 
     @Test
-    public void getResourceWhenResourceDirSetButResourceAvailableInDefaultClassLoader()
+    void getResourceWhenResourceDirSetButResourceAvailableInDefaultClassLoader()
     {
         this.environment.setResourceDirectory(new File("/resource"));
         URL resource = this.environment.getResource("test");
@@ -109,7 +109,7 @@ public class StandardEnvironmentTest
     }
 
     @Test
-    public void getPermanentDirectory()
+    void getPermanentDirectory()
     {
         File permanentDirectory = new File("/permanent");
         this.environment.setPermanentDirectory(permanentDirectory);
@@ -131,7 +131,7 @@ public class StandardEnvironmentTest
     }
 
     @Test
-    public void getPermanentDirectoryWhenNotSet()
+    void getPermanentDirectoryWhenNotSet()
     {
         assertEquals(new File(System.getProperty("java.io.tmpdir")), this.environment.getPermanentDirectory());
 
@@ -146,7 +146,7 @@ public class StandardEnvironmentTest
     }
 
     @Test
-    public void getTemporaryDirectory()
+    void getTemporaryDirectory()
     {
         File tmpDir = new File("tmpdir");
         this.environment.setTemporaryDirectory(tmpDir);
@@ -154,13 +154,13 @@ public class StandardEnvironmentTest
     }
 
     @Test
-    public void getTemporaryDirectoryWhenNotSet()
+    void getTemporaryDirectoryWhenNotSet()
     {
         assertEquals(TMPDIR, this.environment.getTemporaryDirectory());
     }
 
     @Test
-    public void getTemporaryDirectoryWhenNotADirectory() throws Exception
+    void getTemporaryDirectoryWhenNotADirectory() throws Exception
     {
         FileUtils.write(TMPDIR, "test", "UTF-8");
 

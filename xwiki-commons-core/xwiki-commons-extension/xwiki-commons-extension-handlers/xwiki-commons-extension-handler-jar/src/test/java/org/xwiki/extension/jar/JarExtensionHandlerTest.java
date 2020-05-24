@@ -47,6 +47,8 @@ import org.xwiki.observation.ObservationManager;
 import org.xwiki.test.annotation.AfterComponent;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 
+import packagefile.installedextensiononnamespace.DefaultTestInstalledComponent;
+import packagefile.installedextensiononnamespace.TestInstalledComponent;
 import packagefile.jarextension.DefaultTestComponent;
 import packagefile.jarextension.TestComponent;
 import packagefile.jarextensionwithdeps.DefaultTestComponentWithDeps;
@@ -165,7 +167,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
      * Check that the extension is properly reported to be installed in the given namespace.
      *
      * @param installedExtension the local extension to check
-     * @param namespace the namespace where it has been installed
+     * @param namespace          the namespace where it has been installed
      */
     private void checkInstallStatus(InstalledExtension installedExtension, String namespace)
     {
@@ -205,9 +207,9 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
      * Check that an extension is effectively available in all namespace and that the global component manager provide
      * the expected default implementation.
      *
-     * @param role the role expected to be provided by the extension
+     * @param role           the role expected to be provided by the extension
      * @param implementation the implementation expected for the given role
-     * @param <T> the role class
+     * @param <T>            the role class
      * @return the effective role class in the extension class loader
      * @throws Exception on error
      */
@@ -220,10 +222,10 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
      * Check that an extension is effectively available in the given namespace and that the corresponding component
      * manager provide the expected default implementation.
      *
-     * @param role the role expected to be provided by the extension
+     * @param role           the role expected to be provided by the extension
      * @param implementation the implementation expected for the given role
-     * @param namespace the namespace where the extension is expected to installed
-     * @param <T> the role class
+     * @param namespace      the namespace where the extension is expected to installed
+     * @param <T>            the role class
      * @return the effective role class in the extension class loader
      * @throws Exception on error
      */
@@ -282,7 +284,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
      * Check that the extension is properly reported to be not installed in the given namespace.
      *
      * @param localExtension the local extension to check
-     * @param namespace the namespace where it should not be installed
+     * @param namespace      the namespace where it should not be installed
      */
     private void ckeckUninstallStatus(LocalExtension localExtension, String namespace)
     {
@@ -314,7 +316,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
      * Check that an extension is effectively not available in the given namespace and that the corresponding component
      * manager does not provide an implementation.
      *
-     * @param role the role expected to not be provide
+     * @param role      the role expected to not be provide
      * @param namespace the namespace where the extension is not expected to be installed
      * @throws Exception on error
      */
@@ -335,7 +337,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallAndUninstallExtension() throws Throwable
+    void testInstallAndUninstallExtension() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension", "test");
 
@@ -373,7 +375,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallAndUninstallWebjarExtension() throws Throwable
+    void testInstallAndUninstallWebjarExtension() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("webjar", "test");
 
@@ -394,7 +396,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testUpgradeAndDowngradeExtensionOnNamespace() throws Throwable
+    void testUpgradeAndDowngradeExtensionOnNamespace() throws Throwable
     {
         final ExtensionId extensionId1 = new ExtensionId("test", "1.0");
         final ExtensionId extensionId2 = new ExtensionId("test", "2.0");
@@ -440,7 +442,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallAndUninstallExtensionOnNamespace() throws Throwable
+    void testInstallAndUninstallExtensionOnNamespace() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension", "test");
 
@@ -470,7 +472,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallAndUninstallExtensionWithoutComponents() throws Throwable
+    void testInstallAndUninstallExtensionWithoutComponents() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("simplejar", "test");
 
@@ -491,7 +493,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallAndUninstallExtensionWithDependency() throws Throwable
+    void testInstallAndUninstallExtensionWithDependency() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
 
@@ -529,7 +531,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallAndUninstallExtensionWithDependencyOnANamespace() throws Throwable
+    void testInstallAndUninstallExtensionWithDependencyOnANamespace() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
         final String namespace = NAMESPACE;
@@ -555,7 +557,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallEntensionAndUninstallDependency() throws Throwable
+    void testInstallEntensionAndUninstallDependency() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
         final ExtensionId dependencyId = new ExtensionId("org.xwiki.test:test-extension", "test");
@@ -593,7 +595,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallExtensionAndUninstallDependencyOnANamespace() throws Throwable
+    void testInstallExtensionAndUninstallDependencyOnANamespace() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
         final ExtensionId dependencyId = new ExtensionId("org.xwiki.test:test-extension", "test");
@@ -620,7 +622,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallDependencyInstallExtensionOnANamespaceAndUninstallExtension() throws Throwable
+    void testInstallDependencyInstallExtensionOnANamespaceAndUninstallExtension() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
         final ExtensionId dependencyId = new ExtensionId("org.xwiki.test:test-extension", "test");
@@ -668,7 +670,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallDependencyInstallExtensionOnANamespaceAndUninstallDependency() throws Throwable
+    void testInstallDependencyInstallExtensionOnANamespaceAndUninstallDependency() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
         final ExtensionId dependencyId = new ExtensionId("org.xwiki.test:test-extension", "test");
@@ -717,7 +719,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testMultipleInstallOnANamespaceAndUninstall() throws Throwable
+    void testMultipleInstallOnANamespaceAndUninstall() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
         final String namespace1 = "namespace1";
@@ -783,7 +785,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testMultipleInstallOnANamespaceAndUninstallDependency() throws Throwable
+    void testMultipleInstallOnANamespaceAndUninstallDependency() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
         final ExtensionId dependencyId = new ExtensionId("org.xwiki.test:test-extension", "test");
@@ -838,7 +840,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testMultipleInstallOnANamespaceAndUninstallAll() throws Throwable
+    void testMultipleInstallOnANamespaceAndUninstallAll() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
         final String namespace1 = "namespace1";
@@ -883,7 +885,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testMultipleInstallOnANamespaceAndUninstallDependencyAll() throws Throwable
+    void testMultipleInstallOnANamespaceAndUninstallDependencyAll() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
         final ExtensionId dependencyId = new ExtensionId("org.xwiki.test:test-extension", "test");
@@ -925,7 +927,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testMultipleInstallOnANamespaceWithGlobalDependencyAndUninstall() throws Throwable
+    void testMultipleInstallOnANamespaceWithGlobalDependencyAndUninstall() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
         final ExtensionId dependencyId = new ExtensionId("org.xwiki.test:test-extension", "test");
@@ -991,7 +993,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testMultipleInstallOnANamespaceWithGlobalDependencyAndUninstallDependency() throws Throwable
+    void testMultipleInstallOnANamespaceWithGlobalDependencyAndUninstallDependency() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
         final ExtensionId dependencyId = new ExtensionId("org.xwiki.test:test-extension", "test");
@@ -1040,7 +1042,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testUninstallInvalidExtensionFromNamespace() throws Throwable
+    void testUninstallInvalidExtensionFromNamespace() throws Throwable
     {
         ExtensionId extensionId = new ExtensionId("invalidextensiononnamespace", "version");
 
@@ -1048,7 +1050,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testUninstallInvalidExtensionFromRoot() throws Throwable
+    void testUninstallInvalidExtensionFromRoot() throws Throwable
     {
         ExtensionId extensionId = new ExtensionId("invalidextensiononroot", "version");
 
@@ -1056,7 +1058,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testExtensionInstalledOnNamespaceAtInit() throws Throwable
+    void testExtensionInstalledOnNamespaceAtInit() throws Throwable
     {
         ExtensionId extensionId = new ExtensionId("installedextensiononnamespace", "1.0");
 
@@ -1064,14 +1066,14 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, NAMESPACE);
 
-        checkJarExtensionAvailability(packagefile.installedextensiononnamespace.TestInstalledComponent.TYPE_STRING,
-            packagefile.installedextensiononnamespace.DefaultTestInstalledComponent.class, NAMESPACE);
+        checkJarExtensionAvailability(TestInstalledComponent.TYPE_STRING,
+            DefaultTestInstalledComponent.class, NAMESPACE);
 
         uninstall(extensionId, NAMESPACE);
     }
 
     @Test
-    public void testExtensionInstalledOnRootAtInit() throws Throwable
+    void testExtensionInstalledOnRootAtInit() throws Throwable
     {
         ExtensionId extensionId = new ExtensionId("installedextensiononroot", "1.0");
 
@@ -1086,7 +1088,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallOnNamespaceThenOnRoot() throws Throwable
+    void testInstallOnNamespaceThenOnRoot() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension", "test");
 
@@ -1110,7 +1112,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallOnNamespaceThenUpgradeOnRoot() throws Throwable
+    void testInstallOnNamespaceThenUpgradeOnRoot() throws Throwable
     {
         final ExtensionId extensionId1 = new ExtensionId("jarupgrade", "1.0");
         final ExtensionId extensionId2 = new ExtensionId("jarupgrade", "2.0");

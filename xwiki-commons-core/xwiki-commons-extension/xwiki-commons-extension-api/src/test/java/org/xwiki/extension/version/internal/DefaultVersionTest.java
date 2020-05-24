@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link DefaultVersion}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultVersionTest
@@ -54,10 +54,8 @@ public class DefaultVersionTest
         inputStream.close();
     }
 
-    // Tests
-
     @Test
-    public void compareTo()
+    void compareTo()
     {
         assertEquals(0, new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1")));
         assertEquals(0, new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1.0")));
@@ -74,7 +72,7 @@ public class DefaultVersionTest
     }
 
     @Test
-    public void getType()
+    void getType()
     {
         assertEquals(Version.Type.SNAPSHOT, new DefaultVersion("1.1-SNAPSHOT").getType());
         assertEquals(Version.Type.BETA, new DefaultVersion("1.1-milestone-1").getType());
@@ -82,20 +80,20 @@ public class DefaultVersionTest
     }
 
     @Test
-    public void serialize() throws IOException, ClassNotFoundException
+    void serialize() throws IOException, ClassNotFoundException
     {
         validateSerialize(new DefaultVersion("1.1"));
         validateSerialize(new DefaultVersion("1.1-milestone-1"));
     }
 
     @Test
-    public void getTypeForBigInteger()
+    void getTypeForBigInteger()
     {
         new DefaultVersion("1.2147483648").getType();
     }
 
     @Test
-    public void testHashCode()
+    void testHashCode()
     {
         assertEquals(new DefaultVersion("1.1").hashCode(), new DefaultVersion("1.1").hashCode());
         assertEquals(new DefaultVersion("1.1").hashCode(), new DefaultVersion("1.1.0").hashCode());

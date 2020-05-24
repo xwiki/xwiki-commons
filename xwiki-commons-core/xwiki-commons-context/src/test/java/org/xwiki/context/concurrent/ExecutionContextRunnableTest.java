@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 public class ExecutionContextRunnableTest
 {
     @Test
-    public void initializedExecutionContext() throws InterruptedException, ComponentLookupException,
+    void initializedExecutionContext() throws InterruptedException, ComponentLookupException,
         ExecutionContextException
     {
         ComponentManager componentMangerMock = Mockito.mock(ComponentManager.class);

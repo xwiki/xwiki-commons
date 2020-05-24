@@ -80,7 +80,7 @@ public class ObservationManagerEventListenerTest
     }
 
     @Test
-    public void newListenerComponent() throws ComponentRepositoryException
+    void newListenerComponent() throws ComponentRepositoryException
     {
         this.componentManager.registerComponent(this.componentDescriptor, this.eventListenerMock);
 
@@ -88,7 +88,7 @@ public class ObservationManagerEventListenerTest
     }
 
     @Test
-    public void removedListenerComponent() throws Exception
+    void removedListenerComponent() throws Exception
     {
         this.componentManager.registerComponent(this.componentDescriptor, this.eventListenerMock);
         this.componentManager.unregisterComponent(this.componentDescriptor.getRoleType(),

@@ -60,7 +60,7 @@ public class DefaultJobProgressTest
     }
 
     @Test
-    public void progressSteps()
+    void progressSteps()
     {
         assertEquals(0, Double.compare(0D, this.progress.getOffset()));
         assertEquals(0, Double.compare(0D, this.progress.getCurrentLevelOffset()));
@@ -96,7 +96,7 @@ public class DefaultJobProgressTest
     }
 
     @Test
-    public void stepProgressEvent()
+    void stepProgressEvent()
     {
         assertEquals(0, Double.compare(0D, this.progress.getOffset()));
         assertEquals(0, Double.compare(0D, this.progress.getCurrentLevelOffset()));
@@ -131,7 +131,7 @@ public class DefaultJobProgressTest
      * Tests that the offset is 1 when the progress is done.
      */
     @Test
-    public void progressDone()
+    void progressDone()
     {
         assertEquals(0D, this.progress.getOffset(), 0D);
         assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
@@ -144,7 +144,7 @@ public class DefaultJobProgressTest
     }
 
     @Test
-    public void popDontMoveToNextStep()
+    void popDontMoveToNextStep()
     {
         assertEquals(0D, this.progress.getOffset(), 0D);
         assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
@@ -176,8 +176,9 @@ public class DefaultJobProgressTest
 
     // Bulletproofing
 
+    // Bulletproofing
     @Test
-    public void moveToNextStepInRoot()
+    void moveToNextStepInRoot()
     {
         assertEquals(0, this.progress.getRootStep().getChildren().size());
 
@@ -191,7 +192,7 @@ public class DefaultJobProgressTest
     }
 
     @Test
-    public void moreStepsThanExpected()
+    void moreStepsThanExpected()
     {
         // Expect 1 step
         this.observation.notify(new PushLevelProgressEvent(1), null, null);
@@ -223,7 +224,7 @@ public class DefaultJobProgressTest
     }
 
     @Test
-    public void unknownNumberOfSteps()
+    void unknownNumberOfSteps()
     {
         // Unknown number of steps
         this.observation.notify(new PushLevelProgressEvent(), null, null);
@@ -261,7 +262,7 @@ public class DefaultJobProgressTest
     }
 
     @Test
-    public void pushLevelOnClosedStep()
+    void pushLevelOnClosedStep()
     {
         this.observation.notify(new PushLevelProgressEvent(2), null, null);
 
@@ -281,7 +282,7 @@ public class DefaultJobProgressTest
     }
 
     @Test
-    public void popLevelOnWrongSource()
+    void popLevelOnWrongSource()
     {
         assertEquals(0D, this.progress.getOffset(), 0D);
         assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
@@ -297,7 +298,7 @@ public class DefaultJobProgressTest
     }
 
     @Test
-    public void popLevelOnParentLevelSource()
+    void popLevelOnParentLevelSource()
     {
         assertEquals(0D, this.progress.getOffset(), 0D);
         assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
@@ -331,7 +332,7 @@ public class DefaultJobProgressTest
     }
 
     @Test
-    public void endStepOnParentStepSource()
+    void endStepOnParentStepSource()
     {
         assertEquals(0D, this.progress.getOffset(), 0D);
         assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
@@ -373,7 +374,7 @@ public class DefaultJobProgressTest
     }
 
     @Test
-    public void startStepFromDifferentSource()
+    void startStepFromDifferentSource()
     {
         Object source1 = "source1";
         Object source11 = "source11";
@@ -426,7 +427,7 @@ public class DefaultJobProgressTest
     }
 
     @Test
-    public void addStepWhenFinished()
+    void addStepWhenFinished()
     {
         DefaultJobProgressStep step = this.progress.getCurrentStep();
         step.finish();

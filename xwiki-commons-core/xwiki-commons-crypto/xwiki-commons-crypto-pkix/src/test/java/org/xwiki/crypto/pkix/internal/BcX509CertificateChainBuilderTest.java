@@ -83,7 +83,7 @@ public class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
     }
 
     @Test
-    public void validV3CertificatePath() throws Exception
+    void validV3CertificatePath() throws Exception
     {
         Collection<X509CertificateHolder> certs = new ArrayList<>();
         certs.add(BcUtils.getX509CertificateHolder(v3CaCert));
@@ -99,7 +99,7 @@ public class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
     }
 
     @Test
-    public void incompleteV3CertificatePath() throws Exception
+    void incompleteV3CertificatePath() throws Exception
     {
         Collection<X509CertificateHolder> certs = new ArrayList<>();
         certs.add(BcUtils.getX509CertificateHolder(v3InterCaCert));
@@ -114,7 +114,7 @@ public class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
     }
 
     @Test
-    public void brokenV3CertificatePath() throws Exception
+    void brokenV3CertificatePath() throws Exception
     {
         Collection<X509CertificateHolder> certs = new ArrayList<>();
         certs.add(BcUtils.getX509CertificateHolder(v3CaCert));
@@ -129,7 +129,7 @@ public class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
     }
 
     @Test
-    public void validV1CertificatePath() throws Exception
+    void validV1CertificatePath() throws Exception
     {
         Collection<X509CertificateHolder> certs = new ArrayList<>();
         certs.add(BcUtils.getX509CertificateHolder(v1CaCert));
@@ -144,7 +144,7 @@ public class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
     }
 
     @Test
-    public void incompleteV1CertificatePath() throws Exception
+    void incompleteV1CertificatePath() throws Exception
     {
         CertificateProvider provider = componentManager.getInstance(CertificateProvider.class, "BCStoreX509");
 

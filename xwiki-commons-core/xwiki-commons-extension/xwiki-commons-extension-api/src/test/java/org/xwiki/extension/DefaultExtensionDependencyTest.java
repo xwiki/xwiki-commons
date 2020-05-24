@@ -35,13 +35,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link DefaultExtensionDependency}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultExtensionDependencyTest
 {
     @Test
-    public void properties()
+    void properties()
     {
         DefaultExtensionDependency dependency =
             new DefaultExtensionDependency("id", new DefaultVersionConstraint("version"));
@@ -68,7 +68,7 @@ public class DefaultExtensionDependencyTest
     }
 
     @Test
-    public void equals()
+    void equals()
     {
         assertEquals(new DefaultExtensionDependency("id", new DefaultVersionConstraint("version")),
             new DefaultExtensionDependency("id", new DefaultVersionConstraint("version")));
@@ -81,7 +81,7 @@ public class DefaultExtensionDependencyTest
     }
 
     @Test
-    public void isCompatibleWithExtensionId()
+    void isCompatibleWithExtensionId()
     {
         DefaultExtensionDependency dependency =
             new DefaultExtensionDependency("id", new DefaultVersionConstraint("[1.0, 2.0]"));
@@ -96,7 +96,7 @@ public class DefaultExtensionDependencyTest
     }
 
     @Test
-    public void isCompatibleWithExtension()
+    void isCompatibleWithExtension()
     {
         DefaultExtensionDependency dependency =
             new DefaultExtensionDependency("id", new DefaultVersionConstraint("[1.0, 2.0]"));
@@ -127,7 +127,7 @@ public class DefaultExtensionDependencyTest
     }
 
     @Test
-    public void repositories()
+    void repositories()
     {
         DefaultExtensionDependency dependency =
             new DefaultExtensionDependency("id", new DefaultVersionConstraint("version"));
@@ -145,7 +145,7 @@ public class DefaultExtensionDependencyTest
     }
 
     @Test
-    public void addExclusion()
+    void addExclusion()
     {
         DefaultExtensionDependency dependency =
             new DefaultExtensionDependency("id", new DefaultVersionConstraint("version"));

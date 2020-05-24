@@ -26,14 +26,14 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * Validate {@link DefaultExtensionAuthor}.
- * 
+ *
  * @version $Id$
  * @since 10.7RC1
  */
 public class DefaultExtensionAuthorTest
 {
     @Test
-    public void equals()
+    void equals()
     {
         assertEquals(new DefaultExtensionAuthor("name", "url"), new DefaultExtensionAuthor("name", "url"));
 

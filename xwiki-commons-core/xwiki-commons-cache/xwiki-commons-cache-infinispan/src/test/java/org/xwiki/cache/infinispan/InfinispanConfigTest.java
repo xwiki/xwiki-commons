@@ -87,7 +87,7 @@ public class InfinispanConfigTest extends AbstractTestCache
         super.before();
     }
 
-    private org.infinispan.Cache<String, String> createCache(CacheConfiguration configuration) throws Exception
+    private Cache<String, String> createCache(CacheConfiguration configuration) throws Exception
     {
         org.xwiki.cache.Cache<String> cache = getCacheFactory().newCache(configuration);
 
@@ -95,7 +95,7 @@ public class InfinispanConfigTest extends AbstractTestCache
     }
 
     @Test
-    public void createCacheWhenUnnamed() throws Exception
+    void createCacheWhenUnnamed() throws Exception
     {
         CacheConfiguration configuration = new CacheConfiguration("noname");
 
@@ -105,7 +105,7 @@ public class InfinispanConfigTest extends AbstractTestCache
     }
 
     @Test
-    public void createCacheWhenFileCacheNoPath() throws Exception
+    void createCacheWhenFileCacheNoPath() throws Exception
     {
         CacheConfiguration configuration = new LRUCacheConfiguration("file-cache-nopath", 42);
 
@@ -119,7 +119,7 @@ public class InfinispanConfigTest extends AbstractTestCache
     }
 
     @Test
-    public void createCacheWhenFileCachePath() throws Exception
+    void createCacheWhenFileCachePath() throws Exception
     {
         CacheConfiguration configuration = new LRUCacheConfiguration("file-cache-path", 42);
 

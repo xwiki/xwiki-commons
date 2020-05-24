@@ -33,14 +33,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Validate {@link DefaultExtensionRepositoryDescriptor}.
- * 
+ *
  * @version $Id$
  * @since 10.7RC1
  */
 public class DefaultExtensionRepositoryDescriptorTest
 {
     @Test
-    public void equals() throws URISyntaxException
+    void equals() throws URISyntaxException
     {
         assertEquals(new DefaultExtensionRepositoryDescriptor("id", "type", new URI("uri:uri")),
             new DefaultExtensionRepositoryDescriptor("id", "type", new URI("uri:uri")));
@@ -65,7 +65,7 @@ public class DefaultExtensionRepositoryDescriptorTest
     }
 
     @Test
-    public void properties()
+    void properties()
     {
         DefaultExtensionRepositoryDescriptor descriptor = new DefaultExtensionRepositoryDescriptor("id");
 

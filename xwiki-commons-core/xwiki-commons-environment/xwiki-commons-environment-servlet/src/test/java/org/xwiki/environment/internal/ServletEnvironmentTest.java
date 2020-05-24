@@ -75,7 +75,7 @@ public class ServletEnvironmentTest
     }
 
     @Test
-    public void getResourceWhenServletContextNotSet()
+    void getResourceWhenServletContextNotSet()
     {
         Throwable exception = assertThrows(RuntimeException.class, () -> {
             this.environment.getResource("/whatever");
@@ -85,7 +85,7 @@ public class ServletEnvironmentTest
     }
 
     @Test
-    public void getResourceOk() throws Exception
+    void getResourceOk() throws Exception
     {
         ServletContext servletContext = mock(ServletContext.class);
         this.environment.setServletContext(servletContext);
@@ -95,7 +95,7 @@ public class ServletEnvironmentTest
     }
 
     @Test
-    public void getResourceAsStreamOk() throws Exception
+    void getResourceAsStreamOk() throws Exception
     {
         ServletContext servletContext = mock(ServletContext.class);
         this.environment.setServletContext(servletContext);
@@ -105,7 +105,7 @@ public class ServletEnvironmentTest
     }
 
     @Test
-    public void getResourceNotExisting() throws Exception
+    void getResourceNotExisting() throws Exception
     {
         ServletContext servletContext = mock(ServletContext.class);
         this.environment.setServletContext(servletContext);
@@ -113,7 +113,7 @@ public class ServletEnvironmentTest
     }
 
     @Test
-    public void getResourceWhenMalformedURLException() throws Exception
+    void getResourceWhenMalformedURLException() throws Exception
     {
         ServletContext servletContext = mock(ServletContext.class);
         when(servletContext.getResource("bad resource")).thenThrow(new MalformedURLException("invalid url"));
@@ -124,7 +124,7 @@ public class ServletEnvironmentTest
     }
 
     @Test
-    public void getPermanentDirectoryWhenSetWithAPI() throws Exception
+    void getPermanentDirectoryWhenSetWithAPI() throws Exception
     {
         File permanentDirectory = new File("/permanent");
         this.environment.setPermanentDirectory(permanentDirectory);
@@ -134,7 +134,7 @@ public class ServletEnvironmentTest
     }
 
     @Test
-    public void getPermanentDirectoryWhenSetWithSystemProperty() throws Exception
+    void getPermanentDirectoryWhenSetWithSystemProperty() throws Exception
     {
         Logger logger = mock(Logger.class);
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);
@@ -155,7 +155,7 @@ public class ServletEnvironmentTest
     }
 
     @Test
-    public void getPermanentDirectoryWhenNotSet() throws Exception
+    void getPermanentDirectoryWhenNotSet() throws Exception
     {
         ServletContext servletContext = mock(ServletContext.class);
         when(servletContext.getAttribute("javax.servlet.context.tempdir")).thenReturn(this.servletTmpDir);
@@ -174,7 +174,7 @@ public class ServletEnvironmentTest
     }
 
     @Test
-    public void getTemporaryDirectory() throws Exception
+    void getTemporaryDirectory() throws Exception
     {
         File tmpDir = new File("tmpdir");
         this.environment.setTemporaryDirectory(tmpDir);
@@ -182,7 +182,7 @@ public class ServletEnvironmentTest
     }
 
     @Test
-    public void getTemporaryDirectoryWhenNotSet() throws Exception
+    void getTemporaryDirectoryWhenNotSet() throws Exception
     {
         ServletContext servletContext = mock(ServletContext.class);
         when(servletContext.getAttribute("javax.servlet.context.tempdir")).thenReturn(this.servletTmpDir);
@@ -198,7 +198,7 @@ public class ServletEnvironmentTest
      * Verify we default to the system tmp dir if the Servlet tmp dir is not set.
      */
     @Test
-    public void getTemporaryDirectoryWhenServletTempDirNotSet() throws Exception
+    void getTemporaryDirectoryWhenServletTempDirNotSet() throws Exception
     {
         ServletContext servletContext = mock(ServletContext.class);
         this.environment.setServletContext(servletContext);

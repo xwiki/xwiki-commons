@@ -63,7 +63,7 @@ public class DefaultBlameManagerTest
     private DefaultBlameManager blameManager;
 
     @Test
-    public void blameNullRevision()
+    void blameNullRevision()
     {
         assertThat(blameManager.blame(null, null, null), nullValue());
         assertThat(blameManager.blame(null, null, Collections.<String>emptyList()), nullValue());
@@ -71,7 +71,7 @@ public class DefaultBlameManagerTest
     }
 
     @Test
-    public void blame()
+    void blame()
     {
         Revision rev1 = new Revision("rev1");
         Revision rev2 = new Revision("rev2");
@@ -142,6 +142,5 @@ public class DefaultBlameManagerTest
             iter.next();
         });
         assertEquals("No more annotated content", exception.getMessage());
-
     }
 }

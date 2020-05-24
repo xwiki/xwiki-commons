@@ -58,7 +58,7 @@ public class CancelableEventTest
     }
 
     @Test
-    public void matchesEqualsHashcodeWhenDefaultConstructor()
+    void matchesEqualsHashcodeWhenDefaultConstructor()
     {
         TestCancelableEvent event = new TestCancelableEvent();
 
@@ -89,7 +89,7 @@ public class CancelableEventTest
     }
 
     @Test
-    public void matchesEqualsHashcodeWhenNull()
+    void matchesEqualsHashcodeWhenNull()
     {
         TestCancelableEvent event = new TestCancelableEvent((String) null);
 
@@ -120,7 +120,7 @@ public class CancelableEventTest
     }
 
     @Test
-    public void matchesEqualsHashcodeWhenFixedNameEvenFilterConstructor()
+    void matchesEqualsHashcodeWhenFixedNameEvenFilterConstructor()
     {
         TestCancelableEvent event = new TestCancelableEvent(new FixedNameEventFilter("name"));
 
@@ -155,7 +155,7 @@ public class CancelableEventTest
     }
 
     @Test
-    public void matchesEqualsHashcodeWhenStringConstructor()
+    void matchesEqualsHashcodeWhenStringConstructor()
     {
         TestCancelableEvent event = new TestCancelableEvent("name");
 
@@ -190,7 +190,7 @@ public class CancelableEventTest
     }
 
     @Test
-    public void cancel()
+    void cancel()
     {
         CancelableEvent event = new TestCancelableEvent();
         assertFalse(event.isCanceled());
@@ -201,7 +201,7 @@ public class CancelableEventTest
     }
 
     @Test
-    public void cancelWithReason()
+    void cancelWithReason()
     {
         String reason = "Tralala";
         CancelableEvent event = new TestCancelableEvent();

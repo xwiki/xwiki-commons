@@ -34,9 +34,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Integration tests on {@link DefaultDiffManager} that performs check by reading on files and executing operations.
  *
+ * @version $Id$
  * @since 12.3RC1
  * @since 11.10.5
- * @version $Id$
  */
 @ComponentTest
 public class DefaultDiffManagerIntegrationTest
@@ -45,7 +45,7 @@ public class DefaultDiffManagerIntegrationTest
     private DefaultDiffManager defaultDiffManager;
 
     @Test
-    public void merge() throws Exception
+    void merge() throws Exception
     {
         List<String> previous = Files.readAllLines(new File("src/test/resources/integration1/previous.txt").toPath());
         List<String> current = Files.readAllLines(new File("src/test/resources/integration1/current.txt").toPath());

@@ -48,7 +48,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Unit tests for {@link ReplayJob}.
- * 
+ *
  * @version $Id$
  * @since 7.1RC1
  */
@@ -70,7 +70,7 @@ public class ReplayJobTest
     private ReplayJob replayJob;
 
     @Test
-    public void replay()
+    void replay()
     {
         InstallRequest installRequest = new InstallRequest();
         ExtensionJobHistoryRecord installRecord =
@@ -106,7 +106,7 @@ public class ReplayJobTest
     }
 
     @Test
-    public void getGroupPath() throws Exception
+    void getGroupPath() throws Exception
     {
         InstallRequest installOnTech = new InstallRequest();
         installOnTech.addNamespace("wiki:tech");

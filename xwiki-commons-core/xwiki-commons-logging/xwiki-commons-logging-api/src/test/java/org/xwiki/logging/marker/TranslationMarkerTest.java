@@ -44,64 +44,64 @@ public class TranslationMarkerTest
     }
 
     @Test
-    public void getTranslationKey()
+    void getTranslationKey()
     {
         assertEquals("translation.key", this.marker.getTranslationKey());
     }
 
     @Test
-    public void getName()
+    void getName()
     {
         assertEquals(TranslationMarker.NAME, this.marker.getName());
     }
 
     @Test
-    public void add()
+    void add()
     {
         this.marker.add(MarkerFactory.getMarker("marker"));
         assertTrue(this.marker.hasChildren());
     }
 
     @Test
-    public void remove()
+    void remove()
     {
         assertFalse(this.marker.remove(null));
     }
 
     @Test
-    public void hasChildren()
+    void hasChildren()
     {
         assertFalse(this.marker.hasChildren());
     }
 
     @Test
-    public void hasReferences()
+    void hasReferences()
     {
         assertFalse(this.marker.hasReferences());
     }
 
     @Test
-    public void iterator()
+    void iterator()
     {
         assertFalse(this.marker.iterator().hasNext());
     }
 
     @Test
-    public void containsString()
+    void containsString()
     {
         assertFalse(this.marker.contains("name"));
         assertTrue(this.marker.contains(this.marker.getName()));
     }
 
     @Test
-    public void containsMarker()
+    void containsMarker()
     {
         assertFalse(this.marker.contains(MarkerFactory.getMarker("name")));
         assertTrue(this.marker.contains(this.marker));
     }
 
     @Test
-    public void testHashCode()
+    void testHashCode()
     {
         Marker equalsTMarker = new TranslationMarker("translation.key");
         Marker otherTMarker = new TranslationMarker("translation.otherkey");
@@ -113,7 +113,7 @@ public class TranslationMarkerTest
     }
 
     @Test
-    public void testEquals()
+    void testEquals()
     {
         Marker equalsTMarker = new TranslationMarker("translation.key");
         Marker otherTMarker = new TranslationMarker("translation.otherkey");

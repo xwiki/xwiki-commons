@@ -40,7 +40,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
     BcSHA224DigestFactory.class,
     BcSHA256DigestFactory.class,
     BcSHA384DigestFactory.class,
-    BcSHA512DigestFactory.class})
+    BcSHA512DigestFactory.class })
 public class DefaultDigestFactoryTest extends AbstractDigestFactoryTestConstants
 {
     private static final byte[] BYTES = TEXT.getBytes();
@@ -52,10 +52,15 @@ public class DefaultDigestFactoryTest extends AbstractDigestFactoryTestConstants
     private ComponentManager componentManager;
 
     private byte[] md5Digest;
+
     private byte[] sha1Digest;
+
     private byte[] sha224Digest;
+
     private byte[] sha256Digest;
+
     private byte[] sha384Digest;
+
     private byte[] sha512Digest;
 
     @BeforeEach
@@ -73,7 +78,7 @@ public class DefaultDigestFactoryTest extends AbstractDigestFactoryTestConstants
     }
 
     @Test
-    public void testDefaultDigestFactory() throws Exception
+    void testDefaultDigestFactory() throws Exception
     {
         assertThat(factory.getInstance(MD5_DIGEST_ALGO.getEncoded()).digest(BYTES), equalTo(md5Digest));
         assertThat(factory.getInstance(SHA1_DIGEST_ALGO.getEncoded()).digest(BYTES), equalTo(sha1Digest));

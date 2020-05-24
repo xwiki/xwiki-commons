@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Base class for testing cache component implementation.
- * 
+ *
  * @version $Id$
  */
 public abstract class AbstractGenericTestCache extends AbstractTestCache
@@ -44,16 +44,13 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
         super(roleHint);
     }
 
-    // ///////////////////////////////////////////////////////::
-    // Tests
-
     /**
      * Validate factory initialization.
-     * 
+     *
      * @throws Exception error.
      */
     @Test
-    public void getFactory() throws Exception
+    void getFactory() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -64,11 +61,11 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
 
     /**
      * Validate some basic cache use case without any constraints.
-     * 
+     *
      * @throws Exception error.
      */
     @Test
-    public void createAndDestroyCacheSimple() throws Exception
+    void createAndDestroyCacheSimple() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -87,11 +84,11 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
 
     /**
      * Validate {@link Cache#remove(String)}.
-     * 
+     *
      * @throws Exception error.
      */
     @Test
-    public void remove() throws Exception
+    void remove() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -108,11 +105,11 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
 
     /**
      * Validate {@link Cache#removeAll()}.
-     * 
+     *
      * @throws Exception error.
      */
     @Test
-    public void removeAll() throws Exception
+    void removeAll() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -129,11 +126,11 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
 
     /**
      * Validate event management.
-     * 
+     *
      * @throws Exception error.
      */
     @Test
-    public void events() throws Exception
+    void events() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -173,11 +170,11 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
 
     /**
      * Validate that two different caches are really different.
-     * 
+     *
      * @throws Exception error.
      */
     @Test
-    public void severalCaches() throws Exception
+    void severalCaches() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -191,11 +188,11 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
 
     /**
      * Validate that when recreating a cache with the same id the second instance is in a proper state.
-     * 
+     *
      * @throws Exception error
      */
     @Test
-    public void recreateCache() throws Exception
+    void recreateCache() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 

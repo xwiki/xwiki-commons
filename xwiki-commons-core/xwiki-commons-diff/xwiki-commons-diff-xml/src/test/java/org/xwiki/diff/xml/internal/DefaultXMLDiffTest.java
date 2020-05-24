@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit tests for {@link DefaultXMLDiff}.
- * 
+ *
  * @version $Id$
  */
 @ComponentTest
@@ -66,7 +66,7 @@ public class DefaultXMLDiffTest
     }
 
     @Test
-    public void nonSimilarNodeInsert() throws Exception
+    void nonSimilarNodeInsert() throws Exception
     {
         Node text = this.document.getDocumentElement().getLastChild();
         Map<Node, Patch<?>> patches = this.defaultXMLDiff.diff(null, text, this.config);
@@ -82,7 +82,7 @@ public class DefaultXMLDiffTest
     }
 
     @Test
-    public void nonSimilarNodeDelete() throws Exception
+    void nonSimilarNodeDelete() throws Exception
     {
         Node text = this.document.getDocumentElement().getLastChild();
         Map<Node, Patch<?>> patches = this.defaultXMLDiff.diff(text, null, this.config);
@@ -98,7 +98,7 @@ public class DefaultXMLDiffTest
     }
 
     @Test
-    public void nonSimilarNodeChange() throws Exception
+    void nonSimilarNodeChange() throws Exception
     {
         Node child = this.document.getDocumentElement().getFirstChild();
         Node text = this.document.getDocumentElement().getLastChild();

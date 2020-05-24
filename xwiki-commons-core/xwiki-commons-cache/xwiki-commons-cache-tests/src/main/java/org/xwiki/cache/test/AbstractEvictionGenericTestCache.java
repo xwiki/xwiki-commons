@@ -64,16 +64,13 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
 
     }
 
-    // ///////////////////////////////////////////////////////::
-    // Tests
-
     /**
      * Validate the maximum cache entries constraint.
      *
      * @throws Exception error
      */
     @Test
-    public void createAndDestroyCacheLRUMaxEntries() throws Exception
+    void createAndDestroyCacheLRUMaxEntries() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -118,7 +115,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
      * @throws Exception error
      */
     @Test
-    public void createAndDestroyCacheLRUMAxIdle() throws Exception
+    void createAndDestroyCacheLRUMAxIdle() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -161,7 +158,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
      * @throws Exception error
      */
     @Test
-    public void createAndDestroyCacheLRULifespan() throws Exception
+    void createAndDestroyCacheLRULifespan() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -204,7 +201,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
      * @throws Exception error
      */
     @Test
-    public void createAndDestroyCacheLRUAll() throws Exception
+    void createAndDestroyCacheLRUAll() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 

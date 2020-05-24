@@ -119,7 +119,7 @@ public class MockitoComponentManagerExtensionTest
     }
 
     @Test
-    public void testVariousScenarios() throws Exception
+    void testVariousScenarios() throws Exception
     {
         // Verify that a standard mock has been created for the list by Mockito (i.e. for a non-component class)
         assertNotNull(this.list);
@@ -161,7 +161,7 @@ public class MockitoComponentManagerExtensionTest
     }
 
     @Test
-    public void testInjectCM()
+    void testInjectCM()
     {
         assertNotNull(this.componentManager);
     }

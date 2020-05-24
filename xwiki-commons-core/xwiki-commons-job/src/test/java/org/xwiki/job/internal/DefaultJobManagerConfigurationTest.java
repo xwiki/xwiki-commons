@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Validate {@link DefaultJobManagerConfiguration}.
- * 
+ *
  * @version $Id$
  */
 @ComponentTest
@@ -60,7 +60,7 @@ public class DefaultJobManagerConfigurationTest
     }
 
     @Test
-    public void getStorageWithProperty()
+    void getStorageWithProperty()
     {
         when(this.configurationSource.getProperty("job.statusFolder")).thenReturn(this.directory.toString());
 
@@ -68,7 +68,7 @@ public class DefaultJobManagerConfigurationTest
     }
 
     @Test
-    public void getStorageWithoutProperty()
+    void getStorageWithoutProperty()
     {
         assertEquals(new File(this.permDir, "jobs/status/").getAbsoluteFile(),
             this.configuration.getStorage().getAbsoluteFile());

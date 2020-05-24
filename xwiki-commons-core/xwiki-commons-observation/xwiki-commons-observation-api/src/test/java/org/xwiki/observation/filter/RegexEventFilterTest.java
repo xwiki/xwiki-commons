@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class RegexEventFilterTest
 {
     @Test
-    public void testRegexEventFilter()
+    void testRegexEventFilter()
     {
         RegexEventFilter regex = new RegexEventFilter("a.*");
 

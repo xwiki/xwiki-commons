@@ -78,14 +78,14 @@ public abstract class AbstractFilterDescriptorManagerTest
         when(this.converter.convert(String.class, "default value")).thenReturn("default value");
         when(this.converter.convert(Color.class, "#ffffff")).thenReturn(Color.WHITE);
         when(this.converter
-            .convert(new DefaultParameterizedType(null, Map.class, new Type[] { String.class, String.class }), ""))
-                .thenThrow(ConversionException.class);
+            .convert(new DefaultParameterizedType(null, Map.class, new Type[]{ String.class, String.class }), ""))
+            .thenThrow(ConversionException.class);
 
         this.filterDescriptor = this.manager.getFilterDescriptor(this.filter.getClass());
     }
 
     @Test
-    public void containerWithParameters()
+    void containerWithParameters()
     {
         FilterElementDescriptor filterElement = this.filterDescriptor.getElement("containerwithparameters");
 
@@ -100,7 +100,7 @@ public abstract class AbstractFilterDescriptorManagerTest
     }
 
     @Test
-    public void containerWithNamedParameters()
+    void containerWithNamedParameters()
     {
         FilterElementDescriptor filterElement = this.filterDescriptor.getElement("containerwithnamedparameters");
 
@@ -117,7 +117,7 @@ public abstract class AbstractFilterDescriptorManagerTest
     }
 
     @Test
-    public void nameInheritance()
+    void nameInheritance()
     {
         FilterElementDescriptor filterElement =
             this.manager.getFilterDescriptor(TestFilterImplementation.class).getElement("containerwithnamedparameters");
@@ -135,7 +135,7 @@ public abstract class AbstractFilterDescriptorManagerTest
     }
 
     @Test
-    public void withDefaultValue()
+    void withDefaultValue()
     {
         FilterElementDescriptor filterElement =
             this.manager.getFilterDescriptor(TestFilterImplementation.class).getElement("childwithdefaultvalue");
@@ -160,7 +160,7 @@ public abstract class AbstractFilterDescriptorManagerTest
     }
 
     @Test
-    public void namedChild()
+    void namedChild()
     {
         FilterElementDescriptor filterElement = this.filterDescriptor.getElement("childwithname");
 
@@ -171,7 +171,7 @@ public abstract class AbstractFilterDescriptorManagerTest
     }
 
     @Test
-    public void namedContainer()
+    void namedContainer()
     {
         FilterElementDescriptor filterElement = this.filterDescriptor.getElement("containerwithname");
 
@@ -182,7 +182,7 @@ public abstract class AbstractFilterDescriptorManagerTest
     }
 
     @Test
-    public void proxyFailing() throws FilterException
+    void proxyFailing() throws FilterException
     {
         UnknownFilter filter = mock(UnknownFilter.class);
         doThrow(FilterException.class).when(filter).onUnknwon(any(), any());

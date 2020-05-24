@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DefaultRequestTest
 {
     @Test
-    public void createDefaultRequestWithPassedRequest()
+    void createDefaultRequestWithPassedRequest()
     {
         DefaultRequest request = new DefaultRequest();
 

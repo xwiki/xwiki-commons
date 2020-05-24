@@ -57,10 +57,8 @@ public class JobStatusSerializerTest
         return this.serializer.read(this.testFile);
     }
 
-    // Tests
-
     @Test
-    public void serializeUnserialize() throws IOException
+    void serializeUnserialize() throws IOException
     {
         JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 
@@ -70,7 +68,7 @@ public class JobStatusSerializerTest
     }
 
     @Test
-    public void serializeUnserializeProgress() throws IOException
+    void serializeUnserializeProgress() throws IOException
     {
         JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
 

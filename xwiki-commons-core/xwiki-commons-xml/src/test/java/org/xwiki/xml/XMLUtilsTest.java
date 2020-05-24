@@ -27,7 +27,7 @@ import org.w3c.dom.html.HTMLElement;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit tests for {@link org.xwiki.xml.XMLUtils}.
+ * Unit tests for {@link XMLUtils}.
  *
  * @version $Id$
  * @since 1.6M1
@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class XMLUtilsTest
 {
     @Test
-    public void escapeXMLComment()
+    void escapeXMLComment()
     {
         assertEquals("-\\- ", XMLUtils.escapeXMLComment("-- "));
         assertEquals("\\\\", XMLUtils.escapeXMLComment("\\"));
@@ -45,7 +45,7 @@ public class XMLUtilsTest
     }
 
     @Test
-    public void unescapeXMLComment()
+    void unescapeXMLComment()
     {
         assertEquals("", XMLUtils.unescapeXMLComment("\\"));
         assertEquals("\\", XMLUtils.unescapeXMLComment("\\\\"));
@@ -54,7 +54,7 @@ public class XMLUtilsTest
     }
 
     @Test
-    public void escape()
+    void escape()
     {
         String escapedText = XMLUtils.escape("a < a' && a' < a\" => a < a\"");
 
@@ -66,31 +66,31 @@ public class XMLUtilsTest
     }
 
     @Test
-    public void escapeApos()
+    void escapeApos()
     {
         assertFalse(XMLUtils.escape("'").equals("&apos;"), "' wrongly escaped to non-HTML &apos;");
     }
 
     @Test
-    public void escapeEmptyString()
+    void escapeEmptyString()
     {
         assertEquals("", XMLUtils.escape(""), "\"\" should be \"\"");
     }
 
     @Test
-    public void escapeWithNull()
+    void escapeWithNull()
     {
         assertNull(XMLUtils.escape(null), "null should be null");
     }
 
     @Test
-    public void escapeNonAscii()
+    void escapeNonAscii()
     {
         assertEquals("\u0123", XMLUtils.escape("\u0123"), "Non-ASCII characters were escaped");
     }
 
     @Test
-    public void escapeAttributeValue()
+    void escapeAttributeValue()
     {
         String escapedText = XMLUtils.escapeAttributeValue("a < a' && a' < a\" => a < a\" {");
 
@@ -103,31 +103,31 @@ public class XMLUtilsTest
     }
 
     @Test
-    public void escapeAttributeValueApos()
+    void escapeAttributeValueApos()
     {
         assertFalse(XMLUtils.escapeAttributeValue("'").equals("&apos;"), "' wrongly escaped to non-HTML &apos;");
     }
 
     @Test
-    public void escapeFAttributeValueEmptyString()
+    void escapeFAttributeValueEmptyString()
     {
         assertEquals("", XMLUtils.escapeAttributeValue(""), "\"\" should be \"\"");
     }
 
     @Test
-    public void escapeFAttributeValueWithNull()
+    void escapeFAttributeValueWithNull()
     {
         assertNull(XMLUtils.escapeAttributeValue(null), "null should be null");
     }
 
     @Test
-    public void escapeAttributeValueNonAscii()
+    void escapeAttributeValueNonAscii()
     {
         assertEquals("\u0123", XMLUtils.escapeAttributeValue("\u0123"), "Non-ASCII characters were escaped");
     }
 
     @Test
-    public void escapeElementContent()
+    void escapeElementContent()
     {
         String escapedText = XMLUtils.escapeElementContent("a < a' && a' < a\" => a < a\"");
 
@@ -139,25 +139,25 @@ public class XMLUtilsTest
     }
 
     @Test
-    public void escapeElementContentEmptyString()
+    void escapeElementContentEmptyString()
     {
         assertEquals("", XMLUtils.escapeElementContent(""), "\"\" should be \"\"");
     }
 
     @Test
-    public void escapeElementContentWithNull()
+    void escapeElementContentWithNull()
     {
         assertNull(XMLUtils.escapeElementContent(null), "null should be null");
     }
 
     @Test
-    public void escapeElementContentNonAscii()
+    void escapeElementContentNonAscii()
     {
         assertEquals("\u0123", XMLUtils.escapeElementContent("\u0123"), "Non-ASCII characters were escaped");
     }
 
     @Test
-    public void unescape()
+    void unescape()
     {
         assertEquals("&'\"<>", XMLUtils.unescape("&amp;&apos;&quot;&lt;&gt;"), "Failed to unescaped named entities");
         assertEquals("&'\"<>", XMLUtils.unescape("&#38;&#39;&#34;&#60;&#62;"), "Failed to unescaped decimal entities");
@@ -170,19 +170,19 @@ public class XMLUtilsTest
     }
 
     @Test
-    public void unescapeEmptyString()
+    void unescapeEmptyString()
     {
         assertEquals("", XMLUtils.unescape(""), "\"\" should be \"\"");
     }
 
     @Test
-    public void unescapeWithNull()
+    void unescapeWithNull()
     {
         assertNull(XMLUtils.unescape(null), "null should be null");
     }
 
     @Test
-    public void unescapeOtherEscapes()
+    void unescapeOtherEscapes()
     {
         assertEquals("&deg;", XMLUtils.unescape("&deg;"), "Extra named entities were unescaped");
         assertEquals("&#65;", XMLUtils.unescape("&#65;"), "Extra decimal entities were unescaped");
@@ -190,14 +190,14 @@ public class XMLUtilsTest
     }
 
     @Test
-    public void createDomDocument()
+    void createDomDocument()
     {
         // Nothing much that we can test here...
         assertNotNull(XMLUtils.createDOMDocument());
     }
 
     @Test
-    public void serializeNode()
+    void serializeNode()
     {
         HTMLDocumentImpl node = new HTMLDocumentImpl();
         String serialize = XMLUtils.serialize(node, false);

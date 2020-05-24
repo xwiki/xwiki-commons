@@ -44,14 +44,14 @@ public class RestrictParseLocationEventHandlerTest
     LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
     @Test
-    public void includeEventWhenAllowedPath()
+    void includeEventWhenAllowedPath()
     {
         assertEquals("/templates/xwikivars.vm",
             this.handler.includeEvent(null, "xwikivars.vm", "xwiki:Main.WebHome", "parse"), "Wrong template returned");
     }
 
     @Test
-    public void includeEventWhenIllegalPath()
+    void includeEventWhenIllegalPath()
     {
         assertNull(this.handler.includeEvent(null, "../WEB-INF/xwiki.cfg", "xwiki:Main.WebHome", "parse"),
             "Template shouldn't have been returned");

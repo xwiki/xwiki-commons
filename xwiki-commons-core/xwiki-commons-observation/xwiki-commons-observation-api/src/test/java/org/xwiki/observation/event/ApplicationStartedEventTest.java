@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ApplicationStartedEventTest
 {
     @Test
-    public void applicationStartedEventMatching()
+    void applicationStartedEventMatching()
     {
         ApplicationStartedEvent event = new ApplicationStartedEvent();
 

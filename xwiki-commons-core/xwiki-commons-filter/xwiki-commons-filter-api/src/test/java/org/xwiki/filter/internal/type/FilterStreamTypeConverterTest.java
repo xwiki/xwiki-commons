@@ -39,7 +39,7 @@ public class FilterStreamTypeConverterTest
     private FilterStreamTypeConverter converter;
 
     @Test
-    public void convertToTypeObject() throws Exception
+    void convertToTypeObject() throws Exception
     {
         FilterStreamType type =
             this.converter.convert(FilterStreamType.class, FilterStreamType.XWIKI_XAR_CURRENT.serialize());
@@ -47,21 +47,21 @@ public class FilterStreamTypeConverterTest
     }
 
     @Test
-    public void convertToTypeObjectWhenNull() throws Exception
+    void convertToTypeObjectWhenNull() throws Exception
     {
         FilterStreamType type = this.converter.convert(FilterStreamType.class, null);
         assertNull(type);
     }
 
     @Test
-    public void convertToString() throws Exception
+    void convertToString() throws Exception
     {
         String typeId = this.converter.convert(String.class, FilterStreamType.XWIKI_XAR_CURRENT);
         assertEquals(FilterStreamType.XWIKI_XAR_CURRENT.serialize(), typeId);
     }
 
     @Test
-    public void convertToStringWhenNull() throws Exception
+    void convertToStringWhenNull() throws Exception
     {
         String typeId = this.converter.convert(String.class, null);
         assertNull(typeId);

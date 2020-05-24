@@ -28,10 +28,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Unit tests for {@link ApplicationStoppedEvent}.
  *
  * @version $Id$
- */public class ApplicationStoppedEventTest
+ */
+public class ApplicationStoppedEventTest
 {
     @Test
-    public void testApplicationStoppedEvent()
+    void testApplicationStoppedEvent()
     {
         ApplicationStoppedEvent event = new ApplicationStoppedEvent();
 

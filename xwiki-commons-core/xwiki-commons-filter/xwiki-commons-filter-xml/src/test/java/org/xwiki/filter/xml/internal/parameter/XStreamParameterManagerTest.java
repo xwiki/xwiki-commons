@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Validate {@link XStreamParameterManager}.
- * 
+ *
  * @version $Id$
  */
 @ComponentTest()
@@ -63,10 +63,8 @@ public class XStreamParameterManagerTest
         assertEquals(expect, sw.toString());
     }
 
-    // Tests
-
     @Test
-    public void testSerializeUnknownMapImplementation()
+    void testSerializeUnknownMapImplementation()
         throws ComponentLookupException, XMLStreamException, FactoryConfigurationError, IOException
     {
         Map<String, String> customMap = new HashMap()
@@ -78,7 +76,7 @@ public class XStreamParameterManagerTest
     }
 
     @Test
-    public void testSerializeUnknowncollectionImplementation()
+    void testSerializeUnknowncollectionImplementation()
         throws ComponentLookupException, XMLStreamException, FactoryConfigurationError, IOException
     {
         Collection<String> customMap = new ArrayList()
@@ -90,7 +88,7 @@ public class XStreamParameterManagerTest
     }
 
     @Test
-    public void testSerializeUnknownListImplementation()
+    void testSerializeUnknownListImplementation()
         throws ComponentLookupException, XMLStreamException, FactoryConfigurationError, IOException
     {
         List<String> customMap = new ArrayList()

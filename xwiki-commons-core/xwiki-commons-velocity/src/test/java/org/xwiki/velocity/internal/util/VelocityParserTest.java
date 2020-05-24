@@ -37,10 +37,8 @@ public class VelocityParserTest
         this.parser = new VelocityParser();
     }
 
-    // Tests
-
     @Test
-    public void isValidVelocityIdentifierChar()
+    void isValidVelocityIdentifierChar()
     {
         assertTrue(this.parser.isValidVelocityIdentifierChar('a'));
         assertTrue(this.parser.isValidVelocityIdentifierChar('_'));
@@ -50,7 +48,7 @@ public class VelocityParserTest
     }
 
     @Test
-    public void getKeyWordComment() throws InvalidVelocityException
+    void getKeyWordComment() throws InvalidVelocityException
     {
         VelocityParserContext context = new VelocityParserContext();
         StringBuffer buffer = new StringBuffer();
@@ -64,7 +62,7 @@ public class VelocityParserTest
     }
 
     @Test
-    public void getKeyWordMultiLinesComment() throws InvalidVelocityException
+    void getKeyWordMultiLinesComment() throws InvalidVelocityException
     {
         VelocityParserContext context = new VelocityParserContext();
         StringBuffer buffer = new StringBuffer();
@@ -78,7 +76,7 @@ public class VelocityParserTest
     }
 
     @Test
-    public void getKeyWordDirective() throws InvalidVelocityException
+    void getKeyWordDirective() throws InvalidVelocityException
     {
         VelocityParserContext context = new VelocityParserContext();
         StringBuffer buffer = new StringBuffer();
@@ -92,7 +90,7 @@ public class VelocityParserTest
     }
 
     @Test
-    public void getDirective() throws InvalidVelocityException
+    void getDirective() throws InvalidVelocityException
     {
         VelocityParserContext context = new VelocityParserContext();
         StringBuffer buffer = new StringBuffer();

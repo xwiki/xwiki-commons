@@ -40,7 +40,7 @@ public class UriBuilderTest
     }
 
     @Test
-    public void buildWithNoElements()
+    void buildWithNoElements()
     {
         UriBuilder uriBuilder = new UriBuilder("http://base", "");
 
@@ -48,7 +48,7 @@ public class UriBuilderTest
     }
 
     @Test
-    public void buildWithParam()
+    void buildWithParam()
     {
         UriBuilder uriBuilder = new UriBuilder("http://base", "element/");
 
@@ -58,7 +58,7 @@ public class UriBuilderTest
     }
 
     @Test
-    public void buildWithcompleteBase()
+    void buildWithcompleteBase()
     {
         UriBuilder uriBuilder = new UriBuilder("http://host:1111/base?baseparam=basevalue#basefragment", "element/");
 
@@ -69,7 +69,7 @@ public class UriBuilderTest
     }
 
     @Test
-    public void buildWithUTF8()
+    void buildWithUTF8()
     {
         UriBuilder uriBuilder = new UriBuilder("http://base", "{key}");
 
@@ -79,7 +79,7 @@ public class UriBuilderTest
     }
 
     @Test
-    public void testClone()
+    void testClone()
     {
         UriBuilder uriBuilder = new UriBuilder("http://base", "{key}");
 

@@ -30,20 +30,20 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link CompositeReader}.
- * 
+ *
  * @version $Id$
  * @since 7.1RC1
  */
 public class CompositeReaderTest
 {
     @Test
-    public void readOK() throws Exception
+    void readOK() throws Exception
     {
         assertEquals("oneTwo", IOUtils.toString(new CompositeReader(new StringReader("one"), new StringReader("Two"))));
     }
 
     @Test
-    public void closeAll() throws Exception
+    void closeAll() throws Exception
     {
         Reader first = mock(Reader.class, "first");
         Reader second = mock(Reader.class, "second");

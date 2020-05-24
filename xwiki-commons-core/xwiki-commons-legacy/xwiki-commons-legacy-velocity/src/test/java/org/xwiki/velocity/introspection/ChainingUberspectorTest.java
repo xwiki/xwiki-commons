@@ -26,6 +26,7 @@ import java.util.Properties;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.util.introspection.DeprecatedCheckUberspector;
 import org.apache.velocity.util.introspection.UberspectImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -82,7 +83,7 @@ public class ChainingUberspectorTest
      * Tests that the uberspectors in the chain are called, and without a real uberspector no methods are found.
      */
     @Test
-    public void testEmptyChain() throws Exception
+    void testEmptyChain() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, ChainingUberspector.class.getCanonicalName());
@@ -90,7 +91,7 @@ public class ChainingUberspectorTest
         TestingUberspector.methodCalls = 0;
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
         assertEquals("$bar", writer.toString());
         assertEquals(1, TestingUberspector.methodCalls);
@@ -101,7 +102,7 @@ public class ChainingUberspectorTest
      * in the chain.
      */
     @Test
-    public void testBasicChaining() throws Exception
+    void testBasicChaining() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, ChainingUberspector.class.getCanonicalName());
@@ -111,7 +112,7 @@ public class ChainingUberspectorTest
         TestingUberspector.getterCalls = 0;
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
         assertEquals("hello", writer.toString());
         assertEquals(1, TestingUberspector.methodCalls);
@@ -122,7 +123,7 @@ public class ChainingUberspectorTest
      * Tests that invalid uberspectors classnames are ignored.
      */
     @Test
-    public void testInvalidUberspectorsAreIgnored() throws Exception
+    void testInvalidUberspectorsAreIgnored() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, ChainingUberspector.class.getCanonicalName());
@@ -134,7 +135,7 @@ public class ChainingUberspectorTest
         InvalidUberspector.methodCalls = 0;
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
         assertEquals("hello", writer.toString());
         assertEquals(1, TestingUberspector.methodCalls);
@@ -147,7 +148,7 @@ public class ChainingUberspectorTest
      * Tests that a non-chainable entry in the chain does not forward calls.
      */
     @Test
-    public void testChainBreakingOnNonChainableEntry() throws Exception
+    void testChainBreakingOnNonChainableEntry() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, ChainingUberspector.class.getCanonicalName());
@@ -156,7 +157,7 @@ public class ChainingUberspectorTest
         TestingUberspector.methodCalls = 0;
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
         assertEquals("hello", writer.toString());
         assertEquals(0, TestingUberspector.methodCalls);
@@ -166,14 +167,14 @@ public class ChainingUberspectorTest
      * Checks that the default (non-secure) uberspector works and allows calling restricted methods.
      */
     @Test
-    public void testDefaultUberspectorWorks() throws Exception
+    void testDefaultUberspectorWorks() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, ChainingUberspector.class.getCanonicalName());
         prop.setProperty(ChainingUberspector.UBERSPECT_CHAIN_CLASSNAMES, UberspectImpl.class.getCanonicalName());
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$bar"));
         assertTrue(writer.toString().contains("public java.lang.String(byte[],int,int)"), writer.toString());
 
@@ -184,7 +185,7 @@ public class ChainingUberspectorTest
      * Checks that the secure uberspector works and does not allow calling restricted methods.
      */
     @Test
-    public void testSecureUberspectorWorks() throws Exception
+    void testSecureUberspectorWorks() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, ChainingUberspector.class.getCanonicalName());
@@ -192,7 +193,7 @@ public class ChainingUberspectorTest
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
 
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
+        this.engine.evaluate(new VelocityContext(), writer, "mytemplate", new StringReader(
             "#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$foo $foo.class.name $bar"));
         assertEquals("hello java.lang.String $bar", writer.toString());
 
@@ -205,14 +206,14 @@ public class ChainingUberspectorTest
      * Checks that when the chain property is not configured, by default the secure ubespector is used.
      */
     @Test
-    public void testSecureUberspectorEnabledByDefault() throws Exception
+    void testSecureUberspectorEnabledByDefault() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, ChainingUberspector.class.getCanonicalName());
         prop.setProperty(ChainingUberspector.UBERSPECT_CHAIN_CLASSNAMES, "");
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
+        this.engine.evaluate(new VelocityContext(), writer, "mytemplate", new StringReader(
             "#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$foo $foo.class.name $bar"));
         assertEquals("hello java.lang.String $bar", writer.toString());
 
@@ -224,18 +225,18 @@ public class ChainingUberspectorTest
      */
     @SuppressWarnings("deprecation")
     @Test
-    public void testDeprecatedUberspector() throws Exception
+    void testDeprecatedUberspector() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, ChainingUberspector.class.getCanonicalName());
         prop.setProperty(ChainingUberspector.UBERSPECT_CHAIN_CLASSNAMES,
             UberspectImpl.class.getCanonicalName() + "," + TestingUberspector.class.getCanonicalName() + ","
-                + org.apache.velocity.util.introspection.DeprecatedCheckUberspector.class.getCanonicalName());
+                + DeprecatedCheckUberspector.class.getCanonicalName());
         TestingUberspector.methodCalls = 0;
         TestingUberspector.getterCalls = 0;
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        VelocityContext context = new org.apache.velocity.VelocityContext();
+        VelocityContext context = new VelocityContext();
         Date d = new Date();
         context.put("date", d);
         context.put("dobject", new DeprecatedObject());

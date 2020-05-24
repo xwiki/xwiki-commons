@@ -94,10 +94,8 @@ public class DefaultExtensionRepositoryManagerTest
         when(this.testRepository.resolve(this.dependency)).thenReturn(testExtension);
     }
 
-    // Tests
-
     @Test
-    public void addRepository() throws ExtensionRepositoryException
+    void addRepository() throws ExtensionRepositoryException
     {
         ExtensionRepository repository = this.manager.addRepository(this.descriptor);
 
@@ -105,7 +103,7 @@ public class DefaultExtensionRepositoryManagerTest
     }
 
     @Test
-    public void addRepository_unsuported()
+    void addRepository_unsuported()
     {
         assertThrows(ExtensionRepositoryException.class, () -> {
             this.manager.addRepository(this.unsupportedDescriptor);
@@ -113,7 +111,7 @@ public class DefaultExtensionRepositoryManagerTest
     }
 
     @Test
-    public void getRepository() throws ExtensionRepositoryException, ComponentLookupException
+    void getRepository() throws ExtensionRepositoryException, ComponentLookupException
     {
         this.manager.addRepository(this.descriptor);
 
@@ -123,7 +121,7 @@ public class DefaultExtensionRepositoryManagerTest
     }
 
     @Test
-    public void getRepository_doesnotexists()
+    void getRepository_doesnotexists()
     {
         ExtensionRepository repository = this.manager.getRepository("id");
 
@@ -131,7 +129,7 @@ public class DefaultExtensionRepositoryManagerTest
     }
 
     @Test
-    public void removeRepository() throws ExtensionRepositoryException
+    void removeRepository() throws ExtensionRepositoryException
     {
         this.manager.addRepository(this.descriptor);
 
@@ -143,7 +141,7 @@ public class DefaultExtensionRepositoryManagerTest
     }
 
     @Test
-    public void getRepositories() throws ExtensionRepositoryException
+    void getRepositories() throws ExtensionRepositoryException
     {
         this.manager.addRepository(this.descriptor);
 
@@ -153,7 +151,7 @@ public class DefaultExtensionRepositoryManagerTest
     }
 
     @Test
-    public void resolveDependencyWithNoRegisteredRepository()
+    void resolveDependencyWithNoRegisteredRepository()
     {
         assertThrows(ResolveException.class, () -> {
             this.manager.resolve(this.dependency);
@@ -161,7 +159,7 @@ public class DefaultExtensionRepositoryManagerTest
     }
 
     @Test
-    public void resolveDependencyWithEmbeddedRepository() throws ResolveException
+    void resolveDependencyWithEmbeddedRepository() throws ResolveException
     {
         this.dependency.addRepository(this.testRepository.getDescriptor());
 
@@ -169,7 +167,7 @@ public class DefaultExtensionRepositoryManagerTest
     }
 
     @Test
-    public void resolveDependencyWithRegisteredRepository() throws ResolveException
+    void resolveDependencyWithRegisteredRepository() throws ResolveException
     {
         this.manager.addRepository(this.testRepository);
 
@@ -177,7 +175,7 @@ public class DefaultExtensionRepositoryManagerTest
     }
 
     @Test
-    public void repositoryOrder() throws URISyntaxException, ExtensionRepositoryException
+    void repositoryOrder() throws URISyntaxException, ExtensionRepositoryException
     {
         ExtensionRepositoryDescriptor repDescriptor0 =
             new DefaultExtensionRepositoryDescriptor("id0", "test", new URI("http", "host", "/path", "fragment"));

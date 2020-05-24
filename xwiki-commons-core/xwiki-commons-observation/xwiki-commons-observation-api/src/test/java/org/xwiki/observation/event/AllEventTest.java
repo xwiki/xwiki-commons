@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class AllEventTest
 {
     @Test
-    public void allEventMatching()
+    void allEventMatching()
     {
         assertTrue(AllEvent.ALLEVENT.matches(AllEvent.ALLEVENT));
         assertTrue(AllEvent.ALLEVENT.matches(null));

@@ -54,7 +54,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit text form {@link org.xwiki.crypto.store.filesystem.internal.X509KeyFileSystemStore}
+ * Unit text form {@link X509KeyFileSystemStore}
  *
  * @version $Id$
  * @since 6.1M2
@@ -197,7 +197,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void storePrivateKeyToFile() throws Exception
+    void storePrivateKeyToFile() throws Exception
     {
         store.store(SINGLE_STORE_REF, keyPair);
 
@@ -205,7 +205,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void storePrivateKeyToDirectory() throws Exception
+    void storePrivateKeyToDirectory() throws Exception
     {
         store.store(MULTI_STORE_REF, keyPair);
 
@@ -216,7 +216,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void storeEncryptedPrivateKeyToFile() throws Exception
+    void storeEncryptedPrivateKeyToFile() throws Exception
     {
         store.store(SINGLE_STORE_REF, keyPair, PASSWORD);
 
@@ -224,7 +224,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void storeEncryptedPrivateKeyToDirectory() throws Exception
+    void storeEncryptedPrivateKeyToDirectory() throws Exception
     {
         store.store(MULTI_STORE_REF, keyPair, PASSWORD);
 
@@ -235,7 +235,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void retrievePrivateKeyFromFile() throws Exception
+    void retrievePrivateKeyFromFile() throws Exception
     {
         FileUtils.writeStringToFile(FILE, FILE_CONTENT);
 
@@ -246,7 +246,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void retrieveEncryptedPrivateKeyFromFile() throws Exception
+    void retrieveEncryptedPrivateKeyFromFile() throws Exception
     {
         FileUtils.writeStringToFile(FILE, ENCRYPTED_FILE_CONTENT);
 
@@ -257,7 +257,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void retrievePrivateKeyFromDirectory() throws Exception
+    void retrievePrivateKeyFromDirectory() throws Exception
     {
         DIRECTORY.mkdirs();
         FileUtils.writeStringToFile(KEY_FILE, KEY_FILE_CONTENT);
@@ -270,7 +270,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void retrieveEncryptedPrivateKeyFromDirectory() throws Exception
+    void retrieveEncryptedPrivateKeyFromDirectory() throws Exception
     {
         DIRECTORY.mkdirs();
         FileUtils.writeStringToFile(KEY_FILE, ENCRYTEDKEY_FILE_CONTENT);
@@ -283,7 +283,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void retrieveMissingPrivateKeyFromFile() throws Exception
+    void retrieveMissingPrivateKeyFromFile() throws Exception
     {
         FileUtils.writeStringToFile(FILE, CERTIFICATE_FILE_CONTENT);
 
@@ -292,7 +292,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void retrieveMissingCertificateFromFile() throws Exception
+    void retrieveMissingCertificateFromFile() throws Exception
     {
         FileUtils.writeStringToFile(FILE, KEY_FILE_CONTENT);
 
@@ -301,7 +301,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void retrieveMissingPrivateKeyFromDirectory() throws Exception
+    void retrieveMissingPrivateKeyFromDirectory() throws Exception
     {
         DIRECTORY.mkdirs();
         FileUtils.writeStringToFile(CERT_FILE, CERTIFICATE_FILE_CONTENT);
@@ -311,7 +311,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void retrieveMissingCertificateFromDirectory() throws Exception
+    void retrieveMissingCertificateFromDirectory() throws Exception
     {
         DIRECTORY.mkdirs();
         FileUtils.writeStringToFile(KEY_FILE, KEY_FILE_CONTENT);
@@ -323,7 +323,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @Test
-    public void storePrivateKeyToDirectoryWithoutSubjectID() throws Exception
+    void storePrivateKeyToDirectoryWithoutSubjectID() throws Exception
     {
         when(certificate.getExtensions()).thenReturn(null);
         when(certificate.getSubjectKeyIdentifier()).thenReturn(null);

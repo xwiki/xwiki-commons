@@ -84,7 +84,7 @@ public class ReflectionUtilsTest
     }
 
     @Test
-    public void getField() throws Exception
+    void getField() throws Exception
     {
         Field field = ReflectionUtils.getField(TestFieldClass.class, "field");
         assertNotNull(field);
@@ -92,7 +92,7 @@ public class ReflectionUtilsTest
     }
 
     @Test
-    public void getFieldFromSuperClass() throws Exception
+    void getFieldFromSuperClass() throws Exception
     {
         Field field = ReflectionUtils.getField(TestFieldClass.class, "superField");
         assertNotNull(field);
@@ -100,7 +100,7 @@ public class ReflectionUtilsTest
     }
 
     @Test
-    public void getFieldWhenDoesntExist()
+    void getFieldWhenDoesntExist()
     {
         Throwable exception = assertThrows(NoSuchFieldException.class, () -> {
             ReflectionUtils.getField(TestFieldClass.class, "doesntexist");
@@ -110,7 +110,7 @@ public class ReflectionUtilsTest
     }
 
     @Test
-    public void unserializeType() throws Exception
+    void unserializeType() throws Exception
     {
         Type simpleType = ComponentRole.class;
         assertEquals(simpleType, ReflectionUtils.unserializeType("org.xwiki.component.descriptor.ComponentRole",
@@ -118,7 +118,7 @@ public class ReflectionUtilsTest
     }
 
     @Test
-    public void unserializeTypeWithGenerics() throws Exception
+    void unserializeTypeWithGenerics() throws Exception
     {
         Type genericsType = new DefaultParameterizedType(null, ComponentRole.class, String.class);
         assertEquals(genericsType,
@@ -127,18 +127,18 @@ public class ReflectionUtilsTest
     }
 
     @Test
-    public void unserializeListType() throws Exception
+    void unserializeListType() throws Exception
     {
-        Type listType = new DefaultParameterizedType(null, java.util.List.class, ComponentRole.class);
+        Type listType = new DefaultParameterizedType(null, List.class, ComponentRole.class);
         assertEquals(listType,
             ReflectionUtils.unserializeType("java.util.List<org.xwiki.component.descriptor.ComponentRole>",
                 Thread.currentThread().getContextClassLoader()));
     }
 
     @Test
-    public void unserializeMapType() throws Exception
+    void unserializeMapType() throws Exception
     {
-        Type mapType = new DefaultParameterizedType(null, java.util.Map.class, String.class, ComponentRole.class);
+        Type mapType = new DefaultParameterizedType(null, Map.class, String.class, ComponentRole.class);
         assertEquals(mapType,
             ReflectionUtils.unserializeType(
                 "java.util.Map<java.lang.String, " + "org.xwiki.component.descriptor.ComponentRole>",
@@ -146,10 +146,10 @@ public class ReflectionUtilsTest
     }
 
     @Test
-    public void unserializeMapTypeWithGenerics() throws Exception
+    void unserializeMapTypeWithGenerics() throws Exception
     {
         Type annotatedType = new DefaultParameterizedType(null, ComponentRole.class, String.class);
-        Type mapType = new DefaultParameterizedType(null, java.util.Map.class, String.class, annotatedType);
+        Type mapType = new DefaultParameterizedType(null, Map.class, String.class, annotatedType);
         assertEquals(mapType,
             ReflectionUtils.unserializeType(
                 "java.util.Map<java.lang.String, org.xwiki.component.descriptor.ComponentRole<java.lang.String>>",
@@ -157,11 +157,11 @@ public class ReflectionUtilsTest
     }
 
     @Test
-    public void testUnserializeMapInMapWithTypeWithGenerics() throws Exception
+    void testUnserializeMapInMapWithTypeWithGenerics() throws Exception
     {
         Type annotatedType = new DefaultParameterizedType(null, ComponentRole.class, String.class);
-        Type mapType1 = new DefaultParameterizedType(null, java.util.Map.class, String.class, annotatedType);
-        Type mapType2 = new DefaultParameterizedType(null, java.util.Map.class, String.class, mapType1);
+        Type mapType1 = new DefaultParameterizedType(null, Map.class, String.class, annotatedType);
+        Type mapType2 = new DefaultParameterizedType(null, Map.class, String.class, mapType1);
         assertEquals(mapType2,
             ReflectionUtils.unserializeType(
                 "java.util.Map<java.lang.String, java.util.Map<java.lang.String, "
@@ -170,7 +170,7 @@ public class ReflectionUtilsTest
     }
 
     @Test
-    public void getAllFields()
+    void getAllFields()
     {
         Collection<Field> fields = ReflectionUtils.getAllFields(TestFieldClass.class);
 
@@ -178,7 +178,7 @@ public class ReflectionUtilsTest
     }
 
     @Test
-    public void getTypeClass()
+    void getTypeClass()
     {
         assertSame(TestFieldClass.class, ReflectionUtils.getTypeClass(TestFieldClass.class));
         assertSame(TestFieldClass.class, ReflectionUtils
@@ -187,7 +187,7 @@ public class ReflectionUtilsTest
     }
 
     @Test
-    public void resolveType()
+    void resolveType()
     {
         assertEquals(
             new DefaultParameterizedType(ReflectionUtilsTest.class, TestInterface.class,
@@ -202,7 +202,7 @@ public class ReflectionUtilsTest
     }
 
     @Test
-    public void serializeType()
+    void serializeType()
     {
         Type type = new DefaultParameterizedType(null, Void.class);
         assertEquals("java.lang.Void", ReflectionUtils.serializeType(type));

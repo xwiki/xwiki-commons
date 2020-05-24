@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ReflectionMethodUtilsTest
 {
     @Test
-    public void testGetMethodParameterAnnotations() throws SecurityException, NoSuchMethodException
+    void testGetMethodParameterAnnotations() throws SecurityException, NoSuchMethodException
     {
         assertEquals(
             1,

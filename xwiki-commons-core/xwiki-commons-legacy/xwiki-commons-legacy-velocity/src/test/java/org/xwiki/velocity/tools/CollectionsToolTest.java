@@ -39,7 +39,7 @@ public class CollectionsToolTest
     private CollectionsTool tool = new CollectionsTool();
 
     @Test
-    public void reverse()
+    void reverse()
     {
         List<String> list = this.tool.getLinkedList();
         list.add("one");
@@ -56,7 +56,7 @@ public class CollectionsToolTest
     }
 
     @Test
-    public void testSort()
+    void testSort()
     {
         List<String> list = this.tool.getLinkedList();
         list.add("one");

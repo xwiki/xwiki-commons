@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DefaultVersionConstraintTest
 {
     @Test
-    public void merge() throws IncompatibleVersionConstraintException
+    void merge() throws IncompatibleVersionConstraintException
     {
         assertEquals("2.0", new DefaultVersionConstraint("1.0").merge(new DefaultVersionConstraint("2.0")).getValue());
         assertEquals("[2.0]",
@@ -59,7 +59,7 @@ public class DefaultVersionConstraintTest
     }
 
     @Test
-    public void parse() throws InvalidVersionRangeException
+    void parse() throws InvalidVersionRangeException
     {
         assertEquals("1.0", new DefaultVersionConstraint("1.0").getVersion().getValue());
         assertEquals(Arrays.asList(new DefaultVersionRangeCollection("[1.0]")),
@@ -77,7 +77,7 @@ public class DefaultVersionConstraintTest
     }
 
     @Test
-    public void containsVersion()
+    void containsVersion()
     {
         assertTrue(new DefaultVersionConstraint("1.0").containsVersion((Version) new DefaultVersion("1.0")));
         assertFalse(new DefaultVersionConstraint("1.0").containsVersion((Version) new DefaultVersion("2.0")));
@@ -87,7 +87,7 @@ public class DefaultVersionConstraintTest
     }
 
     @Test
-    public void isCompatible()
+    void isCompatible()
     {
         assertTrue(new DefaultVersionConstraint("1.0").isCompatible((Version) new DefaultVersion("1.0")));
         assertTrue(new DefaultVersionConstraint("1.0").isCompatible((Version) new DefaultVersion("2.0")));

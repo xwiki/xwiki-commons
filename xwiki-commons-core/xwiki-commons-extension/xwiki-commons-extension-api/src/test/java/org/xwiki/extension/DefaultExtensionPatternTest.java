@@ -31,13 +31,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link DefaultExtensionPattern}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultExtensionPatternTest
 {
     @Test
-    public void matchesString()
+    void matchesString()
     {
         DefaultExtensionPattern pattern = new DefaultExtensionPattern("abcd");
 
@@ -46,7 +46,7 @@ public class DefaultExtensionPatternTest
     }
 
     @Test
-    public void matchesPattern()
+    void matchesPattern()
     {
         DefaultExtensionPattern pattern = new DefaultExtensionPattern(Pattern.compile("ab.*d"));
 
@@ -55,7 +55,7 @@ public class DefaultExtensionPatternTest
     }
 
     @Test
-    public void matchesDependency()
+    void matchesDependency()
     {
         DefaultExtensionPattern pattern = new DefaultExtensionPattern("abcd");
 
@@ -64,7 +64,7 @@ public class DefaultExtensionPatternTest
     }
 
     @Test
-    public void equal()
+    void equal()
     {
         assertEquals(new DefaultExtensionPattern(Pattern.compile("ab.*d")),
             new DefaultExtensionPattern(Pattern.compile("ab.*d")));

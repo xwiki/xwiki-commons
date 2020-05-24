@@ -70,7 +70,7 @@ import org.xwiki.test.mockito.MockitoComponentManager;
 
 /**
  * Validate {@link DefaultInstalledExtensionRepository}.
- * 
+ *
  * @version $Id$
  */
 @ComponentTest
@@ -125,10 +125,8 @@ public class DefaultInstalledExtensionRepositoryTest
         this.installedExtensionRepository.installExtension(localExtension, null, false);
     }
 
-    // Tests
-
     @Test
-    public void testInit()
+    void testInit()
     {
         assertTrue(this.installedExtensionRepository.countExtensions() > 0);
 
@@ -277,7 +275,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void testGetLocalExtension()
+    void testGetLocalExtension()
     {
         assertNull(this.installedExtensionRepository.getInstalledExtension("unexistingextension", null));
 
@@ -297,7 +295,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void testResolve() throws ResolveException
+    void testResolve() throws ResolveException
     {
         assertThrows(ResolveException.class, () -> {
             this.installedExtensionRepository.resolve(new ExtensionId("unexistingextension", "version"));
@@ -315,7 +313,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void testResolveDependency() throws ResolveException
+    void testResolveDependency() throws ResolveException
     {
         assertThrows(ResolveException.class, () -> {
             this.installedExtensionRepository.resolve(
@@ -336,7 +334,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void testInstallTwice() throws InstallException
+    void testInstallTwice() throws InstallException
     {
         // Change status
         this.installedExtensionRepository.installExtension(this.resources.installed, "namespace",
@@ -350,8 +348,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void testStoreExtensionAndInstall()
-        throws ResolveException, LocalExtensionRepositoryException, InstallException
+    void testStoreExtensionAndInstall() throws ResolveException, LocalExtensionRepositoryException, InstallException
     {
         install(TestResources.REMOTE_SIMPLE_ID);
 
@@ -364,7 +361,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void testUninstallExtension() throws UninstallException, InstallException
+    void testUninstallExtension() throws UninstallException, InstallException
     {
         // uninstall from root
 
@@ -419,7 +416,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void testBackwardDependenciesAfterInit() throws ResolveException
+    void testBackwardDependenciesAfterInit() throws ResolveException
     {
         // installedextension
         assertEquals(Arrays.asList(this.resources.installedwithfeatureasdependency),
@@ -448,7 +445,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void testBackwardDependenciesAfterUninstall() throws ResolveException, UninstallException
+    void testBackwardDependenciesAfterUninstall() throws ResolveException, UninstallException
     {
         this.installedExtensionRepository.uninstallExtension(this.resources.installed, null);
 
@@ -457,7 +454,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void testBackwardDependenciesWithExtensionAndDepOnRoot() throws ResolveException
+    void testBackwardDependenciesWithExtensionAndDepOnRoot() throws ResolveException
     {
         assertEquals(Arrays.asList(this.resources.installed),
             new ArrayList<>(this.installedExtensionRepository
@@ -477,7 +474,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void testBackwardDependenciesWithExtensionOnNamespaceAndDepOnNamespace()
+    void testBackwardDependenciesWithExtensionOnNamespaceAndDepOnNamespace()
         throws InstallException, ResolveException, UninstallException
     {
         this.installedExtensionRepository.uninstallExtension(this.resources.installed, null);
@@ -495,7 +492,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void testBackwardDependenciesWithExtensionAndDepOnNamespace()
+    void testBackwardDependenciesWithExtensionAndDepOnNamespace()
         throws InstallException, ResolveException, UninstallException
     {
         this.installedExtensionRepository.uninstallExtension(this.resources.installed, null);
@@ -512,7 +509,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void testSearch() throws SearchException
+    void testSearch() throws SearchException
     {
         IterableResult<Extension> result = this.installedExtensionRepository.search(null, 0, -1);
 
@@ -588,7 +585,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void testAdvancedSearchWithNullQuery() throws SearchException
+    void testAdvancedSearchWithNullQuery() throws SearchException
     {
         ExtensionQuery query = new ExtensionQuery();
 
@@ -603,7 +600,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void testAdvancedSearchInstalledWithNullQuery() throws SearchException
+    void testAdvancedSearchInstalledWithNullQuery() throws SearchException
     {
         ExtensionQuery query = new ExtensionQuery();
 
@@ -619,7 +616,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void testSearchInstalledExtensions() throws SearchException
+    void testSearchInstalledExtensions() throws SearchException
     {
         // Root namespace
         IterableResult<InstalledExtension> result =
@@ -645,7 +642,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void testgetInstalledExtensionFeatureNamespace()
+    void testgetInstalledExtensionFeatureNamespace()
     {
         InstalledExtension extension;
 
@@ -667,7 +664,7 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
-    public void getOrphanedDependencies() throws ResolveException
+    void getOrphanedDependencies() throws ResolveException
     {
         ExtensionNode<InstalledExtension> node = this.installedExtensionRepository
             .getOrphanedDependencies(this.resources.installedorphaneddependency, Namespace.ROOT);

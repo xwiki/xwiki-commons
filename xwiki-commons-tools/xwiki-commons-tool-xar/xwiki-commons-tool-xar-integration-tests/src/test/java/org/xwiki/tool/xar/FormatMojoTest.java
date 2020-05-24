@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class FormatMojoTest extends AbstractMojoTest
 {
     @Test
-    public void formatWhenNoStyle() throws Exception
+    void formatWhenNoStyle() throws Exception
     {
         Verifier verifier = createVerifier("/format");
         verifier.addCliOption("-Dincludes=**/NoStyle/*.xml");
@@ -82,7 +82,7 @@ public class FormatMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void formatWhenPrettyPrinting() throws Exception
+    void formatWhenPrettyPrinting() throws Exception
     {
         Verifier verifier = createVerifier("/format");
         verifier.addCliOption("-Dincludes=**/Pretty/*.xml");

@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * Unit tests for {@link org.xwiki.xml.stax.StAXUtils}.
+ * Unit tests for {@link StAXUtils}.
  *
  * @version $Id$
  * @since 5.2M1
@@ -55,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class StAXUtilsTest
 {
     @Test
-    public void getXMLStreamReader() throws XMLStreamException
+    void getXMLStreamReader() throws XMLStreamException
     {
         // TODO: add support for XMLEventReader
         // assertNotNull(StAXUtils.getXMLStreamReader(new StAXSource(mockXMLEventReader())));
@@ -64,7 +64,7 @@ public class StAXUtilsTest
     }
 
     @Test
-    public void getXMLEventReader() throws XMLStreamException
+    void getXMLEventReader() throws XMLStreamException
     {
         assertNotNull(StAXUtils.getXMLEventReader(new StAXSource(mockXMLEventReader())));
         assertNotNull(StAXUtils.getXMLEventReader(new StAXSource(mockXMLStreamReader())));
@@ -72,7 +72,7 @@ public class StAXUtilsTest
     }
 
     @Test
-    public void getXMLStreamWriter() throws XMLStreamException
+    void getXMLStreamWriter() throws XMLStreamException
     {
         assertNotNull(StAXUtils.getXMLStreamWriter(new StAXResult(Mockito.mock(XMLEventWriter.class))));
         assertNotNull(StAXUtils.getXMLStreamWriter(new StAXResult(Mockito.mock(XMLStreamWriter.class))));
@@ -80,7 +80,7 @@ public class StAXUtilsTest
     }
 
     @Test
-    public void getXMLStreamWriterWithSAXREsult() throws TransformerConfigurationException, XMLStreamException
+    void getXMLStreamWriterWithSAXREsult() throws TransformerConfigurationException, XMLStreamException
     {
         TransformerFactory tf = TransformerFactory.newInstance();
         if (!tf.getFeature(SAXTransformerFactory.FEATURE)) {

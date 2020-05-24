@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link SerializableXStreamChecker}.
- * 
+ *
  * @version $Id$
  */
 @ComponentTest
@@ -41,7 +41,7 @@ public class SerializableXStreamCheckerTest
     private SerializableXStreamChecker checker;
 
     @Test
-    public void isSerializable()
+    void isSerializable()
     {
         assertNull(this.checker.isSerializable((Object) null));
         assertNull(this.checker.isSerializable(this));

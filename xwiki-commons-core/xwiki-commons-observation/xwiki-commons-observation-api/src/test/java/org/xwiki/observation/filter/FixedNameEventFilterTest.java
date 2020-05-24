@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class FixedNameEventFilterTest
 {
     @Test
-    public void testFixedNameEventFilterTest()
+    void testFixedNameEventFilterTest()
     {
         FixedNameEventFilter filter = new FixedNameEventFilter("filter");
 

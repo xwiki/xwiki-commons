@@ -59,7 +59,7 @@ public class EventListenerTest
     }
 
     @Test
-    public void constructorWithTwoEvents()
+    void constructorWithTwoEvents()
     {
         TestEventListener listener =
             new TestEventListener("name", new ActionExecutionEvent("action1"), new ActionExecutionEvent("action2"));
@@ -70,7 +70,7 @@ public class EventListenerTest
     }
 
     @Test
-    public void constructorWithList()
+    void constructorWithList()
     {
         TestEventListener listener = new TestEventListener("name",
             Arrays.asList(new ActionExecutionEvent("action1"), new ActionExecutionEvent("action2")));
@@ -81,10 +81,10 @@ public class EventListenerTest
     }
 
     @Test
-    public void constructorWithObjects()
+    void constructorWithObjects()
     {
         TestEventListener listener = new TestEventListener("name", new ActionExecutionEvent("action1"),
-            Arrays.asList(new ActionExecutionEvent("action2")), new Event[] { new ActionExecutionEvent("action3") });
+            Arrays.asList(new ActionExecutionEvent("action2")), new Event[]{ new ActionExecutionEvent("action3") });
 
         assertEquals("name", listener.getName());
         assertEquals(Arrays.asList(new ActionExecutionEvent("action1"), new ActionExecutionEvent("action2"),

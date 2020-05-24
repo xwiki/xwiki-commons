@@ -20,6 +20,8 @@
 package org.xwiki.job.internal.xstream;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.Objects;
@@ -41,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Validate {@link SafeXStream}.
- * 
+ *
  * @version $Id$
  */
 @ComponentTest
@@ -70,7 +72,7 @@ public class SafeXStreamTest
 
         public RecursiveObjectThroughArray()
         {
-            this.recurse = new RecursiveObjectThroughArray[] { this };
+            this.recurse = new RecursiveObjectThroughArray[]{ this };
         }
 
         @Override
@@ -82,12 +84,12 @@ public class SafeXStreamTest
 
     static class FailToSerializeObject implements Serializable
     {
-        private void writeObject(java.io.ObjectOutputStream out) throws IOException
+        private void writeObject(ObjectOutputStream out) throws IOException
         {
             throw new IOException();
         }
 
-        private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+        private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
         {
         }
 
@@ -184,10 +186,8 @@ public class SafeXStreamTest
         return obj;
     }
 
-    // Tests
-
     @Test
-    public void testRecursiveObject() throws IOException
+    void testRecursiveObject() throws IOException
     {
         RecursiveObject obj = (RecursiveObject) writeread(new RecursiveObject(), "/xstream/RecursiveObject.xml");
 
@@ -197,7 +197,7 @@ public class SafeXStreamTest
     }
 
     @Test
-    public void testRecursiveObjectThroughArray() throws IOException
+    void testRecursiveObjectThroughArray() throws IOException
     {
         RecursiveObjectThroughArray obj = (RecursiveObjectThroughArray) writeread(new RecursiveObjectThroughArray(),
             "/xstream/RecursiveObjectThroughArray.xml");
@@ -209,13 +209,13 @@ public class SafeXStreamTest
     }
 
     @Test
-    public void testArrayWithReference() throws IOException
+    void testArrayWithReference() throws IOException
     {
         assertReadwrite("/xstream/ArrayWithReference.xml");
     }
 
     @Test
-    public void testFailToSerializeObject() throws IOException
+    void testFailToSerializeObject() throws IOException
     {
         FailToSerializeObject obj =
             (FailToSerializeObject) writeread(new FailToSerializeObject(), "/xstream/FailToSerializeObject.xml");
@@ -224,7 +224,7 @@ public class SafeXStreamTest
     }
 
     @Test
-    public void testFailToSerializeField() throws IOException
+    void testFailToSerializeField() throws IOException
     {
         FailToSerializeField obj =
             (FailToSerializeField) writeread(new FailToSerializeField(), "/xstream/FailToSerializeField.xml");
@@ -234,7 +234,7 @@ public class SafeXStreamTest
     }
 
     @Test
-    public void testNotSerializableObject() throws IOException
+    void testNotSerializableObject() throws IOException
     {
         NotSerializableObject obj =
             (NotSerializableObject) writeread(new NotSerializableObject("value"), "/xstream/NotSerializableObject.xml");
@@ -244,9 +244,9 @@ public class SafeXStreamTest
     }
 
     @Test
-    public void testNotSerializableObjectInArray() throws IOException
+    void testNotSerializableObjectInArray() throws IOException
     {
-        Object[] obj = (Object[]) writeread(new Object[] { new NotSerializableObject("value") },
+        Object[] obj = (Object[]) writeread(new Object[]{ new NotSerializableObject("value") },
             "/xstream/NotSerializableObjectInArray.xml");
 
         assertNotNull(obj);
@@ -254,7 +254,7 @@ public class SafeXStreamTest
     }
 
     @Test
-    public void testNotSerializableField() throws IOException
+    void testNotSerializableField() throws IOException
     {
         NotSerializableField obj =
             (NotSerializableField) writeread(new NotSerializableField("value"), "/xstream/NotSerializableField.xml");
@@ -264,9 +264,9 @@ public class SafeXStreamTest
     }
 
     @Test
-    public void testNotSerializableObjectWithFailingToStringInArray() throws IOException
+    void testNotSerializableObjectWithFailingToStringInArray() throws IOException
     {
-        Object[] obj = (Object[]) writeread(new Object[] { new NotSerializableObjectWithFailingToString() },
+        Object[] obj = (Object[]) writeread(new Object[]{ new NotSerializableObjectWithFailingToString() },
             "/xstream/NotSerializableObjectWithFailingToStringInArray.xml");
 
         assertNotNull(obj);

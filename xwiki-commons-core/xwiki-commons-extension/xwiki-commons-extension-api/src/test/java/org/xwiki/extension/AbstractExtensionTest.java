@@ -92,8 +92,6 @@ public class AbstractExtensionTest
         assertEquals(comparizon, e1.compareTo(e2));
     }
 
-    // Tests
-
     @BeforeEach
     public void beforeEach()
     {
@@ -107,7 +105,7 @@ public class AbstractExtensionTest
     }
 
     @Test
-    public void get()
+    void get()
     {
         assertSame(this.repository, this.extension.get("repository"));
         assertEquals(this.id.getId(), this.extension.get("id"));
@@ -116,7 +114,7 @@ public class AbstractExtensionTest
     }
 
     @Test
-    public void compareTo()
+    void compareTo()
     {
         assertCompareTo(0, toExtension("id", "2.0"), toExtension("id", "2.0"));
         assertCompareTo(-1, toExtension("id", "2.0"), toExtension("id", "3.0"));
@@ -136,7 +134,7 @@ public class AbstractExtensionTest
     }
 
     @Test
-    public void set()
+    void set()
     {
         AbstractExtension extension = toExtension("id", "version", new ExtensionId("feature", "featureversion"));
 
@@ -173,7 +171,7 @@ public class AbstractExtensionTest
     }
 
     @Test
-    public void equals()
+    void equals()
     {
         AbstractExtension extension = toExtension("id", "version");
         AbstractExtension cloneExtension = new TestExtension(extension);

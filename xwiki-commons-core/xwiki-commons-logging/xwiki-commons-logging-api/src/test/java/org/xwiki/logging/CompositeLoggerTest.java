@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class CompositeLoggerTest
 {
     @Test
-    public void test()
+    void test()
     {
         LogTree logTree = new LogTree();
         LogQueue logQueue = new LogQueue();

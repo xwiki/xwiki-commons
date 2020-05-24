@@ -37,13 +37,13 @@ public class AlwaysMatchingEventFilterTest
     AlwaysMatchingEventFilter filter = AlwaysMatchingEventFilter.INSTANCE;
 
     @Test
-    public void testGetFilter()
+    void testGetFilter()
     {
         assertEquals(".*", this.filter.getFilter());
     }
 
     @Test
-    public void testEquals()
+    void testEquals()
     {
         assertFalse(this.filter.equals(null));
         assertFalse(this.filter.equals(new FixedNameEventFilter("filter")));
@@ -52,7 +52,7 @@ public class AlwaysMatchingEventFilterTest
     }
 
     @Test
-    public void testMatches()
+    void testMatches()
     {
         assertTrue(this.filter.matches(null));
         assertTrue(this.filter.matches(new FixedNameEventFilter("filter")));
@@ -60,7 +60,7 @@ public class AlwaysMatchingEventFilterTest
     }
 
     @Test
-    public void testHashcode()
+    void testHashcode()
     {
         assertEquals(0, this.filter.hashCode());
     }

@@ -28,13 +28,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Validate {@link NamespaceUtils}.
- * 
+ *
  * @version $Id$
  */
 public class NamespaceUtilsTest
 {
     @Test
-    public void getPrefix()
+    void getPrefix()
     {
         assertNull(NamespaceUtils.getPrefix(null));
         assertNull(NamespaceUtils.getPrefix("namespace"));
@@ -44,7 +44,7 @@ public class NamespaceUtilsTest
     }
 
     @Test
-    public void toNamespace()
+    void toNamespace()
     {
         assertNull(NamespaceUtils.toNamespace(null));
         assertEquals(new Namespace(null, "namespace"), NamespaceUtils.toNamespace("namespace"));

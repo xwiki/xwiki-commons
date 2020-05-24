@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link DefaultInstalledExtension}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultInstalledExtensionTest
@@ -53,7 +53,7 @@ public class DefaultInstalledExtensionTest
     }
 
     @Test
-    public void isInstalled()
+    void isInstalled()
     {
         assertFalse(this.installedExtension.isInstalled());
         assertFalse(this.installedExtension.isInstalled("namespace"));
@@ -75,7 +75,7 @@ public class DefaultInstalledExtensionTest
     }
 
     @Test
-    public void isValid()
+    void isValid()
     {
         assertTrue(this.installedExtension.isValid(null));
         assertTrue(this.installedExtension.isValid("namespace"));
@@ -107,7 +107,7 @@ public class DefaultInstalledExtensionTest
     }
 
     @Test
-    public void isDependency()
+    void isDependency()
     {
         assertFalse(this.installedExtension.isDependency());
         assertFalse(this.installedExtension.isDependency("namespace"));
@@ -141,7 +141,7 @@ public class DefaultInstalledExtensionTest
     }
 
     @Test
-    public void getNamespaces()
+    void getNamespaces()
     {
         assertNull(this.installedExtension.getNamespaces());
 
@@ -157,11 +157,10 @@ public class DefaultInstalledExtensionTest
         this.installedExtension.setNamespaces(Arrays.asList("namespace3"));
 
         assertEquals(Arrays.asList("namespace3"), new ArrayList<>(this.installedExtension.getNamespaces()));
-
     }
 
     @Test
-    public void setInstallDate()
+    void setInstallDate()
     {
         Date date = new Date(13);
 
@@ -198,7 +197,7 @@ public class DefaultInstalledExtensionTest
     }
 
     @Test
-    public void isValidated()
+    void isValidated()
     {
         assertFalse(this.installedExtension.isValidated("namespace1"));
         assertFalse(this.installedExtension.isValidated("namespace2"));

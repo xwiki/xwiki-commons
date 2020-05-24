@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class MessageParserTest
 {
     @Test
-    public void plain()
+    void plain()
     {
         MessageParser parser = new MessageParser("plain text", false);
 
@@ -47,7 +47,7 @@ public class MessageParserTest
     }
 
     @Test
-    public void logWithTwoArguments()
+    void logWithTwoArguments()
     {
         MessageParser parser = new MessageParser("hello {} world {}", false);
 
@@ -71,7 +71,7 @@ public class MessageParserTest
     }
 
     @Test
-    public void logWithEscaping()
+    void logWithEscaping()
     {
         MessageParser parser = new MessageParser("one \\{} two \\\\{} three \\\\\\{}", false);
 
@@ -95,7 +95,7 @@ public class MessageParserTest
     }
 
     @Test
-    public void logWithIndices()
+    void logWithIndices()
     {
         MessageParser parser;
 

@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
 {
     @Test
-    public void testUpgradePlanOnRoot() throws Throwable
+    void testUpgradePlanOnRoot() throws Throwable
     {
         // Install first version
         InstalledExtension extension = install(TestResources.REMOTE_UPGRADE10_ID);
@@ -96,13 +96,13 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
         assertEquals(0,
             upgradePlan(null,
                 Arrays.asList(TestResources.REMOTE_UPGRADE10_ID, TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID))
-                    .getTree().size());
+                .getTree().size());
         assertEquals(1, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE10_ID)).getTree().size());
         assertEquals(2, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE20_ID)).getTree().size());
     }
 
     @Test
-    public void testUpgradePlanOnNamespaceWithExtensionOnRoot() throws Throwable
+    void testUpgradePlanOnNamespaceWithExtensionOnRoot() throws Throwable
     {
         // install first version
         install(TestResources.REMOTE_UPGRADE10_ID);
@@ -117,7 +117,7 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testUpgradePlanWithDependencyOnRoot() throws Throwable
+    void testUpgradePlanWithDependencyOnRoot() throws Throwable
     {
         // install first version
         install(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID);
@@ -175,7 +175,7 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testUpgradePlanWithDependencyOnNamespace() throws Throwable
+    void testUpgradePlanWithDependencyOnNamespace() throws Throwable
     {
         // install first version
         install(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID, "namespace");
@@ -225,7 +225,7 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testUpgradePlanOnRootWithTargetDependencyExtension() throws Throwable
+    void testUpgradePlanOnRootWithTargetDependencyExtension() throws Throwable
     {
         // install first version
         install(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID);

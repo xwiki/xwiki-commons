@@ -33,10 +33,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class FilterStreamTypeTest
 {
-    // Tests
-
     @Test
-    public void testSerializeWithDataAndVersion()
+    void testSerializeWithDataAndVersion()
     {
         FilterStreamType type = new FilterStreamType(new SystemType("type"), "data", "version");
 
@@ -44,7 +42,7 @@ public class FilterStreamTypeTest
     }
 
     @Test
-    public void testUnserializeWithDataAndVersion()
+    void testUnserializeWithDataAndVersion()
     {
         FilterStreamType type = FilterStreamType.unserialize("type+data/version");
 
@@ -54,7 +52,7 @@ public class FilterStreamTypeTest
     }
 
     @Test
-    public void testUnserializeWithData()
+    void testUnserializeWithData()
     {
         FilterStreamType type = FilterStreamType.unserialize("type+data");
 
@@ -64,7 +62,7 @@ public class FilterStreamTypeTest
     }
 
     @Test
-    public void testUnserializeWithEmptyData()
+    void testUnserializeWithEmptyData()
     {
         FilterStreamType type = FilterStreamType.unserialize("type+");
 
@@ -74,7 +72,7 @@ public class FilterStreamTypeTest
     }
 
     @Test
-    public void testUnserializeWithVersion()
+    void testUnserializeWithVersion()
     {
         FilterStreamType type = FilterStreamType.unserialize("type/version");
 
@@ -84,7 +82,7 @@ public class FilterStreamTypeTest
     }
 
     @Test
-    public void testUnserializeWithEmptyVersion()
+    void testUnserializeWithEmptyVersion()
     {
         FilterStreamType type = FilterStreamType.unserialize("type/");
 
@@ -94,7 +92,7 @@ public class FilterStreamTypeTest
     }
 
     @Test
-    public void equals()
+    void equals()
     {
         FilterStreamType type = new FilterStreamType(new SystemType("type"), "data", "version");
 
@@ -106,7 +104,7 @@ public class FilterStreamTypeTest
     }
 
     @Test
-    public void compareTo()
+    void compareTo()
     {
         FilterStreamType type = new FilterStreamType(new SystemType("type"), "data", "2.0");
 

@@ -43,7 +43,7 @@ public class ComponentDescriptorAddedEventTest
     }
 
     @Test
-    public void matchesAllComponentRoles()
+    void matchesAllComponentRoles()
     {
         ComponentDescriptorAddedEvent event = new ComponentDescriptorAddedEvent();
         // Note: We use any class for the test but it's supposed to be a component role class.
@@ -51,14 +51,14 @@ public class ComponentDescriptorAddedEventTest
     }
 
     @Test
-    public void matchesWhenDifferentEvent()
+    void matchesWhenDifferentEvent()
     {
         ComponentDescriptorAddedEvent event = new ComponentDescriptorAddedEvent();
         assertFalse(event.matches((Event) e -> false));
     }
 
     @Test
-    public void matchesWhenSpecificRoleSpecified()
+    void matchesWhenSpecificRoleSpecified()
     {
         // Note: We use any class for the test but it's supposed to be a component role class.
         ComponentDescriptorAddedEvent event = new ComponentDescriptorAddedEvent((Type) Dummy.class);
@@ -69,7 +69,7 @@ public class ComponentDescriptorAddedEventTest
     }
 
     @Test
-    public void testEquals()
+    void testEquals()
     {
         assertEquals(new ComponentDescriptorAddedEvent(), new ComponentDescriptorAddedEvent());
         assertEquals(new ComponentDescriptorAddedEvent((Type) Dummy.class), new ComponentDescriptorAddedEvent(
@@ -79,7 +79,7 @@ public class ComponentDescriptorAddedEventTest
     }
 
     @Test
-    public void testHashCode()
+    void testHashCode()
     {
         assertEquals(new ComponentDescriptorAddedEvent().hashCode(),
             new ComponentDescriptorAddedEvent().hashCode());

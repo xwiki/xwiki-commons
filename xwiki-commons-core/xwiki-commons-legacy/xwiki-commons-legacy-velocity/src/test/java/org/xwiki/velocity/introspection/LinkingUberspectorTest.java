@@ -24,6 +24,7 @@ import java.io.StringWriter;
 import java.util.Date;
 import java.util.Properties;
 
+import org.apache.velocity.VelocityContext;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.util.introspection.UberspectImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,7 +61,7 @@ public class LinkingUberspectorTest
      * Tests that the uberspectors in the list are called, and without a real uberspector no methods are found.
      */
     @Test
-    public void emptyArray() throws Exception
+    void emptyArray() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, LinkingUberspector.class.getCanonicalName());
@@ -68,7 +69,7 @@ public class LinkingUberspectorTest
         TestingUberspector.methodCalls = 0;
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
         assertEquals("$bar", writer.toString());
         assertEquals(1, TestingUberspector.methodCalls);
@@ -79,7 +80,7 @@ public class LinkingUberspectorTest
      * the chain, and after a method is found no further calls are performed.
      */
     @Test
-    public void basicArray() throws Exception
+    void basicArray() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, LinkingUberspector.class.getCanonicalName());
@@ -90,7 +91,7 @@ public class LinkingUberspectorTest
         TestingUberspector.getterCalls = 0;
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
         assertEquals("hello", writer.toString());
         assertEquals(2, TestingUberspector.methodCalls);
@@ -101,7 +102,7 @@ public class LinkingUberspectorTest
      * Tests that invalid uberspectors classnames are ignored.
      */
     @Test
-    public void invalidUberspectorsAreIgnored() throws Exception
+    void invalidUberspectorsAreIgnored() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, LinkingUberspector.class.getCanonicalName());
@@ -113,7 +114,7 @@ public class LinkingUberspectorTest
         InvalidUberspector.methodCalls = 0;
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
         assertEquals("hello", writer.toString());
         assertEquals(1, TestingUberspector.methodCalls);
@@ -124,14 +125,14 @@ public class LinkingUberspectorTest
      * Checks that the default (non-secure) uberspector works and allows calling restricted methods.
      */
     @Test
-    public void defaultUberspectorWorks() throws Exception
+    void defaultUberspectorWorks() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, LinkingUberspector.class.getCanonicalName());
         prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES, UberspectImpl.class.getCanonicalName());
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$bar"));
         assertTrue(writer.toString().contains("public java.lang.String(byte[],int,int)"), writer.toString());
     }
@@ -140,14 +141,14 @@ public class LinkingUberspectorTest
      * Checks that the secure uberspector works and does not allow calling restricted methods.
      */
     @Test
-    public void secureUberspectorWorks() throws Exception
+    void secureUberspectorWorks() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, LinkingUberspector.class.getCanonicalName());
         prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES, SecureUberspector.class.getCanonicalName());
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$foo$bar"));
         assertEquals("hello$bar", writer.toString());
     }
@@ -156,14 +157,14 @@ public class LinkingUberspectorTest
      * Checks that when the array property is not configured, by default the secure ubespector is used.
      */
     @Test
-    public void secureUberspectorEnabledByDefault() throws Exception
+    void secureUberspectorEnabledByDefault() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, LinkingUberspector.class.getCanonicalName());
         prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES, "");
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$foo$bar"));
         assertEquals("hello$bar", writer.toString());
     }

@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Integration tests for {@link UnifiedHTMLDiffManager}.
- * 
+ *
  * @version $Id$
  */
 @ComponentTest
@@ -132,7 +132,7 @@ public class UnifiedHTMLDiffManagerTest
     }
 
     @Test
-    public void verifyXMLDiffFiltersThrowingExceptions() throws Exception
+    void verifyXMLDiffFiltersThrowingExceptions() throws Exception
     {
         XMLDiffFilter alice = mock(XMLDiffFilter.class, "alice");
         doThrow(new RuntimeException("before alice failed!")).when(alice).before(any(Document.class));

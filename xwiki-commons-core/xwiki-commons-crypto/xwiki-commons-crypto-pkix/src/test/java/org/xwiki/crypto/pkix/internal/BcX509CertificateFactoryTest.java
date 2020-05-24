@@ -87,7 +87,7 @@ public class BcX509CertificateFactoryTest extends AbstractPKIXTest
     }
 
     @Test
-    public void v1CaCert() throws Exception
+    void v1CaCert() throws Exception
     {
         CertifiedPublicKey certificate = factory.decode(v1CaCert);
 
@@ -100,7 +100,7 @@ public class BcX509CertificateFactoryTest extends AbstractPKIXTest
     }
 
     @Test
-    public void v1Cert() throws Exception
+    void v1Cert() throws Exception
     {
         CertifiedPublicKey caCert = factory.decode(v1CaCert);
         CertifiedPublicKey certificate = factory.decode(v1Cert);
@@ -114,7 +114,7 @@ public class BcX509CertificateFactoryTest extends AbstractPKIXTest
     }
 
     @Test
-    public void v3CaCert() throws Exception
+    void v3CaCert() throws Exception
     {
         CertifiedPublicKey certificate = factory.decode(v3CaCert);
 
@@ -139,7 +139,7 @@ public class BcX509CertificateFactoryTest extends AbstractPKIXTest
     }
 
     @Test
-    public void v3InterCACert() throws Exception
+    void v3InterCACert() throws Exception
     {
         CertifiedPublicKey caCert = factory.decode(v3CaCert);
         CertifiedPublicKey interCaCert = factory.decode(v3InterCaCert);
@@ -166,7 +166,7 @@ public class BcX509CertificateFactoryTest extends AbstractPKIXTest
     }
 
     @Test
-    public void v3Cert() throws Exception
+    void v3Cert() throws Exception
     {
         CertifiedPublicKey interCaCert = factory.decode(v3InterCaCert);
         CertifiedPublicKey certificate = factory.decode(v3Cert);

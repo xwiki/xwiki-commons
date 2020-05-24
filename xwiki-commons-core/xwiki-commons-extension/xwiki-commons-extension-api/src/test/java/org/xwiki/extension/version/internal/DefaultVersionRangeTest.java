@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DefaultVersionRangeTest
 {
     @Test
-    public void isCompatible() throws InvalidVersionRangeException
+    void isCompatible() throws InvalidVersionRangeException
     {
         // Compatible
         assertTrue(new DefaultVersionRange("[1.0]").isCompatible(new DefaultVersionRange("[1.0]")));
@@ -51,7 +51,7 @@ public class DefaultVersionRangeTest
     }
 
     @Test
-    public void getValue()
+    void getValue()
     {
         assertEquals("[1.0,2.0]", new DefaultVersionRange(new DefaultVersion("1.0"), true, new DefaultVersion(
             "2.0"), true).getValue());
@@ -69,14 +69,14 @@ public class DefaultVersionRangeTest
     }
 
     @Test
-    public void testToString()
+    void testToString()
     {
         assertEquals("[1.0,2.0]", new DefaultVersionRange(new DefaultVersion("1.0"), true, new DefaultVersion(
             "2.0"), true).toString());
     }
 
     @Test
-    public void testHashCode() throws InvalidVersionRangeException
+    void testHashCode() throws InvalidVersionRangeException
     {
         assertEquals(new DefaultVersionRange("[1.0,2.0]").hashCode(),
             new DefaultVersionRange("[1.0,2.0]").hashCode());
@@ -88,7 +88,7 @@ public class DefaultVersionRangeTest
     }
 
     @Test
-    public void testEquals() throws InvalidVersionRangeException
+    void testEquals() throws InvalidVersionRangeException
     {
         assertEquals(new DefaultVersionRange("[1.0,2.0]"), new DefaultVersionRange("[1.0,2.0]"));
         assertEquals(new DefaultVersionRange("[1.0]"), new DefaultVersionRange("[1.0,1.0]"));
@@ -97,7 +97,7 @@ public class DefaultVersionRangeTest
     }
 
     @Test
-    public void containsVersion() throws InvalidVersionRangeException
+    void containsVersion() throws InvalidVersionRangeException
     {
         assertTrue(new DefaultVersionRange("[1.0,2.0]").containsVersion((Version) new DefaultVersion("1.0")));
         assertTrue(new DefaultVersionRange("[1.0,2.0]").containsVersion((Version) new DefaultVersion("2.0")));
@@ -117,7 +117,7 @@ public class DefaultVersionRangeTest
     }
 
     @Test
-    public void invalidVersionRangeWithSingleVersionWithLowerBoundInclusive()
+    void invalidVersionRangeWithSingleVersionWithLowerBoundInclusive()
     {
         assertThrows(InvalidVersionRangeException.class, () -> {
             new DefaultVersionRange("]1.0]");
@@ -125,7 +125,7 @@ public class DefaultVersionRangeTest
     }
 
     @Test
-    public void invalidVersionRangeWithSingleVersionWithUpperBoundInclusive()
+    void invalidVersionRangeWithSingleVersionWithUpperBoundInclusive()
     {
         assertThrows(InvalidVersionRangeException.class, () -> {
             new DefaultVersionRange("[1.0[");
@@ -133,7 +133,7 @@ public class DefaultVersionRangeTest
     }
 
     @Test
-    public void invalidVersionRangeWithRangeMoreThanTwoBound()
+    void invalidVersionRangeWithRangeMoreThanTwoBound()
     {
         assertThrows(InvalidVersionRangeException.class, () -> {
             new DefaultVersionRange("[1.0,2.0,3.0]");
@@ -141,7 +141,7 @@ public class DefaultVersionRangeTest
     }
 
     @Test
-    public void invalidVersionRangeWithLowerBoundGreaterThanUpperBound()
+    void invalidVersionRangeWithLowerBoundGreaterThanUpperBound()
     {
         assertThrows(InvalidVersionRangeException.class, () -> {
             new DefaultVersionRange("[2.0,1.0]");

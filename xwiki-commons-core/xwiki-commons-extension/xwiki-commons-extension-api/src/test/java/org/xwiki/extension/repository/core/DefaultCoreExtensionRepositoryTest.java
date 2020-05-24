@@ -57,7 +57,7 @@ import static org.mockito.Mockito.doAnswer;
 
 /**
  * Validate {@link DefaultCoreExtensionRepository}.
- * 
+ *
  * @version $Id$
  */
 @ComponentTest
@@ -105,13 +105,11 @@ public class DefaultCoreExtensionRepositoryTest
         }).when(this.scanner).scanEnvironment(any(DefaultCoreExtensionRepository.class));
     }
 
-    // Tests
-
     /**
      * Validate core extension loading and others initializations.
      */
     @Test
-    public void init() throws MalformedURLException
+    void init() throws MalformedURLException
     {
         assertEquals(3, this.coreExtensionRepository.countExtensions());
 
@@ -137,7 +135,7 @@ public class DefaultCoreExtensionRepositoryTest
      * Validate {@link CoreExtensionRepository#getCoreExtension(String)}
      */
     @Test
-    public void getCoreExtension()
+    void getCoreExtension()
     {
         assertNull(this.coreExtensionRepository.getCoreExtension("unexistingextension"));
 
@@ -154,7 +152,7 @@ public class DefaultCoreExtensionRepositoryTest
      * Validate {@link CoreExtensionRepository#resolve(ExtensionId)}
      */
     @Test
-    public void resolve() throws ResolveException
+    void resolve() throws ResolveException
     {
         try {
             this.coreExtensionRepository.resolve(new ExtensionId("unexistingextension", "version"));
@@ -183,11 +181,11 @@ public class DefaultCoreExtensionRepositoryTest
 
     /**
      * Make sure only one result is returned for an extension having several features.
-     * 
+     *
      * @throws SearchException
      */
     @Test
-    public void searchWithSeveralFeatures() throws SearchException
+    void searchWithSeveralFeatures() throws SearchException
     {
         this.coreExtensionRepository.addExtensions("extension", new DefaultVersion("version"),
             new ExtensionId("testfeature1"), new ExtensionId("testfeature2"));

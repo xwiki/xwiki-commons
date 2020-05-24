@@ -106,10 +106,8 @@ public class DefaultExtensionSerializerTest
         return unserializedExtension;
     }
 
-    // Tests
-
     @Test
-    public void testSerializeAndUnserialize()
+    void testSerializeAndUnserialize()
         throws ParserConfigurationException, TransformerException, InvalidExtensionException, ComponentLookupException
     {
         DefaultLocalExtension extension =

@@ -66,13 +66,13 @@ public class DefaultLocalExtensionRepositoryTest
     }
 
     @Test
-    public void testInit()
+    void testInit()
     {
         assertTrue(this.localExtensionRepository.countExtensions() > 0);
     }
 
     @Test
-    public void testResolve() throws ResolveException
+    void testResolve() throws ResolveException
     {
         assertThrows(ResolveException.class, () -> {
             this.localExtensionRepository.resolve(new ExtensionId("unexistingextension", "version"));
@@ -89,7 +89,7 @@ public class DefaultLocalExtensionRepositoryTest
     }
 
     @Test
-    public void testResolveExistingDependency() throws ResolveException
+    void testResolveExistingDependency() throws ResolveException
     {
         Extension extension =
             this.localExtensionRepository.resolve(new DefaultExtensionDependency(TestResources.INSTALLED_ID.getId(),
@@ -100,7 +100,7 @@ public class DefaultLocalExtensionRepositoryTest
     }
 
     @Test
-    public void testResolveUnexistingDependencyId()
+    void testResolveUnexistingDependencyId()
     {
         assertThrows(ResolveException.class, () -> {
             this.localExtensionRepository.resolve(
@@ -109,7 +109,7 @@ public class DefaultLocalExtensionRepositoryTest
     }
 
     @Test
-    public void testResolveIncompatibleDependencyVersion()
+    void testResolveIncompatibleDependencyVersion()
     {
         assertThrows(ResolveException.class, () -> {
             this.localExtensionRepository.resolve(new DefaultExtensionDependency(TestResources.INSTALLED_ID.getId(),
@@ -118,7 +118,7 @@ public class DefaultLocalExtensionRepositoryTest
     }
 
     @Test
-    public void testResolveUnexistingButFeatureCompatibleDependency()
+    void testResolveUnexistingButFeatureCompatibleDependency()
     {
         assertThrows(ResolveException.class, () -> {
             this.localExtensionRepository.resolve(new DefaultExtensionDependency("installedextension-feature",
@@ -127,7 +127,7 @@ public class DefaultLocalExtensionRepositoryTest
     }
 
     @Test
-    public void testResolveUnexistingButSmalerVersionDependency()
+    void testResolveUnexistingButSmalerVersionDependency()
     {
         assertThrows(ResolveException.class, () -> {
             this.localExtensionRepository.resolve(
@@ -137,7 +137,7 @@ public class DefaultLocalExtensionRepositoryTest
     }
 
     @Test
-    public void testSearch() throws SearchException
+    void testSearch() throws SearchException
     {
         CollectionIterableResult<Extension> result =
             (CollectionIterableResult<Extension>) this.localExtensionRepository.search(null, 0, -1);
@@ -208,7 +208,7 @@ public class DefaultLocalExtensionRepositoryTest
     }
 
     @Test
-    public void testSearchWithQueryEQUAL() throws SearchException
+    void testSearchWithQueryEQUAL() throws SearchException
     {
         ExtensionQuery query = new ExtensionQuery();
 
@@ -223,7 +223,7 @@ public class DefaultLocalExtensionRepositoryTest
     }
 
     @Test
-    public void testSearchWithQueryMATCH() throws SearchException
+    void testSearchWithQueryMATCH() throws SearchException
     {
         ExtensionQuery query = new ExtensionQuery();
 
@@ -237,7 +237,7 @@ public class DefaultLocalExtensionRepositoryTest
     }
 
     @Test
-    public void testSearchWithQueryWithNullValue() throws SearchException
+    void testSearchWithQueryWithNullValue() throws SearchException
     {
         ExtensionQuery query = new ExtensionQuery();
 
@@ -251,7 +251,7 @@ public class DefaultLocalExtensionRepositoryTest
     }
 
     @Test
-    public void testRemove() throws ResolveException
+    void testRemove() throws ResolveException
     {
         LocalExtension localExtension = this.localExtensionRepository.resolve(TestResources.INSTALLED_ID);
 
@@ -268,7 +268,7 @@ public class DefaultLocalExtensionRepositoryTest
     }
 
     @Test
-    public void resolveVersions() throws ResolveException
+    void resolveVersions() throws ResolveException
     {
         IterableResult<Version> versions =
             this.localExtensionRepository.resolveVersions(TestResources.INSTALLED_ONNAMESPACE_ID.getId(), 0, -1);

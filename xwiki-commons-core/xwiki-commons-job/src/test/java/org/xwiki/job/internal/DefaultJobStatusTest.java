@@ -54,7 +54,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests for {@link DefaultJobStatus}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultJobStatusTest
@@ -64,10 +64,10 @@ public class DefaultJobStatusTest
     private LoggerManager loggerManager = mock(LoggerManager.class);
 
     @Test
-    public void subJobQuestionIsForwardedToParent() throws Exception
+    void subJobQuestionIsForwardedToParent() throws Exception
     {
         JobStatus parentJobStatus = mock(JobStatus.class);
-        org.xwiki.job.DefaultJobStatus<DefaultRequest> jobStatus = new DefaultJobStatus<>("type", new DefaultRequest(),
+        DefaultJobStatus<DefaultRequest> jobStatus = new DefaultJobStatus<>("type", new DefaultRequest(),
             parentJobStatus, this.observationManager, this.loggerManager);
 
         String question = "What's up?";
@@ -87,7 +87,7 @@ public class DefaultJobStatusTest
     }
 
     @Test
-    public void fireQuestionAnsweredOK()
+    void fireQuestionAnsweredOK()
     {
         DefaultRequest request = new DefaultRequest();
         request.setId(Arrays.asList("test", "answered"));
@@ -102,7 +102,7 @@ public class DefaultJobStatusTest
     }
 
     @Test
-    public void fireQuestionAskedOK() throws Exception
+    void fireQuestionAskedOK() throws Exception
     {
         DefaultRequest request = new DefaultRequest();
         request.setId(Arrays.asList("test", "asked"));
@@ -129,7 +129,7 @@ public class DefaultJobStatusTest
     }
 
     @Test
-    public void defaultogQueue()
+    void defaultogQueue()
     {
         DefaultJobStatus<DefaultRequest> jobStatus =
             new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
@@ -139,7 +139,7 @@ public class DefaultJobStatusTest
     }
 
     @Test
-    public void getLogLevel()
+    void getLogLevel()
     {
         DefaultJobStatus<DefaultRequest> jobStatus =
             new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
@@ -153,7 +153,7 @@ public class DefaultJobStatusTest
     }
 
     @Test
-    public void setError()
+    void setError()
     {
         DefaultJobStatus<DefaultRequest> jobStatus =
             new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
@@ -167,7 +167,7 @@ public class DefaultJobStatusTest
     }
 
     @Test
-    public void setCancellable()
+    void setCancellable()
     {
         DefaultJobStatus<DefaultRequest> jobStatus =
             new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
@@ -184,7 +184,7 @@ public class DefaultJobStatusTest
     }
 
     @Test
-    public void setState()
+    void setState()
     {
         DefaultJobStatus<DefaultRequest> jobStatus =
             new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
@@ -197,7 +197,7 @@ public class DefaultJobStatusTest
     }
 
     @Test
-    public void setDates()
+    void setDates()
     {
         DefaultJobStatus<DefaultRequest> jobStatus =
             new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
@@ -213,7 +213,7 @@ public class DefaultJobStatusTest
     }
 
     @Test
-    public void setIsolated()
+    void setIsolated()
     {
         DefaultRequest request = new DefaultRequest();
         DefaultJobStatus<DefaultRequest> jobStatus = new DefaultJobStatus<>("type", request, null, null, null);
@@ -238,7 +238,7 @@ public class DefaultJobStatusTest
     }
 
     @Test
-    public void cancel()
+    void cancel()
     {
         DefaultJobStatus<DefaultRequest> jobStatus =
             new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
@@ -251,7 +251,7 @@ public class DefaultJobStatusTest
     }
 
     @Test
-    public void setLoggerTail()
+    void setLoggerTail()
     {
         DefaultJobStatus<DefaultRequest> jobStatus =
             new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);

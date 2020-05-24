@@ -56,8 +56,6 @@ class AbstractContextStoreTest
         }
     };
 
-    // Tests
-
     @Test
     void get()
     {

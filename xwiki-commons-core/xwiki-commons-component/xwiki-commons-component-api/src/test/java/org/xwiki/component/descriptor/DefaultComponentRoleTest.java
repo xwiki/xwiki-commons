@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Unit tests for {@link DefaultComponentRole}.
- * 
+ *
  * @version $Id$
  * @since 3.3M1
  */
@@ -41,7 +41,7 @@ public class DefaultComponentRoleTest
     }
 
     @Test
-    public void equals()
+    void equals()
     {
         DefaultComponentRole cr1 = new DefaultComponentRole();
         cr1.setRoleType(Role.class);

@@ -54,7 +54,7 @@ public class DefaultJobManagerTest
     private ComponentManager componentManager;
 
     @Test
-    public void getJobStatusForUnexistingJob() throws Exception
+    void getJobStatusForUnexistingJob() throws Exception
     {
         List<String> jobId = Arrays.asList("unexisting-job");
         JobStatusStore jobStatusStorage = componentManager.getInstance(JobStatusStore.class);

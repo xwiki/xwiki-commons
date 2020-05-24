@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Validate {@link SoftCache}.
- * 
+ *
  * @version $Id$
  */
 public class SoftCacheTest
@@ -34,7 +34,7 @@ public class SoftCacheTest
     private SoftCache<String, String> cache = new SoftCache<>();
 
     @Test
-    public void testWithStrongReferences()
+    void testWithStrongReferences()
     {
         String value = "value";
         String defaultValue = "default";

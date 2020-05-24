@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link XStreamUtils}.
- * 
+ *
  * @version $Id$
  */
 @ComponentTest
@@ -48,19 +48,19 @@ public class XStreamUtilsTest
     private XStreamUtils utils;
 
     @Test
-    public void isSafeType()
+    void isSafeType()
     {
         assertTrue(this.utils.isSafeType(null));
         assertTrue(this.utils.isSafeType("string"));
         assertTrue(this.utils.isSafeType(1));
-        assertTrue(this.utils.isSafeType(new Object[] {}));
+        assertTrue(this.utils.isSafeType(new Object[]{}));
         assertTrue(this.utils.isSafeType(LogLevel.ERROR));
 
         assertFalse(this.utils.isSafeType(getClass()));
     }
 
     @Test
-    public void isSerializable()
+    void isSerializable()
     {
         assertFalse(this.utils.isSerializable(ByteArrayOutputStream.class));
         assertFalse(this.utils.isSerializable(OutputStream.class));

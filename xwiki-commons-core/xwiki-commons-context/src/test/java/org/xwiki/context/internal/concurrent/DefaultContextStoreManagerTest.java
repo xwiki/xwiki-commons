@@ -134,8 +134,6 @@ class DefaultContextStoreManagerTest
         when(this.componentManager.getInstanceList(ContextStore.class)).thenReturn(Arrays.asList(stores));
     }
 
-    // Tests
-
     @Test
     void getSupportedEntries() throws ComponentLookupException
     {

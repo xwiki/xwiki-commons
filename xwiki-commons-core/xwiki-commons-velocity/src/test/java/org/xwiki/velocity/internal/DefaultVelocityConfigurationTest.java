@@ -71,18 +71,18 @@ public class DefaultVelocityConfigurationTest
     }
 
     @Test
-    public void getToolsReturnsDefaultTools()
+    void getToolsReturnsDefaultTools()
     {
         // Verify for example that the number tool is present.
         assertEquals(NumberTool.class.getName(), this.configuration.getTools().get("numbertool"));
     }
 
     @Test
-    public void getPropertiesReturnsDefaultProperties() throws Exception
+    void getPropertiesReturnsDefaultProperties() throws Exception
     {
         // Verify that the secure uberspector is set by default
         assertEquals(
-            StringUtils.join(new String[] { SecureUberspector.class.getName(),
+            StringUtils.join(new String[]{ SecureUberspector.class.getName(),
                 DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','),
             this.configuration.getProperties().getProperty(RuntimeConstants.UBERSPECT_CLASSNAME));
 

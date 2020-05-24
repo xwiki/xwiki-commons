@@ -118,8 +118,6 @@ public class AetherDefaultRepositoryManagerTest
             this.repositoryUtil.getComponentManager().getInstance(ExtensionLicenseManager.class);
     }
 
-    // Tests
-
     @Test
     public void testResolve() throws ResolveException, IOException
     {

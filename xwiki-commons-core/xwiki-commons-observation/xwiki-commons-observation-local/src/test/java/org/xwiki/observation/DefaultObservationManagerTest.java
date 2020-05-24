@@ -62,7 +62,7 @@ public class DefaultObservationManagerTest
     LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
     @Test
-    public void notifyWhenMatching()
+    void notifyWhenMatching()
     {
         EventListener listener = mock(EventListener.class);
         Event event = mock(Event.class);
@@ -78,7 +78,7 @@ public class DefaultObservationManagerTest
     }
 
     @Test
-    public void removeListener()
+    void removeListener()
     {
         EventListener listener = mock(EventListener.class);
         Event event = mock(Event.class);
@@ -93,7 +93,7 @@ public class DefaultObservationManagerTest
     }
 
     @Test
-    public void addEvent()
+    void addEvent()
     {
         EventListener listener = mock(EventListener.class);
         Event initialEvent = mock(Event.class, "initial");
@@ -115,7 +115,7 @@ public class DefaultObservationManagerTest
     }
 
     @Test
-    public void addEventWithNoInitialEvent()
+    void addEventWithNoInitialEvent()
     {
         EventListener listener = mock(EventListener.class);
         Event afterEvent = mock(Event.class, "after");
@@ -133,7 +133,7 @@ public class DefaultObservationManagerTest
     }
 
     @Test
-    public void removeEvent()
+    void removeEvent()
     {
         EventListener listener = mock(EventListener.class);
         Event initialEvent = mock(Event.class, "initial");
@@ -161,7 +161,7 @@ public class DefaultObservationManagerTest
      * Verify that we can register two listeners on the same event and they'll both receive the event.
      */
     @Test
-    public void registerSeveralListenersForSameEvent()
+    void registerSeveralListenersForSameEvent()
     {
         EventListener listener1 = mock(EventListener.class, "listener1");
         EventListener listener2 = mock(EventListener.class, "listener2");
@@ -186,7 +186,7 @@ public class DefaultObservationManagerTest
      * Verify that we can register a listener to receive any kind of event using AllEvent event type.
      */
     @Test
-    public void registerListenerForAllEvents()
+    void registerListenerForAllEvents()
     {
         EventListener listener = mock(EventListener.class);
         Event event = mock(Event.class);
@@ -204,7 +204,7 @@ public class DefaultObservationManagerTest
      * Verify that a warning is logged is we try to register a listener with the same name.
      */
     @Test
-    public void registerSameListenerSeveralTimes()
+    void registerSameListenerSeveralTimes()
     {
         EventListener listener = mock(EventListener.class);
 
@@ -231,7 +231,7 @@ public class DefaultObservationManagerTest
      * it will receive both events.
      */
     @Test
-    public void registerListenerForTwoEventsOfSameType()
+    void registerListenerForTwoEventsOfSameType()
     {
         EventListener listener = mock(EventListener.class);
         Event eventMatcher1 = new ActionExecutionEvent("action1");
@@ -283,6 +283,5 @@ public class DefaultObservationManagerTest
         this.manager.notify((Object) -> false, componentManager, null);
 
         assertEquals("Failed to add listener. Root cause: [RuntimeException: error]", logCapture.getMessage(0));
-
     }
 }

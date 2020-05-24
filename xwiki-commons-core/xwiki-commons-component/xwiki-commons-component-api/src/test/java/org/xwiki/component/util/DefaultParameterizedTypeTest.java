@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DefaultParameterizedTypeTest
 {
     @Test
-    public void toStringTest()
+    void toStringTest()
     {
         DefaultParameterizedType type = new DefaultParameterizedType(null, Void.class);
         assertEquals("java.lang.Void", type.toString());

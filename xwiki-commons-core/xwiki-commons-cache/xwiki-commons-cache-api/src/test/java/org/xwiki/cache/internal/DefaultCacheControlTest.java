@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Validate {@link DefaultCacheControl}.
- * 
+ *
  * @version $Id$
  */
 @ComponentTest
@@ -62,10 +62,8 @@ public class DefaultCacheControlTest
         return Date.from(dateTtime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
-    // Tests
-
     @Test
-    public void isCacheReadAllowed()
+    void isCacheReadAllowed()
     {
         LocalDateTime now = LocalDateTime.now();
 

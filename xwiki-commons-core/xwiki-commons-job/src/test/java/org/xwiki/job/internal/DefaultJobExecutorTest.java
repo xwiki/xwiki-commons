@@ -26,6 +26,7 @@ import org.xwiki.component.internal.ContextComponentManagerProvider;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.Job;
 import org.xwiki.job.JobGroupPath;
+import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.event.status.JobStatus.State;
 import org.xwiki.job.test.TestBasicGroupedJob;
 import org.xwiki.test.annotation.ComponentList;
@@ -38,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Validate {@link DefaultJobExecutor};
- * 
+ *
  * @version $Id$
  */
 @ComponentTest
@@ -82,7 +83,7 @@ public class DefaultJobExecutorTest
     }
 
     @Test
-    public void matchingGroupPathAreBlocked()
+    void matchingGroupPathAreBlocked()
     {
         TestBasicGroupedJob jobA = groupedJob("A");
         TestBasicGroupedJob jobAB = groupedJob("A", "B");

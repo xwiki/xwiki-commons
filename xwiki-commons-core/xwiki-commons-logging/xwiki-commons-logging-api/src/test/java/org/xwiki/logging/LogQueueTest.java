@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class LogQueueTest
 {
     @Test
-    public void error()
+    void error()
     {
         LogQueue queue = new LogQueue();
         LogEvent logEvent;
@@ -70,7 +70,7 @@ public class LogQueueTest
         assertNotNull(logEvent.getThrowable());
         assertNull(logEvent.getTranslationKey());
 
-        queue.error("message {}", new Object[] { "param1", new Exception() });
+        queue.error("message {}", new Object[]{ "param1", new Exception() });
         logEvent = queue.poll();
         assertEquals("message param1", logEvent.getFormattedMessage());
         assertEquals(Arrays.asList("message ", ""), logEvent.getMessageElements());
@@ -86,7 +86,7 @@ public class LogQueueTest
     }
 
     @Test
-    public void containLogsFrom()
+    void containLogsFrom()
     {
         LogQueue queue = new LogQueue();
 
@@ -106,7 +106,7 @@ public class LogQueueTest
     }
 
     @Test
-    public void getLogsFrom()
+    void getLogsFrom()
     {
         LogQueue queue = new LogQueue();
 
@@ -131,7 +131,7 @@ public class LogQueueTest
     }
 
     @Test
-    public void getLogEvent()
+    void getLogEvent()
     {
         LogQueue queue = new LogQueue();
 
@@ -145,7 +145,7 @@ public class LogQueueTest
     }
 
     @Test
-    public void copyLog()
+    void copyLog()
     {
         LogQueue queue1 = new LogQueue();
         LogQueue queue2 = new LogQueue();
@@ -163,7 +163,7 @@ public class LogQueueTest
     }
 
     @Test
-    public void getLogEvents() throws IOException
+    void getLogEvents() throws IOException
     {
         LogQueue queue = new LogQueue();
 
@@ -190,7 +190,7 @@ public class LogQueueTest
     }
 
     @Test
-    public void getFirstEvent()
+    void getFirstEvent()
     {
         LogQueue queue = new LogQueue();
 

@@ -26,13 +26,13 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * Validate {@link DefaultExtensionScm}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultExtensionScmTest
 {
     @Test
-    public void equals()
+    void equals()
     {
         assertEquals(
             new DefaultExtensionScm("http://url", new DefaultExtensionScmConnection("system", "path"),

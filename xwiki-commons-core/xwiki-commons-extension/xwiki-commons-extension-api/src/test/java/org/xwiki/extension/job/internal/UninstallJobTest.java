@@ -63,7 +63,7 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testUninstall() throws Throwable
+    void testUninstall() throws Throwable
     {
         uninstall(TestResources.INSTALLED_ID);
 
@@ -77,7 +77,7 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testUninstallWithBackwarDepencency() throws Throwable
+    void testUninstallWithBackwarDepencency() throws Throwable
     {
         uninstall(TestResources.INSTALLED_DEPENDENCY_ID);
 
@@ -91,7 +91,7 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testUninstallTwice() throws Throwable
+    void testUninstallTwice() throws Throwable
     {
         uninstall(TestResources.INSTALLED_ID);
 
@@ -101,7 +101,7 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testUninstallFromNamespace() throws Throwable
+    void testUninstallFromNamespace() throws Throwable
     {
         // prepare
 
@@ -123,7 +123,7 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testUninstallFromNamespaceWithBackwarDepencency() throws Throwable
+    void testUninstallFromNamespaceWithBackwarDepencency() throws Throwable
     {
         // prepare
 
@@ -151,7 +151,7 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testUninstallFromAllNamespaces() throws Throwable
+    void testUninstallFromAllNamespaces() throws Throwable
     {
         // prepare
 
@@ -173,7 +173,7 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testUninstallFromSeveralNamespaceIncludingWrong() throws Throwable
+    void testUninstallFromSeveralNamespaceIncludingWrong() throws Throwable
     {
         // prepare
 

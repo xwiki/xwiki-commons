@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.xwiki.extension.AbstractExtensionTest;
 import org.xwiki.extension.AbstractExtensionTest.TestExtension;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,16 +31,16 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * Validate {@link DefaultExtensionPlanAction}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultExtensionPlanActionTest
 {
     @Test
-    public void equals()
+    void equals()
     {
-        TestExtension testExtension1 = new AbstractExtensionTest.TestExtension(new ExtensionId("id"), "type");
-        TestExtension testExtension2 = new AbstractExtensionTest.TestExtension(new ExtensionId("id2"), "type");
+        TestExtension testExtension1 = new TestExtension(new ExtensionId("id"), "type");
+        TestExtension testExtension2 = new TestExtension(new ExtensionId("id2"), "type");
 
         assertEquals(
             new DefaultExtensionPlanAction(testExtension1, testExtension2, null, Action.INSTALL, "namespace", true),

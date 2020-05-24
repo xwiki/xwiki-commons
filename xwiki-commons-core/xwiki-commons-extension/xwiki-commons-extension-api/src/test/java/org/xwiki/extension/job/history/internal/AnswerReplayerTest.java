@@ -33,14 +33,14 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link AnswerReplayer}.
- * 
+ *
  * @version $Id$
  * @since 7.1RC1
  */
 public class AnswerReplayerTest
 {
     @Test
-    public void replayAnswerOK()
+    void replayAnswerOK()
     {
         QuestionAskedEvent questionAskedEvent = new QuestionAskedEvent();
 

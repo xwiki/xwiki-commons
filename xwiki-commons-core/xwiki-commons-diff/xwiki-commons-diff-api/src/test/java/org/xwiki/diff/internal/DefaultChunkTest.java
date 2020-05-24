@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DefaultChunkTest
 {
     @Test
-    public void isOverlapping()
+    void isOverlapping()
     {
         Chunk<Integer> chunk1 = new DefaultChunk<>(5, Arrays.asList(1, 2, 3, 4, 5));
         Chunk<Integer> chunk2 = new DefaultChunk<>(5, Arrays.asList(1, 2));

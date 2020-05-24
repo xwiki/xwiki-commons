@@ -59,8 +59,6 @@ public class ArtifactModelConverterTest
         this.artifactModel = new ArtifactModel(model);
     }
 
-    // Tests
-
     @Test
     void testConvertWithClassifier() throws SecurityException
     {

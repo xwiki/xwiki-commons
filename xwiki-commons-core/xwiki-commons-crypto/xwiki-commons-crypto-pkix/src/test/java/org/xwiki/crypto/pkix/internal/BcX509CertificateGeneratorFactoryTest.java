@@ -145,7 +145,8 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     }
 */
 
-    private X509CertifiedPublicKey checkSelfSigned(CertifiedPublicKey certificate, int version) throws Exception {
+    private X509CertifiedPublicKey checkSelfSigned(CertifiedPublicKey certificate, int version) throws Exception
+    {
         assertThat(certificate.getIssuer(), equalTo(new DistinguishedName("CN=Test")));
         assertThat(certificate.getSubject(), equalTo(new DistinguishedName("CN=Test")));
         assertThat(certificate.getIssuer(), equalTo(certificate.getSubject()));
@@ -200,7 +201,7 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     }
 
     @Test
-    public void generateSelfSignedCertificateVersion1() throws Exception
+    void generateSelfSignedCertificateVersion1() throws Exception
     {
         CertifiedPublicKey certificate =
             factory.getInstance(signerFactory.getInstance(true, rsaPrivateKey),
@@ -212,7 +213,7 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     }
 
     @Test
-    public void generateSelfSignedCertificateVersion3WithoutExtension() throws Exception
+    void generateSelfSignedCertificateVersion3WithoutExtension() throws Exception
     {
         CertifiedPublicKey certificate =
             factory.getInstance(signerFactory.getInstance(true, rsaPrivateKey),
@@ -224,7 +225,7 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     }
 
     @Test
-    public void generateSelfSignedCertificateVersion3RootCa() throws Exception
+    void generateSelfSignedCertificateVersion3RootCa() throws Exception
     {
         CertifiedPublicKey certificate =
             factory.getInstance(signerFactory.getInstance(true, rsaPrivateKey),
@@ -251,7 +252,7 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     }
 
     @Test
-    public void generateEndEntitySignedCertificateVersion1() throws Exception
+    void generateEndEntitySignedCertificateVersion1() throws Exception
     {
         CertifiedPublicKey caCertificate =
             factory.getInstance(signerFactory.getInstance(true, rsaPrivateKey),
@@ -276,7 +277,7 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     }
 
     @Test
-    public void generateEndEntitySignedCertificateVersion3() throws Exception
+    void generateEndEntitySignedCertificateVersion3() throws Exception
     {
         CertifiedPublicKey caCertificate =
             factory.getInstance(signerFactory.getInstance(true, rsaPrivateKey),
@@ -377,7 +378,7 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     }
 
     @Test
-    public void generateIntermediateCertificateVersion3() throws Exception
+    void generateIntermediateCertificateVersion3() throws Exception
     {
         CertifiedPublicKey caCertificate =
             factory.getInstance(signerFactory.getInstance(true, rsaPrivateKey),

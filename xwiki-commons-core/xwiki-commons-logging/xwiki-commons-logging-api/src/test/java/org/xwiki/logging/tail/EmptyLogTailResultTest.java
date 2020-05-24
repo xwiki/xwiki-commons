@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link EmptyLogTailResult}.
- * 
+ *
  * @version $Id$
  */
 public class EmptyLogTailResultTest
@@ -36,13 +36,13 @@ public class EmptyLogTailResultTest
     EmptyLogTailResult tail = EmptyLogTailResult.INSTANCE;
 
     @Test
-    public void stream()
+    void stream()
     {
         assertTrue(this.tail.stream().collect(Collectors.toList()).isEmpty());
     }
 
     @Test
-    public void iterator()
+    void iterator()
     {
         assertFalse(this.tail.iterator().hasNext());
     }

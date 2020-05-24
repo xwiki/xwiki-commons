@@ -52,7 +52,8 @@ public class DefaultDiffManagerTest
     private DefaultDiffManager diffManager;
 
     // We want to execute some tests with all the possible fallback configurations.
-    public static MergeConfiguration[] createConfigurations() {
+    public static MergeConfiguration[] createConfigurations()
+    {
         MergeConfiguration defaultConfig = new MergeConfiguration();
         MergeConfiguration previousConfig = new MergeConfiguration();
         previousConfig.setFallbackOnConflict(MergeConfiguration.Version.PREVIOUS);
@@ -63,7 +64,7 @@ public class DefaultDiffManagerTest
 
         // Default is currently current, but I find it safer to keep both the default and the explicit current config
         // in case we change that in the future. Null value should be also fallback to the default config.
-        return new MergeConfiguration[] { null, defaultConfig, previousConfig, nextConfig, currentConfig };
+        return new MergeConfiguration[]{ null, defaultConfig, previousConfig, nextConfig, currentConfig };
     }
 
     /**
@@ -92,10 +93,8 @@ public class DefaultDiffManagerTest
         return StringUtils.join(characters, null);
     }
 
-    // Tests
-
     @Test
-    public void diffStringList() throws Exception
+    void diffStringList() throws Exception
     {
         // Null
 
@@ -136,7 +135,7 @@ public class DefaultDiffManagerTest
     }
 
     @Test
-    public void diffCharList() throws Exception
+    void diffCharList() throws Exception
     {
         // Equals
 
@@ -203,7 +202,6 @@ public class DefaultDiffManagerTest
             Arrays.asList("some new content"), Arrays.asList("some new content"), mergeConfiguration);
         assertTrue(result.getConflicts().isEmpty());
         assertEquals(Arrays.asList("some new content"), result.getMerged());
-
     }
 
     @ParameterizedTest
@@ -306,7 +304,7 @@ public class DefaultDiffManagerTest
     }
 
     @Test
-    public void mergeCharOnConflicts() throws Exception
+    void mergeCharOnConflicts() throws Exception
     {
         MergeResult<Character> result;
         Conflict<Character> conflict;
@@ -535,7 +533,7 @@ public class DefaultDiffManagerTest
             Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('a', 'r', 'r', 'b'),
             Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('d', 'd', 'd', 'd'));
         Conflict<Character> conflict1 = createConflict(7,
-            Type.CHANGE, 7, 7, Arrays.asList('a', 'b'), Arrays.asList('y','y'),
+            Type.CHANGE, 7, 7, Arrays.asList('a', 'b'), Arrays.asList('y', 'y'),
             Type.CHANGE, 7, 7, Arrays.asList('a', 'b'), Arrays.asList('a', 'z'));
         mergeConfiguration = null;
         result = this.diffManager
@@ -753,7 +751,7 @@ public class DefaultDiffManagerTest
     }
 
     @Test
-    public void applyDecisionsOnMergeCharConflicts() throws Exception
+    void applyDecisionsOnMergeCharConflicts() throws Exception
     {
         MergeResult<Character> result;
         MergeConfiguration<Character> mergeConfiguration;
@@ -1017,7 +1015,7 @@ public class DefaultDiffManagerTest
             Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('a', 'r', 'r', 'b'),
             Type.CHANGE, 0, 0, Arrays.asList('a', 'a', 'b', 'b'), Arrays.asList('d', 'd', 'd', 'd'));
         Conflict<Character> conflict1 = createConflict(7,
-            Type.CHANGE, 7, 7, Arrays.asList('a', 'b'), Arrays.asList('y','y'),
+            Type.CHANGE, 7, 7, Arrays.asList('a', 'b'), Arrays.asList('y', 'y'),
             Type.CHANGE, 7, 7, Arrays.asList('a', 'b'), Arrays.asList('a', 'z'));
         allConflictDecisions = new ArrayList<>();
         conflictDecision = new DefaultConflictDecision<>(conflict);
@@ -1262,7 +1260,7 @@ public class DefaultDiffManagerTest
     }
 
     @Test
-    public void mergeWithEmptyNew() throws Exception
+    void mergeWithEmptyNew() throws Exception
     {
         MergeResult<Character> result;
 
@@ -1274,14 +1272,14 @@ public class DefaultDiffManagerTest
     }
 
     @Test
-    public void mergeWhenUserHasChangedAllContent() throws Exception
+    void mergeWhenUserHasChangedAllContent() throws Exception
     {
         MergeResult<String> result;
 
         // Test 1: All content has changed between previous and current
         result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
-                Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
-                Arrays.asList("New content", "That is completely different"), null);
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
+            Arrays.asList("New content", "That is completely different"), null);
         assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
         assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
             .contains("Conflict between"));
@@ -1318,8 +1316,8 @@ public class DefaultDiffManagerTest
 
         // Test 2: All content has been deleted between previous and current
         result = this.diffManager.merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
-                Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
-                Collections.emptyList(), null);
+            Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
+            Collections.emptyList(), null);
         conflict = createConflict(0,
             Type.CHANGE, 0, 0, Arrays.asList("Line 1", "Line 2", "Line 3"), Collections.emptyList(),
             Type.CHANGE, 0, 0, Arrays.asList("Line 1", "Line 2", "Line 3"), Arrays.asList("Line 1", "Line 2 modified",
@@ -1591,7 +1589,7 @@ public class DefaultDiffManagerTest
                 "Fifth line.",
                 "6th line.",
                 "Seventh line."
-        ), mergeConfiguration);
+            ), mergeConfiguration);
         assertEquals(2, result.getConflicts().size());
         assertEquals(conflict, result.getConflicts().get(0));
         assertEquals(conflict2, result.getConflicts().get(1));
@@ -1687,7 +1685,7 @@ public class DefaultDiffManagerTest
     }
 
     @Test
-    public void applyDecisionsOnLinesConflicts() throws Exception
+    void applyDecisionsOnLinesConflicts() throws Exception
     {
         MergeResult<String> result;
         MergeConfiguration<String> mergeConfiguration;

@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 public class BadTest2
 {
     @Test
-    public void test()
+    void test()
     {
         assertTrue(true);
     }

@@ -51,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link InstallPlanJob}.
- * 
+ *
  * @version $Id$
  */
 @ComponentTest
@@ -70,7 +70,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithSimpleRemoteExtensionOnRoot() throws Throwable
+    void testInstallPlanWithSimpleRemoteExtensionOnRoot() throws Throwable
     {
         ExtensionPlan plan = installPlan(TestResources.REMOTE_SIMPLE_ID);
 
@@ -96,7 +96,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithRemoteDependencyOnRoot() throws Throwable
+    void testInstallPlanWithRemoteDependencyOnRoot() throws Throwable
     {
         ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHRDEPENDENCY_ID);
 
@@ -120,7 +120,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithRemoteTransitiveDependencyOnRoot() throws Throwable
+    void testInstallPlanWithRemoteTransitiveDependencyOnRoot() throws Throwable
     {
         ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHRTDEPENDENCY_ID);
 
@@ -152,7 +152,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithExcludedRemoteTransitiveDependencyOnRoot() throws Throwable
+    void testInstallPlanWithExcludedRemoteTransitiveDependencyOnRoot() throws Throwable
     {
         ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHEXCLUDEDRTDEPENDENCY_ID);
 
@@ -176,7 +176,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithCoreDependencyOnRoot() throws Throwable
+    void testInstallPlanWithCoreDependencyOnRoot() throws Throwable
     {
         ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHCDEPENDENCY_ID);
 
@@ -200,7 +200,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithInstalledDependencyOnRoot() throws Throwable
+    void testInstallPlanWithInstalledDependencyOnRoot() throws Throwable
     {
         ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHLDEPENDENCY_ID);
 
@@ -242,7 +242,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithUpgradeOnRoot() throws Throwable
+    void testInstallPlanWithUpgradeOnRoot() throws Throwable
     {
         install(TestResources.REMOTE_UPGRADE10_ID);
 
@@ -265,7 +265,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithUpgradeOnDifferentId() throws Throwable
+    void testInstallPlanWithUpgradeOnDifferentId() throws Throwable
     {
         ExtensionPlan plan = installPlan(TestResources.REMOTE_NOTINSTALLED_ID);
 
@@ -303,7 +303,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithUpgradeFeatureWithDifferentVersion() throws Throwable
+    void testInstallPlanWithUpgradeFeatureWithDifferentVersion() throws Throwable
     {
         install(TestResources.REMOTE_UPGRADEFEATURE20_ID);
 
@@ -342,7 +342,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithDowngradeOnRoot() throws Throwable
+    void testInstallPlanWithDowngradeOnRoot() throws Throwable
     {
         install(TestResources.REMOTE_UPGRADE20_ID);
 
@@ -365,7 +365,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallOnNamespaceThenOnRoot() throws Throwable
+    void testInstallOnNamespaceThenOnRoot() throws Throwable
     {
         // Install 1.0 on namespace
         install(TestResources.REMOTE_UPGRADE10_ID, "namespace");
@@ -396,7 +396,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallOnNamespaceThenUnpgradeOnRoot() throws Throwable
+    void testInstallOnNamespaceThenUnpgradeOnRoot() throws Throwable
     {
         // Install 1.0 on namespace
         install(TestResources.REMOTE_UPGRADE10_ID, "namespace");
@@ -427,7 +427,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallWithTwoDependenciesFeaturesInTheSameRequest() throws Throwable
+    void testInstallWithTwoDependenciesFeaturesInTheSameRequest() throws Throwable
     {
         ExtensionPlan plan = installPlan(
             Arrays.asList(TestResources.REMOTE_WITHRDEPENDENCY_ID, TestResources.REMOTE_WITHRDEPENDENCYFEATURE_ID));
@@ -471,8 +471,9 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
 
     // Errors
 
+    // Errors
     @Test
-    public void testInstallPlanWithUnsupportedType()
+    void testInstallPlanWithUnsupportedType()
     {
         assertThrows(InstallException.class, () -> {
             installPlan(TestResources.REMOTE_UNSUPPORTED_ID);
@@ -480,7 +481,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithCoreExtension()
+    void testInstallPlanWithCoreExtension()
     {
         assertThrows(InstallException.class, () -> {
             this.coreRepository.addExtensions(TestResources.REMOTE_SIMPLE_ID.getId(), new DefaultVersion("version"));
@@ -490,7 +491,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithFeatureAsCoreExtension()
+    void testInstallPlanWithFeatureAsCoreExtension()
     {
         assertThrows(InstallException.class, () -> {
             this.coreRepository.addExtensions("rsimple-feature", new DefaultVersion("version"));
@@ -500,7 +501,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithFeatureAsCoreExtensionFeature()
+    void testInstallPlanWithFeatureAsCoreExtensionFeature()
     {
         assertThrows(InstallException.class, () -> {
             this.coreRepository.addExtensions("coreextension", new DefaultVersion("version"),
@@ -511,7 +512,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithCoreExtensionFeature()
+    void testInstallPlanWithCoreExtensionFeature()
     {
         assertThrows(InstallException.class, () -> {
             this.coreRepository.addExtensions("coreextension", new DefaultVersion("version"),
@@ -522,7 +523,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithLowerCoreDependencyFeature()
+    void testInstallPlanWithLowerCoreDependencyFeature()
     {
         assertThrows(InstallException.class, () -> {
             this.coreRepository.addExtensions("coreextension", new DefaultVersion("3.0"),
@@ -533,7 +534,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithHigherCoreDependencyFeature() throws Throwable
+    void testInstallPlanWithHigherCoreDependencyFeature() throws Throwable
     {
         this.coreRepository.addExtensions("coreextension", new DefaultVersion("0.5"),
             TestResources.REMOTE_UPGRADE20_ID);
@@ -562,7 +563,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testReInstalledWithMissingDependency() throws Throwable
+    void testReInstalledWithMissingDependency() throws Throwable
     {
         ExtensionPlan plan = installPlan(TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID);
 
@@ -589,7 +590,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallRemoteWithMissingDependency() throws Throwable
+    void testInstallRemoteWithMissingDependency() throws Throwable
     {
         ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHRMISSINGDEPENDENCY_ID);
 
@@ -624,7 +625,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallNameSpaceExtensionWithExistingRootExtension() throws Throwable
+    void testInstallNameSpaceExtensionWithExistingRootExtension() throws Throwable
     {
         // Install 1.0 on root
         install(TestResources.REMOTE_UPGRADE10_ID);
@@ -644,7 +645,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallNameSpaceExtensionWithDependencyAllowedOnRootOnly() throws Throwable
+    void testInstallNameSpaceExtensionWithDependencyAllowedOnRootOnly() throws Throwable
     {
         // Try to install remote extension with only root allowed dependency on namespace
         ExtensionPlan plan = installPlan(TestResources.REMOTE_WITH_ROOT_DEPENDENY10_ID, "namespace");
@@ -671,7 +672,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testUpgradeExtensionOnNamespaceWithDependencyAllowedOnRootOnly() throws Throwable
+    void testUpgradeExtensionOnNamespaceWithDependencyAllowedOnRootOnly() throws Throwable
     {
         // Instance version 1.0
         install(TestResources.REMOTE_WITH_ROOT_DEPENDENY10_ID, "namespace");
@@ -701,7 +702,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallOnNameSpaceRootExtensionWithRDependency() throws Throwable
+    void testInstallOnNameSpaceRootExtensionWithRDependency() throws Throwable
     {
         // Try to install remote extension with only root allowed dependency on namespace
         ExtensionPlan plan = installPlan(TestResources.REMOTE_ROOTEXTENSIONWITHRDEPENDENCY_ID, "namespace");
@@ -728,7 +729,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallOnNameSpaceWithConflictingNamespacesDependencies() throws Throwable
+    void testInstallOnNameSpaceWithConflictingNamespacesDependencies() throws Throwable
     {
         // Try to install remote extension with only root allowed dependency on namespace
         ExtensionPlan plan = installPlan(TestResources.REMOTE_RWITHCONFLICTINGNAMESPACEDEPENDENCY_ID, "namespace");
@@ -794,7 +795,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallOnNameSpaceWithConflictingNamespacesDependencies2() throws Throwable
+    void testInstallOnNameSpaceWithConflictingNamespacesDependencies2() throws Throwable
     {
         // Try to install remote extension with only root allowed dependency on namespace
         ExtensionPlan plan = installPlan(TestResources.REMOTE_RWITHCONFLICTINGNAMESPACEDEPENDENCY2_ID, "namespace");
@@ -860,7 +861,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallWithOverwrittenManagedDependency() throws Throwable
+    void testInstallWithOverwrittenManagedDependency() throws Throwable
     {
         ExtensionPlan plan = installPlan(TestResources.REMOTE_WITH_OVERWRITTEN_MANAGED_DEPENDENY_ID, "namespace");
 
@@ -886,7 +887,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallWithManagedTransitiveDependency() throws Throwable
+    void testInstallWithManagedTransitiveDependency() throws Throwable
     {
         ExtensionPlan plan = installPlan(TestResources.REMOTE_WITH_MANAGED_TRANSITIVEDEPENDENY_ID, "namespace");
 
@@ -921,7 +922,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallWithManagedDependency() throws Throwable
+    void testInstallWithManagedDependency() throws Throwable
     {
         ExtensionPlan plan = installPlan(TestResources.REMOTE_WITH_MANAGED_DEPENDENY_ID, "namespace");
 
@@ -947,7 +948,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallWithRecommendedManagedDependency() throws Throwable
+    void testInstallWithRecommendedManagedDependency() throws Throwable
     {
         // Change the version of the dependency trough recommended version
         this.coreRepository.getConfigurableEnvironmentExtension().putProperty("xwiki.extension.recommendedVersions",
@@ -977,7 +978,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallWithStrictRecommendedManagedDependency() throws Throwable
+    void testInstallWithStrictRecommendedManagedDependency() throws Throwable
     {
         // Change the version of the dependency trough recommended version
         this.coreRepository.getConfigurableEnvironmentExtension().putProperty("xwiki.extension.recommendedVersions",
@@ -1007,7 +1008,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallWithInvalidRecommendedManagedDependency() throws Throwable
+    void testInstallWithInvalidRecommendedManagedDependency() throws Throwable
     {
         // Change the version of the dependency trough recommended version
         this.coreRepository.getConfigurableEnvironmentExtension().putProperty("xwiki.extension.recommendedVersions",
@@ -1037,7 +1038,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallWithInvalidOptionalDependency() throws Throwable
+    void testInstallWithInvalidOptionalDependency() throws Throwable
     {
         ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHRMISSINGOPTIONALDEPENDENCY_ID, "namespace");
 
@@ -1054,7 +1055,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithCrossDependencies() throws Throwable
+    void testInstallPlanWithCrossDependencies() throws Throwable
     {
         ExtensionPlan plan = installPlan(TestResources.REMOTE_CROSSDEPENDENCY1);
 
@@ -1078,8 +1079,9 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
 
     // Failures
 
+    // Failures
     @Test
-    public void testForbiddenInstallLowerVersionOfDependencyOnRoot()
+    void testForbiddenInstallLowerVersionOfDependencyOnRoot()
     {
         assertThrows(InstallException.class, () -> {
             // Install extension 2.0 on namespace
@@ -1090,7 +1092,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testForbiddenInstallNameSpaceExtensionWithExistingRootExtension()
+    void testForbiddenInstallNameSpaceExtensionWithExistingRootExtension()
     {
         assertThrows(InstallException.class, () -> {
             // Install 1.0 on root
@@ -1101,7 +1103,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testForbiddenInstallNameSpaceExtensionWithIncompatibleRootDependency()
+    void testForbiddenInstallNameSpaceExtensionWithIncompatibleRootDependency()
     {
         assertThrows(InstallException.class, () -> {
             // Install 1.0 on root
@@ -1112,7 +1114,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testForbiddenInstallExtensionOnIncompatibleNamespace() throws Throwable
+    void testForbiddenInstallExtensionOnIncompatibleNamespace() throws Throwable
     {
         // Install 1.0 on root
         install(TestResources.REMOTE_ROOTEXTENSION10_ID);
@@ -1125,7 +1127,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallPlanWithUpgradeOnDifferentIdNotAllowed()
+    void testInstallPlanWithUpgradeOnDifferentIdNotAllowed()
     {
         assertThrows(InstallException.class, () -> {
             InstallRequest installRequest = createInstallRequest(TestResources.REMOTE_NOTINSTALLED_ID);

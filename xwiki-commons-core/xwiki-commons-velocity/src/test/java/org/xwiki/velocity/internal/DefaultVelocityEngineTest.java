@@ -159,7 +159,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateWithReader() throws Exception
+    void evaluateWithReader() throws Exception
     {
         this.engine.initialize(new Properties());
         StringWriter writer = new StringWriter();
@@ -169,7 +169,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateWithString() throws Exception
+    void evaluateWithString() throws Exception
     {
         this.engine.initialize(new Properties());
 
@@ -180,7 +180,7 @@ public class DefaultVelocityEngineTest
      * Verify that the default configuration doesn't allow calling Class.forName.
      */
     @Test
-    public void evaluateWithSecureUberspectorActiveByDefault() throws Exception
+    void evaluateWithSecureUberspectorActiveByDefault() throws Exception
     {
         this.engine.initialize(new Properties());
 
@@ -198,7 +198,7 @@ public class DefaultVelocityEngineTest
      * Verify that the default configuration allows #setting existing variables to null.
      */
     @Test
-    public void evaluateWithSettingNullAllowedByDefault() throws Exception
+    void evaluateWithSettingNullAllowedByDefault() throws Exception
     {
         this.engine.initialize(new Properties());
         StringWriter writer = new StringWriter();
@@ -220,7 +220,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateWithOverrideConfiguration() throws Exception
+    void evaluateWithOverrideConfiguration() throws Exception
     {
         // For example try setting a non secure Uberspector.
         Properties properties = new Properties();
@@ -235,7 +235,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateMacroIsolation() throws Exception
+    void evaluateMacroIsolation() throws Exception
     {
         this.engine.initialize(new Properties());
         Context context = new XWikiVelocityContext();
@@ -244,7 +244,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateConfigureMacrosToBeGlobal() throws Exception
+    void evaluateConfigureMacrosToBeGlobal() throws Exception
     {
         Properties properties = new Properties();
         // Force macros to be global
@@ -256,7 +256,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateMacroScope() throws XWikiVelocityException
+    void evaluateMacroScope() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
@@ -264,7 +264,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateMacroWithMissingParameter() throws XWikiVelocityException
+    void evaluateMacroWithMissingParameter() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
@@ -272,7 +272,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateMacroWithLiteralBooleanParameter() throws XWikiVelocityException
+    void evaluateMacroWithLiteralBooleanParameter() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
@@ -280,7 +280,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateMacroWithLiteralMapParameter() throws XWikiVelocityException
+    void evaluateMacroWithLiteralMapParameter() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
@@ -288,7 +288,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateMacroWithLiteralArrayParameter() throws XWikiVelocityException
+    void evaluateMacroWithLiteralArrayParameter() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
@@ -296,7 +296,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateUseGlobalMacroUseLocalMacro() throws XWikiVelocityException
+    void evaluateUseGlobalMacroUseLocalMacro() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
@@ -308,7 +308,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateGlobalMacroUseLocalMacroAfterInclude() throws XWikiVelocityException
+    void evaluateGlobalMacroUseLocalMacroAfterInclude() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
@@ -324,7 +324,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateWithncludeMacro() throws XWikiVelocityException
+    void evaluateWithncludeMacro() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
@@ -336,7 +336,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateWithOverwrittenIncludeMacro() throws XWikiVelocityException
+    void evaluateWithOverwrittenIncludeMacro() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
@@ -351,7 +351,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evauateTemplateScope() throws XWikiVelocityException
+    void evauateTemplateScope() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
@@ -362,7 +362,7 @@ public class DefaultVelocityEngineTest
      * Verify namespace is properly cleared when not needed anymore.
      */
     @Test
-    public void evaluateMacroNamespaceCleanup() throws Exception
+    void evaluateMacroNamespaceCleanup() throws Exception
     {
         this.engine.initialize(new Properties());
 
@@ -391,7 +391,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateWithStopCommand() throws Exception
+    void evaluateWithStopCommand() throws Exception
     {
         this.engine.initialize(new Properties());
 
@@ -399,7 +399,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateVelocityCount() throws XWikiVelocityException
+    void evaluateVelocityCount() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
@@ -419,7 +419,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateEmptyNamespaceInheritance() throws Exception
+    void evaluateEmptyNamespaceInheritance() throws Exception
     {
         this.engine.initialize(new Properties());
 
@@ -431,7 +431,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateOverrideMacros() throws Exception
+    void evaluateOverrideMacros() throws Exception
     {
         this.engine.initialize(new Properties());
 
@@ -462,7 +462,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateMacroParameters() throws Exception
+    void evaluateMacroParameters() throws Exception
     {
         this.engine.initialize(new Properties());
 
@@ -483,7 +483,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateMissingMacroParameter() throws XWikiVelocityException
+    void evaluateMissingMacroParameter() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
@@ -491,7 +491,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateSetSharpString() throws Exception
+    void evaluateSetSharpString() throws Exception
     {
         this.engine.initialize(new Properties());
 
@@ -500,7 +500,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateSetDollarString() throws Exception
+    void evaluateSetDollarString() throws Exception
     {
         this.engine.initialize(new Properties());
 
@@ -509,7 +509,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateExpressionFollowedByTwoPipes() throws XWikiVelocityException
+    void evaluateExpressionFollowedByTwoPipes() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
@@ -517,7 +517,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateClassMethods() throws XWikiVelocityException
+    void evaluateClassMethods() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
@@ -529,7 +529,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateWithSubEvaluate() throws XWikiVelocityException
+    void evaluateWithSubEvaluate() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
@@ -548,7 +548,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateSpaceGobling() throws Exception
+    void evaluateSpaceGobling() throws Exception
     {
         this.engine.initialize(new Properties());
 
@@ -556,7 +556,7 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void evaluateWhenNotInitialized()
+    void evaluateWhenNotInitialized()
     {
         Throwable exception = assertThrows(XWikiVelocityException.class, () -> {
             this.engine.evaluate(null, new StringWriter(), null, (Reader) null);

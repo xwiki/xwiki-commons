@@ -42,7 +42,7 @@ public class ComponentDescriptorRemovedEventTest
     }
 
     @Test
-    public void matchesAllComponentRoles()
+    void matchesAllComponentRoles()
     {
         ComponentDescriptorRemovedEvent event = new ComponentDescriptorRemovedEvent();
         // Note: We use any class for the test but it's supposed to be a component role class.
@@ -50,14 +50,14 @@ public class ComponentDescriptorRemovedEventTest
     }
 
     @Test
-    public void matchesWhenDifferentEvent()
+    void matchesWhenDifferentEvent()
     {
         ComponentDescriptorRemovedEvent event = new ComponentDescriptorRemovedEvent();
         assertFalse(event.matches((Event) e -> false));
     }
 
     @Test
-    public void matchesWhenSpecificRoleSpecified()
+    void matchesWhenSpecificRoleSpecified()
     {
         // Note: We use any class for the test but it's supposed to be a component role class.
         ComponentDescriptorRemovedEvent event = new ComponentDescriptorRemovedEvent((Type) Dummy.class);

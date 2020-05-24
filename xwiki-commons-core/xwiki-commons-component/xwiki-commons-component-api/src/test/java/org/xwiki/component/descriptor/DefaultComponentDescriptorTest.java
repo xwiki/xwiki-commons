@@ -49,7 +49,7 @@ public class DefaultComponentDescriptorTest
     }
 
     @Test
-    public void equals()
+    void equals()
     {
         DefaultComponentDescriptor cd1 = new DefaultComponentDescriptor();
         cd1.setImplementation(ImplRole.class);
@@ -135,7 +135,7 @@ public class DefaultComponentDescriptorTest
     }
 
     @Test
-    public void testToString()
+    void testToString()
     {
         DefaultComponentDescriptor cd = new DefaultComponentDescriptor();
         cd.setImplementation(ImplRole.class);
@@ -146,6 +146,8 @@ public class DefaultComponentDescriptorTest
         dep.setRoleType(String.class);
         cd.addComponentDependency(dep);
 
-        assertEquals("role = [interface org.xwiki.component.descriptor.DefaultComponentDescriptorTest$Role], hint = [hint]], implementation = [org.xwiki.component.descriptor.DefaultComponentDescriptorTest$ImplRole], instantiation = [SINGLETON]", cd.toString());
+        assertEquals(
+            "role = [interface org.xwiki.component.descriptor.DefaultComponentDescriptorTest$Role], hint = [hint]], implementation = [org.xwiki.component.descriptor.DefaultComponentDescriptorTest$ImplRole], instantiation = [SINGLETON]",
+            cd.toString());
     }
 }

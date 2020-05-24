@@ -60,7 +60,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallOnRoot() throws Throwable
+    void testInstallOnRoot() throws Throwable
     {
         install(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID);
 
@@ -86,7 +86,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallNoType() throws Throwable
+    void testInstallNoType() throws Throwable
     {
         install(TestResources.REMOTE_NOTYPE_ID);
 
@@ -101,7 +101,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallRemoteOnNamespace() throws Throwable
+    void testInstallRemoteOnNamespace() throws Throwable
     {
         install(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID, "namespace");
 
@@ -123,9 +123,9 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallRemoteOnNamespaces() throws Throwable
+    void testInstallRemoteOnNamespaces() throws Throwable
     {
-        install(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID, new String[] { "namespace1", "namespace2" });
+        install(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID, new String[]{ "namespace1", "namespace2" });
 
         LocalExtension installedExtension = this.installedExtensionRepository
             .getInstalledExtension(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID.getId(), "namespace1");
@@ -145,7 +145,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testUpgradeFirstOnRoot() throws Throwable
+    void testUpgradeFirstOnRoot() throws Throwable
     {
         install(TestResources.REMOTE_UPGRADE10_ID);
 
@@ -177,7 +177,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testDowngradeFirstOnRoot() throws Throwable
+    void testDowngradeFirstOnRoot() throws Throwable
     {
         install(TestResources.REMOTE_UPGRADE20_ID);
 
@@ -208,7 +208,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testReplaceDependencyWithFeature() throws Throwable
+    void testReplaceDependencyWithFeature() throws Throwable
     {
         InstalledExtension installedextension =
             this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID);
@@ -235,7 +235,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallOnNamespaceThenOnRoot() throws Throwable
+    void testInstallOnNamespaceThenOnRoot() throws Throwable
     {
         // Install 1.0 on "namespace"
 
@@ -262,7 +262,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallOnNamespaceThenUpgradeOnRoot() throws Throwable
+    void testInstallOnNamespaceThenUpgradeOnRoot() throws Throwable
     {
         // Install 1.0 on "namespace"
 
@@ -291,7 +291,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallOnNamespaceThenMoveDependencyOnRoot() throws Throwable
+    void testInstallOnNamespaceThenMoveDependencyOnRoot() throws Throwable
     {
         install(TestResources.REMOTE_WITHRDEPENDENCY_ID, "namespace");
 
@@ -313,7 +313,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallOnNamespaceThenOnRootWithLowerDependency() throws Throwable
+    void testInstallOnNamespaceThenOnRootWithLowerDependency() throws Throwable
     {
         // Install extension on namespace
         install(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID, "namespace");
@@ -342,7 +342,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallRemoteWithMissingDependency() throws Throwable
+    void testInstallRemoteWithMissingDependency() throws Throwable
     {
         install(TestResources.REMOTE_WITHRMISSINGDEPENDENCY_ID);
 

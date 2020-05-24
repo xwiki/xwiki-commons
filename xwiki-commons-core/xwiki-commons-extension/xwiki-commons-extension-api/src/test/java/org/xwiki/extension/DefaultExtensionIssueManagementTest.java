@@ -26,13 +26,13 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * Validate {@link DefaultExtensionIssueManagement}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultExtensionIssueManagementTest
 {
     @Test
-    public void equals()
+    void equals()
     {
         assertEquals(new DefaultExtensionIssueManagement("system", "http://url"),
             new DefaultExtensionIssueManagement("system", "http://url"));

@@ -36,7 +36,7 @@ public class AbstractProgressEventTest
     }
 
     @Test
-    public void matches()
+    void matches()
     {
         TestableProgressEvent event = new TestableProgressEvent();
         assertTrue(event.matches(new TestableProgressEvent()));

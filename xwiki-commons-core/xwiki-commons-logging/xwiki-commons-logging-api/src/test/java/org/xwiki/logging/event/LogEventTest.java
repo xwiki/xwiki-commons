@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class LogEventTest
 {
     @Test
-    public void testGetMessageElements()
+    void testGetMessageElements()
     {
         LogEvent logEvent = new LogEvent(null, LogLevel.ERROR, "", null, null);
 
@@ -50,13 +50,13 @@ public class LogEventTest
 
         assertEquals(logEvent.getMessageElements(), Arrays.asList("message"));
 
-        logEvent = new LogEvent(null, LogLevel.ERROR, "message {}", new Object[] { "" }, null);
+        logEvent = new LogEvent(null, LogLevel.ERROR, "message {}", new Object[]{ "" }, null);
 
         assertEquals(logEvent.getMessageElements(), Arrays.asList("message ", ""));
     }
 
     @Test
-    public void testLogLogger()
+    void testLogLogger()
     {
         LogEvent logEvent = new LogEvent(null, LogLevel.ERROR, "message", null, null);
 

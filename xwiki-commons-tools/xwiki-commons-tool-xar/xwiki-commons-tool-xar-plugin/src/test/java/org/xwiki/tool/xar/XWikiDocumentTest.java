@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Validate {@link XWikiDocument}.
- * 
+ *
  * @version $Id$
  */
 public class XWikiDocumentTest
@@ -40,10 +40,8 @@ public class XWikiDocumentTest
         assertEquals(reference, xdocument.getReference());
     }
 
-    // Tests
-
     @Test
-    public void createReference() throws DocumentException
+    void createReference() throws DocumentException
     {
         assertReferenceFromNameSpace("Space.Page", "Space", "Page");
 

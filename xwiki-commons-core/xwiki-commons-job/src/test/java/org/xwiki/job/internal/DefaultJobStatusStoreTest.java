@@ -289,8 +289,6 @@ class DefaultJobStatusStoreTest
         return getStatus();
     }
 
-    // Tests
-
     @Test
     void getJobStatusWithNullId()
     {

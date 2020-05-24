@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class LogTreeTest
 {
     @Test
-    public void twoLevel0()
+    void twoLevel0()
     {
         LogTree logTree = new LogTree();
 
@@ -46,7 +46,7 @@ public class LogTreeTest
     }
 
     @Test
-    public void ThreeLevels()
+    void ThreeLevels()
     {
         LogTree logTree = new LogTree();
 

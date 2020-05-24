@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link XStreamFileLoggerTail}.
- * 
+ *
  * @version $Id$
  */
 @ComponentTest
@@ -61,7 +61,7 @@ public class XStreamFileLoggerTailTest
     }
 
     @Test
-    public void writeread() throws IOException
+    void writeread() throws IOException
     {
         this.tail.initialize(new File(this.tmpDir, "log").toPath(), false);
 
@@ -73,7 +73,7 @@ public class XStreamFileLoggerTailTest
     }
 
     @Test
-    public void readonly() throws IOException, ComponentLifecycleException
+    void readonly() throws IOException, ComponentLifecycleException
     {
         this.tail.initialize(new File(this.tmpDir, "log").toPath(), false);
 
@@ -102,7 +102,7 @@ public class XStreamFileLoggerTailTest
     }
 
     @Test
-    public void getFirstLogEvent() throws IOException
+    void getFirstLogEvent() throws IOException
     {
         this.tail.initialize(new File(this.tmpDir, "log").toPath(), false);
 
@@ -124,7 +124,7 @@ public class XStreamFileLoggerTailTest
     }
 
     @Test
-    public void getLastLogEvent() throws IOException
+    void getLastLogEvent() throws IOException
     {
         this.tail.initialize(new File(this.tmpDir, "log").toPath(), false);
 
@@ -146,7 +146,7 @@ public class XStreamFileLoggerTailTest
     }
 
     @Test
-    public void getLogEvents() throws IOException
+    void getLogEvents() throws IOException
     {
         this.tail.initialize(new File(this.tmpDir, "log").toPath(), false);
 
@@ -178,7 +178,7 @@ public class XStreamFileLoggerTailTest
     }
 
     @Test
-    public void getDeleteLog() throws IOException
+    void getDeleteLog() throws IOException
     {
         this.tail.initialize(new File(this.tmpDir, "log").toPath(), false);
 
@@ -196,7 +196,7 @@ public class XStreamFileLoggerTailTest
     }
 
     @Test
-    public void getModifiedLog() throws IOException
+    void getModifiedLog() throws IOException
     {
         this.tail.initialize(new File(this.tmpDir, "log").toPath(), false);
 
@@ -216,7 +216,7 @@ public class XStreamFileLoggerTailTest
     }
 
     @Test
-    public void logStoreDeletedWhileReading() throws IOException
+    void logStoreDeletedWhileReading() throws IOException
     {
         this.tail.initialize(new File(this.tmpDir, "log").toPath(), false);
 
@@ -233,6 +233,5 @@ public class XStreamFileLoggerTailTest
         assertNull(this.tail.getLogEvent(1));
 
         this.tail.error("info3");
-
     }
 }

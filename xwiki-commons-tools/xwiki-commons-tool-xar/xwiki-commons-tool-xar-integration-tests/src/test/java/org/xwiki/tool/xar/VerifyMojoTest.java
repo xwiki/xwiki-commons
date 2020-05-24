@@ -38,14 +38,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class VerifyMojoTest extends AbstractMojoTest
 {
     @Test
-    public void executeWithWrongAuthor() throws Exception
+    void executeWithWrongAuthor() throws Exception
     {
         verifyExecution("/wrongAuthor", "Verifying [Space/WebHome.xml]... errors",
             "- Author must be [xwiki:XWiki.Admin] but was [wrongAuthor]", "There are errors in the XAR XML files!");
     }
 
     @Test
-    public void executeWithWrongAttachmentAuthorsAndMimetypes() throws Exception
+    void executeWithWrongAttachmentAuthorsAndMimetypes() throws Exception
     {
         verifyExecution("/wrongAttachmentAuthorsAndMimetypes", "Verifying [Space/WebHome.xml]... errors",
             "- Attachment author must be [xwiki:XWiki.Admin] but was []",
@@ -55,7 +55,7 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeWithWrongContentAuthor() throws Exception
+    void executeWithWrongContentAuthor() throws Exception
     {
         verifyExecution("/wrongContentAuthor", "Verifying [Space/WebHome.xml]... errors",
             "- Content Author must be [xwiki:XWiki.Admin] but was [wrongContentAuthor]",
@@ -63,42 +63,42 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeWithWrongCreator() throws Exception
+    void executeWithWrongCreator() throws Exception
     {
         verifyExecution("/wrongCreator", "Verifying [Space/WebHome.xml]... errors",
             "- Creator must be [xwiki:XWiki.Admin] but was [wrongCreator]", "There are errors in the XAR XML files!");
     }
 
     @Test
-    public void executeWithEmptyParent() throws Exception
+    void executeWithEmptyParent() throws Exception
     {
         verifyExecution("/emptyParent", "Verifying [Space/WebHome.xml]... errors", "- Parent must not be empty",
             "There are errors in the XAR XML files!");
     }
 
     @Test
-    public void executeWithWrongVersion() throws Exception
+    void executeWithWrongVersion() throws Exception
     {
         verifyExecution("/wrongVersion", "Verifying [Space/WebHome.xml]... errors",
             "- Version must be [1.1] but was [1.2]", "There are errors in the XAR XML files!");
     }
 
     @Test
-    public void executeWithNotEmptyComment() throws Exception
+    void executeWithNotEmptyComment() throws Exception
     {
         verifyExecution("/notEmptyComment", "Verifying [Space/WebHome.xml]... errors",
             "- Comment must be empty but was [notempty]", "There are errors in the XAR XML files!");
     }
 
     @Test
-    public void executeWithWrongMinorEdit() throws Exception
+    void executeWithWrongMinorEdit() throws Exception
     {
         verifyExecution("/wrongMinorEdit", "Verifying [Space/WebHome.xml]... errors",
             "- Minor edit must always be [false] but was [true]", "There are errors in the XAR XML files!");
     }
 
     @Test
-    public void executeWithVisibleTechnicalPages() throws Exception
+    void executeWithVisibleTechnicalPages() throws Exception
     {
         Verifier verifier = createVerifier("/visibleTechnicalPages");
         verifier.executeGoal("install");
@@ -106,21 +106,21 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeWithNotEmptyDefaultLanguage() throws Exception
+    void executeWithNotEmptyDefaultLanguage() throws Exception
     {
         verifyExecution("/notEmptyDefaultLanguage", "Verifying [Space/WebHome.xml]... errors",
             "- Default Language should have been [] but was [en]", "There are errors in the XAR XML files!");
     }
 
     @Test
-    public void executeWithWrongEncoding() throws Exception
+    void executeWithWrongEncoding() throws Exception
     {
         verifyExecution("/wrongEncoding", "Verifying [Space/WebHome.xml]... errors",
             "- Encoding must be [UTF-8] but was [ISO-8859-1]", "There are errors in the XAR XML files!");
     }
 
     @Test
-    public void executeWithWronPageTitle() throws Exception
+    void executeWithWronPageTitle() throws Exception
     {
         verifyExecution("/wrongPageTitle", "Verifying [Space/WebPreferences.xml]... errors",
             "- [WebPreferences.xml] ([Space.WebPreferences]) page must have a title matching regex "
@@ -129,7 +129,7 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeWithMissingLicenseHeader() throws Exception
+    void executeWithMissingLicenseHeader() throws Exception
     {
         Verifier verifier = createVerifier("/missingLicense");
         verifier.addCliOption("-Dxar.formatLicense=true");
@@ -138,7 +138,7 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeWithTranslationPages() throws Exception
+    void executeWithTranslationPages() throws Exception
     {
         Verifier verifier = createVerifier("/translations");
         verifier.executeGoal("install");
@@ -146,7 +146,7 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeWithTranslationOverrides() throws Exception
+    void executeWithTranslationOverrides() throws Exception
     {
         Verifier verifier = createVerifier("/translationOverrides");
         verifier.executeGoal("install");
@@ -154,7 +154,7 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeWithWrongTranslationPages() throws Exception
+    void executeWithWrongTranslationPages() throws Exception
     {
         // @formatter:off
         verifyExecution("/wrongTranslations",
@@ -166,7 +166,7 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeWhenContentPages() throws Exception
+    void executeWhenContentPages() throws Exception
     {
         Verifier verifier = createVerifier("/contentPages");
         verifier.executeGoal("install");
@@ -174,7 +174,7 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeNestedSpaces() throws Exception
+    void executeNestedSpaces() throws Exception
     {
         Verifier verifier = createVerifier("/nestedSpaces");
         verifier.executeGoal("install");
@@ -182,7 +182,7 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeWithWrongSyntaxForTranslations() throws Exception
+    void executeWithWrongSyntaxForTranslations() throws Exception
     {
         verifyExecution("/wrongSyntaxForTranslations", "Verifying [Space/WatchListTranslations.xml]... errors",
             "- [WatchListTranslations.xml] ([Space.WatchListTranslations]) page must use a [plain/1.0] syntax",
@@ -190,7 +190,7 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeWithWrongVisibilityForTranslations() throws Exception
+    void executeWithWrongVisibilityForTranslations() throws Exception
     {
         verifyExecution("/wrongVisibilityForTranslations", "Verifying [Space/UserTranslations.xml]... errors",
             "- [UserTranslations.xml] ([Space.UserTranslations]) page contains a translation using a wrong "
@@ -218,7 +218,7 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeWithDatesPresent() throws Exception
+    void executeWithDatesPresent() throws Exception
     {
         // @formatter:off
         verifyExecution("/datesPresent",
@@ -235,7 +235,7 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeWithSkippedDatesCheck() throws Exception
+    void executeWithSkippedDatesCheck() throws Exception
     {
         Verifier verifier = createVerifier("/datesPresent");
         verifier.addCliOption("-Dxar.dates.skip=true");
@@ -244,7 +244,7 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeWithSkippedDatesCheckDocument() throws Exception
+    void executeWithSkippedDatesCheckDocument() throws Exception
     {
         Verifier verifier = createVerifier("/datesPresent");
         verifier.addCliOption("-Dxar.dates.skip.documentList=Space.WebHome,Space.Test");
@@ -252,9 +252,8 @@ public class VerifyMojoTest extends AbstractMojoTest
         verifier.verifyErrorFreeLog();
     }
 
-
     @Test
-    public void invalidXml() throws Exception
+    void invalidXml() throws Exception
     {
         Verifier verifier = createVerifier("/invalidContent");
         assertThrows(VerificationException.class, () -> {

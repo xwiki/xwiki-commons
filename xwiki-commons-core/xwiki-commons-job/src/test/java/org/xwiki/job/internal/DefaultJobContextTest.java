@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Validate {@link DefaultJobContext}.
- * 
+ *
  * @version $Id$
  */
 @ComponentTest
@@ -54,7 +54,7 @@ public class DefaultJobContextTest
     }
 
     @Test
-    public void pushpop()
+    void pushpop()
     {
         Job job1 = mock(Job.class);
         Job job2 = mock(Job.class);

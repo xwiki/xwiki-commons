@@ -82,7 +82,7 @@ public class AbstractHTMLFilterTest
     }
 
     @Test
-    public void filterChildren()
+    void filterChildren()
     {
         Document document =
             this.cleaner.clean(new StringReader("<html><head><body><p>test1</p><p>test2</p></body></html>"));
@@ -94,20 +94,19 @@ public class AbstractHTMLFilterTest
         assertEquals("test2", paragraphs.get(1).getTextContent());
     }
 
-
     @Test
-    public void filterDescendants()
+    void filterDescendants()
     {
         Document document =
             this.cleaner.clean(new StringReader("<html><head><body><p>test1</p><p>test2</p></body></html>"));
-        List<Element> paragraphs = htmlFilter.filterDescendants(document.getDocumentElement(), new String[]{"p"});
+        List<Element> paragraphs = htmlFilter.filterDescendants(document.getDocumentElement(), new String[]{ "p" });
         assertEquals(2, paragraphs.size());
         assertEquals("test1", paragraphs.get(0).getTextContent());
         assertEquals("test2", paragraphs.get(1).getTextContent());
     }
 
     @Test
-    public void filterDescendantsWithElementSelector()
+    void filterDescendantsWithElementSelector()
     {
         Document document =
             this.cleaner.clean(new StringReader("<html><head><body><p>test1</p><p class=\"myClass\">test2</p></body>"
@@ -119,7 +118,7 @@ public class AbstractHTMLFilterTest
     }
 
     @Test
-    public void hasAttribute()
+    void hasAttribute()
     {
         Document document =
             this.cleaner.clean(new StringReader("<html><head><body><p>test1</p><p class=\"myClass\">test2</p></body>"
@@ -145,35 +144,35 @@ public class AbstractHTMLFilterTest
     }
 
     @Test
-    public void replaceWithChildren()
+    void replaceWithChildren()
     {
         Document document =
             this.cleaner.clean(new StringReader("<html><head><body><div><p>test1</p><p>test2</p></div></body></html>"));
 
-        List<Element> div = htmlFilter.filterDescendants(document.getDocumentElement(), new String[] { "div" });
+        List<Element> div = htmlFilter.filterDescendants(document.getDocumentElement(), new String[]{ "div" });
         assertEquals(1, div.size());
 
         htmlFilter.replaceWithChildren(div.get(0));
 
-        div = htmlFilter.filterDescendants(document.getDocumentElement(), new String[] { "div" });
+        div = htmlFilter.filterDescendants(document.getDocumentElement(), new String[]{ "div" });
         assertTrue(div.isEmpty());
 
-        List<Element> paragraphs = htmlFilter.filterDescendants(document.getDocumentElement(), new String[]{"p"});
+        List<Element> paragraphs = htmlFilter.filterDescendants(document.getDocumentElement(), new String[]{ "p" });
         assertEquals(2, paragraphs.size());
     }
 
     @Test
-    public void moveChildren()
+    void moveChildren()
     {
         Document document =
             this.cleaner.clean(new StringReader("<html><body><div><p>test1</p><p>test2</p></div>"
                 + "<span>bla</span></body></html>"));
 
-        List<Element> divs = htmlFilter.filterDescendants(document.getDocumentElement(), new String[] { "div" });
+        List<Element> divs = htmlFilter.filterDescendants(document.getDocumentElement(), new String[]{ "div" });
         assertEquals(1, divs.size());
         assertEquals(2, htmlFilter.filterChildren(divs.get(0), "p").size());
 
-        List<Element> spans = htmlFilter.filterDescendants(document.getDocumentElement(), new String[] { "span" });
+        List<Element> spans = htmlFilter.filterDescendants(document.getDocumentElement(), new String[]{ "span" });
         assertEquals(1, spans.size());
         assertTrue(htmlFilter.filterChildren(spans.get(0), "p").isEmpty());
 

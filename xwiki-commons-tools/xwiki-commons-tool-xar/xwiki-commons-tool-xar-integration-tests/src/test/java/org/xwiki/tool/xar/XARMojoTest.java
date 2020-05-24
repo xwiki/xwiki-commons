@@ -54,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class XARMojoTest extends AbstractMojoTest
 {
     @Test
-    public void invalidPackageXmlThrowsException() throws Exception
+    void invalidPackageXmlThrowsException() throws Exception
     {
         Verifier verifier = createVerifier("/invalidPackageFile");
 
@@ -66,7 +66,7 @@ public class XARMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void validPackageXml() throws Exception
+    void validPackageXml() throws Exception
     {
         Verifier verifier = createVerifier("/validXml");
         verifier.executeGoals(Arrays.asList("clean", "package"));
@@ -113,7 +113,7 @@ public class XARMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void noPackageXml() throws Exception
+    void noPackageXml() throws Exception
     {
         Verifier verifier = createVerifier("/noPackageXml");
         verifier.executeGoals(Arrays.asList("clean", "package"));
@@ -157,7 +157,7 @@ public class XARMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void nestedSpacesXml() throws Exception
+    void nestedSpacesXml() throws Exception
     {
         Verifier verifier = createVerifier("/nestedSpaces");
         verifier.executeGoals(Arrays.asList("clean", "package"));
@@ -183,7 +183,7 @@ public class XARMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void transformXML() throws Exception
+    void transformXML() throws Exception
     {
         Verifier verifier = createVerifier("/transformedXml");
         verifier.executeGoals(Arrays.asList("clean", "package"));
@@ -214,7 +214,7 @@ public class XARMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void entities() throws Exception
+    void entities() throws Exception
     {
         Verifier verifier = createVerifier("/entries");
         verifier.executeGoals(Arrays.asList("clean", "package"));
@@ -241,7 +241,7 @@ public class XARMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void invalidXml() throws Exception
+    void invalidXml() throws Exception
     {
         Verifier verifier = createVerifier("/invalidXml");
 

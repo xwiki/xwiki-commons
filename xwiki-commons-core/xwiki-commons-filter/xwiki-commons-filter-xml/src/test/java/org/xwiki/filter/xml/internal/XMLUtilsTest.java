@@ -26,14 +26,13 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Validate {@link XMLUtils}.
- * 
+ *
  * @version $Id$
  */
 public class XMLUtilsTest
 {
     static class TestClass
     {
-
     }
 
     static class TestClassWithNoDefaultConstructor
@@ -44,7 +43,7 @@ public class XMLUtilsTest
     }
 
     @Test
-    public void emptyValue()
+    void emptyValue()
     {
         assertSame(Boolean.FALSE, XMLUtils.emptyValue(boolean.class));
 
