@@ -49,10 +49,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 
 @ComponentTest
-@ComponentList({ Base64BinaryStringEncoder.class, BcRSAKeyFactory.class, BcDSAKeyFactory.class,
-    BcSHA1DigestFactory.class, BcSHA1withRsaSignerFactory.class, BcDSAwithSHA1SignerFactory.class,
-    DefaultSignerFactory.class, BcStoreX509CertificateProvider.class, BcX509CertificateFactory.class })
-public class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
+// @formatter:off
+@ComponentList({
+    Base64BinaryStringEncoder.class,
+    BcRSAKeyFactory.class,
+    BcDSAKeyFactory.class,
+    BcSHA1DigestFactory.class,
+    BcSHA1withRsaSignerFactory.class,
+    BcDSAwithSHA1SignerFactory.class,
+    DefaultSignerFactory.class,
+    BcStoreX509CertificateProvider.class,
+    BcX509CertificateFactory.class
+})
+// @formatter:on
+class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
 {
     @InjectMockComponents
     private BcX509CertificateChainBuilder builder;
@@ -71,7 +81,7 @@ public class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
     private CertifiedPublicKey v3Cert;
 
     @BeforeEach
-    public void setupTest() throws Exception
+    void setupTest() throws Exception
     {
         BinaryStringEncoder base64encoder = componentManager.getInstance(BinaryStringEncoder.class, "Base64");
         CertificateFactory certFactory = componentManager.getInstance(CertificateFactory.class, "X509");

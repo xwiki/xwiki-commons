@@ -51,6 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @since 4.1M2
  */
 @ComponentTest
+// @formatter:off
 @ComponentList({
     LineSplitter.class,
     CharSplitter.class,
@@ -58,7 +59,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
     DefaultUnifiedDiffDisplayer.class,
     DefaultInlineDiffDisplayer.class
 })
-public class ExtendedDiffDisplayerTest
+// @formatter:on
+class ExtendedDiffDisplayerTest
 {
     @InjectComponentManager
     private ComponentManager componentManager;

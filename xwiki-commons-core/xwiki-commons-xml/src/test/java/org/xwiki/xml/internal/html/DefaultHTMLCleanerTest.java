@@ -19,27 +19,16 @@
  */
 package org.xwiki.xml.internal.html;
 
-import java.io.ByteArrayInputStream;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.htmlcleaner.CleanerProperties;
-import org.htmlcleaner.DomSerializer;
-import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.SimpleXmlSerializer;
-import org.htmlcleaner.TagNode;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -56,9 +45,6 @@ import org.xwiki.xml.internal.html.filter.ListFilter;
 import org.xwiki.xml.internal.html.filter.ListItemFilter;
 import org.xwiki.xml.internal.html.filter.UniqueIdFilter;
 
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -68,6 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @since 1.6M1
  */
 @ComponentTest
+// @formatter:off
 @ComponentList({
     ListFilter.class,
     ListItemFilter.class,
@@ -79,6 +66,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
     LinkFilter.class,
     ControlCharactersFilter.class
 })
+// @formatter:on
 public class DefaultHTMLCleanerTest
 {
     public static final String HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"

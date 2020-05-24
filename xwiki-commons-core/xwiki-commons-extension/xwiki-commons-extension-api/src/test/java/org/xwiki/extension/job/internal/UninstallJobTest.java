@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ComponentTest
 @ExtendWith(MockitoRepositoryUtilsExtension.class)
-public class UninstallJobTest extends AbstractExtensionHandlerTest
+class UninstallJobTest extends AbstractExtensionHandlerTest
 {
     private TestResources resources;
 

@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  */
 @ComponentTest
 @AllComponents
-public class ArtifactModelConverterTest
+class ArtifactModelConverterTest
 {
     @InjectMockComponents
     private DefaultConverterManager converter;
@@ -47,7 +47,7 @@ public class ArtifactModelConverterTest
     private ArtifactModel artifactModel;
 
     @BeforeEach
-    public void beforeEach()
+    void beforeEach()
     {
         Model model = new Model();
 

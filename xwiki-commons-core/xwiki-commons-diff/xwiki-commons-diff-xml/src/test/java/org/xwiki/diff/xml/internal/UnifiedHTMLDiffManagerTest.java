@@ -63,7 +63,7 @@ import static org.mockito.Mockito.when;
  */
 @ComponentTest
 @AllComponents
-public class UnifiedHTMLDiffManagerTest
+class UnifiedHTMLDiffManagerTest
 {
     private UnifiedHTMLDiffManager unifiedHTMLDiffManager;
 
@@ -82,7 +82,7 @@ public class UnifiedHTMLDiffManagerTest
     private Map<String, String> images = new HashMap<>();
 
     @BeforeEach
-    public void configure(MockitoComponentManager componentManager) throws Exception
+    void configure(MockitoComponentManager componentManager) throws Exception
     {
         this.unifiedHTMLDiffManager = componentManager.getInstance(XMLDiffManager.class, "html/unified");
         this.config = componentManager.getInstance(XMLDiffConfiguration.class, "html");

@@ -29,16 +29,19 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 @ComponentTest
+// @formatter:off
 @ComponentList({
-    Base64BinaryStringEncoder.class})
-public class BcSHA1DigestFactoryTest extends AbstractDigestFactoryTest
+    Base64BinaryStringEncoder.class
+})
+// @formatter:o,
+class BcSHA1DigestFactoryTest extends AbstractDigestFactoryTest
 {
     @InjectMockComponents
     @Named("SHA-1")
     private BcSHA1DigestFactory bcSHA1DigestFactory;
 
     @BeforeEach
-    public void configure() throws Exception
+    void configure() throws Exception
     {
         factory = bcSHA1DigestFactory;
 

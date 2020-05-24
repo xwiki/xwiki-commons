@@ -51,6 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  */
 @ComponentTest
+// @formatter:off
 @ComponentList({
     LinkFilter.class,
     ListFilter.class,
@@ -62,7 +63,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     DefaultExecution.class,
     ControlCharactersFilter.class
 })
-public class AbstractHTMLFilterTest
+// @formatter:on
+class AbstractHTMLFilterTest
 {
     private AbstractHTMLFilter htmlFilter = new AbstractHTMLFilter()
     {
@@ -76,7 +78,7 @@ public class AbstractHTMLFilterTest
     private HTMLCleaner cleaner;
 
     @BeforeEach
-    public void setUp(ComponentManager componentManager) throws Exception
+    void setUp(ComponentManager componentManager) throws Exception
     {
         this.cleaner = componentManager.getInstance(HTMLCleaner.class);
     }

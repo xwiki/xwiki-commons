@@ -41,11 +41,13 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  */
 @ComponentTest
+// @formatter:off
 @ComponentList({
     DefaultExecution.class,
     DefaultExecutionContextManager.class
 })
-public class DefaultJobManagerTest
+// @formatter:on
+class DefaultJobManagerTest
 {
     @InjectMockComponents
     private DefaultJobManager jobManager;

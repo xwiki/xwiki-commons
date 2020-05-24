@@ -57,7 +57,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
     DefaultSecureRandomProvider.class
 })
 // @formatter:on
-public class BcRSAKeyFactoryTest
+class BcRSAKeyFactoryTest
 {
     private static final String PRIVATE_KEY =
         // Link to decoded ASN.1: https://goo.gl/kgV0IB

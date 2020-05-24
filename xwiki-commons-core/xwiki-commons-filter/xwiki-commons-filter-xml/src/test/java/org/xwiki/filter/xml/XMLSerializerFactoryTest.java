@@ -56,7 +56,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 @ComponentTest
 @AllComponents
-public class XMLSerializerFactoryTest
+class XMLSerializerFactoryTest
 {
     @InjectComponentManager
     public ComponentManager componentManager;

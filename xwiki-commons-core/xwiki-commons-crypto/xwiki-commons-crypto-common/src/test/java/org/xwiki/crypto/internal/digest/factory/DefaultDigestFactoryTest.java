@@ -33,6 +33,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @ComponentTest
+// @formatter:off
 @ComponentList({
     Base64BinaryStringEncoder.class,
     BcMD5DigestFactory.class,
@@ -40,8 +41,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
     BcSHA224DigestFactory.class,
     BcSHA256DigestFactory.class,
     BcSHA384DigestFactory.class,
-    BcSHA512DigestFactory.class })
-public class DefaultDigestFactoryTest extends AbstractDigestFactoryTestConstants
+    BcSHA512DigestFactory.class
+})
+// @formatter:on
+class DefaultDigestFactoryTest extends AbstractDigestFactoryTestConstants
 {
     private static final byte[] BYTES = TEXT.getBytes();
 
@@ -64,7 +67,7 @@ public class DefaultDigestFactoryTest extends AbstractDigestFactoryTestConstants
     private byte[] sha512Digest;
 
     @BeforeEach
-    public void configure() throws Exception
+    void configure() throws Exception
     {
         if (md5Digest == null) {
             BinaryStringEncoder base64encoder = componentManager.getInstance(BinaryStringEncoder.class, "Base64");

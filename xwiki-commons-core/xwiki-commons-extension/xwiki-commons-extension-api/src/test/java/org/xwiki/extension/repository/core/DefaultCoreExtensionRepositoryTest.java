@@ -62,7 +62,7 @@ import static org.mockito.Mockito.doAnswer;
  */
 @ComponentTest
 @AllComponents
-public class DefaultCoreExtensionRepositoryTest
+class DefaultCoreExtensionRepositoryTest
 {
     @MockComponent
     private Environment environment;
@@ -75,7 +75,7 @@ public class DefaultCoreExtensionRepositoryTest
     private ConfigurableDefaultCoreExtensionRepository coreExtensionRepository;
 
     @AfterComponent
-    public void afterComponent()
+    void afterComponent()
     {
         doAnswer(new Answer<Void>()
         {

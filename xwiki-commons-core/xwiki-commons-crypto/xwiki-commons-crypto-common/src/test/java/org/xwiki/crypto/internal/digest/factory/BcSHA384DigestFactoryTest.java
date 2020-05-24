@@ -29,8 +29,11 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 @ComponentTest
+// @formatter:off
 @ComponentList({
-    Base64BinaryStringEncoder.class})
+    Base64BinaryStringEncoder.class
+})
+// @formatter:on
 public class BcSHA384DigestFactoryTest extends AbstractDigestFactoryTest
 {
     @InjectMockComponents
@@ -38,7 +41,7 @@ public class BcSHA384DigestFactoryTest extends AbstractDigestFactoryTest
     private BcSHA384DigestFactory bcSHA384DigestFactory;
 
     @BeforeEach
-    public void configure() throws Exception
+    void configure() throws Exception
     {
         factory = bcSHA384DigestFactory;
 

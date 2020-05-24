@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
  */
 @ComponentTest
 @ComponentList(DefaultVelocityConfiguration.class)
-public class DefaultVelocityEngineTest
+class DefaultVelocityEngineTest
 {
     public class TestClass
     {
@@ -116,7 +116,7 @@ public class DefaultVelocityEngineTest
     private ConfigurationSource configurationSource;
 
     @BeforeEach
-    void setUp() throws Exception
+    void setUp()
     {
         when(execution.getContext()).thenReturn(new ExecutionContext());
         when(this.loggerConfiguration.isDeprecatedLogEnabled()).thenReturn(true);

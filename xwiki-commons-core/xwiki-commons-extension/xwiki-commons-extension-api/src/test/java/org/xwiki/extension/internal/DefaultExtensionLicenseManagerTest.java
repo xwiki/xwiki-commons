@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     DefaultExtensionLicenseManager.class
 })
 // @formatter:on
-public class DefaultExtensionLicenseManagerTest
+class DefaultExtensionLicenseManagerTest
 {
     @InjectComponentManager
     private ComponentManager componentManager;
@@ -56,7 +56,7 @@ public class DefaultExtensionLicenseManagerTest
     private ExtensionLicenseManager licenseManager;
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
         this.licenseManager = this.componentManager.getInstance(ExtensionLicenseManager.class);
     }

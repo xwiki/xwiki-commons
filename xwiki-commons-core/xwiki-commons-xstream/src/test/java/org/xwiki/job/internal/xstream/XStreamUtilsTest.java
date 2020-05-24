@@ -41,8 +41,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  */
 @ComponentTest
-@ComponentList({ TestSerializableXStreamChecker.class })
-public class XStreamUtilsTest
+// @formatter:off
+@ComponentList({
+    TestSerializableXStreamChecker.class
+})
+// @formatter:on
+class XStreamUtilsTest
 {
     @InjectMockComponents
     private XStreamUtils utils;

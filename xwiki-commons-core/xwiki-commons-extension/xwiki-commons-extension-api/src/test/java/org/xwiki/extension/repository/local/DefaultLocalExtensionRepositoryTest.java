@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ComponentTest
 @ExtendWith(MockitoRepositoryUtilsExtension.class)
 @AllComponents
-public class DefaultLocalExtensionRepositoryTest
+class DefaultLocalExtensionRepositoryTest
 {
     private LocalExtensionRepository localExtensionRepository;
 
@@ -60,7 +60,7 @@ public class DefaultLocalExtensionRepositoryTest
     private MockitoComponentManager componentManager;
 
     @BeforeEach
-    public void before() throws ComponentLookupException
+    void before() throws ComponentLookupException
     {
         this.localExtensionRepository = this.componentManager.getInstance(LocalExtensionRepository.class);
     }

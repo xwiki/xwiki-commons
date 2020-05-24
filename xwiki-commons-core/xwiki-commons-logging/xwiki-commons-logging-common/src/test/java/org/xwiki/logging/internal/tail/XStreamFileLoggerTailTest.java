@@ -45,8 +45,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  */
 @ComponentTest
-@ComponentList({ SafeXStream.class, XStreamUtils.class })
-public class XStreamFileLoggerTailTest
+// @formatter:off
+@ComponentList({
+    SafeXStream.class,
+    XStreamUtils.class
+})
+// @formatter:off
+class XStreamFileLoggerTailTest
 {
     @InjectMockComponents
     private XStreamFileLoggerTail tail;
@@ -55,7 +60,7 @@ public class XStreamFileLoggerTailTest
     private File tmpDir;
 
     @AfterEach
-    public void afterEach() throws Exception
+    void afterEach() throws Exception
     {
         this.tail.close();
     }

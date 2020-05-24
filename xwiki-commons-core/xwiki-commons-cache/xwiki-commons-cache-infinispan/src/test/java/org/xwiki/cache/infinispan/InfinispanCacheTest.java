@@ -43,7 +43,7 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
     DefaultCacheManagerConfiguration.class
 })
 // @formatter:off
-public class InfinispanCacheTest extends AbstractEvictionGenericTestCache
+class InfinispanCacheTest extends AbstractEvictionGenericTestCache
 {
     public InfinispanCacheTest()
     {

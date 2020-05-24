@@ -44,12 +44,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @ComponentTest
 @AllComponents
-public class LinkingUberspectorTest
+class LinkingUberspectorTest
 {
     private VelocityEngine engine;
 
     @BeforeEach
-    public void setUp(MockitoComponentManager componentManager) throws Exception
+    void setUp(MockitoComponentManager componentManager) throws Exception
     {
         // Register in-memory configuration sources for the test.
         componentManager.registerMemoryConfigurationSource();

@@ -58,7 +58,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
     DefaultSecureRandomProvider.class
 })
 // @formatter:on
-public class BcDSAKeyFactoryTest
+class BcDSAKeyFactoryTest
 {
     private static final String PRIVATE_KEY = "MIIBTAIBADCCASwGByqGSM44BAEwggEfAoGBANQ9Oa1j9sWAhdXNyqz8HL/bA/e"
         + "d2VrBw6TPkgMyV1Upix58RSjOHMQNrgemSGkb80dRcLqVDYbI3ObnIJh83Zx6ze"

@@ -76,7 +76,7 @@ import org.xwiki.test.mockito.MockitoComponentManager;
 @ComponentTest
 @ExtendWith(MockitoRepositoryUtilsExtension.class)
 @AllComponents
-public class DefaultInstalledExtensionRepositoryTest
+class DefaultInstalledExtensionRepositoryTest
 {
     @InjectComponentManager
     private MockitoComponentManager componentManager;
@@ -92,7 +92,7 @@ public class DefaultInstalledExtensionRepositoryTest
     private TestExtensionHandler handler;
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
         // lookup
 

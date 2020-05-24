@@ -66,7 +66,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @ComponentTest
 @ExtendWith(MockitoRepositoryUtilsExtension.class)
-public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
+class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 {
     private ComponentManagerManager componentManagerManager;
 
@@ -77,7 +77,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     private static final String NAMESPACE = "namespace";
 
     @AfterComponent
-    public void registerComponents() throws Exception
+    void registerComponents() throws Exception
     {
         // Override the system ClassLoader to isolate class loading of extensions from the current ClassLoader
         // (which already contains the extensions)

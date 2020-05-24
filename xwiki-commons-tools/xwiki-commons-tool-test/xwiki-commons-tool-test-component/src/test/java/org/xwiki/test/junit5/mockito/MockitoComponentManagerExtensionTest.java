@@ -49,10 +49,12 @@ import static org.mockito.Mockito.when;
  * @since 10.3RC1
  */
 @ComponentTest
+// @formatter:off
 @ComponentList({
     Component3Impl.class
 })
-public class MockitoComponentManagerExtensionTest
+// @formatter:on
+class MockitoComponentManagerExtensionTest
 {
     @Mock
     private List<String> list;
@@ -86,7 +88,7 @@ public class MockitoComponentManagerExtensionTest
     private MockitoComponentManager componentManager;
 
     @BeforeComponent
-    public void beforeComponent(MockitoComponentManager componentManager) throws Exception
+    void beforeComponent(MockitoComponentManager componentManager) throws Exception
     {
         // Verify that we can pass a MockitoComponentManager in parameter
         componentManager.registerComponent(Component2Role.class, mock(Component2Role.class, "beforeComponent"));
@@ -96,7 +98,7 @@ public class MockitoComponentManagerExtensionTest
     }
 
     @BeforeEach
-    public void before(MockitoComponentManager componentManager)
+    void before(MockitoComponentManager componentManager)
     {
         // Verify that we can get a Mockito CM injected
         assertNotNull(componentManager);

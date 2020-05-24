@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 @ComponentTest
 @ComponentList(ContextComponentManagerProvider.class)
-public class DefaultJobExecutorTest
+class DefaultJobExecutorTest
 {
     @InjectMockComponents
     private DefaultJobExecutor executor;

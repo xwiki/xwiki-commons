@@ -51,10 +51,18 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ComponentTest
-@ComponentList({ Base64BinaryStringEncoder.class, BcRSAKeyFactory.class, BcDSAKeyFactory.class,
-    BcSHA1DigestFactory.class, BcSHA1withRsaSignerFactory.class,
-    DefaultSignerFactory.class, BcDSAwithSHA1SignerFactory.class })
-public class BcX509CertificateFactoryTest extends AbstractPKIXTest
+// @formatter:off
+@ComponentList({
+    Base64BinaryStringEncoder.class,
+    BcRSAKeyFactory.class,
+    BcDSAKeyFactory.class,
+    BcSHA1DigestFactory.class,
+    BcSHA1withRsaSignerFactory.class,
+    DefaultSignerFactory.class,
+    BcDSAwithSHA1SignerFactory.class
+})
+// @formatter:on
+class BcX509CertificateFactoryTest extends AbstractPKIXTest
 {
     @InjectMockComponents
     private BcX509CertificateFactory factory;
@@ -73,7 +81,7 @@ public class BcX509CertificateFactoryTest extends AbstractPKIXTest
     private static byte[] v3Cert;
 
     @BeforeEach
-    public void setupTest() throws Exception
+    void setupTest() throws Exception
     {
         // Decode keys once for all tests.
         if (v1CaCert == null) {

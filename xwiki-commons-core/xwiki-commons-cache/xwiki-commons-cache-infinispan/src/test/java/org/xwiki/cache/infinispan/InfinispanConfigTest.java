@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
     DefaultCacheManagerConfiguration.class
 })
 // @formatter:on
-public class InfinispanConfigTest extends AbstractTestCache
+class InfinispanConfigTest extends AbstractTestCache
 {
     private Environment environment;
 

@@ -29,15 +29,19 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 @ComponentTest
-@ComponentList({Base64BinaryStringEncoder.class})
-public class BcMD5DigestFactoryTest extends AbstractDigestFactoryTest
+// @formatter:off
+@ComponentList({
+    Base64BinaryStringEncoder.class
+})
+// @formatter:on
+class BcMD5DigestFactoryTest extends AbstractDigestFactoryTest
 {
     @InjectMockComponents
     @Named("MD5")
     private BcMD5DigestFactory bcMD5DigestFactory;
 
     @BeforeEach
-    public void configure() throws Exception
+    void configure() throws Exception
     {
         factory = bcMD5DigestFactory;
 

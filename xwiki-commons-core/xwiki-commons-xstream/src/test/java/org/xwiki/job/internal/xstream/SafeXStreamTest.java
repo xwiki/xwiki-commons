@@ -47,8 +47,13 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * @version $Id$
  */
 @ComponentTest
-@ComponentList({ TestSerializableXStreamChecker.class, XStreamUtils.class })
-public class SafeXStreamTest
+// @formatter:off
+@ComponentList({
+    TestSerializableXStreamChecker.class,
+    XStreamUtils.class
+})
+// @formatter:on
+class SafeXStreamTest
 {
     static class RecursiveObject
     {

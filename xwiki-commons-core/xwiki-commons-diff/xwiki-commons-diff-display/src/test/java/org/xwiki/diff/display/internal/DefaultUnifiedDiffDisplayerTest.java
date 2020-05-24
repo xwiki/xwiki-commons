@@ -58,10 +58,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @since 4.1M2
  */
 @ComponentTest
+// @formatter:off
 @ComponentList({
     DefaultDiffManager.class
 })
-public class DefaultUnifiedDiffDisplayerTest
+// @formatter:on
+class DefaultUnifiedDiffDisplayerTest
 {
     @InjectMockComponents
     private DefaultUnifiedDiffDisplayer unifiedDiffDisplayer;

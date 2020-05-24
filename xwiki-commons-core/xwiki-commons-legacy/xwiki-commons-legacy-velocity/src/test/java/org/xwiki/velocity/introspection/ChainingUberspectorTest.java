@@ -51,10 +51,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Unit tests for {@link ChainingUberspector}.
  */
-@ComponentList({ DefaultVelocityEngine.class, DefaultVelocityConfiguration.class, DefaultVelocityContextFactory.class,
-    DefaultConfigurationSourceProvider.class })
 @ComponentTest
-public class ChainingUberspectorTest
+// @formatter:off
+@ComponentList({
+    DefaultVelocityEngine.class,
+    DefaultVelocityConfiguration.class,
+    DefaultVelocityContextFactory.class,
+    DefaultConfigurationSourceProvider.class
+})
+// @formatter:on
+class ChainingUberspectorTest
 {
     @InjectComponentManager
     MockitoComponentManager componentManager;
@@ -71,7 +77,7 @@ public class ChainingUberspectorTest
     LogCaptureExtension logCapture = new LogCaptureExtension();
 
     @BeforeEach
-    public void beforeEach() throws Exception
+    void beforeEach() throws Exception
     {
         // Register in-memory configuration sources for the test.
         this.componentManager.registerMemoryConfigurationSource();

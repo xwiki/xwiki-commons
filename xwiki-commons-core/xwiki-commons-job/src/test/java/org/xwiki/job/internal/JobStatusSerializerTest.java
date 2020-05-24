@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 @ComponentTest
 @ComponentList({ SafeXStream.class, XStreamUtils.class })
-public class JobStatusSerializerTest
+class JobStatusSerializerTest
 {
     @InjectMockComponents
     private JobStatusSerializer serializer;

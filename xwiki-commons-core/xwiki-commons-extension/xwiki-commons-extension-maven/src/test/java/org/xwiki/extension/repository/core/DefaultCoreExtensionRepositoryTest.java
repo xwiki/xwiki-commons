@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @ComponentTest
 @AllComponents
-public class DefaultCoreExtensionRepositoryTest
+class DefaultCoreExtensionRepositoryTest
 {
     @InjectMockComponents
     private DefaultCoreExtensionRepository coreExtensionRepository;

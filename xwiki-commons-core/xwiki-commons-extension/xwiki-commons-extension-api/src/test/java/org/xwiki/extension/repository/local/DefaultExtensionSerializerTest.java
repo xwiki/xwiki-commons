@@ -51,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ComponentTest
 @ComponentList(ExtensionFactory.class)
-public class DefaultExtensionSerializerTest
+class DefaultExtensionSerializerTest
 {
     @InjectMockComponents
     private DefaultExtensionSerializer serializer;

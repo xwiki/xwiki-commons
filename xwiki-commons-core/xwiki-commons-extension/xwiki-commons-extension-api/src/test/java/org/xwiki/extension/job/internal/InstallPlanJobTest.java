@@ -56,7 +56,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @ComponentTest
 @ExtendWith(MockitoRepositoryUtilsExtension.class)
-public class InstallPlanJobTest extends AbstractExtensionHandlerTest
+class InstallPlanJobTest extends AbstractExtensionHandlerTest
 {
     private ConfigurableDefaultCoreExtensionRepository coreRepository;
 

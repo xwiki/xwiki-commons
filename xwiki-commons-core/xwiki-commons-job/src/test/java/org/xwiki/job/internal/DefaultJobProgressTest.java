@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 
 @ComponentTest
 @ComponentList(DefaultObservationManager.class)
-public class DefaultJobProgressTest
+class DefaultJobProgressTest
 {
     @InjectComponentManager
     private ComponentManager componentManager;
@@ -52,7 +52,7 @@ public class DefaultJobProgressTest
     private DefaultJobProgress progress;
 
     @BeforeEach
-    public void before() throws Exception
+    void before() throws Exception
     {
         this.observation = this.componentManager.getInstance(ObservationManager.class);
         this.progress = new DefaultJobProgress();

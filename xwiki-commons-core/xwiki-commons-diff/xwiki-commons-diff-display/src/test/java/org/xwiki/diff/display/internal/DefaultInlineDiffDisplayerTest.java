@@ -46,11 +46,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @since 4.1M2
  */
 @ComponentTest
+// @formatter:off
 @ComponentList({
     DefaultDiffManager.class,
     DefaultInlineDiffDisplayer.class
 })
-public class DefaultInlineDiffDisplayerTest
+// @formatter:on
+class DefaultInlineDiffDisplayerTest
 {
     @InjectComponentManager
     private ComponentManager componentManager;

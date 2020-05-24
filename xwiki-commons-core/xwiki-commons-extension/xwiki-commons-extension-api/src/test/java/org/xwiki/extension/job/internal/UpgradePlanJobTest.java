@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 @ComponentTest
 @ExtendWith(MockitoRepositoryUtilsExtension.class)
-public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
+class UpgradePlanJobTest extends AbstractExtensionHandlerTest
 {
     @Test
     void testUpgradePlanOnRoot() throws Throwable

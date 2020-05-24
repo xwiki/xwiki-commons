@@ -49,7 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 @ComponentTest
 @ComponentList(DefaultDiffManager.class)
-public class DefaultUnifiedDiffDisplayerIntegrationTest
+class DefaultUnifiedDiffDisplayerIntegrationTest
 {
     @InjectMockComponents
     private DefaultUnifiedDiffDisplayer defaultUnifiedDiffDisplayer;

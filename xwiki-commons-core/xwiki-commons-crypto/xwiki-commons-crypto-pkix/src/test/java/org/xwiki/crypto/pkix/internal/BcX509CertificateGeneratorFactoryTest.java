@@ -84,10 +84,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @ComponentTest
-@ComponentList({ Base64BinaryStringEncoder.class, DefaultSecureRandomProvider.class, BcRSAKeyFactory.class,
-    BcDSAKeyFactory.class, BcSHA1DigestFactory.class, BcSHA1withRsaSignerFactory.class, DefaultSignerFactory.class,
-    BcX509CertificateFactory.class, BcDSAwithSHA1SignerFactory.class })
-public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
+// @formatter:off
+@ComponentList({
+    Base64BinaryStringEncoder.class,
+    DefaultSecureRandomProvider.class,
+    BcRSAKeyFactory.class,
+    BcDSAKeyFactory.class,
+    BcSHA1DigestFactory.class,
+    BcSHA1withRsaSignerFactory.class,
+    DefaultSignerFactory.class,
+    BcX509CertificateFactory.class,
+    BcDSAwithSHA1SignerFactory.class
+})
+// @formatter:on
+class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
 {
     @InjectMockComponents
     private BcX509CertificateGeneratorFactory factory;
@@ -130,7 +140,7 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     }
 
     @BeforeEach
-    public void configure() throws Exception
+    void configure() throws Exception
     {
         signerFactory = componentManager.getInstance(SignerFactory.class, "SHA1withRSAEncryption");
         setupTest();
