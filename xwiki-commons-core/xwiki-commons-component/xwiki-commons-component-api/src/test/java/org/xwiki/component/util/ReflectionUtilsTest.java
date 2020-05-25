@@ -20,7 +20,9 @@
 package org.xwiki.component.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,6 +32,9 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.descriptor.ComponentRole;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -81,6 +86,52 @@ public class ReflectionUtilsTest
     {
         @SuppressWarnings("unused")
         private Object field;
+    }
+
+    private class AllMethodsTestSuperClass
+    {
+        public void publicParentMethod()
+        {
+        }
+
+        void packageLeveLParentMethod()
+        {
+        }
+
+        protected void protectedParentMethod()
+        {
+        }
+
+        protected void protectedOverridenMethod()
+        {
+        }
+
+        private void privateParentMethod()
+        {
+        }
+    }
+
+    private class AllMethodsTestClass extends AllMethodsTestSuperClass
+    {
+        public void publicMethod()
+        {
+        }
+
+        void packageLevelMethod()
+        {
+        }
+
+        protected void protectedMethod()
+        {
+        }
+
+        protected void protectedOverridenMethod()
+        {
+        }
+
+        private void privateMethod()
+        {
+        }
     }
 
     @Test
@@ -228,5 +279,33 @@ public class ReflectionUtilsTest
         assertEquals("java.util.HashMap", ReflectionUtils.serializeType(stringListMap.getClass()));
 
         assertNull(ReflectionUtils.serializeType(null));
+    }
+
+    @Test
+    void getAllMethods()
+    {
+        Collection<Method> methods = ReflectionUtils.getAllMethods(AllMethodsTestClass.class);
+
+        List<String> methodSignatures = new ArrayList<>();
+        for (Method method : methods) {
+            methodSignatures.add(method.toString());
+        }
+
+        assertThat(methodSignatures, hasItems(
+            "public void org.xwiki.component.util.ReflectionUtilsTest$AllMethodsTestClass.publicMethod()",
+            "public void org.xwiki.component.util.ReflectionUtilsTest$AllMethodsTestSuperClass.publicParentMethod()",
+            "void org.xwiki.component.util.ReflectionUtilsTest$AllMethodsTestClass.packageLevelMethod()",
+            "void org.xwiki.component.util.ReflectionUtilsTest$AllMethodsTestSuperClass.packageLeveLParentMethod()",
+            "private void org.xwiki.component.util.ReflectionUtilsTest$AllMethodsTestClass.privateMethod()",
+            "private void org.xwiki.component.util.ReflectionUtilsTest$AllMethodsTestSuperClass.privateParentMethod()",
+            "protected void org.xwiki.component.util.ReflectionUtilsTest$AllMethodsTestClass.protectedMethod()",
+            "protected void org.xwiki.component.util.ReflectionUtilsTest$AllMethodsTestSuperClass."
+                + "protectedParentMethod()",
+            "protected void org.xwiki.component.util.ReflectionUtilsTest$AllMethodsTestClass."
+                + "protectedOverridenMethod()"));
+
+        assertThat(methodSignatures, not(hasItems(
+            "protected void org.xwiki.component.util.ReflectionUtilsTest$AllMethodsTestSuperClass."
+            + "protectedOverridenMethod()")));
     }
 }
