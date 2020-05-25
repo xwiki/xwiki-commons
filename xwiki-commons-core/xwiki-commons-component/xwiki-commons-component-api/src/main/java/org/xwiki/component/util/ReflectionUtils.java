@@ -20,21 +20,28 @@
 package org.xwiki.component.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.xwiki.stability.Unstable;
 
@@ -663,5 +670,76 @@ public final class ReflectionUtils
         }
 
         return sb.toString();
+    }
+
+    /**
+     * Find all methods (public, private, package private, protected) in the current class and in all its superclasses.
+     *
+     * @param clazz the class for which to return all the methods
+     * @return the collections of methods (in the defined order from current to superclasses)
+     * @since 12.5RC1
+     */
+    @Unstable
+    public static Collection<Method> getAllMethods(Class<?> clazz)
+    {
+        Set<Method> methods = new LinkedHashSet<>();
+
+        // Adds all the public methods, including inherited ones
+        Collections.addAll(methods, clazz.getMethods());
+
+        // Store the method signatures so that we don't add twice inherited methods
+        Map<Object, Set<Package>> types = new HashMap<>();
+        Set<Package> pkgIndependent = Collections.emptySet();
+        for (Method method : methods) {
+            types.put(getMethodSignature(method), pkgIndependent);
+        }
+
+        for (Class<?> current = clazz; current != null; current = current.getSuperclass()) {
+            addDeclaredMethodsForClass(current, methods, types, pkgIndependent);
+        }
+
+        return methods;
+    }
+
+    private static void addDeclaredMethodsForClass(Class<?> current, Set<Method> methods, Map<Object,
+        Set<Package>> types, Set<Package> pkgIndependent)
+    {
+        // Get all methods for the current class (doesn't include inherited methods)
+        for (Method method : current.getDeclaredMethods()) {
+            int mod = method.getModifiers();
+            int access = Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE;
+            if (!Modifier.isStatic(mod)) {
+                switch (mod & access) {
+                    case Modifier.PUBLIC:
+                        // Already added to the methods Set.
+                        continue;
+                    case Modifier.PROTECTED:
+                        if (types.putIfAbsent(getMethodSignature(method), pkgIndependent) != null) {
+                            // There was a mapping already so already taken care of, we don't add the method again
+                            continue;
+                        }
+                        // Otherwise add the method by falling-through
+                        break;
+                    case Modifier.PRIVATE:
+                        // Cannot be inherited so no need to check the method signature.
+                        // Add the method by falling-through
+                    default:
+                        // Package level visibility
+                        Set<Package> pkg = types.computeIfAbsent(getMethodSignature(method), key -> new HashSet<>());
+                        if (pkg != pkgIndependent && pkg.add(current.getPackage())) {
+                            break;
+                        } else {
+                            continue;
+                        }
+                }
+            }
+            methods.add(method);
+        }
+    }
+
+    private static Object getMethodSignature(Method method)
+    {
+        return Arrays.asList(method.getName(),
+            MethodType.methodType(method.getReturnType(), method.getParameterTypes()));
     }
 }

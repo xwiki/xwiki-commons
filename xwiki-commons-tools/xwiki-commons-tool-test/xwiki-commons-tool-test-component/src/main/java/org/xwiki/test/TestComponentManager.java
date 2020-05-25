@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.internal.StackingComponentEventManager;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.test.annotation.AfterComponent;
@@ -147,7 +148,7 @@ public class TestComponentManager extends EmbeddableComponentManager
     private List<Method> getBeforeComponentAnnotatedMethods(Class<?> testClass)
     {
         LinkedList<Method> methods = new LinkedList<>();
-        for (Method method : testClass.getDeclaredMethods()) {
+        for (Method method : ReflectionUtils.getAllMethods(testClass)) {
             if (method.isAnnotationPresent(BeforeComponent.class)) {
                 String target = method.getAnnotation(BeforeComponent.class).value();
                 // Add to the top if the method applies globally to all test and at the bottom if not so that we
@@ -166,7 +167,7 @@ public class TestComponentManager extends EmbeddableComponentManager
     private List<Method> getAfterComponentAnnotatedMethods(Class<?> testClass)
     {
         LinkedList<Method> methods = new LinkedList<>();
-        for (Method method : testClass.getDeclaredMethods()) {
+        for (Method method : ReflectionUtils.getAllMethods(testClass)) {
             if (method.isAnnotationPresent(AfterComponent.class)) {
                 String target = method.getAnnotation(AfterComponent.class).value();
                 // Add to the top if the method applies globally to all test and at the bottom if not so that we
