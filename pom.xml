@@ -1873,7 +1873,7 @@
         <plugin>
           <groupId>fr.inria.gforge.spoon</groupId>
           <artifactId>spoon-maven-plugin</artifactId>
-          <version>3.3</version>
+          <version>3.4</version>
           <dependencies>
             <dependency>
               <groupId>fr.inria.gforge.spoon</groupId>
