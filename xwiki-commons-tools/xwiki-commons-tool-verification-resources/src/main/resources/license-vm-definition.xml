@@ -23,11 +23,13 @@
 <additionalHeaders>
   <sharpsharp_style>
     <firstLine>## ---------------------------------------------------------------------------</firstLine>
-    <beforeEachLine>## </beforeEachLine>
+    <beforeEachLine><![CDATA[## ]]></beforeEachLine>
     <endLine>## ---------------------------------------------------------------------------</endLine>
     <skipLine>^##!.*$</skipLine>
-    <firstLineDetectionPattern>##\s---------------------------------------------------------------------------$</firstLineDetectionPattern>
-    <lastLineDetectionPattern>##\s---------------------------------------------------------------------------$</lastLineDetectionPattern>
+    <firstLineDetectionPattern>##\s---------------------------------------------------------------------------$
+    </firstLineDetectionPattern>
+    <lastLineDetectionPattern>##\s---------------------------------------------------------------------------$
+    </lastLineDetectionPattern>
     <allowBlankLines>false</allowBlankLines>
     <isMultiline>true</isMultiline>
   </sharpsharp_style>

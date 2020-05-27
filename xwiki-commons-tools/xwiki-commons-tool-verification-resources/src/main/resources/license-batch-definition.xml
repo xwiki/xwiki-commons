@@ -23,11 +23,13 @@
 <additionalHeaders>
   <batch>
     <firstLine>REM -------------------------------------------------------------------------</firstLine>
-    <beforeEachLine>REM </beforeEachLine>
+    <beforeEachLine><![CDATA[REM ]]></beforeEachLine>
     <endLine>REM -------------------------------------------------------------------------</endLine>
     <skipLine>@echo off</skipLine>
-    <firstLineDetectionPattern>REM\s-------------------------------------------------------------------------$</firstLineDetectionPattern>
-    <lastLineDetectionPattern>REM\s-------------------------------------------------------------------------$</lastLineDetectionPattern>
+    <firstLineDetectionPattern>REM\s-------------------------------------------------------------------------$
+    </firstLineDetectionPattern>
+    <lastLineDetectionPattern>REM\s-------------------------------------------------------------------------$
+    </lastLineDetectionPattern>
     <allowBlankLines>false</allowBlankLines>
     <isMultiline>true</isMultiline>
   </batch>
