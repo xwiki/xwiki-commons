@@ -86,9 +86,6 @@ public class UnifiedHTMLDiffManager implements XMLDiffManager, Initializable
         htmlCleanerParametersMap = new HashMap<>();
         // We need to parse the clean HTML as XML later and we don't want to resolve the entity references from the DTD.
         htmlCleanerParametersMap.put(HTMLCleanerConfiguration.USE_CHARACTER_REFERENCES, Boolean.toString(true));
-
-        // We need to translate special entities to properly use the XML parser afterwards.
-        htmlCleanerParametersMap.put(HTMLCleanerConfiguration.TRANSLATE_SPECIAL_ENTITIES, Boolean.toString(true));
     }
 
     @Override

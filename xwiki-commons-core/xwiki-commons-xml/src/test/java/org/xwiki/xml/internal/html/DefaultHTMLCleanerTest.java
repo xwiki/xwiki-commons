@@ -26,9 +26,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.htmlcleaner.CleanerProperties;
+import org.htmlcleaner.DomSerializer;
+import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.TagNode;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -93,7 +98,8 @@ public class DefaultHTMLCleanerTest
     @Test
     void specialCharacters()
     {
-        assertHTML("<p>&quot;&amp;**notbold**&lt;notag&gt;&nbsp;</p>",
+        // The blank space is not a standard space, but a non-breaking space.
+        assertHTML("<p>\"&amp;**notbold**&lt;notag&gt; </p>",
             "<p>&quot;&amp;**notbold**&lt;notag&gt;&nbsp;</p>");
         assertHTML("<p>\"&amp;</p>", "<p>\"&</p>");
         assertHTML("<p><img src=\"http://host.com/a.gif?a=foo&amp;b=bar\" /></p>",
@@ -208,7 +214,7 @@ public class DefaultHTMLCleanerTest
             + "       .replace(/>/g,'&'+'gt;').replace(/\'/g,'&'+'apos;').replace(/\"/g,'&'+'quot;');" + "}\n"
             + "/*]]>*/\n" + "</script>");
 
-        assertHTML("<script>/*<![CDATA[*/\n&lt;&gt;\n/*]]>*/</script>", "<script>&lt;&gt;</script>");
+        assertHTML("<script>/*<![CDATA[*/\n<>\n/*]]>*/</script>", "<script>&lt;&gt;</script>");
         assertHTML("<script>/*<![CDATA[*/\n<>\n/*]]>*/</script>", "<script><></script>");
 
         // Verify that CDATA not inside SCRIPT or STYLE elements are considered comments in HTML and thus stripped
@@ -229,10 +235,10 @@ public class DefaultHTMLCleanerTest
         assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>",
             "<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>");
 
-        assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na&gt;span { color: blue;}\n/*]]>*/</style>",
+        assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na>span { color: blue;}\n/*]]>*/</style>",
             "<style type=\"text/css\">a&gt;span { color: blue;}</style>");
 
-        assertHTMLWithHeadContent("<style>/*<![CDATA[*/\n&lt;&gt;\n/*]]>*/</style>", "<style>&lt;&gt;</style>");
+        assertHTMLWithHeadContent("<style>/*<![CDATA[*/\n<>\n/*]]>*/</style>", "<style>&lt;&gt;</style>");
         assertHTMLWithHeadContent("<style>/*<![CDATA[*/\n<>\n/*]]>*/</style>", "<style><></style>");
     }
 
@@ -415,20 +421,41 @@ public class DefaultHTMLCleanerTest
     @Test
     void verifyEntitiesAreNotBroken()
     {
-        assertHTML("<p>&Eacute;</p>", "&Eacute;");
-        assertHTML("<p>&frac14;</p>", "&frac14;");
+        Document document = this.cleaner.clean(new StringReader("<p>&Eacute;</p>"));
+        String content = document.getElementsByTagName("p").item(0).getTextContent();
+        assertEquals("É", content);
+        assertHTML("<p>É</p>", "&Eacute;");
+
+        document = this.cleaner.clean(new StringReader("<p>&frac14;</p>"));
+        content = document.getElementsByTagName("p").item(0).getTextContent();
+        assertEquals("¼", content);
+        assertHTML("<p>¼</p>", "&frac14;");
+
+        document = this.cleaner.clean(new StringReader("<p>&f!rac14;</p>"));
+        content = document.getElementsByTagName("p").item(0).getTextContent();
+        assertEquals("&f!rac14;", content);
         assertHTML("<p>&amp;f!rac14;</p>", "&f!rac14;");
-        assertHTML("<p>&frac12;</p>", "&frac12;");
+
+        document = this.cleaner.clean(new StringReader("<p>&frac12;</p>"));
+        content = document.getElementsByTagName("p").item(0).getTextContent();
+        assertEquals("½", content);
+        assertHTML("<p>½</p>", "&frac12;");
     }
 
     @Test
     void entitiesWithTranslation()
     {
-        assertHTML("<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>", "<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>");
+        String content = "<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>";
+        String expectedContent = "1>2&3 4½5öüäăâîș";
+        Document document = this.cleaner.clean(new StringReader(content));
+        String obtainedContent = document.getElementsByTagName("p").item(0).getTextContent();
+        assertEquals(expectedContent, obtainedContent);
+        assertHTML("<p>1&gt;2&amp;3 4½5öüäăâîș</p>", content);
+
         HTMLCleanerConfiguration htmlCleanerConfiguration = new DefaultHTMLCleanerConfiguration();
         htmlCleanerConfiguration
             .setParameters(Collections.singletonMap(HTMLCleanerConfiguration.TRANSLATE_SPECIAL_ENTITIES, "true"));
-        assertHTML("<p>1&gt;2&amp;3&#160;4&#189;5öüäăâîș</p>",
+        assertHTML("<p>1&amp;gt;2&amp;amp;3 4½5öüäăâîș</p>",
             "<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>", htmlCleanerConfiguration);
     }
 
@@ -506,16 +533,31 @@ public class DefaultHTMLCleanerTest
         htmlInput = "<p>&#8;</p>";
         document = this.cleaner.clean(new StringReader(htmlInput));
 
+        // HtmlCleaner currently doesn't handle properly unicode characters: asking it to recognize them
+        // involves that all entities will be escaped during the parsing and that's not what we want. So we
+        // keep them encoded.
+        // See https://sourceforge.net/p/htmlcleaner/bugs/221/
         textContent =
             document.getElementsByTagName("p").item(0).getTextContent();
         assertEquals("&#8;", textContent);
         assertHTML("<p>&#8;</p>", "&#8;");
+
+        htmlInput = "<p foo=\"&#8;\">content</p>";
+        document = this.cleaner.clean(new StringReader(htmlInput));
+
+        // HtmlCleaner currently doesn't handle properly unicode characters: asking it to recognize them
+        // involves that all entities will be escaped during the parsing and that's not what we want. So we
+        // keep them encoded.
+        textContent =
+            document.getElementsByTagName("p").item(0).getAttributes().getNamedItem("foo").getTextContent();
+        assertEquals("&#8;", textContent);
+        assertHTML("<p foo=\"&#8;\">content</p>", "<p foo=\"&#8;\">content</p>");
     }
 
     private void assertHTML(String expected, String actual)
     {
-        assertEquals(HEADER_FULL + expected + FOOTER,
-            HTMLUtils.toString(this.cleaner.clean(new StringReader(actual))));
+        Document documentValue = this.cleaner.clean(new StringReader(actual));
+        assertEquals(HEADER_FULL + expected + FOOTER, HTMLUtils.toString(documentValue));
     }
 
     private void assertHTML(String expected, String actual, HTMLCleanerConfiguration configuration)
@@ -546,5 +588,82 @@ public class DefaultHTMLCleanerTest
         textContent =
             document.getElementsByTagName("img").item(0).getAttributes().getNamedItem("src").getTextContent();
         assertEquals("http://host.com/a.gif?a=foo&b=bar", textContent);
+    }
+
+    @Test
+    public void preserveDoubleEscapingInAttributes() throws Exception
+    {
+        CleanerProperties cleanerProperties = new CleanerProperties();
+        cleanerProperties.setDeserializeEntities(true);
+        HtmlCleaner cleaner = new HtmlCleaner(cleanerProperties);
+        TagNode tagNode = cleaner.clean("<?xml version = \"1.0\"?><div foo=\"&amp;quot;\">&amp;quot;</div>");
+        List<? extends TagNode> divList = tagNode.getElementListByName("div", true);
+        assertEquals(1, divList.size());
+        assertEquals("&quot;", divList.get(0).getText().toString());
+        // This assert is failing: the attribute is deserialized to contain ".
+        assertEquals("&quot;", divList.get(0).getAttributeByName("foo"));
+
+        DomSerializer domSerializer = new DomSerializer(cleanerProperties, false);
+        Document document = domSerializer.createDOM(tagNode);
+
+        NodeList nodeList = document.getElementsByTagName("div");
+        assertEquals(1, nodeList.getLength());
+        assertEquals("&quot;", nodeList.item(0).getTextContent());
+        assertEquals("&quot;", nodeList.item(0).getAttributes().getNamedItem("foo").getTextContent());
+
+        document = this.cleaner.clean(new StringReader("<div foo=\"&amp;quot;\">&amp;quot;</div>"));
+        nodeList = document.getElementsByTagName("div");
+        assertEquals(1, nodeList.getLength());
+        assertEquals("&quot;", nodeList.item(0).getTextContent());
+        // We can never retrieve the expected value here since the encoded &amp; has been lost earlier.
+        assertEquals("&quot;", nodeList.item(0).getAttributes().getNamedItem("foo").getTextContent());
+
+        assertHTML("<div foo=\"&amp;quot;\">content</div>",
+            "<div foo=\"&amp;quot;\">content</div>");
+    }
+
+    @Test
+    @Disabled("See https://sourceforge.net/p/htmlcleaner/bugs/221/")
+    public void parseWithUnicodeChars() throws Exception
+    {
+        CleanerProperties cleanerProperties = new CleanerProperties();
+
+        cleanerProperties.setDeserializeEntities(true);
+        cleanerProperties.setRecognizeUnicodeChars(true);
+        cleanerProperties.setTranslateSpecialEntities(false);
+
+        HtmlCleaner cleaner = new HtmlCleaner(cleanerProperties);
+        TagNode tagNode = cleaner.clean("<?xml version = \"1.0\"?>"
+            + "<div foo=\"&#169;\">&#169;</div>"
+            + "<div foo=\"baz&gt;buz\">baz&gt;buz</div>"
+            + "<div foo=\"baz&buz\">baz&buz</div>");
+        List<? extends TagNode> divList = tagNode.getElementListByName("div", true);
+        assertEquals(3, divList.size());
+
+        assertEquals("©", divList.get(0).getText().toString());
+        assertEquals("©", divList.get(0).getAttributeByName("foo"));
+
+        assertEquals("baz>buz", divList.get(1).getText().toString());
+        assertEquals("baz>buz", divList.get(1).getAttributeByName("foo"));
+
+        assertEquals("baz&buz", divList.get(2).getText().toString());
+        assertEquals("baz&buz", divList.get(2).getAttributeByName("foo"));
+
+        DomSerializer domSerializer = new DomSerializer(cleanerProperties, false);
+        Document document = domSerializer.createDOM(tagNode);
+
+        NodeList nodeList = document.getElementsByTagName("div");
+        assertEquals(3, nodeList.getLength());
+        assertEquals("©", nodeList.item(0).getTextContent());
+        assertEquals("©", nodeList.item(0).getAttributes().getNamedItem("foo").getTextContent());
+
+        assertEquals("baz>buz", nodeList.item(1).getAttributes().getNamedItem("foo").getTextContent());
+
+        assertEquals("baz&buz", nodeList.item(2).getAttributes().getNamedItem("foo").getTextContent());
+
+        // BUG: This is failing with baz&gt;buz
+        assertEquals("baz>buz", nodeList.item(1).getTextContent());
+        // BUG: This is failing with baz&amp;buz
+        assertEquals("baz&buz", nodeList.item(2).getTextContent());
     }
 }
