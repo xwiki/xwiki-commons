@@ -76,12 +76,14 @@ public class ComponentAnnotationCheck extends AbstractCheck
     }
 
     @Override
-    public int[] getAcceptableTokens() {
+    public int[] getAcceptableTokens()
+    {
         return getDefaultTokens();
     }
 
     @Override
-    public int[] getRequiredTokens() {
+    public int[] getRequiredTokens()
+    {
         return getDefaultTokens();
     }
 
@@ -242,8 +244,8 @@ public class ComponentAnnotationCheck extends AbstractCheck
             // Ths is check 1-A
             log(ast.getLineNo(), ast.getColumnNo(), String.format(
                 "There is no [%s] file and thus Component [%s] isn't declared! Consider "
-                + "adding a components.txt file or if it is normal use the \"staticRegistration\" parameter as "
-                + "in \"@Component(staticRegistration = false)\"", this.componentsDeclarationLocation,
+                    + "adding a components.txt file or if it is normal use the \"staticRegistration\" parameter as "
+                    + "in \"@Component(staticRegistration = false)\"", this.componentsDeclarationLocation,
                 getFullClassName()));
         }
 

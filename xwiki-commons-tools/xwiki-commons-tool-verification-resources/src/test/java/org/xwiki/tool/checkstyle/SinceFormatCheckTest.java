@@ -64,7 +64,8 @@ public class SinceFormatCheckTest extends AbstractModuleTestSupport
     }
 
     @Override
-    protected String getPackageLocation() {
+    protected String getPackageLocation()
+    {
         return "org/xwiki/tool/checkstyle/test/since";
     }
 }

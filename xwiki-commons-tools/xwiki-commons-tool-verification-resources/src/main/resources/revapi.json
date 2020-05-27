@@ -65,7 +65,9 @@
   {
     "extension": "revapi.java.filter.annotated",
     "configuration": {
-      "exclude": ["@org.xwiki.stability.Unstable"]
+      "exclude": [
+        "@org.xwiki.stability.Unstable"
+      ]
     }
   }
 ]

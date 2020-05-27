@@ -42,12 +42,14 @@ public class ScriptServiceCheck extends AbstractCheck
     }
 
     @Override
-    public int[] getAcceptableTokens() {
+    public int[] getAcceptableTokens()
+    {
         return getDefaultTokens();
     }
 
     @Override
-    public int[] getRequiredTokens() {
+    public int[] getRequiredTokens()
+    {
         return getDefaultTokens();
     }
 
@@ -65,7 +67,8 @@ public class ScriptServiceCheck extends AbstractCheck
                 // internal package unless the name ends with InternalScriptService which makes it on purpose.
                 String className = ast.findFirstToken(TokenTypes.IDENT).getText();
                 if (className.endsWith("ScriptService") && this.packageName.contains("internal")
-                    && !className.endsWith("InternalScriptService")) {
+                    && !className.endsWith("InternalScriptService"))
+                {
                     log(ast.getLineNo(), "Script Service implementation [" + className + "] in package ["
                         + this.packageName + "] should not be located in the internal package");
                 }

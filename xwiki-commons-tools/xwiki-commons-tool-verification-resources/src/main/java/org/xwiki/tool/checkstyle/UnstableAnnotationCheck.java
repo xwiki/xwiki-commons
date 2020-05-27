@@ -59,12 +59,14 @@ public class UnstableAnnotationCheck extends AbstractCheck
     }
 
     @Override
-    public int[] getAcceptableTokens() {
+    public int[] getAcceptableTokens()
+    {
         return getDefaultTokens();
     }
 
     @Override
-    public int[] getRequiredTokens() {
+    public int[] getRequiredTokens()
+    {
         return getDefaultTokens();
     }
 
@@ -86,7 +88,7 @@ public class UnstableAnnotationCheck extends AbstractCheck
         if (this.currentVersion == null) {
             // If not current version is set, just ignore this check
 
-            return ;
+            return;
         }
 
         switch (ast.getType()) {
@@ -222,5 +224,4 @@ public class UnstableAnnotationCheck extends AbstractCheck
         }
         return results;
     }
-
 }

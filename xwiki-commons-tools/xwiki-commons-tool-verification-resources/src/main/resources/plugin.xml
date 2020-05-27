@@ -24,18 +24,18 @@
 
 <?eclipse version="3.1"?>
 <plugin>
-    <!-- This plugin provides custom Checkstyle modules. -->
-    <extension point="net.sf.eclipsecs.core.checkstyleAddonProvider" />
+  <!-- This plugin provides custom Checkstyle modules. -->
+  <extension point="net.sf.eclipsecs.core.checkstyleAddonProvider"/>
 
-    <!--
-        Standard XWiki check configurations
-    -->
-    <extension
-        id="checkstyle.CheckConfiguration"
-        point="net.sf.eclipsecs.core.configurations">
-        <check-configuration
-            name="XWiki Checks"
-            location="checkstyle.xml"
-            description="Checkstyle configuration that checks the XWiki coding conventions."/>
-    </extension>
+  <!--
+      Standard XWiki check configurations
+  -->
+  <extension
+    id="checkstyle.CheckConfiguration"
+    point="net.sf.eclipsecs.core.configurations">
+    <check-configuration
+      name="XWiki Checks"
+      location="checkstyle.xml"
+      description="Checkstyle configuration that checks the XWiki coding conventions."/>
+  </extension>
 </plugin>

@@ -50,12 +50,14 @@ public class SinceFormatCheck extends AbstractCheck
     }
 
     @Override
-    public int[] getAcceptableTokens() {
+    public int[] getAcceptableTokens()
+    {
         return getDefaultTokens();
     }
 
     @Override
-    public int[] getRequiredTokens() {
+    public int[] getRequiredTokens()
+    {
         return getDefaultTokens();
     }
 
