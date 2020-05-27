@@ -98,6 +98,7 @@ public class DefaultHTMLCleanerTest
     @Test
     void specialCharacters()
     {
+        // The blank space is not a standard space, but a non-breaking space.
         assertHTML("<p>\"&amp;**notbold**&lt;notag&gt; </p>",
             "<p>&quot;&amp;**notbold**&lt;notag&gt;&nbsp;</p>");
         assertHTML("<p>\"&amp;</p>", "<p>\"&</p>");
