@@ -32,7 +32,6 @@
   <description>API to produce blame/annotate/praise information from a history of changes</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.94</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>91</xwiki.pitest.mutationThreshold>
     <!-- Name to display in the Extension Manager -->
     <xwiki.extension.name>Blame API</xwiki.extension.name>
     <!-- Category to display in the Extension Manager -->

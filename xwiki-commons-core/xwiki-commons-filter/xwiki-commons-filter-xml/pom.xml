@@ -33,7 +33,6 @@
   <description>XWiki Commons - Filter - XML</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.56</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>57</xwiki.pitest.mutationThreshold>
     <!-- Working with XStream requires a lot of classes, relax the coupling requirements -->
     <checkstyle.suppressions.location>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml
     </checkstyle.suppressions.location>

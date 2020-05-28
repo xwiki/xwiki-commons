@@ -34,7 +34,6 @@
     <!-- Tests are in a different module because otherwise that would create a cyclic dependency as Spoon is used in
          all modules to perform checks... -->
     <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>0</xwiki.pitest.mutationThreshold>
     <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>true</xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
   </properties>
   <dependencies>

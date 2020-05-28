@@ -32,7 +32,6 @@
   <description>Scripting APIs, on top of JSR-223</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.27</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>9</xwiki.pitest.mutationThreshold>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Script API</xwiki.extension.name>
   </properties>

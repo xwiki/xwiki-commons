@@ -32,7 +32,6 @@
   <description>XWiki Commons - Cache - Infinispan</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.68</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>0</xwiki.pitest.mutationThreshold>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-cache-infinispan</xwiki.extension.features>
   </properties>

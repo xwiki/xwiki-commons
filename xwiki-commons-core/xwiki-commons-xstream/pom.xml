@@ -85,22 +85,4 @@
       </plugin>
     </plugins>
   </build>
-  <profiles>
-    <profile>
-      <id>quality</id>
-      <build>
-        <plugins>
-          <!-- pitest/descartes is currently failing on this module,
-               see https://github.com/STAMP-project/pitest-descartes/issues/51 -->
-          <plugin>
-            <groupId>org.pitest</groupId>
-            <artifactId>pitest-maven</artifactId>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>

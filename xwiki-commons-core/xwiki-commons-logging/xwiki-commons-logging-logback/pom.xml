@@ -33,7 +33,6 @@
   <description>XWiki Commons - Logging - Logback</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.93</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>94</xwiki.pitest.mutationThreshold>
   </properties>
   <dependencies>
     <dependency>

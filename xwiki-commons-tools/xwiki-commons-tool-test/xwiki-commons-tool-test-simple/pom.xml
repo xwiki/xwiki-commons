@@ -33,7 +33,6 @@
   <description>For tests not requiring notion of Components</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.43</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>56</xwiki.pitest.mutationThreshold>
     <!-- Allow throwing 'Throwable', since throwing Throwable is part of the JUnit method signature that we implement! -->
     <checkstyle.suppressions.location>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml
     </checkstyle.suppressions.location>

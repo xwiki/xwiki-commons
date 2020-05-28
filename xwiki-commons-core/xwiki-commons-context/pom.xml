@@ -33,7 +33,6 @@
   <description>XWiki Commons - Context</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.86</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>97</xwiki.pitest.mutationThreshold>
   </properties>
   <dependencies>
     <dependency>

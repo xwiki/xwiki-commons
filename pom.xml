@@ -81,18 +81,6 @@
     <junit.platform.version>1.6.2</junit.platform.version>
     <junit.vintage.version>${junit5.version}</junit.vintage.version>
 
-    <!-- Pitest -->
-    <!-- TODO: The following modules have had their mutation score threshold lowered or ignored because of problems in
-         the versions of pitest/descartes that we use. When changing the version please review each of them and try to
-         put back the previous threshold values (check the comments in their pom.xml too).
-
-          - xwiki-commons-extension-repository-xwiki
-          - xwiki-commons-extension-repository-maven
-          - xwiki-platform-rendering-parser
-    -->
-    <pitest.version>1.4.10</pitest.version>
-    <descartes.version>1.2.6</descartes.version>
-
     <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
          are executed with surefire or failsafe) -->
     <surefire.version>2.22.2</surefire.version>
@@ -158,15 +146,6 @@
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
     <xwiki.enforcer.enforce-java.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-java.skip>
     <xwiki.license.skip>false</xwiki.license.skip>
-
-    <!-- By default we don't run pitest/descartes since it's taking too long to execute to be executed after all
-         commits. Thus the idea is that the CI will set this as a system property to run it using a scheduler. It can
-         also be execute locally by running "mvn install -Pquality -Dxwiki.pitest.skip=false" -->
-    <xwiki.pitest.skip>true</xwiki.pitest.skip>
-    <!-- Default Pitest timeout factor. Increasing the value will increase the duration of a build
-         but might change the mutation score: some mutation might take longer than the timeout to be killed
-         on some machines. See: https://github.com/STAMP-project/pitest-descartes/issues/62 -->
-    <xwiki.pitest.timeoutFactor>1.25</xwiki.pitest.timeoutFactor>
 
     <!-- Enable by default auto release on Jira -->
     <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
@@ -2398,11 +2377,6 @@
             </lifecycleMappingMetadata>
           </configuration>
         </plugin>
-        <plugin>
-          <groupId>org.pitest</groupId>
-          <artifactId>pitest-maven</artifactId>
-          <version>${pitest.version}</version>
-        </plugin>
         <!-- In order to make it simple to execute Dspot on XWiki with: mvn dspot:amplify-unit-tests -->
         <plugin>
           <groupId>eu.stamp-project</groupId>
@@ -2618,8 +2592,6 @@
         <!-- Default Jacoco Instruction Ratio. We use 100% to force each module to define its
              own ratio. Note that good values are above 70%. -->
         <xwiki.jacoco.instructionRatio>1.00</xwiki.jacoco.instructionRatio>
-        <!-- Default Pitest Instruction Ratio. We use 100% to force each module to define its own ratio. -->
-        <xwiki.pitest.mutationThreshold>100</xwiki.pitest.mutationThreshold>
       </properties>
       <build>
         <plugins>
@@ -2653,91 +2625,6 @@
                 </rule>
               </rules>
             </configuration>
-          </plugin>
-          <!-- Fail the build of the test quality is below a given value -->
-          <plugin>
-            <groupId>org.pitest</groupId>
-            <artifactId>pitest-maven</artifactId>
-            <executions>
-              <execution>
-                <id>pitest-check</id>
-                <goals>
-                  <goal>mutationCoverage</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <skip>${xwiki.pitest.skip}</skip>
-              <failWhenNoMutations>false</failWhenNoMutations>
-              <mutationThreshold>${xwiki.pitest.mutationThreshold}</mutationThreshold>
-              <mutationEngine>descartes</mutationEngine>
-              <timeoutFactor>${xwiki.pitest.timeoutFactor}</timeoutFactor>
-              <threads>4</threads>
-              <outputFormats>
-                <value>HTML</value>
-                <value>JSON</value>
-                <value>METHODS</value>
-                <value>ISSUES</value>
-              </outputFormats>
-              <!-- List of mutations we want to run for each test -->
-              <mutators>
-                <mutator>void</mutator>
-                <mutator>null</mutator>
-                <mutator>true</mutator>
-                <mutator>false</mutator>
-                <mutator>empty</mutator>
-                <mutator>0</mutator>
-                <mutator>1</mutator>
-                <mutator>(byte)0</mutator>
-                <mutator>(byte)1</mutator>
-                <mutator>(short)1</mutator>
-                <mutator>(short)2</mutator>
-                <mutator>0L</mutator>
-                <mutator>1L</mutator>
-                <mutator>0.0</mutator>
-                <mutator>1.0</mutator>
-                <mutator>0.0f</mutator>
-                <mutator>1.0f</mutator>
-                <mutator>'\40'</mutator>
-                <mutator>'A'</mutator>
-                <mutator>""</mutator>
-                <mutator>"A"</mutator>
-              </mutators>
-            </configuration>
-            <dependencies>
-              <!-- Make sure we end up with the right pitest versions -->
-              <dependency>
-                <groupId>org.pitest</groupId>
-                <artifactId>pitest</artifactId>
-                <version>${pitest.version}</version>
-              </dependency>
-              <dependency>
-                <groupId>org.pitest</groupId>
-                <artifactId>pitest-entry</artifactId>
-                <version>${pitest.version}</version>
-              </dependency>
-
-              <!-- Make sure we end up with the right version of Junit 5 -->
-              <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter</artifactId>
-                <version>${junit5.version}</version>
-                <scope>compile</scope>
-              </dependency>
-
-              <dependency>
-                <groupId>org.pitest</groupId>
-                <artifactId>pitest-junit5-plugin</artifactId>
-                <!-- TODO: Upgrade to the latest version only when
-                     https://github.com/pitest/pitest-junit5-plugin/issues/48 is fixed -->
-                <version>0.10</version>
-              </dependency>
-              <dependency>
-                <groupId>eu.stamp-project</groupId>
-                <artifactId>descartes</artifactId>
-                <version>${descartes.version}</version>
-              </dependency>
-            </dependencies>
           </plugin>
         </plugins>
       </build>

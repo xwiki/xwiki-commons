@@ -105,12 +105,6 @@ public class CaptureConsoleExtensionTest
             LauncherDiscoveryRequestBuilder builder =
                 LauncherDiscoveryRequestBuilder.request().selectors(selectClass(SampleTestCase.class));
 
-            // TODO: Because of https://github.com/pitest/pitest-junit5-plugin/issues/35 we need to force the loading
-            // of our custom Extension for the test to pass.
-            if (System.getProperty("junit.jupiter.extensions.autodetection.enabled") == null) {
-                builder = builder.configurationParameter("junit.jupiter.extensions.autodetection.enabled", "true");
-            }
-
             LauncherDiscoveryRequest request = builder.build();
             Launcher launcher = LauncherFactory.create();
             SummaryGeneratingListener summaryListener = new SummaryGeneratingListener();
