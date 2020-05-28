@@ -2168,12 +2168,12 @@
           <groupId>org.revapi</groupId>
           <artifactId>revapi-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.11.4</version>
+          <version>0.11.5</version>
           <dependencies>
             <dependency>
               <groupId>org.revapi</groupId>
               <artifactId>revapi-java</artifactId>
-              <version>0.20.2</version>
+              <version>0.21.0</version>
             </dependency>
           </dependencies>
           <executions>
@@ -2191,6 +2191,7 @@
                  differences which could lead to issues when releasing XWiki, see
                  https://github.com/revapi/revapi/issues/137 for more info. -->
             <outputNonIdentifyingDifferenceInfo>false</outputNonIdentifyingDifferenceInfo>
+            <ignoreSuggestionsFormat>xml</ignoreSuggestionsFormat>
           </configuration>
         </plugin>
         <plugin>
