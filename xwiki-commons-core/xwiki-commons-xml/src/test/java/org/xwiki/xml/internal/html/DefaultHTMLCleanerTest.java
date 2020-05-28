@@ -666,4 +666,15 @@ public class DefaultHTMLCleanerTest
         // BUG: This is failing with baz&amp;buz
         assertEquals("baz&buz", nodeList.item(2).getTextContent());
     }
+
+    @Test
+    public void followingEncodedEntitiesAreProperlyKept()
+    {
+        String content = "<p><textarea>&#123;&#123;velocity}}machin&#123;&#123;/velocity}}</textarea></p>";
+        Document document = this.cleaner.clean(new StringReader(content));
+        String textareaContent = document.getElementsByTagName("textarea").item(0).getTextContent();
+        assertEquals("&#123;&#123;velocity}}machin&#123;&#123;/velocity}}", textareaContent);
+
+        assertHTML("<p><textarea>&#123;&#123;velocity}}machin&#123;&#123;/velocity}}</textarea></p>", content);
+    }
 }

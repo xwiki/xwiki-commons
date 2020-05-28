@@ -134,7 +134,9 @@ public final class HTMLUtils
                 if (matcher.lookingAt()) {
                     // We've found an entity, replace the "&amp;" by a single "&"
                     buffer.replace(pos, pos + 5, "&");
-                    pos = pos + matcher.end() - matcher.start();
+
+                    // We have replaced 4 characters in the buffer so let's move the position back
+                    pos = pos + matcher.end() - matcher.start() - 4;
                 } else {
                     // don't do anything, just move on.
                     pos += 5;
