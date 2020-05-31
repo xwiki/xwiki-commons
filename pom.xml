@@ -1950,7 +1950,7 @@
             <systemProperties>
               <!-- Used to automatically register our custom JUnit5 Extensions using the service loader mechanism.
                    We also need to have the JAR containing our extensions visible to JUnit5's ClassLoader. This is
-                   done in xwiki-comons-core/pom.xml and xwiki-platform/pom.xml as otherwise it would cause a cyclic
+                   done in xwiki-commons-core/pom.xml and xwiki-platform/pom.xml as otherwise it would cause a cyclic
                    dependency.
               -->
               <property>
@@ -1964,6 +1964,10 @@
                 <value>${xwiki.test.verifyRunningXWikiAtStart}</value>
               </property>
             </systemProperties>
+            <!-- Explicitly define how much memory to give to the forked JVM process for the tests, as otherwise
+                 Java will give about 1/4th of the physical memory which can be not enough or too much (e.g. on a CI
+                 agent too much means we cannot run as many jobs in parallel as we could). -->
+            <argLine>-Xmx1024m</argLine>
           </configuration>
         </plugin>
         <plugin>
@@ -1987,7 +1991,7 @@
               </property>
               <!-- Used to automatically register our custom JUnit5 Extensions using the service loader mechanism.
                    We also need to have the JAR containing our extensions visible to JUnit5's ClassLoader. This is
-                   done in xwiki-comons-core/pom.xml and xwiki-platform/pom.xml as otherwise it would cause a cyclic
+                   done in xwiki-commons-core/pom.xml and xwiki-platform/pom.xml as otherwise it would cause a cyclic
                    dependency.
               -->
               <property>
@@ -1995,6 +1999,10 @@
                 <value>true</value>
               </property>
             </systemProperties>
+            <!-- Explicitly define how much memory to give to the forked JVM process for the tests, as otherwise
+                 Java will give about 1/4th of the physical memory which can be not enough or too much (e.g. on a CI
+                 agent too much means we cannot run as many jobs in parallel as we could). -->
+            <argLine>-Xmx1024m</argLine>
           </configuration>
           <executions>
             <execution>
