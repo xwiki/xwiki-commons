@@ -46,10 +46,13 @@ import org.xwiki.component.phase.Disposable;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.job.GroupedJob;
+import org.xwiki.job.GroupedJobInitializer;
+import org.xwiki.job.GroupedJobInitializerManager;
 import org.xwiki.job.Job;
 import org.xwiki.job.JobException;
 import org.xwiki.job.JobExecutor;
 import org.xwiki.job.JobGroupPath;
+import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.Request;
 
 /**
@@ -72,10 +75,17 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
         private String groupThreadName;
 
-        JobGroupExecutor(JobGroupPath path)
-        {
-            super(1, 36000L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+        private GroupedJobInitializer initializer;
 
+        JobGroupExecutor(JobGroupPath path, GroupedJobInitializer initializer)
+        {
+            super(initializer.getPoolSize(), initializer.getPoolSize(),
+                DefaultJobExecutor.this.jobManagerConfiguration.getGroupedJobThreadKeepAliveTime(),
+                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+
+            // We want to be sure to not keep idle threads.
+            this.allowCoreThreadTimeOut(true);
+            this.initializer = initializer;
             setThreadFactory(this);
 
             this.path = path;
@@ -127,6 +137,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
             thread.setDaemon(true);
             thread.setName(this.groupThreadName);
+            thread.setPriority(this.initializer.getDefaultPriority());
 
             return thread;
         }
@@ -134,9 +145,10 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
     private class JobThreadExecutor extends ThreadPoolExecutor
     {
-        JobThreadExecutor(int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue)
+        JobThreadExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,
+            BlockingQueue<Runnable> workQueue)
         {
-            super(0, maximumPoolSize, keepAliveTime, unit, workQueue);
+            super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
         }
 
         @Override
@@ -173,6 +185,12 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     @Named("context")
     private Provider<ComponentManager> componentManager;
 
+    @Inject
+    private JobManagerConfiguration jobManagerConfiguration;
+
+    @Inject
+    private GroupedJobInitializerManager groupedJobInitializerManager;
+
     private final Map<List<String>, Queue<Job>> groupedJobs = new ConcurrentHashMap<>();
 
     private final Map<List<String>, Job> jobs = new ConcurrentHashMap<>();
@@ -180,7 +198,8 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     /**
      * Handle care of hierarchical locking for grouped jobs.
      */
-    private final JobGroupPathLockTree lockTree = new JobGroupPathLockTree();
+    @Inject
+    private JobGroupPathLockTree lockTree;
 
     /**
      * Map<groupname, group executor>.
@@ -199,7 +218,8 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     public void initialize() throws InitializationException
     {
         this.jobExecutor =
-            new JobThreadExecutor(Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
+            new JobThreadExecutor(0, Integer.MAX_VALUE, this.jobManagerConfiguration.getSingleJobThreadKeepAliveTime(),
+                TimeUnit.MILLISECONDS, new SynchronousQueue<>());
     }
 
     @Override
@@ -317,7 +337,8 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
             JobGroupExecutor groupExecutor = this.groupExecutors.get(path);
 
             if (groupExecutor == null) {
-                groupExecutor = new JobGroupExecutor(path);
+                groupExecutor = new JobGroupExecutor(path,
+                    this.groupedJobInitializerManager.getGroupedJobInitializer(path));
                 this.groupExecutors.put(path, groupExecutor);
             }
 

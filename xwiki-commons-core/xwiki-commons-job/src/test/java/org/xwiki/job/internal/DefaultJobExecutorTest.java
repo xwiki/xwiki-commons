@@ -20,22 +20,31 @@
 package org.xwiki.job.internal;
 
 import java.util.Arrays;
+import java.util.Collections;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.internal.ContextComponentManagerProvider;
 import org.xwiki.job.DefaultRequest;
+import org.xwiki.job.GroupedJobInitializer;
+import org.xwiki.job.GroupedJobInitializerManager;
 import org.xwiki.job.Job;
 import org.xwiki.job.JobGroupPath;
-import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.event.status.JobStatus.State;
 import org.xwiki.job.test.TestBasicGroupedJob;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.junit5.mockito.MockComponent;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Validate {@link DefaultJobExecutor};
@@ -43,11 +52,31 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @version $Id$
  */
 @ComponentTest
-@ComponentList(ContextComponentManagerProvider.class)
+@ComponentList({ContextComponentManagerProvider.class, JobGroupPathLockTree.class})
 class DefaultJobExecutorTest
 {
+    /**
+     * Wait value used during the test: we use 100 milliseconds for not slowing down the test and it should be plenty
+     * enough. Change the value for debugging purpose only.
+     */
+    private static final int WAIT_VALUE = 500;
+
     @InjectMockComponents
     private DefaultJobExecutor executor;
+
+    @MockComponent
+    private JobManagerConfiguration jobManagerConfiguration;
+
+    @BeforeEach
+    public void setup()
+    {
+        // We use a very short keep alive time.
+        when(this.jobManagerConfiguration.getGroupedJobThreadKeepAliveTime()).thenReturn(1L);
+        when(this.jobManagerConfiguration.getSingleJobThreadKeepAliveTime()).thenReturn(1L);
+    }
+
+    @MockComponent
+    private GroupedJobInitializerManager groupedJobInitializerManager;
 
     private void waitJobWaiting(Job job)
     {
@@ -76,15 +105,19 @@ class DefaultJobExecutorTest
             }
 
             wait += 1;
-        } while (wait < 100);
+        } while (wait < WAIT_VALUE);
 
-        fail("Job never reached expected state [" + expected + "]. Still [" + job.getStatus().getState()
-            + "] after 100 milliseconds");
+        fail(String.format("Job never reached expected state [%s]. Still [%s] after %s milliseconds",
+            expected, job.getStatus().getState(), WAIT_VALUE));
     }
 
     @Test
     void matchingGroupPathAreBlocked()
     {
+        GroupedJobInitializer groupedJobInitializer = mock(GroupedJobInitializer.class);
+        when(groupedJobInitializer.getPoolSize()).thenReturn(1);
+        when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
+        when(this.groupedJobInitializerManager.getGroupedJobInitializer(any())).thenReturn(groupedJobInitializer);
         TestBasicGroupedJob jobA = groupedJob("A");
         TestBasicGroupedJob jobAB = groupedJob("A", "B");
 
@@ -149,6 +182,185 @@ class DefaultJobExecutorTest
 
         assertSame(State.FINISHED, job1.getStatus().getState());
         assertSame(State.FINISHED, job1.getStatus().getState());
+    }
+
+    @Test
+    void matchingGroupPathAreBlockedPoolMultiSize()
+    {
+        // Check the following setup:
+        // Pool A of size 1
+        // Pool AB of size 2
+        // Pool AC of size 2
+
+        GroupedJobInitializer groupedJobInitializer = mock(GroupedJobInitializer.class);
+        when(groupedJobInitializer.getPoolSize()).thenReturn(1);
+        when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
+
+        JobGroupPath jobGroupPathA = new JobGroupPath(Collections.singletonList("A"));
+        when(this.groupedJobInitializerManager.getGroupedJobInitializer(eq(jobGroupPathA)))
+            .thenReturn(groupedJobInitializer);
+
+        groupedJobInitializer = mock(GroupedJobInitializer.class);
+        when(groupedJobInitializer.getPoolSize()).thenReturn(2);
+        when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
+
+        JobGroupPath jobGroupPathAB = new JobGroupPath(Arrays.asList("A", "B"));
+        when(this.groupedJobInitializerManager.getGroupedJobInitializer(eq(jobGroupPathAB)))
+            .thenReturn(groupedJobInitializer);
+
+        JobGroupPath jobGroupPathAC = new JobGroupPath(Arrays.asList("A", "C"));
+        when(this.groupedJobInitializerManager.getGroupedJobInitializer(eq(jobGroupPathAC)))
+            .thenReturn(groupedJobInitializer);
+
+        TestBasicGroupedJob jobA1 = groupedJob("A");
+        TestBasicGroupedJob jobA2 = groupedJob("A");
+        TestBasicGroupedJob jobA3 = groupedJob("A");
+
+        TestBasicGroupedJob jobAB1 = groupedJob("A", "B");
+        TestBasicGroupedJob jobAB2 = groupedJob("A", "B");
+        TestBasicGroupedJob jobAB3 = groupedJob("A", "B");
+
+        TestBasicGroupedJob jobAC1 = groupedJob("A", "C");
+        TestBasicGroupedJob jobAC2 = groupedJob("A", "C");
+        TestBasicGroupedJob jobAC3 = groupedJob("A", "C");
+
+        // Pre-lock all jobs
+        jobA1.lock();
+        jobA2.lock();
+        jobA3.lock();
+        jobAB1.lock();
+        jobAB2.lock();
+        jobAB3.lock();
+        jobAC1.lock();
+        jobAC2.lock();
+        jobAC3.lock();
+
+        // Give first jobs to JobExecutor
+        this.executor.execute(jobA1);
+        this.executor.execute(jobA2);
+
+        // Give enough time for the jobs to be fully taken into account
+        waitJobWaiting(jobA1);
+
+        // Give following jobs to JobExecutor (to make sure they are actually after since the grouped job executor queue
+        // is not "fair")
+        this.executor.execute(jobAC1);
+        this.executor.execute(jobAC2);
+        this.executor.execute(jobAC3);
+
+        ////////////////////
+        // A and A/C
+
+        assertSame(State.WAITING, jobA1.getStatus().getState());
+        assertNull(jobA2.getStatus().getState());
+        assertNull(jobAC1.getStatus().getState());
+        assertNull(jobAC2.getStatus().getState());
+        assertNull(jobAC3.getStatus().getState());
+
+        // Next job
+        jobA1.unlock();
+        waitJobFinished(jobA1);
+
+        // AC1 and AC2 can now start since they were already waiting on a lock
+        // A2 is not starting yet because the pool for A is only of 1 thread so it wasn't waiting on a lock and
+        // AC1 and AC2 will put a lock immediately on it.
+        // AC3 cannot start either since the pool for AC is of 2 only.
+        waitJobWaiting(jobAC1);
+        waitJobWaiting(jobAC2);
+
+        assertSame(State.FINISHED, jobA1.getStatus().getState());
+        assertSame(State.WAITING, jobAC1.getStatus().getState());
+        assertSame(State.WAITING, jobAC2.getStatus().getState());
+        assertNull(jobA2.getStatus().getState());
+        assertNull(jobAC3.getStatus().getState());
+
+        // Next job
+        jobAC1.unlock();
+
+        // We still cannot start AC3 or A2: A2 is now waiting on a lock taken by AC2,
+        // and AC3 is waiting on the lock for A.
+        waitJobFinished(jobAC1);
+
+        assertSame(State.FINISHED, jobAC1.getStatus().getState());
+        assertSame(State.WAITING, jobAC2.getStatus().getState());
+        assertNull(jobAC3.getStatus().getState());
+        assertNull(jobA2.getStatus().getState());
+
+        // Next job
+        jobAC2.unlock();
+
+        // Once AC2 is finished the lock for A2 is released, it's starting.
+        // AC3 is still waiting A2 to release the lock.
+        waitJobFinished(jobAC2);
+        waitJobWaiting(jobA2);
+
+        assertSame(State.FINISHED, jobAC2.getStatus().getState());
+        assertSame(State.WAITING, jobA2.getStatus().getState());
+        assertNull(jobAC3.getStatus().getState());
+
+        // Next job
+        jobA2.unlock();
+
+        // A2 is finished so AC3 can now take its turn.
+        waitJobFinished(jobA2);
+        waitJobWaiting(jobAC3);
+
+        assertSame(State.FINISHED, jobA2.getStatus().getState());
+        assertSame(State.WAITING, jobAC3.getStatus().getState());
+
+        jobAC3.unlock();
+        waitJobFinished(jobAC3);
+        assertSame(State.FINISHED, jobAC3.getStatus().getState());
+
+        ////////////////////
+        // A/B and A
+
+        this.executor.execute(jobAB1);
+        this.executor.execute(jobAB2);
+
+        waitJobWaiting(jobAB1);
+        waitJobWaiting(jobAB2);
+
+        this.executor.execute(jobA3);
+        this.executor.execute(jobAB3);
+
+        assertSame(State.WAITING, jobAB1.getStatus().getState());
+        assertSame(State.WAITING, jobAB2.getStatus().getState());
+        assertNull(jobA3.getStatus().getState());
+        assertNull(jobAB3.getStatus().getState());
+
+        jobAB1.unlock();
+
+        // Same as before: the lock is then taken by A3, but it cannot start yet because AB2 did not released it yet.
+        // And AB3 will wait A3 to be finished.
+        waitJobFinished(jobAB1);
+
+        assertSame(State.FINISHED, jobAB1.getStatus().getState());
+        assertSame(State.WAITING, jobAB2.getStatus().getState());
+        assertNull(jobA3.getStatus().getState());
+        assertNull(jobAB3.getStatus().getState());
+
+        jobAB2.unlock();
+
+        // Now that AB2 released the lock, A3 can start, but AB3 is still waiting it to be finished.
+        waitJobFinished(jobAB2);
+        waitJobWaiting(jobA3);
+
+        assertSame(State.FINISHED, jobAB2.getStatus().getState());
+        assertSame(State.WAITING, jobA3.getStatus().getState());
+        assertNull(jobAB3.getStatus().getState());
+
+        jobA3.unlock();
+        // Now AB3 can start since A3 released the lock.
+        waitJobFinished(jobA3);
+        waitJobWaiting(jobAB3);
+
+        assertSame(State.FINISHED, jobA3.getStatus().getState());
+        assertSame(State.WAITING, jobAB3.getStatus().getState());
+
+        jobAB3.unlock();
+        waitJobFinished(jobAB3);
+        assertSame(State.FINISHED, jobAB3.getStatus().getState());
     }
 
     private TestBasicGroupedJob groupedJob(String... path)

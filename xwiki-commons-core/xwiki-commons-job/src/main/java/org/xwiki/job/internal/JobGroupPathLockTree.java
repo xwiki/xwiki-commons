@@ -21,9 +21,15 @@ package org.xwiki.job.internal;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.job.GroupedJobInitializerManager;
 import org.xwiki.job.JobGroupPath;
 
 /**
@@ -32,20 +38,93 @@ import org.xwiki.job.JobGroupPath;
  * @version $Id$
  * @since 6.1M2
  */
+@Component(roles = JobGroupPathLockTree.class)
+@Singleton
 public class JobGroupPathLockTree
 {
-    private final Map<JobGroupPath, ReadWriteLock> tree = new ConcurrentHashMap<>();
+    @Inject
+    private GroupedJobInitializerManager groupedJobInitializerManager;
 
-    private synchronized ReadWriteLock getLock(JobGroupPath key)
+    /**
+     * A specific concurrency implementation for managing Semaphore with Read/Write lock capabilities.
+     */
+    private class ReadWriteSemaphore
     {
-        ReadWriteLock lock = this.tree.get(key);
+        private volatile int readCounter;
+        private volatile int writeCounter;
+        private Semaphore semaphore;
+        private Lock writeCounterLock;
 
-        if (lock == null) {
-            lock = new ReentrantReadWriteLock(true);
-            this.tree.put(key, lock);
+        ReadWriteSemaphore(int poolSize)
+        {
+            this.semaphore = new Semaphore(poolSize, true);
+            this.writeCounterLock = new ReentrantLock(true);
+            this.readCounter = 0;
+            this.writeCounter = 0;
         }
 
-        return lock;
+        void lockWrite()
+        {
+            this.writeCounterLock.lock();
+            this.writeCounter++;
+            this.writeCounterLock.unlock();
+            this.semaphore.acquireUninterruptibly(this.readCounter + 1);
+        }
+
+        void unlockWrite()
+        {
+            this.writeCounterLock.lock();
+            this.writeCounter--;
+
+            if (this.writeCounter == 0) {
+                this.writeCounterLock.unlock();
+                this.semaphore.release(this.readCounter + 1);
+            } else {
+                this.writeCounterLock.unlock();
+                this.semaphore.release();
+            }
+        }
+
+        void lockRead()
+        {
+            this.readCounter++;
+
+            this.writeCounterLock.lock();
+            if (this.writeCounter > 0) {
+                this.writeCounterLock.unlock();
+                this.semaphore.acquireUninterruptibly();
+            } else {
+                this.writeCounterLock.unlock();
+            }
+        }
+
+        void unlockRead()
+        {
+            this.readCounter--;
+
+            this.writeCounterLock.lock();
+            if (this.writeCounter > 0) {
+                this.writeCounterLock.unlock();
+                this.semaphore.release();
+            } else {
+                this.writeCounterLock.unlock();
+            }
+        }
+    }
+
+    private final Map<JobGroupPath, ReadWriteSemaphore> tree = new ConcurrentHashMap<>();
+
+    private synchronized ReadWriteSemaphore getSemaphore(JobGroupPath key)
+    {
+        ReadWriteSemaphore semaphore = this.tree.get(key);
+
+        if (semaphore == null) {
+            semaphore = new ReadWriteSemaphore(this.groupedJobInitializerManager.getGroupedJobInitializer(key)
+                .getPoolSize());
+            this.tree.put(key, semaphore);
+        }
+
+        return semaphore;
     }
 
     /**
@@ -53,10 +132,10 @@ public class JobGroupPathLockTree
      */
     public void lock(JobGroupPath key)
     {
-        getLock(key).writeLock().lock();
+        getSemaphore(key).lockWrite();
 
         for (JobGroupPath path = key.getParent(); path != null; path = path.getParent()) {
-            getLock(path).readLock().lock();
+            getSemaphore(path).lockRead();
         }
     }
 
@@ -65,10 +144,10 @@ public class JobGroupPathLockTree
      */
     public void unlock(JobGroupPath key)
     {
-        getLock(key).writeLock().unlock();
+        getSemaphore(key).unlockWrite();
 
         for (JobGroupPath path = key.getParent(); path != null; path = path.getParent()) {
-            getLock(path).readLock().unlock();
+            getSemaphore(path).unlockRead();
         }
     }
 }
