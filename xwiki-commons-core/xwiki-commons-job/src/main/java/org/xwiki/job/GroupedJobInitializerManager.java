@@ -42,4 +42,9 @@ public interface GroupedJobInitializerManager
      * @return a matching initializer or {@link DefaultGoupedJobInitializer} if none can be find.
      */
     GroupedJobInitializer getGroupedJobInitializer(JobGroupPath jobGroupPath);
+
+    /**
+     * Invalidate the cache of {@link GroupedJobInitializer}.
+     */
+    void invalidateCache();
 }

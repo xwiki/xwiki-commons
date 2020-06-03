@@ -19,7 +19,6 @@
  */
 package org.xwiki.job.internal;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -34,7 +33,6 @@ import org.xwiki.cache.CacheException;
 import org.xwiki.cache.CacheManager;
 import org.xwiki.cache.config.LRUCacheConfiguration;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.event.ComponentDescriptorRemovedEvent;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
@@ -43,8 +41,6 @@ import org.xwiki.job.GroupedJobInitializer;
 import org.xwiki.job.GroupedJobInitializerManager;
 import org.xwiki.job.JobGroupPath;
 import org.xwiki.job.JobManagerConfiguration;
-import org.xwiki.observation.EventListener;
-import org.xwiki.observation.event.Event;
 
 /**
  * A component dedicated to find the appropriate {@link GroupedJobInitializer} based on a {@link JobGroupPath}.
@@ -54,7 +50,7 @@ import org.xwiki.observation.event.Event;
  */
 @Component
 @Singleton
-public class DefaultGroupedJobInitializerManager implements GroupedJobInitializerManager, Initializable, EventListener
+public class DefaultGroupedJobInitializerManager implements GroupedJobInitializerManager, Initializable
 {
     @Inject
     @Named("context")
@@ -77,12 +73,14 @@ public class DefaultGroupedJobInitializerManager implements GroupedJobInitialize
     @Override
     public void initialize() throws InitializationException
     {
-        LRUCacheConfiguration cacheConfiguration = new LRUCacheConfiguration("job.grouped.initializer",
-            this.configuration.getGroupedJobInitializerCacheSize());
-        try {
-            this.cachedInitializers = this.cacheManager.createNewCache(cacheConfiguration);
-        } catch (CacheException e) {
-            throw new InitializationException("Error while creating cache for GroupedJobInitializer", e);
+        if (this.cachedInitializers == null) {
+            LRUCacheConfiguration cacheConfiguration = new LRUCacheConfiguration("job.grouped.initializer",
+                this.configuration.getGroupedJobInitializerCacheSize());
+            try {
+                this.cachedInitializers = this.cacheManager.createNewCache(cacheConfiguration);
+            } catch (CacheException e) {
+                throw new InitializationException("Error while creating cache for GroupedJobInitializer", e);
+            }
         }
     }
 
@@ -94,27 +92,21 @@ public class DefaultGroupedJobInitializerManager implements GroupedJobInitialize
      *   2. if not stored, iterates over all the {@link GroupedJobInitializer}, put them in cache, and check if it
      *      matches the path. If it matches stop iterating.
      * @param path the searched path.
+     * @param initializers the actual list of available initializers components.
      * @return an initializer matching the path or null if no initializer has been found.
      */
-    private GroupedJobInitializer search(JobGroupPath path)
+    private GroupedJobInitializer search(JobGroupPath path, List<GroupedJobInitializer> initializers)
     {
         GroupedJobInitializer result = this.cachedInitializers.get(path.toString());
         if (result == null) {
-            try {
-                List<GroupedJobInitializer> initializers =
-                    this.componentManagerProvider.get().getInstanceList(GroupedJobInitializer.class);
-                for (GroupedJobInitializer initializer : initializers) {
-                    if (initializer.getId() != null) {
-                        this.cachedInitializers.set(initializer.getId().toString(), initializer);
-                        if (path.equals(initializer.getId())) {
-                            result = initializer;
-                            break;
-                        }
+            for (GroupedJobInitializer initializer : initializers) {
+                if (initializer.getId() != null) {
+                    this.cachedInitializers.set(initializer.getId().toString(), initializer);
+                    if (path.equals(initializer.getId())) {
+                        result = initializer;
+                        break;
                     }
                 }
-            } catch (ComponentLookupException e) {
-                this.logger.error("Error while loading GroupedJobInitializer component: [{}]",
-                    ExceptionUtils.getRootCauseMessage(e));
             }
         }
         return result;
@@ -125,14 +117,27 @@ public class DefaultGroupedJobInitializerManager implements GroupedJobInitialize
     {
         GroupedJobInitializer result = null;
         if (jobGroupPath != null) {
+            // check first in cache: if it's already available we're good.
+            result = this.cachedInitializers.get(jobGroupPath.toString());
 
-            JobGroupPath currentPath = jobGroupPath;
+            // if it's not yet in cache
+            if (result == null) {
+                try {
+                    // we'll need the list of initializers to find the right one
+                    List<GroupedJobInitializer> initializers =
+                        this.componentManagerProvider.get().getInstanceList(GroupedJobInitializer.class);
+                    JobGroupPath currentPath = jobGroupPath;
 
-            // loop over the parents of the path and stop as soon as a result has been found
-            // or if there is no more parent.
-            while (currentPath != null && result == null) {
-                result = search(currentPath);
-                currentPath = currentPath.getParent();
+                    // loop over the parents of the path and stop as soon as a result has been found
+                    // or if there is no more parent.
+                    while (currentPath != null && result == null) {
+                        result = search(currentPath, initializers);
+                        currentPath = currentPath.getParent();
+                    }
+                } catch (ComponentLookupException e) {
+                    this.logger.error("Error while loading GroupedJobInitializer component: [{}]",
+                        ExceptionUtils.getRootCauseMessage(e));
+                }
             }
         }
 
@@ -141,29 +146,18 @@ public class DefaultGroupedJobInitializerManager implements GroupedJobInitialize
             result = this.defaultGoupedJobInitializer;
         }
 
+        // Put in cache the initializer we used, even if it's a fallback
+        // so we can retrieve it very fast next time.
+        if (jobGroupPath != null) {
+            this.cachedInitializers.set(jobGroupPath.toString(), result);
+        }
+
         return result;
     }
 
     @Override
-    public String getName()
+    public void invalidateCache()
     {
-        return getClass().getSimpleName();
-    }
-
-    @Override
-    public List<Event> getEvents()
-    {
-        return Collections.singletonList(new ComponentDescriptorRemovedEvent());
-    }
-
-    @Override
-    public void onEvent(Event event, Object source, Object data)
-    {
-        ComponentDescriptorRemovedEvent componentDescriptorRemovedEvent = (ComponentDescriptorRemovedEvent) event;
-
-        // Flush the cache in case a GroupedJobInitializer component has been removed
-        if (componentDescriptorRemovedEvent.getRoleType() == GroupedJobInitializer.class) {
-            this.cachedInitializers.removeAll();
-        }
+        this.cachedInitializers.removeAll();
     }
 }

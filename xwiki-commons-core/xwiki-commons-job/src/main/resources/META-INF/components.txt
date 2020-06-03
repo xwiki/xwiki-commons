@@ -12,3 +12,4 @@ org.xwiki.job.script.ProgressScripService
 org.xwiki.job.internal.DefaultGoupedJobInitializer
 org.xwiki.job.internal.DefaultGroupedJobInitializerManager
 org.xwiki.job.internal.JobGroupPathLockTree
+org.xwiki.job.internal.GroupedJobInitializerComponentListener
