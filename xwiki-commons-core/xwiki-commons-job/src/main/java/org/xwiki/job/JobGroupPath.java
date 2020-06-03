@@ -19,6 +19,7 @@
  */
 package org.xwiki.job;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,7 +33,7 @@ import org.apache.commons.lang3.StringUtils;
  * @version $Id$
  * @since 6.1M2
  */
-public class JobGroupPath
+public class JobGroupPath implements Serializable
 {
     private final JobGroupPath parent;
 
