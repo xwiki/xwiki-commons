@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 class DefaultJobExecutorTest
 {
     /**
-     * Wait value used during the test: we use 100 milliseconds for not slowing down the test and it should be plenty
+     * Wait value used during the test: we use 500 milliseconds for not slowing down the test and it should be plenty
      * enough. Change the value for debugging purpose only.
      */
     private static final int WAIT_VALUE = 500;

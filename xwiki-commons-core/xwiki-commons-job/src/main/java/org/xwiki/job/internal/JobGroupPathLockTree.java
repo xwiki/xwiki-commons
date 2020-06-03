@@ -21,9 +21,6 @@ package org.xwiki.job.internal;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -44,73 +41,6 @@ public class JobGroupPathLockTree
 {
     @Inject
     private GroupedJobInitializerManager groupedJobInitializerManager;
-
-    /**
-     * A specific concurrency implementation for managing Semaphore with Read/Write lock capabilities.
-     */
-    private class ReadWriteSemaphore
-    {
-        private volatile int readCounter;
-        private volatile int writeCounter;
-        private Semaphore semaphore;
-        private Lock writeCounterLock;
-
-        ReadWriteSemaphore(int poolSize)
-        {
-            this.semaphore = new Semaphore(poolSize, true);
-            this.writeCounterLock = new ReentrantLock(true);
-            this.readCounter = 0;
-            this.writeCounter = 0;
-        }
-
-        void lockWrite()
-        {
-            this.writeCounterLock.lock();
-            this.writeCounter++;
-            this.writeCounterLock.unlock();
-            this.semaphore.acquireUninterruptibly(this.readCounter + 1);
-        }
-
-        void unlockWrite()
-        {
-            this.writeCounterLock.lock();
-            this.writeCounter--;
-
-            if (this.writeCounter == 0) {
-                this.writeCounterLock.unlock();
-                this.semaphore.release(this.readCounter + 1);
-            } else {
-                this.writeCounterLock.unlock();
-                this.semaphore.release();
-            }
-        }
-
-        void lockRead()
-        {
-            this.readCounter++;
-
-            this.writeCounterLock.lock();
-            if (this.writeCounter > 0) {
-                this.writeCounterLock.unlock();
-                this.semaphore.acquireUninterruptibly();
-            } else {
-                this.writeCounterLock.unlock();
-            }
-        }
-
-        void unlockRead()
-        {
-            this.readCounter--;
-
-            this.writeCounterLock.lock();
-            if (this.writeCounter > 0) {
-                this.writeCounterLock.unlock();
-                this.semaphore.release();
-            } else {
-                this.writeCounterLock.unlock();
-            }
-        }
-    }
 
     private final Map<JobGroupPath, ReadWriteSemaphore> tree = new ConcurrentHashMap<>();
 

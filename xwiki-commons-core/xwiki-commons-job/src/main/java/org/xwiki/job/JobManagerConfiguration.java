@@ -52,7 +52,7 @@ public interface JobManagerConfiguration
     @Unstable
     default int getGroupedJobInitializerCacheSize()
     {
-        return 10;
+        return 100;
     }
 
     /**

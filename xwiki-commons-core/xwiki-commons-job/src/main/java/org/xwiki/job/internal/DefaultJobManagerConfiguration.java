@@ -92,7 +92,7 @@ public class DefaultJobManagerConfiguration implements JobManagerConfiguration
     @Override
     public int getGroupedJobInitializerCacheSize()
     {
-        return this.configuration.get().getProperty("job.groupedJobInitializerCacheSize", 10);
+        return this.configuration.get().getProperty("job.groupedJobInitializerCacheSize", 100);
     }
 
     @Override
