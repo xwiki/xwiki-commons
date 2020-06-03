@@ -88,4 +88,22 @@ public class DefaultJobManagerConfiguration implements JobManagerConfiguration
     {
         return this.configuration.get().getProperty("job.statusCacheSize", 50);
     }
+
+    @Override
+    public int getGroupedJobInitializerCacheSize()
+    {
+        return this.configuration.get().getProperty("job.groupedJobInitializerCacheSize", 100);
+    }
+
+    @Override
+    public long getSingleJobThreadKeepAliveTime()
+    {
+        return this.configuration.get().getProperty("job.singleJobThreadKeepAliveTime", 60000L);
+    }
+
+    @Override
+    public long getGroupedJobThreadKeepAliveTime()
+    {
+        return this.configuration.get().getProperty("job.groupedJobThreadKeepAliveTime", 60000L);
+    }
 }

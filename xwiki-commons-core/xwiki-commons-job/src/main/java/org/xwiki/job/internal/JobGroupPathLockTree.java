@@ -21,9 +21,12 @@ package org.xwiki.job.internal;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.job.GroupedJobInitializerManager;
 import org.xwiki.job.JobGroupPath;
 
 /**
@@ -32,20 +35,26 @@ import org.xwiki.job.JobGroupPath;
  * @version $Id$
  * @since 6.1M2
  */
+@Component(roles = JobGroupPathLockTree.class)
+@Singleton
 public class JobGroupPathLockTree
 {
-    private final Map<JobGroupPath, ReadWriteLock> tree = new ConcurrentHashMap<>();
+    @Inject
+    private GroupedJobInitializerManager groupedJobInitializerManager;
 
-    private synchronized ReadWriteLock getLock(JobGroupPath key)
+    private final Map<JobGroupPath, ReadWriteSemaphore> tree = new ConcurrentHashMap<>();
+
+    private synchronized ReadWriteSemaphore getSemaphore(JobGroupPath key)
     {
-        ReadWriteLock lock = this.tree.get(key);
+        ReadWriteSemaphore semaphore = this.tree.get(key);
 
-        if (lock == null) {
-            lock = new ReentrantReadWriteLock(true);
-            this.tree.put(key, lock);
+        if (semaphore == null) {
+            semaphore = new ReadWriteSemaphore(this.groupedJobInitializerManager.getGroupedJobInitializer(key)
+                .getPoolSize());
+            this.tree.put(key, semaphore);
         }
 
-        return lock;
+        return semaphore;
     }
 
     /**
@@ -53,10 +62,10 @@ public class JobGroupPathLockTree
      */
     public void lock(JobGroupPath key)
     {
-        getLock(key).writeLock().lock();
+        getSemaphore(key).lockWrite();
 
         for (JobGroupPath path = key.getParent(); path != null; path = path.getParent()) {
-            getLock(path).readLock().lock();
+            getSemaphore(path).lockRead();
         }
     }
 
@@ -65,10 +74,10 @@ public class JobGroupPathLockTree
      */
     public void unlock(JobGroupPath key)
     {
-        getLock(key).writeLock().unlock();
+        getSemaphore(key).unlockWrite();
 
         for (JobGroupPath path = key.getParent(); path != null; path = path.getParent()) {
-            getLock(path).readLock().unlock();
+            getSemaphore(path).unlockRead();
         }
     }
 }

@@ -20,8 +20,10 @@
 package org.xwiki.job;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
  * Some job manager related configuration.
@@ -42,4 +44,36 @@ public interface JobManagerConfiguration
      * @since 7.2M2
      */
     int getJobStatusCacheSize();
+
+    /**
+     * @return the number of {@link GroupedJobInitializer} to keep in cache.
+     * @since 12.5RC1
+     */
+    @Unstable
+    default int getGroupedJobInitializerCacheSize()
+    {
+        return 100;
+    }
+
+    /**
+     * @return the duration in milliseconds for the thread keep alive in our single job thread executor.
+     * @see java.util.concurrent.ThreadPoolExecutor#setKeepAliveTime(long, TimeUnit).
+     * @since 12.5RC1
+     */
+    @Unstable
+    default long getSingleJobThreadKeepAliveTime()
+    {
+        return 60000L;
+    }
+
+    /**
+     * @return the duration in milliseconds for the thread keep alive in our grouped job thread executor.
+     * @see java.util.concurrent.ThreadPoolExecutor#setKeepAliveTime(long, TimeUnit).
+     * @since 12.5RC1
+     */
+    @Unstable
+    default long getGroupedJobThreadKeepAliveTime()
+    {
+        return 60000L;
+    }
 }
