@@ -20,7 +20,6 @@
 package org.xwiki.job;
 
 import java.io.File;
-import java.util.concurrent.TimeUnit;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
@@ -57,7 +56,7 @@ public interface JobManagerConfiguration
 
     /**
      * @return the duration in milliseconds for the thread keep alive in our single job thread executor.
-     * @see java.util.concurrent.ThreadPoolExecutor#setKeepAliveTime(long, TimeUnit).
+     * @see java.util.concurrent.ThreadPoolExecutor#setKeepAliveTime(long, java.util.concurrent.TimeUnit)
      * @since 12.5RC1
      */
     @Unstable
@@ -68,7 +67,7 @@ public interface JobManagerConfiguration
 
     /**
      * @return the duration in milliseconds for the thread keep alive in our grouped job thread executor.
-     * @see java.util.concurrent.ThreadPoolExecutor#setKeepAliveTime(long, TimeUnit).
+     * @see java.util.concurrent.ThreadPoolExecutor#setKeepAliveTime(long, java.util.concurrent.TimeUnit)
      * @since 12.5RC1
      */
     @Unstable
