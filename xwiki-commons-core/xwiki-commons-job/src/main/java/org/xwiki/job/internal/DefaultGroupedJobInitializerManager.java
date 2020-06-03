@@ -19,6 +19,7 @@
  */
 package org.xwiki.job.internal;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -33,6 +34,7 @@ import org.xwiki.cache.CacheException;
 import org.xwiki.cache.CacheManager;
 import org.xwiki.cache.config.LRUCacheConfiguration;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.event.ComponentDescriptorRemovedEvent;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
@@ -41,6 +43,8 @@ import org.xwiki.job.GroupedJobInitializer;
 import org.xwiki.job.GroupedJobInitializerManager;
 import org.xwiki.job.JobGroupPath;
 import org.xwiki.job.JobManagerConfiguration;
+import org.xwiki.observation.EventListener;
+import org.xwiki.observation.event.Event;
 
 /**
  * A component dedicated to find the appropriate {@link GroupedJobInitializer} based on a {@link JobGroupPath}.
@@ -50,7 +54,7 @@ import org.xwiki.job.JobManagerConfiguration;
  */
 @Component
 @Singleton
-public class DefaultGroupedJobInitializerManager implements GroupedJobInitializerManager, Initializable
+public class DefaultGroupedJobInitializerManager implements GroupedJobInitializerManager, Initializable, EventListener
 {
     @Inject
     @Named("context")
@@ -138,5 +142,28 @@ public class DefaultGroupedJobInitializerManager implements GroupedJobInitialize
         }
 
         return result;
+    }
+
+    @Override
+    public String getName()
+    {
+        return getClass().getSimpleName();
+    }
+
+    @Override
+    public List<Event> getEvents()
+    {
+        return Collections.singletonList(new ComponentDescriptorRemovedEvent());
+    }
+
+    @Override
+    public void onEvent(Event event, Object source, Object data)
+    {
+        ComponentDescriptorRemovedEvent componentDescriptorRemovedEvent = (ComponentDescriptorRemovedEvent) event;
+
+        // Flush the cache in case a GroupedJobInitializer component has been removed
+        if (componentDescriptorRemovedEvent.getRoleType() == GroupedJobInitializer.class) {
+            this.cachedInitializers.removeAll();
+        }
     }
 }

@@ -33,6 +33,7 @@ import org.xwiki.cache.CacheManager;
 import org.xwiki.cache.internal.MapCache;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.job.GroupedJobInitializer;
+import org.xwiki.job.GroupedJobInitializerManager;
 import org.xwiki.job.JobGroupPath;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -54,7 +55,7 @@ import static org.mockito.Mockito.when;
 @ComponentTest
 public class DefaultGroupedJobInitializerManagerTest
 {
-    @InjectMockComponents
+    @InjectMockComponents(role = GroupedJobInitializerManager.class)
     private DefaultGroupedJobInitializerManager groupedJobInitializerManager;
 
     @MockComponent
