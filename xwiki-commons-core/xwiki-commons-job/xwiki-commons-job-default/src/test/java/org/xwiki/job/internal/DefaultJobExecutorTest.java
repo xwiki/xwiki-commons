@@ -246,7 +246,6 @@ class DefaultJobExecutorTest
         // is not "fair")
         this.executor.execute(jobAC1);
         this.executor.execute(jobAC2);
-        this.executor.execute(jobAC3);
 
         ////////////////////
         // A and A/C
@@ -255,7 +254,6 @@ class DefaultJobExecutorTest
         assertNull(jobA2.getStatus().getState());
         assertNull(jobAC1.getStatus().getState());
         assertNull(jobAC2.getStatus().getState());
-        assertNull(jobAC3.getStatus().getState());
 
         // Next job
         jobA1.unlock();
@@ -267,6 +265,9 @@ class DefaultJobExecutorTest
         // AC3 cannot start either since the pool for AC is of 2 only.
         waitJobWaiting(jobAC1);
         waitJobWaiting(jobAC2);
+
+        // Start AC3 only now to be sure it does not take the lock before AC1 or AC2.
+        this.executor.execute(jobAC3);
 
         assertSame(State.FINISHED, jobA1.getStatus().getState());
         assertSame(State.WAITING, jobAC1.getStatus().getState());

@@ -24,38 +24,59 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-extension</artifactId>
+    <artifactId>xwiki-commons-job</artifactId>
     <version>12.5-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-extension-handlers</artifactId>
-  <name>XWiki Commons - Extension - Handler - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Extension - Handler - Parent POM</description>
+  <artifactId>xwiki-commons-job-default</artifactId>
+  <name>XWiki Commons - Job - Default</name>
+  <packaging>jar</packaging>
+  <description>XWiki Commons - Job - Default</description>
+  <properties>
+    <xwiki.extension.features>
+      <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
+      org.xwiki.commons:xwiki-commons-job
+    </xwiki.extension.features>
+    <xwiki.jacoco.instructionRatio>0.58</xwiki.jacoco.instructionRatio>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-extension-api</artifactId>
+      <artifactId>xwiki-commons-job-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-extension-api</artifactId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
       <version>${project.version}</version>
-      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-    <!-- We depends on job-default for the test since we want to use the actual job components -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-job-default</artifactId>
+      <artifactId>xwiki-commons-observation-local</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <modules>
-    <module>xwiki-commons-extension-handler-jar</module>
-  </modules>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <executions>
+          <execution>
+            <!-- Specify the "default" execution id so that the "blocker" one is always executed -->
+            <id>default</id>
+            <configuration>
+              <excludes>
+                org/xwiki/job/internal/DefaultJobStatusStore.java,
+                org/xwiki/job/internal/xstream/SafeReflectionConverter.java,
+                org/xwiki/job/internal/xstream/XStreamUtils.java
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
-       

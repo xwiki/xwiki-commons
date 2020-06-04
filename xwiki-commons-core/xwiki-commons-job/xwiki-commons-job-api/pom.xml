@@ -24,24 +24,35 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-extension</artifactId>
+    <artifactId>xwiki-commons-job</artifactId>
     <version>12.5-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-extension-api</artifactId>
-  <name>XWiki Commons - Extension - API</name>
+  <artifactId>xwiki-commons-job-api</artifactId>
+  <name>XWiki Commons - Job - API</name>
   <packaging>jar</packaging>
-  <description>XWiki Commons - Extension - API</description>
+  <description>XWiki Commons - Job - API</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.71</xwiki.jacoco.instructionRatio>
-    <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
-    <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-api</xwiki.extension.features>
-    <!-- TODO: Remove once the tests have been fixed to not output anything to the console! -->
-    <xwiki.surefire.captureconsole.skip>true</xwiki.surefire.captureconsole.skip>
+    <xwiki.jacoco.instructionRatio>0.58</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-cache-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-logging-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-environment-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -56,92 +67,55 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-observation-api</artifactId>
+      <artifactId>xwiki-commons-xstream</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-properties</artifactId>
+      <artifactId>xwiki-commons-script</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-logging-api</artifactId>
+      <artifactId>xwiki-commons-component-observation</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-environment-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-job-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <!-- We depends on job-default for the test since we want to use the actual job components -->
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-job-default</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
-    <!-- Core extensions -->
     <dependency>
-      <groupId>org.reflections</groupId>
-      <artifactId>reflections</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-configuration2</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>com.thoughtworks.xstream</groupId>
+      <artifactId>xstream</artifactId>
+    </dependency>
     <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-observation-local</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-logging-logback</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>test-jar</id>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-            <configuration>
-              <includes>
-                <include>**/test/**.class</include>
-                <include>META-INF/**</include>
-              </includes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
@@ -151,19 +125,7 @@
             <id>default</id>
             <configuration>
               <excludes>
-                **/ExtensionConverter.java,
-                **/MavenUtils.java,
-                **/AbstractExtensionJob.java,
-                **/DefaultCoreExtensionScanner.java,
-                **/DefaultExtensionRepositoryManager.java,
-                **/DefaultExtensionSerializer.java,
-                **/DefaultInstalledExtensionRepository.java,
-                **/DefaultVersion.java,
-                **/AbstractInstallPlanJob.java,
-                **/UnmodifiableUtils.java,
-                **/AbstractExtension.java,
-                **/DefaultExtensionManagerConfiguration.java,
-                **/ExtensionUtils.java
+                org/xwiki/job/AbstractJob.java
               </excludes>
             </configuration>
           </execution>

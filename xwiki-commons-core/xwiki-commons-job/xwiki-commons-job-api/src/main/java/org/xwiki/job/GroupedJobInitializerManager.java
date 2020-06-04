@@ -20,7 +20,6 @@
 package org.xwiki.job;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.job.internal.DefaultGoupedJobInitializer;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -36,10 +35,9 @@ public interface GroupedJobInitializerManager
     /**
      * Retrieve a matching {@link GroupedJobInitializer} for the given {@link JobGroupPath}.
      * If no exact match can be find, this methods will check the parent paths to find an appropriate initializer.
-     * The root initializer being the {@link DefaultGoupedJobInitializer}.
      *
      * @param jobGroupPath the patch for which to find a matching initializer.
-     * @return a matching initializer or {@link DefaultGoupedJobInitializer} if none can be find.
+     * @return a matching initializer or a default one if none can be find.
      */
     GroupedJobInitializer getGroupedJobInitializer(JobGroupPath jobGroupPath);
 

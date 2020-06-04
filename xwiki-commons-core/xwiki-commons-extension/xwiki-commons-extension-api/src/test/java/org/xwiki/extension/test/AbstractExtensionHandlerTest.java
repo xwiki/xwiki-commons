@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.xwiki.cache.Cache;
+import org.xwiki.cache.CacheFactory;
 import org.xwiki.cache.CacheManager;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
 import org.xwiki.extension.ExtensionId;
@@ -42,8 +44,13 @@ import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
 import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.junit5.mockito.InjectComponentManager;
 import org.xwiki.test.mockito.MockitoComponentManager;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @AllComponents
 public abstract class AbstractExtensionHandlerTest
@@ -58,6 +65,13 @@ public abstract class AbstractExtensionHandlerTest
     protected JobExecutor jobExecutor;
 
     protected MemoryConfigurationSource memoryConfigurationSource;
+
+    @BeforeComponent
+    public void beforeComponent() throws Exception
+    {
+        CacheFactory infinispan = this.componentManager.registerMockComponent(CacheFactory.class, "infinispan");
+        when(infinispan.newCache(any())).thenReturn(mock(Cache.class));
+    }
 
     @BeforeEach
     public void setUp() throws Exception

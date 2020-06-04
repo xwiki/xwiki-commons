@@ -8,7 +8,6 @@ org.xwiki.job.internal.DefaultJobStatusStore
 org.xwiki.job.internal.JobStatusSerializer
 org.xwiki.job.internal.script.safe.JobStatusScriptSafeProvider
 org.xwiki.job.internal.xstream.SerializableXStreamChecker
-org.xwiki.job.script.ProgressScripService
 org.xwiki.job.internal.DefaultGoupedJobInitializer
 org.xwiki.job.internal.DefaultGroupedJobInitializerManager
 org.xwiki.job.internal.JobGroupPathLockTree
