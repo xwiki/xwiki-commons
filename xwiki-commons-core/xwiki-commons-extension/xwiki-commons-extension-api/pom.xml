@@ -114,6 +114,14 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- Infinispan is required to initialize the cache in DefaultGroupedJobInitializerManager which is required
+        by DefaultGroupedJobInitializerManager -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-cache-infinispan</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
