@@ -46,13 +46,6 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-    <!-- We depends on job-default for the test since we want to use the actual job components -->
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-job-default</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <modules>
     <module>xwiki-commons-extension-handler-jar</module>
