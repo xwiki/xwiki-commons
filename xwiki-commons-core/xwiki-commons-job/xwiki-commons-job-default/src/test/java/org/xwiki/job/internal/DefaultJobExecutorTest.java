@@ -56,10 +56,10 @@ import static org.mockito.Mockito.when;
 class DefaultJobExecutorTest
 {
     /**
-     * Wait value used during the test: we use 500 milliseconds for not slowing down the test and it should be plenty
+     * Wait value used during the test: we use 100 milliseconds for not slowing down the test and it should be plenty
      * enough. Change the value for debugging purpose only.
      */
-    private static final int WAIT_VALUE = 500;
+    private static final int WAIT_VALUE = 100;
 
     @InjectMockComponents
     private DefaultJobExecutor executor;
@@ -237,7 +237,6 @@ class DefaultJobExecutorTest
 
         // Give first jobs to JobExecutor
         this.executor.execute(jobA1);
-        this.executor.execute(jobA2);
 
         // Give enough time for the jobs to be fully taken into account
         waitJobWaiting(jobA1);
@@ -260,28 +259,28 @@ class DefaultJobExecutorTest
         waitJobFinished(jobA1);
 
         // AC1 and AC2 can now start since they were already waiting on a lock
-        // A2 is not starting yet because the pool for A is only of 1 thread so it wasn't waiting on a lock and
-        // AC1 and AC2 will put a lock immediately on it.
-        // AC3 cannot start either since the pool for AC is of 2 only.
         waitJobWaiting(jobAC1);
         waitJobWaiting(jobAC2);
 
-        // Start AC3 only now to be sure it does not take the lock before AC1 or AC2.
-        this.executor.execute(jobAC3);
+        // Make sure that A2 is not taking the lock before AC2.
+        this.executor.execute(jobA2);
 
+        // AC1 and AC2 were waiting on the lock: they can start both since the pool is of size 2
+        // A2 is now waiting on a lock
         assertSame(State.FINISHED, jobA1.getStatus().getState());
         assertSame(State.WAITING, jobAC1.getStatus().getState());
         assertSame(State.WAITING, jobAC2.getStatus().getState());
         assertNull(jobA2.getStatus().getState());
-        assertNull(jobAC3.getStatus().getState());
 
         // Next job
         jobAC1.unlock();
 
-        // We still cannot start AC3 or A2: A2 is now waiting on a lock taken by AC2,
-        // and AC3 is waiting on the lock for A.
         waitJobFinished(jobAC1);
 
+        // Start AC3 only now to be sure it does not take the lock before A2.
+        this.executor.execute(jobAC3);
+
+        // AC3 cannot start yet even if the pool is of 2 because A2 requested for the lock.
         assertSame(State.FINISHED, jobAC1.getStatus().getState());
         assertSame(State.WAITING, jobAC2.getStatus().getState());
         assertNull(jobAC3.getStatus().getState());
@@ -323,29 +322,28 @@ class DefaultJobExecutorTest
         waitJobWaiting(jobAB2);
 
         this.executor.execute(jobA3);
-        this.executor.execute(jobAB3);
 
         assertSame(State.WAITING, jobAB1.getStatus().getState());
         assertSame(State.WAITING, jobAB2.getStatus().getState());
         assertNull(jobA3.getStatus().getState());
-        assertNull(jobAB3.getStatus().getState());
 
         jobAB1.unlock();
 
         // Same as before: the lock is then taken by A3, but it cannot start yet because AB2 did not released it yet.
-        // And AB3 will wait A3 to be finished.
         waitJobFinished(jobAB1);
 
         assertSame(State.FINISHED, jobAB1.getStatus().getState());
         assertSame(State.WAITING, jobAB2.getStatus().getState());
         assertNull(jobA3.getStatus().getState());
-        assertNull(jobAB3.getStatus().getState());
 
         jobAB2.unlock();
 
         // Now that AB2 released the lock, A3 can start, but AB3 is still waiting it to be finished.
         waitJobFinished(jobAB2);
         waitJobWaiting(jobA3);
+
+        // Ensure AB3 doesn't take the lock before A3
+        this.executor.execute(jobAB3);
 
         assertSame(State.FINISHED, jobAB2.getStatus().getState());
         assertSame(State.WAITING, jobA3.getStatus().getState());
