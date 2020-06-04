@@ -53,7 +53,7 @@ public class FailingTestDebuggingTestExecutionListener implements TestExecutionL
             // it would trigger the CaptureConsoleExtension extension since this debugging listener prints something
             // in the logs ;)
             LOGGER.info(START_MESSAGE);
-            LOGGER.info(RuntimeUtils.run("top -b -c -n 1"));
+            LOGGER.info(RuntimeUtils.run("top -b -c -n 1 -w512"));
             LOGGER.info(RuntimeUtils.run("lsof -i -P -n"));
             LOGGER.info(RuntimeUtils.run("docker ps -a"));
             LOGGER.info(RuntimeUtils.run("docker run --cap-add=NET_ADMIN --network=host --rm --entrypoint \"/bin/sh\" "
