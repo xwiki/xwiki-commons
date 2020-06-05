@@ -58,6 +58,9 @@ public class FailingTestDebuggingTestExecutionListener implements TestExecutionL
             LOGGER.info(RuntimeUtils.run("docker ps -a"));
             LOGGER.info(RuntimeUtils.run("docker run --cap-add=NET_ADMIN --network=host --rm --entrypoint \"/bin/sh\" "
                 + "vimagick/iptables -c \"/sbin/iptables -S\""));
+            // Display IPs of docker containers so that we can debug iptable rules
+            LOGGER.info(RuntimeUtils.run("docker ps | awk '{ print $1 }' | tail +2 | xargs -n 1 "
+                + "docker inspect -f \"{{ .ID}}:{{ .NetworkSettings.IPAddress }}\""));
             LOGGER.info(RuntimeUtils.run("docker events --since '15m' --until '0m'"));
             LOGGER.info(STOP_MESSAGE);
         }
