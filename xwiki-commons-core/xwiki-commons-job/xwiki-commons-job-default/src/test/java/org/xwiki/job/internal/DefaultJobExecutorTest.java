@@ -185,12 +185,16 @@ class DefaultJobExecutorTest
     }
 
     @Test
-    void matchingGroupPathAreBlockedPoolMultiSize()
+    void matchingGroupPathAreBlockedPoolMultiSizeParentFirst()
     {
         // Check the following setup:
-        // Pool A of size 1
-        // Pool AB of size 2
-        // Pool AC of size 2
+        // Pool A of size 1 with 2 jobs (A1, A2)
+        // Pool AB of size 2 with 3 jobs (AB1, AB2, AB3)
+        // Order of starting jobs:
+        //   - A1
+        //   - AB1 && AB2
+        //   - A2
+        //   - AB3
 
         GroupedJobInitializer groupedJobInitializer = mock(GroupedJobInitializer.class);
         when(groupedJobInitializer.getPoolSize()).thenReturn(1);
@@ -208,109 +212,138 @@ class DefaultJobExecutorTest
         when(this.groupedJobInitializerManager.getGroupedJobInitializer(eq(jobGroupPathAB)))
             .thenReturn(groupedJobInitializer);
 
-        JobGroupPath jobGroupPathAC = new JobGroupPath(Arrays.asList("A", "C"));
-        when(this.groupedJobInitializerManager.getGroupedJobInitializer(eq(jobGroupPathAC)))
-            .thenReturn(groupedJobInitializer);
-
         TestBasicGroupedJob jobA1 = groupedJob("A");
         TestBasicGroupedJob jobA2 = groupedJob("A");
-        TestBasicGroupedJob jobA3 = groupedJob("A");
 
         TestBasicGroupedJob jobAB1 = groupedJob("A", "B");
         TestBasicGroupedJob jobAB2 = groupedJob("A", "B");
         TestBasicGroupedJob jobAB3 = groupedJob("A", "B");
 
-        TestBasicGroupedJob jobAC1 = groupedJob("A", "C");
-        TestBasicGroupedJob jobAC2 = groupedJob("A", "C");
-        TestBasicGroupedJob jobAC3 = groupedJob("A", "C");
-
         // Pre-lock all jobs
         jobA1.lock();
         jobA2.lock();
-        jobA3.lock();
         jobAB1.lock();
         jobAB2.lock();
         jobAB3.lock();
-        jobAC1.lock();
-        jobAC2.lock();
-        jobAC3.lock();
 
         // Give first jobs to JobExecutor
         this.executor.execute(jobA1);
 
-        // Give enough time for the jobs to be fully taken into account
+        // Give enough time for the jobs to be fully taken into ABcount
         waitJobWaiting(jobA1);
 
-        // Give following jobs to JobExecutor (to make sure they are actually after since the grouped job executor queue
+        // Give following jobs to JobExecutor (to make sure they are ABtually after since the grouped job executor queue
         // is not "fair")
-        this.executor.execute(jobAC1);
-        this.executor.execute(jobAC2);
-
-        ////////////////////
-        // A and A/C
+        this.executor.execute(jobAB1);
+        this.executor.execute(jobAB2);
 
         assertSame(State.WAITING, jobA1.getStatus().getState());
         assertNull(jobA2.getStatus().getState());
-        assertNull(jobAC1.getStatus().getState());
-        assertNull(jobAC2.getStatus().getState());
+        assertNull(jobAB1.getStatus().getState());
+        assertNull(jobAB2.getStatus().getState());
 
         // Next job
         jobA1.unlock();
         waitJobFinished(jobA1);
 
-        // AC1 and AC2 can now start since they were already waiting on a lock
-        waitJobWaiting(jobAC1);
-        waitJobWaiting(jobAC2);
+        // AB1 and AB2 can now start since they were already waiting on a lock
+        waitJobWaiting(jobAB1);
+        waitJobWaiting(jobAB2);
 
-        // Make sure that A2 is not taking the lock before AC2.
+        // We don't execute A2 at the same time as A1 because in that case A2 is put in the queue of the pool
+        // and is not directly waiting on the lock. So in that case it's not deterministic to know which one between
+        // AB1 or A2 will get the lock first. To avoid such situation we just wait after AB1 started to start A2.
         this.executor.execute(jobA2);
 
-        // AC1 and AC2 were waiting on the lock: they can start both since the pool is of size 2
+        // AB1 and AB2 were waiting on the lock: they can start both since the pool is of size 2
         // A2 is now waiting on a lock
         assertSame(State.FINISHED, jobA1.getStatus().getState());
-        assertSame(State.WAITING, jobAC1.getStatus().getState());
-        assertSame(State.WAITING, jobAC2.getStatus().getState());
+        assertSame(State.WAITING, jobAB1.getStatus().getState());
+        assertSame(State.WAITING, jobAB2.getStatus().getState());
         assertNull(jobA2.getStatus().getState());
 
         // Next job
-        jobAC1.unlock();
+        jobAB1.unlock();
 
-        waitJobFinished(jobAC1);
+        waitJobFinished(jobAB1);
 
-        // Start AC3 only now to be sure it does not take the lock before A2.
-        this.executor.execute(jobAC3);
+        // Start AB3 only now to be sure it does not take the lock before A2.
+        this.executor.execute(jobAB3);
 
-        // AC3 cannot start yet even if the pool is of 2 because A2 requested for the lock.
-        assertSame(State.FINISHED, jobAC1.getStatus().getState());
-        assertSame(State.WAITING, jobAC2.getStatus().getState());
-        assertNull(jobAC3.getStatus().getState());
+        // AB3 cannot start yet even if the pool is of 2 because A2 requested for the lock.
+        assertSame(State.FINISHED, jobAB1.getStatus().getState());
+        assertSame(State.WAITING, jobAB2.getStatus().getState());
+        assertNull(jobAB3.getStatus().getState());
         assertNull(jobA2.getStatus().getState());
 
         // Next job
-        jobAC2.unlock();
+        jobAB2.unlock();
 
-        // Once AC2 is finished the lock for A2 is released, it's starting.
-        // AC3 is still waiting A2 to release the lock.
-        waitJobFinished(jobAC2);
+        // Once AB2 is finished the lock for A2 is released, it's starting.
+        // AB3 is still waiting A2 to release the lock.
+        waitJobFinished(jobAB2);
         waitJobWaiting(jobA2);
 
-        assertSame(State.FINISHED, jobAC2.getStatus().getState());
+        assertSame(State.FINISHED, jobAB2.getStatus().getState());
         assertSame(State.WAITING, jobA2.getStatus().getState());
-        assertNull(jobAC3.getStatus().getState());
+        assertNull(jobAB3.getStatus().getState());
 
         // Next job
         jobA2.unlock();
 
-        // A2 is finished so AC3 can now take its turn.
+        // A2 is finished so AB3 can now take its turn.
         waitJobFinished(jobA2);
-        waitJobWaiting(jobAC3);
+        waitJobWaiting(jobAB3);
 
         assertSame(State.FINISHED, jobA2.getStatus().getState());
-        assertSame(State.WAITING, jobAC3.getStatus().getState());
+        assertSame(State.WAITING, jobAB3.getStatus().getState());
 
-        jobAC3.unlock();
-        waitJobFinished(jobAC3);
-        assertSame(State.FINISHED, jobAC3.getStatus().getState());
+        jobAB3.unlock();
+        waitJobFinished(jobAB3);
+        assertSame(State.FINISHED, jobAB3.getStatus().getState());
+    }
+
+    @Test
+    void matchingGroupPathAreBlockedPoolMultiSizeChildrenFirst()
+    {
+        // Check the following setup:
+        // Pool A of size 2 with 2 jobs (A1, A2)
+        // Pool AB of size 2 with 3 jobs (AB1, AB2, AB3)
+        // Order of starting jobs:
+        //   - AB1 && AB2
+        //   - A1 && A2
+        //   - AB3
+
+        GroupedJobInitializer groupedJobInitializer = mock(GroupedJobInitializer.class);
+        when(groupedJobInitializer.getPoolSize()).thenReturn(2);
+        when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
+
+        JobGroupPath jobGroupPathA = new JobGroupPath(Collections.singletonList("A"));
+        when(this.groupedJobInitializerManager.getGroupedJobInitializer(eq(jobGroupPathA)))
+            .thenReturn(groupedJobInitializer);
+
+        groupedJobInitializer = mock(GroupedJobInitializer.class);
+        when(groupedJobInitializer.getPoolSize()).thenReturn(2);
+        when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
+
+        JobGroupPath jobGroupPathAB = new JobGroupPath(Arrays.asList("A", "B"));
+        when(this.groupedJobInitializerManager.getGroupedJobInitializer(eq(jobGroupPathAB)))
+            .thenReturn(groupedJobInitializer);
+
+        TestBasicGroupedJob jobA1 = groupedJob("A");
+        TestBasicGroupedJob jobA2 = groupedJob("A");
+
+        TestBasicGroupedJob jobAB1 = groupedJob("A", "B");
+        TestBasicGroupedJob jobAB2 = groupedJob("A", "B");
+        TestBasicGroupedJob jobAB3 = groupedJob("A", "B");
+
+
+        // Pre-lock all jobs
+        jobA1.lock();
+        jobA2.lock();
+        jobAB1.lock();
+        jobAB2.lock();
+        jobAB3.lock();
 
         ////////////////////
         // A/B and A
@@ -321,40 +354,49 @@ class DefaultJobExecutorTest
         waitJobWaiting(jobAB1);
         waitJobWaiting(jobAB2);
 
-        this.executor.execute(jobA3);
+        this.executor.execute(jobA1);
+        this.executor.execute(jobA2);
 
+        // AB1 and AB2 are taking all locks, A1 and A2 are waiting the lock to be released.
         assertSame(State.WAITING, jobAB1.getStatus().getState());
         assertSame(State.WAITING, jobAB2.getStatus().getState());
-        assertNull(jobA3.getStatus().getState());
+        assertNull(jobA1.getStatus().getState());
+        assertNull(jobA2.getStatus().getState());
 
         jobAB1.unlock();
-
-        // Same as before: the lock is then taken by A3, but it cannot start yet because AB2 did not released it yet.
         waitJobFinished(jobAB1);
+        waitJobWaiting(jobA1);
 
+        // Ensure AB3 doesn't take the lock before A2
+        this.executor.execute(jobAB3);
+
+        // AB1 is finished so A1 can start right away but A2 is still waiting
         assertSame(State.FINISHED, jobAB1.getStatus().getState());
         assertSame(State.WAITING, jobAB2.getStatus().getState());
-        assertNull(jobA3.getStatus().getState());
+        assertSame(State.WAITING, jobA1.getStatus().getState());
+        assertNull(jobA2.getStatus().getState());
+        assertNull(jobAB3.getStatus().getState());
 
         jobAB2.unlock();
 
-        // Now that AB2 released the lock, A3 can start, but AB3 is still waiting it to be finished.
+        // Now that AB2 released the lock, A2 can start too
         waitJobFinished(jobAB2);
-        waitJobWaiting(jobA3);
-
-        // Ensure AB3 doesn't take the lock before A3
-        this.executor.execute(jobAB3);
+        waitJobWaiting(jobA2);
 
         assertSame(State.FINISHED, jobAB2.getStatus().getState());
-        assertSame(State.WAITING, jobA3.getStatus().getState());
+        assertSame(State.WAITING, jobA1.getStatus().getState());
+        assertSame(State.WAITING, jobA2.getStatus().getState());
         assertNull(jobAB3.getStatus().getState());
 
-        jobA3.unlock();
-        // Now AB3 can start since A3 released the lock.
-        waitJobFinished(jobA3);
+        jobA1.unlock();
+        jobA2.unlock();
+        waitJobFinished(jobA1);
+        waitJobFinished(jobA2);
         waitJobWaiting(jobAB3);
 
-        assertSame(State.FINISHED, jobA3.getStatus().getState());
+        // Now that both A1 and A2 are finished, AB3 can start
+        assertSame(State.FINISHED, jobA1.getStatus().getState());
+        assertSame(State.FINISHED, jobA2.getStatus().getState());
         assertSame(State.WAITING, jobAB3.getStatus().getState());
 
         jobAB3.unlock();

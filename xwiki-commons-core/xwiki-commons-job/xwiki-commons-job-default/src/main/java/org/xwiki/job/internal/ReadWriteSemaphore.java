@@ -57,7 +57,12 @@ public class ReadWriteSemaphore
     public void lockWrite()
     {
         this.writeCounter.incrementAndGet();
-        this.semaphore.acquireUninterruptibly(this.readCounter.get() + 1);
+
+        if (this.writeCounter.get() == 1) {
+            this.semaphore.acquireUninterruptibly(this.readCounter.get() + 1);
+        } else {
+            this.semaphore.acquireUninterruptibly();
+        }
     }
 
     /**
