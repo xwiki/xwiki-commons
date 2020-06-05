@@ -20,8 +20,7 @@
 package org.xwiki.job.internal;
 
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.xwiki.stability.Unstable;
 
@@ -36,11 +35,9 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public class ReadWriteSemaphore
 {
-    private volatile int readCounter;
-    private volatile int writeCounter;
+    private final AtomicInteger readCounter;
+    private final AtomicInteger writeCounter;
     private final Semaphore semaphore;
-    private final Lock writeCounterLock;
-    private final Lock readCounterLock;
 
     /**
      * Create a semaphore with the given number of permits.
@@ -49,10 +46,8 @@ public class ReadWriteSemaphore
     public ReadWriteSemaphore(int poolSize)
     {
         this.semaphore = new Semaphore(poolSize, true);
-        this.writeCounterLock = new ReentrantLock(true);
-        this.readCounterLock = new ReentrantLock(true);
-        this.readCounter = 0;
-        this.writeCounter = 0;
+        this.readCounter = new AtomicInteger(0);
+        this.writeCounter = new AtomicInteger(0);
     }
 
     /**
@@ -61,12 +56,8 @@ public class ReadWriteSemaphore
      */
     public void lockWrite()
     {
-        // Encapsulate the operations about write counter
-        // with a lock to avoid concurrent access on it.
-        this.writeCounterLock.lock();
-        this.writeCounter++;
-        this.writeCounterLock.unlock();
-        this.semaphore.acquireUninterruptibly(this.readCounter + 1);
+        this.writeCounter.incrementAndGet();
+        this.semaphore.acquireUninterruptibly(this.readCounter.get() + 1);
     }
 
     /**
@@ -75,15 +66,10 @@ public class ReadWriteSemaphore
      */
     public void unlockWrite()
     {
-        // Encapsulate the operations about write counter
-        // with a lock to avoid concurrent access on it.
-        this.writeCounterLock.lock();
-        this.writeCounter--;
-        this.writeCounterLock.unlock();
+        this.writeCounter.decrementAndGet();
 
-        // the access of the writerCounter here should be safe since it's volatile.
-        if (this.writeCounter == 0) {
-            this.semaphore.release(this.readCounter + 1);
+        if (this.writeCounter.get() == 0) {
+            this.semaphore.release(this.readCounter.get() + 1);
         } else {
             this.semaphore.release();
         }
@@ -95,14 +81,9 @@ public class ReadWriteSemaphore
      */
     public void lockRead()
     {
-        // Encapsulate the operations about read counter
-        // with a lock to avoid concurrent access on it.
-        this.readCounterLock.lock();
-        this.readCounter++;
-        this.readCounterLock.unlock();
+        this.readCounter.incrementAndGet();
 
-        // the access of the writerCounter here should be safe since it's volatile.
-        if (this.writeCounter > 0) {
+        if (this.writeCounter.get() > 0) {
             this.semaphore.acquireUninterruptibly();
         }
     }
@@ -113,14 +94,9 @@ public class ReadWriteSemaphore
      */
     public void unlockRead()
     {
-        // Encapsulate the operations about read counter
-        // with a lock to avoid concurrent access on it.
-        this.readCounterLock.lock();
-        this.readCounter--;
-        this.readCounterLock.unlock();
+        this.readCounter.decrementAndGet();
 
-        // the access of the writerCounter here should be safe since it's volatile.
-        if (this.writeCounter > 0) {
+        if (this.writeCounter.get() > 0) {
             this.semaphore.release();
         }
     }
