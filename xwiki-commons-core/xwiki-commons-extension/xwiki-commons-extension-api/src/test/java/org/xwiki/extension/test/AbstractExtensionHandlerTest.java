@@ -43,8 +43,8 @@ import org.xwiki.job.JobExecutor;
 import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
+import org.xwiki.test.annotation.AfterComponent;
 import org.xwiki.test.annotation.AllComponents;
-import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.junit5.mockito.InjectComponentManager;
 import org.xwiki.test.mockito.MockitoComponentManager;
 
@@ -66,11 +66,15 @@ public abstract class AbstractExtensionHandlerTest
 
     protected MemoryConfigurationSource memoryConfigurationSource;
 
-    @BeforeComponent
-    public void beforeComponent() throws Exception
+    // We inject infinispan after components have been loaded to be sure to mock it only if
+    // it's not available in all components.
+    @AfterComponent
+    public void afterComponent() throws Exception
     {
-        CacheFactory infinispan = this.componentManager.registerMockComponent(CacheFactory.class, "infinispan");
-        when(infinispan.newCache(any())).thenReturn(mock(Cache.class));
+        if (!this.componentManager.hasComponent(CacheFactory.class, "infinispan")) {
+            CacheFactory infinispan = this.componentManager.registerMockComponent(CacheFactory.class, "infinispan");
+            when(infinispan.newCache(any())).thenReturn(mock(Cache.class));
+        }
     }
 
     @BeforeEach

@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
@@ -48,7 +49,7 @@ import org.xwiki.observation.event.Event;
 public class GroupedJobInitializerComponentListener implements EventListener
 {
     @Inject
-    private GroupedJobInitializerManager groupedJobInitializerManager;
+    private Provider<GroupedJobInitializerManager> groupedJobInitializerManagerProvider;
 
     @Override
     public String getName()
@@ -67,7 +68,7 @@ public class GroupedJobInitializerComponentListener implements EventListener
     {
         AbstractComponentDescriptorEvent componentDescriptorEvent = (AbstractComponentDescriptorEvent) event;
         if (componentDescriptorEvent.getRoleType() == GroupedJobInitializer.class) {
-            this.groupedJobInitializerManager.invalidateCache();
+            this.groupedJobInitializerManagerProvider.get().invalidateCache();
         }
     }
 }
