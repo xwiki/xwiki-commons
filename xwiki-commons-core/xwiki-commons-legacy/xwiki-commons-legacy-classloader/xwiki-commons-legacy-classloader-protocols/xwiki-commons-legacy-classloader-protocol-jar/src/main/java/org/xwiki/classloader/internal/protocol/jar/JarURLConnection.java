@@ -47,7 +47,9 @@ import java.util.jar.Manifest;
  *
  * @version $Id$
  * @since 2.0.1
+ * @deprecated since 12.5RC1
  */
+@Deprecated
 public class JarURLConnection extends java.net.URLConnection implements org.xwiki.classloader.internal.JarURLConnection
 {
     private URLStreamHandlerFactory handlerFactory;

@@ -33,6 +33,5 @@
   <description>XWiki Commons - ClassLoader - Parent POM</description>
   <modules>
     <module>xwiki-commons-classloader-api</module>
-    <module>xwiki-commons-classloader-protocols</module>
   </modules>
 </project>

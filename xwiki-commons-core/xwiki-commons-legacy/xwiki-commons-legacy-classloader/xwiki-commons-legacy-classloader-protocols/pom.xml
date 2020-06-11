@@ -24,29 +24,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
+    <artifactId>xwiki-commons-legacy-classloader</artifactId>
     <version>12.5-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-legacy</artifactId>
-  <name>XWiki Commons - Legacy</name>
+  <artifactId>xwiki-commons-legacy-classloader-protocols</artifactId>
+  <name>XWiki Commons - Legacy - ClassLoader - Protocols - Parent POM</name>
   <packaging>pom</packaging>
-  <description>XWiki Commons - Legacy</description>
-  <properties>
-    <!-- Skip Enforcer check on legacy dependencies since we allow legacy modules to depend on other legacy modules -->
-    <xwiki.enforcer.no-legacy-dependencies.skip>true</xwiki.enforcer.no-legacy-dependencies.skip>
-  </properties>
+  <description>XWiki Commons - Legacy - ClassLoader - Protocols - Parent POM</description>
   <modules>
-    <module>xwiki-commons-legacy-classloader</module>
-    <module>xwiki-commons-legacy-component</module>
-    <module>xwiki-commons-legacy-configuration</module>
-    <module>xwiki-commons-legacy-properties</module>
-    <module>xwiki-commons-legacy-velocity</module>
+    <module>xwiki-commons-legacy-classloader-protocol-jar</module>
   </modules>
-  <dependencies>
-    <!-- Needed for backward compatibility Aspects -->
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjrt</artifactId>
-    </dependency>
-  </dependencies>
 </project>

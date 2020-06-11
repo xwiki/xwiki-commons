@@ -24,13 +24,13 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-classloader-protocols</artifactId>
+    <artifactId>xwiki-commons-legacy-classloader-protocols</artifactId>
     <version>12.5-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-classloader-protocol-jar</artifactId>
-  <name>XWiki Commons - ClassLoader - Protocols - JAR</name>
+  <artifactId>xwiki-commons-legacy-classloader-protocol-jar</artifactId>
+  <name>XWiki Commons - Legacy - ClassLoader - Protocols - JAR</name>
   <packaging>jar</packaging>
-  <description>XWiki Commons - ClassLoader - Protocols - JAR</description>
+  <description>XWiki Commons - Legacy - ClassLoader - Protocols - JAR</description>
   <properties>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-classloader-protocol-jar</xwiki.extension.features>
@@ -39,7 +39,7 @@
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-classloader-api</artifactId>
+      <artifactId>xwiki-commons-legacy-classloader-api</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

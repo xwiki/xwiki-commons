@@ -155,15 +155,15 @@
         <configuration>
           <analysisConfiguration>
             <!-- Add ignores here using the following syntax. You can use a single <revapi.ignore> entry but it
-                 cannot be empty
+                 cannot be empty -->
             <revapi.ignore>
               <item>
-                <code>java.class.removed</code>
-                <old>class org.xwiki.velocity.tools.CollectionsTool</old>
-                <justification>Not a Breakage. Moved to Legacy</justification>
+                <code>java.class.noLongerInheritsFromClass</code>
+                <old>class org.xwiki.classloader.NamespaceURLClassLoader</old>
+                <new>class org.xwiki.classloader.NamespaceURLClassLoader</new>
+                <justification>NamespaceURLClassLoader no longer inherits from URIClassLoader since this one is now deprecated.</justification>
               </item>
             </revapi.ignore>
-            -->
           </analysisConfiguration>
         </configuration>
       </plugin>

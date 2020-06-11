@@ -59,7 +59,9 @@ import edu.emory.mathcs.util.io.RedirectingInputStream;
  * @see JarURLStreamHandler
  * @version $Id$
  * @since 2.0.1
+ * @deprecated since 12.5RC1
  */
+@Deprecated
 public class JarProxy implements JarURLConnection.JarOpener
 {
     private final Map<URL, CachedJarFile> cache = new HashMap<>();

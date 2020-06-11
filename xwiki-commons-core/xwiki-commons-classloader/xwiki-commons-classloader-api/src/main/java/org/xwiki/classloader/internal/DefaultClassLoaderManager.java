@@ -20,7 +20,6 @@
 package org.xwiki.classloader.internal;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -88,7 +87,7 @@ public class DefaultClassLoaderManager implements ClassLoaderManager, Initializa
         if (this.rootClassLoader == null) {
             synchronized (this) {
                 if (this.rootClassLoader == null) {
-                    this.rootClassLoader = new NamespaceURLClassLoader(new URI[] {}, getContainerClassLoader(), null);
+                    this.rootClassLoader = new NamespaceURLClassLoader(getContainerClassLoader(), null);
                 }
             }
         }
@@ -103,7 +102,7 @@ public class DefaultClassLoaderManager implements ClassLoaderManager, Initializa
             if (wikiClassLoader == null) {
                 if (create) {
                     // Create classloader
-                    wikiClassLoader = new NamespaceURLClassLoader(new URI[] {}, this.rootClassLoader, namespace);
+                    wikiClassLoader = new NamespaceURLClassLoader(this.rootClassLoader, namespace);
 
                     // Store new classloader
                     this.wikiClassLoaderMap.put(namespace, wikiClassLoader);

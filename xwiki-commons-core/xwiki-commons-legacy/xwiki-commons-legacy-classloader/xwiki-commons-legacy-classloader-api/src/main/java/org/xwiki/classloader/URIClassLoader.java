@@ -70,7 +70,9 @@ import edu.emory.mathcs.util.classloader.ResourceHandle;
  * @see java.io.File#toURI
  * @version $Id$d
  * @since 2.0.1
+ * @deprecated since 12.5RC1
  */
+@Deprecated
 public class URIClassLoader extends ExtendedURLClassLoader
 {
     final URIResourceFinder finder;

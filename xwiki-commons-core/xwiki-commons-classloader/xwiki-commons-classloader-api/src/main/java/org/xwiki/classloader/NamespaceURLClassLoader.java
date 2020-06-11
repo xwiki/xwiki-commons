@@ -19,16 +19,23 @@
  */
 package org.xwiki.classloader;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+import org.xwiki.stability.Unstable;
 
 /**
- * A {@link URIClassLoader} associated with a namespace. The namespace can be anything. For example it's used by the
- * Extension Manager to have one classloader per wiki using a namrspace of the type {@code wiki:wikiname}.
+ * An {@link ExtendedURLClassLoader} associated with a namespace. The namespace can be anything.
+ * For example it's used by the Extension Manager to have one classloader per wiki using a
+ * namespace of the type {@code wiki:wikiname}.
  *
  * @version $Id$
  * @since 4.0M1
  */
-public class NamespaceURLClassLoader extends URIClassLoader
+public class NamespaceURLClassLoader extends ExtendedURLClassLoader
 {
     /**
      * @see #getNamespace()
@@ -39,12 +46,43 @@ public class NamespaceURLClassLoader extends URIClassLoader
      * @param uris the search path
      * @param parent the parent class loader
      * @param namespace see {@link #getNamespace()}
+     * @deprecated since 12.5RC1 prefer using
+     *      {@link NamespaceURLClassLoader#NamespaceURLClassLoader(URL[], ClassLoader, String)}.
      */
+    @Deprecated
     public NamespaceURLClassLoader(URI[] uris, ClassLoader parent, String namespace)
     {
-        super(uris, parent);
+        this(Arrays.stream(uris).map(uri -> {
+            try {
+                return uri.toURL();
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList()).toArray(new URL[0]), parent, namespace);
+    }
 
+    /**
+     * @param urls the search path.
+     * @param parent the parent class loader
+     * @param namespace see {@link #getNamespace()}
+     * @since 12.5RC1
+     */
+    @Unstable
+    public NamespaceURLClassLoader(URL[] urls, ClassLoader parent, String namespace)
+    {
+        super(urls, parent);
         this.namespace = namespace;
+    }
+
+    /**
+     * @param parent the parent class loader
+     * @param namespace see {@link #getNamespace()}
+     * @since 12.5RC1
+     */
+    @Unstable
+    public NamespaceURLClassLoader(ClassLoader parent, String namespace)
+    {
+        this(new URL[]{}, parent, namespace);
     }
 
     /**

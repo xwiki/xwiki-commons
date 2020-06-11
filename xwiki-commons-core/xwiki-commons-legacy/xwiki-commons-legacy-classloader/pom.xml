@@ -24,14 +24,15 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-classloader</artifactId>
+    <artifactId>xwiki-commons-legacy</artifactId>
     <version>12.5-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-classloader-protocols</artifactId>
-  <name>XWiki Commons - ClassLoader - Protocols - Parent POM</name>
+  <artifactId>xwiki-commons-legacy-classloader</artifactId>
+  <name>XWiki Commons - Legacy - Classloader - Parent POM</name>
   <packaging>pom</packaging>
-  <description>XWiki Commons - ClassLoader - Protocols - Parent POM</description>
+  <description>Legacy modules for xwiki-commons-classloader-*</description>
   <modules>
-    <module>xwiki-commons-classloader-protocol-jar</module>
+    <module>xwiki-commons-legacy-classloader-api</module>
+    <module>xwiki-commons-legacy-classloader-protocols</module>
   </modules>
 </project>

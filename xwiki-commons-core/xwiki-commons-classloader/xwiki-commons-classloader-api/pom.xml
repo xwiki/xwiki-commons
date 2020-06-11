@@ -37,6 +37,8 @@
     <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>ClassLoader API</xwiki.extension.name>
+    <!-- Skipping revapi since xwiki-commons-legacy-classloader-api wraps this module and runs checks on it -->
+    <xwiki.revapi.skip>true</xwiki.revapi.skip>
   </properties>
   <dependencies>
     <dependency>
@@ -44,30 +46,5 @@
       <artifactId>xwiki-commons-component-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>edu.emory.mathcs.util</groupId>
-      <artifactId>emory-util-classloader</artifactId>
-      <version>2.1</version>
-    </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <executions>
-          <execution>
-            <!-- Specify the "default" execution id so that the "blocker" one is always executed -->
-            <id>default</id>
-            <configuration>
-              <excludes>
-                org/xwiki/classloader/internal/ResourceLoader.java,
-                org/xwiki/classloader/URIClassLoader.java
-              </excludes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>

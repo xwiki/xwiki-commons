@@ -83,7 +83,9 @@ import edu.emory.mathcs.util.classloader.ResourceUtils;
  *
  * @version $Id$
  * @since 2.0.1
+ * @deprecated Since 12.5RC1
  */
+@Deprecated
 public class ResourceLoader
 {
     private static final String JAR_INDEX_ENTRY_NAME = "META-INF/INDEX.LIST";
