@@ -56,7 +56,7 @@ public class SoftCache<K, V>
     }
 
     /**
-     * Get the value associated to the passed key. If no value can be found stored and return the passed default value.
+     * Get the value associated to the passed key. If no value can be found store and return the passed default value.
      * 
      * @param key the entry key
      * @param defaultValue the default value
