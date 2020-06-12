@@ -1967,7 +1967,7 @@
             <!-- Explicitly define how much memory to give to the forked JVM process for the tests, as otherwise
                  Java will give about 1/4th of the physical memory which can be not enough or too much (e.g. on a CI
                  agent too much means we cannot run as many jobs in parallel as we could). -->
-            <argLine>-Xmx1024m</argLine>
+            <argLine>@{argLine} -Xmx1024m</argLine>
           </configuration>
         </plugin>
         <plugin>
@@ -2002,7 +2002,7 @@
             <!-- Explicitly define how much memory to give to the forked JVM process for the tests, as otherwise
                  Java will give about 1/4th of the physical memory which can be not enough or too much (e.g. on a CI
                  agent too much means we cannot run as many jobs in parallel as we could). -->
-            <argLine>-Xmx1024m</argLine>
+            <argLine>@{argLine} -Xmx1024m</argLine>
           </configuration>
           <executions>
             <execution>
