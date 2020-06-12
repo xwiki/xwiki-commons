@@ -304,7 +304,7 @@ class DefaultJobExecutorTest
     }
 
     @Test
-    void matchingGroupPathAreBlockedPoolMultiSizeChildrenFirst()
+    void matchingGroupPathAreBlockedPoolMultiSizeChildrenFirst() throws InterruptedException
     {
         // Check the following setup:
         // Pool A of size 2 with 2 jobs (A1, A2)
@@ -355,6 +355,8 @@ class DefaultJobExecutorTest
         waitJobWaiting(jobAB2);
 
         this.executor.execute(jobA1);
+        // We wait a bit to ensure A1 take the lock before A2.
+        Thread.sleep(WAIT_VALUE);
         this.executor.execute(jobA2);
 
         // AB1 and AB2 are taking all locks, A1 and A2 are waiting the lock to be released.
