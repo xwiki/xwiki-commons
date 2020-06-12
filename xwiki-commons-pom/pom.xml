@@ -227,8 +227,6 @@
               </processorProperties>
             </configuration>
           </execution>
-          <!-- TODO: Disabled FTM since spoon doesn't seem able to execute a process or test source roots ATM, see
-               https://github.com/INRIA/spoon/issues/3326
           <execution>
             <id>spoon-test</id>
             <goals>
@@ -240,7 +238,7 @@
                 <processor>org.xwiki.tool.spoon.JUnit5JUnit4Processor</processor>
               </processors>
             </configuration>
-          </execution-->
+          </execution>
         </executions>
         <configuration>
           <skip>${xwiki.spoon.skip}</skip>
