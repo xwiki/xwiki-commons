@@ -237,6 +237,13 @@
     <!-- Control Maven output directory -->
     <maven.build.dir>${project.basedir}/target</maven.build.dir>
 
+    <!-- The Surefire and Failsafe configurations override the <argLine> element using the @{argLine} notation which
+         allows to include any argLine defined by plugins executing before them (such as Jacoco). However, if no such
+         plugin executes before, the property is undefined and makes the tests fail. Thus we define an empty property
+         here to make sure it doesn't fail. See also https://issues.apache.org/jira/browse/SUREFIRE-1431
+    -->
+    <argLine></argLine>
+
   </properties>
   <prerequisites>
     <maven>${maven.minimum.version}</maven>
