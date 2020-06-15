@@ -57,7 +57,7 @@ public class XWikiTempDirExtension implements BeforeAllCallback, BeforeEachCallb
     public void beforeAll(ExtensionContext extensionContext) throws Exception
     {
         // Find all static fields annotated with @XWikiTempDir and inject a temporary directory in them.
-        Class testClass = extensionContext.getRequiredTestClass();
+        Class<?> testClass = extensionContext.getRequiredTestClass();
         for (Field field : ReflectionUtils.getAllFields(testClass)) {
             if (field.isAnnotationPresent(XWikiTempDir.class) && Modifier.isStatic(field.getModifiers())
                 && File.class.isAssignableFrom(field.getType()))
@@ -77,13 +77,15 @@ public class XWikiTempDirExtension implements BeforeAllCallback, BeforeEachCallb
     public void beforeEach(ExtensionContext extensionContext)
     {
         // Find all fields annotated with @XWikiTempDir and inject a temporary directory in them.
-        Object testInstance = extensionContext.getTestInstance().get();
-        for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
-            if (field.isAnnotationPresent(XWikiTempDir.class) && !Modifier.isStatic(field.getModifiers())
-                && File.class.isAssignableFrom(field.getType()))
-            {
-                ReflectionUtils.setFieldValue(testInstance, field.getName(),
-                    XWikiTempDirUtil.createTemporaryDirectory());
+        if (extensionContext.getTestInstance().isPresent()) {
+            Object testInstance = extensionContext.getTestInstance().get();
+            for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
+                if (field.isAnnotationPresent(XWikiTempDir.class) && !Modifier.isStatic(field.getModifiers())
+                    && File.class.isAssignableFrom(field.getType()))
+                {
+                    ReflectionUtils.setFieldValue(testInstance, field.getName(),
+                        XWikiTempDirUtil.createTemporaryDirectory());
+                }
             }
         }
     }
