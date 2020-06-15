@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.job.event.status.JobStatus;
 
 /**
@@ -255,5 +257,39 @@ public abstract class AbstractRequest implements Request
     public Map<String, Object> getProperties()
     {
         return Collections.unmodifiableMap(properties);
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        AbstractRequest that = (AbstractRequest) o;
+
+        return new EqualsBuilder()
+            .append(verbose, that.verbose)
+            .append(id, that.id)
+            .append(properties, that.properties)
+            .append(statusLogIsolated, that.statusLogIsolated)
+            .append(statusSerialized, that.statusSerialized)
+            .isEquals();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder(17, 37)
+            .append(id)
+            .append(properties)
+            .append(verbose)
+            .append(statusLogIsolated)
+            .append(statusSerialized)
+            .toHashCode();
     }
 }
