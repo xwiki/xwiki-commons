@@ -19,14 +19,35 @@
  */
 package org.xwiki.tool.spoon.inject;
 
-import javax.inject.Inject;
+import java.util.List;
+import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+
+import org.slf4j.Logger;
+import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.tool.spoon.injectoutside.ComponentAndInterface2;
 
 public class ComponentAndInterfaceUsage
 {
     @Inject
+    private Logger logger;
+
+    @Inject
     private ComponentAndInterface componentAndInterface;
+
+    @Inject
+    private Provider<ComponentAndInterface> provider;
+
+    @Inject
+    private List<ComponentAndInterface> list;
+
+    @Inject
+    private Map<String, ComponentAndInterface> map;
+
+    @Inject
+    private ComponentDescriptor descriptor;
 
     /**
      * Type that is not in the analyzed sources.

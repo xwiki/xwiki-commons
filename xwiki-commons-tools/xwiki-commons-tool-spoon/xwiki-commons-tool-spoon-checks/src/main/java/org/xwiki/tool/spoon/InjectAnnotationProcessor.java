@@ -20,6 +20,7 @@
 package org.xwiki.tool.spoon;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +43,14 @@ import spoon.reflect.reference.CtTypeReference;
  */
 public class InjectAnnotationProcessor extends AbstractXWikiProcessor<CtAnnotation<? extends Annotation>>
 {
+    private static final List<String> SPECIAL_INJECT_INTERFACES = Arrays.asList(
+        "org.slf4j.Logger",
+        "java.util.List",
+        "java.util.Map",
+        "javax.inject.Provider",
+        "org.xwiki.component.descriptor.ComponentDescriptor"
+    );
+
     @Property
     private List<String> excludedFieldTypes;
 
@@ -82,7 +91,8 @@ public class InjectAnnotationProcessor extends AbstractXWikiProcessor<CtAnnotati
 
     private boolean isValidInterface(CtTypeReference<?> ctTypeReference)
     {
-        return ctTypeReference.isInterface() && hasRoleAnnotation(ctTypeReference);
+        return ctTypeReference.isInterface() && (SPECIAL_INJECT_INTERFACES.contains(ctTypeReference.getQualifiedName())
+            || hasRoleAnnotation(ctTypeReference));
     }
 
     private boolean isComponentAnnotationWithRoleToSelf(CtTypeReference<?> ctTypeReference)
