@@ -145,7 +145,7 @@ public class MockitoRepositoryUtils extends RepositoryUtils
 
     private void registerComponent(Class<?> componentClass) throws Exception
     {
-        List<ComponentDescriptor> descriptors = getComponentLoader().getComponentsDescriptors(componentClass);
+        List<ComponentDescriptor<?>> descriptors = getComponentLoader().getComponentsDescriptors(componentClass);
 
         for (ComponentDescriptor<?> descriptor : descriptors) {
             this.componentManager.registerComponent(descriptor);

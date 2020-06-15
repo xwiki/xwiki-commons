@@ -58,10 +58,11 @@ public class ComponentDescriptorFactory
      * @param componentClass the component implementation class
      * @param componentRoleClass the component role class
      * @return the component descriptors with resolved component dependencies
+     * @param <T> the described class type
      * @deprecated since 4.0M1 use {@link #createComponentDescriptors(Class, Type)} instead
      */
     @Deprecated
-    public List<ComponentDescriptor> createComponentDescriptors(Class<?> componentClass,
+    public <T> List<ComponentDescriptor<T>> createComponentDescriptors(Class<? extends T> componentClass,
         Class<?> componentRoleClass)
     {
         return createComponentDescriptors(componentClass, (Type) componentRoleClass);
@@ -73,12 +74,14 @@ public class ComponentDescriptorFactory
      *
      * @param componentClass the component implementation class
      * @param componentRoleType the component role type
+     * @param <T> the described class type
      * @return the component descriptors with resolved component dependencies
      * @since 4.0M1
      */
-    public List<ComponentDescriptor> createComponentDescriptors(Class<?> componentClass, Type componentRoleType)
+    public <T> List<ComponentDescriptor<T>> createComponentDescriptors(Class<? extends T> componentClass,
+        Type componentRoleType)
     {
-        List<ComponentDescriptor> descriptors = new ArrayList<>();
+        List<ComponentDescriptor<T>> descriptors = new ArrayList<>();
 
         // If there's a @Named annotation, use it and ignore hints specified in the @Component annotation.
         String[] hints;
@@ -116,10 +119,10 @@ public class ComponentDescriptorFactory
      * @param componentRoleType the component role type
      * @return the component descriptor with resolved component dependencies
      */
-    private ComponentDescriptor createComponentDescriptor(Class<?> componentClass, String hint,
+    private <T> ComponentDescriptor<T> createComponentDescriptor(Class<? extends T> componentClass, String hint,
         Type componentRoleType)
     {
-        DefaultComponentDescriptor descriptor = new DefaultComponentDescriptor();
+        DefaultComponentDescriptor<T> descriptor = new DefaultComponentDescriptor<>();
         descriptor.setRoleType(componentRoleType);
         descriptor.setImplementation(componentClass);
         descriptor.setRoleHint(hint);
@@ -130,7 +133,7 @@ public class ComponentDescriptorFactory
         // superclass. Since Java doesn't offer a method to return all fields we have to traverse all parent classes
         // looking for declared fields.
         for (Field field : ReflectionUtils.getAllFields(componentClass)) {
-            ComponentDependency dependency = createComponentDependency(field);
+            ComponentDependency<?> dependency = createComponentDependency(field);
             if (dependency != null) {
                 descriptor.addComponentDependency(dependency);
             }
@@ -170,9 +173,9 @@ public class ComponentDescriptorFactory
      * @param field the field for which to extract a Component Dependency
      * @return the Component Dependency instance created from the passed field
      */
-    private ComponentDependency createComponentDependency(Field field)
+    private ComponentDependency<?> createComponentDependency(Field field)
     {
-        ComponentDependency dependency = null;
+        ComponentDependency<?> dependency = null;
 
         // Try each factory till one returns a non null result
         for (ComponentDependencyFactory factory : this.componentDependencyFactories) {

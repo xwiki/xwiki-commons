@@ -66,7 +66,7 @@ public class MockitoComponentMocker<T>
     /**
      * The class of the component implementation to mock.
      */
-    private Class<?> componentImplementationClass;
+    private Class<? extends T> componentImplementationClass;
 
     /**
      * The role Type if the component implementation implements several roles.
@@ -110,8 +110,8 @@ public class MockitoComponentMocker<T>
      * @param componentRoleType the role type of the component implementation (when it has several), for disambiguation
      * @param componentRoleHint the role hint of the component implementation (when it has several), for disambiguation
      */
-    public MockitoComponentMocker(MockitoComponentManager componentManager, Class<?> componentImplementationClass,
-        Type componentRoleType, String componentRoleHint)
+    public MockitoComponentMocker(MockitoComponentManager componentManager,
+        Class<? extends T> componentImplementationClass, Type componentRoleType, String componentRoleHint)
     {
         this(componentManager, componentImplementationClass, componentRoleType, componentRoleHint,
             Collections.emptyList());
@@ -124,8 +124,9 @@ public class MockitoComponentMocker<T>
      * @param componentRoleHint the role hint of the component implementation (when it has several), for disambiguation
      * @param excludedComponentRoleDependencies list of component dependency role classes that we don't want mocked
      */
-    public MockitoComponentMocker(MockitoComponentManager componentManager, Class<?> componentImplementationClass,
-        Type componentRoleType, String componentRoleHint, List<? extends Class<?>> excludedComponentRoleDependencies)
+    public MockitoComponentMocker(MockitoComponentManager componentManager,
+        Class<? extends T> componentImplementationClass, Type componentRoleType, String componentRoleHint,
+        List<? extends Class<?>> excludedComponentRoleDependencies)
     {
         this.componentManager = componentManager;
         this.componentImplementationClass = componentImplementationClass;
@@ -155,8 +156,8 @@ public class MockitoComponentMocker<T>
     public RoleHint<T> mockComponent(final Object testInstance) throws Exception
     {
         // Handle component fields
-        for (ComponentDescriptor<T> descriptor : this.factory
-            .createComponentDescriptors(this.componentImplementationClass, findComponentRoleType())) {
+        for (ComponentDescriptor<T> descriptor
+            : this.factory.createComponentDescriptors(this.componentImplementationClass, findComponentRoleType())) {
             // Only use the descriptor for the specified hint
             if ((this.componentRoleHint != null && this.componentRoleHint.equals(descriptor.getRoleHint()))
                 || this.componentRoleHint == null) {
