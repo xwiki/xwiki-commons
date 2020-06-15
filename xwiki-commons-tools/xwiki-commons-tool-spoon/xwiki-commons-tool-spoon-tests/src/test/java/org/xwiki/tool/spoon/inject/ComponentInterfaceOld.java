@@ -19,20 +19,9 @@
  */
 package org.xwiki.tool.spoon.inject;
 
-import javax.inject.Inject;
+import org.xwiki.component.annotation.ComponentRole;
 
-public class ComponentUsageOk
+@ComponentRole
+public interface ComponentInterfaceOld
 {
-    @Inject
-    private ComponentInterface component;
-
-    @Inject
-    private ImplementationClass implementationClass;
-
-    @Inject
-    private ComponentInterfaceOld componentInterfaceOld;
-
-    private class ImplementationClass
-    {
-    }
 }

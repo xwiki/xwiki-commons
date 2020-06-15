@@ -111,6 +111,7 @@ public class InjectAnnotationProcessor extends AbstractXWikiProcessor<CtAnnotati
 
     private boolean hasRoleAnnotation(CtTypeReference<?> ctTypeReference)
     {
-        return SpoonUtils.hasAnnotation(ctTypeReference, "org.xwiki.component.annotation.Role");
+        return SpoonUtils.hasAnnotation(ctTypeReference, "org.xwiki.component.annotation.Role")
+            || SpoonUtils.hasAnnotation(ctTypeReference, "org.xwiki.component.annotation.ComponentRole");
     }
 }
