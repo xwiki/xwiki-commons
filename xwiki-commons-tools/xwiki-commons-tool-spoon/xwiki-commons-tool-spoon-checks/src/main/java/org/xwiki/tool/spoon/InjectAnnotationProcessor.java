@@ -53,7 +53,7 @@ public class InjectAnnotationProcessor extends AbstractXWikiProcessor<CtAnnotati
             if (element instanceof CtField) {
                 CtField<?> ctField = (CtField<?>) element;
                 if (!isExcluded(ctField)) {
-                    process(ctAnnotation, ctField);
+                    process(ctField);
                 }
             } else {
                 registerError(String.format("Only fields should use the @Inject annotation. Problem at %s",
@@ -62,7 +62,7 @@ public class InjectAnnotationProcessor extends AbstractXWikiProcessor<CtAnnotati
         }
     }
 
-    private void process(CtAnnotation<? extends Annotation> ctAnnotation, CtField<?> ctField)
+    private void process(CtField<?> ctField)
     {
         // The following 2 cases are supported:
         // - The field refers to an interface that has the @Role annotation
