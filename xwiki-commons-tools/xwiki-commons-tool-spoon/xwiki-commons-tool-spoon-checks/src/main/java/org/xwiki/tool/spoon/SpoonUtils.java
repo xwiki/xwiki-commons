@@ -74,7 +74,7 @@ public final class SpoonUtils
      */
     public static boolean hasAnnotation(CtTypeReference<?> ctTypeReference, String annotationFQN)
     {
-        return getAnnotation(ctTypeReference, annotationFQN) != null;
+        return getAnnotation(ctTypeReference, annotationFQN).isPresent();
     }
 
     /**
