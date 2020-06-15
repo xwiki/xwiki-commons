@@ -91,7 +91,7 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
         boolean isStaticRegistration = true;
         boolean hasInstantiationStrategyAnnotation = false;
         boolean hasSingletonAnnotation = false;
-        for (CtAnnotation annotation : SpoonUtils.getAnnotationsIncludingFromSuperclasses(ctClass)) {
+        for (CtAnnotation<?> annotation : SpoonUtils.getAnnotationsIncludingFromSuperclasses(ctClass)) {
             // Is it a Component annotation?
             if (COMPONENT_ANNOTATION.equals(annotation.getAnnotationType().getQualifiedName())) {
                 hasComponentAnnotation = true;
@@ -132,7 +132,7 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
         // Check 2-D
         // Note: We have some legacy modules which merge the components.txt since they use AspectJ to weave a new JAR.
         // We allow skipping the check for foreign declarations for them.
-        if (this.skipForeignDeclarations == null || !Boolean.valueOf(this.skipForeignDeclarations)) {
+        if (this.skipForeignDeclarations == null || !Boolean.parseBoolean(this.skipForeignDeclarations)) {
             check2D();
         }
 
