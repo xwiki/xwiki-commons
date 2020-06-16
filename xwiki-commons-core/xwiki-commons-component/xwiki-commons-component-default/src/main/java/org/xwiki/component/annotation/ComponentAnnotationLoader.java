@@ -291,9 +291,9 @@ public class ComponentAnnotationLoader
         }
     }
 
-    public List<ComponentDescriptor> getComponentsDescriptors(Class<?> componentClass)
+    public List<ComponentDescriptor<?>> getComponentsDescriptors(Class<?> componentClass)
     {
-        List<ComponentDescriptor> descriptors = new ArrayList<>();
+        List<ComponentDescriptor<?>> descriptors = new ArrayList<>();
 
         // Look for ComponentRole annotations and register one component per ComponentRole found
         for (Type componentRoleType : findComponentRoleTypes(componentClass)) {

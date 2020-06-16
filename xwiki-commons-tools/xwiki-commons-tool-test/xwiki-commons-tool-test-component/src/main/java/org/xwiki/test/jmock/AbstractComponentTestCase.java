@@ -108,7 +108,7 @@ public abstract class AbstractComponentTestCase extends AbstractMockingTestCase
             this.componentLoader = new ComponentAnnotationLoader();
         }
 
-        List<ComponentDescriptor> descriptors = this.componentLoader.getComponentsDescriptors(componentClass);
+        List<ComponentDescriptor<?>> descriptors = this.componentLoader.getComponentsDescriptors(componentClass);
 
         for (ComponentDescriptor descriptor : descriptors) {
             getComponentManager().registerComponent(descriptor);

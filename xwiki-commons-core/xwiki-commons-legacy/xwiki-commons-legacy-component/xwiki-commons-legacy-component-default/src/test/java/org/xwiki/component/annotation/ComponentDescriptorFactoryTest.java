@@ -138,17 +138,18 @@ class ComponentDescriptorFactoryTest
     void singletonAnnotationForComponent()
     {
         ComponentDescriptorFactory factory = new ComponentDescriptorFactory();
-        List<ComponentDescriptor> descriptors =
+        List<ComponentDescriptor<SingletonImpl>> descriptors =
             factory.createComponentDescriptors(SingletonImpl.class, Role.class);
 
         assertEquals(1, descriptors.size());
         assertEquals(ComponentInstantiationStrategy.SINGLETON, descriptors.get(0).getInstantiationStrategy());
     }
 
-    private void assertComponentDescriptor(Class< ? > componentClass, String fieldRoleName)
+    private <T> void assertComponentDescriptor(Class<? extends T> componentClass, String fieldRoleName)
     {
         ComponentDescriptorFactory factory = new ComponentDescriptorFactory();
-        List<ComponentDescriptor> descriptors = factory.createComponentDescriptors(componentClass, ExtendedRole.class);
+        List<ComponentDescriptor<T>> descriptors =
+            factory.createComponentDescriptors(componentClass, ExtendedRole.class);
         
         assertEquals(1, descriptors.size());
         ComponentDescriptor descriptor = descriptors.get(0);

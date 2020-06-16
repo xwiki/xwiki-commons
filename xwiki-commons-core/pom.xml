@@ -163,6 +163,13 @@
                 <new>class org.xwiki.classloader.NamespaceURLClassLoader</new>
                 <justification>NamespaceURLClassLoader no longer inherits from URIClassLoader since this one is now deprecated.</justification>
               </item>
+              <item>
+                <regex>true</regex>
+                <code>java\.generics\.elementNowParameterized</code>
+                <old>.*org\.xwiki\.component\.annotation\.ComponentDescriptorFactory::createComponentDescriptors.*</old>
+                <new>.*org\.xwiki\.component\.annotation\.ComponentDescriptorFactory::createComponentDescriptors.*</new>
+                <justification>Not a binary breakage (no API breakage), only source level.</justification>
+              </item>
             </revapi.ignore>
           </analysisConfiguration>
         </configuration>
