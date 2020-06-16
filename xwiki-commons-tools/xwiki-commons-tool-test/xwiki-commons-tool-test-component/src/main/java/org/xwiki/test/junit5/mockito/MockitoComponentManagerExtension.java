@@ -20,9 +20,11 @@
 package org.xwiki.test.junit5.mockito;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Named;
 
@@ -34,6 +36,7 @@ import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
+import org.junit.jupiter.api.extension.TestInstances;
 import org.mockito.MockitoAnnotations;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.descriptor.ComponentDescriptor;
@@ -100,9 +103,10 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
     @Override
     public void beforeEach(ExtensionContext context) throws Exception
     {
-        if (context.getTestInstances().isPresent()) {
+        Optional<TestInstances> testInstances = context.getTestInstances();
+        if (testInstances.isPresent()) {
             // Initialize all test classes, including nested ones.
-            for (Object testInstance : context.getTestInstances().get().getAllInstances()) {
+            for (Object testInstance : testInstances.get().getAllInstances()) {
                 initializeTestInstance(testInstance, context);
             }
         }
@@ -187,7 +191,7 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
         }
 
         // Find Component descriptors
-        List<ComponentDescriptor> descriptors = LOADER.getComponentsDescriptors(field.getType());
+        List<ComponentDescriptor<?>> descriptors = LOADER.getComponentsDescriptors(field.getType());
         ComponentDescriptor<?> descriptor = getDescriptor(annotation.role(), descriptors, field);
         MockitoComponentMocker<?> mocker =
             new MockitoComponentMocker<>(mcm, field.getType(), descriptor.getRoleType(), descriptor.getRoleHint());
@@ -208,13 +212,14 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
         ExtensionContext context)
         throws Exception
     {
-        if (context.getTestMethod().isPresent()) {
-            mcm.initializeTest(testInstance, context.getTestMethod().get(), mcm);
+        Optional<Method> testMethod = context.getTestMethod();
+        if (testMethod.isPresent()) {
+            mcm.initializeTest(testInstance, testMethod.get(), mcm);
         }
     }
 
     @Override
-    public void afterEach(ExtensionContext extensionContext) throws Exception
+    public void afterEach(ExtensionContext extensionContext)
     {
         MockitoComponentManager mcm = loadComponentManager(extensionContext);
         if (mcm != null) {
@@ -237,7 +242,7 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
         return loadComponentManager(extensionContext);
     }
 
-    private ComponentDescriptor<?> getDescriptor(Class<?> role, List<ComponentDescriptor> descriptors, Field field)
+    private ComponentDescriptor<?> getDescriptor(Class<?> role, List<ComponentDescriptor<?>> descriptors, Field field)
         throws Exception
     {
         // When the role is InjectMockComponents.class it means that no role has been set by the user, see the
@@ -289,7 +294,7 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
         }
     }
 
-    private boolean areRolesIdentical(List<ComponentDescriptor> descriptors)
+    private boolean areRolesIdentical(List<ComponentDescriptor<?>> descriptors)
     {
         boolean areSame = true;
         Type type = null;
