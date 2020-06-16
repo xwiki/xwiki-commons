@@ -69,5 +69,20 @@
         "@org.xwiki.stability.Unstable"
       ]
     }
+  },
+  {
+    "extension": "revapi.reclassify",
+    // We reclassify all source compatibility checks to be of EQUIVALENT severity so that the build doesn't fail on
+    // source incompatibilities since we're only interested in binary and (some) semantic incompatibilities. As we
+    // break on potentiallyBreaking severity, issues with equivalent severity won't stop the build.
+    "configuration": [
+      {
+        "regex" : true,
+        "code" : ".*",
+        "classify" : {
+          "SOURCE" : "EQUIVALENT"
+        }
+      }
+    ]
   }
 ]
