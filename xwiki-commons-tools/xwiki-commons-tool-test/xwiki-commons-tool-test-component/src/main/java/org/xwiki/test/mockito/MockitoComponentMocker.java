@@ -156,8 +156,8 @@ public class MockitoComponentMocker<T>
     public RoleHint<T> mockComponent(final Object testInstance) throws Exception
     {
         // Handle component fields
-        for (ComponentDescriptor<T> descriptor
-            : this.factory.createComponentDescriptors(this.componentImplementationClass, findComponentRoleType())) {
+        for (ComponentDescriptor<T> descriptor : this.factory
+            .<T>createComponentDescriptors(this.componentImplementationClass, findComponentRoleType())) {
             // Only use the descriptor for the specified hint
             if ((this.componentRoleHint != null && this.componentRoleHint.equals(descriptor.getRoleHint()))
                 || this.componentRoleHint == null) {
