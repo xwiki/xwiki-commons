@@ -26,5 +26,5 @@ Read our [Release Notes](http://www.xwiki.org/xwiki/bin/view/ReleaseNotes/).
 We're always looking for contributors! 
 You should read our [Get Involved Guide](http://dev.xwiki.org/xwiki/bin/view/Community/Contributing) or get in touch:
 * [Blog](http://www.xwiki.org/xwiki/bin/view/Blog/)
-* [Mailing Lists](http://dev.xwiki.org/xwiki/bin/view/Community/MailingLists)
-* [IRC](http://dev.xwiki.org/xwiki/bin/view/Community/IRC)
+* [Forum](https://dev.xwiki.org/xwiki/bin/view/Community/Discuss)
+* [Chat](https://dev.xwiki.org/xwiki/bin/view/Community/Chat)
