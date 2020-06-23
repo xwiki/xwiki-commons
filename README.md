@@ -4,7 +4,7 @@
 
 These libraries can be used by projects outside of the XWiki ecosystem, are generic and not related to the wiki domain.
 
-XWiki Platform, XWiki Enterprise, XWiki Commons and XWiki Rendering are part of the [XWiki.org](http://www.xwiki.org/) software forge. They are released together and share the same version.
+XWiki Platform, XWiki Commons and XWiki Rendering are part of the [XWiki.org](http://www.xwiki.org/) software forge. They are released together and share the same version.
 
 ## Documentation
 * [Documentation](http://commons.xwiki.org/)
