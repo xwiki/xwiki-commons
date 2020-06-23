@@ -237,7 +237,7 @@
          plugin executes before, the property is undefined and makes the tests fail. Thus we define an empty property
          here to make sure it doesn't fail. See also https://issues.apache.org/jira/browse/SUREFIRE-1431
     -->
-    <argLine></argLine>
+    <argLine />
 
   </properties>
   <prerequisites>
@@ -272,7 +272,7 @@
     <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki/xwiki-commons.git</developerConnection>
     <url>https://github.com/xwiki/xwiki-commons/tree/master/</url>
-    <tag>stable-11.9.x</tag>
+    <tag>stable-12.5.x</tag>
   </scm>
   <mailingLists>
     <mailingList>
