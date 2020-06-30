@@ -62,16 +62,17 @@
       }
     ]
   },
-  {
-    // Only works at the method level for now. If the Unstable annotation is at the class level and a method has a
-    // breaking change, it's not ignored. See https://github.com/revapi/revapi/issues/187
-    "extension": "revapi.java.filter.annotated",
-    "configuration": {
-      "exclude": [
-        "@org.xwiki.stability.Unstable"
-      ]
-    }
-  },
+  // Only works at the method level for now. If the Unstable annotation is at the class level and a method has a
+  // breaking change, it's not ignored. See https://github.com/revapi/revapi/issues/187
+  // Since it's hiding real problems, see https://github.com/revapi/revapi/issues/188, we have disavbed it for now.
+  //  {
+  //    "extension": "revapi.java.filter.annotated",
+  //    "configuration": {
+  //      "exclude": [
+  //        "@org.xwiki.stability.Unstable"
+  //      ]
+  //    }
+  //  },
   {
     "extension": "revapi.reclassify",
     // We reclassify all source compatibility checks to be of EQUIVALENT severity so that the build doesn't fail on
