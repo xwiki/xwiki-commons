@@ -63,6 +63,8 @@
     ]
   },
   {
+    // Only works at the method level for now. If the Unstable annotation is at the class level and a method has a
+    // breaking change, it's not ignored. See https://github.com/revapi/revapi/issues/187
     "extension": "revapi.java.filter.annotated",
     "configuration": {
       "exclude": [
