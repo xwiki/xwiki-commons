@@ -46,6 +46,7 @@ import org.xwiki.job.event.JobStartedEvent;
 import org.xwiki.job.event.status.JobProgressManager;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.event.status.JobStatus.State;
+import org.xwiki.job.internal.JobUtils;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.logging.marker.BeginTranslationMarker;
 import org.xwiki.logging.marker.EndTranslationMarker;
@@ -169,7 +170,8 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
         this.request = castRequest(request);
         this.status = createNewStatus(this.request);
 
-        if (this.status instanceof AbstractJobStatus) {
+        // Create a filesystem log tail if the status is supposed to be serialized (to avoid creating too much files)
+        if (this.status instanceof AbstractJobStatus && JobUtils.isSerializable(this.status)) {
             ((AbstractJobStatus) this.status).setLoggerTail(this.store.createLoggerTail(request.getId(), false));
         }
     }

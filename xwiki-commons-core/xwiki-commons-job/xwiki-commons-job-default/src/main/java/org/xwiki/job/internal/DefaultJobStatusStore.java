@@ -53,7 +53,6 @@ import org.xwiki.job.AbstractJobStatus;
 import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.JobStatusStore;
-import org.xwiki.job.annotation.Serializable;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.LoggerManager;
@@ -427,7 +426,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             }
 
             // Only store Serializable job status on file system
-            if (isSerializable(status)) {
+            if (JobUtils.isSerializable(status)) {
                 if (async) {
                     this.executorService.execute(new JobStatusSerializerRunnable(status));
                 } else {
@@ -435,20 +434,6 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
                 }
             }
         }
-    }
-
-    private boolean isSerializable(JobStatus status)
-    {
-        if (!status.isSerialized()) {
-            return false;
-        }
-
-        Serializable serializable = status.getClass().getAnnotation(Serializable.class);
-        if (serializable != null) {
-            return serializable.value();
-        }
-
-        return status instanceof java.io.Serializable;
     }
 
     @Override
