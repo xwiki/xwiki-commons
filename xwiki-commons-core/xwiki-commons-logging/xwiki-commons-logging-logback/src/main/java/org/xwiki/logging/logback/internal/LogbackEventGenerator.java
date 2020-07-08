@@ -44,7 +44,7 @@ import org.xwiki.observation.event.Event;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.ThrowableProxy;
-import ch.qos.logback.core.AppenderBase;
+import ch.qos.logback.core.UnsynchronizedAppenderBase;
 
 /**
  * Bridge converting log to Observation Events.
@@ -64,8 +64,8 @@ import ch.qos.logback.core.AppenderBase;
 @Component
 @Named("LogbackEventGenerator")
 @Singleton
-public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implements EventListener, Initializable,
-    Disposable
+public class LogbackEventGenerator extends UnsynchronizedAppenderBase<ILoggingEvent>
+    implements EventListener, Initializable, Disposable
 {
     /**
      * The logger to log.
@@ -109,8 +109,8 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
             rootLogger.addAppender(this);
             start();
         } else {
-            this.logger.warn("Could not find any Logback root logger."
-                + " The logging module won't be able to catch logs.");
+            this.logger
+                .warn("Could not find any Logback root logger." + " The logging module won't be able to catch logs.");
         }
     }
 
@@ -142,9 +142,8 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
         try {
             LogLevel logLevel = this.utils.toLogLevel(event.getLevel());
 
-            LogEvent logevent =
-                LogUtils.newLogEvent(event.getMarker(), logLevel, event.getMessage(), event.getArgumentArray(),
-                    throwable, event.getTimeStamp());
+            LogEvent logevent = LogUtils.newLogEvent(event.getMarker(), logLevel, event.getMessage(),
+                event.getArgumentArray(), throwable, event.getTimeStamp());
 
             getObservationManager().notify(logevent, event.getLoggerName(), null);
         } catch (IllegalArgumentException e) {

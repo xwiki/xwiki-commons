@@ -20,26 +20,41 @@
 package org.xwiki.logging.logback.internal;
 
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
 import org.xwiki.observation.internal.DefaultObservationManager;
-import org.xwiki.test.AllLogRule;
-import org.xwiki.test.ComponentManagerRule;
 import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.junit5.LogCaptureExtension;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link LogbackEventGenerator}.
@@ -47,24 +62,22 @@ import static org.mockito.Mockito.*;
  * @version $Id$
  * @since 3.2M3
  */
-@ComponentList({
-    DefaultObservationManager.class,
-    LogbackEventGenerator.class
-})
+@ComponentTest
+@ComponentList({DefaultObservationManager.class, LogbackEventGenerator.class})
 public class LogbackEventGeneratorTest
 {
-    @Rule
-    public final ComponentManagerRule componentManager = new ComponentManagerRule();
+    @InjectComponentManager
+    private ComponentManager componentManager;
 
-    @Rule
-    public final AllLogRule logCapture = new AllLogRule();
+    @RegisterExtension
+    LogCaptureExtension logCapture = new LogCaptureExtension(org.xwiki.test.LogLevel.INFO);
 
     private Logger logger;
 
     private ObservationManager observationManager;
 
-    @Before
-    public void setUp() throws Exception
+    @BeforeEach
+    public void beforeEach() throws Exception
     {
         this.observationManager = this.componentManager.getInstance(ObservationManager.class);
 
@@ -77,7 +90,7 @@ public class LogbackEventGeneratorTest
     @Test
     public void verifyThatLoggingGeneratesALogEvent()
     {
-        Event event = new LogEvent(null, LogLevel.INFO, "dummy", null, null);
+        Event event = new LogEvent();
 
         EventListener listener = mock(EventListener.class);
         when(listener.getName()).thenReturn("mylistener");
@@ -103,8 +116,51 @@ public class LogbackEventGeneratorTest
 
         spyGenerator.initialize();
 
-        Assert.assertEquals(1, this.logCapture.size());
-        Assert.assertEquals("Could not find any Logback root logger. The logging module won't be able to catch "
-            + "logs.", this.logCapture.getMessage(0));
+        assertEquals(1, this.logCapture.size());
+        assertEquals("Could not find any Logback root logger. The logging module won't be able to catch " + "logs.",
+            this.logCapture.getMessage(0));
+    }
+
+    /**
+     * Verify that LogbackEventGenerator can produce two events on two different threads at the same time.
+     */
+    @Test
+    public void unsynchronized() throws ComponentLookupException, InterruptedException
+    {
+        EventListener listener = mock(EventListener.class);
+        when(listener.getName()).thenReturn("mylistener");
+        when(listener.getEvents()).thenReturn(Arrays.asList(new LogEvent()));
+
+        this.observationManager.addListener(listener);
+
+        // Make the listener wait
+        Lock lock = new ReentrantLock();
+        lock.lock();
+        doAnswer(new Answer<Void>()
+        {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable
+            {
+                lock.lock();
+                lock.unlock();
+
+                return null;
+            }
+        }).when(listener).onEvent(any(), any(), any());
+
+        CompletableFuture.runAsync(() -> this.logger.error("thread1 error message"));
+        CompletableFuture.runAsync(() -> this.logger.error("thread2 error message"));
+
+        // Make threads have enough time to send the events
+        Thread.sleep(100);
+
+        // Make sure both thread send the log
+        verify(listener, times(2)).onEvent(any(), any(), any());
+
+        // Release the threads
+        lock.unlock();
+
+        // We don't really care about the actual log
+        this.logCapture.ignoreAllMessages();
     }
 }
