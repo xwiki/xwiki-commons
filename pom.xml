@@ -2062,7 +2062,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.3.0</version>
+          <version>3.2.3</version>
           <configuration>
             <!-- Add some useful information about the extension in the manifest file. -->
             <archive>
