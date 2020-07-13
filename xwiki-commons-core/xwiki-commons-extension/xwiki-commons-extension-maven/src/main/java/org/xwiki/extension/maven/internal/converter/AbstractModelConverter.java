@@ -265,11 +265,11 @@ public class AbstractModelConverter<T> extends AbstractConverter<T>
                     idPattern = null;
                 } else {
                     idPattern =
-                        Pattern.compile(MavenUtils.toExtensionId("*", Pattern.quote(exclusionArtifactId), null));
+                        Pattern.compile(MavenUtils.toExtensionId(".*", Pattern.quote(exclusionArtifactId), null));
                 }
             } else {
                 if (MavenUtils.WILDCARD.equals(exclusionArtifactId)) {
-                    idPattern = Pattern.compile(MavenUtils.toExtensionId(Pattern.quote(exclusionGroupId), "*", null));
+                    idPattern = Pattern.compile(MavenUtils.toExtensionId(Pattern.quote(exclusionGroupId), ".*", null));
                 } else {
                     idPattern = Pattern.compile(MavenUtils.toExtensionId(exclusionGroupId, exclusionArtifactId, null),
                         Pattern.LITERAL);

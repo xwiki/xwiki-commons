@@ -23,20 +23,23 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Named;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Exclusion;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Repository;
 import org.junit.jupiter.api.Test;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionFeaturesInjector;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.ExtensionPattern;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.properties.internal.DefaultConverterManager;
 import org.xwiki.test.annotation.AllComponents;
@@ -98,6 +101,18 @@ class ModelConverterTest
         dependency.setArtifactId("dartifactId");
         dependency.setVersion("1.0");
         dependency.setOptional(false);
+        Exclusion exclusion1 = new Exclusion();
+        exclusion1.setArtifactId("excludedartifact1");
+        exclusion1.setGroupId("excludedgroup1");
+        dependency.addExclusion(exclusion1);
+        Exclusion exclusion2 = new Exclusion();
+        exclusion2.setArtifactId("excludedartifact2");
+        exclusion2.setGroupId("*");
+        dependency.addExclusion(exclusion2);
+        Exclusion exclusion3 = new Exclusion();
+        exclusion3.setArtifactId("*");
+        exclusion3.setGroupId("excludedgroup3");
+        dependency.addExclusion(exclusion3);
         model.addDependency(dependency);
 
         Extension extension = this.converter.convert(Extension.class, model);
@@ -116,6 +131,17 @@ class ModelConverterTest
             Arrays.asList(new DefaultExtensionRepositoryDescriptor("repository-id", "maven", new URI("http://url"))),
             extension.getRepositories());
         assertEquals(1, extension.getDependencies().size());
+        ExtensionDependency extensionDependency = extension.getDependencies().iterator().next();
+        assertEquals("dgroupid:dartifactId", extensionDependency.getId());
+        assertEquals("1.0", extensionDependency.getVersionConstraint().getValue());
+        Collection<ExtensionPattern> extensionExclusions = extensionDependency.getExclusions();
+        Iterator<ExtensionPattern> patternIt = extensionExclusions.iterator();
+        ExtensionPattern pattern = patternIt.next();
+        assertEquals("excludedgroup1:excludedartifact1", pattern.getIdPattern().toString());
+        pattern = patternIt.next();
+        assertEquals(".*:\\Qexcludedartifact2\\E", pattern.getIdPattern().toString());
+        pattern = patternIt.next();
+        assertEquals("\\Qexcludedgroup3\\E:.*", pattern.getIdPattern().toString());
     }
 
     @Test
