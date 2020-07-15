@@ -670,8 +670,9 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
             // Already exists in the plan but we don't trust it (might have been previously been installed with totally
             // different managed dependencies and a ton of exclusions) so we check the dependencies anyway
-            List<ModifableExtensionPlanNode> children = installExtensionDependencies(
-                existingNode.getAction().getExtension(), namespace, extensionContext, parents);
+            List<ModifableExtensionPlanNode> children =
+                installExtensionDependencies(existingNode.getAction().getExtension(), namespace,
+                    new ExtensionPlanContext(extensionContext, extensionDependency), parents);
 
             ModifableExtensionPlanNode node = new ModifableExtensionPlanNode(extensionDependency, existingNode);
             node.setChildren(children);
@@ -692,8 +693,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         if (targetDependency == null) {
             // Already installed but we don't trust it (might have been previously been installed with totally different
             // managed dependencies and a ton of exclusions) so we check the dependencies anyway
-            List<ModifableExtensionPlanNode> children =
-                installExtensionDependencies(installedExtension, namespace, extensionContext, parents);
+            List<ModifableExtensionPlanNode> children = installExtensionDependencies(installedExtension, namespace,
+                new ExtensionPlanContext(extensionContext, extensionDependency), parents);
 
             ModifableExtensionPlanNode node = new ModifableExtensionPlanNode(extensionDependency, versionConstraint);
             node.setAction(new DefaultExtensionPlanAction(installedExtension, installedExtension, null, Action.NONE,
