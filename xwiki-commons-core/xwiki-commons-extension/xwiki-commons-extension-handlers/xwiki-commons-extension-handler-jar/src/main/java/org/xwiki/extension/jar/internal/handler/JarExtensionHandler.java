@@ -112,7 +112,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
     public static boolean isWebjar(Extension extension)
     {
         // Ideally webjar extensions should have "webjar" type
-        if (extension.getType().equals(WEBJAR)) {
+        if (WEBJAR.equals(extension.getType())) {
             return true;
         }
 
@@ -186,7 +186,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
 
     private boolean containsComponents(Extension extension)
     {
-        return extension != null && extension.getType().equals(JAR) && !isWebjar(extension);
+        return extension != null && JAR.equals(extension.getType()) && !isWebjar(extension);
     }
 
     @Override
