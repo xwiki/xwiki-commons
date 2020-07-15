@@ -328,7 +328,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
                     try {
                         this.installedExtensionRepository.uninstallExtension(previousExtension, namespace);
                     } catch (UninstallException e) {
-                        this.logger.error("Failed to uninstall extension [" + previousExtension.getId() + "]", e);
+                        this.logger.error("Failed to uninstall extension [{}]", previousExtension.getId(), e);
                     }
                 }
 
