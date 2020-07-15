@@ -331,7 +331,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                     + "] is not compatible with core extension feature [" + feature + "] ([" + coreExtension + "])");
             } else {
                 if (getRequest().isVerbose()) {
-                    this.logger.debug(
+                    this.logger.info(
                         "There is already a core extension feature [{}] ([{}]) covering extension dependency [{}]",
                         feature, coreExtension.getId(), extensionDependency.toString());
                 }
@@ -497,7 +497,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
                 if (versionConstraint.isCompatible(feature.getVersion())) {
                     if (getRequest().isVerbose()) {
-                        this.logger.debug(
+                        this.logger.info(
                             "There is already an installed extension [{}] covering extension dependency [{}]",
                             installedExtension.getId(), extensionDependency.toString());
                     }
