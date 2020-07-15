@@ -334,7 +334,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 if (getRequest().isVerbose()) {
                     this.logger.debug(
                         "There is already a core extension feature [{}] ([{}]) covering extension dependency [{}]",
-                        feature, coreExtension, extensionDependency);
+                        feature, coreExtension.getId(), extensionDependency.toString());
                 }
 
                 ModifableExtensionPlanNode node =
@@ -439,7 +439,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                     if (getRequest().isVerbose()) {
                         this.logger.debug(
                             "There is already an installed extension [{}] covering extension dependency [{}]",
-                            installedExtension.getId(), extensionDependency);
+                            installedExtension.getId(), extensionDependency.toString());
                     }
 
                     ModifableExtensionPlanNode node =
@@ -551,8 +551,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             return true;
         } catch (Throwable e) {
             if (getRequest().isVerbose()) {
-                this.logger.warn("Failed to install optional dependency [{}] with error: {}", extensionDependency,
-                    ExceptionUtils.getRootCauseMessage(e));
+                this.logger.warn("Failed to install optional dependency [{}] with error: {}",
+                    extensionDependency.toString(), ExceptionUtils.getRootCauseMessage(e));
             }
         }
 
@@ -584,10 +584,10 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         if (getRequest().isVerbose()) {
             if (namespace != null) {
                 this.logger.info(LOG_RESOLVEDEPENDENCY_NAMESPACE,
-                    "Resolving extension dependency [{}] on namespace [{}]", extensionDependency, namespace);
+                    "Resolving extension dependency [{}] on namespace [{}]", extensionDependency.toString(), namespace);
             } else {
                 this.logger.info(LOG_RESOLVEDEPENDENCY, "Resolving extension dependency [{}] on all namespaces",
-                    extensionDependency);
+                    extensionDependency.toString());
             }
         }
 
