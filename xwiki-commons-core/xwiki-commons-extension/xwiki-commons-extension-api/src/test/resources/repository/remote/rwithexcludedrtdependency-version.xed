@@ -14,5 +14,14 @@
         </extensionpattern>
       </exclusions>
     </dependency>
+    <dependency>
+      <id>rwithrdependency</id>
+      <version>version</version>
+      <exclusions>
+        <extensionpattern>
+          <id>.*</id>
+        </extensionpattern>
+      </exclusions>
+    </dependency>
   </dependencies>
 </extension>
