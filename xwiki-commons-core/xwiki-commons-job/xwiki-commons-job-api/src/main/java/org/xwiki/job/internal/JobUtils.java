@@ -26,7 +26,7 @@ import org.xwiki.job.event.status.JobStatus;
  * Various job related utility methods.
  * 
  * @version $Id$
- * @since 12.6RC1
+ * @since 12.6
  * @since 11.10.6
  */
 public final class JobUtils
