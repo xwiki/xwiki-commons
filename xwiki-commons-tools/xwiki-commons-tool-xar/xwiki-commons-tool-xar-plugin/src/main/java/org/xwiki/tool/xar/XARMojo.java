@@ -70,6 +70,14 @@ public class XARMojo extends AbstractXARMojo
     private boolean includeDependencies;
 
     /**
+     * Allows to change the default entry type that will be applied for each entry of the project.
+     *
+     * @since 12.7
+     */
+    @Parameter(property = "defaultEntryType", readonly = true, required = false)
+    private String defaultEntryType;
+
+    /**
      * List of XML transformations to execute on the XML files.
      */
     @Parameter
@@ -400,6 +408,8 @@ public class XARMojo extends AbstractXARMojo
                 XAREntry cfgEntry = getEntryMap().get(reference);
                 if (cfgEntry != null && cfgEntry.getType() != null) {
                     element.addAttribute("type", cfgEntry.getType());
+                } else if (defaultEntryType != null) {
+                    element.addAttribute("type", defaultEntryType);
                 }
 
                 filesElement.add(element);
