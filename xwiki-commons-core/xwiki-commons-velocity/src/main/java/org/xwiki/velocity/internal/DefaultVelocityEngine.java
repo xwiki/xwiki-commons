@@ -30,6 +30,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.context.InternalContextAdapterImpl;
 import org.apache.velocity.runtime.RuntimeConstants;
@@ -229,6 +231,9 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
             if (StringUtils.isNotEmpty(namespace)) {
                 stoppedUsingMacroNamespaceInternal(namespace);
             }
+
+            // Clean the introspection cache to avoid memory leak
+            cleanIntrospectionCache(context);
         }
     }
 
@@ -276,6 +281,17 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
         return false;
     }
 
+    private void cleanIntrospectionCache(Context context)
+    {
+        try {
+            Map introspectionCache = (Map) FieldUtils.readField(context, "introspectionCache", true);
+            introspectionCache.clear();
+        } catch (IllegalAccessException e) {
+            this.logger.warn("Failed to clean the Velocity context introspection cache: ",
+                ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+    
     @Override
     public void clearMacroNamespace(String templateName)
     {
