@@ -25,11 +25,14 @@ import java.io.Writer;
 import java.util.Deque;
 import java.util.Enumeration;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.Context;
@@ -296,9 +299,23 @@ public class DefaultVelocityEngine implements VelocityEngine
             if (context instanceof VelocityContext) {
                 ((VelocityContext) context).setCurrentResource(currentResource);
             }
+
+            // Clean the introspection cache to avoid memory leak
+            cleanIntrospectionCache(context);
         }
     }
 
+    private void cleanIntrospectionCache(Context context)
+    {
+        try {
+            Map introspectionCache = (Map) FieldUtils.readField(context, "introspectionCache", true);
+            introspectionCache.clear();
+        } catch (IllegalAccessException e) {
+            this.logger.warn("Failed to clean the Velocity context introspection cache: ",
+                ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+    
     @Override
     @Deprecated
     public void clearMacroNamespace(String namespace)
