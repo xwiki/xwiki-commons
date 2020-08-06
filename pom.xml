@@ -2350,6 +2350,42 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>1.5.1</version>
         </plugin>
+        <plugin>
+          <groupId>com.github.blutorange</groupId>
+          <artifactId>closure-compiler-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.17.0</version>
+          <configuration>
+            <includes>
+              <include>**/*.js</include>
+            </includes>
+            <excludes>
+              <exclude>**/*.min.*</exclude>
+            </excludes>
+            <skipMerge>true</skipMerge>
+            <closureRewritePolyfills>false</closureRewritePolyfills>
+            <closureLanguageIn>STABLE</closureLanguageIn>
+            <closureLanguageOut>ECMASCRIPT5_STRICT</closureLanguageOut>
+            <closureCreateSourceMap>true</closureCreateSourceMap>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>com.cj.jshintmojo</groupId>
+          <artifactId>jshint-maven-plugin</artifactId>
+          <version>1.6.0</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>lint</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <globals>require,define</globals>
+            <!-- See https://github.com/jshint/jshint/blob/master/examples/.jshintrc -->
+            <options>esnext,camelcase,maxparams:5,maxdepth:3,maxstatements:20,maxcomplexity:10,maxlen:120</options>
+          </configuration>
+        </plugin>
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>

@@ -33,6 +33,9 @@
           <process-resources>
             <mojos>
               <mojo>
+                <goal>com.cj.jshintmojo:jshint-maven-plugin:lint</goal>
+              </mojo>
+              <mojo>
                 <goal>org.apache.maven.plugins:maven-resources-plugin:resources</goal>
               </mojo>
               <mojo>
@@ -47,16 +50,25 @@
                 </configuration>
               </mojo>
               <mojo>
-                <goal>net.alchim31.maven:yuicompressor-maven-plugin:compress</goal>
+                <goal>com.github.blutorange:closure-compiler-maven-plugin:minify</goal>
                 <configuration>
-                  <sourceDirectory>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}</sourceDirectory>
-                  <excludes>
-                    <exclude>**/*.min.*</exclude>
-                  </excludes>
-                  <outputDirectory>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}</outputDirectory>
-                  <!-- The default suffix uses the dash as separator (-min) but we prefer the dot (.min) because it is
-                    currently more widely used in the JavaScript world. -->
-                  <suffix>.min</suffix>
+                  <baseSourceDir>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}</baseSourceDir>
+                  <sourceDir>${project.version}</sourceDir>
+                  <baseTargetDir>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}</baseTargetDir>
+                  <targetDir>${project.version}</targetDir>
+                </configuration>
+              </mojo>
+              <mojo>
+                <goal>com.github.blutorange:closure-compiler-maven-plugin:minify</goal>
+                <configuration>
+                  <baseSourceDir>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}</baseSourceDir>
+                  <sourceDir>${project.version}</sourceDir>
+                  <baseTargetDir>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}</baseTargetDir>
+                  <targetDir>${project.version}</targetDir>
+                  <skipMerge>false</skipMerge>
+                  <closureRewritePolyfills>true</closureRewritePolyfills>
+                  <outputFilename>bundle.min.js</outputFilename>
+                  <closureIncludeSourcesContent>true</closureIncludeSourcesContent>
                 </configuration>
               </mojo>
             </mojos>
