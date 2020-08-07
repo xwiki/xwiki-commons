@@ -2295,6 +2295,12 @@
             <phantomjs>
               <version>2.1.1</version>
             </phantomjs>
+            <specRunnerTemplate>REQUIRE_JS</specRunnerTemplate>
+            <preloadSources>
+              <source>/webjars/require.js</source>
+            </preloadSources>
+            <timeout>10</timeout>
+            <debug>true</debug>
           </configuration>
           <!-- Turn off logging in the console since some non-important errors (duh!) make Jenkins fail the build.
                For example:
@@ -2356,30 +2362,35 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>2.17.0</version>
           <configuration>
+            <!-- Process all JavaScript files by default. -->
             <includes>
               <include>**/*.js</include>
             </includes>
+            <!-- Exclude already minified files. -->
             <excludes>
               <exclude>**/*.min.*</exclude>
             </excludes>
+            <!-- Don't aggregate / merge files by default. -->
             <skipMerge>true</skipMerge>
+            <!-- Don't include the polyfills in each minified JavaScript file because it leads to a lot of code
+              duplication. It makes sense to do this only for the aggregated / merged file. -->
             <closureRewritePolyfills>false</closureRewritePolyfills>
+            <!-- Support the latest stable ECMAScript features (excludes drafts) as input. -->
             <closureLanguageIn>STABLE</closureLanguageIn>
+            <!-- The output language must match the highest ECMAScript version supported by all the browsers we support.
+              See https://dev.xwiki.org/xwiki/bin/view/Community/SupportStrategy/BrowserSupportStrategy
+              As long as we support IE11 we need to output a lower version of ECMAScript. -->
             <closureLanguageOut>ECMASCRIPT5_STRICT</closureLanguageOut>
+            <!-- Generate the source maps in order to have better error reporting on minified JavaScript files and in
+              order to ease the debuggging of these files. -->
             <closureCreateSourceMap>true</closureCreateSourceMap>
           </configuration>
         </plugin>
         <plugin>
           <groupId>com.cj.jshintmojo</groupId>
           <artifactId>jshint-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
           <version>1.6.0</version>
-          <executions>
-            <execution>
-              <goals>
-                <goal>lint</goal>
-              </goals>
-            </execution>
-          </executions>
           <configuration>
             <globals>require,define</globals>
             <!-- See https://github.com/jshint/jshint/blob/master/examples/.jshintrc -->
