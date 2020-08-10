@@ -49,7 +49,7 @@
     <dependency>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-core</artifactId>
-      <version>9.4.20.Final</version>
+      <version>11.0.0.Final</version>
       <exclusions>
         <!-- Use jakarta.transaction:jakarta.transaction-api instead to not have duplicate JARs in generated WARs -->
         <exclusion>
