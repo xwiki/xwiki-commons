@@ -2355,6 +2355,17 @@
           <artifactId>yuicompressor-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>1.5.1</version>
+          <configuration>
+            <skip>${xwiki.minification.skip}</skip>
+            <excludes>
+              <exclude>**/*.min.*</exclude>
+            </excludes>
+            <!-- We prefer to use the JSHint Maven Plugin because it gives us more control over the validation rules. -->
+            <jswarn>false</jswarn>
+            <!-- The default suffix uses the dash as separator (-min) but we prefer the dot (.min) because it is
+              currently more widely used in the JavaScript world. -->
+            <suffix>.min</suffix>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>com.github.blutorange</groupId>

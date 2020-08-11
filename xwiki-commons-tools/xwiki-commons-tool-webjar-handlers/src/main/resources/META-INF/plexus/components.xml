@@ -82,6 +82,26 @@
                   <closureIncludeSourcesContent>true</closureIncludeSourcesContent>
                 </configuration>
               </mojo>
+              <mojo>
+                <!-- Minify and aggregate the CSS files. -->
+                <goal>net.alchim31.maven:yuicompressor-maven-plugin:compress</goal>
+                <configuration>
+                  <sourceDirectory>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}</sourceDirectory>
+                  <includes>
+                    <include>**/*.css</include>
+                  </includes>
+                  <outputDirectory>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}</outputDirectory>
+                  <aggregations>
+                    <aggregation>
+                      <insertNewLine>true</insertNewLine>
+                      <output>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}/webjar.bundle.min.css</output>
+                      <includes>
+                        <include>**/*.min.css</include>
+                      </includes>
+                    </aggregation>
+                  </aggregations>
+                </configuration>
+              </mojo>
             </mojos>
           </compile>
           <process-test-resources>org.apache.maven.plugins:maven-resources-plugin:testResources</process-test-resources>
