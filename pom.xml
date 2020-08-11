@@ -215,6 +215,9 @@
     <!-- The version of Eclipse Sisu to use-->
     <sisu.version>0.3.4</sisu.version>
 
+    <!-- The version of Antlr4 to bundle -->
+    <antlr4.version>4.8-1</antlr4.version>
+
     <!-- The recommended version of known extensions to use -->
     <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]
     </xwiki.extension.recommendedVersions.commons>
@@ -1292,6 +1295,17 @@
         <groupId>antlr</groupId>
         <artifactId>antlr</artifactId>
         <version>2.7.7</version>
+      </dependency>
+      <!-- ANTLR4 -->
+      <dependency>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-runtime</artifactId>
+        <version>${antlr4.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4</artifactId>
+        <version>${antlr4.version}</version>
       </dependency>
       <!-- Used on remote observation and also by JBossCache/Infinispan (even if it does not really use it) -->
       <dependency>
