@@ -50,6 +50,7 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.index.Indexable;
 import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.rating.ExtensionRating;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
@@ -84,7 +85,7 @@ import org.xwiki.repository.UriBuilder;
  * @since 4.0M1
  */
 public class XWikiExtensionRepository extends AbstractExtensionRepository
-    implements AdvancedSearchable, RatableExtensionRepository
+    implements AdvancedSearchable, RatableExtensionRepository, Indexable
 {
     public static final Version VERSION10 = new DefaultVersion(Resources.VERSION10);
 

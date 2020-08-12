@@ -69,14 +69,14 @@ public interface Extension extends Comparable<Extension>
     String FIELD_FEATURES = "features";
 
     /**
-     * @see #getFeatures()
+     * @see #getExtensionFeatures()
      * @since 9.0RC1
      * @since 8.4.2
      */
     String FIELD_EXTENSIONFEATURE = "extensionfeature";
 
     /**
-     * @see #getFeatures()
+     * @see #getExtensionFeatures()
      * @since 9.0RC1
      * @since 8.4.2
      */
