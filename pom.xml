@@ -2357,13 +2357,17 @@
           <version>1.5.1</version>
           <configuration>
             <skip>${xwiki.minification.skip}</skip>
+            <!-- We use it only to minify the CSS. For JavaScript we use the Closure Compiler. -->
+            <includes>
+              <include>**/*.css</include>
+            </includes>
             <excludes>
               <exclude>**/*.min.*</exclude>
             </excludes>
             <!-- We prefer to use the JSHint Maven Plugin because it gives us more control over the validation rules. -->
             <jswarn>false</jswarn>
             <!-- The default suffix uses the dash as separator (-min) but we prefer the dot (.min) because it is
-              currently more widely used in the JavaScript world. -->
+              currently more widely used on the web. -->
             <suffix>.min</suffix>
           </configuration>
         </plugin>
@@ -2373,6 +2377,8 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>2.17.0</version>
           <configuration>
+            <sourceDir>resources</sourceDir>
+            <targetDir>resources</targetDir>
             <!-- Process all JavaScript files by default. -->
             <includes>
               <include>**/*.js</include>

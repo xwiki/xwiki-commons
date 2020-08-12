@@ -87,9 +87,6 @@
                 <goal>net.alchim31.maven:yuicompressor-maven-plugin:compress</goal>
                 <configuration>
                   <sourceDirectory>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}</sourceDirectory>
-                  <includes>
-                    <include>**/*.css</include>
-                  </includes>
                   <outputDirectory>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}</outputDirectory>
                   <aggregations>
                     <aggregation>
