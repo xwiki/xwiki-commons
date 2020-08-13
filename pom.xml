@@ -2391,6 +2391,7 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>2.17.0</version>
           <configuration>
+            <skip>${xwiki.minification.skip}</skip>
             <sourceDir>resources</sourceDir>
             <targetDir>resources</targetDir>
             <!-- Process all JavaScript files by default. -->
