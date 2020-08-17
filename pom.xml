@@ -2414,7 +2414,13 @@
               As long as we support IE11 we need to output a lower version of ECMAScript. -->
             <closureLanguageOut>ECMASCRIPT5_STRICT</closureLanguageOut>
             <!-- Generate the source maps in order to have better error reporting on minified JavaScript files and in
-              order to ease the debuggging of these files. -->
+              order to ease the debuggging of these files. Note that the path to the source file from the generated
+              source map won't work on the server (and thus you won't be able to debug the source code) unless the
+              source (input) folder is the same as the target (output) folder (which is not the case by default).
+              Unfortunately we cannot fix the source path with the closureSourceMapLocationMappings configuration ATM
+              because it supports only prefix stripping which doesn't help when you have nested folders inside the
+              source folder. The only fix is to generate the source maps in the same folder as the source itself and for
+              this you need to copy the source files before executing this plugin. -->
             <closureCreateSourceMap>true</closureCreateSourceMap>
           </configuration>
         </plugin>
