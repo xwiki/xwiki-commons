@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-classloader-protocols</artifactId>
-    <version>11.10.9-SNAPSHOT</version>
+    <version>11.10.10</version>
   </parent>
   <artifactId>xwiki-commons-classloader-protocol-jar</artifactId>
   <name>XWiki Commons - ClassLoader - Protocols - JAR</name>
