@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-crypto</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>12.7-rc-1</version>
+    <version>12.7-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-crypto-pkix</artifactId>
   <packaging>jar</packaging>

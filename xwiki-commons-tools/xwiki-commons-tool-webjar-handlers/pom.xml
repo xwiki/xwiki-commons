@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-tool-pom</artifactId>
-    <version>12.7-rc-1</version>
+    <version>12.7-SNAPSHOT</version>
     <relativePath>../xwiki-commons-tool-pom</relativePath>
   </parent>
   <artifactId>xwiki-commons-tool-webjar-handlers</artifactId>
