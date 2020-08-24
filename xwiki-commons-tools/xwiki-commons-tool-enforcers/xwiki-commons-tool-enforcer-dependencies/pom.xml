@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-tool-enforcers</artifactId>
-    <version>12.7-SNAPSHOT</version>
+    <version>12.7-rc-1</version>
   </parent>
   <artifactId>xwiki-commons-tool-enforcer-dependencies</artifactId>
   <name>XWiki Commons - Tools - Banned Dependencies Enforcer</name>
