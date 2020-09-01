@@ -111,6 +111,9 @@
     <!-- Ivy -->
     <ivy.version>2.5.0</ivy.version>
 
+    <!-- Closure compiler -->
+    <closure-compiler.version>v20200830</closure-compiler.version>
+
     <!-- By default Checkstyle, Backward compatibility check, Enforcer, License plugins, etc are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.revapi.skip>false</xwiki.revapi.skip>
@@ -2389,7 +2392,7 @@
           <groupId>com.github.blutorange</groupId>
           <artifactId>closure-compiler-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.17.0</version>
+          <version>2.18.0</version>
           <configuration>
             <skip>${xwiki.minification.skip}</skip>
             <sourceDir>resources</sourceDir>
@@ -2423,6 +2426,13 @@
               this you need to copy the source files before executing this plugin. -->
             <closureCreateSourceMap>true</closureCreateSourceMap>
           </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>com.google.javascript</groupId>
+              <artifactId>closure-compiler</artifactId>
+              <version>${closure-compiler.version}</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
           <groupId>com.cj.jshintmojo</groupId>
