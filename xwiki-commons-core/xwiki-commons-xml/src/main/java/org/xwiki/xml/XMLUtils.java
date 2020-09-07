@@ -218,20 +218,27 @@ public final class XMLUtils
     }
 
     /**
+     * Escapes all the XML special characters and a XWiki Syntax 2.0+ special character (i.e., <code>{</code>) in a
+     * {@code String} using numerical XML entities.
+     * For instance, {@code <b>{{html}}$x{{/html}}</b>} will be escaped and can thus be put inside an
+     * XML tag or an XML attribute.
+     * For instance, in a div tag
+     * <code>&lt;div&gt;&amp;#60;b&amp;#62;&amp;#123;&amp;#123;html}}$x&amp;#123;&amp;#123;/html}}&amp;#60;/b&amp;#62;
+     *&lt;/div&gt;</code>
+     * or in the value attribute of an input tag
+     * <code>&lt;input
+     * value=&quot;&amp;#60;b&amp;#62;&amp;#123;&amp;#123;html}}$x&amp;#123;&amp;#123;/html}}&amp;#60;/b&amp;#62;&quot;
+     * /&gt;</code>.
+     * Specifically, escapes &lt;, &gt;, ", ', &amp; and {.
+     * Left curly bracket is included here to protect against {{/html}} in xwiki 2.x syntax.
      * <p>
-     * Escapes all the XML special characters and a xwiki 2.x special character (i.e., <code>{</code>) in a
-     * {@code String} using numerical XML entities. Specifically, escapes &lt;, &gt;, ", ', &amp; and {. Left curly
-     * bracket is included here to protect against {{/html}} in xwiki 2.x syntax.
-     * </p>
-     * <p>
-     * Note that is is preferable to use {@link XMLUtils#escapeAttributeValue(Object)} when the content is used as 
-     * an XML tag attribute, and {@link XMLUtils#escapeElementText(Object)} when the content is used as an XML text.
-     * </p>
+     * Note that is is preferable to use {@link #escapeAttributeValue(Object)} when the content is used as
+     * an XML tag attribute, and {@link #escapeElementText(String)} when the content is used as an XML text.
      *
      * @param content the text to escape, may be {@code null}
      * @return a new escaped {@code String}, {@code null} if {@code null} input
-     * @see XMLUtils#escapeAttributeValue(Object)
-     * @see XMLUtils#escapeElementText(Object) 
+     * @see #escapeAttributeValue(Object)
+     * @see #escapeElementText(String)
      */
     public static String escape(Object content)
     {
@@ -285,28 +292,27 @@ public final class XMLUtils
 
     /**
      * Escapes XML special characters in a {@code String} using numerical XML entities, so that the resulting string
-     * can safely be used as an XML element text value. For instance, {@code Jim & John} will be escaped and can thus
-     * be put inside an XML tag, such as the {@code p} tag, as in {@code <p>Jim &amp; John</p>}. Specifically, escapes
-     * &lt; to {@code &lt;}, and &amp; to {@code &amp;}.
+     * can safely be used as an XML element text value.
+     * For instance, {@code Jim & John} will be escaped and can thus be put inside an XML tag, such as the {@code p}
+     * tag, as in {@code <p>Jim &amp; John</p>}.
+     * Specifically, escapes &lt; to {@code &lt;}, and &amp; to {@code &amp;}.
      *
-     * @param content the text to escape, may be {@code null}. The content is converted to a {@link String} using
-     * {@link String#valueOf(Object)} before escaping.
+     * @param content the text to escape, may be {@code null}.
      * @return a new escaped {@code String}, {@code null} if {@code null} input
      * @since 12.8RC1
      */
     @Unstable
-    public static String escapeElementText(Object content)
+    public static String escapeElementText(String content)
     {
         if (content == null) {
             return null;
         }
-        String str = String.valueOf(content);
         // Initializes a string builder with an initial capacity 1.1 times greater than the initial content to account
         // for special character substitutions.
-        int contentLength = str.length();
+        int contentLength = content.length();
         StringBuilder result = new StringBuilder((int) (contentLength * 1.1));
         for (int i = 0; i < contentLength; ++i) {
-            char c = str.charAt(i);
+            char c = content.charAt(i);
             switch (c) {
                 case '&':
                     result.append(AMP);
