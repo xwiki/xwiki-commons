@@ -225,6 +225,7 @@ public final class XMLUtils
      * @param content the text to escape, may be {@code null}
      * @return a new escaped {@code String}, {@code null} if {@code null} input
      */
+    @Deprecated
     public static String escape(Object content)
     {
         return escapeAttributeValue(content);
@@ -276,15 +277,15 @@ public final class XMLUtils
     }
 
     /**
-     *  Escapes some XML special characters (&amp; and &lt;) in a <code>String</code> using numerical XML
-     *  entities, so that the resulting string can safely be used in HTML pages.
+     * Escapes XML special characters in a {@code String} using numerical XML entities, so that the resulting string
+     * can safely be used as an XML text value. Specifically, escapes &lt;, and &amp;.
      *
      * @param content the text to escape, may be {@code null}
      * @return a new escaped {@code String}, {@code null} if {@code null} input
      * @since 12.8RC1
      */
     @Unstable
-    public static String minimalEscape(Object content)
+    public static String escapeElementText(Object content)
     {
         if (content == null) {
             return null;

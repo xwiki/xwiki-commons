@@ -66,16 +66,16 @@ public class XMLUtilsTest
     }
 
     @Test
-    void escapeMinimal()
+    void escapeElementText()
     {
-        String actual = XMLUtils.minimalEscape("a < a' && a' < a\" => a < a\"");
+        String actual = XMLUtils.escapeElementText("a < a' && a' < a\" => a < a\"");
         assertEquals("a &#60; a' &#38;&#38; a' &#60; a\" => a &#60; a\"", actual);
     }
 
     @Test
-    void escapeMinimalNull()
+    void escapeElementTextNull()
     {
-        assertNull(XMLUtils.minimalEscape(null));
+        assertNull(XMLUtils.escapeElementText(null));
     }
 
     @Test
