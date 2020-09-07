@@ -218,14 +218,21 @@ public final class XMLUtils
     }
 
     /**
-     * Escapes all the XML special characters in a <code>String</code> using numerical XML entities. Specifically,
-     * escapes &lt;, &gt;, ", ', &amp; and {.  Left curly bracket is included here to protect against {{/html}} in
-     * xwiki 2.x syntax.
+     * <p>
+     * Escapes all the XML special characters and a xwiki 2.x special character (i.e., <code>{</code>) in a
+     * {@code String} using numerical XML entities. Specifically, escapes &lt;, &gt;, ", ', &amp; and {. Left curly
+     * bracket is included here to protect against {{/html}} in xwiki 2.x syntax.
+     * </p>
+     * <p>
+     * Note that is is preferable to use {@link XMLUtils#escapeAttributeValue(Object)} when the content is used as 
+     * an XML tag attribute, and {@link XMLUtils#escapeElementText(Object)} when the content is used as an XML text.
+     * </p>
      *
      * @param content the text to escape, may be {@code null}
      * @return a new escaped {@code String}, {@code null} if {@code null} input
+     * @see XMLUtils#escapeAttributeValue(Object)
+     * @see XMLUtils#escapeElementText(Object) 
      */
-    @Deprecated
     public static String escape(Object content)
     {
         return escapeAttributeValue(content);
@@ -278,9 +285,12 @@ public final class XMLUtils
 
     /**
      * Escapes XML special characters in a {@code String} using numerical XML entities, so that the resulting string
-     * can safely be used as an XML text value. Specifically, escapes &lt;, and &amp;.
+     * can safely be used as an XML element text value. For instance, {@code Jim & John} will be escaped and can thus
+     * be put inside an XML tag, such as the {@code p} tag, as in {@code <p>Jim &amp; John</p>}. Specifically, escapes
+     * &lt; to {@code &lt;}, and &amp; to {@code &amp;}.
      *
-     * @param content the text to escape, may be {@code null}
+     * @param content the text to escape, may be {@code null}. The content is converted to a {@link String} using
+     * {@link String#valueOf(Object)} before escaping.
      * @return a new escaped {@code String}, {@code null} if {@code null} input
      * @since 12.8RC1
      */
