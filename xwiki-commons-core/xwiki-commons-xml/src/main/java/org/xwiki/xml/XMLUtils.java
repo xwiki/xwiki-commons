@@ -218,52 +218,117 @@ public final class XMLUtils
     }
 
     /**
-     * Escapes all the XML special characters and a XWiki Syntax 2.0+ special character (i.e., <code>{</code>) in a
-     * {@code String} using numerical XML entities.
-     * For instance, {@code <b>{{html}}$x{{/html}}</b>} will be escaped and can thus be put inside an
-     * XML tag or an XML attribute.
-     * For instance, in a div tag
+     * Escapes all the XML special characters and a XWiki Syntax 2.0+ special character (i.e., <code>{</code>, to
+     * protect against <code>{{/html}}</code>) in a {@code String}.
+     * The escaping is done using numerical XML entities to allow the content to be used as an XML attribute value
+     * or as an XML element text.
+     * For instance, {@code <b>{{html}}$x{{/html}}</b>} will be escaped and can thus be put inside an XML attribute.
+     * To illustrate, the value can be used in a div tag
      * <code>&lt;div&gt;&amp;#60;b&amp;#62;&amp;#123;&amp;#123;html}}$x&amp;#123;&amp;#123;/html}}&amp;#60;/b&amp;#62;
-     *&lt;/div&gt;</code>
-     * or in the value attribute of an input tag
+     * &lt;/div&gt;</code>
+     * or in the attribute of an input tag
      * <code>&lt;input
      * value=&quot;&amp;#60;b&amp;#62;&amp;#123;&amp;#123;html}}$x&amp;#123;&amp;#123;/html}}&amp;#60;/b&amp;#62;&quot;
      * /&gt;</code>.
-     * Specifically, escapes &lt;, &gt;, ", ', &amp; and {.
-     * Left curly bracket is included here to protect against {{/html}} in xwiki 2.x syntax.
      * <p>
-     * Note that is is preferable to use {@link #escapeAttributeValue(Object)} when the content is used as
+     * Specifically, escapes &lt;, &gt;, ", ', &amp; and {.
+     * <p>
+     * Note that is is preferable to use {@link #escapeAttributeValue(String)} when the content is used as
      * an XML tag attribute, and {@link #escapeElementText(String)} when the content is used as an XML text.
      *
-     * @param content the text to escape, may be {@code null}
+     * @param content the text to escape, may be {@code null}. The content is converted to {@code String} using
+     * {@link String#valueOf(Object)} before escaping.
      * @return a new escaped {@code String}, {@code null} if {@code null} input
-     * @see #escapeAttributeValue(Object)
+     * @see #escapeAttributeValue(String)
      * @see #escapeElementText(String)
+     * @deprecated since 12.8RC1, use {@link #escape(String)} instead
      */
+    @Deprecated
     public static String escape(Object content)
     {
         return escapeAttributeValue(content);
     }
 
     /**
-     * Escapes all the XML special characters and left curly bracket in a <code>String</code> using numerical XML
-     * entities, so that the resulting string can safely be used as an XML attribute value. Specifically, escapes &lt;,
-     * &gt;, ", ', &amp; and {.  Left curly bracket is included here to protect against {{/html}} in xwiki 2.x syntax.
+     * Escapes all the XML special characters and a XWiki Syntax 2.0+ special character (i.e., <code>{</code>, to
+     * protect against {{/html}}) in a {@code String}.
+     * The escaping is done using numerical XML entities to allow the content to be used as an XML attribute value
+     * or as an XML element text.
+     * For instance, {@code <b>{{html}}$x{{/html}}</b>} will be escaped and can thus be put inside as XML attribute.
+     * To illustrate, the value can be used in a div tag
+     * <code>&lt;div&gt;&amp;#60;b&amp;#62;&amp;#123;&amp;#123;html}}$x&amp;#123;&amp;#123;/html}}&amp;#60;/b&amp;#62;
+     * &lt;/div&gt;</code>
+     * or in the attribute of an input tag
+     * <code>&lt;input
+     * value=&quot;&amp;#60;b&amp;#62;&amp;#123;&amp;#123;html}}$x&amp;#123;&amp;#123;/html}}&amp;#60;/b&amp;#62;&quot;
+     * /&gt;</code>.
+     * <p>
+     * Specifically, escapes &lt;, &gt;, ", ', &amp; and {.
+     * <p>
+     * Note that is is preferable to use {@link #escapeAttributeValue(String)} when the content is used as
+     * an XML tag attribute, and {@link #escapeElementText(String)} when the content is used as an XML text.
      *
      * @param content the text to escape, may be {@code null}
      * @return a new escaped {@code String}, {@code null} if {@code null} input
+     * @see #escapeAttributeValue(String)
+     * @see #escapeElementText(String)
      */
+    public static String escape(String content)
+    {
+        return escapeAttributeValue(content);
+    }
+
+    /**
+     * Escapes all the XML special characters and a XWiki Syntax 2.0+ special character (i.e., <code>{</code>, to
+     * protect against {{/html}}) in a {@code String}.
+     * The escaping is done using numerical XML entities to allow the content to be used inside XML attributes.
+     * For instance, {@code <b>{{html}}$x{{/html}}</b>} will be escaped and can thus be put inside an XML attribute.
+     * To illustrate, the value can be used in the attribute of an input tag
+     * <code>&lt;input
+     * value=&quot;&amp;#60;b&amp;#62;&amp;#123;&amp;#123;html}}$x&amp;#123;&amp;#123;/html}}&amp;#60;/b&amp;#62;&quot;
+     * /&gt;</code>.
+     * <p>
+     * Specifically, escapes &lt;, &gt;, ", ', &amp; and {.
+     *
+     * @param content the text to escape, may be {@code null}. The content is converted to {@code String} using
+     * {@link String#valueOf(Object)} before escaping.
+     * @return a new escaped {@code String}, {@code null} if {@code null} input
+     * @deprecated since 12.8RC1, use {@link #escapeAttributeValue(String)} instead
+     */
+    @Deprecated
     public static String escapeAttributeValue(Object content)
     {
         if (content == null) {
             return null;
         }
-        String str = String.valueOf(content);
-        StringBuilder result = new StringBuilder((int) (str.length() * 1.1));
-        int length = str.length();
+        return escapeAttributeValue(String.valueOf(content));
+    }
+
+    /**
+     * Escapes all the XML special characters and a XWiki Syntax 2.0+ special character (i.e., <code>{</code>, to
+     * protect against {{/html}}) in a {@code String}.
+     * The escaping is done using numerical XML entities to allow the content to be used inside XML attributes.
+     * For instance, {@code <b>{{html}}$x{{/html}}</b>} will be escaped and can thus be put inside an XML attribute.
+     * To illustrate, the value can be used in the attribute of an input tag
+     * <code>&lt;input
+     * value=&quot;&amp;#60;b&amp;#62;&amp;#123;&amp;#123;html}}$x&amp;#123;&amp;#123;/html}}&amp;#60;/b&amp;#62;&quot;
+     * /&gt;</code>.
+     * <p>
+     * Specifically, escapes &lt;, &gt;, ", ', &amp; and {.
+     *
+     * @param content the text to escape, may be {@code null}
+     * @return a new escaped {@code String}, {@code null} if {@code null} input
+     */
+    public static String escapeAttributeValue(String content)
+    {
+        if (content == null) {
+            return null;
+        }
+        StringBuilder result = new StringBuilder((int) (content.length() * 1.1));
+        int length = content.length();
         char c;
         for (int i = 0; i < length; ++i) {
-            c = str.charAt(i);
+            c = content.charAt(i);
             switch (c) {
                 case '&':
                     result.append(AMP);
@@ -331,20 +396,37 @@ public final class XMLUtils
      * Escapes the XML special characters in a <code>String</code> using numerical XML entities, so that the resulting
      * string can safely be used as an XML text node. Specifically, escapes &lt;, &gt;, and &amp;.
      *
-     * @param content the text to escape, may be {@code null}
+     * @param content the text to escape, may be {@code null}. The content is converted to {@code String} using
+     * {@link String#valueOf(Object)} before escaping.
      * @return a new escaped {@code String}, {@code null} if {@code null} input
+     * @deprecated since 12.8RC1, use {@link #escapeElementContent(String)} instead.
      */
+    @Deprecated
     public static String escapeElementContent(Object content)
     {
         if (content == null) {
             return null;
         }
-        String str = String.valueOf(content);
-        StringBuilder result = new StringBuilder((int) (str.length() * 1.1));
-        int length = str.length();
+        return escapeElementContent(String.valueOf(content));
+    }
+
+    /**
+     * Escapes the XML special characters in a <code>String</code> using numerical XML entities, so that the resulting
+     * string can safely be used as an XML text node. Specifically, escapes &lt;, &gt;, and &amp;.
+     *
+     * @param content the text to escape, may be {@code null}
+     * @return a new escaped {@code String}, {@code null} if {@code null} input
+     */
+    public static String escapeElementContent(String content)
+    {
+        if (content == null) {
+            return null;
+        }
+        StringBuilder result = new StringBuilder((int) (content.length() * 1.1));
+        int length = content.length();
         char c;
         for (int i = 0; i < length; ++i) {
-            c = str.charAt(i);
+            c = content.charAt(i);
             switch (c) {
                 case '&':
                     result.append(AMP);
@@ -366,24 +448,42 @@ public final class XMLUtils
      * Unescape encoded special XML characters. Only &gt;, &lt; &amp;, ", ' and { are unescaped, since they are the only
      * ones that affect the resulting markup.
      *
-     * @param content the text to decode, may be {@code null}
+     * @param content the text to decode, may be {@code null}. The content is converted to {@code String} using
+     * {@link String#valueOf(Object)} before escaping.
      * @return unescaped content, {@code null} if {@code null} input
+     * @deprecated since 12.8RC1, use {@link #unescape(String)} instead
      */
+    @Deprecated
     public static String unescape(Object content)
     {
         if (content == null) {
             return null;
         }
-        String str = String.valueOf(content);
 
-        str = APOS_PATTERN.matcher(str).replaceAll("'");
-        str = QUOT_PATTERN.matcher(str).replaceAll("\"");
-        str = LT_PATTERN.matcher(str).replaceAll("<");
-        str = GT_PATTERN.matcher(str).replaceAll(">");
-        str = AMP_PATTERN.matcher(str).replaceAll("&");
-        str = LCURL_PATTERN.matcher(str).replaceAll("{");
+        return unescape(String.valueOf(content));
+    }
 
-        return str;
+    /**
+     * Unescape encoded special XML characters. Only &gt;, &lt; &amp;, ", ' and { are unescaped, since they are the only
+     * ones that affect the resulting markup.
+     *
+     * @param content the text to decode, may be {@code null}
+     * @return unescaped content, {@code null} if {@code null} input
+     */
+    public static String unescape(String content)
+    {
+        if (content == null) {
+            return null;
+        }
+
+        String ret = APOS_PATTERN.matcher(content).replaceAll("'");
+        ret = QUOT_PATTERN.matcher(ret).replaceAll("\"");
+        ret = LT_PATTERN.matcher(ret).replaceAll("<");
+        ret = GT_PATTERN.matcher(ret).replaceAll(">");
+        ret = AMP_PATTERN.matcher(ret).replaceAll("&");
+        ret = LCURL_PATTERN.matcher(ret).replaceAll("{");
+
+        return ret;
     }
 
     /**
