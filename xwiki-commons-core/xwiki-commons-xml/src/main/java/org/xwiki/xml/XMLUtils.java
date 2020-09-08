@@ -22,6 +22,7 @@ package org.xwiki.xml;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -246,7 +247,7 @@ public final class XMLUtils
     @Deprecated
     public static String escape(Object content)
     {
-        return escapeAttributeValue(content);
+        return escapeAttributeValue(Objects.toString(content, null));
     }
 
     /**
@@ -272,7 +273,9 @@ public final class XMLUtils
      * @return a new escaped {@code String}, {@code null} if {@code null} input
      * @see #escapeAttributeValue(String)
      * @see #escapeElementText(String)
+     * @since 12.8RC1
      */
+    @Unstable
     public static String escape(String content)
     {
         return escapeAttributeValue(content);
@@ -318,7 +321,9 @@ public final class XMLUtils
      *
      * @param content the text to escape, may be {@code null}
      * @return a new escaped {@code String}, {@code null} if {@code null} input
+     * @since 12.8RC1
      */
+    @Unstable
     public static String escapeAttributeValue(String content)
     {
         if (content == null) {
@@ -416,7 +421,9 @@ public final class XMLUtils
      *
      * @param content the text to escape, may be {@code null}
      * @return a new escaped {@code String}, {@code null} if {@code null} input
+     * @since 12.8RC1
      */
+    @Unstable
     public static String escapeElementContent(String content)
     {
         if (content == null) {
@@ -469,7 +476,9 @@ public final class XMLUtils
      *
      * @param content the text to decode, may be {@code null}
      * @return unescaped content, {@code null} if {@code null} input
+     * @since 12.8RC1
      */
+    @Unstable
     public static String unescape(String content)
     {
         if (content == null) {
