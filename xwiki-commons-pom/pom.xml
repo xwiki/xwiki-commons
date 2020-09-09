@@ -169,6 +169,8 @@
               <goal>check</goal>
             </goals>
             <configuration>
+              <includeSource>true</includeSource>
+              <includeTest>false</includeTest>
               <processors>
                 <processor>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</processor>
                 <processor>org.xwiki.tool.spoon.ComponentAnnotationProcessor</processor>
@@ -233,7 +235,9 @@
               <goal>check</goal>
             </goals>
             <configuration>
-              <srcFolder>src/test/java</srcFolder>
+              <!-- TODO: Set to false when https://github.com/INRIA/spoon/issues/3582 is fixed -->
+              <includeSource>true</includeSource>
+              <includeTest>true</includeTest>
               <processors>
                 <processor>org.xwiki.tool.spoon.JUnit5JUnit4Processor</processor>
               </processors>
