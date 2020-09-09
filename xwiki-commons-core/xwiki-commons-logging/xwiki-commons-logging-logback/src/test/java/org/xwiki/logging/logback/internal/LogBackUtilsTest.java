@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  * @since 4.4RC1
  */
-public class LogBackUtilsTest
+class LogBackUtilsTest
 {
     @Test
     void getLoggerContextIsNullWhenLogbackNotPresent()
