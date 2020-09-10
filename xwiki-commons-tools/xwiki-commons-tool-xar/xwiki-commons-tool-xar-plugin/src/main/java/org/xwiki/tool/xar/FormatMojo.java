@@ -194,7 +194,7 @@ public class FormatMojo extends AbstractVerifyMojo
     private void removeContent(Element element)
     {
         if (element.hasContent()) {
-            element.content().get(0).detach();
+            element.clearContent();
         }
     }
 
