@@ -238,7 +238,7 @@ public final class XMLUtils
      * an XML tag attribute, and {@link #escapeElementText(String)} when the content is used as an XML text.
      *
      * @param content the text to escape, may be {@code null}. The content is converted to {@code String} using
-     * {@link String#valueOf(Object)} before escaping.
+     * {@link Objects#toString(Object, String)}, where the second parameter is {@code null}
      * @return a new escaped {@code String}, {@code null} if {@code null} input
      * @see #escapeAttributeValue(String)
      * @see #escapeElementText(String)
@@ -404,7 +404,7 @@ public final class XMLUtils
      * @param content the text to escape, may be {@code null}. The content is converted to {@code String} using
      * {@link String#valueOf(Object)} before escaping.
      * @return a new escaped {@code String}, {@code null} if {@code null} input
-     * @deprecated since 12.8RC1, use {@link #escapeElementContent(String)} instead.
+     * @deprecated since 12.8RC1, use {@link #escapeElementText(String)} instead.
      */
     @Deprecated
     public static String escapeElementContent(Object content)
@@ -412,43 +412,7 @@ public final class XMLUtils
         if (content == null) {
             return null;
         }
-        return escapeElementContent(String.valueOf(content));
-    }
-
-    /**
-     * Escapes the XML special characters in a <code>String</code> using numerical XML entities, so that the resulting
-     * string can safely be used as an XML text node. Specifically, escapes &lt;, &gt;, and &amp;.
-     *
-     * @param content the text to escape, may be {@code null}
-     * @return a new escaped {@code String}, {@code null} if {@code null} input
-     * @since 12.8RC1
-     */
-    @Unstable
-    public static String escapeElementContent(String content)
-    {
-        if (content == null) {
-            return null;
-        }
-        StringBuilder result = new StringBuilder((int) (content.length() * 1.1));
-        int length = content.length();
-        char c;
-        for (int i = 0; i < length; ++i) {
-            c = content.charAt(i);
-            switch (c) {
-                case '&':
-                    result.append(AMP);
-                    break;
-                case '<':
-                    result.append(LT);
-                    break;
-                case '>':
-                    result.append(GT);
-                    break;
-                default:
-                    result.append(c);
-            }
-        }
-        return result.toString();
+        return escapeElementText(String.valueOf(content));
     }
 
     /**
