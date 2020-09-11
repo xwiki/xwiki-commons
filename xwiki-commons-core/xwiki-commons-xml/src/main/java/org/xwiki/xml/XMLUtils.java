@@ -247,7 +247,7 @@ public final class XMLUtils
     @Deprecated
     public static String escape(Object content)
     {
-        return escapeAttributeValue(Objects.toString(content, null));
+        return escape(Objects.toString(content, null));
     }
 
     /**
@@ -412,7 +412,27 @@ public final class XMLUtils
         if (content == null) {
             return null;
         }
-        return escapeElementText(String.valueOf(content));
+        String str = String.valueOf(content);
+        StringBuilder result = new StringBuilder((int) (str.length() * 1.1));
+        int length = str.length();
+        char c;
+        for (int i = 0; i < length; ++i) {
+            c = str.charAt(i);
+            switch (c) {
+                case '&':
+                    result.append(AMP);
+                    break;
+                case '<':
+                    result.append(LT);
+                    break;
+                case '>':
+                    result.append(GT);
+                    break;
+                default:
+                    result.append(c);
+            }
+        }
+        return result.toString();
     }
 
     /**
@@ -420,9 +440,9 @@ public final class XMLUtils
      * ones that affect the resulting markup.
      *
      * @param content the text to decode, may be {@code null}. The content is converted to {@code String} using
-     * {@link String#valueOf(Object)} before escaping.
+     * {@link String#valueOf(Object)} before escaping
      * @return unescaped content, {@code null} if {@code null} input
-     * @deprecated since 12.8RC1, use {@link #unescape(String)} instead
+     * @deprecated since 12.8RC1, use {@link org.apache.commons.text.StringEscapeUtils#unescapeXml(String)} instead
      */
     @Deprecated
     public static String unescape(Object content)
@@ -430,33 +450,16 @@ public final class XMLUtils
         if (content == null) {
             return null;
         }
+        String str = String.valueOf(content);
 
-        return unescape(String.valueOf(content));
-    }
+        str = APOS_PATTERN.matcher(str).replaceAll("'");
+        str = QUOT_PATTERN.matcher(str).replaceAll("\"");
+        str = LT_PATTERN.matcher(str).replaceAll("<");
+        str = GT_PATTERN.matcher(str).replaceAll(">");
+        str = AMP_PATTERN.matcher(str).replaceAll("&");
+        str = LCURL_PATTERN.matcher(str).replaceAll("{");
 
-    /**
-     * Unescape encoded special XML characters. Only &gt;, &lt; &amp;, ", ' and { are unescaped, since they are the only
-     * ones that affect the resulting markup.
-     *
-     * @param content the text to decode, may be {@code null}
-     * @return unescaped content, {@code null} if {@code null} input
-     * @since 12.8RC1
-     */
-    @Unstable
-    public static String unescape(String content)
-    {
-        if (content == null) {
-            return null;
-        }
-
-        String ret = APOS_PATTERN.matcher(content).replaceAll("'");
-        ret = QUOT_PATTERN.matcher(ret).replaceAll("\"");
-        ret = LT_PATTERN.matcher(ret).replaceAll("<");
-        ret = GT_PATTERN.matcher(ret).replaceAll(">");
-        ret = AMP_PATTERN.matcher(ret).replaceAll("&");
-        ret = LCURL_PATTERN.matcher(ret).replaceAll("{");
-
-        return ret;
+        return str;
     }
 
     /**

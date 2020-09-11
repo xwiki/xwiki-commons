@@ -167,8 +167,13 @@ public class XMLUtilsTest
     @Test
     void escapeElementContent()
     {
-        String actual = XMLUtils.escapeElementContent("a < a' && a' < a\" => a < a\"");
-        assertEquals("a &#60; a' &#38;&#38; a' &#60; a\" => a &#60; a\"", actual);
+        String escapedText = XMLUtils.escapeElementContent("a < a' && a' < a\" => a < a\"");
+
+        assertFalse(escapedText.contains("<"), "Failed to escape <");
+        assertFalse(escapedText.contains(">"), "Failed to escape >");
+        assertTrue(escapedText.contains("'"), "Wrongfully escaped '");
+        assertTrue(escapedText.contains("\""), "Wrongfully escaped \"");
+        assertFalse(escapedText.contains("&&"), "Failed to escape &");
     }
 
     @Test
