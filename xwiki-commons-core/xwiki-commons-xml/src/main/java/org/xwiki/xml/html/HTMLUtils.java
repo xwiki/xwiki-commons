@@ -34,6 +34,8 @@ import org.jdom.output.XMLOutputter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xwiki.stability.Unstable;
+import org.xwiki.xml.XMLUtils;
 
 /**
  * HTML Utility methods.
@@ -288,5 +290,22 @@ public final class HTMLUtils
                 parentNode.removeChild(pNode);
             }
         }
+    }
+
+    /**
+     * Escapes HTML special characters in a {@code String} using numerical HTML entities, so that the resulting string
+     * can safely be used as an HTML content text value.
+     * For instance, {@code Jim & John} will be escaped and can thus be put inside a HTML tag, such as the {@code p}
+     * tag, as in {@code <p>Jim &amp; John</p>}.
+     * Specifically, escapes &lt; to {@code &lt;}, and &amp; to {@code &amp;}.
+     *
+     * @param content the text to escape, may be {@code null}.
+     * @return a new escaped {@code String}, {@code null} if {@code null} input
+     * @since 12.8RC1
+     */
+    @Unstable
+    public static String escapeElementText(String content)
+    {
+        return XMLUtils.escapeElementText(content);
     }
 }
