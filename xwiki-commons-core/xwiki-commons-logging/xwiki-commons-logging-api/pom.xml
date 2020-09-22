@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-logging</artifactId>
-    <version>12.8-SNAPSHOT</version>
+    <version>12.8-rc-1</version>
   </parent>
   <artifactId>xwiki-commons-logging-api</artifactId>
   <name>XWiki Commons - Logging - API</name>
