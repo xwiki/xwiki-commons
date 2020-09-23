@@ -2622,7 +2622,7 @@
           <plugin>
             <groupId>net.sigmalab.maven.plugins</groupId>
             <artifactId>jira-maven-plugin</artifactId>
-            <version>0.7</version>
+            <version>0.9.2</version>
             <configuration>
               <skip>${xwiki.release.jira.skip}</skip>
               <settingsKey>${xwiki.release.jira.settingsKey}</settingsKey>
