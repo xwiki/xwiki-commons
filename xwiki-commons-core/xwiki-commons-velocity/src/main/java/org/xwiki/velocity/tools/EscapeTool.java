@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.BCodec;
@@ -68,7 +69,7 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
     @Override
     public String xml(Object content)
     {
-        return XMLUtils.escape(content);
+        return XMLUtils.escape(Objects.toString(content, null));
     }
 
     /**

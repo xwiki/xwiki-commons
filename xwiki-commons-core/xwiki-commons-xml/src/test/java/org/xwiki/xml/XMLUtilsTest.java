@@ -21,7 +21,12 @@ package org.xwiki.xml;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for {@link org.xwiki.xml.XMLUtils}.
@@ -29,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @version $Id$
  * @since 1.6M1
  */
-public class XMLUtilsTest
+class XMLUtilsTest
 {
     @Test
     public void escapeXMLComment()
@@ -61,23 +66,36 @@ public class XMLUtilsTest
         assertFalse(escapedText.contains("&&"), "Failed to escape &");
     }
 
-     @Test
-    void escapeMinimal()
+    @Test
+    void escapeApos()
     {
-        String actual = XMLUtils.minimalEscape("a < a' && a' < a\" => a < a\"");
+        assertNotEquals("&apos;", XMLUtils.escape("'"), "' wrongly escaped to non-HTML &apos;");
+    }
+
+    @Test
+    void escapeObjectContent()
+    {
+        String content = "a < a' && a' < a\" => a < a\"";
+        StringBuilder sb = new StringBuilder();
+        sb.append(content);
+
+        String expected = XMLUtils.escape(content);
+        String actual = XMLUtils.escape(sb);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void escapeElementText()
+    {
+        String actual = XMLUtils.escapeElementText("a < a' && a' < a\" => a < a\"");
         assertEquals("a &#60; a' &#38;&#38; a' &#60; a\" => a &#60; a\"", actual);
     }
 
     @Test
-    void escapeMinimalNull()
+    void escapeElementTextNull()
     {
-        assertNull(XMLUtils.minimalEscape(null));
-    }
-
-    @Test
-    void escapeApos()
-    {
-        assertFalse(XMLUtils.escape("'").equals("&apos;"), "' wrongly escaped to non-HTML &apos;");
+        assertNull(XMLUtils.escapeElementText(null));
     }
 
     @Test
@@ -112,13 +130,13 @@ public class XMLUtilsTest
     }
 
     @Test
-    public void escapeAttributeValueApos()
+    void escapeAttributeValueApos()
     {
-        assertFalse(XMLUtils.escapeAttributeValue("'").equals("&apos;"), "' wrongly escaped to non-HTML &apos;");
+        assertNotEquals("&apos;", XMLUtils.escapeAttributeValue("'"), "' wrongly escaped to non-HTML &apos;");
     }
 
     @Test
-    public void escapeFAttributeValueEmptyString()
+    void escapeFAttributeValueEmptyString()
     {
         assertEquals("", XMLUtils.escapeAttributeValue(""), "\"\" should be \"\"");
     }
@@ -148,7 +166,7 @@ public class XMLUtilsTest
     }
 
     @Test
-    public void escapeElementContentEmptyString()
+    void escapeElementContentEmptyString()
     {
         assertEquals("", XMLUtils.escapeElementContent(""), "\"\" should be \"\"");
     }
@@ -179,7 +197,7 @@ public class XMLUtilsTest
     }
 
     @Test
-    public void unescapeEmptyString()
+    void unescapeEmptyString()
     {
         assertEquals("", XMLUtils.unescape(""), "\"\" should be \"\"");
     }
