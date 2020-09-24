@@ -61,8 +61,21 @@ public class XMLUtilsTest
         assertFalse(escapedText.contains("&&"), "Failed to escape &");
     }
 
+     @Test
+    void escapeMinimal()
+    {
+        String actual = XMLUtils.minimalEscape("a < a' && a' < a\" => a < a\"");
+        assertEquals("a &#60; a' &#38;&#38; a' &#60; a\" => a &#60; a\"", actual);
+    }
+
     @Test
-    public void escapeApos()
+    void escapeMinimalNull()
+    {
+        assertNull(XMLUtils.minimalEscape(null));
+    }
+
+    @Test
+    void escapeApos()
     {
         assertFalse(XMLUtils.escape("'").equals("&apos;"), "' wrongly escaped to non-HTML &apos;");
     }

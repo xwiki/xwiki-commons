@@ -51,6 +51,7 @@ import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+import org.xwiki.stability.Unstable;
 
 /**
  * XML Utility methods.
@@ -266,6 +267,41 @@ public final class XMLUtils
                     break;
                 case '{':
                     result.append(LCURL);
+                    break;
+                default:
+                    result.append(c);
+            }
+        }
+        return result.toString();
+    }
+
+    /**
+     *  Escapes some XML special characters (&amp; and &lt;) in a <code>String</code> using numerical XML
+     *  entities, so that the resulting string can safely be used in HTML pages.
+     *
+     * @param content the text to escape, may be {@code null}
+     * @return a new escaped {@code String}, {@code null} if {@code null} input
+     * @since 12.8RC1
+     */
+    @Unstable
+    public static String minimalEscape(Object content)
+    {
+        if (content == null) {
+            return null;
+        }
+        String str = String.valueOf(content);
+        // Initializes a string builder with an initial capacity 1.1 times greater than the initial content to account
+        // for special character substitutions.
+        int contentLength = str.length();
+        StringBuilder result = new StringBuilder((int) (contentLength * 1.1));
+        for (int i = 0; i < contentLength; ++i) {
+            char c = str.charAt(i);
+            switch (c) {
+                case '&':
+                    result.append(AMP);
+                    break;
+                case '<':
+                    result.append(LT);
                     break;
                 default:
                     result.append(c);
