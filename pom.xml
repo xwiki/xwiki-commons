@@ -112,7 +112,7 @@
     <ivy.version>2.5.0</ivy.version>
 
     <!-- Closure compiler -->
-    <closure-compiler.version>v20200830</closure-compiler.version>
+    <closure-compiler.version>v20200920</closure-compiler.version>
 
     <!-- By default Checkstyle, Backward compatibility check, Enforcer, License plugins, etc are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
