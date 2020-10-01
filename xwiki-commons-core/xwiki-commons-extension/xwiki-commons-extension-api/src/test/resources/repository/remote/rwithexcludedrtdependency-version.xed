@@ -15,11 +15,11 @@
       </exclusions>
     </dependency>
     <dependency>
-      <id>rwithrdependency</id>
+      <id>rwithrotherdependency</id>
       <version>version</version>
       <exclusions>
         <extensionpattern>
-          <id>.*</id>
+          <id>rothersimple</id>
         </extensionpattern>
       </exclusions>
     </dependency>
