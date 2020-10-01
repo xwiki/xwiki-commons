@@ -492,6 +492,11 @@
         <artifactId>commons-cli</artifactId>
         <version>1.4</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-cli</artifactId>
+        <version>1.8</version>
+      </dependency>
 
       <!-- XZ -->
       <dependency>
