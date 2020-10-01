@@ -272,6 +272,14 @@ class DefaultInstalledExtensionRepositoryTest
         assertTrue(extension.isValid(null));
         assertTrue(extension.isInstalled(null));
         assertEquals("version", extension.getId().getVersion().toString());
+
+        // installedwithexcludedrtdependency
+        extension = this.installedExtensionRepository.getInstalledExtension("installedwithexcludedrtdependency", null);
+
+        assertNotNull(extension);
+        assertTrue(extension.isValid(null));
+        assertTrue(extension.isInstalled(null));
+        assertEquals("version", extension.getId().getVersion().toString());
     }
 
     @Test
@@ -513,14 +521,14 @@ class DefaultInstalledExtensionRepositoryTest
     {
         IterableResult<Extension> result = this.installedExtensionRepository.search(null, 0, -1);
 
-        assertEquals(18, result.getTotalHits());
-        assertEquals(18, result.getSize());
+        assertEquals(20, result.getTotalHits());
+        assertEquals(20, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search("", 0, -1);
 
-        assertEquals(18, result.getTotalHits());
-        assertEquals(18, result.getSize());
+        assertEquals(20, result.getTotalHits());
+        assertEquals(20, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search("extension", 0, -1);
@@ -537,49 +545,49 @@ class DefaultInstalledExtensionRepositoryTest
 
         result = this.installedExtensionRepository.search("dependency", 0, -1);
 
-        assertEquals(10, result.getTotalHits());
-        assertEquals(10, result.getSize());
+        assertEquals(12, result.getTotalHits());
+        assertEquals(12, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, 0, 0);
 
-        assertEquals(18, result.getTotalHits());
+        assertEquals(20, result.getTotalHits());
         assertEquals(0, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, 0, 2);
 
-        assertEquals(18, result.getTotalHits());
+        assertEquals(20, result.getTotalHits());
         assertEquals(2, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, 0, 1);
 
-        assertEquals(18, result.getTotalHits());
+        assertEquals(20, result.getTotalHits());
         assertEquals(1, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, 1, 2);
 
-        assertEquals(18, result.getTotalHits());
+        assertEquals(20, result.getTotalHits());
         assertEquals(2, result.getSize());
         assertEquals(1, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, 2, 2);
 
-        assertEquals(18, result.getTotalHits());
+        assertEquals(20, result.getTotalHits());
         assertEquals(2, result.getSize());
         assertEquals(2, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, -1, 2);
 
-        assertEquals(18, result.getTotalHits());
+        assertEquals(20, result.getTotalHits());
         assertEquals(2, result.getSize());
         assertEquals(-1, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, -1, 1);
 
-        assertEquals(18, result.getTotalHits());
+        assertEquals(20, result.getTotalHits());
         assertEquals(1, result.getSize());
         assertEquals(-1, result.getOffset());
     }
@@ -622,22 +630,22 @@ class DefaultInstalledExtensionRepositoryTest
         IterableResult<InstalledExtension> result =
             this.installedExtensionRepository.searchInstalledExtensions(null, null, 0, -1);
 
-        assertEquals(12, result.getTotalHits());
-        assertEquals(12, result.getSize());
+        assertEquals(14, result.getTotalHits());
+        assertEquals(14, result.getSize());
         assertEquals(0, result.getOffset());
 
         // Namespace "namespace" + "root"
         result = this.installedExtensionRepository.searchInstalledExtensions(null, "namespace", 0, -1);
 
-        assertEquals(16, result.getTotalHits());
-        assertEquals(16, result.getSize());
+        assertEquals(18, result.getTotalHits());
+        assertEquals(18, result.getSize());
         assertEquals(0, result.getOffset());
 
         // This namespace does not exist so same as root
         result = this.installedExtensionRepository.searchInstalledExtensions(null, "notnamespace", 0, -1);
 
-        assertEquals(12, result.getTotalHits());
-        assertEquals(12, result.getSize());
+        assertEquals(14, result.getTotalHits());
+        assertEquals(14, result.getSize());
         assertEquals(0, result.getOffset());
     }
 

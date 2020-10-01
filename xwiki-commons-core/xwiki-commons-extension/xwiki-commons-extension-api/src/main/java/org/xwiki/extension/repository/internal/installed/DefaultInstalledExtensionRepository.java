@@ -248,7 +248,8 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
         Collection<String> namespaces = DefaultInstalledExtension.getNamespaces(localExtension);
 
         if (namespaces == null) {
-            if (dependencies || !DefaultInstalledExtension.isDependency(localExtension, null)) {
+            if ((dependencies && !isValidated(localExtension, null))
+                || (!dependencies && !DefaultInstalledExtension.isDependency(localExtension, null))) {
                 try {
                     validateExtension(localExtension, null, new ExtensionPlanContext());
                 } catch (InvalidExtensionException | StackOverflowError e) {
@@ -264,7 +265,8 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
             }
         } else {
             for (String namespace : namespaces) {
-                if (dependencies || !DefaultInstalledExtension.isDependency(localExtension, namespace)) {
+                if ((dependencies && !isValidated(localExtension, namespace))
+                    || (!dependencies && !DefaultInstalledExtension.isDependency(localExtension, namespace))) {
                     try {
                         validateExtension(localExtension, namespace, new ExtensionPlanContext());
                     } catch (InvalidExtensionException | StackOverflowError e) {
@@ -352,6 +354,13 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
         }
     }
 
+    private boolean isValidated(LocalExtension localExtension, String namespace)
+    {
+        DefaultInstalledExtension installedExtension = this.extensions.get(localExtension.getId());
+
+        return installedExtension != null && installedExtension.isValidated(namespace);
+    }
+
     /**
      * Check extension validity against a specific namespace.
      *
@@ -364,12 +373,6 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
     private DefaultInstalledExtension validateExtension(LocalExtension localExtension, String namespace,
         ExtensionPlanContext extensionContext) throws InvalidExtensionException
     {
-        DefaultInstalledExtension installedExtension = this.extensions.get(localExtension.getId());
-        if (installedExtension != null && installedExtension.isValidated(namespace)) {
-            // Already validated
-            return installedExtension;
-        }
-
         // Actually validate
 
         if (namespace != null && DefaultInstalledExtension.getNamespaces(localExtension) == null) {
@@ -535,7 +538,10 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
         }
 
         // VALID
-        installedExtension.setValid(namespace, isValid(installedExtension, namespace, extensionContext));
+        // We cannot calculate the validity of a dependency before of dependency management and exclusions
+        if (!dependency) {
+            installedExtension.setValid(namespace, isValid(installedExtension, namespace, extensionContext));
+        }
 
         // Update caches
 
@@ -869,8 +875,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
                     if (!backwardDependencies.isEmpty()) {
                         // copy the list to allow use cases like uninstalling all backward dependencies without getting
                         // a concurrent issue on the list
-                        result.put(festureExtension.root.namespace,
-                            new ArrayList<>(backwardDependencies));
+                        result.put(festureExtension.root.namespace, new ArrayList<>(backwardDependencies));
                     }
                 }
             }
