@@ -49,6 +49,9 @@ public class TestResources
     public static final ExtensionId INSTALLED_WITHMISSINDEPENDENCY_ID =
         new ExtensionId("installedwithmissingdependency", "version");
 
+    public static final ExtensionId INSTALLED_WITHMISSINDEPENDENCY2_ID =
+        new ExtensionId("installedwithmissingdependency2", "version");
+
     public static final ExtensionId INSTALLED_ORPHANEDDEPENDENCY_ID =
         new ExtensionId("installedorphaneddependency", "version");
 

@@ -58,7 +58,7 @@ class UpgradePlanJobTest extends AbstractExtensionHandlerTest
 
         // Tree
 
-        assertEquals(2, plan.getTree().size());
+        assertEquals(3, plan.getTree().size());
 
         ExtensionPlanNode node = getNode(TestResources.REMOTE_UPGRADE20_ID, plan.getTree());
         ExtensionPlanAction action = node.getAction();
@@ -86,19 +86,37 @@ class UpgradePlanJobTest extends AbstractExtensionHandlerTest
         assertNull(action.getNamespace());
         assertEquals(0, node.getChildren().size());
 
+        node = getNode(TestResources.INSTALLED_WITHMISSINDEPENDENCY2_ID, plan.getTree());
+        action = node.getAction();
+
+        assertEquals(TestResources.INSTALLED_WITHMISSINDEPENDENCY2_ID, action.getExtension().getId());
+        assertEquals(Action.REPAIR, action.getAction());
+        assertEquals(0, action.getPreviousExtensions().size());
+        assertNull(action.getNamespace());
+        assertEquals(1, node.getChildren().size());
+
+        node = node.getChildren().iterator().next();
+        action = node.getAction();
+
+        assertEquals(TestResources.REMOTE_MISSINGDEPENDENCY_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertEquals(0, action.getPreviousExtensions().size());
+        assertNull(action.getNamespace());
+        assertEquals(0, node.getChildren().size());
+
         // Actions
 
-        assertEquals(3, plan.getActions().size());
+        assertEquals(4, plan.getActions().size());
 
         // //////////////////////
         // Exclude extension
 
         assertEquals(0,
-            upgradePlan(null,
-                Arrays.asList(TestResources.REMOTE_UPGRADE10_ID, TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID))
-                .getTree().size());
-        assertEquals(1, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE10_ID)).getTree().size());
-        assertEquals(2, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE20_ID)).getTree().size());
+            upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE10_ID,
+                TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID, TestResources.INSTALLED_WITHMISSINDEPENDENCY2_ID))
+                    .getTree().size());
+        assertEquals(2, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE10_ID)).getTree().size());
+        assertEquals(3, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE20_ID)).getTree().size());
     }
 
     @Test
@@ -129,7 +147,7 @@ class UpgradePlanJobTest extends AbstractExtensionHandlerTest
         // Tree
         // ////////
 
-        assertEquals(2, plan.getTree().size());
+        assertEquals(3, plan.getTree().size());
 
         // First node
         ExtensionPlanNode node = getNode(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, plan.getTree());
@@ -168,10 +186,29 @@ class UpgradePlanJobTest extends AbstractExtensionHandlerTest
         assertNull(action.getNamespace());
         assertEquals(0, node.getChildren().size());
 
+        // Third node
+        node = getNode(TestResources.INSTALLED_WITHMISSINDEPENDENCY2_ID, plan.getTree());
+        action = node.getAction();
+
+        assertEquals(TestResources.INSTALLED_WITHMISSINDEPENDENCY2_ID, action.getExtension().getId());
+        assertEquals(Action.REPAIR, action.getAction());
+        assertEquals(0, action.getPreviousExtensions().size());
+        assertNull(action.getNamespace());
+        assertEquals(1, node.getChildren().size());
+
+        node = node.getChildren().iterator().next();
+        action = node.getAction();
+
+        assertEquals(TestResources.REMOTE_MISSINGDEPENDENCY_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertEquals(0, action.getPreviousExtensions().size());
+        assertNull(action.getNamespace());
+        assertEquals(0, node.getChildren().size());
+
         // Actions
         // ////////
 
-        assertEquals(4, plan.getActions().size());
+        assertEquals(5, plan.getActions().size());
     }
 
     @Test
