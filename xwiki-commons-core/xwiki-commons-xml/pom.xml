@@ -78,6 +78,11 @@
       <groupId>com.fasterxml.woodstox</groupId>
       <artifactId>woodstox-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.sf.carte</groupId>
+      <artifactId>xml-dtd</artifactId>
+      <version>3.0.0</version>
+    </dependency>
     <!-- Testing dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
