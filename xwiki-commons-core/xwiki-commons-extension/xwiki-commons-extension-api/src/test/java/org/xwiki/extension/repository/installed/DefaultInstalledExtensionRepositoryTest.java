@@ -280,6 +280,24 @@ class DefaultInstalledExtensionRepositoryTest
         assertTrue(extension.isValid(null));
         assertTrue(extension.isInstalled(null));
         assertEquals("version", extension.getId().getVersion().toString());
+
+        // installedwithmissingdependency
+        extension = this.installedExtensionRepository.getInstalledExtension("installedwithmissingdependency", null);
+
+        assertNotNull(extension);
+        assertFalse(extension.isDependency(null));
+        assertFalse(extension.isValid(null));
+        assertTrue(extension.isInstalled(null));
+        assertEquals("version", extension.getId().getVersion().toString());
+
+        // installeddepwithmissingdependency
+        extension = this.installedExtensionRepository.getInstalledExtension("installeddepwithmissingdependency", null);
+
+        assertNotNull(extension);
+        assertTrue(extension.isDependency(null));
+        assertTrue(extension.isValid(null));
+        assertTrue(extension.isInstalled(null));
+        assertEquals("version", extension.getId().getVersion().toString());
     }
 
     @Test

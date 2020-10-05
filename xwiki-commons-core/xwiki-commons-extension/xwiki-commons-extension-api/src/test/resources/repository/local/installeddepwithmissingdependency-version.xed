@@ -23,7 +23,7 @@
 -->
 
 <extension>
-  <id>installedwithmissingdependency2</id>
+  <id>installeddepwithmissingdependency</id>
   <version>version</version>
   <type>test</type>
   <installed>true</installed>
@@ -33,4 +33,7 @@
       <version>version</version>
     </dependency>
   </dependencies>
+  <properties>
+    <installed.dependency type="boolean">true</installed.dependency>
+  </properties>
 </extension>

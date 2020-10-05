@@ -6,7 +6,7 @@
   <type>test</type>
   <dependencies>
     <dependency>
-      <id>installedwithmissingdependency2</id>
+      <id>installeddepwithmissingdependency</id>
       <version>version</version>
       <exclusions>
         <extensionpattern>
