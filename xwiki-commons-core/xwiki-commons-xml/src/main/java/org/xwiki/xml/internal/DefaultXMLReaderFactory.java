@@ -27,6 +27,8 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -79,10 +81,29 @@ public class DefaultXMLReaderFactory implements XMLReaderFactory, Initializable
                 this.xercesGrammarPool);
             xmlReader = (XMLReader) Class.forName("org.apache.xerces.parsers.SAXParser").getConstructor(
                 Class.forName("org.apache.xerces.xni.parser.XMLParserConfiguration")).newInstance(xercesConfiguration);
+
+            // Set a Xerces "SecurityManager" to prevent DoS entity recursion attacks:
+            //
+            // - The SecurityManager class was added Jan 8, 2003, XML11NonValidatingConfiguration
+            //   in Jul 23, 2004.
+            //
+            // - If we have XML11NonValidatingConfiguration, we should have SecurityManager as well.
+            Object secManager = Class.forName("org.apache.xerces.util.SecurityManager").newInstance();
+            // Default EntityExpansionLimit is 100000 per document.
+            xmlReader.setProperty("http://apache.org/xml/properties/security-manager", secManager);
         } catch (Exception e) {
             // There's no Xerces JAR in the classpath, don't do grammar caching for Xerces.
             // Default to standard SAX parsing which will be slower.
             SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+
+            // Set security defaults
+            try {
+                parserFactory.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            } catch (SAXNotRecognizedException | SAXNotSupportedException e1) {
+                // All implementations are required to support the above feature, but for example
+                // the Piccolo parser (piccolo.sourceforge.net) JAXPSAXParserFactory does not.
+            }
+
             SAXParser parser = parserFactory.newSAXParser();
             xmlReader = parser.getXMLReader();
         }
