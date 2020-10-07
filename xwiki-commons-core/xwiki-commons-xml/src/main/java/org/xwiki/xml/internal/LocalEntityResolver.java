@@ -24,20 +24,21 @@ import javax.inject.Singleton;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.xml.EntityResolver;
 
+import io.sf.carte.doc.xml.dtd.DefaultEntityResolver;
+
 /**
  * Uses css4j's entity resolver.
  * <p>
- * That resolver provides the following features:
- * </p>
+ * Provides the following features:
  * <ul>
- * <li>Security protections against <a href=
+ *   <li>Security protections against <a href=
  * "https://owasp.org/www-community/attacks/Server_Side_Request_Forgery">SSRF</a>
  * (although better security could be achieved by enabling the whitelist) and
  * {@code jar:} decompression bombs.</li>
- * <li>Has about all W3C DTDs built-in for fast access.</li>
- * <li>Enables the usage of the XHTML5 DOCTYPE declaration or even DTD-less
+ *   <li>Has about all W3C DTDs built-in for fast access.</li>
+ *   <li>Enables the usage of the XHTML5 DOCTYPE declaration or even DTD-less
  * documents.</li>
- * <li>Allows reading preset DTDs from the classpath or modulepath (currently
+ *   <li>Allows reading preset DTDs from the classpath or modulepath (currently
  * none set).</li>
  * </ul>
  *
@@ -45,14 +46,14 @@ import org.xwiki.xml.EntityResolver;
  */
 @Component
 @Singleton
-public class Css4jEntityResolver extends io.sf.carte.doc.xml.dtd.DefaultEntityResolver implements EntityResolver
+public class LocalEntityResolver extends DefaultEntityResolver implements EntityResolver
 {
     /**
      * Construct a subclass of css4j's {@code DefaultEntityResolver} with the
      * whitelist disabled (can connect to any remote {@code http} or {@code https}
      * server, but applying restrictions to the retrieved URL).
      */
-    public Css4jEntityResolver()
+    public LocalEntityResolver()
     {
         super(false);
     }
