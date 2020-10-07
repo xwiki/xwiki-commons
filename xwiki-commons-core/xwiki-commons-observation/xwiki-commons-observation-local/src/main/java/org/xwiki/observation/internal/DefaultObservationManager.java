@@ -177,14 +177,14 @@ public class DefaultObservationManager implements ObservationManager
     public void addListener(EventListener eventListener)
     {
         try {
-            addListenerInernal(eventListener);
+            addListenerInternal(eventListener);
         } catch (Exception e) {
             // Protect against bad listeners which have their getName() methods throw some runtime exception.
             this.logger.warn("Failed to add listener. Root cause: [{}]", ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
-    private void addListenerInernal(EventListener eventListener)
+    private void addListenerInternal(EventListener eventListener)
     {
         Map<String, EventListener> listeners = getListenersByName();
 
