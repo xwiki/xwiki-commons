@@ -26,7 +26,7 @@ import org.xwiki.stability.Unstable;
  * The status of the currently running or last indexing process.
  * 
  * @version $Id$
- * @since 12.7RC1
+ * @since 12.9RC1
  */
 @Unstable
 public interface ExtensionIndexStatus extends JobStatus

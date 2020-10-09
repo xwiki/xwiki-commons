@@ -28,11 +28,11 @@ import org.xwiki.stability.Unstable;
  * A local index of extensions coming from various repositories.
  * 
  * @version $Id$
- * @since 12.7RC1
+ * @since 12.9RC1
  */
 @Unstable
 @Role
-public interface ExtensionIndex extends ExtensionRepository, AdvancedSearchable, Indexable
+public interface ExtensionIndex extends ExtensionRepository, AdvancedSearchable
 {
     /**
      * @return the status of the currently running or last indexing process
