@@ -19,101 +19,42 @@
  */
 package org.xwiki.xml.internal;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.slf4j.Logger;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.xml.EntityResolver;
 
+import io.sf.carte.doc.xml.dtd.DefaultEntityResolver;
+
 /**
- * Entity resolver that resolves entities using entity files (like xhtml-symbol.ent, xhtml-special.ent, xhtml-lat1.ent)
- * located on the file system (in the classpath). This allows an XML parser that uses this entity resolver to work even
- * when there's no internet connection. It also speeds up the entity resolution.
+ * Uses css4j's entity resolver.
+ * <p>
+ * Provides the following features:
+ * <ul>
+ *   <li>Security protections against <a href=
+ * "https://owasp.org/www-community/attacks/Server_Side_Request_Forgery">SSRF</a>
+ * (although better security could be achieved by enabling the whitelist) and
+ * {@code jar:} decompression bombs.</li>
+ *   <li>Has about all W3C DTDs built-in for fast access.</li>
+ *   <li>Enables the usage of the XHTML5 DOCTYPE declaration or even DTD-less
+ * documents.</li>
+ *   <li>Allows reading preset DTDs from the classpath or modulepath (currently
+ * none set).</li>
+ * </ul>
  *
  * @version $Id$
  */
 @Component
 @Singleton
-public class LocalEntityResolver implements EntityResolver
+public class LocalEntityResolver extends DefaultEntityResolver implements EntityResolver
 {
     /**
-     * The logger to use for logging.
+     * Construct a subclass of css4j's {@code DefaultEntityResolver} with the
+     * whitelist disabled (can connect to any remote {@code http} or {@code https}
+     * server, but applying restrictions to the retrieved URL).
      */
-    @Inject
-    private Logger logger;
-
-    /**
-     * Allow the application to resolve external entities.
-     * <p/>
-     * <p>The Parser will call this method before opening any external entity except the top-level document entity
-     * including the external DTD subset, external entities referenced within the DTD, and external entities referenced
-     * within the document element): the application may request that the parser resolve the entity itself, that it use
-     * an alternative URI, or that it use an entirely different input source.</p>
-     * <p/>
-     * <p>Application writers can use this method to redirect external system identifiers to secure and/or local URIs,
-     * to look up public identifiers in a catalogue, or to read an entity from a database or other input source
-     * (including, for example, a dialog box).</p>
-     * <p/>
-     * <p>If the system identifier is a URL, the SAX parser must resolve it fully before reporting it to the
-     * application.</p>
-     *
-     * @param publicId The public identifier of the external entity being referenced, or null if none was supplied.
-     * @param systemId The system identifier of the external entity being referenced.
-     * @return An InputSource object describing the new input source, or null to request that the parser open a regular
-     *         URI connection to the system identifier.
-     * @throws org.xml.sax.SAXException Any SAX exception, possibly wrapping another exception.
-     * @throws java.io.IOException A Java-specific IO exception, possibly the result of creating a new InputStream or
-     *         Reader for the InputSource.
-     * @see org.xml.sax.InputSource
-     */
-    @Override
-    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
+    public LocalEntityResolver()
     {
-        InputSource source = null;
-
-        try {
-            URI uri = new URI(systemId);
-
-            if ("http".equals(uri.getScheme()) || "file".equals(uri.getScheme())) {
-                String filename = new File(uri.getPath()).getName();
-                InputStream istream = getClass().getClassLoader().getResourceAsStream(filename);
-                if (istream != null) {
-                    source = new InputSource(istream);
-                } else {
-                    this.logger.warn("Failed to load resource [{}] locally. "
-                        + "Will try to get it online at [{}]", filename, systemId);
-                }
-            } else {
-                // As there's no scheme we'll assume that it's an already resolved systemId that is
-                // passed. This happens when a DTD file uses a relative systemId for dependent
-                // entity files. For example the default xhtml1-strict.dtd and
-                // xhtml1-transitional.dtd files reference xhtml-lat1.ent, xhtml-special.ent and
-                // xhtml1-symbol.ent relatively. Normally these relative declarations generate a
-                // URL with a "file" scheme but apparently there are some cases when the raw
-                // entity file names is passed to this resolveEntity method...
-                this.logger.debug("Unknown URI scheme [{}] for entity [{}]. "
-                    + "Assuming the entity is already resolved and looking for it in the file system.",
-                    uri.getScheme(), systemId);
-                InputStream istream = getClass().getClassLoader().getResourceAsStream(systemId);
-                if (istream != null) {
-                    source = new InputSource(istream);
-                } else {
-                    this.logger.warn("Failed to load resource [{}]", systemId);
-                }
-            }
-        } catch (URISyntaxException e) {
-            this.logger.warn("Invalid URI [{}]. Reason [{}]", systemId, e.getMessage());
-        }
-        // Returning null causes the caller to try accessing the entity online
-        return source;
+        super(false);
     }
 }

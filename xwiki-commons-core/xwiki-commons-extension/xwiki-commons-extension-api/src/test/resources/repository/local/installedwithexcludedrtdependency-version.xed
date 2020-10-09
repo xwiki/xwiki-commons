@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<extension>
+  <id>installedwithexcludedrtdependency</id>
+  <version>version</version>
+  <type>test</type>
+  <dependencies>
+    <dependency>
+      <id>installeddepwithmissingdependency</id>
+      <version>version</version>
+      <exclusions>
+        <extensionpattern>
+          <id>missingdependency</id>
+        </extensionpattern>
+      </exclusions>
+    </dependency>
+  </dependencies>
+  <properties>
+    <installed.installed type="boolean">true</installed.installed>
+  </properties>
+</extension>

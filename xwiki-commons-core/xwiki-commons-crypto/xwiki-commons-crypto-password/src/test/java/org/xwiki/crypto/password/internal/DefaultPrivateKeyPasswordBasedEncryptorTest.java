@@ -21,6 +21,8 @@ package org.xwiki.crypto.password.internal;
 
 import javax.crypto.EncryptedPrivateKeyInfo;
 
+import org.apache.commons.lang3.JavaVersion;
+import org.apache.commons.lang3.SystemUtils;
 import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,7 +82,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 // @formatter:on
 class DefaultPrivateKeyPasswordBasedEncryptorTest
 {
-    private static final boolean IS_JRE_8 = System.getProperty("java.specification.version").equals("1.8");
+    private static final boolean IS_JRE_GREATER_THAN_7 = SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_1_8);
     private static final byte[] PASSWORD = PasswordToByteConverter.convert("changeit");
 
     /**
@@ -134,10 +136,10 @@ class DefaultPrivateKeyPasswordBasedEncryptorTest
     {
         assertThat(this.encryptor.decrypt(PASSWORD, data).getEncoded(), equalTo(RSAKEY));
 
-        // The JCE distributed with Java 8 seems to not properly support PKCS#8 decoding of encrypted private key
+        // The JCE distributed with Java 8+ seems to not properly support PKCS#8 decoding of encrypted private key
         // using the PBES2 password based encryption scheme defined in PKCS#5.
         // See https://bugs.openjdk.java.net/browse/JDK-8076999.
-        if (!IS_JRE_8) {
+        if (!IS_JRE_GREATER_THAN_7) {
             assertThat(this.encryptor.decrypt(PASSWORD, new EncryptedPrivateKeyInfo(data)).getEncoded(),
                 equalTo(RSAKEY));
         }

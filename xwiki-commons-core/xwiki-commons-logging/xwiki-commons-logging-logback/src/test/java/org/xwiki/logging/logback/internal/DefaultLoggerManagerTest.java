@@ -59,8 +59,14 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  * @since 3.2M3
  */
-@ComponentList({ DefaultLoggerManager.class, DefaultObservationManager.class, LogbackEventGenerator.class,
-    XStreamFileLoggerTail.class })
+// @formatter:off
+@ComponentList({
+    DefaultLoggerManager.class,
+    DefaultObservationManager.class,
+    LogbackEventGenerator.class,
+    XStreamFileLoggerTail.class
+})
+// @formatter:on
 public class DefaultLoggerManagerTest
 {
     @Rule

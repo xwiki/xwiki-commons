@@ -40,6 +40,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
+/**
+ * Validate {@link UpgradePlanJob}.
+ * 
+ * @version $Id$
+ */
 @ComponentTest
 @ExtendWith(MockitoRepositoryUtilsExtension.class)
 class UpgradePlanJobTest extends AbstractExtensionHandlerTest
@@ -96,7 +101,7 @@ class UpgradePlanJobTest extends AbstractExtensionHandlerTest
         assertEquals(0,
             upgradePlan(null,
                 Arrays.asList(TestResources.REMOTE_UPGRADE10_ID, TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID))
-                .getTree().size());
+                    .getTree().size());
         assertEquals(1, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE10_ID)).getTree().size());
         assertEquals(2, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE20_ID)).getTree().size());
     }

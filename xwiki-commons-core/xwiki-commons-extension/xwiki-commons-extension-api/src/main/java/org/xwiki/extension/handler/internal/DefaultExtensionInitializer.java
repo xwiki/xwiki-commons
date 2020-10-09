@@ -38,6 +38,7 @@ import org.xwiki.extension.ExtensionException;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.handler.ExtensionHandlerManager;
 import org.xwiki.extension.handler.ExtensionInitializer;
+import org.xwiki.extension.job.internal.ExtensionPlanContext;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 
@@ -110,40 +111,27 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
         }
     }
 
-    /**
-     * Initialize extension.
-     *
-     * @param installedExtension the extension to initialize
-     * @param namespaceToLoad the namespace to be initialized, null for all
-     * @param initializedExtensions the currently initialized extensions set
-     * @throws ExtensionException when an initialization error occurs
-     */
     private void initializeExtension(InstalledExtension installedExtension, String namespaceToLoad,
         Map<String, Set<InstalledExtension>> initializedExtensions) throws ExtensionException
     {
         if (installedExtension.getNamespaces() != null) {
             if (namespaceToLoad == null) {
                 for (String namespace : installedExtension.getNamespaces()) {
-                    initializeExtensionInNamespace(installedExtension, namespace, initializedExtensions);
+                    initializeExtensionInNamespace(installedExtension, namespace, initializedExtensions,
+                        new ExtensionPlanContext());
                 }
             } else if (installedExtension.getNamespaces().contains(namespaceToLoad)) {
-                initializeExtensionInNamespace(installedExtension, namespaceToLoad, initializedExtensions);
+                initializeExtensionInNamespace(installedExtension, namespaceToLoad, initializedExtensions,
+                    new ExtensionPlanContext());
             }
         } else if (namespaceToLoad == null) {
-            initializeExtensionInNamespace(installedExtension, null, initializedExtensions);
+            initializeExtensionInNamespace(installedExtension, null, initializedExtensions, new ExtensionPlanContext());
         }
     }
 
-    /**
-     * Initialize an extension in the given namespace.
-     *
-     * @param installedExtension the extension to initialize
-     * @param namespace the namespace in which the extention is initialized, null for global
-     * @param initializedExtensions the currently initialized extensions set (to avoid initializing twice a dependency)
-     * @throws ExtensionException when an initialization error occurs
-     */
     private void initializeExtensionInNamespace(InstalledExtension installedExtension, String namespace,
-        Map<String, Set<InstalledExtension>> initializedExtensions) throws ExtensionException
+        Map<String, Set<InstalledExtension>> initializedExtensions, ExtensionPlanContext extensionContext)
+        throws ExtensionException
     {
         // Check if the extension can be available from this namespace
         if (!installedExtension.isValid(namespace)) {
@@ -159,23 +147,24 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
 
         if (!initializedExtensionsInNamespace.contains(installedExtension)) {
             initializeExtensionInNamespace(installedExtension, namespace, initializedExtensions,
-                initializedExtensionsInNamespace);
+                initializedExtensionsInNamespace, extensionContext);
         }
     }
 
     private void initializeExtensionInNamespace(InstalledExtension installedExtension, String namespace,
         Map<String, Set<InstalledExtension>> initializedExtensions,
-        Set<InstalledExtension> initializedExtensionsInNamespace) throws ExtensionException
+        Set<InstalledExtension> initializedExtensionsInNamespace, ExtensionPlanContext extensionContext)
+        throws ExtensionException
     {
         if (namespace != null && installedExtension.getNamespaces() == null) {
             // This extension is supposed to be installed on root namespace only so redirecting to null namespace
             // initialization
-            initializeExtensionInNamespace(installedExtension, null, initializedExtensions);
+            initializeExtensionInNamespace(installedExtension, null, initializedExtensions, extensionContext);
         } else {
             // Initialize dependencies
             for (ExtensionDependency dependency : installedExtension.getDependencies()) {
                 initializeExtensionDependencyInNamespace(installedExtension, dependency, namespace,
-                    initializedExtensions);
+                    initializedExtensions, new ExtensionPlanContext(extensionContext, installedExtension));
             }
 
             // Initialize the extension
@@ -187,8 +176,8 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
     }
 
     private void initializeExtensionDependencyInNamespace(InstalledExtension installedExtension,
-        ExtensionDependency dependency, String namespace, Map<String, Set<InstalledExtension>> initializedExtensions)
-        throws ExtensionException
+        ExtensionDependency dependency, String namespace, Map<String, Set<InstalledExtension>> initializedExtensions,
+        ExtensionPlanContext extensionContext) throws ExtensionException
     {
         if (!this.coreExtensionRepository.exists(dependency.getId())) {
             InstalledExtension dependencyExtension =
@@ -203,19 +192,17 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
                 }
 
                 try {
-                    initializeExtensionInNamespace(dependencyExtension, namespace, initializedExtensions);
+                    initializeExtensionInNamespace(dependencyExtension, namespace, initializedExtensions,
+                        new ExtensionPlanContext(extensionContext, dependency));
                 } catch (Exception e) {
                     if (dependency.isOptional()) {
                         this.logger.warn("Failed to initialize dependency [{}]: {}", dependency,
                             ExceptionUtils.getRootCauseMessage(e));
                     } else {
-                        throw new ExtensionException(String.format(
-                            "Failed to initialize dependency [%s]", dependency), e);
+                        throw new ExtensionException(String.format("Failed to initialize dependency [%s]", dependency),
+                            e);
                     }
                 }
-            } else if (!dependency.isOptional()) {
-                throw new ExtensionException(String.format("Mandatory dependency [%s] of extension [%s] "
-                    + "is not installed", dependency, installedExtension.getId()));
             }
         }
     }

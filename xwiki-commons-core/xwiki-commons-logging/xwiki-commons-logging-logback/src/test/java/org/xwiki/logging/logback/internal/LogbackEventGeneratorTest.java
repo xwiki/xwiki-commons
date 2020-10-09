@@ -31,7 +31,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
@@ -44,7 +43,7 @@ import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectComponentManager;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -61,8 +60,13 @@ import static org.mockito.Mockito.when;
  * @since 3.2M3
  */
 @ComponentTest
-@ComponentList({DefaultObservationManager.class, LogbackEventGenerator.class})
-public class LogbackEventGeneratorTest
+// @formatter:off
+@ComponentList({
+    DefaultObservationManager.class,
+    LogbackEventGenerator.class
+})
+// @formatter:on
+class LogbackEventGeneratorTest
 {
     @InjectComponentManager
     private ComponentManager componentManager;
@@ -75,7 +79,7 @@ public class LogbackEventGeneratorTest
     private ObservationManager observationManager;
 
     @BeforeEach
-    public void beforeEach() throws Exception
+    void beforeEach() throws Exception
     {
         this.observationManager = this.componentManager.getInstance(ObservationManager.class);
 
@@ -86,7 +90,7 @@ public class LogbackEventGeneratorTest
      * Verify that logging an error will generate a Log Event.
      */
     @Test
-    public void verifyThatLoggingGeneratesALogEvent()
+    void verifyThatLoggingGeneratesALogEvent()
     {
         Event event = new LogEvent();
 
@@ -104,7 +108,7 @@ public class LogbackEventGeneratorTest
     }
 
     @Test
-    public void initializeWhenNoLogback() throws Exception
+    void initializeWhenNoLogback() throws Exception
     {
         // Simulate that the Logging implementation is not Logback
         LogbackEventGenerator generator =
@@ -123,7 +127,7 @@ public class LogbackEventGeneratorTest
      * Verify that LogbackEventGenerator can produce two events on two different threads at the same time.
      */
     @Test
-    public void unsynchronized() throws ComponentLookupException, InterruptedException
+    void unsynchronized() throws InterruptedException
     {
         EventListener listener = mock(EventListener.class);
         when(listener.getName()).thenReturn("mylistener");
@@ -137,7 +141,7 @@ public class LogbackEventGeneratorTest
         doAnswer(new Answer<Void>()
         {
             @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable
+            public Void answer(InvocationOnMock invocation)
             {
                 lock.lock();
                 lock.unlock();

@@ -177,7 +177,7 @@ class InstallPlanJobTest extends AbstractExtensionHandlerTest
 
         childnode = iterator.next();
 
-        assertEquals(TestResources.REMOTE_WITHRDEPENDENCY_ID, childnode.getAction().getExtension().getId());
+        assertEquals(TestResources.REMOTE_WITHROTHERDEPENDENCY_ID, childnode.getAction().getExtension().getId());
         assertEquals(Action.INSTALL, childnode.getAction().getAction());
         assertNull(childnode.getAction().getPreviousExtension());
         assertNull(childnode.getAction().getNamespace());

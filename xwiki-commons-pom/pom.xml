@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons</artifactId>
-    <version>12.7-SNAPSHOT</version>
+    <version>12.9-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-pom</artifactId>
   <name>XWiki Commons - Root POM</name>
@@ -72,12 +72,12 @@
       <plugin>
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-tool-remote-resource-plugin</artifactId>
-        <version>12.7-SNAPSHOT</version>
+        <version>12.9-SNAPSHOT</version>
         <dependencies>
           <dependency>
             <groupId>org.xwiki.commons</groupId>
             <artifactId>xwiki-commons-tool-license-resources</artifactId>
-            <version>12.7-SNAPSHOT</version>
+            <version>12.9-SNAPSHOT</version>
           </dependency>
         </dependencies>
         <executions>
@@ -103,7 +103,7 @@
           <dependency>
             <groupId>org.xwiki.commons</groupId>
             <artifactId>xwiki-commons-tool-enforcer-dependencies</artifactId>
-            <version>12.7-SNAPSHOT</version>
+            <version>12.9-SNAPSHOT</version>
           </dependency>
         </dependencies>
         <executions>
@@ -147,7 +147,7 @@
           <dependency>
             <groupId>org.xwiki.commons</groupId>
             <artifactId>xwiki-commons-tool-verification-resources</artifactId>
-            <version>12.7-SNAPSHOT</version>
+            <version>12.9-SNAPSHOT</version>
           </dependency>
         </dependencies>
         <configuration>
@@ -169,6 +169,8 @@
               <goal>check</goal>
             </goals>
             <configuration>
+              <includeSource>true</includeSource>
+              <includeTest>false</includeTest>
               <processors>
                 <processor>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</processor>
                 <processor>org.xwiki.tool.spoon.ComponentAnnotationProcessor</processor>
@@ -233,7 +235,9 @@
               <goal>check</goal>
             </goals>
             <configuration>
-              <srcFolder>src/test/java</srcFolder>
+              <!-- TODO: Set to false when https://github.com/INRIA/spoon/issues/3582 is fixed -->
+              <includeSource>true</includeSource>
+              <includeTest>true</includeTest>
               <processors>
                 <processor>org.xwiki.tool.spoon.JUnit5JUnit4Processor</processor>
               </processors>
@@ -250,7 +254,7 @@
           <dependency>
             <groupId>org.xwiki.commons</groupId>
             <artifactId>xwiki-commons-tool-spoon-checks</artifactId>
-            <version>12.7-SNAPSHOT</version>
+            <version>12.9-SNAPSHOT</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -266,7 +270,7 @@
             <dependency>
               <groupId>org.xwiki.commons</groupId>
               <artifactId>xwiki-commons-tool-verification-resources</artifactId>
-              <version>12.7-SNAPSHOT</version>
+              <version>12.9-SNAPSHOT</version>
             </dependency>
           </dependencies>
           <configuration>
@@ -349,7 +353,7 @@
             <dependency>
               <groupId>org.xwiki.commons</groupId>
               <artifactId>xwiki-commons-tool-verification-resources</artifactId>
-              <version>12.7-SNAPSHOT</version>
+              <version>12.9-SNAPSHOT</version>
             </dependency>
           </dependencies>
           <executions>
@@ -363,7 +367,7 @@
         <plugin>
           <groupId>org.xwiki.commons</groupId>
           <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
-          <version>12.7-SNAPSHOT</version>
+          <version>12.9-SNAPSHOT</version>
           <configuration>
             <!-- Add missing license headers by default -->
             <formatLicense>true</formatLicense>
@@ -386,7 +390,7 @@
             <dependency>
               <groupId>org.xwiki.commons</groupId>
               <artifactId>xwiki-commons-tool-archiver</artifactId>
-              <version>12.7-SNAPSHOT</version>
+              <version>12.9-SNAPSHOT</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -398,7 +402,7 @@
             <dependency>
               <groupId>org.xwiki.commons</groupId>
               <artifactId>xwiki-commons-tool-archiver</artifactId>
-              <version>12.7-SNAPSHOT</version>
+              <version>12.9-SNAPSHOT</version>
             </dependency>
           </dependencies>
         </plugin>

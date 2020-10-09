@@ -36,6 +36,7 @@
                 <goal>org.apache.maven.plugins:maven-resources-plugin:resources</goal>
               </mojo>
               <mojo>
+                <!-- Prepare resources for WebJar packaging. -->
                 <goal>org.apache.maven.plugins:maven-resources-plugin:copy-resources</goal>
                 <configuration>
                   <outputDirectory>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}</outputDirectory>
@@ -46,25 +47,76 @@
                   </resources>
                 </configuration>
               </mojo>
+            </mojos>
+          </process-resources>
+          <compile>
+            <mojos>
               <mojo>
+                <!-- Quality checks. -->
+                <goal>com.cj.jshintmojo:jshint-maven-plugin:lint</goal>
+              </mojo>
+              <mojo>
+                <!-- Minify and optimize all JavaScript files and generate source maps. -->
+                <goal>com.github.blutorange:closure-compiler-maven-plugin:minify</goal>
+                <configuration>
+                  <baseSourceDir>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}</baseSourceDir>
+                  <sourceDir>${project.version}</sourceDir>
+                  <baseTargetDir>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}</baseTargetDir>
+                  <targetDir>${project.version}</targetDir>
+                </configuration>
+              </mojo>
+              <mojo>
+                <!-- Aggregate / merge all JavaScript files. -->
+                <goal>com.github.blutorange:closure-compiler-maven-plugin:minify</goal>
+                <configuration>
+                  <baseSourceDir>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}</baseSourceDir>
+                  <sourceDir>${project.version}</sourceDir>
+                  <baseTargetDir>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}</baseTargetDir>
+                  <targetDir>${project.version}</targetDir>
+                  <skipMerge>false</skipMerge>
+                  <!-- Include the polyfills in the aggregated JavaScript file. -->
+                  <closureRewritePolyfills>true</closureRewritePolyfills>
+                  <outputFilename>webjar.bundle.min.js</outputFilename>
+                  <!-- There's no configuration option to keep the unminified aggregated file so we include its source
+                    in the generated source map file.  -->
+                  <closureIncludeSourcesContent>true</closureIncludeSourcesContent>
+                </configuration>
+              </mojo>
+              <mojo>
+                <!-- Minify and aggregate the CSS files. -->
                 <goal>net.alchim31.maven:yuicompressor-maven-plugin:compress</goal>
                 <configuration>
                   <sourceDirectory>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}</sourceDirectory>
-                  <excludes>
-                    <exclude>**/*.min.*</exclude>
-                  </excludes>
                   <outputDirectory>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}</outputDirectory>
-                  <!-- The default suffix uses the dash as separator (-min) but we prefer the dot (.min) because it is
-                    currently more widely used in the JavaScript world. -->
-                  <suffix>.min</suffix>
+                  <aggregations>
+                    <aggregation>
+                      <insertNewLine>true</insertNewLine>
+                      <output>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}/webjar.bundle.min.css</output>
+                      <includes>
+                        <include>**/*.min.css</include>
+                      </includes>
+                    </aggregation>
+                  </aggregations>
                 </configuration>
               </mojo>
             </mojos>
-          </process-resources>
+          </compile>
           <process-test-resources>org.apache.maven.plugins:maven-resources-plugin:testResources</process-test-resources>
           <test-compile>org.apache.maven.plugins:maven-compiler-plugin:testCompile</test-compile>
-          <test>org.apache.maven.plugins:maven-surefire-plugin:test</test>
-          <package>org.apache.maven.plugins:maven-jar-plugin:jar</package>
+          <test>com.github.searls:jasmine-maven-plugin:test</test>
+          <package>
+            <mojos>
+              <mojo>
+                <goal>org.apache.maven.plugins:maven-jar-plugin:jar</goal>
+                <configuration>
+                  <archive>
+                    <!-- Cancel custom MANIFEST file (since it's not generated for "webjar" packaging) -->
+                    <manifestFile combine.self="override" />
+                  </archive>
+                </configuration>
+              </mojo>
+            </mojos>
+          </package>
           <install>org.apache.maven.plugins:maven-install-plugin:install</install>
           <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
         </phases>

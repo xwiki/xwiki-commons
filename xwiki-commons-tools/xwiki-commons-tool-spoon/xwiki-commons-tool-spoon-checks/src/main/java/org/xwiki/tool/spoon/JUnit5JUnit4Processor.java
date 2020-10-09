@@ -35,7 +35,9 @@ public class JUnit5JUnit4Processor extends AbstractXWikiProcessor<CtClass<?>>
         boolean hasJunit5Types = false;
         boolean hasJunit4Types = false;
         for (CtTypeReference<?> typeReference : ctClass.getReferencedTypes()) {
-            if (typeReference.getQualifiedName().startsWith("org.junit.jupiter")) {
+            if (typeReference.getQualifiedName().startsWith("org.junit.jupiter")
+                || typeReference.getQualifiedName().startsWith("org.junit.platform"))
+            {
                 hasJunit5Types = true;
                 if (hasJunit4Types) {
                     break;
