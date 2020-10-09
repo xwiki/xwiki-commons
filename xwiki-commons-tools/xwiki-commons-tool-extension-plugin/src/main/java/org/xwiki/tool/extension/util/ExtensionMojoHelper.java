@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -206,8 +207,8 @@ public class ExtensionMojoHelper implements AutoCloseable
         if (componentList != null) {
             for (ComponentRepresentation componentRepresentation : componentList) {
                 try {
-                    Type type = ReflectionUtils.unserializeType(componentRepresentation.getType(),
-                        getClass().getClassLoader());
+                    Type type =
+                        ReflectionUtils.unserializeType(componentRepresentation.getType(), getClass().getClassLoader());
 
                     this.componentManager.unregisterComponent(type, componentRepresentation.getRole());
                 } catch (ClassNotFoundException e) {
@@ -358,26 +359,80 @@ public class ExtensionMojoHelper implements AutoCloseable
 
     public LocalExtension storeExtension(Extension extension) throws MojoExecutionException
     {
-        try {
-            return getLocalExtensionRepository().storeExtension(extension);
-        } catch (LocalExtensionRepositoryException e) {
-            throw new MojoExecutionException("Failed to stored extension", e);
+        LocalExtension localExtension = getLocalExtensionRepository().getLocalExtension(extension.getId());
+
+        if (localExtension == null) {
+            try {
+                localExtension = getLocalExtensionRepository().storeExtension(extension);
+            } catch (LocalExtensionRepositoryException e) {
+                throw new MojoExecutionException("Failed to stored extension", e);
+            }
         }
+
+        return localExtension;
     }
 
     public void storeExtensionDependencies() throws MojoExecutionException
     {
+        storeExtensionDependencies(false);
+    }
+
+    public void storeExtensionDependencies(boolean isolate) throws MojoExecutionException
+    {
         // Resolve dependencies
-        ExtensionPlan plan = resolveDependencies(this.project);
+        List<ExtensionPlan> plans = resolveDependencies(this.project, isolate);
 
         // Store dependencies
-        for (ExtensionPlanAction action : plan.getActions()) {
-            if (action.getAction() == Action.INSTALL) {
-                storeExtension(action.getExtension());
-            } else if (action.getAction() != Action.NONE) {
-                throw new MojoExecutionException(
-                    "Unexpected action [" + action + "] when storing dependencies of project [" + this.project + "]");
+        for (ExtensionPlan plan : plans) {
+            for (ExtensionPlanAction action : plan.getActions()) {
+                if (action.getAction() == Action.INSTALL) {
+                    storeExtension(action.getExtension());
+                } else if (action.getAction() != Action.NONE) {
+                    throw new MojoExecutionException("Unexpected action [" + action
+                        + "] when storing dependencies of project [" + this.project + "]");
+                }
             }
+        }
+    }
+
+    private ExtensionPlan resolve(InstallRequest installRequest)
+    {
+        // Minimum job log
+        installRequest.setVerbose(false);
+
+        Job installPlanJob = this.dependeciesJobProvider.get();
+
+        installPlanJob.initialize(installRequest);
+        installPlanJob.run();
+
+        return (ExtensionPlan) installPlanJob.getStatus();
+    }
+
+    public List<ExtensionPlan> resolveDependencies(MavenProject project, boolean isolate) throws MojoExecutionException
+    {
+        if (isolate) {
+            List<ExtensionPlan> plans = new ArrayList<>();
+
+            for (org.apache.maven.model.Dependency dependency : project.getDependencies()) {
+                InstallRequest installRequest = new InstallRequest();
+
+                // TODO: Add support for version range or ExtensionDependency in InstallRequest
+                installRequest.addExtension(new ExtensionId(dependency.getGroupId() + ':' + dependency.getArtifactId(),
+                    dependency.getVersion()));
+
+                ExtensionPlan status = resolve(installRequest);
+                // Deal with errors
+                if (status.getError() != null) {
+                    throw new MojoExecutionException(
+                        "Failed to resolve dependencies for project [" + project + "] dependencies", status.getError());
+                }
+
+                plans.add(status);
+            }
+
+            return plans;
+        } else {
+            return Collections.singletonList(resolveDependencies(project));
         }
     }
 
@@ -391,15 +446,7 @@ public class ExtensionMojoHelper implements AutoCloseable
                 new ExtensionId(dependency.getGroupId() + ':' + dependency.getArtifactId(), dependency.getVersion()));
         }
 
-        // Minimum job log
-        installRequest.setVerbose(false);
-
-        Job installPlanJob = this.dependeciesJobProvider.get();
-
-        installPlanJob.initialize(installRequest);
-        installPlanJob.run();
-
-        ExtensionPlan status = (ExtensionPlan) installPlanJob.getStatus();
+        ExtensionPlan status = resolve(installRequest);
         // Deal with errors
         if (status.getError() != null) {
             throw new MojoExecutionException(
