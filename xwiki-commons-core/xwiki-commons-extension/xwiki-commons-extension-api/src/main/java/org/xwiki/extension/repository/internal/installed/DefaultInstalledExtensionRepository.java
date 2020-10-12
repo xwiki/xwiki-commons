@@ -580,8 +580,9 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
 
         installedExtension.setInstalled(true, namespace);
 
-        // If a dependency is valid in any context mark it as valid
-        if (!installedExtension.isDependency(namespace) || !installedExtension.isValid(namespace)) {
+        // If a dependency is valid in any context keep it valid
+        if (!installedExtension.isDependency(namespace) || !installedExtension.isValidated(namespace)
+            || !installedExtension.isValid(namespace)) {
             installedExtension.setValid(namespace, valid);
         }
 
