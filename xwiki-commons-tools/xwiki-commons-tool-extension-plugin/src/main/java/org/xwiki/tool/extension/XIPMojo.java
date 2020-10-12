@@ -47,7 +47,7 @@ public class XIPMojo extends AbstractExtensionMojo
     {
         // Store extensions
         // Use Extension Manager to resolve dependencies instead of Maven since there is some differences
-        this.extensionHelper.storeExtensionDependencies();
+        this.extensionHelper.storeExtensionDependencies(true);
 
         // Generate package
         createPackage();
