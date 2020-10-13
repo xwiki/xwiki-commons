@@ -22,6 +22,7 @@ package org.xwiki.extension.version.internal;
 import java.util.Collection;
 
 import org.xwiki.extension.version.Version;
+import org.xwiki.extension.version.VersionConstraint;
 import org.xwiki.extension.version.VersionRange;
 import org.xwiki.extension.version.VersionRangeCollection;
 
@@ -84,5 +85,18 @@ public final class VersionUtils
         }
 
         return null;
+    }
+
+    /**
+     * Extract a unique version from the provided {@link VersionConstraint}. This make sense only when the constraint is
+     * actually a version or when it's a range with a strict version.
+     * 
+     * @param constraint the constraint
+     * @return the version
+     * @since 12.9RC1
+     */
+    public static Version getUniqueVersion(VersionConstraint constraint)
+    {
+        return constraint.getVersion() != null ? constraint.getVersion() : getStrictVersion(constraint.getRanges());
     }
 }

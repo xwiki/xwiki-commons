@@ -22,6 +22,7 @@ package org.xwiki.extension.index;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.search.AdvancedSearchable;
+import org.xwiki.job.JobException;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -40,10 +41,10 @@ public interface ExtensionIndex extends ExtensionRepository, AdvancedSearchable
     ExtensionIndexStatus getStatus();
 
     /**
-     * Start a new indexing process if none is already running or if {@code force} is true.
+     * Start a new indexing process or return the status of the currently running one.
      * 
-     * @param force if true force starting a new indexing process
      * @return the status of the running indexing process
+     * @throws JobException when failing to start indexing
      */
-    ExtensionIndexStatus index(boolean force);
+    ExtensionIndexStatus index() throws JobException;
 }

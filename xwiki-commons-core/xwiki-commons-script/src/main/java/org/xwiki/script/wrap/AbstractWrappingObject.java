@@ -31,7 +31,7 @@ public abstract class AbstractWrappingObject<T>
     /**
      * @see #getWrapped()
      */
-    private T wrapped;
+    protected T wrapped;
 
     /**
      * @param wrapped the wrapped object

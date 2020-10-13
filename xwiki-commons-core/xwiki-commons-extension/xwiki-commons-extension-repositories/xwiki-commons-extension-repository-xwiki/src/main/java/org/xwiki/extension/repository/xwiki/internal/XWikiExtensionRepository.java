@@ -50,7 +50,6 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
-import org.xwiki.extension.index.Indexable;
 import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.rating.ExtensionRating;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
@@ -85,7 +84,7 @@ import org.xwiki.repository.UriBuilder;
  * @since 4.0M1
  */
 public class XWikiExtensionRepository extends AbstractExtensionRepository
-    implements AdvancedSearchable, RatableExtensionRepository, Indexable
+    implements AdvancedSearchable, RatableExtensionRepository
 {
     public static final Version VERSION10 = new DefaultVersion(Resources.VERSION10);
 
@@ -424,8 +423,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             versions.add(new DefaultVersion(restExtension.getVersion()));
         }
 
-        return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(),
-            versions);
+        return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(), versions);
     }
 
     // Searchable
@@ -453,8 +451,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             extensions.add(new XWikiExtension(this, restExtension, this.licenseManager, this.factory));
         }
 
-        return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(),
-            extensions);
+        return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(), extensions);
     }
 
     @Override
@@ -498,8 +495,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             extensions.add(new XWikiExtension(this, restExtension, this.licenseManager, this.factory));
         }
 
-        return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(),
-            extensions);
+        return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(), extensions);
     }
 
     // Ratable
