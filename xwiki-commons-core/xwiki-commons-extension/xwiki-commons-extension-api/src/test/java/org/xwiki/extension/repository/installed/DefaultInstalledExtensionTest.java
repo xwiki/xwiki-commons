@@ -83,6 +83,11 @@ public class DefaultInstalledExtensionTest
         this.installedExtension.setValid(null, false);
 
         assertFalse(this.installedExtension.isValid(null));
+        assertFalse(this.installedExtension.isValid("namespace"));
+
+        this.installedExtension.setValid("namespace", true);
+
+        assertFalse(this.installedExtension.isValid(null));
         assertTrue(this.installedExtension.isValid("namespace"));
 
         this.installedExtension.setValid("namespace", false);
@@ -103,7 +108,7 @@ public class DefaultInstalledExtensionTest
         this.installedExtension.setInstalled(false, "namespace");
 
         assertFalse(this.installedExtension.isValid(null));
-        assertTrue(this.installedExtension.isValid("namespace"));
+        assertFalse(this.installedExtension.isValid("namespace"));
     }
 
     @Test

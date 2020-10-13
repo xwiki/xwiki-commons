@@ -318,9 +318,19 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     @Override
     public boolean isValid(String namespace)
     {
-        Boolean isvalid = this.valid != null ? this.valid.get(namespace) : null;
+        if (this.valid != null) {
+            Boolean isvalid = this.valid.get(namespace);
+            if (isvalid == null && namespace != null) {
+                isvalid = this.valid.get(null);
+            }
 
-        return isvalid != null ? isvalid : true;
+            if (isvalid != null) {
+                return isvalid.booleanValue();
+            }
+        }
+
+        // Default to true
+        return true;
     }
 
     /**
