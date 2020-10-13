@@ -172,19 +172,17 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
             // initialization
             initializeExtensionInNamespace(installedExtension, null, initializedExtensions);
         } else {
-            try {
-                // Initialize dependencies
-                for (ExtensionDependency dependency : installedExtension.getDependencies()) {
-                    initializeExtensionDependencyInNamespace(installedExtension, dependency, namespace,
-                        initializedExtensions);
-                }
-
-                // Initialize the extension
-                this.extensionHandlerManager.initialize(installedExtension, namespace);
-            } finally {
-                // Cache the extension to not initialize several times
-                initializedExtensionsInNamespace.add(installedExtension);
+            // Initialize dependencies
+            for (ExtensionDependency dependency : installedExtension.getDependencies()) {
+                initializeExtensionDependencyInNamespace(installedExtension, dependency, namespace,
+                    initializedExtensions);
             }
+
+            // Initialize the extension
+            this.extensionHandlerManager.initialize(installedExtension, namespace);
+
+            // Cache the extension to not initialize several times
+            initializedExtensionsInNamespace.add(installedExtension);
         }
     }
 
