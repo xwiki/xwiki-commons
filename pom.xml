@@ -76,7 +76,7 @@
     <hamcrest.version>2.2</hamcrest.version>
 
     <!-- JUnit -->
-    <junit.version>4.13</junit.version>
+    <junit.version>4.13.1</junit.version>
     <junit5.version>5.7.0</junit5.version>
     <junit.platform.version>1.7.0</junit.platform.version>
     <junit.vintage.version>${junit5.version}</junit.vintage.version>
@@ -948,7 +948,7 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-archiver</artifactId>
-        <version>4.2.2</version>
+        <version>4.2.3</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
