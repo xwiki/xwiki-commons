@@ -42,11 +42,34 @@ public abstract class AbstractWrappingObject<T>
     }
 
     /**
+     * A default constructor allowing to set the wrapped object later.
+     * 
+     * @since 12.9RC1
+     */
+    protected AbstractWrappingObject()
+    {
+
+    }
+
+    /**
      * @return the wrapped object
+     * @since 12.9RC1
      */
     protected T getWrapped()
     {
+        if (this.wrapped == null) {
+            this.wrapped = resolveWrapped();
+        }
+
         return this.wrapped;
+    }
+
+    /**
+     * @return the wrapped object
+     */
+    protected T resolveWrapped()
+    {
+        throw new UnsupportedOperationException();
     }
 
     // Object
