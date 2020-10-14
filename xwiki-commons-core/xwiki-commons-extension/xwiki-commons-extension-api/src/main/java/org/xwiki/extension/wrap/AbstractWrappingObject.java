@@ -37,4 +37,14 @@ public abstract class AbstractWrappingObject<T> extends org.xwiki.script.wrap.Ab
     {
         super(wrapped);
     }
+
+    /**
+     * A default constructor allowing to set the wrapped object later.
+     * 
+     * @since 12.9RC1
+     */
+    protected AbstractWrappingObject()
+    {
+        
+    }
 }
