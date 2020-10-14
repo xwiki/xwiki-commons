@@ -41,6 +41,7 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionManager;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.index.ExtensionIndex;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
@@ -88,6 +89,9 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
     private InstalledExtensionRepository installedExtensionRepository;
 
     @Inject
+    private ExtensionIndex index;
+
+    @Inject
     @Named("context")
     private Provider<ComponentManager> componentManagerProvider;
 
@@ -108,6 +112,7 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
             this.localExtensionRepository);
         this.standardRepositories.put(this.installedExtensionRepository.getDescriptor().getId(),
             this.installedExtensionRepository);
+        this.standardRepositories.put(this.index.getDescriptor().getId(), this.index);
     }
 
     @Override
