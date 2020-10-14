@@ -66,6 +66,7 @@ public abstract class AbstractWrappingObject<T>
 
     /**
      * @return the wrapped object
+     * @since 12.9RC1
      */
     protected T resolveWrapped()
     {
