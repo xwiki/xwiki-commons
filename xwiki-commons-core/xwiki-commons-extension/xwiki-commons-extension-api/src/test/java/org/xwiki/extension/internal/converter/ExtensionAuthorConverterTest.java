@@ -58,4 +58,15 @@ class ExtensionAuthorConverterTest
         assertEquals(new DefaultExtensionAuthor("name\\/url", (String) null),
             this.manager.convert(ExtensionAuthor.class, "name\\\\\\/url"));
     }
+
+    @Test
+    void convertToString()
+    {
+        assertEquals("name", this.manager.getConverter(ExtensionAuthor.class).convert(String.class,
+            new DefaultExtensionAuthor("name", (String) null)));
+        assertEquals("name/url", this.manager.getConverter(ExtensionAuthor.class).convert(String.class,
+            new DefaultExtensionAuthor("name", "url")));
+        assertEquals("name\\/url", this.manager.getConverter(ExtensionAuthor.class).convert(String.class,
+            new DefaultExtensionAuthor("name/url", (String) null)));
+    }
 }
