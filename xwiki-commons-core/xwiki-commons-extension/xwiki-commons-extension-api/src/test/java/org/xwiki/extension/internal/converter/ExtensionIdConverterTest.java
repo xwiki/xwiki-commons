@@ -58,4 +58,15 @@ public class ExtensionIdConverterTest
         assertEquals(new ExtensionId("id\\/1.0"),
             this.mocker.getComponentUnderTest().convert(ExtensionId.class, "id\\\\\\/1.0"));
     }
+
+    @Test
+    public void convertToString() throws ComponentLookupException
+    {
+        assertEquals("id", this.mocker.getComponentUnderTest().convert(String.class,
+            new ExtensionId("id", (String) null)));
+        assertEquals("id/version", this.mocker.getComponentUnderTest().convert(String.class,
+            new ExtensionId("id", "version")));
+        assertEquals("id\\/version", this.mocker.getComponentUnderTest().convert(String.class,
+            new ExtensionId("id/version", (String) null)));
+    }
 }
