@@ -50,10 +50,16 @@ class ExtensionIdConverterTest
         assertEquals(new ExtensionId("id\\", new DefaultVersion("1.0")),
             this.manager.convert(ExtensionId.class, "id\\\\/1.0"));
 
-        assertEquals(new ExtensionId("id/1.0"),
-            this.manager.convert(ExtensionId.class, "id\\/1.0"));
+        assertEquals(new ExtensionId("id/1.0"), this.manager.convert(ExtensionId.class, "id\\/1.0"));
         assertEquals(new ExtensionId("/1.0"), this.manager.convert(ExtensionId.class, "\\/1.0"));
-        assertEquals(new ExtensionId("id\\/1.0"),
-            this.manager.convert(ExtensionId.class, "id\\\\\\/1.0"));
+        assertEquals(new ExtensionId("id\\/1.0"), this.manager.convert(ExtensionId.class, "id\\\\\\/1.0"));
+    }
+
+    @Test
+    void convertToString()
+    {
+        assertEquals("id", this.manager.convert(String.class, new ExtensionId("id", (String) null)));
+        assertEquals("id/version", this.manager.convert(String.class, new ExtensionId("id", "version")));
+        assertEquals("id\\/version", this.manager.convert(String.class, new ExtensionId("id/version", (String) null)));
     }
 }

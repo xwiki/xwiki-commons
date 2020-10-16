@@ -161,7 +161,7 @@ public class ExtensionIdConverter extends AbstractConverter<ExtensionId>
     {
         StringBuilder builder = new StringBuilder();
 
-        builder.append(value.getId());
+        builder.append(value.getId().replace("\\", "\\\\").replace("/", "\\/"));
 
         if (value.getVersion() != null) {
             builder.append('/');
