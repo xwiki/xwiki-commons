@@ -133,9 +133,6 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
     {
         // Check if the extension can be available from this namespace
         if (!installedExtension.isValid(namespace)) {
-            this.logger.warn("Extension [{}] could not be initialized on namespace [{}] because it's invalid",
-                installedExtension.getId(), namespace);
-
             return false;
         }
 
