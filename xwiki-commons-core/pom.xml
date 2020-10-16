@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,7 +18,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -156,21 +154,7 @@
           <analysisConfiguration>
             <!-- Add ignores here using the following syntax. You can use a single <revapi.ignore> entry but it
                  cannot be empty -->
-            <revapi.ignore>
-              <item>
-                <code>java.class.noLongerInheritsFromClass</code>
-                <old>class org.xwiki.classloader.NamespaceURLClassLoader</old>
-                <new>class org.xwiki.classloader.NamespaceURLClassLoader</new>
-                <justification>NamespaceURLClassLoader no longer inherits from URIClassLoader since this one is now deprecated.</justification>
-              </item>
-              <item>
-                <regex>true</regex>
-                <code>java\.generics\.elementNowParameterized</code>
-                <old>.*org\.xwiki\.component\.annotation\.ComponentDescriptorFactory::createComponentDescriptors.*</old>
-                <new>.*org\.xwiki\.component\.annotation\.ComponentDescriptorFactory::createComponentDescriptors.*</new>
-                <justification>Not a binary breakage (no API breakage), only source level.</justification>
-              </item>
-            </revapi.ignore>
+            
           </analysisConfiguration>
         </configuration>
       </plugin>
