@@ -59,12 +59,10 @@ public abstract class AbstractWrappingExtension<E extends Extension> extends Abs
 
     /**
      * A default constructor allowing to set the wrapped object later.
-     * 
-     * @since 12.9RC1
      */
     protected AbstractWrappingExtension()
     {
-        
+
     }
 
     /**
