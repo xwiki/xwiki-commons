@@ -86,16 +86,16 @@ class URLToolTest
     }
 
     @Test
-    void parseValidURL() throws MalformedURLException
+    void getURLValid() throws MalformedURLException
     {
-        URL url = tool.getURL("http://www.xwiki.com");
-        assertEquals(url, new URL("http://www.xwiki.com"));
+        URL url = tool.toURL("http://www.xwiki.com");
+        assertEquals(new URL("http://www.xwiki.com"), url);
     }
 
     @Test
-    void parseInvalidURL()
+    void getURLInvalid()
     {
-        URL url = tool.getURL("xwiki.com");
+        URL url = tool.toURL("xwiki.com");
         assertNull(url);
     }
 }
