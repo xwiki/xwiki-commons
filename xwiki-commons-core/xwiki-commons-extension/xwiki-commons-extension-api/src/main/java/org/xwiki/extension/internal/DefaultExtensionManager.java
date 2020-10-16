@@ -89,7 +89,7 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
     private InstalledExtensionRepository installedExtensionRepository;
 
     @Inject
-    private ExtensionIndex index;
+    private Provider<ExtensionIndex> indexRepositoryProvider;
 
     @Inject
     @Named("context")
@@ -112,7 +112,6 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
             this.localExtensionRepository);
         this.standardRepositories.put(this.installedExtensionRepository.getDescriptor().getId(),
             this.installedExtensionRepository);
-        this.standardRepositories.put(this.index.getDescriptor().getId(), this.index);
     }
 
     @Override
@@ -183,6 +182,11 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
     @Override
     public ExtensionRepository getRepository(String repositoryId)
     {
+        // Try index
+        if (repositoryId.equals("index")) {
+            return this.indexRepositoryProvider.get();
+        }
+
         // Try internal repositories
         ExtensionRepository repository = this.standardRepositories.get(repositoryId);
 
