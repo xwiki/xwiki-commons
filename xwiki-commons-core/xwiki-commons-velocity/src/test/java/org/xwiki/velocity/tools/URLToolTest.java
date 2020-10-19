@@ -20,6 +20,8 @@
 
 package org.xwiki.velocity.tools;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -28,6 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -80,5 +83,19 @@ class URLToolTest
         EscapeTool escapeTool = new EscapeTool();
         String queryString = "x=5&x=4&r=3&a=2";
         assertEquals(queryString, escapeTool.url(tool.parseQuery(queryString)));
+    }
+
+    @Test
+    void toValidURL() throws MalformedURLException
+    {
+        URL url = tool.toURL("http://www.xwiki.com");
+        assertEquals(new URL("http://www.xwiki.com"), url);
+    }
+
+    @Test
+    void toInvalidURL()
+    {
+        URL url = tool.toURL("xwiki.com");
+        assertNull(url);
     }
 }

@@ -19,6 +19,8 @@
  */
 package org.xwiki.velocity.tools;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -57,5 +59,21 @@ public class URLTool
             }
         }
         return queryParams;
+    }
+
+    /**
+     * Convert a string to an URL object, if it's possible.
+     *
+     * @param urlString string to be convert
+     * @return an URL object from a given string
+     * @since 12.9RC1
+     */
+    public URL toURL(String urlString)
+    {
+        try {
+            return new URL(urlString);
+        } catch (MalformedURLException e) {
+            return null;
+        }
     }
 }
