@@ -66,7 +66,7 @@ public class URLTool
      *
      * @param urlString string to be convert
      * @return an URL object from a given string
-     * @since 12.9RC
+     * @since 12.9RC1
      */
     public URL toURL(String urlString)
     {
