@@ -165,44 +165,7 @@
               </item>
             </revapi.ignore>
             -->
-            <revapi.ignore>
-              <item>
-                <code>java.class.nonFinalClassInheritsFromNewClass</code>
-                <old>class org.xwiki.extension.wrap.WrappingCoreExtension&lt;T extends org.xwiki.extension.CoreExtension&gt;</old>
-                <new>class org.xwiki.extension.wrap.WrappingCoreExtension&lt;T extends org.xwiki.extension.CoreExtension&gt;</new>
-                <justification>Should not cause any retro compatibility issue in practice</justification>
-              </item>
-              <item>
-                <code>java.class.nonFinalClassInheritsFromNewClass</code>
-                <old>class org.xwiki.extension.wrap.WrappingExtension&lt;E extends org.xwiki.extension.Extension&gt;</old>
-                <new>class org.xwiki.extension.wrap.WrappingExtension&lt;E extends org.xwiki.extension.Extension&gt;</new>
-                <justification>Should not cause any retro compatibility issue in practice</justification>
-              </item>
-              <item>
-                <code>java.class.nonFinalClassInheritsFromNewClass</code>
-                <old>class org.xwiki.extension.wrap.WrappingInstalledExtension&lt;E extends org.xwiki.extension.InstalledExtension&gt;</old>
-                <new>class org.xwiki.extension.wrap.WrappingInstalledExtension&lt;E extends org.xwiki.extension.InstalledExtension&gt;</new>
-                <justification>Should not cause any retro compatibility issue in practice</justification>
-              </item>
-              <item>
-                <code>java.class.nonFinalClassInheritsFromNewClass</code>
-                <old>class org.xwiki.extension.wrap.WrappingLocalExtension&lt;T extends org.xwiki.extension.LocalExtension&gt;</old>
-                <new>class org.xwiki.extension.wrap.WrappingLocalExtension&lt;T extends org.xwiki.extension.LocalExtension&gt;</new>
-                <justification>Should not cause any retro compatibility issue in practice</justification>
-              </item>
-              <item>
-                <code>java.class.nonFinalClassInheritsFromNewClass</code>
-                <old>class org.xwiki.extension.wrap.WrappingRatingExtension&lt;T extends org.xwiki.extension.rating.RatingExtension&gt;</old>
-                <new>class org.xwiki.extension.wrap.WrappingRatingExtension&lt;T extends org.xwiki.extension.rating.RatingExtension&gt;</new>
-                <justification>Should not cause any retro compatibility issue in practice</justification>
-              </item>
-              <item>
-                <code>java.class.nonFinalClassInheritsFromNewClass</code>
-                <old>class org.xwiki.extension.wrap.WrappingRemoteExtension&lt;T extends org.xwiki.extension.RemoteExtension&gt;</old>
-                <new>class org.xwiki.extension.wrap.WrappingRemoteExtension&lt;T extends org.xwiki.extension.RemoteExtension&gt;</new>
-                <justification>Should not cause any retro compatibility issue in practice</justification>
-              </item>
-            </revapi.ignore>
+            
           </analysisConfiguration>
         </configuration>
       </plugin>
