@@ -20,8 +20,10 @@
 package org.xwiki.extension.index;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.xwiki.component.namespace.Namespace;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.stability.Unstable;
 
@@ -29,7 +31,7 @@ import org.xwiki.stability.Unstable;
  * Extends {@link ExtensionQuery} with extension index specific criteria.
  * 
  * @version $Id$
- * @since 12.9RC1
+ * @since 12.10RC1
  */
 @Unstable
 public class IndexedExtensionQuery extends ExtensionQuery
@@ -37,6 +39,8 @@ public class IndexedExtensionQuery extends ExtensionQuery
     private final List<String> repositories = new ArrayList<>();
 
     private Boolean compatible;
+
+    private List<Namespace> namespaces;
 
     /**
      * @param repositoryId the repository from which the extension is coming from
@@ -51,11 +55,13 @@ public class IndexedExtensionQuery extends ExtensionQuery
 
     /**
      * @param compatible true if only compatible extension should be returned
+     * @param namespaces the namespaces with which the extensions should be (not) compatible
      * @return this
      */
-    public IndexedExtensionQuery setCompatible(boolean compatible)
+    public IndexedExtensionQuery setCompatible(boolean compatible, Namespace... namespaces)
     {
         this.compatible = compatible;
+        this.namespaces = Arrays.asList(namespaces);
 
         return this;
     }
@@ -66,5 +72,13 @@ public class IndexedExtensionQuery extends ExtensionQuery
     public Boolean getCompatible()
     {
         return this.compatible;
+    }
+
+    /**
+     * @return the namespace with which the extensions should be compatible
+     */
+    public List<Namespace> getNamespaces()
+    {
+        return this.namespaces;
     }
 }
