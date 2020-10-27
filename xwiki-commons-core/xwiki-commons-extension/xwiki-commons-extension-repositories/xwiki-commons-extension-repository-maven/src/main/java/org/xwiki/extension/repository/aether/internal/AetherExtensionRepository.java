@@ -80,9 +80,11 @@ import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionContext;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionNotFoundException;
+import org.xwiki.extension.ExtensionSession;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.maven.internal.DefaultMavenExtensionDependency;
@@ -137,6 +139,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
      */
     protected static final GenericVersionScheme AETHERVERSIONSCHEME = new GenericVersionScheme();
 
+    private static final String ECONTEXT_SESSION = "maven.systeSession";
+
     protected final PlexusContainer plexusContainer;
 
     protected final ComponentManager componentManager;
@@ -165,6 +169,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     protected ExtensionFactory factory;
 
+    protected ExtensionContext extensionContext;
+
     public AetherExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
         AetherExtensionRepositoryFactory repositoryFactory, RemoteRepository aetherRepository,
         PlexusContainer plexusContainer, ComponentManager componentManager) throws Exception
@@ -179,6 +185,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         this.extensionConverter = componentManager.getInstance(ModelConverter.ROLE);
         this.factory = componentManager.getInstance(ExtensionFactory.class);
+        this.extensionContext = componentManager.getInstance(ExtensionContext.class);
 
         this.versionRangeResolver = this.plexusContainer.lookup(VersionRangeResolver.class);
         this.versionResolver = this.plexusContainer.lookup(VersionResolver.class);
@@ -205,6 +212,25 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return this.repositoryConnectorProvider;
     }
 
+    protected XWikiRepositorySystemSession pushSession() throws ResolveException
+    {
+        ExtensionSession extensionSession = this.extensionContext.pushSession();
+
+        XWikiRepositorySystemSession session = extensionSession.get(ECONTEXT_SESSION);
+
+        if (session == null) {
+            session = createRepositorySystemSession();
+            extensionSession.set(ECONTEXT_SESSION, session);
+        }
+
+        return session;
+    }
+
+    protected void popSession()
+    {
+        this.extensionContext.popSession();
+    }
+
     protected XWikiRepositorySystemSession createRepositorySystemSession() throws ResolveException
     {
         XWikiRepositorySystemSession session;
@@ -228,11 +254,23 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     {
         XWikiRepositorySystemSession session;
         try {
-            session = createRepositorySystemSession();
+            session = pushSession();
         } catch (ResolveException e) {
             throw new IOException("Failed to create the repository system session", e);
         }
 
+        File file;
+        try {
+            file = getFile(artifact, session);
+        } finally {
+            popSession();
+        }
+
+        return new AetherExtensionFileInputStream(file, true);
+    }
+
+    private File getFile(Artifact artifact, XWikiRepositorySystemSession session) throws IOException
+    {
         List<RemoteRepository> repositories = newResolutionRepositories(session);
         RemoteRepository repository = repositories.get(0);
 
@@ -255,7 +293,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             connector.get(Arrays.asList(download), null);
         } finally {
             connector.close();
-            session.close();
         }
 
         // Check if the download succeeded
@@ -263,7 +300,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             throw new IOException("Failed to download file for artifact [" + artifact + "]", download.getException());
         }
 
-        return new AetherExtensionFileInputStream(file, true);
+        return file;
     }
 
     @Override
@@ -310,10 +347,13 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         }
 
         List<org.eclipse.aether.version.Version> versions;
-        try (XWikiRepositorySystemSession session = createRepositorySystemSession()) {
+        XWikiRepositorySystemSession session = pushSession();
+        try {
             versions = resolveVersions(artifact, session);
         } catch (Exception e) {
             throw new ResolveException("Failed to resolve versions for id [" + id + "]", e);
+        } finally {
+            popSession();
         }
 
         if (versions.isEmpty()) {
@@ -436,7 +476,9 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     {
         Artifact artifact;
         String targetMavenType;
-        try (XWikiRepositorySystemSession session = createRepositorySystemSession()) {
+
+        XWikiRepositorySystemSession session = pushSession();
+        try {
             if (extensionDependency instanceof AetherExtensionDependency) {
                 artifact = ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact();
                 targetMavenType = ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact()
@@ -457,6 +499,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
                         extensionDependency.getVersionConstraint(), session).toString());
                 }
             }
+        } finally {
+            popSession();
         }
 
         return resolveMaven(artifact, targetMavenType);
@@ -471,8 +515,11 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private AetherExtension resolveMaven(Artifact artifact, String targetMavenExtension) throws ResolveException
     {
-        try (XWikiRepositorySystemSession session = createRepositorySystemSession()) {
+        XWikiRepositorySystemSession session = pushSession();
+        try {
             return resolveMaven(artifact, targetMavenExtension, session);
+        } finally {
+            popSession();
         }
     }
 

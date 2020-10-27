@@ -29,6 +29,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionContext;
 import org.xwiki.extension.ExtensionException;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
@@ -99,6 +100,9 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
     @Inject
     protected InstalledExtensionRepository installedExtensionRepository;
 
+    @Inject
+    protected ExtensionContext extensionContext;
+
     protected JobGroupPath groupPath;
 
     @Override
@@ -111,6 +115,26 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
             this.groupPath = new JobGroupPath(getRequest().getNamespaces().iterator().next(), ROOT_GROUP);
         } else {
             this.groupPath = ROOT_GROUP;
+        }
+    }
+
+    @Override
+    protected void jobStarting()
+    {
+        // Start an extension session so that things like the Maven cache are shared with the whole process
+        this.extensionContext.pushSession();
+
+        super.jobStarting();
+    }
+
+    @Override
+    protected void jobFinished(Throwable error)
+    {
+        try {
+            super.jobFinished(error);
+        } finally {
+            // We don't need the extension session anymore
+            this.extensionContext.popSession();
         }
     }
 

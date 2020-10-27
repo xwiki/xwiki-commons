@@ -1,3 +1,4 @@
+org.xwiki.extension.internal.DefaultExtensionContext
 org.xwiki.extension.handler.internal.DefaultExtensionHandlerManager
 org.xwiki.extension.handler.internal.DefaultExtensionInitializer
 org.xwiki.extension.handler.internal.DefaultExtensionValidatorProvider
