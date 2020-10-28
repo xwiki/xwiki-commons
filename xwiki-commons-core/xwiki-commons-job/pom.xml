@@ -96,6 +96,12 @@
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-classloader-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>

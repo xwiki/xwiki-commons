@@ -38,6 +38,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.xwiki.classloader.ClassLoaderManager;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -164,7 +165,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
             Thread.currentThread().setName(getThreadName(r));
 
             // Make sure to set a clean classloader
-            Thread.currentThread().setContextClassLoader(initClassLoader);
+            Thread.currentThread().setContextClassLoader(classloaderManager.getURLClassLoader(null, false));
         }
 
         @Override
@@ -194,6 +195,9 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     @Named("context")
     private Provider<ComponentManager> componentManager;
 
+    @Inject
+    private ClassLoaderManager classloaderManager;
+
     private final Map<List<String>, Queue<Job>> groupedJobs = new ConcurrentHashMap<List<String>, Queue<Job>>();
 
     private final Map<List<String>, Job> jobs = new ConcurrentHashMap<List<String>, Job>();
@@ -202,8 +206,6 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
      * Handle care of hierarchical locking for grouped jobs.
      */
     private final JobGroupPathLockTree lockTree = new JobGroupPathLockTree();
-
-    private ClassLoader initClassLoader;
 
     /**
      * Map<groupname, group executor>.
@@ -221,8 +223,6 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     @Override
     public void initialize() throws InitializationException
     {
-        this.initClassLoader = Thread.currentThread().getContextClassLoader();
-
         this.jobExecutor =
             new JobThreadExecutor(Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
     }
