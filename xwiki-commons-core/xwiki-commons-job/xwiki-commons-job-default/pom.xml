@@ -44,6 +44,12 @@
       <artifactId>xwiki-commons-job-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-classloader-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
