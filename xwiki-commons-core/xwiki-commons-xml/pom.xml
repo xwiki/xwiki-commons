@@ -81,7 +81,6 @@
     <dependency>
       <groupId>io.sf.carte</groupId>
       <artifactId>xml-dtd</artifactId>
-      <version>${css4j.version}</version>
     </dependency>
     <!-- Testing dependencies -->
     <dependency>

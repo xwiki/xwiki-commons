@@ -1366,6 +1366,17 @@
         <artifactId>maven-remote-resources-plugin</artifactId>
         <version>${maven-remote-resources-plugin.version}</version>
       </dependency>
+      <!-- CSS4J -->
+      <dependency>
+        <groupId>io.sf.carte</groupId>
+        <artifactId>xml-dtd</artifactId>
+        <version>${css4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.sf.carte</groupId>
+        <artifactId>css4j-dom4j</artifactId>
+        <version>${css4j.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <build>
