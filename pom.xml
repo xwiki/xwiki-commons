@@ -114,6 +114,9 @@
     <!-- Closure compiler -->
     <closure-compiler.version>v20200830</closure-compiler.version>
 
+    <!-- CSS4J/Carte -->
+    <css4j.version>3.1.0</css4j.version>
+
     <!-- By default Checkstyle, Backward compatibility check, Enforcer, License plugins, etc are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.revapi.skip>false</xwiki.revapi.skip>
