@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.apache.maven.model.DistributionManagement;
@@ -87,6 +88,7 @@ import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.maven.internal.DefaultMavenExtensionDependency;
 import org.xwiki.extension.maven.internal.MavenExtensionDependency;
+import org.xwiki.extension.maven.internal.MavenUtils;
 import org.xwiki.extension.maven.internal.converter.ModelConverter;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepository;
@@ -523,25 +525,30 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         // Set type
 
-        String artifactExtension;
-        if (targetMavenExtension == null) {
-            // Resolve extension from the pom packaging
-            ArtifactType artifactType = session.getArtifactTypeRegistry().get(model.getPackaging());
-            if (artifactType != null) {
-                artifactExtension = artifactType.getExtension();
-            } else {
-                artifactExtension = model.getPackaging();
-            }
-        } else {
-            artifactExtension = targetMavenExtension;
+        // Find the file extension
+        String artifactFileExtension = targetMavenExtension != null ? targetMavenExtension : model.getPackaging();
+        ArtifactType artifactType = session.getArtifactTypeRegistry().get(artifactFileExtension);
+        if (artifactType != null) {
+            artifactFileExtension = artifactType.getExtension();
         }
 
         Extension mavenExtension = this.extensionConverter.convert(Extension.class, model);
 
         Artifact fileArtifact = new DefaultArtifact(pomArtifact.getGroupId(), pomArtifact.getArtifactId(),
-            artifact.getClassifier(), artifactExtension, pomArtifact.getVersion());
+            artifact.getClassifier(), artifactFileExtension, pomArtifact.getVersion());
 
-        AetherExtension extension = new AetherExtension(mavenExtension, fileArtifact, this, this.factory);
+        ExtensionId extensionId;
+        String extensionType = mavenExtension.getType();
+        if (targetMavenExtension != null
+            && !Objects.equals(MavenUtils.packagingToType(targetMavenExtension), mavenExtension.getType())
+            && !Objects.equals(MavenUtils.packagingToType(artifactFileExtension), mavenExtension.getType())) {
+            extensionId = AetherUtils.createExtensionId(artifact, true, factory);
+            extensionType = MavenUtils.packagingToType(artifactFileExtension);
+        } else {
+            extensionId = AetherUtils.createExtensionId(artifact, false, factory);
+        }
+
+        AetherExtension extension = new AetherExtension(extensionId, extensionType, mavenExtension, fileArtifact, this);
 
         // Convert Maven dependencies to Aether dependencies
         extension.setDependencies(toAetherDependencies(mavenExtension.getDependencies(), session));
