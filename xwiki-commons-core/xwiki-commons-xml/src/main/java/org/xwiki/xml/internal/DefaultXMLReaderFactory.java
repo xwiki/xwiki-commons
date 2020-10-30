@@ -82,12 +82,9 @@ public class DefaultXMLReaderFactory implements XMLReaderFactory, Initializable
             xmlReader = (XMLReader) Class.forName("org.apache.xerces.parsers.SAXParser").getConstructor(
                 Class.forName("org.apache.xerces.xni.parser.XMLParserConfiguration")).newInstance(xercesConfiguration);
 
-            // Set a Xerces "SecurityManager" to prevent DoS entity recursion attacks:
-            //
-            // - The SecurityManager class was added Jan 8, 2003, XML11NonValidatingConfiguration
-            //   in Jul 23, 2004.
-            //
-            // - If we have XML11NonValidatingConfiguration, we should have SecurityManager as well.
+            // Set a Xerces "SecurityManager" to prevent DoS entity recursion attacks. We know that the SecurityManager
+            // class will be found since it was added in Jan 8, 2003, while XML11NonValidatingConfiguration was itself
+            // added later, in Jul 23, 2004. So if XML11NonValidatingConfiguration then so should SecurityManager.
             Object secManager = Class.forName("org.apache.xerces.util.SecurityManager").newInstance();
             // Default EntityExpansionLimit is 100000 per document.
             xmlReader.setProperty("http://apache.org/xml/properties/security-manager", secManager);
@@ -102,6 +99,7 @@ public class DefaultXMLReaderFactory implements XMLReaderFactory, Initializable
             } catch (SAXNotRecognizedException | SAXNotSupportedException e1) {
                 // All implementations are required to support the above feature, but for example
                 // the Piccolo parser (piccolo.sourceforge.net) JAXPSAXParserFactory does not.
+                // We let it go through, the security feature will just not be active.
             }
 
             SAXParser parser = parserFactory.newSAXParser();
