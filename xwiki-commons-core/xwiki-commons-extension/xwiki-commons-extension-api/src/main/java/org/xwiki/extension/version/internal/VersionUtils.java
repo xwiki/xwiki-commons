@@ -93,10 +93,14 @@ public final class VersionUtils
      * 
      * @param constraint the constraint
      * @return the version
-     * @since 12.9RC1
+     * @since 12.10RC1
      */
     public static Version getUniqueVersion(VersionConstraint constraint)
     {
+        if (constraint == null) {
+            return null;
+        }
+
         return constraint.getVersion() != null ? constraint.getVersion() : getStrictVersion(constraint.getRanges());
     }
 }
