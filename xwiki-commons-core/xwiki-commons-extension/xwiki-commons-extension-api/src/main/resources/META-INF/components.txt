@@ -11,6 +11,7 @@ org.xwiki.extension.internal.DefaultExtensionManagerConfiguration
 org.xwiki.extension.internal.converter.ExtensionAuthorConverter
 org.xwiki.extension.internal.converter.ExtensionConverter
 org.xwiki.extension.internal.converter.ExtensionIdConverter
+org.xwiki.extension.internal.converter.VersionConverter
 org.xwiki.extension.job.history.internal.AnswerReplayer
 org.xwiki.extension.job.history.internal.DefaultExtensionJobHistory
 org.xwiki.extension.job.history.internal.DefaultExtensionJobHistoryConfiguration
