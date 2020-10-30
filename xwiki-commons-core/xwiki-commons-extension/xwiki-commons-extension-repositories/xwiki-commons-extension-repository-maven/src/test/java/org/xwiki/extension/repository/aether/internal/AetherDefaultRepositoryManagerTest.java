@@ -65,7 +65,7 @@ public class AetherDefaultRepositoryManagerTest
 {
     private static final String GROUPID = "groupid";
 
-    private static final String ARTIfACTID = "artifactid";
+    private static final String ARTIFACTID = "artifactid";
 
     @Rule
     public MockitoRepositoryUtilsRule repositoryUtil = new MockitoRepositoryUtilsRule();
@@ -88,6 +88,10 @@ public class AetherDefaultRepositoryManagerTest
 
     private ExtensionId bundleExtensionId;
 
+    private ExtensionId mavenpluginExtensionId;
+
+    private ExtensionId webjarExtensionId;
+
     private ExtensionId sextensionId;
 
     private ExtensionId sextensionDependencyId;
@@ -95,17 +99,21 @@ public class AetherDefaultRepositoryManagerTest
     @Before
     public void setUp() throws Exception
     {
-        this.extensionId = new ExtensionId(GROUPID + ':' + ARTIfACTID, "version");
-        this.snapshotExtensionId = new ExtensionId(GROUPID + ':' + ARTIfACTID, "1.0-SNAPSHOT");
+        this.extensionId = new ExtensionId(GROUPID + ':' + ARTIFACTID, "version");
+        this.snapshotExtensionId = new ExtensionId(GROUPID + ':' + ARTIFACTID, "1.0-SNAPSHOT");
         this.extensionDependencyId = new ExtensionId("dgroupid:dartifactid", "dversion");
 
-        this.extensionIdClassifier = new ExtensionId(GROUPID + ':' + ARTIfACTID + ":classifier", "version");
+        this.extensionIdClassifier = new ExtensionId(GROUPID + ':' + ARTIFACTID + ":classifier", "version");
         this.dependencyExtensionId = new DefaultExtensionDependency(this.extensionDependencyId.getId(),
             new DefaultVersionConstraint(this.extensionDependencyId.getVersion().getValue()));
         this.dependencyExtensionIdRange = new DefaultExtensionDependency(this.extensionDependencyId.getId(),
             new DefaultVersionConstraint("[dversion,)"));
 
         this.bundleExtensionId = new ExtensionId("groupid:bundleartifactid", "version");
+
+        this.mavenpluginExtensionId = new ExtensionId("groupid:mavenplugin", "version");
+
+        this.webjarExtensionId = new ExtensionId("wgroupid:wartifactid", "wversion");
 
         this.sextensionId = new ExtensionId("sgroupid:sartifactid", "version");
         this.sextensionDependencyId = new ExtensionId("sgroupid:sdartifactid", "version");
@@ -180,7 +188,7 @@ public class AetherDefaultRepositoryManagerTest
         // Modify the file on the descriptor on the repository
         File pomFile = new File(this.repositoryUtil.getMavenRepository(),
             this.extensionId.getId().replace('.', '/').replace(':', '/') + '/' + this.extensionId.getVersion() + '/'
-                + ARTIfACTID + '-' + this.extensionId.getVersion() + ".pom");
+                + ARTIFACTID + '-' + this.extensionId.getVersion() + ".pom");
         FileUtils.writeStringToFile(pomFile, FileUtils.readFileToString(pomFile, "UTF-8")
             .replace("<description>summary</description>", "<description>modified summary</description>"), "UTF-8");
         extension = this.repositoryManager.resolve(this.extensionId);
@@ -209,17 +217,6 @@ public class AetherDefaultRepositoryManagerTest
         assertEquals("groupid:artifactid::othertype", dependencyExtension.getId().getId());
         assertEquals("version", dependencyExtension.getId().getVersion().getValue());
         assertEquals("othertype", dependencyExtension.getType());
-    }
-
-    @Test
-    public void testResolveWebjar() throws ResolveException, IOException
-    {
-        Extension webjar = this.repositoryManager.resolve(new ExtensionId("wgroupid:wartifactid", "wversion"));
-
-        // Make sure accessing the webjar file works
-        try (InputStream stream = webjar.getFile().openStream()) {
-            assertEquals("webjar", IOUtils.toString(stream));
-        }
     }
 
     @Test
@@ -324,18 +321,7 @@ public class AetherDefaultRepositoryManagerTest
 
         ExtensionDependency dependency = extension.getDependencies().iterator().next();
         assertEquals(this.sextensionDependencyId.getId(), dependency.getId());
-        assertEquals(this.sextensionDependencyId.getVersion().getValue(),
-            dependency.getVersionConstraint().getValue());
-    }
-
-    @Test
-    public void testResolveVersionClassifier() throws ResolveException
-    {
-        Extension extension = this.repositoryManager.resolve(this.extensionIdClassifier);
-
-        assertNotNull(extension);
-        assertEquals(this.extensionIdClassifier.getId(), extension.getId().getId());
-        assertEquals(this.extensionIdClassifier.getVersion(), extension.getId().getVersion());
+        assertEquals(this.sextensionDependencyId.getVersion().getValue(), dependency.getVersionConstraint().getValue());
     }
 
     @Test
@@ -381,6 +367,27 @@ public class AetherDefaultRepositoryManagerTest
     {
         Extension extension = this.repositoryManager.resolve(this.extensionIdClassifier);
 
+        assertNotNull(extension);
+        assertEquals(this.extensionIdClassifier, extension.getId());
+        assertEquals("type", extension.getType());
+        try (InputStream is = extension.getFile().openStream()) {
+            assertEquals("classifier content", IOUtils.toString(is));
+        }
+    }
+
+    @Test
+    public void testDownloadClassifierDependency() throws ResolveException, IOException
+    {
+        Artifact artifact = new DefaultArtifact(GROUPID, ARTIFACTID, "classifier", "type",
+            this.extensionIdClassifier.getVersion().getValue());
+        Dependency aetherDependency = new Dependency(artifact, null);
+        AetherExtensionDependency dependency = new AetherExtensionDependency(aetherDependency);
+
+        Extension extension = this.repositoryManager.resolve(dependency);
+
+        assertNotNull(extension);
+        assertEquals(this.extensionIdClassifier, extension.getId());
+        assertEquals("type", extension.getType());
         try (InputStream is = extension.getFile().openStream()) {
             assertEquals("classifier content", IOUtils.toString(is));
         }
@@ -391,8 +398,88 @@ public class AetherDefaultRepositoryManagerTest
     {
         Extension extension = this.repositoryManager.resolve(this.bundleExtensionId);
 
+        assertEquals(this.bundleExtensionId, extension.getId());
+        assertEquals("jar", extension.getType());
         try (InputStream is = extension.getFile().openStream()) {
             assertEquals("content", IOUtils.toString(is));
+        }
+    }
+
+    @Test
+    public void testDownloadBundleDependency() throws ResolveException, IOException
+    {
+        Artifact artifact = new DefaultArtifact("groupid", "bundleartifactid", "", "bundle",
+            this.bundleExtensionId.getVersion().getValue());
+        Dependency aetherDependency = new Dependency(artifact, null);
+        AetherExtensionDependency dependency = new AetherExtensionDependency(aetherDependency);
+
+        Extension extension = this.repositoryManager.resolve(dependency);
+
+        assertNotNull(extension);
+        assertEquals(this.bundleExtensionId, extension.getId());
+        assertEquals("jar", extension.getType());
+        try (InputStream is = extension.getFile().openStream()) {
+            assertEquals("content", IOUtils.toString(is));
+        }
+    }
+
+    @Test
+    public void testDownloadMavenPlugin() throws ExtensionException, IOException
+    {
+        Extension extension = this.repositoryManager.resolve(this.mavenpluginExtensionId);
+
+        assertEquals(this.mavenpluginExtensionId, extension.getId());
+        assertEquals("jar", extension.getType());
+        try (InputStream is = extension.getFile().openStream()) {
+            assertEquals("maven-plugin", IOUtils.toString(is));
+        }
+    }
+
+    @Test
+    public void testDownloadMavenPluginDependency() throws ResolveException, IOException
+    {
+        Artifact artifact = new DefaultArtifact("groupid", "mavenplugin", "", "bundle",
+            this.mavenpluginExtensionId.getVersion().getValue());
+        Dependency aetherDependency = new Dependency(artifact, null);
+        AetherExtensionDependency dependency = new AetherExtensionDependency(aetherDependency);
+
+        Extension extension = this.repositoryManager.resolve(dependency);
+
+        assertNotNull(extension);
+        assertEquals(this.mavenpluginExtensionId, extension.getId());
+        assertEquals("jar", extension.getType());
+        try (InputStream is = extension.getFile().openStream()) {
+            assertEquals("maven-plugin", IOUtils.toString(is));
+        }
+    }
+
+    @Test
+    public void testDownloadWebjar() throws ResolveException, IOException
+    {
+        Extension extension = this.repositoryManager.resolve(this.webjarExtensionId);
+
+        assertEquals(this.webjarExtensionId, extension.getId());
+        assertEquals("webjar", extension.getType());
+        try (InputStream stream = extension.getFile().openStream()) {
+            assertEquals("webjar", IOUtils.toString(stream));
+        }
+    }
+
+    @Test
+    public void testDownloadWebjarDependency() throws ResolveException, IOException
+    {
+        Artifact artifact =
+            new DefaultArtifact("wgroupid", "wartifactid", "", "webjar", webjarExtensionId.getVersion().getValue());
+        Dependency aetherDependency = new Dependency(artifact, null);
+        AetherExtensionDependency dependency = new AetherExtensionDependency(aetherDependency);
+
+        Extension extension = this.repositoryManager.resolve(dependency);
+
+        assertNotNull(extension);
+        assertEquals(this.webjarExtensionId, extension.getId());
+        assertEquals("webjar", extension.getType());
+        try (InputStream stream = extension.getFile().openStream()) {
+            assertEquals("webjar", IOUtils.toString(stream));
         }
     }
 
