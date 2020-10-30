@@ -46,6 +46,7 @@ import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.phase.Disposable;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionContext;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.internal.PathUtils;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
@@ -91,6 +92,9 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
     @Inject
     private List<ExtensionScanner> scanners;
 
+    @Inject
+    private ExtensionContext extensionContext;
+
     private boolean shouldStop;
 
     @Override
@@ -104,31 +108,37 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
     {
         ExtensionRepositoryManager repositoryManager = this.repositoryManagerProvider.get();
 
-        for (DefaultCoreExtension extension : extensions) {
-            // If XWiki is stopping before this is finished then we need to exit.
-            if (this.shouldStop) {
-                SHUTDOWN_LOGGER.debug("Aborting Extension Update as XWiki is stopping");
-                break;
-            }
+        this.extensionContext.pushSession();
 
-            if (!extension.isComplete()) {
-                try {
-                    Extension remoteExtension = repositoryManager.resolve(extension.getId());
+        try {
+            for (DefaultCoreExtension extension : extensions) {
+                // If XWiki is stopping before this is finished then we need to exit.
+                if (this.shouldStop) {
+                    SHUTDOWN_LOGGER.debug("Aborting Extension Update as XWiki is stopping");
+                    break;
+                }
 
-                    extension.set(remoteExtension);
-                    extension.setComplete(true);
+                if (!extension.isComplete()) {
+                    try {
+                        Extension remoteExtension = repositoryManager.resolve(extension.getId());
 
-                    // Cache it
-                    if (extension.getDescriptorURL() != null) {
-                        this.cache.store(extension);
+                        extension.set(remoteExtension);
+                        extension.setComplete(true);
+
+                        // Cache it
+                        if (extension.getDescriptorURL() != null) {
+                            this.cache.store(extension);
+                        }
+                    } catch (ResolveException e) {
+                        this.logger.debug("Can't find remote extension with id [{}]", extension.getId(), e);
+                    } catch (Exception e) {
+                        this.logger.warn("Failed to update core extension [{}]: [{}]", extension.getId(),
+                            ExceptionUtils.getRootCauseMessage(e), e);
                     }
-                } catch (ResolveException e) {
-                    this.logger.debug("Can't find remote extension with id [{}]", extension.getId(), e);
-                } catch (Exception e) {
-                    this.logger.warn("Failed to update core extension [{}]: [{}]", extension.getId(),
-                        ExceptionUtils.getRootCauseMessage(e), e);
                 }
             }
+        } finally {
+            extensionContext.popSession();
         }
     }
 

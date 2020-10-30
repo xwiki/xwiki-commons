@@ -38,6 +38,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.xwiki.classloader.ClassLoaderManager;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -93,13 +94,23 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
         }
 
         @Override
+        protected String getThreadName(Runnable r)
+        {
+            return this.groupThreadName + " - " + this.currentJob;
+        }
+
+        @Override
+        protected String getExecutorThreadName(Runnable r)
+        {
+            return this.groupThreadName;
+        }
+
+        @Override
         protected void beforeExecute(Thread t, Runnable r)
         {
             DefaultJobExecutor.this.lockTree.lock(this.path);
 
             this.currentJob = (Job) r;
-
-            Thread.currentThread().setName(this.groupThreadName + " - " + this.currentJob);
 
             super.beforeExecute(t, r);
         }
@@ -107,8 +118,6 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
         @Override
         protected void afterExecute(Runnable r, Throwable t)
         {
-            Thread.currentThread().setName(this.groupThreadName);
-
             DefaultJobExecutor.this.lockTree.unlock(this.path);
 
             this.currentJob = null;
@@ -151,11 +160,24 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
             super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
         }
 
+        protected String getThreadName(Runnable r)
+        {
+            return r.toString();
+        }
+
+        protected String getExecutorThreadName(Runnable r)
+        {
+            return "Unused job pool thread";
+        }
+
         @Override
         protected void beforeExecute(Thread t, Runnable r)
         {
             // Set a custom thread name corresponding to the job to make debugging easier
-            Thread.currentThread().setName(r.toString());
+            Thread.currentThread().setName(getThreadName(r));
+
+            // Make sure to set a clean classloader
+            Thread.currentThread().setContextClassLoader(classloaderManager.getURLClassLoader(null, false));
         }
 
         @Override
@@ -174,7 +196,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
             }
 
             // Reset thread name since it's not used anymore
-            Thread.currentThread().setName("Unused job pool thread");
+            Thread.currentThread().setName(getExecutorThreadName(r));
         }
     }
 
@@ -191,6 +213,9 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     @Inject
     private GroupedJobInitializerManager groupedJobInitializerManager;
 
+    @Inject
+    private ClassLoaderManager classloaderManager;
+
     private final Map<List<String>, Queue<Job>> groupedJobs = new ConcurrentHashMap<>();
 
     private final Map<List<String>, Job> jobs = new ConcurrentHashMap<>();
@@ -204,8 +229,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     /**
      * Map<groupname, group executor>.
      */
-    private final Map<JobGroupPath, JobGroupExecutor> groupExecutors =
-        new ConcurrentHashMap<>();
+    private final Map<JobGroupPath, JobGroupExecutor> groupExecutors = new ConcurrentHashMap<>();
 
     /**
      * Execute non grouped jobs.
@@ -337,8 +361,8 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
             JobGroupExecutor groupExecutor = this.groupExecutors.get(path);
 
             if (groupExecutor == null) {
-                groupExecutor = new JobGroupExecutor(path,
-                    this.groupedJobInitializerManager.getGroupedJobInitializer(path));
+                groupExecutor =
+                    new JobGroupExecutor(path, this.groupedJobInitializerManager.getGroupedJobInitializer(path));
                 this.groupExecutors.put(path, groupExecutor);
             }
 

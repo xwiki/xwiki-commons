@@ -186,6 +186,7 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
             Map<String, Serializable> storedContext = getRequest().getContext();
 
             // Initialize a new context only if there is not already one
+            // But if there is a context in the job request then we want to replace the current one with a fresh one
             ExecutionContext context;
             if (storedContext != null || this.jobExecution.getContext() == null) {
                 // Create a clean Execution Context

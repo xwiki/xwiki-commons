@@ -81,7 +81,6 @@
     <dependency>
       <groupId>io.sf.carte</groupId>
       <artifactId>xml-dtd</artifactId>
-      <version>3.0.0</version>
     </dependency>
     <!-- Testing dependencies -->
     <dependency>
