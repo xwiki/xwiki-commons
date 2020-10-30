@@ -43,7 +43,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
-import org.xwiki.context.Execution;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.ExtensionDependency;
@@ -122,9 +121,6 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
 
     @Inject
     private ConverterManager converter;
-
-    @Inject
-    private Execution execution;
 
     // Cache
 
