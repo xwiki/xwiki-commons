@@ -85,7 +85,7 @@ public class MavenUtils
      * 
      * @since 12.4RC1
      */
-    public static final Set<String> JAR_TYPES = new HashSet<>(Arrays.asList("bundle", null));
+    public static final Set<String> JAR_TYPES = new HashSet<>(Arrays.asList("bundle", "maven-plugin", null));
 
     /**
      * The name of the Model property containing the target file type.

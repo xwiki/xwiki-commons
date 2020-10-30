@@ -21,14 +21,12 @@ package org.xwiki.extension.repository.aether.internal;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.aether.artifact.Artifact;
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.internal.ExtensionFactory;
+import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.maven.internal.AbstractMavenExtension;
-import org.xwiki.extension.maven.internal.MavenUtils;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 
 /**
@@ -41,16 +39,13 @@ public class AetherExtension extends AbstractMavenExtension
 {
     public static final String PKEY_AETHER_ARTIFACT = "aether.Artifact";
 
-    public AetherExtension(Extension extension, Artifact artifact, AetherExtensionRepository repository,
-        ExtensionFactory factory)
+    public AetherExtension(ExtensionId extensionId, String extensionType, Extension extension, Artifact artifact,
+        AetherExtensionRepository repository)
     {
         super(repository, extension);
 
-        String artifactExtensionType = MavenUtils.packagingToType(artifact.getExtension());
-
-        setId(AetherUtils.createExtensionId(artifact, !Objects.equals(artifactExtensionType, extension.getType()),
-            factory));
-        setType(artifactExtensionType);
+        setId(extensionId);
+        setType(extensionType);
 
         // pom type does not have any file associated
         if (StringUtils.isNotEmpty(getType())) {
