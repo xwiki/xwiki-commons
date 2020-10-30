@@ -528,6 +528,14 @@ public class DefaultVersion implements Version
      */
     public boolean equals(DefaultVersion version)
     {
+        if (this == version) {
+            return true;
+        }
+
+        if (version == null) {
+            return false;
+        }
+
         return compareTo(version) == 0;
     }
 

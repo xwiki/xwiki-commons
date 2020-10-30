@@ -29,7 +29,9 @@ import org.junit.jupiter.api.Test;
 import org.xwiki.extension.version.Version;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -37,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * 
  * @version $Id$
  */
-public class DefaultVersionTest
+class DefaultVersionTest
 {
     private void validateSerialize(Version version) throws IOException, ClassNotFoundException
     {
@@ -57,7 +59,16 @@ public class DefaultVersionTest
     // Tests
 
     @Test
-    public void compareTo()
+    void equal()
+    {
+        DefaultVersion version = new DefaultVersion("1.0");
+
+        assertFalse(version.equals(null));
+        assertTrue(version.equals(version));
+    }
+
+    @Test
+    void compareTo()
     {
         assertEquals(0, new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1")));
         assertEquals(0, new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1.0")));
@@ -91,7 +102,7 @@ public class DefaultVersionTest
     @Test
     public void getTypeForBigInteger()
     {
-        new DefaultVersion("1.2147483648").getType();
+        assertSame(Version.Type.STABLE, new DefaultVersion("1.2147483648").getType());
     }
 
     @Test
