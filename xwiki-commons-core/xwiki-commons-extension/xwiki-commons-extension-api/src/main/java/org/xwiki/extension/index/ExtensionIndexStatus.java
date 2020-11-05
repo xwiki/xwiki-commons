@@ -31,5 +31,8 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public interface ExtensionIndexStatus extends JobStatus
 {
-
+    /**
+     * @return true if the index was updated
+     */
+    boolean isUpdated();
 }

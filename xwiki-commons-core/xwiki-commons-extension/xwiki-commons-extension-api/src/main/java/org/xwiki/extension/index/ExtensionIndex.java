@@ -20,6 +20,7 @@
 package org.xwiki.extension.index;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.component.namespace.Namespace;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.search.AdvancedSearchable;
 import org.xwiki.job.JobException;
@@ -36,15 +37,17 @@ import org.xwiki.stability.Unstable;
 public interface ExtensionIndex extends ExtensionRepository, AdvancedSearchable
 {
     /**
+     * @param namespace the namespace for which the validation was executed
      * @return the status of the currently running or last indexing process
      */
-    ExtensionIndexStatus getStatus();
+    ExtensionIndexStatus getStatus(Namespace namespace);
 
     /**
      * Start a new indexing process or return the status of the currently running one.
      * 
+     * @param namespace the namespace for which to validate the extensions
      * @return the status of the running indexing process
      * @throws JobException when failing to start indexing
      */
-    ExtensionIndexStatus index() throws JobException;
+    ExtensionIndexStatus index(Namespace namespace) throws JobException;
 }

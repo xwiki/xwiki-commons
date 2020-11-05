@@ -40,7 +40,22 @@ public class IndexedExtensionQuery extends ExtensionQuery
 
     private Boolean compatible;
 
-    private List<Namespace> namespaces;
+    private List<Namespace> compatibleNamespaces;
+
+    /**
+     * No filtering. Usually return everything.
+     */
+    public IndexedExtensionQuery()
+    {
+    }
+
+    /**
+     * @param query the query to execute
+     */
+    public IndexedExtensionQuery(String query)
+    {
+        super(query);
+    }
 
     /**
      * @param repositoryId the repository from which the extension is coming from
@@ -61,7 +76,7 @@ public class IndexedExtensionQuery extends ExtensionQuery
     public IndexedExtensionQuery setCompatible(boolean compatible, Namespace... namespaces)
     {
         this.compatible = compatible;
-        this.namespaces = Arrays.asList(namespaces);
+        this.compatibleNamespaces = Arrays.asList(namespaces);
 
         return this;
     }
@@ -77,8 +92,8 @@ public class IndexedExtensionQuery extends ExtensionQuery
     /**
      * @return the namespace with which the extensions should be compatible
      */
-    public List<Namespace> getNamespaces()
+    public List<Namespace> getCompatibleNamespaces()
     {
-        return this.namespaces;
+        return this.compatibleNamespaces;
     }
 }
