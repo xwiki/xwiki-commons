@@ -6,7 +6,6 @@ import org.bouncycastle.util.encoders.Hex;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,6 +19,7 @@ import org.xwiki.crypto.password.params.ScryptParameters;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @ComponentList({ BcScryptKeyDerivationFunctionFactory.class, BcPKCS5S2KeyDerivationFunctionFactory.class })
 public class AmplDefaultKeyDerivationFunctionFactoryTest {
@@ -46,9 +46,9 @@ public class AmplDefaultKeyDerivationFunctionFactoryTest {
         KeyWithIVParameters params = kdf.derive(password, 8);
         KeyDerivationFunction kdf2 = factory.getInstance(encoded);
         KeyWithIVParameters params2 = kdf2.derive(password, 8);
-        Assert.assertThat(kdf.getEncoded(), CoreMatchers.equalTo(encoded));
-        Assert.assertThat(params.getKey(), CoreMatchers.equalTo(params2.getKey()));
-        Assert.assertThat(params2.getIV(), CoreMatchers.equalTo(params2.getIV()));
+        assertThat(kdf.getEncoded(), CoreMatchers.equalTo(encoded));
+        assertThat(params.getKey(), CoreMatchers.equalTo(params2.getKey()));
+        assertThat(params2.getIV(), CoreMatchers.equalTo(params2.getIV()));
     }
 
     @Test(timeout = 10000)

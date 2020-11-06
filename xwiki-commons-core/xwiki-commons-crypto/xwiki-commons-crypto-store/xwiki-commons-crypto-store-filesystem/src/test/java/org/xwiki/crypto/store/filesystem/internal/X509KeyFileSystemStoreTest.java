@@ -23,6 +23,7 @@ package org.xwiki.crypto.store.filesystem.internal;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -201,7 +202,7 @@ public class X509KeyFileSystemStoreTest
     {
         store.store(SINGLE_STORE_REF, keyPair);
 
-        assertThat(FileUtils.readFileToString(FILE), equalTo(FILE_CONTENT));
+        assertThat(FileUtils.readFileToString(FILE, StandardCharsets.UTF_8), equalTo(FILE_CONTENT));
     }
 
     @Test
@@ -209,9 +210,9 @@ public class X509KeyFileSystemStoreTest
     {
         store.store(MULTI_STORE_REF, keyPair);
 
-        assertThat(FileUtils.readFileToString(KEY_FILE),
+        assertThat(FileUtils.readFileToString(KEY_FILE, StandardCharsets.UTF_8),
             equalTo(KEY_FILE_CONTENT));
-        assertThat(FileUtils.readFileToString(CERT_FILE),
+        assertThat(FileUtils.readFileToString(CERT_FILE, StandardCharsets.UTF_8),
             equalTo(CERTIFICATE_FILE_CONTENT));
     }
 
@@ -220,7 +221,7 @@ public class X509KeyFileSystemStoreTest
     {
         store.store(SINGLE_STORE_REF, keyPair, PASSWORD);
 
-        assertThat(FileUtils.readFileToString(FILE), equalTo(ENCRYPTED_FILE_CONTENT));
+        assertThat(FileUtils.readFileToString(FILE, StandardCharsets.UTF_8), equalTo(ENCRYPTED_FILE_CONTENT));
     }
 
     @Test
@@ -228,16 +229,16 @@ public class X509KeyFileSystemStoreTest
     {
         store.store(MULTI_STORE_REF, keyPair, PASSWORD);
 
-        assertThat(FileUtils.readFileToString(KEY_FILE),
+        assertThat(FileUtils.readFileToString(KEY_FILE, StandardCharsets.UTF_8),
             equalTo(ENCRYTEDKEY_FILE_CONTENT));
-        assertThat(FileUtils.readFileToString(CERT_FILE),
+        assertThat(FileUtils.readFileToString(CERT_FILE, StandardCharsets.UTF_8),
             equalTo(CERTIFICATE_FILE_CONTENT));
     }
 
     @Test
     void retrievePrivateKeyFromFile() throws Exception
     {
-        FileUtils.writeStringToFile(FILE, FILE_CONTENT);
+        FileUtils.writeStringToFile(FILE, FILE_CONTENT, StandardCharsets.UTF_8);
 
         CertifiedKeyPair keyPair = store.retrieve(SINGLE_STORE_REF);
         assertThat(keyPair, notNullValue());
@@ -248,7 +249,7 @@ public class X509KeyFileSystemStoreTest
     @Test
     void retrieveEncryptedPrivateKeyFromFile() throws Exception
     {
-        FileUtils.writeStringToFile(FILE, ENCRYPTED_FILE_CONTENT);
+        FileUtils.writeStringToFile(FILE, ENCRYPTED_FILE_CONTENT, StandardCharsets.UTF_8);
 
         CertifiedKeyPair keyPair = store.retrieve(SINGLE_STORE_REF, PASSWORD);
         assertThat(keyPair, notNullValue());
@@ -260,8 +261,8 @@ public class X509KeyFileSystemStoreTest
     void retrievePrivateKeyFromDirectory() throws Exception
     {
         DIRECTORY.mkdirs();
-        FileUtils.writeStringToFile(KEY_FILE, KEY_FILE_CONTENT);
-        FileUtils.writeStringToFile(CERT_FILE, CERTIFICATE_FILE_CONTENT);
+        FileUtils.writeStringToFile(KEY_FILE, KEY_FILE_CONTENT, StandardCharsets.UTF_8);
+        FileUtils.writeStringToFile(CERT_FILE, CERTIFICATE_FILE_CONTENT, StandardCharsets.UTF_8);
 
         CertifiedKeyPair keyPair = store.retrieve(MULTI_STORE_REF, certificate);
         assertThat(keyPair, notNullValue());
@@ -273,8 +274,8 @@ public class X509KeyFileSystemStoreTest
     void retrieveEncryptedPrivateKeyFromDirectory() throws Exception
     {
         DIRECTORY.mkdirs();
-        FileUtils.writeStringToFile(KEY_FILE, ENCRYTEDKEY_FILE_CONTENT);
-        FileUtils.writeStringToFile(CERT_FILE, CERTIFICATE_FILE_CONTENT);
+        FileUtils.writeStringToFile(KEY_FILE, ENCRYTEDKEY_FILE_CONTENT, StandardCharsets.UTF_8);
+        FileUtils.writeStringToFile(CERT_FILE, CERTIFICATE_FILE_CONTENT, StandardCharsets.UTF_8);
 
         CertifiedKeyPair keyPair = store.retrieve(MULTI_STORE_REF, certificate, PASSWORD);
         assertThat(keyPair, notNullValue());
@@ -285,7 +286,7 @@ public class X509KeyFileSystemStoreTest
     @Test
     void retrieveMissingPrivateKeyFromFile() throws Exception
     {
-        FileUtils.writeStringToFile(FILE, CERTIFICATE_FILE_CONTENT);
+        FileUtils.writeStringToFile(FILE, CERTIFICATE_FILE_CONTENT, StandardCharsets.UTF_8);
 
         CertifiedKeyPair keyPair = store.retrieve(SINGLE_STORE_REF);
         assertThat(keyPair, nullValue());
@@ -294,7 +295,7 @@ public class X509KeyFileSystemStoreTest
     @Test
     void retrieveMissingCertificateFromFile() throws Exception
     {
-        FileUtils.writeStringToFile(FILE, KEY_FILE_CONTENT);
+        FileUtils.writeStringToFile(FILE, KEY_FILE_CONTENT, StandardCharsets.UTF_8);
 
         CertifiedKeyPair keyPair = store.retrieve(SINGLE_STORE_REF);
         assertThat(keyPair, nullValue());
@@ -304,7 +305,7 @@ public class X509KeyFileSystemStoreTest
     void retrieveMissingPrivateKeyFromDirectory() throws Exception
     {
         DIRECTORY.mkdirs();
-        FileUtils.writeStringToFile(CERT_FILE, CERTIFICATE_FILE_CONTENT);
+        FileUtils.writeStringToFile(CERT_FILE, CERTIFICATE_FILE_CONTENT, StandardCharsets.UTF_8);
 
         CertifiedKeyPair keyPair = store.retrieve(MULTI_STORE_REF, certificate);
         assertThat(keyPair, nullValue());
@@ -314,7 +315,7 @@ public class X509KeyFileSystemStoreTest
     void retrieveMissingCertificateFromDirectory() throws Exception
     {
         DIRECTORY.mkdirs();
-        FileUtils.writeStringToFile(KEY_FILE, KEY_FILE_CONTENT);
+        FileUtils.writeStringToFile(KEY_FILE, KEY_FILE_CONTENT, StandardCharsets.UTF_8);
 
         CertifiedKeyPair keyPair = store.retrieve(MULTI_STORE_REF, certificate);
         assertThat(keyPair, notNullValue());
@@ -330,9 +331,11 @@ public class X509KeyFileSystemStoreTest
 
         store.store(MULTI_STORE_REF, keyPair);
 
-        assertThat(FileUtils.readFileToString(new File(DIRECTORY, SERIAL + ", " + ISSUER + ".key")),
+        assertThat(
+            FileUtils.readFileToString(new File(DIRECTORY, SERIAL + ", " + ISSUER + ".key"), StandardCharsets.UTF_8),
             equalTo(KEY_FILE_CONTENT));
-        assertThat(FileUtils.readFileToString(new File(DIRECTORY, SERIAL + ", " + ISSUER + ".cert")),
+        assertThat(
+            FileUtils.readFileToString(new File(DIRECTORY, SERIAL + ", " + ISSUER + ".cert"), StandardCharsets.UTF_8),
             equalTo(CERTIFICATE_FILE_CONTENT));
     }
 }

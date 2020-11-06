@@ -117,7 +117,6 @@ public final class BcCMSUtils
         return verifiedData;
     }
 
-    @SuppressWarnings("unchecked")
     static Collection<SignerInformation> getSigners(CMSSignedData signedData)
     {
         return signedData.getSignerInfos().getSigners();

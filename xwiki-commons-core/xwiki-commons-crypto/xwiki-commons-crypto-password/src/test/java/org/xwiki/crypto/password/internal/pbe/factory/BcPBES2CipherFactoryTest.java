@@ -46,7 +46,7 @@ import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @ComponentList({DefaultKeyDerivationFunctionFactory.class, BcPKCS5S2KeyDerivationFunctionFactory.class,
     BcPBES2Rc2CipherFactory.class, BcRc2CbcPaddedCipherFactory.class,

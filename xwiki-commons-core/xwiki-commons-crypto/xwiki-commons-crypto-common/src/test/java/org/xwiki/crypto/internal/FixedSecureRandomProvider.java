@@ -29,7 +29,6 @@ import org.bouncycastle.crypto.prng.FixedSecureRandom;
 import org.bouncycastle.util.encoders.Base64;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
 
 @Component(staticRegistration = false)
 @Singleton
