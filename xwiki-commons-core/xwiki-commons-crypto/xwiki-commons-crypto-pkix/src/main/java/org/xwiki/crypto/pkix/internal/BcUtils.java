@@ -24,9 +24,9 @@ import java.io.OutputStream;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.ASN1OutputStream;
 import org.bouncycastle.asn1.DERBitString;
 import org.bouncycastle.asn1.DERNull;
-import org.bouncycastle.asn1.DEROutputStream;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
@@ -178,7 +178,7 @@ public final class BcUtils
         throws IOException
     {
         OutputStream sOut = signer.getOutputStream();
-        DEROutputStream dOut = new DEROutputStream(sOut);
+        ASN1OutputStream dOut = ASN1OutputStream.create(sOut);
 
         dOut.writeObject(tbsObj);
 
