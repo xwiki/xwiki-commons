@@ -33,7 +33,6 @@ import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.Extensions;
 import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
-import org.bouncycastle.asn1.x509.X509Extension;
 import org.xwiki.crypto.pkix.params.x509certificate.extension.ExtendedKeyUsages;
 import org.xwiki.crypto.pkix.params.x509certificate.extension.KeyUsage;
 import org.xwiki.crypto.pkix.params.x509certificate.extension.X509Extensions;
@@ -178,13 +177,13 @@ public class BcX509Extensions implements X509Extensions
     public List<X509GeneralName> getSubjectAltName()
     {
         return BcExtensionUtils.getX509GeneralNames(GeneralNames.fromExtensions(this.extensions,
-            X509Extension.subjectAlternativeName));
+            Extension.subjectAlternativeName));
     }
 
     @Override
     public List<X509GeneralName> getIssuerAltName()
     {
         return BcExtensionUtils.getX509GeneralNames(GeneralNames.fromExtensions(this.extensions,
-            X509Extension.issuerAlternativeName));
+            Extension.issuerAlternativeName));
     }
 }

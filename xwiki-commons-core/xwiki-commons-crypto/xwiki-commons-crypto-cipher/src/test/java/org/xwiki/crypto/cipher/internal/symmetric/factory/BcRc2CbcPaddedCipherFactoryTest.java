@@ -30,7 +30,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class BcRc2CbcPaddedCipherFactoryTest extends AbstractSymmetricCipherFactoryTest
 {

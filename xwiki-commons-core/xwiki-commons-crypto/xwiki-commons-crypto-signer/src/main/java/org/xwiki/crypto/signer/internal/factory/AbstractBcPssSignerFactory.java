@@ -80,7 +80,7 @@ public abstract class AbstractBcPssSignerFactory extends AbstractBcSignerFactory
             keyParams = ((PssSignerParameters) parameters).getKeyParameters();
         }
 
-        if (keyParams != null && keyParams instanceof BcAsymmetricKeyParameters) {
+        if (keyParams instanceof BcAsymmetricKeyParameters) {
             return ((BcAsymmetricKeyParameters) keyParams).getParameters();
         }
 
