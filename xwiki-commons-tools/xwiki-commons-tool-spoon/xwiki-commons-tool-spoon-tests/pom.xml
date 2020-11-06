@@ -40,13 +40,6 @@
       <artifactId>spoon-core</artifactId>
       <version>${spoon.version}</version>
       <scope>test</scope>
-      <exclusions>
-        <!-- Not needed and conflict with out version -->
-        <exclusion>
-          <groupId>org.apache.maven</groupId>
-          <artifactId>maven-model</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
