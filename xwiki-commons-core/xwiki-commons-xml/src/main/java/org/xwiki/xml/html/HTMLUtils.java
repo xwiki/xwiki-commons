@@ -303,6 +303,7 @@ public final class HTMLUtils
      * @return a new escaped {@code String}, {@code null} if {@code null} input
      * @since 12.8RC1
      * @since 12.6.3
+     * @since 11.10.11
      */
     @Unstable
     public static String escapeElementText(String content)
