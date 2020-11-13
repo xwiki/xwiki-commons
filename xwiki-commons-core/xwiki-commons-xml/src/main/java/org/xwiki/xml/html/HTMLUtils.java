@@ -335,7 +335,7 @@ public final class HTMLUtils
      * @param content the text to escape, may be {@code null}.
      * @return a new escaped {@code String}, {@code null} if {@code null} input
      * @since 12.8RC1
-     * @since 11.10.11
+     * @since 12.6.3
      */
     @Unstable
     public static String escapeElementText(String content)
