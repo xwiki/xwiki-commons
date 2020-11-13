@@ -39,6 +39,24 @@ import org.xwiki.extension.repository.search.SearchException;
 public interface ExtensionManager
 {
     /**
+     * @param extensionId the extension identifier
+     * @return true if the extension exists in the repository
+     * @since 12.10RC1
+     */
+    default boolean exists(ExtensionId extensionId)
+    {
+        try {
+            resolveExtension(extensionId);
+
+            return true;
+        } catch (ResolveException e) {
+            // The extension does not exist
+        }
+
+        return false;
+    }
+
+    /**
      * Search the provided extension among all repositories including core and local repositories.
      * <p>
      * The search is done in the following order:

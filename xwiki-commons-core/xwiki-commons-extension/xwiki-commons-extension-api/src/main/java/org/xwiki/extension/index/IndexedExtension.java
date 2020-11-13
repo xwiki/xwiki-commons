@@ -19,20 +19,22 @@
  */
 package org.xwiki.extension.index;
 
-import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.component.namespace.Namespace;
+import org.xwiki.extension.rating.RatingExtension;
 import org.xwiki.stability.Unstable;
 
 /**
- * The status of the currently running or last indexing process.
+ * An extension stored in the {@link ExtensionIndex}.
  * 
  * @version $Id$
  * @since 12.10RC1
  */
 @Unstable
-public interface ExtensionIndexStatus extends JobStatus
+public interface IndexedExtension extends RatingExtension
 {
     /**
-     * @return true if the index was updated
+     * @param namespace the namespace for which to check if the extension is compatible
+     * @return true if the extension is compatible, false if incompatible and null if unknown
      */
-    boolean isExtensionAdded();
+    Boolean isCompatible(Namespace namespace);
 }

@@ -124,6 +124,18 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
         }
     }
 
+    @Override
+    public boolean exists(ExtensionId extensionId)
+    {
+        if (!this.installedExtensionRepository.exists(extensionId)) {
+            if (!this.localExtensionRepository.exists(extensionId)) {
+                return this.repositoryManager.exists(extensionId);
+            }
+        }
+
+        return true;
+    }
+
     /**
      * @param extensionId the extension identifier
      * @return the resolved extension
