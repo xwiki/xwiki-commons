@@ -68,7 +68,7 @@ public class LoggerListener extends AbstractLogEventListener
     }
 
     /**
-     * @param ignore true if the log should be ignored
+     * @param ignore true if the logs should be ignored
      * @since 12.10RC1
      */
     @Unstable

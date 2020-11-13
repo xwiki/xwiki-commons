@@ -209,11 +209,11 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
     }
 
     /**
-     * @param ignore true to ignore log produced by the job execution
+     * @param ignore true to ignore logs produced by the job execution
      * @since 12.10RC1
      */
     @Unstable
-    public void ignoreLog(boolean ignore)
+    public void ignoreLogs(boolean ignore)
     {
         this.logListener.setIgnore(ignore);
     }
