@@ -416,7 +416,7 @@ public final class XMLUtils
      * @since 12.6.5
      */
     @Unstable
-    public static boolean containsElementSyntax(CharSequence content)
+    public static boolean containsElementText(CharSequence content)
     {
         return StringUtils.containsAny(content, ELEMENT_SYNTAX);
     }
