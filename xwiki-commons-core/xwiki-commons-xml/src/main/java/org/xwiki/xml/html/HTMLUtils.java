@@ -321,8 +321,8 @@ public final class HTMLUtils
      * @since 12.6.5
      */
     @Unstable
-    public static boolean containsElementSyntax(CharSequence content)
+    public static boolean containsElementText(CharSequence content)
     {
-        return XMLUtils.containsElementSyntax(content);
+        return XMLUtils.containsElementText(content);
     }
 }

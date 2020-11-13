@@ -101,11 +101,11 @@ class HTMLUtilsTest
     }
 
     @Test
-    void containsElementSyntax()
+    void containsElementText()
     {
-        assertTrue(HTMLUtils.containsElementSyntax("a < a"));
-        assertTrue(HTMLUtils.containsElementSyntax("a & a"));
+        assertTrue(HTMLUtils.containsElementText("a < a"));
+        assertTrue(HTMLUtils.containsElementText("a & a"));
 
-        assertFalse(HTMLUtils.containsElementSyntax("a >'\" a"));
+        assertFalse(HTMLUtils.containsElementText("a >'\" a"));
     }
 }
