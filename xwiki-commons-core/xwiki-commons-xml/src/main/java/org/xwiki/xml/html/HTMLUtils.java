@@ -308,4 +308,19 @@ public final class HTMLUtils
     {
         return XMLUtils.escapeElementText(content);
     }
+
+    /**
+     * Same logic as {@link #escapeElementText(String)} but only indicates if there is something to escape.
+     * 
+     * @param content the content to parse
+     * @return true if the passed content contains content that can be interpreted as HTML syntax
+     * @see #escapeElementText(String)
+     * @since 12.10RC1
+     * @since 12.6.5
+     */
+    @Unstable
+    public static boolean containsElementSyntax(CharSequence content)
+    {
+        return XMLUtils.containsElementSyntax(content);
+    }
 }
