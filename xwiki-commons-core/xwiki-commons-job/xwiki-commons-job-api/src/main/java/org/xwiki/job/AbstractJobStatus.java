@@ -41,6 +41,7 @@ import org.xwiki.logging.tail.LogTail;
 import org.xwiki.logging.tail.LoggerTail;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.WrappedThreadEventListener;
+import org.xwiki.stability.Unstable;
 
 /**
  * Base implementation of {@link JobStatus}.
@@ -205,6 +206,16 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
         } else {
             this.observationManager.addListener(new WrappedThreadEventListener(this.logListener));
         }
+    }
+
+    /**
+     * @param ignore true to ignore log produced by the job execution
+     * @since 12.10RC1
+     */
+    @Unstable
+    public void ignoreLog(boolean ignore)
+    {
+        this.logListener.setIgnore(ignore);
     }
 
     /**
