@@ -29,6 +29,7 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.context.internal.DefaultExecution;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.xml.XMLUtils;
 import org.xwiki.xml.internal.html.DefaultHTMLCleaner;
 import org.xwiki.xml.internal.html.DefaultHTMLCleanerTest;
 import org.xwiki.xml.internal.html.filter.AttributeFilter;
@@ -40,6 +41,8 @@ import org.xwiki.xml.internal.html.filter.ListFilter;
 import org.xwiki.xml.internal.html.filter.ListItemFilter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for {@link org.xwiki.xml.html.HTMLUtils}.
@@ -95,5 +98,14 @@ class HTMLUtilsTest
         Document document = this.cleaner.clean(new StringReader("<html><head /><body foo=\"\"></body></html>"));
         assertEquals(DefaultHTMLCleanerTest.HEADER + "<html><head></head><body foo=\"\"></body></html>\n",
             HTMLUtils.toString(document));
+    }
+
+    @Test
+    void containsElementText()
+    {
+        assertTrue(HTMLUtils.containsElementText("a < a"));
+        assertTrue(HTMLUtils.containsElementText("a & a"));
+
+        assertFalse(HTMLUtils.containsElementText("a >'\" a"));
     }
 }

@@ -21,6 +21,7 @@ package org.xwiki.logging.event;
 
 import org.xwiki.logging.Logger;
 import org.xwiki.observation.event.Event;
+import org.xwiki.stability.Unstable;
 
 /**
  * Redirect all received event to the provided {@link Logger}.
@@ -39,6 +40,8 @@ public class LoggerListener extends AbstractLogEventListener
      * The logger where to send received events.
      */
     private Logger logger;
+
+    private boolean ignore;
 
     /**
      * @param name the name of the listener
@@ -64,9 +67,21 @@ public class LoggerListener extends AbstractLogEventListener
         return this.logger;
     }
 
+    /**
+     * @param ignore true if the logs should be ignored
+     * @since 12.10RC1
+     */
+    @Unstable
+    public void setIgnore(boolean ignore)
+    {
+        this.ignore = ignore;
+    }
+
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        this.logger.log((LogEvent) event);
+        if (!this.ignore) {
+            this.logger.log((LogEvent) event);
+        }
     }
 }

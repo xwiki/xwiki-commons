@@ -39,6 +39,7 @@ import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -100,6 +101,8 @@ public final class XMLUtils
 
     /** Regular expression recognizing XML-escaped "greater than" characters. */
     private static final Pattern GT_PATTERN = Pattern.compile("&(?:gt|#0*+62|#x0*+3[eE]);");
+
+    private static final char[] ELEMENT_SYNTAX = new char[] {'<', '&'};
 
     /** Helper object for manipulating DOM Level 3 Load and Save APIs. */
     private static final DOMImplementationLS LS_IMPL;
@@ -274,6 +277,8 @@ public final class XMLUtils
      * @see #escapeAttributeValue(String)
      * @see #escapeElementText(String)
      * @since 12.8RC1
+     * @since 12.6.3
+     * @since 11.10.11
      */
     @Unstable
     public static String escape(String content)
@@ -322,6 +327,8 @@ public final class XMLUtils
      * @param content the text to escape, may be {@code null}
      * @return a new escaped {@code String}, {@code null} if {@code null} input
      * @since 12.8RC1
+     * @since 12.6.3
+     * @since 11.10.11
      */
     @Unstable
     public static String escapeAttributeValue(String content)
@@ -370,6 +377,8 @@ public final class XMLUtils
      * @param content the text to escape, may be {@code null}.
      * @return a new escaped {@code String}, {@code null} if {@code null} input
      * @since 12.8RC1
+     * @since 12.6.3
+     * @since 11.10.11
      */
     @Unstable
     public static String escapeElementText(String content)
@@ -395,6 +404,21 @@ public final class XMLUtils
             }
         }
         return result.toString();
+    }
+
+    /**
+     * Same logic as {@link #escapeElementText(String)} but only indicate if there is something to escape.
+     * 
+     * @param content the content to parse
+     * @return true if the passed content contains content that can be interpreted as XML syntax
+     * @see #escapeElementText(String)
+     * @since 12.10RC1
+     * @since 12.6.5
+     */
+    @Unstable
+    public static boolean containsElementText(CharSequence content)
+    {
+        return StringUtils.containsAny(content, ELEMENT_SYNTAX);
     }
 
     /**
