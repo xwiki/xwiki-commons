@@ -277,6 +277,8 @@ public final class XMLUtils
      * @see #escapeAttributeValue(String)
      * @see #escapeElementText(String)
      * @since 12.8RC1
+     * @since 12.6.3
+     * @since 11.10.11
      */
     @Unstable
     public static String escape(String content)
@@ -325,6 +327,8 @@ public final class XMLUtils
      * @param content the text to escape, may be {@code null}
      * @return a new escaped {@code String}, {@code null} if {@code null} input
      * @since 12.8RC1
+     * @since 12.6.3
+     * @since 11.10.11
      */
     @Unstable
     public static String escapeAttributeValue(String content)
@@ -374,6 +378,7 @@ public final class XMLUtils
      * @return a new escaped {@code String}, {@code null} if {@code null} input
      * @since 12.8RC1
      * @since 12.6.3
+     * @since 11.10.11
      */
     @Unstable
     public static String escapeElementText(String content)
