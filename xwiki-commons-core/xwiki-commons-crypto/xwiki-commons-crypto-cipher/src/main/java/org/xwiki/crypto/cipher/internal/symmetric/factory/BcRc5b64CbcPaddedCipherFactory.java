@@ -39,7 +39,7 @@ import org.xwiki.crypto.params.cipher.symmetric.RC5KeyParameters;
  * @since 5.4M1
  */
 @Component(hints = { "RC5-32/CBC/PKCS5Padding", "RC5-32/CBC/PKCS7Padding", "RC5/CBC/PKCS5Padding",
-        "RC5/CBC/PKCS7Padding", "1.2.840.113549.3.9" })
+    "RC5/CBC/PKCS7Padding", "1.2.840.113549.3.9" })
 @Singleton
 public class BcRc5b64CbcPaddedCipherFactory extends AbstractBcCbcPaddedCipherFactory
 {
