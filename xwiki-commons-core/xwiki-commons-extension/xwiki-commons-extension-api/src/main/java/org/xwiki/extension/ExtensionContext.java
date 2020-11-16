@@ -20,6 +20,7 @@
 package org.xwiki.extension;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
  * Manipulate extension specific contextual informations.
@@ -28,6 +29,7 @@ import org.xwiki.component.annotation.Role;
  * @since 12.10RC1
  */
 @Role
+@Unstable
 public interface ExtensionContext
 {
     /**

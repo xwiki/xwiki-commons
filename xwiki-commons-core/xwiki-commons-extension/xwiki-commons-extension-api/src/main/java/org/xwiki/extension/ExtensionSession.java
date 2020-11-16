@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * A short lived container used to store extensions manipulations related data which can be disposed.
  * <p>
@@ -27,6 +29,7 @@ package org.xwiki.extension;
  * @version $Id$
  * @since 12.10RC1
  */
+@Unstable
 public interface ExtensionSession
 {
     /**
