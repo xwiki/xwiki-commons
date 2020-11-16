@@ -22,20 +22,20 @@
 
 <infinispan
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="urn:infinispan:config:9.4 http://www.infinispan.org/schemas/infinispan-config-9.4.xsd"
-      xmlns="urn:infinispan:config:9.4">
+      xsi:schemaLocation="urn:infinispan:config:11.0 https://infinispan.org/schemas/infinispan-config-11.0.xsd"
+      xmlns="urn:infinispan:config:11.0">
 
    <!--
       ******************************************************************************************************************
 
       A summary of the format of this XML file and all available options can be see online:
 
-         http://infinispan.org/docs/9.4.x/user_guide/user_guide.html
+         https://infinispan.org/docs/11.0.x/titles/configuring/configuring.html
 
       ******************************************************************************************************************
    -->
 
-   <cache-container name="xwiki" statistics="true" default-cache="the-default-cache" shutdown-hook="DEFAULT">
+   <cache-container name="xwiki" statistics="true" default-cache="default" shutdown-hook="DEFAULT">
 
      <!--
          ******************************************************************************************************************
@@ -45,25 +45,23 @@
          ******************************************************************************************************************
      -->
 
-     <!-- The default cache. -->
-     <local-cache name="the-default-cache">
-        <memory>
-          <object size="10000"/>
-        </memory>
-     </local-cache>
+     <!-- The default cache configuration. -->
+     <local-cache-configuration name="default">
+        <memory max-count="10000"/>
+     </local-cache-configuration>
 
-     <local-cache name="file-cache-nopath">
+     <local-cache-configuration name="template_file-cache-nopath" configuration="default">
         <persistence>
            <!-- Let XWiki cache module set the proper location -->
-           <file-store/>
+           <file-store path="" segmented="false"/>
         </persistence>
-     </local-cache>
+     </local-cache-configuration>
 
-     <local-cache name="file-cache-path">
+     <local-cache-configuration name="template_file-cache-path" configuration="default">
         <persistence>
-           <file-store path="${java.io.tmpdir}"/>
+           <file-store path="${java.io.tmpdir}" segmented="false"/>
         </persistence>
-     </local-cache>
+     </local-cache-configuration>
 
    </cache-container>
 </infinispan>

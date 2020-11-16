@@ -30,7 +30,6 @@ import org.infinispan.configuration.cache.SingleFileStoreConfigurationBuilder;
 import org.infinispan.configuration.cache.StoreConfiguration;
 import org.infinispan.configuration.cache.StoreConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
-import org.infinispan.eviction.EvictionType;
 import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.cache.eviction.EntryEvictionConfiguration;
 import org.xwiki.cache.eviction.LRUEvictionConfiguration;
@@ -49,11 +48,6 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
      * {@link ExpirationConfigurationBuilder}.
      */
     public static final String CONFX_EXPIRATION_WAKEUPINTERVAL = "infinispan.expiration.wakeupinterval";
-
-    /**
-     * The default location of a filesystem based cache loader when not provided in the xml configuration file.
-     */
-    private static final String DEFAULT_SINGLEFILESTORE_LOCATION = "Infinispan-SingleFileStore";
 
     /**
      * @param configuration the XWiki cache configuration
@@ -98,8 +92,8 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
     {
         Object maxEntries = eec.get(LRUEvictionConfiguration.MAXENTRIES_ID);
         if (maxEntries instanceof Number) {
-            builder.memory().evictionStrategy(EvictionStrategy.REMOVE);
-            builder.memory().evictionType(EvictionType.COUNT).size(((Number) maxEntries).longValue());
+            builder.memory().whenFull(EvictionStrategy.REMOVE);
+            builder.memory().maxCount(((Number) maxEntries).longValue());
         }
 
     }
@@ -141,8 +135,7 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
 
                 String location = singleFileStoreConfiguration.location();
 
-                // "Infinispan-SingleFileStore" is the default location...
-                if (StringUtils.isBlank(location) || location.equals(DEFAULT_SINGLEFILESTORE_LOCATION)) {
+                if (StringUtils.isBlank(location)) {
                     return true;
                 }
             }
@@ -202,9 +195,10 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
 
     private void read(ConfigurationBuilder builder, Configuration configuration)
     {
-        builder.read(configuration);
+        // Inherit the configuration
+        builder.read(configuration).template(false);
 
         // Make sure filesystem based caches have a proper location
-        completeFilesystem(builder, configuration);        
+        completeFilesystem(builder, configuration);
     }
 }

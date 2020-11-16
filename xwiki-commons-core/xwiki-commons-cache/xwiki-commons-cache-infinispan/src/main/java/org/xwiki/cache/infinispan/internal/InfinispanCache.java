@@ -153,7 +153,7 @@ public class InfinispanCache<T> extends AbstractCache<T>
     @CacheEntryRemoved
     public void nodeRemoved(CacheEntryRemovedEvent<String, T> event)
     {
-        if (!event.isPre()) {
+        if (!event.isPre() && event.getOldValue() != null) {
             cacheEntryRemoved(event.getKey(), event.getOldValue());
         }
     }
