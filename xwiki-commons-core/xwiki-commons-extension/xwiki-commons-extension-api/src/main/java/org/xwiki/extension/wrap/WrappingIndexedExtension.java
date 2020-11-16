@@ -19,7 +19,6 @@
  */
 package org.xwiki.extension.wrap;
 
-import org.xwiki.component.namespace.Namespace;
 import org.xwiki.extension.index.IndexedExtension;
 
 /**
@@ -43,7 +42,7 @@ public class WrappingIndexedExtension<T extends IndexedExtension> extends Wrappi
     // IndexedExtension
 
     @Override
-    public Boolean isCompatible(Namespace namespace)
+    public Boolean isCompatible(String namespace)
     {
         return getWrapped().isCompatible(namespace);
     }

@@ -21,6 +21,9 @@ package org.xwiki.extension.index;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.component.namespace.Namespace;
+import org.xwiki.extension.ExtensionDependency;
+import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.search.AdvancedSearchable;
 import org.xwiki.job.JobException;
@@ -50,4 +53,12 @@ public interface ExtensionIndex extends ExtensionRepository, AdvancedSearchable
      * @throws JobException when failing to start indexing
      */
     ExtensionIndexStatus index(Namespace namespace) throws JobException;
+
+    // ExtensionRepository
+
+    @Override
+    IndexedExtension resolve(ExtensionDependency extensionDependency) throws ResolveException;
+
+    @Override
+    IndexedExtension resolve(ExtensionId extensionId) throws ResolveException;
 }

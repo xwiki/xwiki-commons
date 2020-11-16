@@ -19,7 +19,6 @@
  */
 package org.xwiki.extension.index;
 
-import org.xwiki.component.namespace.Namespace;
 import org.xwiki.extension.rating.RatingExtension;
 import org.xwiki.stability.Unstable;
 
@@ -36,5 +35,5 @@ public interface IndexedExtension extends RatingExtension
      * @param namespace the namespace for which to check if the extension is compatible
      * @return true if the extension is compatible, false if incompatible and null if unknown
      */
-    Boolean isCompatible(Namespace namespace);
+    Boolean isCompatible(String namespace);
 }
