@@ -423,8 +423,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             versions.add(new DefaultVersion(restExtension.getVersion()));
         }
 
-        return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(),
-            versions);
+        return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(), versions);
     }
 
     // Searchable
@@ -452,8 +451,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             extensions.add(new XWikiExtension(this, restExtension, this.licenseManager, this.factory));
         }
 
-        return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(),
-            extensions);
+        return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(), extensions);
     }
 
     @Override
@@ -497,8 +495,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             extensions.add(new XWikiExtension(this, restExtension, this.licenseManager, this.factory));
         }
 
-        return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(),
-            extensions);
+        return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(), extensions);
     }
 
     // Ratable

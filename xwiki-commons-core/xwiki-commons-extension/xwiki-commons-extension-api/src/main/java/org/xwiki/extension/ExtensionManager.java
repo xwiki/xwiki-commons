@@ -28,6 +28,7 @@ import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
+import org.xwiki.stability.Unstable;
 
 /**
  * Main entry point for some extensions management tasks.
@@ -38,6 +39,25 @@ import org.xwiki.extension.repository.search.SearchException;
 @Role
 public interface ExtensionManager
 {
+    /**
+     * @param extensionId the extension identifier
+     * @return true if the extension exists in the repository
+     * @since 12.10RC1
+     */
+    @Unstable
+    default boolean exists(ExtensionId extensionId)
+    {
+        try {
+            resolveExtension(extensionId);
+
+            return true;
+        } catch (ResolveException e) {
+            // The extension does not exist
+        }
+
+        return false;
+    }
+
     /**
      * Search the provided extension among all repositories including core and local repositories.
      * <p>

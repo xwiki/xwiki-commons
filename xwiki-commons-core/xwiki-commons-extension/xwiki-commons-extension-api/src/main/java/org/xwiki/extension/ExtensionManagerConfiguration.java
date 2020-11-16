@@ -26,6 +26,7 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
 import org.xwiki.extension.version.VersionConstraint;
+import org.xwiki.stability.Unstable;
 
 /**
  * Provide some general extension manager configuration.
@@ -36,6 +37,11 @@ import org.xwiki.extension.version.VersionConstraint;
 @Role
 public interface ExtensionManagerConfiguration
 {
+    /**
+     * The default interval between two extension indexing. The default is 1h.
+     */
+    int DEFAULT_INDEX_INTERVAL = 60 * 60;
+
     /**
      * @return the folder containing the local extensions
      * @see org.xwiki.extension.repository.LocalExtensionRepository
@@ -101,5 +107,15 @@ public interface ExtensionManagerConfiguration
     default boolean isIgnoredDependency(ExtensionDependency dependency)
     {
         return false;
+    }
+
+    /**
+     * @return the number of seconds between two extension indexing
+     * @since 12.10RC1
+     */
+    @Unstable
+    default int getIndexInterval()
+    {
+        return DEFAULT_INDEX_INTERVAL;
     }
 }

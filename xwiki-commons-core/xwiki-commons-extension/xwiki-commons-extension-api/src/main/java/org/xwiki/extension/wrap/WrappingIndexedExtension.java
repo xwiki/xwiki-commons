@@ -17,30 +17,33 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension;
+package org.xwiki.extension.wrap;
 
-import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
+import org.xwiki.extension.index.IndexedExtension;
 
 /**
- * Manipulate extension specific contextual informations.
- * 
+ * Wrap an indexed extension.
+ *
+ * @param <T> the extension type
  * @version $Id$
  * @since 12.10RC1
  */
-@Role
-@Unstable
-public interface ExtensionContext
+public class WrappingIndexedExtension<T extends IndexedExtension> extends WrappingRatingExtension<T>
+    implements IndexedExtension
 {
     /**
-     * Increment by 1 the session level and create or return the session associated with the current thread.
-     * 
-     * @return the current session
+     * @param localExtension the wrapped local extension
      */
-    ExtensionSession pushSession();
+    public WrappingIndexedExtension(T localExtension)
+    {
+        super(localExtension);
+    }
 
-    /**
-     * Decrement by 1 the session level and destroy the current session when reaching the first level.
-     */
-    void popSession();
+    // IndexedExtension
+
+    @Override
+    public Boolean isCompatible(String namespace)
+    {
+        return getWrapped().isCompatible(namespace);
+    }
 }

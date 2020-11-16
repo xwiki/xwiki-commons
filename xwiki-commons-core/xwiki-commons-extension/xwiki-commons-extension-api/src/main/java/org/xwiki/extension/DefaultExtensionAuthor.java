@@ -123,4 +123,20 @@ public class DefaultExtensionAuthor implements ExtensionAuthor
 
         return builder.toHashCode();
     }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(getName());
+
+        if (getURLString() != null) {
+            builder.append('(');
+            builder.append(getURLString());
+            builder.append(')');
+        }
+
+        return builder.toString();
+    }
 }

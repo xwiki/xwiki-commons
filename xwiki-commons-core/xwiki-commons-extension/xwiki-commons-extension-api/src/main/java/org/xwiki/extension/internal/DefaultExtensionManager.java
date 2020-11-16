@@ -41,6 +41,7 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionManager;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.index.ExtensionIndex;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
@@ -88,6 +89,9 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
     private InstalledExtensionRepository installedExtensionRepository;
 
     @Inject
+    private Provider<ExtensionIndex> indexRepositoryProvider;
+
+    @Inject
     @Named("context")
     private Provider<ComponentManager> componentManagerProvider;
 
@@ -118,6 +122,18 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
         } catch (ResolveException notACoreExtension) {
             return resolveExtensionFromInstalled(extensionId);
         }
+    }
+
+    @Override
+    public boolean exists(ExtensionId extensionId)
+    {
+        if (!this.installedExtensionRepository.exists(extensionId)) {
+            if (!this.localExtensionRepository.exists(extensionId)) {
+                return this.repositoryManager.exists(extensionId);
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -178,6 +194,11 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
     @Override
     public ExtensionRepository getRepository(String repositoryId)
     {
+        // Try index
+        if (repositoryId.equals("index")) {
+            return this.indexRepositoryProvider.get();
+        }
+
         // Try internal repositories
         ExtensionRepository repository = this.standardRepositories.get(repositoryId);
 

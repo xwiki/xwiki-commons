@@ -17,30 +17,22 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension;
+package org.xwiki.extension.index;
 
-import org.xwiki.component.annotation.Role;
+import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.stability.Unstable;
 
 /**
- * Manipulate extension specific contextual informations.
+ * The status of the currently running or last indexing process.
  * 
  * @version $Id$
  * @since 12.10RC1
  */
-@Role
 @Unstable
-public interface ExtensionContext
+public interface ExtensionIndexStatus extends JobStatus
 {
     /**
-     * Increment by 1 the session level and create or return the session associated with the current thread.
-     * 
-     * @return the current session
+     * @return true if the index was updated
      */
-    ExtensionSession pushSession();
-
-    /**
-     * Decrement by 1 the session level and destroy the current session when reaching the first level.
-     */
-    void popSession();
+    boolean isExtensionAdded();
 }
