@@ -63,8 +63,6 @@ public class InfinispanCacheFactory implements CacheFactory, Initializable, Disp
      */
     private static final String DEFAULT_CONFIGURATION_FILE = "/WEB-INF/cache/infinispan/config.xml";
 
-    private static final String TEMPLATE_PREFIX = "template_";
-
     /**
      * The logger to log.
      */
@@ -159,7 +157,7 @@ public class InfinispanCacheFactory implements CacheFactory, Initializable, Disp
         // Set custom configuration
 
         Configuration namedConfiguration =
-            cacheName != null ? this.cacheManager.getCacheConfiguration(TEMPLATE_PREFIX + cacheName) : null;
+            cacheName != null ? this.cacheManager.getCacheConfiguration(cacheName) : null;
 
         Configuration modifiedConfiguration =
             loader.customize(this.cacheManager.getDefaultCacheConfiguration(), namedConfiguration);

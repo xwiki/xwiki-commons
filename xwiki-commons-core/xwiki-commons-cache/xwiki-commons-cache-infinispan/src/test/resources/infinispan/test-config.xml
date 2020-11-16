@@ -50,14 +50,14 @@
         <memory max-count="10000"/>
      </local-cache-configuration>
 
-     <local-cache-configuration name="template_file-cache-nopath" configuration="default">
+     <local-cache-configuration name="file-cache-nopath" configuration="default">
         <persistence>
            <!-- Let XWiki cache module set the proper location -->
            <file-store path="" segmented="false"/>
         </persistence>
      </local-cache-configuration>
 
-     <local-cache-configuration name="template_file-cache-path" configuration="default">
+     <local-cache-configuration name="file-cache-path" configuration="default">
         <persistence>
            <file-store path="${java.io.tmpdir}" segmented="false"/>
         </persistence>
