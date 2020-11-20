@@ -33,7 +33,7 @@ import org.xwiki.extension.ExtensionSession;
  * Default implementation of {@link ExtensionSession}.
  * 
  * @version $Id$
- * @since 12.10RC1
+ * @since 12.10
  */
 public class DefaultExtensionSession implements ExtensionSession
 {

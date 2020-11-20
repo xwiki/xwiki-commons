@@ -111,7 +111,7 @@ public interface ExtensionManagerConfiguration
 
     /**
      * @return the number of seconds between two extension indexing
-     * @since 12.10RC1
+     * @since 12.10
      */
     @Unstable
     default int getIndexInterval()

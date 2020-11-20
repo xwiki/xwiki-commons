@@ -26,7 +26,7 @@ import org.xwiki.stability.Unstable;
  * An extension stored in the {@link ExtensionIndex}.
  * 
  * @version $Id$
- * @since 12.10RC1
+ * @since 12.10
  */
 @Unstable
 public interface IndexedExtension extends RatingExtension

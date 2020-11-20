@@ -26,7 +26,7 @@ import org.xwiki.stability.Unstable;
  * Manipulate extension specific contextual informations.
  * 
  * @version $Id$
- * @since 12.10RC1
+ * @since 12.10
  */
 @Role
 @Unstable

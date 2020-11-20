@@ -33,7 +33,7 @@ import org.xwiki.stability.Unstable;
  * A local index of extensions coming from various repositories.
  * 
  * @version $Id$
- * @since 12.10RC1
+ * @since 12.10
  */
 @Unstable
 @Role

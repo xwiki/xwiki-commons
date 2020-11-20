@@ -32,7 +32,7 @@ import org.xwiki.properties.converter.AbstractConverter;
  * Convert a version from a String to a {@link Version} object and the other way around.
  * 
  * @version $Id$
- * @since 12.10RC1
+ * @since 12.10
  */
 @Component
 @Singleton

@@ -317,7 +317,7 @@ public final class HTMLUtils
      * @param content the content to parse
      * @return true if the passed content contains content that can be interpreted as HTML syntax
      * @see #escapeElementText(String)
-     * @since 12.10RC1
+     * @since 12.10
      * @since 12.6.5
      */
     @Unstable

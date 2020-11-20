@@ -42,7 +42,7 @@ public interface ExtensionManager
     /**
      * @param extensionId the extension identifier
      * @return true if the extension exists in the repository
-     * @since 12.10RC1
+     * @since 12.10
      */
     @Unstable
     default boolean exists(ExtensionId extensionId)

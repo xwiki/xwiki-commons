@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
  * Any entry value implementing {@link java.io.Closeable} will be called when the session is destroyed.
  * 
  * @version $Id$
- * @since 12.10RC1
+ * @since 12.10
  */
 @Unstable
 public interface ExtensionSession

@@ -31,7 +31,7 @@ import org.xwiki.stability.Unstable;
  * Extends {@link ExtensionQuery} with extension index specific criteria.
  * 
  * @version $Id$
- * @since 12.10RC1
+ * @since 12.10
  */
 @Unstable
 public class IndexedExtensionQuery extends ExtensionQuery

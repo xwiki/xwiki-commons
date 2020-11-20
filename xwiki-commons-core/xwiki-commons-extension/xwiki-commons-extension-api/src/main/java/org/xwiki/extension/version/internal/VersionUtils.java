@@ -93,7 +93,7 @@ public final class VersionUtils
      * 
      * @param constraint the constraint
      * @return the version
-     * @since 12.10RC1
+     * @since 12.10
      */
     public static Version getUniqueVersion(VersionConstraint constraint)
     {
