@@ -1369,6 +1369,32 @@
         <artifactId>css4j-dom4j</artifactId>
         <version>${css4j.version}</version>
       </dependency>
+
+      <!-- Infinispan and protobuf -->
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <!-- Keep the version in sync with Infinispan until https://issues.redhat.com/browse/IPROTO-177 is fixed -->
+        <version>3.12.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-core</artifactId>
+        <!-- Keep the version in sync with Infinispan until https://issues.redhat.com/browse/IPROTO-177 is fixed -->
+        <version>11.0.5.Final</version>
+        <exclusions>
+          <!-- We use jakarta.transaction:jakarta.transaction-api (the reference API id) instead in XWiki -->
+          <exclusion>
+            <groupId>org.jboss.spec.javax.transaction</groupId>
+            <artifactId>jboss-transaction-api_1.2_spec</artifactId>
+          </exclusion>
+          <!-- Remove when https://jira.xwiki.org/browse/XCOMMONS-2058 or https://jira.xwiki.org/browse/XCOMMONS-2004 are fixed -->
+          <exclusion>
+            <groupId>org.jgroups</groupId>
+            <artifactId>jgroups</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <build>
