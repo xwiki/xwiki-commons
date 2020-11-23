@@ -19,15 +19,15 @@
  */
 package org.xwiki.diff.display.internal;
 
-import java.io.IOException;
+import java.io.BufferedReader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.io.IOUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.diff.display.Splitter;
 
@@ -45,10 +45,18 @@ public class LineSplitter implements Splitter<String, String>
     @Override
     public List<String> split(String composite)
     {
-        try {
-            return composite == null ? Collections.<String>emptyList() : IOUtils.readLines(new StringReader(composite));
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to split lines.", e);
+        List<String> lines;
+        if (composite == null) {
+            lines = Collections.emptyList();
+        } else {
+            lines = new ArrayList<>();
+            new BufferedReader(new StringReader(composite)).lines().forEach(line -> lines.add(line));
+            // This allows to differentiate two contents, one with a trailing new line and one without. Otherwise
+            // they would be considered as having the same content.
+            if (composite.endsWith("\n")) {
+                lines.add("");
+            }
         }
+        return lines;
     }
 }
