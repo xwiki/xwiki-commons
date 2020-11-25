@@ -21,15 +21,12 @@ package org.xwiki.diff;
 
 import java.util.List;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Represent a decision taken to solve a given {@link Conflict}.
  * @param <E> the type of element used in the merge operation.
  * @version $Id$
  * @since 11.7RC1
  */
-@Unstable
 public interface ConflictDecision<E>
 {
     /**

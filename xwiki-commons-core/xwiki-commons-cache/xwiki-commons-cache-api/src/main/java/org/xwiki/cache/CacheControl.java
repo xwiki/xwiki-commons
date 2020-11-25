@@ -23,7 +23,6 @@ import java.time.chrono.ChronoLocalDateTime;
 import java.util.Date;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Control the caches behavior in the current context.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 11.8RC1
  */
-@Unstable
 @Role
 public interface CacheControl
 {

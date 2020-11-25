@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.xwiki.logging.LogQueue;
-import org.xwiki.stability.Unstable;
 
 /**
  * @param <E> the type of compared elements
@@ -60,7 +59,6 @@ public interface MergeResult<E>
      * @return the list of conflicts obtained during the merge
      * @since 11.7RC1
      */
-    @Unstable
     default List<Conflict<E>> getConflicts()
     {
         return Collections.emptyList();

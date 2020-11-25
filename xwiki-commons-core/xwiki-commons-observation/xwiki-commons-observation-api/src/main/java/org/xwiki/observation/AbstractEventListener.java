@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.xwiki.observation.event.Event;
-import org.xwiki.stability.Unstable;
 
 /**
  * Base class for {@link EventListener}s.
@@ -73,7 +72,6 @@ public abstract class AbstractEventListener implements EventListener
      *            {@link #onEvent(Event, Object, Object)} method will be called.
      * @since 11.8RC1
      */
-    @Unstable
     public AbstractEventListener(String name, Object... values)
     {
         this.name = name;

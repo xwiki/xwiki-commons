@@ -22,7 +22,6 @@ package org.xwiki.xml.internal.html;
 import org.htmlcleaner.CleanerTransformations;
 import org.htmlcleaner.TagTransformation;
 import org.htmlcleaner.TrimAttributeTagTransformation;
-import org.xwiki.stability.Unstable;
 
 /**
  * This class allows to create on the fly a new tag transformation to trim leading space.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 11.1RC1
  */
-@Unstable
 public class TrimAttributeCleanerTransformations extends CleanerTransformations
 {
     @Override

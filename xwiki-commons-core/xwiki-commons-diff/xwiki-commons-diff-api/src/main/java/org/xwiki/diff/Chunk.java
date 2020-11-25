@@ -21,8 +21,6 @@ package org.xwiki.diff;
 
 import java.util.List;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * A snippet of the source list.
  *
@@ -72,7 +70,6 @@ public interface Chunk<E>
      * @since 10.11.10
      * @since 11.3.3
      */
-    @Unstable
     default boolean isOverlappingWith(Chunk<E> otherChunk)
     {
         return false;

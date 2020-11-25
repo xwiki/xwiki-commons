@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.xwiki.logging.event.LogEvent;
 import org.xwiki.logging.internal.AbstractLogger;
 import org.xwiki.logging.tail.LoggerTail;
-import org.xwiki.stability.Unstable;
 
 /**
  * Base class to help implement {@link LoggerTail}.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 11.9RC1
  */
-@Unstable
 public abstract class AbstractLoggerTail extends AbstractLogger implements LoggerTail
 {
     @Override

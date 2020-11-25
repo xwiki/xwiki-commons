@@ -127,7 +127,6 @@ public interface PropertyDescriptor
      * @return the type used when displaying the property.
      * @since 11.0
      */
-    @Unstable
     default Type getDisplayType()
     {
         return getPropertyType();

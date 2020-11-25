@@ -27,7 +27,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.diff.Chunk;
 import org.xwiki.diff.Conflict;
 import org.xwiki.diff.ConflictDecision;
-import org.xwiki.stability.Unstable;
 
 /**
  * Default implementation of a {@link ConflictDecision}.
@@ -35,7 +34,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 11.7RC1
  */
-@Unstable
 public class DefaultConflictDecision<E> implements ConflictDecision<E>
 {
     private DecisionType type;

@@ -24,7 +24,6 @@ import java.util.List;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.diff.Conflict;
 import org.xwiki.diff.DiffResult;
-import org.xwiki.stability.Unstable;
 
 /**
  * Displays a {@link DiffResult} as a <a href="http://en.wikipedia.org/wiki/Diff#Unified_format">unified diff</a>. The
@@ -66,7 +65,6 @@ public interface UnifiedDiffDisplayer
      * @see #display(DiffResult, UnifiedDiffConfiguration)
      * @since 11.7RC1
      */
-    @Unstable
     default <E, F> List<UnifiedDiffBlock<E, F>> display(DiffResult<E> diffResult, List<Conflict<E>> conflicts)
     {
         return display(diffResult);
@@ -137,7 +135,6 @@ public interface UnifiedDiffDisplayer
      * @return the list of blocks that form the unified diff
      * @since 11.7RC1
      */
-    @Unstable
     default <E, F> List<UnifiedDiffBlock<E, F>> display(DiffResult<E> diffResult, List<Conflict<E>> conflicts,
         UnifiedDiffConfiguration<E, F> config)
     {

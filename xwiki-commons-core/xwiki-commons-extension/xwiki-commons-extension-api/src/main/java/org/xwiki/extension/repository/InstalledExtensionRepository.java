@@ -37,7 +37,6 @@ import org.xwiki.extension.repository.search.AdvancedSearchable;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.tree.ExtensionNode;
-import org.xwiki.stability.Unstable;
 
 /**
  * A repository containing installed extension.
@@ -156,7 +155,6 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
      * @throws ResolveException error when searching for backward dependencies
      * @since 11.10
      */
-    @Unstable
     default Collection<InstalledExtension> getBackwardDependencies(String feature, String namespace,
         boolean withOptionals) throws ResolveException
     {
@@ -182,7 +180,6 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
      * @throws ResolveException error when searching for extension backward dependencies
      * @since 11.10
      */
-    @Unstable
     default Map<String, Collection<InstalledExtension>> getBackwardDependencies(ExtensionId extensionId,
         boolean withOptionals) throws ResolveException
     {
@@ -198,7 +195,6 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
      *         dependencies
      * @since 11.10
      */
-    @Unstable
     default ExtensionNode<InstalledExtension> getOrphanedDependencies(InstalledExtension extension, Namespace namespace)
     {
         return new DefaultExtensionNode<>(namespace, extension);

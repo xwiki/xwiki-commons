@@ -40,7 +40,6 @@ import org.xwiki.stability.Unstable;
 @Component
 @Named("diff.html")
 @Singleton
-@Unstable
 public class DiffHTMLScriptService implements ScriptService
 {
     @Inject

@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Setup merge behavior.
  *
@@ -47,7 +45,6 @@ public class MergeConfiguration<E> extends HashMap<String, Object>
      * @param conflictDecisions the decisions to be taken in case of conflict.
      * @since 11.7RC1
      */
-    @Unstable
     public MergeConfiguration(List<ConflictDecision<E>> conflictDecisions)
     {
         this(Version.CURRENT, conflictDecisions);
@@ -59,7 +56,6 @@ public class MergeConfiguration<E> extends HashMap<String, Object>
      * @param conflictDecisions the decisions to be taken in case of conflict.
      * @since 11.7RC1
      */
-    @Unstable
     public MergeConfiguration(Version version, List<ConflictDecision<E>> conflictDecisions)
     {
         setFallbackOnConflict(version);
@@ -118,7 +114,6 @@ public class MergeConfiguration<E> extends HashMap<String, Object>
      * @return the list of decisions to be taken in case of conflicts.
      * @since 11.7RC1
      */
-    @Unstable
     public List<ConflictDecision<E>> getConflictDecisionList()
     {
         return conflictDecisionList;
@@ -130,7 +125,6 @@ public class MergeConfiguration<E> extends HashMap<String, Object>
      * @param conflictDecisionList the new conflict decision list.
      * @since 11.7RC1
      */
-    @Unstable
     public void setConflictDecisionList(List<ConflictDecision<E>> conflictDecisionList)
     {
         this.conflictDecisionList = new ArrayList<>(conflictDecisionList);

@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.stream.Stream;
 
 import org.xwiki.logging.event.LogEvent;
-import org.xwiki.stability.Unstable;
 
 /**
  * A {@link LogTailResult} containing no result.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 11.9RC1
  */
-@Unstable
 public class EmptyLogTailResult implements LogTailResult
 {
     /**

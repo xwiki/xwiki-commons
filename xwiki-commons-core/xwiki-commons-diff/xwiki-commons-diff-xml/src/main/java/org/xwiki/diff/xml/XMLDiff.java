@@ -27,7 +27,6 @@ import org.w3c.dom.NodeList;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.diff.DiffException;
 import org.xwiki.diff.Patch;
-import org.xwiki.stability.Unstable;
 
 /**
  * Computes the differences between two XML documents.
@@ -36,7 +35,6 @@ import org.xwiki.stability.Unstable;
  * @since 11.6RC1
  */
 @Role
-@Unstable
 public interface XMLDiff
 {
     /**

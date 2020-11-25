@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.xwiki.diff.Chunk;
 import org.xwiki.diff.Conflict;
-import org.xwiki.stability.Unstable;
 
 /**
  * This is a {@link Conflict} representation for the unified diff.
@@ -33,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 11.7RC1
  */
-@Unstable
 public class UnifiedDiffConflictElement<E>
 {
     private Conflict<E> conflict;

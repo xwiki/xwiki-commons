@@ -188,7 +188,6 @@ public class ComponentAnnotationLoader
      * @param componentDescriptors the descriptors of components to register
      * @since 11.1
      */
-    @Unstable
     public void register(ComponentManager manager, Collection<ComponentDescriptor<?>> componentDescriptors)
     {
         try {

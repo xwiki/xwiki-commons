@@ -22,7 +22,6 @@ package org.xwiki.logging.tail;
 import java.io.IOException;
 
 import org.xwiki.logging.Logger;
-import org.xwiki.stability.Unstable;
 
 /**
  * Extends {@link Logger} and provide tail-like APIs to navigate in it.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 11.9RC1
  */
-@Unstable
 public interface LoggerTail extends Logger, LogTail, AutoCloseable
 {
     /**

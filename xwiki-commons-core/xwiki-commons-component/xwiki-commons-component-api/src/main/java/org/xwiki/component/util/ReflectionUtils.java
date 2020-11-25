@@ -614,7 +614,6 @@ public final class ReflectionUtils
      * @return a string representing this type.
      * @since 11.2RC1
      */
-    @Unstable
     public static String serializeType(Type type)
     {
         if (type == null) {

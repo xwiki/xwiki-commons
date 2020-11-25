@@ -38,7 +38,6 @@ import org.xwiki.diff.display.UnifiedDiffBlock;
 import org.xwiki.diff.display.UnifiedDiffConfiguration;
 import org.xwiki.diff.display.UnifiedDiffDisplayer;
 import org.xwiki.script.service.ScriptService;
-import org.xwiki.stability.Unstable;
 
 /**
  * Provide script oriented APIs to display diff.
@@ -138,7 +137,6 @@ public class DiffDisplayerScriptService implements ScriptService
      * @return the list of extended diff blocks
      * @since 11.7RC1
      */
-    @Unstable
     public List<UnifiedDiffBlock<String, Character>> unified(String previous, String next,
         List<Conflict<String>> conflicts)
     {
@@ -183,7 +181,6 @@ public class DiffDisplayerScriptService implements ScriptService
      * @return the list of extended diff blocks
      * @since 11.7RC1
      */
-    @Unstable
     public <E, F> List<UnifiedDiffBlock<E, F>> unified(List<E> previous, List<E> next,
         UnifiedDiffConfiguration<E, F> config, List<Conflict<E>> conflicts)
     {

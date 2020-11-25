@@ -22,7 +22,6 @@ package org.xwiki.diff.display;
 import java.util.ArrayList;
 
 import org.xwiki.diff.Conflict;
-import org.xwiki.stability.Unstable;
 
 /**
  * Represents a list of {@link UnifiedDiffElement}s that share the same context. The context is defined based on the
@@ -105,7 +104,6 @@ public class UnifiedDiffBlock<E, F> extends ArrayList<UnifiedDiffElement<E, F>>
      * @return {@code true} if this block is part of a conflict.
      * @since 11.7RC1
      */
-    @Unstable
     public boolean isConflicting()
     {
         return this.conflict != null;
@@ -115,7 +113,6 @@ public class UnifiedDiffBlock<E, F> extends ArrayList<UnifiedDiffElement<E, F>>
      * @return the {@link UnifiedDiffConflictElement} or null if there is no conflict.
      * @since 11.8RC1
      */
-    @Unstable
     public UnifiedDiffConflictElement<E> getConflict()
     {
         return this.conflict;
@@ -126,7 +123,6 @@ public class UnifiedDiffBlock<E, F> extends ArrayList<UnifiedDiffElement<E, F>>
      * @param conflict the conflict to be registered.
      * @since 11.8RC1
      */
-    @Unstable
     public void setConflict(Conflict<E> conflict)
     {
         if (conflict != null) {

@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.logging.tail.LoggerTail;
 import org.xwiki.observation.EventListener;
-import org.xwiki.stability.Unstable;
 
 /**
  * Provide some logging management APIs such as the ability to redirect logs to an {@link EventListener}.
@@ -92,7 +91,6 @@ public interface LoggerManager
      * @throws IOException when failing to open the {@link LoggerTail}
      * @since 11.9RC1
      */
-    @Unstable
     default LoggerTail createLoggerTail(Path file, boolean readonly) throws IOException
     {
         return new LogQueue();

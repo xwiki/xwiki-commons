@@ -25,8 +25,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Use this annotation to specify the class type of a property.
  * <p> You can for instance specify the generic type Map&lt;String, Long&gt; using the following value:
@@ -38,7 +36,6 @@ import org.xwiki.stability.Unstable;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.FIELD })
 @Inherited
-@Unstable
 public @interface PropertyDisplayType
 {
     /**

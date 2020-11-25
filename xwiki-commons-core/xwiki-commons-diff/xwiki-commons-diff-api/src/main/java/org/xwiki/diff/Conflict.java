@@ -21,8 +21,6 @@ package org.xwiki.diff;
 
 import java.util.List;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Represent a conflict that happened during a merge operation.
  * For more information, see {@link DiffManager#merge(List, List, List, MergeConfiguration)}.
@@ -30,7 +28,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 11.7RC1
  */
-@Unstable
 public interface Conflict<E>
 {
     /**
@@ -83,7 +80,6 @@ public interface Conflict<E>
      * @return the conflict max size.
      * @since 11.8RC1
      */
-    @Unstable
     default int getMaxSize()
     {
         return Math.max(getDeltaCurrent().getNext().size(), getDeltaNext().getNext().size());

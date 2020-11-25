@@ -25,7 +25,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.xwiki.diff.Chunk;
 import org.xwiki.diff.Conflict;
 import org.xwiki.diff.Delta;
-import org.xwiki.stability.Unstable;
 import org.xwiki.text.XWikiToStringBuilder;
 
 /**
@@ -34,7 +33,6 @@ import org.xwiki.text.XWikiToStringBuilder;
  * @version $Id$
  * @since 11.7RC1
  */
-@Unstable
 public class DefaultConflict<E> implements Conflict<E>
 {
     private int index;

@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.xwiki.component.namespace.Namespace;
 import org.xwiki.extension.Extension;
-import org.xwiki.stability.Unstable;
 
 /**
  * A node in the extension tree.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 11.10
  */
-@Unstable
 public interface ExtensionNode<E extends Extension>
 {
     /**

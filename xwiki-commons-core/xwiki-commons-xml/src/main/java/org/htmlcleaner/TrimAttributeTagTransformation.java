@@ -22,8 +22,6 @@ package org.htmlcleaner;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * This class allows to transform all tags attribute to trim their value from leading space, except for input value.
  * It applies the original tag transformations, and then iterates over the attributes to remove the leading spaces.
@@ -36,7 +34,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 11.1RC1
  */
-@Unstable
 public class TrimAttributeTagTransformation extends TagTransformation
 {
     /**

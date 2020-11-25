@@ -22,7 +22,6 @@ package org.xwiki.logging.tail;
 import java.util.stream.Stream;
 
 import org.xwiki.logging.event.LogEvent;
-import org.xwiki.stability.Unstable;
 
 /**
  * The result of a log search.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 11.9RC1
  */
-@Unstable
 public interface LogTailResult extends Iterable<LogEvent>
 {
     /**
