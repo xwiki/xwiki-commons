@@ -165,7 +165,13 @@
               </item>
             </revapi.ignore>
             -->
-            
+            <revapi.ignore>
+              <item>
+                <code>java.method.removed</code>
+                <old>method void org.xwiki.diff.xml.XMLDiff::xxx()</old>
+                <justification>Unstable API added by mistake.</justification>
+              </item>
+            </revapi.ignore>
           </analysisConfiguration>
         </configuration>
       </plugin>

@@ -38,14 +38,6 @@ import org.xwiki.diff.Patch;
 public interface XMLDiff
 {
     /**
-     * whatever.
-     *
-     * @since 12.4RC1
-     */
-    @Unstable
-    void xxx();
-
-    /**
      * Computes the difference between two XML nodes and their descendants. When a value node type (e.g. text,
      * attribute, comment) is modified we compute the difference on the text value using the splitter indicated by the
      * configuration. Otherwise the difference is expressed at node level, as if two lists of nodes are compared.
