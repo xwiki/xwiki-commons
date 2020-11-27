@@ -149,7 +149,9 @@ public class ExtensionAuthorConverter extends AbstractConverter<ExtensionAuthor>
     {
         StringBuilder builder = new StringBuilder();
 
-        builder.append(value.getName().replace("\\", "\\\\").replace("/", "\\/"));
+        if (value.getName() != null) {
+            builder.append(value.getName().replace("\\", "\\\\").replace("/", "\\/"));
+        }
 
         if (value.getURLString() != null) {
             builder.append('/');

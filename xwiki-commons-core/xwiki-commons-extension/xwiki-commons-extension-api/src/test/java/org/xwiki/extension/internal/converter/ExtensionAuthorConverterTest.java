@@ -28,6 +28,7 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Validate {@link ExtensionAuthorConverter} component.
@@ -44,6 +45,9 @@ class ExtensionAuthorConverterTest
     @Test
     void convertFromString()
     {
+        assertNull(this.manager.convert(ExtensionAuthor.class, null));
+        assertEquals(new DefaultExtensionAuthor("", (String) null), this.manager.convert(ExtensionAuthor.class, ""));
+
         assertEquals(new DefaultExtensionAuthor("name", (String) null),
             this.manager.convert(ExtensionAuthor.class, "name"));
         assertEquals(new DefaultExtensionAuthor("name", "url"),
@@ -62,6 +66,11 @@ class ExtensionAuthorConverterTest
     @Test
     void convertToString()
     {
+        assertEquals("", this.manager.getConverter(ExtensionAuthor.class).convert(String.class,
+            new DefaultExtensionAuthor(null, (String) null)));
+        assertEquals("/url", this.manager.getConverter(ExtensionAuthor.class).convert(String.class,
+            new DefaultExtensionAuthor(null, "url")));
+
         assertEquals("name", this.manager.getConverter(ExtensionAuthor.class).convert(String.class,
             new DefaultExtensionAuthor("name", (String) null)));
         assertEquals("name/url", this.manager.getConverter(ExtensionAuthor.class).convert(String.class,
