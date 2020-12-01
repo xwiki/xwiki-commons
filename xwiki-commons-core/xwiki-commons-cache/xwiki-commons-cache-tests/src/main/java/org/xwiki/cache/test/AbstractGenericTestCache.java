@@ -136,7 +136,7 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
 
         Cache<Object> cache = factory.newCache(new CacheConfiguration());
 
-        CacheEntryListenerTest eventListener = new CacheEntryListenerTest();
+        TestCacheEntryListener eventListener = new TestCacheEntryListener();
 
         cache.addCacheEntryListener(eventListener);
 
@@ -200,13 +200,18 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
 
         Cache<Object> cache = factory.newCache(configuration);
 
+        TestCacheEntryListener eventListener = new TestCacheEntryListener();
+        cache.addCacheEntryListener(eventListener);
+
         cache.set(KEY, VALUE);
 
         assertEquals(VALUE, cache.get(KEY));
 
-        // dispose the first cache
+        // dispose the cache
 
         cache.dispose();
+
+        assertNotNull(eventListener.getRemovedEvent());
 
         // recreate it
 

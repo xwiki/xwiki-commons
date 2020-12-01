@@ -27,7 +27,7 @@ import org.xwiki.cache.event.CacheEntryListener;
  * 
  * @version $Id$
  */
-public class CacheEntryListenerTest implements CacheEntryListener<Object>
+public class TestCacheEntryListener implements CacheEntryListener<Object>
 {
     /**
      * 

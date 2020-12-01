@@ -21,9 +21,9 @@ package org.xwiki.cache.infinispan.internal;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.infinispan.Cache;
+import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntriesEvicted;
@@ -58,7 +58,7 @@ public class InfinispanCache<T> extends AbstractCache<T>
     /**
      * The state of the node before modification.
      */
-    private ConcurrentMap<String, T> preEventData = new ConcurrentHashMap<>();
+    private Map<String, T> preEventData = new ConcurrentHashMap<>();
 
     /**
      * The Infinispan cache manager.
@@ -68,13 +68,15 @@ public class InfinispanCache<T> extends AbstractCache<T>
     /**
      * @param cacheManager the Infinispan cache manager
      * @param configuration the XWiki Cache configuration
+     * @param infinispanConfiguration the Infinispan Cache configuration
      */
-    InfinispanCache(EmbeddedCacheManager cacheManager, CacheConfiguration configuration)
+    InfinispanCache(EmbeddedCacheManager cacheManager, CacheConfiguration configuration,
+        Configuration infinispanConfiguration)
     {
         super(configuration);
 
         this.cacheManager = cacheManager;
-        this.cache = cacheManager.getCache(configuration.getConfigurationId());
+        this.cache = cacheManager.createCache(configuration.getConfigurationId(), infinispanConfiguration);
 
         this.cache.addListener(this);
     }
@@ -110,9 +112,13 @@ public class InfinispanCache<T> extends AbstractCache<T>
     @Override
     public void dispose()
     {
-        super.dispose();
+        // Make sure to empty the cache
+        removeAll();
 
+        // Remove the cache from the Infinispan registry
         this.cacheManager.administration().removeCache(this.cache.getName());
+
+        super.dispose();
     }
 
     // ////////////////////////////////////////////////////////////////
