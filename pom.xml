@@ -143,6 +143,7 @@
     <xwiki.enforcer.enforce-jta.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jta.skip>
     <xwiki.enforcer.enforce-jboss-marshalling-osgi.skip>${xwiki.enforcer.skip}
     </xwiki.enforcer.enforce-jboss-marshalling-osgi.skip>
+    <xwiki.enforcer.enforce-jakarta.validation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.validation-api.skip>
     <xwiki.enforcer.enforce-hibernate-validator.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-hibernate-validator.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}
     </xwiki.enforcer.enforce-javase-dependencies.skip>
@@ -714,6 +715,13 @@
         <groupId>com.fasterxml.jackson.module</groupId>
         <artifactId>jackson-module-jsonSchema</artifactId>
         <version>${jackson.version}</version>
+        <exclusions>
+          <!-- We use jakarta.validation:jakarta.validation-api -->
+          <exclusion>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -1204,9 +1212,9 @@
       </dependency>
       <!-- Bean validation -->
       <dependency>
-        <groupId>javax.validation</groupId>
-        <artifactId>validation-api</artifactId>
-        <version>2.0.1.Final</version>
+        <groupId>jakarta.validation</groupId>
+        <artifactId>jakarta.validation-api</artifactId>
+        <version>2.0.2</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate.validator</groupId>
@@ -1884,6 +1892,25 @@
                   <message>Use org.jboss.marshalling:jboss-marshalling-osgi instead</message>
                   <excludes>
                     <exclude>org.jboss.marshalling:jboss-marshalling</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we use the right version of the Validation API -->
+          <execution>
+            <id>enforce-jakarta.validation-api</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jakarta.validation-api.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>Use jakarta.validation:jakarta.validation-api instead</message>
+                  <excludes>
+                    <exclude>javax.validation:validation-api</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
