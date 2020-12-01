@@ -1390,7 +1390,7 @@
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-core</artifactId>
         <!-- Keep the version in sync with Infinispan until https://issues.redhat.com/browse/IPROTO-177 is fixed -->
-        <version>11.0.5.Final</version>
+        <version>11.0.7.Final</version>
         <exclusions>
           <!-- We use jakarta.transaction:jakarta.transaction-api (the reference API id) instead in XWiki -->
           <exclusion>
