@@ -26,7 +26,7 @@ import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.cache.config.LRUCacheConfiguration;
 import org.xwiki.cache.eviction.EntryEvictionConfiguration;
 import org.xwiki.cache.eviction.LRUEvictionConfiguration;
-import org.xwiki.cache.test.CacheEntryListenerTest.EventType;
+import org.xwiki.cache.test.TestCacheEntryListener.EventType;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -84,9 +84,9 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
 
         assertNotNull(cache);
 
-        CacheEntryListenerTest eventListener;
+        TestCacheEntryListener eventListener;
         if (this.supportEvictionEvent) {
-            eventListener = new CacheEntryListenerTest();
+            eventListener = new TestCacheEntryListener();
             cache.addCacheEntryListener(eventListener);
         } else {
             eventListener = null;
@@ -129,9 +129,9 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
 
         assertNotNull(cache);
 
-        CacheEntryListenerTest eventListener;
+        TestCacheEntryListener eventListener;
         if (this.supportEvictionEvent) {
-            eventListener = new CacheEntryListenerTest();
+            eventListener = new TestCacheEntryListener();
             cache.addCacheEntryListener(eventListener);
         } else {
             eventListener = null;
@@ -172,9 +172,9 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
 
         assertNotNull(cache);
 
-        CacheEntryListenerTest eventListener;
+        TestCacheEntryListener eventListener;
         if (this.supportEvictionEvent) {
-            eventListener = new CacheEntryListenerTest();
+            eventListener = new TestCacheEntryListener();
             cache.addCacheEntryListener(eventListener);
         } else {
             eventListener = null;
@@ -216,9 +216,9 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
 
         assertNotNull(cache);
 
-        CacheEntryListenerTest eventListener;
+        TestCacheEntryListener eventListener;
         if (this.supportEvictionEvent) {
-            eventListener = new CacheEntryListenerTest();
+            eventListener = new TestCacheEntryListener();
             cache.addCacheEntryListener(eventListener);
         }
 

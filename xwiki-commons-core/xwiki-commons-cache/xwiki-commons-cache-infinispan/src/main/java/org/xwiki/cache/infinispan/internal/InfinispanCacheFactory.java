@@ -173,9 +173,8 @@ public class InfinispanCacheFactory implements CacheFactory, Initializable, Disp
             // Existing cache configuration must be unregistered before registering a new one
             this.cacheManager.undefineConfiguration(cacheName);
         }
-        this.cacheManager.defineConfiguration(cacheName, modifiedConfiguration);
 
         // Create cache
-        return new InfinispanCache<>(this.cacheManager, loader.getCacheConfiguration());
+        return new InfinispanCache<>(this.cacheManager, loader.getCacheConfiguration(), modifiedConfiguration);
     }
 }
