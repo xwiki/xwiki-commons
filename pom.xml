@@ -204,7 +204,7 @@
          for example) -->
     <maven.version>${maven.build.version}</maven.version>
     <maven.resolver.build.version>1.1.1</maven.resolver.build.version>
-    <maven.resolver.version>${maven.resolver.build.version}</maven.resolver.version>
+    <maven.resolver.version>1.6.1</maven.resolver.version>
 
     <!-- Plexus -->
     <plexus-containers.version>2.1.0</plexus-containers.version>
