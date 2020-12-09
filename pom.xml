@@ -106,7 +106,7 @@
     <spoon.version>7.5.0</spoon.version>
 
     <!-- Groovy -->
-    <groovy.version>2.5.14</groovy.version>
+    <groovy.version>3.0.7</groovy.version>
 
     <!-- Ivy -->
     <ivy.version>2.5.0</ivy.version>
