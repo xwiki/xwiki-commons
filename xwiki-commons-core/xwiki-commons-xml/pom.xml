@@ -78,11 +78,7 @@
       <groupId>com.fasterxml.woodstox</groupId>
       <artifactId>woodstox-core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.sf.carte</groupId>
-      <artifactId>css4j</artifactId>
-      <version>1.0.8</version>
-    </dependency>
+
     <!-- Testing dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
