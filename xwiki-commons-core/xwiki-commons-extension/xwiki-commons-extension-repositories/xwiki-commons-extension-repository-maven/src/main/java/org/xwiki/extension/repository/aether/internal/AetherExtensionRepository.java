@@ -278,8 +278,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         RepositoryConnector connector;
         try {
-            RepositoryConnectorProvider repositoryConnectorProvider = getRepositoryConnectorProvider();
-            connector = repositoryConnectorProvider.newRepositoryConnector(session, repository);
+            connector = getRepositoryConnectorProvider().newRepositoryConnector(session, repository);
         } catch (NoRepositoryConnectorException e) {
             throw new IOException("Failed to download artifact [" + artifact + "]", e);
         }
