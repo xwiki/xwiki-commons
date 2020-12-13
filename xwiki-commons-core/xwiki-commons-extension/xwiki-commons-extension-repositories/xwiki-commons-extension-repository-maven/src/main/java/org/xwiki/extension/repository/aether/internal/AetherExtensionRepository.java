@@ -29,12 +29,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Relocation;
@@ -46,6 +48,7 @@ import org.apache.maven.project.ProjectBuildingRequest.RepositoryMerging;
 import org.apache.maven.project.ProjectModelResolver;
 import org.apache.maven.repository.internal.ArtifactDescriptorUtils;
 import org.codehaus.plexus.PlexusContainer;
+import org.eclipse.aether.ConfigurationProperties;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
@@ -241,6 +244,18 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         } catch (IOException e) {
             throw new ResolveException("Failed to create the repository system session", e);
         }
+
+        // Add HTTP headers separately from the rest of the configuration of the session as they have to be
+        // stored as a map in the session configuration properties.
+        Map<String, String> sessionHttpHeaders = new HashMap<>();
+        for (Map.Entry<String, String> property : getDescriptor().getProperties().entrySet()) {
+            if (StringUtils.startsWith(property.getKey(), "http.headers.")) {
+                String headerName = StringUtils.split(property.getKey(), ".", 3)[2];
+                sessionHttpHeaders.put(headerName, property.getValue());
+            }
+        }
+        session.addConfigurationProperties(Collections.singletonMap(ConfigurationProperties.HTTP_HEADERS,
+            sessionHttpHeaders));
 
         session.addConfigurationProperties(getDescriptor().getProperties());
 

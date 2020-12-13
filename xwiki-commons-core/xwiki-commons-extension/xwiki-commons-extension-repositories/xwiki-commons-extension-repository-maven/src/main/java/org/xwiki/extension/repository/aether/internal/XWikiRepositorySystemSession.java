@@ -174,10 +174,10 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
     /**
      * @param properties the custom properties
      */
-    public void addConfigurationProperties(Map<String, String> properties)
+    public void addConfigurationProperties(Map<String, ?> properties)
     {
         if (this.session instanceof DefaultRepositorySystemSession) {
-            for (Map.Entry<String, String> entry : properties.entrySet()) {
+            for (Map.Entry<String, ?> entry : properties.entrySet()) {
                 ((DefaultRepositorySystemSession) this.session).setConfigProperty(entry.getKey(), entry.getValue());
             }
         }
