@@ -249,8 +249,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         // stored as a map in the session configuration properties.
         Map<String, String> sessionHttpHeaders = new HashMap<>();
         for (Map.Entry<String, String> property : getDescriptor().getProperties().entrySet()) {
-            if (StringUtils.startsWith(property.getKey(), "httpHeaders.")) {
-                String headerName = StringUtils.split(property.getKey(), ".", 2)[1];
+            if (StringUtils.startsWith(property.getKey(), "http.headers.")) {
+                String headerName = StringUtils.split(property.getKey(), ".", 3)[2];
                 sessionHttpHeaders.put(headerName, property.getValue());
             }
         }
