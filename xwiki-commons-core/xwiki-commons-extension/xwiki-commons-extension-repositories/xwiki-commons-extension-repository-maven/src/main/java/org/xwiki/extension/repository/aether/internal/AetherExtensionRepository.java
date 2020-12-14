@@ -526,11 +526,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         // Set type
 
         // Find the file extension
-        String artifactFileExtension = targetMavenExtension != null ? targetMavenExtension : model.getPackaging();
-        ArtifactType artifactType = session.getArtifactTypeRegistry().get(artifactFileExtension);
-        if (artifactType != null) {
-            artifactFileExtension = artifactType.getExtension();
-        }
+        String artifactFileExtension = getExtension(targetMavenExtension != null ? targetMavenExtension : model.getPackaging(), session);
 
         Extension mavenExtension = this.extensionConverter.convert(Extension.class, model);
 
@@ -539,7 +535,10 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         ExtensionId extensionId;
         String extensionType = mavenExtension.getType();
+        String extensionFileExtension = getExtension(extensionType, session);
         if (targetMavenExtension != null
+            && !Objects.equals(targetMavenExtension, extensionFileExtension)
+            && !Objects.equals(artifactFileExtension, extensionFileExtension)
             && !Objects.equals(MavenUtils.packagingToType(targetMavenExtension), mavenExtension.getType())
             && !Objects.equals(MavenUtils.packagingToType(artifactFileExtension), mavenExtension.getType())) {
             extensionId = AetherUtils.createExtensionId(artifact, true, factory);
@@ -557,6 +556,16 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         extension.setManagedDependencies(toAetherDependencies(mavenExtension.getManagedDependencies(), session));
 
         return extension;
+    }
+
+    private String getExtension(String type, RepositorySystemSession session)
+    {
+        ArtifactType artifactType = session.getArtifactTypeRegistry().get(type);
+        if (artifactType != null) {
+            return artifactType.getExtension();
+        }
+
+        return type != null ? type : "pom";
     }
 
     private List<ExtensionDependency> toAetherDependencies(Collection<ExtensionDependency> mavenDependencies,
