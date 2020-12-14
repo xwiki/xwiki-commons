@@ -484,6 +484,24 @@ public class AetherDefaultRepositoryManagerTest
     }
 
     @Test
+    public void testDownloadWebjarDependencyAsJAR() throws ResolveException, IOException
+    {
+        Artifact artifact =
+            new DefaultArtifact("wgroupid", "wartifactid", "", "jar", webjarExtensionId.getVersion().getValue());
+        Dependency aetherDependency = new Dependency(artifact, null);
+        AetherExtensionDependency dependency = new AetherExtensionDependency(aetherDependency);
+
+        Extension extension = this.repositoryManager.resolve(dependency);
+
+        assertNotNull(extension);
+        assertEquals(this.webjarExtensionId, extension.getId());
+        assertEquals("webjar", extension.getType());
+        try (InputStream stream = extension.getFile().openStream()) {
+            assertEquals("webjar", IOUtils.toString(stream));
+        }
+    }
+
+    @Test
     public void testDownloadRelocation() throws ExtensionException, IOException
     {
         Extension extension = this.repositoryManager.resolve(new ExtensionId("groupid:relocation", "version"));
