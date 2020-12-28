@@ -1369,8 +1369,7 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <!-- Keep the version in sync with Infinispan until https://issues.redhat.com/browse/IPROTO-177 is fixed -->
-        <version>3.12.2</version>
+        <version>3.14.0</version>
       </dependency>
       <dependency>
         <groupId>org.infinispan.protostream</groupId>
@@ -1380,7 +1379,6 @@
       <dependency>
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-core</artifactId>
-        <!-- Keep the version in sync with Infinispan until https://issues.redhat.com/browse/IPROTO-177 is fixed -->
         <version>11.0.8.Final</version>
         <exclusions>
           <!-- We use jakarta.transaction:jakarta.transaction-api (the reference API id) instead in XWiki -->
