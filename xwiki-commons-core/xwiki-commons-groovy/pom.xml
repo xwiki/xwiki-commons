@@ -47,6 +47,16 @@
       <artifactId>xwiki-commons-configuration-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-environment-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-observation-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Groovy engine -->
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
