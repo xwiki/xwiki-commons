@@ -19,7 +19,10 @@
  */
 package org.xwiki.velocity.introspection;
 
+import java.io.File;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.velocity.util.introspection.SecureIntrospectorImpl;
@@ -33,7 +36,8 @@ import org.slf4j.Logger;
  */
 public class SecureIntrospector extends SecureIntrospectorImpl
 {
-    private final Set<String> secureClassMethods = new HashSet<>();
+    private static final String GETNAME = "getname";
+    private final Map<Class, Set<String>> whitelistedMethods;
 
     /**
      * @param badClasses forbidden classes
@@ -44,41 +48,80 @@ public class SecureIntrospector extends SecureIntrospectorImpl
     {
         super(badClasses, badPackages, log);
 
-        this.secureClassMethods.add("getname");
-        this.secureClassMethods.add("getName");
-        this.secureClassMethods.add("getsimpleName");
-        this.secureClassMethods.add("getSimpleName");
+        this.whitelistedMethods = new HashMap<>();
+        this.prepareWhitelistClass();
+        this.prepareWhiteListFile();
+    }
 
-        this.secureClassMethods.add("isarray");
-        this.secureClassMethods.add("isArray");
-        this.secureClassMethods.add("isassignablefrom");
-        this.secureClassMethods.add("isAssignableFrom");
-        this.secureClassMethods.add("isenum");
-        this.secureClassMethods.add("isEnum");
-        this.secureClassMethods.add("isinstance");
-        this.secureClassMethods.add("isInstance");
-        this.secureClassMethods.add("isinterface");
-        this.secureClassMethods.add("isInterface");
-        this.secureClassMethods.add("islocalClass");
-        this.secureClassMethods.add("isLocalClass");
-        this.secureClassMethods.add("ismemberclass");
-        this.secureClassMethods.add("isMemberClass");
-        this.secureClassMethods.add("isprimitive");
-        this.secureClassMethods.add("isPrimitive");
-        this.secureClassMethods.add("issynthetic");
-        this.secureClassMethods.add("isSynthetic");
-        this.secureClassMethods.add("getEnumConstants");
+    private void prepareWhitelistClass()
+    {
+        Set<String> whitelist = new HashSet<>();
+        whitelist.add(GETNAME);
+        whitelist.add("getsimpleName");
+        whitelist.add("isarray");
+        whitelist.add("isassignablefrom");
+        whitelist.add("isenum");
+        whitelist.add("isinstance");
+        whitelist.add("isinterface");
+        whitelist.add("islocalclass");
+        whitelist.add("ismemberclass");
+        whitelist.add("isprimitive");
+        whitelist.add("issynthetic");
+        whitelist.add("getenumconstants");
+        this.whitelistedMethods.put(Class.class, whitelist);
+    }
 
-        // TODO: add more when needed
+    private void prepareWhiteListFile()
+    {
+        Set<String> whitelist = new HashSet<>();
+        whitelist.add("canexecute");
+        whitelist.add("canread");
+        whitelist.add("canwrite");
+        whitelist.add("compareto");
+        whitelist.add("createtempfile");
+        whitelist.add("equals");
+        whitelist.add("getabsolutefile");
+        whitelist.add("getabsolutePath");
+        whitelist.add("getcanonicalfile");
+        whitelist.add("getcanonicalpath");
+        whitelist.add("getfreespace");
+        whitelist.add(GETNAME);
+        whitelist.add("getparent");
+        whitelist.add("getparentFile");
+        whitelist.add("getpath");
+        whitelist.add("gettotalspace");
+        whitelist.add("getusablespace");
+        whitelist.add("hashcode");
+        whitelist.add("isabsolute");
+        whitelist.add("isdirectory");
+        whitelist.add("isfile");
+        whitelist.add("ishidden");
+        whitelist.add("lastmodified");
+        whitelist.add("length");
+        whitelist.add("topath");
+        whitelist.add("tostring");
+        whitelist.add("touri");
+        whitelist.add("tourl");
+        whitelist.add("getclass");
+        this.whitelistedMethods.put(File.class, whitelist);
     }
 
     @Override
     public boolean checkObjectExecutePermission(Class clazz, String methodName)
     {
-        if (Class.class.isAssignableFrom(clazz) && methodName != null && this.secureClassMethods.contains(methodName)) {
-            return true;
-        } else {
-            return super.checkObjectExecutePermission(clazz, methodName);
+        Boolean result = null;
+        if (methodName != null) {
+            for (Map.Entry<Class, Set<String>> classSetEntry : this.whitelistedMethods.entrySet()) {
+                if (classSetEntry.getKey().isAssignableFrom(clazz)) {
+                    result = classSetEntry.getValue().contains(methodName.toLowerCase());
+                    break;
+                }
+            }
         }
+
+        if (result == null) {
+            result = super.checkObjectExecutePermission(clazz, methodName);
+        }
+        return result;
     }
 }
