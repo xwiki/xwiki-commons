@@ -25,8 +25,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -52,14 +54,21 @@ public class GroovyInitializerListener implements EventListener, Initializable
     public static final String NAME = "groovy.init";
 
     @Inject
-    private Environment environment;
+    private Provider<Environment> environmentProvider;
+
+    @Inject
+    private Logger logger;
 
     @Override
     public void initialize() throws InitializationException
     {
-        // Set the root Groovy folder in a more accurate location
-        System.setProperty("groovy.root",
-            new File(this.environment.getPermanentDirectory(), "cache/groovy").getAbsolutePath());
+        try {
+            // Set the root Groovy folder in a more accurate location
+            System.setProperty("groovy.root",
+                new File(this.environmentProvider.get().getPermanentDirectory(), "cache/groovy").getAbsolutePath());
+        } catch (Exception e) {
+            this.logger.debug("No registered environment, keep default Groovy setup", e);
+        }
     }
 
     @Override
