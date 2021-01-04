@@ -26,10 +26,13 @@ import org.junit.jupiter.api.Test;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.environment.Environment;
 import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 /**
@@ -46,6 +49,9 @@ class GroovyInitializerListenerTest
     @MockComponent
     private Environment environment;
 
+    @InjectComponentManager
+    private MockitoComponentManager componentManager;
+
     @Test
     void init() throws InitializationException
     {
@@ -54,6 +60,13 @@ class GroovyInitializerListenerTest
         this.listener.initialize();
 
         assertEquals(new File("permdir/cache/groovy").getAbsolutePath(), System.getProperty("groovy.root"));
+
+        this.componentManager.unregisterComponent(Environment.class, null);
+        System.clearProperty("groovy.root");
+
+        this.listener.initialize();
+
+        assertNull(System.getProperty("groovy.root"));
     }
 
     @Test
