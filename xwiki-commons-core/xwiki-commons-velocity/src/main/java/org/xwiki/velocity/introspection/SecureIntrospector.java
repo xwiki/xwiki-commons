@@ -20,6 +20,7 @@
 package org.xwiki.velocity.introspection;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -55,54 +56,56 @@ public class SecureIntrospector extends SecureIntrospectorImpl
 
     private void prepareWhitelistClass()
     {
-        Set<String> whitelist = new HashSet<>();
-        whitelist.add(GETNAME);
-        whitelist.add("getsimpleName");
-        whitelist.add("isarray");
-        whitelist.add("isassignablefrom");
-        whitelist.add("isenum");
-        whitelist.add("isinstance");
-        whitelist.add("isinterface");
-        whitelist.add("islocalclass");
-        whitelist.add("ismemberclass");
-        whitelist.add("isprimitive");
-        whitelist.add("issynthetic");
-        whitelist.add("getenumconstants");
+        Set<String> whitelist = new HashSet<>(Arrays.asList(
+            GETNAME,
+            "getsimpleName",
+            "isarray",
+            "isassignablefrom",
+            "isenum",
+            "isinstance",
+            "isinterface",
+            "islocalclass",
+            "ismemberclass",
+            "isprimitive",
+            "issynthetic",
+            "getenumconstants"
+        ));
         this.whitelistedMethods.put(Class.class, whitelist);
     }
 
     private void prepareWhiteListFile()
     {
-        Set<String> whitelist = new HashSet<>();
-        whitelist.add("canexecute");
-        whitelist.add("canread");
-        whitelist.add("canwrite");
-        whitelist.add("compareto");
-        whitelist.add("createtempfile");
-        whitelist.add("equals");
-        whitelist.add("getabsolutefile");
-        whitelist.add("getabsolutePath");
-        whitelist.add("getcanonicalfile");
-        whitelist.add("getcanonicalpath");
-        whitelist.add("getfreespace");
-        whitelist.add(GETNAME);
-        whitelist.add("getparent");
-        whitelist.add("getparentFile");
-        whitelist.add("getpath");
-        whitelist.add("gettotalspace");
-        whitelist.add("getusablespace");
-        whitelist.add("hashcode");
-        whitelist.add("isabsolute");
-        whitelist.add("isdirectory");
-        whitelist.add("isfile");
-        whitelist.add("ishidden");
-        whitelist.add("lastmodified");
-        whitelist.add("length");
-        whitelist.add("topath");
-        whitelist.add("tostring");
-        whitelist.add("touri");
-        whitelist.add("tourl");
-        whitelist.add("getclass");
+        Set<String> whitelist = new HashSet<>(Arrays.asList(
+            "canexecute",
+            "canread",
+            "canwrite",
+            "compareto",
+            "createtempfile",
+            "equals",
+            "getabsolutefile",
+            "getabsolutepath",
+            "getcanonicalfile",
+            "getcanonicalpath",
+            "getfreespace",
+            GETNAME,
+            "getparent",
+            "getparentfile",
+            "getpath",
+            "gettotalspace",
+            "getusablespace",
+            "hashcode",
+            "isabsolute",
+            "isdirectory",
+            "isfile",
+            "ishidden",
+            "lastmodified",
+            "length",
+            "topath",
+            "tostring",
+            "touri",
+            "tourl",
+            "getclass"
+        ));
         this.whitelistedMethods.put(File.class, whitelist);
     }
 

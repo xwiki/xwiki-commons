@@ -34,12 +34,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class SecureIntrospectorTest
+class SecureIntrospectorTest
 {
     @Mock
     private Logger logger;
 
-    class CustomFile extends File {
+    class CustomFile extends File
+    {
         public CustomFile(String s)
         {
             super(s);
