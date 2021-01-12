@@ -2580,34 +2580,6 @@
             </lifecycleMappingMetadata>
           </configuration>
         </plugin>
-        <!-- In order to make it simple to execute Dspot on XWiki with: mvn dspot:amplify-unit-tests -->
-        <plugin>
-          <groupId>eu.stamp-project</groupId>
-          <artifactId>dspot-maven</artifactId>
-          <version>2.2.1</version>
-          <configuration>
-            <clean>true</clean>
-            <descartes>true</descartes>
-            <verbose>true</verbose>
-            <withComment>true</withComment>
-            <generateNewTestClass>true</generateNewTestClass>
-            <iteration>1</iteration>
-            <amplifiers>
-              <!-- Uncomment the amplifier to use or pass them on the command line using -Damplifiers=... -->
-              <!--amplifier>StringLiteralAmplifier</amplifier-->
-              <!--amplifier>NumberLiteralAmplifier</amplifier-->
-              <!--amplifier>CharLiteralAmplifier</amplifier-->
-              <!--amplifier>BooleanLiteralAmplifier</amplifier-->
-              <!--amplifier>AllLiteralAmplifiers</amplifier-->
-              <!--amplifier>ReplacementAmplifier</amplifier-->
-              <amplifier>MethodAdd</amplifier>
-              <amplifier>MethodRemove</amplifier>
-              <amplifier>MethodGeneratorAmplifier</amplifier>
-              <amplifier>ReturnValueAmplifier</amplifier>
-              <amplifier>NullifierAmplifier</amplifier>
-            </amplifiers>
-          </configuration>
-        </plugin>
       </plugins>
     </pluginManagement>
   </build>
