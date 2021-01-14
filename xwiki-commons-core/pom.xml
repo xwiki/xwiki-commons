@@ -152,20 +152,49 @@
         <artifactId>revapi-maven-plugin</artifactId>
         <configuration>
           <analysisConfiguration>
-            <!-- Add ignores here using the following syntax. You can use a single <revapi.ignore> entry but it
-                 cannot be empty.
+            <!-- Add ignores here using the following syntax. You can use a single <revapi.differences> entry but it
+                 cannot be empty. You can also use different <revapi.differences> entries if you wish to use a common
+                 justification for example (see example below).
+
+                 By default criticality is set to "error" if not specified.
+                 See https://revapi.org/revapi/configuration.html#_criticality for more.
 
                  Note: you can use regexes by using the syntax: <regex>true</regex>
                  Don't forget to '\'-escape dots and other special characters in this case ;)
-            <revapi.ignore>
-              <item>
-                <code>java.class.removed</code>
-                <old>class org.xwiki.velocity.tools.CollectionsTool</old>
-                <justification>Not a Breakage. Moved to Legacy</justification>
-              </item>
-            </revapi.ignore>
+
+                 Common justification example:
+
+                 <revapi.differences>
+                   <justification>This change is necessary to fix bug #1234</justification>
+                   <criticality>highlight</criticality>
+                   <differences>
+                     <item>
+                       <code>java.method.addToInterface</code>
+                       <fullQualifiedClassName>com.acme.ToolInterface</fullyQualifiedClassName>
+                       <new>method void com.acme.ToolInterface::setup()</new>
+                     </item>
+                     <item>
+                       <code>java.method.removed</code>
+                       <fullQualifiedClassName>com.acme.ToolInterface</fullyQualifiedClassName>
+                       <old>method void com.acme.ToolInterface::initialize()</old>
+                       <justification>...</justification>
+                     </item>
+                   </differences>
+                 </revapi.differences>
+
+                 Single justification example:
+
+                 <revapi.differences>
+                   <differences>
+                     <item>
+                       <code>java.method.removed</code>
+                       <old>method void org.xwiki.diff.xml.XMLDiff::xxx()</old>
+                       <justification>Unstable API added by mistake.</justification>
+                       <criticality>highlight</criticality>
+                     </item>
+                   </differences>
+                 </revapi.differences>
             -->
-            
           </analysisConfiguration>
         </configuration>
       </plugin>
