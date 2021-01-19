@@ -355,7 +355,8 @@ class DefaultJobExecutorTest
         waitJobWaiting(jobAB2);
 
         this.executor.execute(jobA1);
-        // We wait a bit to ensure A1 take the lock before A2.
+        // We wait a bit to ensure A1 take the lock on the group before A2.
+        // We cannot use waitJobWaiting since the job itself is not started yet (blocked by previous jobs)
         Thread.sleep(WAIT_VALUE);
         this.executor.execute(jobA2);
 
