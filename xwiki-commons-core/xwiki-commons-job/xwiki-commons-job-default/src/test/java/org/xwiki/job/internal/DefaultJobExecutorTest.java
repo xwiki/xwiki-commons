@@ -356,34 +356,39 @@ class DefaultJobExecutorTest
 
         this.executor.execute(jobA1);
         // We wait a bit to ensure A1 take the lock on the group before A2.
-        // We cannot use waitJobWaiting since the job itself is not started yet (blocked by previous jobs)
+        // FIXME: We cannot use waitJobWaiting since the job itself is not started yet (blocked by previous jobs)
         Thread.sleep(WAIT_VALUE);
         this.executor.execute(jobA2);
 
-        // AB1 and AB2 are taking all locks, A1 and A2 are waiting the lock to be released.
         assertSame(State.WAITING, jobAB1.getStatus().getState());
         assertSame(State.WAITING, jobAB2.getStatus().getState());
+        // AB1 and AB2 are taking all groups locks so A1 and A2 are not started yet
         assertNull(jobA1.getStatus().getState());
         assertNull(jobA2.getStatus().getState());
 
+        // Unlock AB1 and finish it
         jobAB1.unlock();
         waitJobFinished(jobAB1);
-        waitJobWaiting(jobA1);
 
-        // Ensure AB3 doesn't take the lock before A2
+        // We wait a bit to ensure A2 take the lock on the group before AB3.
+        // FIXME: We cannot use waitJobWaiting since the job itself is not started yet (blocked by previous jobs)
+        Thread.sleep(WAIT_VALUE);
         this.executor.execute(jobAB3);
 
-        // AB1 is finished so A1 can start right away but A2 is still waiting
+        // AB1 released a seat so A1 can take it and start
+        waitJobWaiting(jobA1);
+
         assertSame(State.FINISHED, jobAB1.getStatus().getState());
         assertSame(State.WAITING, jobAB2.getStatus().getState());
         assertSame(State.WAITING, jobA1.getStatus().getState());
         assertNull(jobA2.getStatus().getState());
         assertNull(jobAB3.getStatus().getState());
 
+        // Unlock AB2 and finish it
         jobAB2.unlock();
-
-        // Now that AB2 released the lock, A2 can start too
         waitJobFinished(jobAB2);
+
+        // AB2 released a seat so A2 can take it and start
         waitJobWaiting(jobA2);
 
         assertSame(State.FINISHED, jobAB2.getStatus().getState());
@@ -391,13 +396,15 @@ class DefaultJobExecutorTest
         assertSame(State.WAITING, jobA2.getStatus().getState());
         assertNull(jobAB3.getStatus().getState());
 
+        // Unlock A1 and A2 and finish them
         jobA1.unlock();
         jobA2.unlock();
         waitJobFinished(jobA1);
         waitJobFinished(jobA2);
+
+        // There is now enough free seat for AB3 to start
         waitJobWaiting(jobAB3);
 
-        // Now that both A1 and A2 are finished, AB3 can start
         assertSame(State.FINISHED, jobA1.getStatus().getState());
         assertSame(State.FINISHED, jobA2.getStatus().getState());
         assertSame(State.WAITING, jobAB3.getStatus().getState());
