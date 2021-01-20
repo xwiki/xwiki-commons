@@ -26,7 +26,7 @@ import org.xwiki.extension.repository.ExtensionRepository;
  * 
  * @version $Id$
  * @since 12.10.2
- * @since 13.0RC1
+ * @since 13.0
  */
 public interface SearchableExtensionRepository extends ExtensionRepository, Searchable
 {

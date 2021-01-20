@@ -40,7 +40,7 @@ import org.xwiki.observation.event.Event;
  * Set the root Groovy folder in a more accurate location.
  * 
  * @version $Id$
- * @since 13.0RC1
+ * @since 13.0
  * @since 12.10.3
  */
 @Component
