@@ -2694,7 +2694,7 @@
               </keepStagingRepositoryOnCloseRuleFailure>
               <skipLocalStaging>${xwiki.nexus.skipLocalStaging}</skipLocalStaging>
               <skipStaging>${xwiki.nexus.skipStaging}</skipStaging>
-              <stagingProgressTimeoutMinutes>15</stagingProgressTimeoutMinutes>
+              <stagingProgressTimeoutMinutes>60</stagingProgressTimeoutMinutes>
             </configuration>
           </plugin>
         </plugins>
