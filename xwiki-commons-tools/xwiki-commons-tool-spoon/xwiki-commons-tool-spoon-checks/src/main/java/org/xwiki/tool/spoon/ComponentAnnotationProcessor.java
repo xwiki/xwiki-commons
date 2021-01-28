@@ -21,6 +21,7 @@ package org.xwiki.tool.spoon;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -56,6 +57,9 @@ import spoon.reflect.declaration.CtClass;
  *     <li>A - Verify that either {@code @Singleton} or {@code @InstantiationStrategy} are used on any class annotated
  *       with {@code @Component}</li>
  *   </ul></li>
+ *   <li>Check 4<ul>
+ *      <li>A - Verify that the {@code components.txt} ends with a line return character.</li>
+ *    </ul></li>
  * </ul>
  *
  * @version $Id$
@@ -192,6 +196,20 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
         this.resolvedComponentsTxtPath = getComponentsTxtPath(ctClass);
         if (Files.exists(this.resolvedComponentsTxtPath)) {
             this.componentsDeclarationLocation = this.resolvedComponentsTxtPath.toString();
+            String ioExceptionMessage = String.format("Failed to read the [%s] file", this.resolvedComponentsTxtPath);
+
+            // Check that last character of the file is line carriage.
+            try (RandomAccessFile accessFile = new RandomAccessFile(this.resolvedComponentsTxtPath.toFile(), "r")) {
+                long length = accessFile.length();
+                accessFile.seek(length - 1);
+                int lastChar = accessFile.read();
+                if (lastChar != '\n') {
+                    registerError(String.format("Missing final blank line in [%s]. Last character is [%s].",
+                        this.resolvedComponentsTxtPath.toAbsolutePath(), (char) lastChar));
+                }
+            } catch (IOException e) {
+                throw new SpoonException(ioExceptionMessage, e);
+            }
             try (Stream<String> stream = Files.lines(this.resolvedComponentsTxtPath)) {
                 stream.forEach((line) -> {
                     // Make sure we don't include empty lines
@@ -217,8 +235,7 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
                     }
                 });
             } catch (IOException e) {
-                throw new SpoonException(
-                    String.format("Failed to read the [%s] file", this.resolvedComponentsTxtPath), e);
+                throw new SpoonException(ioExceptionMessage, e);
             }
         } else {
             // Check 1-A
