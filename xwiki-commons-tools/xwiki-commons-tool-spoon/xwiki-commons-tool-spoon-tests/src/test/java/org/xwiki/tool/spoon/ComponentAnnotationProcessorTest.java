@@ -42,6 +42,7 @@ public class ComponentAnnotationProcessorTest
     {
         Throwable exception = assertThrows(SpoonException.class, () -> run());
         assertThat(exception.getMessage(), matchesPattern("\\QThe following errors were found:\\E\n"
+            + "\\Q- Missing final blank line in [\\E.*\\Q]. Last character is [n].\\E\n"
             + "\\Q- Component [org.xwiki.tool.spoon.component.ComponentAnnotationWithOverrideAndDeclared] is "
                 + "registered several times in [\\E.*\\Q]\\E\n"
             + "\\Q- Component class [org.xwiki.tool.spoon.component.ComponentAnnotationWithoutSingletonOrInstantation"

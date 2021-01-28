@@ -23,9 +23,6 @@
       <property name="currentVersion" value="${currentVersion}" default=""/>
     </module>
 
-    <!-- Verify that components.txt is in sync with @Component annotations -->
-    <module name="org.xwiki.tool.checkstyle.ComponentAnnotationCheck"/>
-
     <!-- Verify that @since javadoc tags don't define several versions -->
     <module name="org.xwiki.tool.checkstyle.SinceFormatCheck"/>
 
