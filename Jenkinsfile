@@ -91,11 +91,12 @@ stage ('Commons Builds') {
           goals = 'clean install jacoco:report sonar:sonar'
           profiles = 'quality,legacy,coverage'
           properties = '-Dxwiki.jacoco.itDestFile=`pwd`/target/jacoco-it.exec'
-          sonar = true
+    			// TODO: 1/2/2021: Also disabled because sonarcloud.io now requires that XWiki be built with Java to work.
+		    	// See https://jira.xwiki.org/browse/XCOMMONS-2120
+          sonar = false
           javadoc = false
         }
       }
-    }
   )
 }
 
