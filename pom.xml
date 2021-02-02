@@ -2490,7 +2490,7 @@
           <groupId>com.github.blutorange</groupId>
           <artifactId>closure-compiler-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.19.0</version>
+          <version>2.20.0</version>
           <configuration>
             <skip>${xwiki.minification.skip}</skip>
             <sourceDir>resources</sourceDir>
