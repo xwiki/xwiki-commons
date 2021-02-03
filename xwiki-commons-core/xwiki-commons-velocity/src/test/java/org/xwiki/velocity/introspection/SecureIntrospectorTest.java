@@ -21,7 +21,10 @@ package org.xwiki.velocity.introspection;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.slf4j.Logger;
@@ -76,5 +79,18 @@ class SecureIntrospectorTest
             new String[] { "java.util.ArrayList" }, new String[] {}, this.logger);
         assertTrue(secureIntrospector.checkObjectExecutePermission(File.class, "toString"));
         assertFalse(secureIntrospector.checkObjectExecutePermission(ArrayList.class, "toString"));
+    }
+
+    @Test
+    void whiteListMethodAreStoredLowercase()
+    {
+        SecureIntrospector secureIntrospector = new SecureIntrospector(new String[] {}, new String[] {}, this.logger);
+        Map<Class, Set<String>> whitelistedMethods = secureIntrospector.getWhitelistedMethods();
+
+        for (Map.Entry<Class, Set<String>> classSetEntry : whitelistedMethods.entrySet()) {
+            for (String methodName : classSetEntry.getValue()) {
+                assertTrue(StringUtils.isAllLowerCase(methodName));
+            }
+        }
     }
 }
