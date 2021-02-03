@@ -20,7 +20,6 @@
 package org.xwiki.velocity.introspection;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -56,9 +55,9 @@ public class SecureIntrospector extends SecureIntrospectorImpl
 
     private void prepareWhitelistClass()
     {
-        Set<String> whitelist = new HashSet<>(Arrays.asList(
+        Set<String> whitelist = prepareSet(
             GETNAME,
-            "getsimpleName",
+            "getsimplename",
             "isarray",
             "isassignablefrom",
             "isenum",
@@ -69,13 +68,13 @@ public class SecureIntrospector extends SecureIntrospectorImpl
             "isprimitive",
             "issynthetic",
             "getenumconstants"
-        ));
+        );
         this.whitelistedMethods.put(Class.class, whitelist);
     }
 
     private void prepareWhiteListFile()
     {
-        Set<String> whitelist = new HashSet<>(Arrays.asList(
+        Set<String> whitelist = prepareSet(
             "canexecute",
             "canread",
             "canwrite",
@@ -105,8 +104,27 @@ public class SecureIntrospector extends SecureIntrospectorImpl
             "touri",
             "tourl",
             "getclass"
-        ));
+        );
         this.whitelistedMethods.put(File.class, whitelist);
+    }
+
+    /**
+     * @return a copy of the whitelisted methods used in this introspector.
+     */
+    protected Map<Class, Set<String>> getWhitelistedMethods()
+    {
+        return new HashMap<>(this.whitelistedMethods);
+    }
+
+    private static Set<String> prepareSet(String... methodNames)
+    {
+        Set<String> result = new HashSet<>();
+        if (methodNames != null) {
+            for (String methodName : methodNames) {
+                result.add(methodName.toLowerCase());
+            }
+        }
+        return result;
     }
 
     @Override
