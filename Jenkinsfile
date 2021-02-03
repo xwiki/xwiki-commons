@@ -97,6 +97,7 @@ stage ('Commons Builds') {
           javadoc = false
         }
       }
+		}
   )
 }
 
