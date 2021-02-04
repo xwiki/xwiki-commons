@@ -95,8 +95,8 @@ stage ('Commons Builds') {
           goals = 'clean install jacoco:report'
           profiles = 'quality,legacy,coverage'
           properties = '-Dxwiki.jacoco.itDestFile=`pwd`/target/jacoco-it.exec'
-    			// TODO: 1/2/2021: Disabled upload to sonarcloud.io since also requires that XWiki be built with Java 11
-    			// When fixed, put back:
+          // TODO: 1/2/2021: Disabled upload to sonarcloud.io since also requires that XWiki be built with Java 11
+          // When fixed, put back:
           //  sonar = true
           sonar = false
           javadoc = false
