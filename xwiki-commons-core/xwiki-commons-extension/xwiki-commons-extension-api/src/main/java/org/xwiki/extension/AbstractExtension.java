@@ -341,8 +341,8 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public void addExtensionFeature(ExtensionId feature)
     {
-        Map<String, ExtensionId> map = this.featuresMap != null
-            ? new LinkedHashMap<>(this.featuresMap) : new LinkedHashMap<>();
+        Map<String, ExtensionId> map =
+            this.featuresMap != null ? new LinkedHashMap<>(this.featuresMap) : new LinkedHashMap<>();
         map.put(feature.getId(), feature);
 
         setFeatureMap(map);
@@ -477,8 +477,8 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public void addAllowedNamespace(String namespace)
     {
-        Set<String> newNamespaces = this.allowedNamespaces != null ? new LinkedHashSet<>(this.allowedNamespaces)
-            : new LinkedHashSet<>();
+        Set<String> newNamespaces =
+            this.allowedNamespaces != null ? new LinkedHashSet<>(this.allowedNamespaces) : new LinkedHashSet<>();
         newNamespaces.add(namespace);
 
         this.allowedNamespaces = Collections.unmodifiableSet(newNamespaces);
@@ -637,8 +637,7 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public void addRepository(ExtensionRepositoryDescriptor repository)
     {
-        List<ExtensionRepositoryDescriptor> newrepositories =
-            new ArrayList<>(getRepositories());
+        List<ExtensionRepositoryDescriptor> newrepositories = new ArrayList<>(getRepositories());
         newrepositories.add(repository);
 
         this.repositories = Collections.unmodifiableList(newrepositories);
@@ -665,11 +664,15 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public void putProperty(String key, Object value)
     {
-        synchronized (this.propertiesLock) {
+        try {
+            this.propertiesLock.lock();
+
             Map<String, Object> newProperties = new LinkedHashMap<>(getProperties());
             newProperties.put(key, value);
 
             this.properties = Collections.unmodifiableMap(newProperties);
+        } finally {
+            this.propertiesLock.unlock();
         }
     }
 
@@ -687,11 +690,15 @@ public abstract class AbstractExtension implements MutableExtension
     {
         T previous;
 
-        synchronized (this.propertiesLock) {
+        try {
+            this.propertiesLock.lock();
+
             Map<String, Object> newProperties = new LinkedHashMap<>(getProperties());
             previous = (T) newProperties.remove(key);
 
             this.properties = Collections.unmodifiableMap(newProperties);
+        } finally {
+            this.propertiesLock.unlock();
         }
 
         return previous;
