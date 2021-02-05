@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -162,6 +163,27 @@ public class DefaultInstalledExtensionTest
         this.installedExtension.setNamespaces(Arrays.asList("namespace3"));
 
         assertEquals(Arrays.asList("namespace3"), new ArrayList<>(this.installedExtension.getNamespaces()));
+    }
+
+    @Test
+    void namespaceThreadSafe()
+    {
+        this.installedExtension.setNamespaces(Arrays.asList("namespace1", "namespace2", "namespace3"));
+
+        assertEquals(Arrays.asList("namespace1", "namespace2", "namespace3"),
+            new ArrayList<>(this.installedExtension.getNamespaces()));
+
+        Iterator<String> it = this.installedExtension.getNamespaces().iterator();
+
+        this.installedExtension.setInstalled(false, "namespace2");
+
+        assertEquals(Arrays.asList("namespace1", "namespace3"),
+            new ArrayList<>(this.installedExtension.getNamespaces()));
+
+        // Make sure the iterator is manipulating older namespaces
+        assertEquals("namespace1", it.next());
+        assertEquals("namespace2", it.next());
+        assertEquals("namespace3", it.next());
     }
 
     @Test

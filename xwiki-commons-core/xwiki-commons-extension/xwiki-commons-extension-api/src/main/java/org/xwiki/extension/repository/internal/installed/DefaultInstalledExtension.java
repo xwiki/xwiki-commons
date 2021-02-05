@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -200,14 +201,17 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
                 putProperty(PKEY_ROOT_NAMESPACE, isInstalled() ? new HashMap<String, Object>() : null);
                 putProperty(PKEY_NAMESPACES, null);
             } else {
-                putProperty(PKEY_ROOT_NAMESPACE, null);
-                Map<String, Map<String, Object>> installedNamespaces =
-                    new ConcurrentHashMap<>();
-                putProperty(PKEY_NAMESPACES, installedNamespaces);
+                // Create new namespaces
+                Map<String, Map<String, Object>> installedNamespaces = new LinkedHashMap<>();
                 for (String namespace : namespaces) {
-                    Map<String, Object> namespaceData = new HashMap<>();
-                    namespaceData.put(PKEY_NAMESPACES_NAMESPACE, namespace);
-                    installedNamespaces.put(namespace, namespaceData);
+                    createNamespace(installedNamespaces, namespace);
+                }
+
+                synchronized (this.propertiesLock) {
+                    // Reset root namespace metadata
+                    putProperty(PKEY_ROOT_NAMESPACE, null);
+                    // Replace current namespaces
+                    putProperty(PKEY_NAMESPACES, installedNamespaces);
                 }
             }
         } finally {
@@ -215,6 +219,15 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
         }
 
         this.namespacesCache = null;
+    }
+
+    private Map<String, Object> createNamespace(Map<String, Map<String, Object>> installedNamespaces, String namespace)
+    {
+        Map<String, Object> namespaceData = new ConcurrentHashMap<>();
+        namespaceData.put(PKEY_NAMESPACES_NAMESPACE, namespace);
+        installedNamespaces.put(namespace, namespaceData);
+
+        return namespaceData;
     }
 
     /**
@@ -274,10 +287,13 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
                     addNamespace(namespace);
                 } else {
                     Map<String, Map<String, Object>> installedNamespaces = getInstalledNamespaces();
-                    if (installedNamespaces != null) {
-                        installedNamespaces.remove(namespace);
 
-                        if (getNamespaces().isEmpty()) {
+                    if (installedNamespaces != null) {
+                        removeNamespace(installedNamespaces, namespace);
+
+                        // Update general installed tag
+                        installedNamespaces = getInstalledNamespaces();
+                        if (installedNamespaces != null && installedNamespaces.isEmpty()) {
                             setInstalled(false);
                             setNamespaces(null);
                         }
@@ -339,8 +355,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      */
     public void setValid(String namespace, boolean valid)
     {
-        Map<String, Boolean> validMap =
-            this.valid != null ? new HashMap<>(this.valid) : new HashMap<>();
+        Map<String, Boolean> validMap = this.valid != null ? new HashMap<>(this.valid) : new HashMap<>();
         validMap.put(namespace, valid);
 
         this.valid = validMap;
@@ -392,17 +407,15 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
         try {
             this.propertiesLock.lock();
 
-            // Can't use ConcurrentHashMap because we have null key (root namespace)
             Map<String, Map<String, Object>> newNamespaces;
             if (namespaces != null) {
-                newNamespaces = new HashMap<>(namespaces);
+                newNamespaces = new LinkedHashMap<>(namespaces);
             } else {
-                newNamespaces = new HashMap<>();
+                newNamespaces = new LinkedHashMap<>();
             }
 
             // Create the map for the namespace
-            Map<String, Object> installedNamespace = new ConcurrentHashMap<>();
-            newNamespaces.put(namespace, installedNamespace);
+            Map<String, Object> installedNamespace = createNamespace(newNamespaces, namespace);
 
             // Set the new map of properties
             putProperty(PKEY_NAMESPACES, newNamespaces);
@@ -411,6 +424,33 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
             this.namespacesCache = null;
 
             return installedNamespace;
+        } finally {
+            this.propertiesLock.unlock();
+        }
+    }
+
+    private void removeNamespace(Map<String, Map<String, Object>> namespaces, String namespace)
+    {
+        try {
+            this.propertiesLock.lock();
+
+            Map<String, Map<String, Object>> newNamespaces;
+            if (namespaces != null) {
+                newNamespaces = new LinkedHashMap<>(namespaces.size());
+                for (Map.Entry<String, Map<String, Object>> entry : namespaces.entrySet()) {
+                    if (!namespace.equals(entry.getKey())) {
+                        newNamespaces.put(entry.getKey(), entry.getValue());
+                    }
+                }
+            } else {
+                newNamespaces = new LinkedHashMap<>();
+            }
+
+            // Set the new map of properties
+            putProperty(PKEY_NAMESPACES, newNamespaces);
+
+            // Reset the cache
+            this.namespacesCache = null;
         } finally {
             this.propertiesLock.unlock();
         }
