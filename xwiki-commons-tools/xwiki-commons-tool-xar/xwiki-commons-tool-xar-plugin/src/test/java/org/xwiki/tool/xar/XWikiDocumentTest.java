@@ -24,13 +24,15 @@ import org.junit.jupiter.api.Test;
 import org.xwiki.tool.xar.internal.XWikiDocument;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link XWikiDocument}.
  *
  * @version $Id$
  */
-public class XWikiDocumentTest
+class XWikiDocumentTest
 {
     private void assertReferenceFromNameSpace(String reference, String space, String name) throws DocumentException
     {
@@ -38,6 +40,18 @@ public class XWikiDocumentTest
         xdocument.fromXML("<xwikidoc><web>" + space + "</web><name>" + name + "</name></xwikidoc>");
 
         assertEquals(reference, xdocument.getReference());
+    }
+
+    @Test
+    void objectPresent() throws DocumentException
+    {
+        XWikiDocument xdocument = new XWikiDocument();
+
+        xdocument.fromXML("<xwikidoc><web>space</web><name>name</name><object></object></xwikidoc>");
+        assertTrue(xdocument.isObjectPresent());
+
+        xdocument.fromXML("<xwikidoc><web>space</web><name>name</name></xwikidoc>");
+        assertFalse(xdocument.isObjectPresent());
     }
 
     @Test
