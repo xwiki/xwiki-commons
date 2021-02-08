@@ -139,19 +139,24 @@ public class XWikiDocument
     private List<String> translationVisibilities = new ArrayList<>();
 
     /**
-     * @see #datePresent()
+     * @see #isDatePresent()
      */
     private boolean datePresent;
 
     /**
-     * @see #contentUpdateDatePresent()
+     * @see #isContentUpdateDatePresent()
      */
     private boolean contentUpdateDatePresent;
 
     /**
-     * @see #creationDatePresent()
+     * @see #isCreationDatePresent()
      */
     private boolean creationDatePresent;
+
+    /**
+     * @see #isObjectPresent()
+     */
+    private boolean objectPresent;
 
     /**
      * @see #isAttachmentDatePresent()
@@ -220,6 +225,7 @@ public class XWikiDocument
         this.datePresent = isElementPresent(rootElement, "date");
         this.contentUpdateDatePresent = isElementPresent(rootElement, "contentUpdateDate");
         this.creationDatePresent = isElementPresent(rootElement, "creationDate");
+        this.objectPresent = isElementPresent(rootElement, "object");
         this.attachmentDatePresent = rootElement.selectSingleNode("//attachment/date") != null;
 
         // Does this document contain a XWiki.TranslationDocumentClass xobject?
@@ -552,11 +558,29 @@ public class XWikiDocument
 
     /**
      * @return {@code true} if the creationDate field is present; false otherwise
-     * @since 10.8RC1
+     * @since 13.1RC1
      */
-    public boolean isCreationeDatePresent()
+    public boolean isCreationDatePresent()
     {
         return creationDatePresent;
+    }
+
+    /**
+     * @return {@code true} if there is object(s) in the document; false otherwise
+     * @since 13.1RC1
+     */
+    public boolean isObjectPresent()
+    {
+        return objectPresent;
+    }
+
+    /**
+     * @return {@code true} if there is attachment(s) in the document; false otherwise
+     * @since 13.1RC1
+     */
+    public boolean isAttachmentPresent()
+    {
+        return !attachmentData.isEmpty();
     }
 
     /**
