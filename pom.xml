@@ -77,8 +77,8 @@
 
     <!-- JUnit -->
     <junit.version>4.13.1</junit.version>
-    <junit5.version>5.7.0</junit5.version>
-    <junit.platform.version>1.7.0</junit.platform.version>
+    <junit5.version>5.7.1</junit5.version>
+    <junit.platform.version>1.7.1</junit.platform.version>
     <junit.vintage.version>${junit5.version}</junit.vintage.version>
 
     <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
