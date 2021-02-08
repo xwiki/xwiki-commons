@@ -52,8 +52,8 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  *   <li>ensure that Translations pages are using the plain/1.0 syntax</li>
  *   <li>ensure that Translations pages don't have a GLOBAL or USER visibility (USER makes no sense and GLOBAL would
  *       require Programming Rights, which is an issue in farm-based use cases)</li>
- *   <li>ensure that Translations pages don't contain attachments</li>
- *   <li>ensure that Translations pages don't contain objects</li>
+ *   <li>ensure that translated pages don't contain attachments</li>
+ *   <li>ensure that translated pages don't contain objects</li>
  *   <li>ensure that attachments have a mimetype set. If the mimetype is missing then the attachment won't be
  *       filterable in the attachment view in Page Index.</li>
  * </ul>
@@ -201,13 +201,13 @@ public class VerifyMojo extends AbstractVerifyMojo
                 }
             }
 
-            // Verification 12: Translations pages don't contain attachment(s)
+            // Verification 12: Translated pages don't contain attachment(s)
             if (!xdoc.getLocale().isEmpty() && xdoc.isAttachmentPresent()) {
                 errors.add(String.format("[%s] ([%s]) translated page contains attachment(s)", file.getName(),
                     xdoc.getReference()));
             }
 
-            // Verification 13: Translations pages don't contain object(s)
+            // Verification 13: Translated pages don't contain object(s)
             if (!xdoc.getLocale().isEmpty() && xdoc.isObjectPresent()) {
                 errors.add(String.format("[%s] ([%s]) translated page contains object(s)", file.getName(),
                     xdoc.getReference()));
