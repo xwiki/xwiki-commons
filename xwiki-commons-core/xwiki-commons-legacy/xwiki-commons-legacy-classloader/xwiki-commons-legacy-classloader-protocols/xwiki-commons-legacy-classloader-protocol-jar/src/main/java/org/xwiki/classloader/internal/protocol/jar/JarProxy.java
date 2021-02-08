@@ -228,11 +228,7 @@ public class JarProxy implements JarURLConnection.JarOpener
         @Override
         protected void finalize() throws IOException
         {
-            try {
-                closeCachedFile();
-            } finally {
-                super.finalize();
-            }
+            closeCachedFile();
         }
 
         protected void closeCachedFile() throws IOException
