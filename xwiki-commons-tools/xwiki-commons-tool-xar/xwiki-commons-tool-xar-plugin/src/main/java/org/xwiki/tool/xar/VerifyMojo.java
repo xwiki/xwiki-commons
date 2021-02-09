@@ -202,13 +202,13 @@ public class VerifyMojo extends AbstractVerifyMojo
             }
 
             // Verification 12: Translated pages don't contain any attachment
-            if (!xdoc.getLocale().isEmpty() && xdoc.isAttachmentPresent()) {
+            if (StringUtils.isNotEmpty(xdoc.getLocale()) && xdoc.isAttachmentPresent()) {
                 errors.add(String.format("[%s] ([%s]) translated page contains attachment(s)", file.getName(),
                     xdoc.getReference()));
             }
 
             // Verification 13: Translated pages don't contain any object
-            if (!xdoc.getLocale().isEmpty() && xdoc.isObjectPresent()) {
+            if (StringUtils.isNotEmpty(xdoc.getLocale()) && xdoc.isObjectPresent()) {
                 errors.add(String.format("[%s] ([%s]) translated page contains object(s)", file.getName(),
                     xdoc.getReference()));
             }
