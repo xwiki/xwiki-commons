@@ -112,7 +112,7 @@ public class ExtensionAuthorConverter extends AbstractConverter<ExtensionAuthor>
     {
         String valueString = value;
 
-        int index = valueString.lastIndexOf('/');
+        int index = valueString.indexOf('/');
         String name;
         String url;
         if (index > 0 && index < end) {
