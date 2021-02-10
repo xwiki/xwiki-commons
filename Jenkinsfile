@@ -91,7 +91,7 @@ stage ('Commons Builds') {
           goals = 'clean install jacoco:report sonar:sonar'
           profiles = 'quality,legacy,coverage'
           // Note: We specify the "jvm" system property to to execute the tests with Java 8 in order to limit problems
-          // with more recent versions of Jaba. In the future, we'll need to be able to also execute the tests with
+          // with more recent versions of Java. In the future, we'll need to be able to also execute the tests with
           // Java 14+. Remove that when we support it. See for example https://jira.xwiki.org/browse/XCOMMONS-2136
           properties = '-Dxwiki.jacoco.itDestFile=`pwd`/target/jacoco-it.exec -Djvm=/home/hudsonagent/java8/bin/java'
           sonar = true
