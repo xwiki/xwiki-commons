@@ -2362,6 +2362,8 @@
             <maxmemory>1024m</maxmemory>
             <!-- Enable all doclint checks by default -->
             <doclint>all</doclint>
+            <!-- Specify the version of the code so that it doesn't depend on the Java version used to build XWiki -->
+            <source>8</source>
           </configuration>
         </plugin>
         <!-- We don't use site plugin but we org.apache.maven.plugins.enforcer.RequirePluginVersions enforcer rule
