@@ -222,7 +222,7 @@ public class XARMojo extends AbstractXARMojo
                                 document = xmlDocument;
                             } else {
                                 List<Element> siblings = parent.elements();
-                                siblings.set(parent.indexOf(node), xmlElement);
+                                siblings.set(siblings.indexOf(node), xmlElement);
                             }
                             break;
 
