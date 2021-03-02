@@ -221,6 +221,10 @@ public class XARMojo extends AbstractXARMojo
                             if (parent == null) {
                                 document = xmlDocument;
                             } else {
+                                // this is the method we use to replace the child and it seems to be
+                                // the canonical way in dom4j (for which a manipulation on a collection
+                                // is a manipulation of the XML tree: We manipulate the elements' list
+                                // by setting the child at the position where it was found.
                                 List<Element> siblings = parent.elements();
                                 siblings.set(siblings.indexOf(node), xmlElement);
                             }
