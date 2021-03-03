@@ -211,6 +211,9 @@ public class XARMojoTest extends AbstractMojoTest
 
         assertTrue(document.selectSingleNode("/xwikidoc/attachment/content") != null,
             "Insertion of attachment did not happen?");
+
+        assertTrue(document.selectSingleNode("//insertHereBlogXWikiClass") == null,
+                "Replacement of insertHereBlogXWikiClass did not happen?");
     }
 
     @Test
