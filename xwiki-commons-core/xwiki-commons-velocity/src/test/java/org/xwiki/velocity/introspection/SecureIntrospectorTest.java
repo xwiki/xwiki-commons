@@ -26,8 +26,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.slf4j.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -39,9 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class SecureIntrospectorTest
 {
-    @Mock
-    private Logger logger;
-
     class CustomFile extends File
     {
         public CustomFile(String s)
@@ -53,14 +48,14 @@ class SecureIntrospectorTest
     @Test
     void checkObjectExecutePermissionWithClass()
     {
-        SecureIntrospector secureIntrospector = new SecureIntrospector(new String[] {}, new String[] {}, this.logger);
+        SecureIntrospector secureIntrospector = new SecureIntrospector(new String[] {}, new String[] {}, null);
         assertTrue(secureIntrospector.checkObjectExecutePermission(Class.class, "isLocalClass"));
     }
 
     @Test
     void checkObjectExecutePermissionWithFile()
     {
-        SecureIntrospector secureIntrospector = new SecureIntrospector(new String[] {}, new String[] {}, this.logger);
+        SecureIntrospector secureIntrospector = new SecureIntrospector(new String[] {}, new String[] {}, null);
         assertTrue(secureIntrospector.checkObjectExecutePermission(File.class, "toString"));
         assertFalse(secureIntrospector.checkObjectExecutePermission(File.class, "mkdir"));
 
@@ -76,7 +71,7 @@ class SecureIntrospectorTest
     void checkObjectExecutePermissionBlacklistedClass()
     {
         SecureIntrospector secureIntrospector = new SecureIntrospector(
-            new String[] { "java.util.ArrayList" }, new String[] {}, this.logger);
+            new String[] { "java.util.ArrayList" }, new String[] {}, null);
         assertTrue(secureIntrospector.checkObjectExecutePermission(File.class, "toString"));
         assertFalse(secureIntrospector.checkObjectExecutePermission(ArrayList.class, "toString"));
     }
@@ -84,7 +79,7 @@ class SecureIntrospectorTest
     @Test
     void whiteListMethodAreStoredLowercase()
     {
-        SecureIntrospector secureIntrospector = new SecureIntrospector(new String[] {}, new String[] {}, this.logger);
+        SecureIntrospector secureIntrospector = new SecureIntrospector(new String[] {}, new String[] {}, null);
         Map<Class, Set<String>> whitelistedMethods = secureIntrospector.getWhitelistedMethods();
 
         for (Map.Entry<Class, Set<String>> classSetEntry : whitelistedMethods.entrySet()) {
