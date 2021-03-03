@@ -213,7 +213,7 @@ public class XARMojoTest extends AbstractMojoTest
             "Insertion of attachment did not happen?");
 
         assertTrue(document.selectSingleNode("//insertHereBlogXWikiClass") == null,
-                "Replacement of insertHereBlogXWikiClass did not happen?");
+             "Replacement of insertHereBlogXWikiClass did not happen?");
     }
 
     @Test
