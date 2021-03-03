@@ -100,6 +100,10 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
 {
     private static final ComponentAnnotationLoader LOADER = new ComponentAnnotationLoader();
 
+    private static final String COMPONENT_MANAGER = "componentManager";
+
+    private static final String MOCKITO_AUTOCLOSEABLE = "mockitoAutoCloseable";
+
     @Override
     public void beforeEach(ExtensionContext context) throws Exception
     {
@@ -178,7 +182,7 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
         // need the field to be non-null when this line executes or otherwise Mockito will not inject anything...
         // Also note that all fields annotated with @InjectMocks will have their fields replaced by all mocks found
         // in the test class.
-        MockitoAnnotations.initMocks(testInstance);
+        saveMockitoAutoCloseable(context, MockitoAnnotations.openMocks(testInstance));
     }
 
     protected void processInjectMockComponents(Object testInstance, Field field, InjectMockComponents annotation,
@@ -225,6 +229,8 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
         if (mcm != null) {
             mcm.dispose();
         }
+        // Cleanup Mockito
+        loadMockitoAutoCloseable(extensionContext).close();
     }
 
     @Override
@@ -316,27 +322,37 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
 
     protected MockitoComponentManager loadComponentManager(ExtensionContext context)
     {
-        ExtensionContext.Store store = getGlobalRootStore(context);
-        Class<?> testClass = context.getRequiredTestClass();
-        return store.get(testClass, MockitoComponentManager.class);
+        ExtensionContext.Store store = getStore(context);
+        return store.get(COMPONENT_MANAGER, MockitoComponentManager.class);
     }
 
     private void removeComponentManager(ExtensionContext context)
     {
-        ExtensionContext.Store store = getGlobalRootStore(context);
-        Class<?> testClass = context.getRequiredTestClass();
-        store.remove(testClass);
+        ExtensionContext.Store store = getStore(context);
+        store.remove(COMPONENT_MANAGER);
     }
 
     private void saveComponentManager(ExtensionContext context, MockitoComponentManager componentManager)
     {
-        ExtensionContext.Store store = getGlobalRootStore(context);
-        Class<?> testClass = context.getRequiredTestClass();
-        store.put(testClass, componentManager);
+        ExtensionContext.Store store = getStore(context);
+        store.put(COMPONENT_MANAGER, componentManager);
     }
 
-    private static ExtensionContext.Store getGlobalRootStore(ExtensionContext context)
+    private AutoCloseable loadMockitoAutoCloseable(ExtensionContext context)
     {
-        return context.getRoot().getStore(Namespace.GLOBAL);
+        ExtensionContext.Store store = getStore(context);
+        return store.get(MOCKITO_AUTOCLOSEABLE, AutoCloseable.class);
+    }
+
+    private void saveMockitoAutoCloseable(ExtensionContext context, AutoCloseable mockitoAutoCloseable)
+    {
+        ExtensionContext.Store store = getStore(context);
+        store.put(MOCKITO_AUTOCLOSEABLE, mockitoAutoCloseable);
+    }
+
+    private static ExtensionContext.Store getStore(ExtensionContext context)
+    {
+        return context.getStore(Namespace.create(MockitoComponentManagerExtension.class,
+            context.getRequiredTestMethod()));
     }
 }
