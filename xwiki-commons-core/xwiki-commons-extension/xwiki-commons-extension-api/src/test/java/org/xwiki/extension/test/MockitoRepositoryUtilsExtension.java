@@ -26,8 +26,15 @@ import javax.inject.Inject;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.xwiki.component.util.ReflectionUtils;
-import org.xwiki.test.mockito.MockitoComponentManager;
 
+import static org.xwiki.test.junit5.mockito.MockitoComponentManagerExtension.loadComponentManager;
+
+/**
+ * Must be used after the {@link org.xwiki.test.junit5.mockito.MockitoComponentManagerExtension} since it relies on
+ * the ComponentManager being set up and saved in the Extension Context Store.
+ *
+ * @version $Id$
+ */
 public class MockitoRepositoryUtilsExtension implements BeforeEachCallback
 {
     @Override
@@ -45,17 +52,5 @@ public class MockitoRepositoryUtilsExtension implements BeforeEachCallback
                 ReflectionUtils.setFieldValue(testInstance, field.getName(), utils);
             }
         }
-    }
-
-    protected MockitoComponentManager loadComponentManager(ExtensionContext context)
-    {
-        ExtensionContext.Store store = getGlobalRootStore(context);
-        Class<?> testClass = context.getRequiredTestClass();
-        return store.get(testClass, MockitoComponentManager.class);
-    }
-
-    private static ExtensionContext.Store getGlobalRootStore(ExtensionContext context)
-    {
-        return context.getRoot().getStore(ExtensionContext.Namespace.GLOBAL);
     }
 }
