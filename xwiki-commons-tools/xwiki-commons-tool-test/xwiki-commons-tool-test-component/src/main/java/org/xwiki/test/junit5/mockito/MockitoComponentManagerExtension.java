@@ -320,7 +320,11 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
         return !role.equals(InjectMockComponents.class);
     }
 
-    protected MockitoComponentManager loadComponentManager(ExtensionContext context)
+    /**
+     * @param context the test execution context, used to get the context store
+     * @return the MockitoComponentManager found in the context store
+     */
+    public static MockitoComponentManager loadComponentManager(ExtensionContext context)
     {
         ExtensionContext.Store store = getStore(context);
         return store.get(COMPONENT_MANAGER, MockitoComponentManager.class);
@@ -350,7 +354,11 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
         store.put(MOCKITO_AUTOCLOSEABLE, mockitoAutoCloseable);
     }
 
-    private static ExtensionContext.Store getStore(ExtensionContext context)
+    /**
+     * @param context the test execution context, used to get the context store
+     * @return an extension context store for the currently running test
+     */
+    public static ExtensionContext.Store getStore(ExtensionContext context)
     {
         return context.getStore(Namespace.create(MockitoComponentManagerExtension.class,
             context.getRequiredTestMethod()));
