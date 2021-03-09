@@ -165,7 +165,18 @@
               </item>
             </revapi.ignore>
             -->
-            
+            <revapi.ignore>
+              <item>
+                <code>java.method.removed</code>
+                <old>method java.lang.String org.apache.velocity.tools.generic.ComparisonDateTool::toString(long, int, int, boolean, java.util.Locale) @ org.xwiki.velocity.tools.ComparisonDateTool</old>
+                <justification>Not a breakage for scripts</justification>
+              </item>
+              <item>
+                <code>java.method.removed</code>
+                <old>method java.lang.String org.apache.velocity.tools.generic.ComparisonDateTool::toString(long, int, boolean, java.util.Locale) @ org.xwiki.velocity.tools.ComparisonDateTool</old>
+                <justification>Not a breakage for scripts</justification>
+              </item>
+            </revapi.ignore>
           </analysisConfiguration>
         </configuration>
       </plugin>
