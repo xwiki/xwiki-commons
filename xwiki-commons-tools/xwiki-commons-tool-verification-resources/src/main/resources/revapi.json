@@ -1,24 +1,40 @@
 [
   {
-    "extension": "revapi.java",
+    "extension": "revapi.filter",
     "configuration": {
-      "filter": {
-        "packages": {
-          "regex": true,
-          // Note that we currently don't include non-XWiki classes in the checks, the reason being that
-          // third-party deps break backward-compat or source compat all the time and we would need to have
-          // excludes all the time. So we currently trust them that the breakages are not real breakages
-          // that will affect us. We should probably improve this in the future.
-          "include": [
-            "org\\.xwiki\\..*",
-            "com\\.xpn\\.xwiki\\..*"
-          ],
-          "exclude": [
-            "org\\.xwiki\\..*\\.internal(\\..*)?",
-            "org\\.xwiki\\..*\\.test(\\..*)?",
-            "com\\.xpn\\.xwiki\\.internal(\\..*)?"
-          ]
-        }
+      "elements" : {
+        // Note that we currently don't include non-XWiki classes in the checks, the reason being that
+        // third-party deps break backward-compat or source compat all the time and we would need to have
+        // excludes all the time. So we currently trust them that the breakages are not real breakages
+        // that will affect us. We should probably improve this in the future.
+        "include": [
+          {
+            "matcher": "java",
+            "match": "type ^org.xwiki.** {}"
+          },
+          {
+            "matcher": "java",
+            "match": "type ^com.xpn.xwiki.** {}"
+          }
+        ],
+        "exclude": [
+          {
+            "matcher": "java",
+            "match": "type ^org.xwiki.**.internal.** {}"
+          },
+          {
+            "matcher": "java",
+            "match": "type ^org.xwiki.**.test.** {}"
+          },
+          {
+            "matcher": "java",
+            "match": "type ^com.xpn.xwiki.**.internal.** {}"
+          },
+          {
+            "matcher": "java",
+            "match": "@org.xwiki.stability.Unstable ^*;"
+          }
+        ]
       }
     }
   },
@@ -26,29 +42,22 @@
     "extension": "revapi.ignore",
     "configuration": [
       {
-        "code": "java.annotation.removed",
-        "annotationType": "org.xwiki.stability.Unstable",
-        "justification": "These are marker annotations that have no semantical consequences."
-      },
-      {
-        "code": "java.annotation.added",
-        "annotationType": "org.xwiki.stability.Unstable",
-        "justification": "Not a breakage. Indicates API readiness only and has no semantic consequences."
-      },
-      {
-        "code": "java.annotation.added",
-        "annotationType": "java.lang.SafeVarargs",
+        "regex": true,
+        "ignore": true,
+        "code": "java.annotation.(added|removed)",
+        "annotationType": "java\\.lang\\.SafeVarargs",
         "justification": "Not a breakage. Indicates that the body of the annotated method or constructor does not perform potentially unsafe operations on its varargs parameter. It has no semantic consequences."
       },
-      // The "externalClassExposedInAPI" check is used to detect code smells. It's documented as:
-      // "This is reported for classes from dependencies that are exposed in the API (for example as a
-      // return value). This is generally discouraged practice because it makes updating the dependency
-      // version a more complex task (you want a bugfix but you don’t want the changed API to leak to your
-      // users)."
-      // In the case of XWiki it's not a problem because we release all modules together using the same
-      // versioning. However we still want to detect this for non XWiki classes.
       {
+        // The "externalClassExposedInAPI" check is used to detect code smells. It's documented as:
+        // "This is reported for classes from dependencies that are exposed in the API (for example as a
+        // return value). This is generally discouraged practice because it makes updating the dependency
+        // version a more complex task (you want a bugfix but you don’t want the changed API to leak to your
+        // users)."
+        // In the case of XWiki it's not a problem because we release all modules together using the same
+        // versioning. However we still want to detect this for non XWiki classes.
         "regex": true,
+        "ignore": true,
         "code": "java\\.class\\.externalClassExposedInAPI",
         "package": "org\\.xwiki\\..*",
         "justification": "Dragging of other XWiki types to the API is OK."
@@ -56,30 +65,15 @@
       // Same rule for the old com.xpn.xwiki package.
       {
         "regex": true,
+        "ignore": true,
         "code": "java\\.class\\.externalClassExposedInAPI",
         "package": "com\\.xpn\\.xwiki\\..*",
         "justification": "Dragging of other XWiki types to the API is OK."
-      }
-    ]
-  },
-  // Only works at the method level for now. If the Unstable annotation is at the class level and a method has a
-  // breaking change, it's not ignored. See https://github.com/revapi/revapi/issues/187
-  // Since it's hiding real problems, see https://github.com/revapi/revapi/issues/188, we have disavbed it for now.
-  //  {
-  //    "extension": "revapi.java.filter.annotated",
-  //    "configuration": {
-  //      "exclude": [
-  //        "@org.xwiki.stability.Unstable"
-  //      ]
-  //    }
-  //  },
-  {
-    "extension": "revapi.reclassify",
-    // We reclassify all source compatibility checks to be of EQUIVALENT severity so that the build doesn't fail on
-    // source incompatibilities since we're only interested in binary and (some) semantic incompatibilities. As we
-    // break on potentiallyBreaking severity, issues with equivalent severity won't stop the build.
-    "configuration": [
+      },
       {
+        // We reclassify all source compatibility checks to be of EQUIVALENT severity so that the build doesn't fail on
+        // source incompatibilities since we're only interested in binary and (some) semantic incompatibilities. As we
+        // break on potentiallyBreaking severity, issues with equivalent severity won't stop the build.
         "regex" : true,
         "code" : ".*",
         "classify" : {

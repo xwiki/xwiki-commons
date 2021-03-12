@@ -181,4 +181,10 @@ public class DefaultAnnotatedContent<R, E> implements AnnotatedContent<R, E>
             }
         }
     }
+
+    @Override
+    public void xxx()
+    {
+        // empty
+    }
 }

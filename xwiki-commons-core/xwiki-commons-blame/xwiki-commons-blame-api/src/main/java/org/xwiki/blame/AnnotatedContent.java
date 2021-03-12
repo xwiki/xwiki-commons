@@ -47,4 +47,9 @@ public interface AnnotatedContent<R, E> extends Iterable<AnnotatedElement<R, E>>
      *              are useless.
      */
     boolean isEntirelyAnnotated();
+
+    /**
+     * hello.
+     */
+    void xxx();
 }
