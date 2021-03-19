@@ -59,9 +59,6 @@ import org.xwiki.velocity.internal.directive.TryCatchDirective;
  * Default implementation of the Velocity service which initializes the Velocity system using configuration values
  * defined in the component's configuration. Note that the {@link #initialize} method has to be executed before any
  * other method can be called.
- * <p>
- * This class implements {@link org.apache.velocity.runtime.log.LogChute} (through {@link AbstractSLF4JLogChute}) to
- * access to {@link RuntimeServices}.
  *
  * @version $Id$
  */
