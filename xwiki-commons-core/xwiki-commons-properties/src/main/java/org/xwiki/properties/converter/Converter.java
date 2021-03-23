@@ -22,9 +22,13 @@ package org.xwiki.properties.converter;
 import java.lang.reflect.Type;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.properties.BeanManager;
+import org.xwiki.properties.ConverterManager;
 
 /**
- * Converter provided value in the provided target type.
+ * General purpose data type converter that can be registered and used within the frameworks like
+ * {@link ConverterManager} and {@link BeanManager} package to manage the conversion of objects from one type to
+ * another.
  * <p>
  * The type supported by the converted is indicated in its role.
  * <p>
@@ -39,7 +43,8 @@ import org.xwiki.component.annotation.Role;
  *
  * </blockquote>
  * <p>
- * When something goes wrong a Converter can throw a {@link ConversionException}.
+ * If a conversion cannot be performed successfully the converter is expected to throw a
+ * {@link org.xwiki.properties.converter.ConversionException}.
  *
  * @param <T> the type in which the provided value has to be converted
  * @version $Id$
@@ -49,10 +54,13 @@ import org.xwiki.component.annotation.Role;
 public interface Converter<T>
 {
     /**
+     * Convert the specified input object into an output object of the specified type.
+     * 
      * @param <G> the type in which the provided value has to be converted
      * @param targetType the type in which the provided value has to be converted
      * @param sourceValue the value to convert
      * @return the converted value
+     * @throws org.xwiki.properties.converter.ConversionException if conversion cannot be performed successfully
      * @since 3.0M1
      */
     <G> G convert(Type targetType, Object sourceValue);
