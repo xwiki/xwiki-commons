@@ -20,6 +20,9 @@
 package org.xwiki.properties.converter;
 
 /**
+ * A <strong>ConversionException</strong> indicates that a call to <code>Converter.convert()</code> has failed to
+ * complete successfully.
+ * 
  * @version $Id$
  * @since 2.0M2
  */
