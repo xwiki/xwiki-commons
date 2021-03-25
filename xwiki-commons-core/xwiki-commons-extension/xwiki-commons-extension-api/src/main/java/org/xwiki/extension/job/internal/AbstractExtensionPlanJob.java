@@ -249,7 +249,6 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest>
      * @param parentBranch the children of the parent {@link ExtensionPlanNode}
      * @param withBackWard uninstall also the backward dependencies
      * @throws UninstallException error when trying to uninstall backward dependencies
-     * @throws ResolveException error when trying to resolve backward dependencies
      */
     protected void uninstallBackwardDependencies(InstalledExtension installedExtension, String namespace,
         List<ExtensionPlanNode> parentBranch, boolean withBackWard) throws UninstallException
