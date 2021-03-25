@@ -24,6 +24,7 @@ import java.util.Iterator;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.TestResources;
 import org.xwiki.extension.job.InstallRequest;
@@ -260,5 +261,23 @@ class UpgradePlanJobTest extends AbstractExtensionHandlerTest
         assertEquals(1, plan.getActions().size());
 
         assertSame(action, plan.getActions().iterator().next());
+    }
+
+    @Test
+    void testUpgradePlanSkipOptionalDependencies() throws Throwable
+    {
+        // Make sure to uninstall everything to avoid pollution from initial setup
+        resetInstalledExtensions();
+
+        // install first version
+        install(new ExtensionId("rwithupgradableoptionaldependency", "version"));
+
+        // check upgrade
+
+        ExtensionPlan plan = upgradePlan();
+
+        // Tree
+
+        assertEquals(0, plan.getTree().size());
     }
 }

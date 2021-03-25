@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<extension>
+  <id>rwithupgradableoptionaldependency</id>
+  <version>version</version>
+  <type>test</type>
+  <dependencies>
+    <dependency>
+      <id>rootextension</id>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <id>upgrade</id>
+      <version>1.0</version>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+</extension>

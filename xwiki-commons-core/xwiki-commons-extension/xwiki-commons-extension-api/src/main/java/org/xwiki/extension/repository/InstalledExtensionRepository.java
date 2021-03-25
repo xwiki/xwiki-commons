@@ -135,6 +135,8 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
      * <p>
      * Only look at the backward dependencies in the provided namespace. To get all the dependencies of a root extension
      * (namespace=null) across namespaces use {@link #getBackwardDependencies(ExtensionId)} instead.
+     * <p>
+     * This does not follow optional dependencies.
      *
      * @param feature the extension unique identifier
      * @param namespace the namespace where to search for backward dependencies
@@ -165,6 +167,8 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
 
     /**
      * Get all backward dependencies by namespace for the provided installed extension.
+     * <p>
+     * This does not follow optional dependencies.
      *
      * @param extensionId the extension identifier
      * @return the extension backward dependencies in all namespaces
