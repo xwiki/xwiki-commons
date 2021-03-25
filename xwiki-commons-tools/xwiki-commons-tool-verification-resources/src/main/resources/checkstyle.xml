@@ -209,7 +209,7 @@
     <!--module name="InterfaceIsType"/-->
 
     <module name="JavadocMethod">
-      <property name="scope" value="public"/>
+      <property name="accessModifiers" value="public"/>
     </module>
 
     <module name="MissingJavadocMethod"/>
