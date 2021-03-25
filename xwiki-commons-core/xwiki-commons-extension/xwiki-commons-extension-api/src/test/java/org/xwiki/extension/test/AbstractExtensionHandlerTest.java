@@ -31,6 +31,7 @@ import org.xwiki.configuration.internal.MemoryConfigurationSource;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
+import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.UninstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
@@ -160,7 +161,7 @@ public abstract class AbstractExtensionHandlerTest
     protected InstalledExtension install(ExtensionId extensionId, String namespace, boolean rootModifications,
         LogLevel failFrom) throws Throwable
     {
-        return install(extensionId, namespace != null ? new String[] { namespace } : (String[]) null, rootModifications,
+        return install(extensionId, namespace != null ? new String[] {namespace} : (String[]) null, rootModifications,
             failFrom);
     }
 
@@ -224,7 +225,7 @@ public abstract class AbstractExtensionHandlerTest
     protected ExtensionPlan installPlan(ExtensionId extensionId, String namespace, boolean rootModifications)
         throws Throwable
     {
-        return installPlan(extensionId, namespace != null ? new String[] { namespace } : null, rootModifications,
+        return installPlan(extensionId, namespace != null ? new String[] {namespace} : null, rootModifications,
             LogLevel.WARN);
     }
 
@@ -406,5 +407,18 @@ public abstract class AbstractExtensionHandlerTest
     protected ExtensionPlan upgradePlan(InstallRequest installRequest, LogLevel failFrom) throws Throwable
     {
         return (ExtensionPlan) executeJob("upgradeplan", installRequest, failFrom).getStatus();
+    }
+
+    protected void resetInstalledExtensions() throws UninstallException
+    {
+        for (InstalledExtension installedExtension : this.installedExtensionRepository.getInstalledExtensions()) {
+            if (installedExtension.getNamespaces() == null) {
+                this.installedExtensionRepository.uninstallExtension(installedExtension, null);
+            } else {
+                for (String namespace : installedExtension.getNamespaces()) {
+                    this.installedExtensionRepository.uninstallExtension(installedExtension, namespace);
+                }
+            }
+        }
     }
 }

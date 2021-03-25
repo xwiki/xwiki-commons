@@ -97,7 +97,7 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
                 boolean hasBackwardDependencies;
                 if (extension.getNamespaces() == null) {
                     hasBackwardDependencies =
-                        !this.installedExtensionRepository.getBackwardDependencies(extension.getId()).isEmpty();
+                        !this.installedExtensionRepository.getBackwardDependencies(extension.getId(), true).isEmpty();
                 } else {
                     hasBackwardDependencies = !this.installedExtensionRepository
                         .getBackwardDependencies(extension.getId().getId(), namespace).isEmpty();
