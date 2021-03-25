@@ -521,7 +521,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             try {
                 if (installedExtension.isInstalled(null)) {
                     Map<String, Collection<InstalledExtension>> backwardDependencies =
-                        this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId());
+                        this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId(), true);
 
                     mergedVersionContraint = mergeVersionConstraints(backwardDependencies.get(null),
                         extensionDependency.getId(), versionConstraint);
@@ -1324,7 +1324,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         for (InstalledExtension installedExtension : installedExtensions) {
             if (namespace == null) {
                 for (Map.Entry<String, Collection<InstalledExtension>> entry : this.installedExtensionRepository
-                    .getBackwardDependencies(installedExtension.getId()).entrySet()) {
+                    .getBackwardDependencies(installedExtension.getId(), true).entrySet()) {
                     Set<InstalledExtension> namespaceBackwardDependencies = backwardDependencies.get(entry.getKey());
                     if (namespaceBackwardDependencies == null) {
                         namespaceBackwardDependencies = new LinkedHashSet<>();
@@ -1335,7 +1335,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 }
             } else {
                 for (InstalledExtension backwardDependency : this.installedExtensionRepository
-                    .getBackwardDependencies(installedExtension.getId().getId(), namespace)) {
+                    .getBackwardDependencies(installedExtension.getId().getId(), namespace, true)) {
                     Set<InstalledExtension> namespaceBackwardDependencies = backwardDependencies.get(namespace);
                     if (namespaceBackwardDependencies == null) {
                         namespaceBackwardDependencies = new LinkedHashSet<>();
