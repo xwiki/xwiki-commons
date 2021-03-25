@@ -582,9 +582,6 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
      * @param extensionContext the current extension context
      * @param parents the parents extensions (which triggered this extension install)
-     * @throws InstallException error when trying to install provided extension
-     * @throws ResolveException
-     * @throws IncompatibleVersionConstraintException
      */
     private boolean installOptionalExtensionDependency(ExtensionDependency extensionDependency, String namespace,
         List<ModifableExtensionPlanNode> parentBranch, ExtensionPlanContext extensionContext, Set<String> parents)
