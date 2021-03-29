@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -37,6 +39,7 @@ import org.eclipse.aether.graph.Dependency;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.xwiki.environment.Environment;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
@@ -96,6 +99,8 @@ public class AetherDefaultRepositoryManagerTest
 
     private ExtensionId sextensionDependencyId;
 
+    private Environment environment;
+
     @Before
     public void setUp() throws Exception
     {
@@ -124,6 +129,8 @@ public class AetherDefaultRepositoryManagerTest
             this.repositoryUtil.getComponentManager().getInstance(ExtensionRepositoryManager.class);
         this.extensionLicenseManager =
             this.repositoryUtil.getComponentManager().getInstance(ExtensionLicenseManager.class);
+        this.environment =
+            this.repositoryUtil.getComponentManager().getInstance(Environment.class);
     }
 
     @Test
@@ -193,6 +200,10 @@ public class AetherDefaultRepositoryManagerTest
             .replace("<description>summary</description>", "<description>modified summary</description>"), "UTF-8");
         extension = this.repositoryManager.resolve(this.extensionId);
         assertEquals("modified summary", extension.getSummary());
+
+        // Make sure the temporary local Maven repository was cleaned
+        Path downloadDirectory = XWikiRepositorySystemSession.getDownloadDirectory(this.environment);
+        assertEquals(0, Files.list(downloadDirectory).count());
     }
 
     @Test
