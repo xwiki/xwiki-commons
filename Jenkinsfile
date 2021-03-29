@@ -56,8 +56,7 @@ stage ('Commons Builds') {
         xwikiBuild('Checkstyle') {
           xvnc = false
           mavenOpts = globalMavenOpts
-          goals = 'clean test-compile checkstyle:check@default'
-          profiles = 'legacy'
+          goals = 'checkstyle:check@default'
           javadoc = false
         }
       }
