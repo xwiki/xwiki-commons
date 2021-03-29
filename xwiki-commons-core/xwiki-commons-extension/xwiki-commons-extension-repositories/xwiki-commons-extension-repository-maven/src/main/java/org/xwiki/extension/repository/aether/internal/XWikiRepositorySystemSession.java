@@ -19,6 +19,7 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -50,7 +51,7 @@ import org.xwiki.extension.maven.internal.MavenUtils;
  * @version $Id$
  * @since 6.0
  */
-public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySystemSession implements AutoCloseable
+public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySystemSession implements Closeable
 {
     /**
      * The {@link ArtifactType} corresponding to a known type.
@@ -103,7 +104,7 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
 
         // Local repository
 
-        Path downloadDirectory = enviroment.getTemporaryDirectory().toPath().resolve("extension/download");
+        Path downloadDirectory = getDownloadDirectory(enviroment);
         Files.createDirectories(downloadDirectory);
         File localDir = Files.createTempDirectory(downloadDirectory, "repository").toFile();
         LocalRepository localRepository = new LocalRepository(localDir);
@@ -122,6 +123,11 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
 
         // Fail when the pom is missing or invalid
         wsession.setArtifactDescriptorPolicy(new SimpleArtifactDescriptorPolicy(false, false));
+    }
+
+    static Path getDownloadDirectory(Environment enviroment)
+    {
+        return enviroment.getTemporaryDirectory().toPath().resolve("extension/download");
     }
 
     private void addTypes(RepositorySystemSession session)
