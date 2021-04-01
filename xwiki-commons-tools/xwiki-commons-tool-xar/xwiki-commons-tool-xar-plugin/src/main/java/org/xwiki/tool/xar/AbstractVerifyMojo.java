@@ -331,12 +331,15 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
             licensePlugin,
             goal(goal),
             configuration(
-                element(name("header"), "license.txt"),
-                element(name("strictCheck"), "true"),
-                element(name("headerDefinitions"),
-                    element(name("headerDefinition"), "license-xml-definition.xml")),
-                element(name("includes"),
-                    element(name("include"), "src/main/resources/**/*.xml"))
+                element(name("licenseSets"),
+                    element(name("licenseSet"),
+                        element(name("header"), "license.txt"),
+                        element(name("headerDefinitions"),
+                            element(name("headerDefinition"), "license-xml-definition.xml")),
+                        element(name("includes"),
+                            element(name("include"), "src/main/resources/**/*.xml"))
+                      )
+                  )
             ),
             executionEnvironment(
                 this.project,
