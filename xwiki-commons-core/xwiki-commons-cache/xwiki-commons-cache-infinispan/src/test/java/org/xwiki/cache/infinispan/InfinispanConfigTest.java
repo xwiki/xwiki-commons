@@ -115,7 +115,7 @@ class InfinispanConfigTest extends AbstractTestCache
         assertEquals(1, stores.size());
 
         String location = ((SingleFileStoreConfiguration) stores.get(0)).location();
-        assertEquals(this.environment.getTemporaryDirectory().toString() + "\\cache", location);
+        assertEquals(this.environment.getTemporaryDirectory().toString() + "/cache", location);
     }
 
     @Test
