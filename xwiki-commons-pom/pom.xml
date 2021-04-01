@@ -308,7 +308,6 @@
           <configuration>
             <skip>${xwiki.license.skip}</skip>
             <header>license.txt</header>
-            <strictCheck>true</strictCheck>
             <headerDefinitions>
               <!-- Our styles for headers aren't standard so we need to define them in a custom manner.
                    See xwiki-commons-tool-verification-resources module -->
