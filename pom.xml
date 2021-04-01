@@ -1376,6 +1376,7 @@
         <artifactId>protobuf-java</artifactId>
         <version>3.15.6</version>
       </dependency>
+      <!-- Protostream 4.4.0 is required by Infinispan 12.0.2. Since no final version of Protostream is available, the Beta2 version will be used. -->
       <dependency>
         <groupId>org.infinispan.protostream</groupId>
         <artifactId>protostream</artifactId>
@@ -1384,7 +1385,7 @@
       <dependency>
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-core</artifactId>
-        <version>12.0.1.Final</version>
+        <version>12.0.2.Final</version>
         <exclusions>
           <!-- We use jakarta.transaction:jakarta.transaction-api (the reference API id) instead in XWiki -->
           <exclusion>
