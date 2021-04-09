@@ -31,7 +31,7 @@ import org.xwiki.test.mockito.MockitoComponentManager;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Validate {@link LocaleConverter} component.
+ * Validate {@link NamespaceConverter} component.
  *
  * @version $Id$
  */
@@ -53,8 +53,7 @@ class NamespaceConverterTest
     @Test
     void convertToNamespace()
     {
-        assertEquals(new Namespace("wiki", "wikiid"),
-            this.converterManager.convert(Namespace.class, "wiki:wikiid"));
+        assertEquals(new Namespace("wiki", "wikiid"), this.converterManager.convert(Namespace.class, "wiki:wikiid"));
     }
 
     @Test

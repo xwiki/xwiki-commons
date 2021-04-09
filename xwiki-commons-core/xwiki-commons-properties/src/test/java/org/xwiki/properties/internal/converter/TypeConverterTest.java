@@ -34,7 +34,7 @@ import org.xwiki.test.mockito.MockitoComponentManager;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Validate {@link LocaleConverter} component.
+ * Validate {@link TypeConverter} component.
  *
  * @version $Id$
  */
