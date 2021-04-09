@@ -37,7 +37,7 @@ stage ('Commons Builds') {
           xvnc = false
           mavenOpts = globalMavenOpts
           profiles = 'legacy,integration-tests'
-          properties = '--settings /root/.m2/xwiki-commons-settings.xml -Dxwiki.checkstyle.skip=true -Dxwiki.surefire.captureconsole.skip=true -Dxwiki.revapi.skip=true'
+          properties = '-Dxwiki.checkstyle.skip=true -Dxwiki.surefire.captureconsole.skip=true -Dxwiki.revapi.skip=true'
           javadoc = false
         }
 
@@ -69,7 +69,7 @@ stage ('Commons Builds') {
           mavenOpts = globalMavenOpts
           goals = 'clean install'
           profiles = 'legacy,integration-tests'
-          properties = '--settings /root/.m2/xwiki-commons-settings.xml -DskipTests -DperformRelease=true -Dgpg.skip=true -Dxwiki.checkstyle.skip=true -Ddoclint=all'
+          properties = '-DskipTests -DperformRelease=true -Dgpg.skip=true -Dxwiki.checkstyle.skip=true -Ddoclint=all'
           javadoc = false
         }
       }
@@ -92,7 +92,7 @@ stage ('Commons Builds') {
           // Note: We specify the "jvm" system property to to execute the tests with Java 8 in order to limit problems
           // with more recent versions of Java. In the future, we'll need to be able to also execute the tests with
           // Java 14+. Remove that when we support it. See for example https://jira.xwiki.org/browse/XCOMMONS-2136
-          properties = '--settings /root/.m2/xwiki-commons-settings.xml -Dxwiki.jacoco.itDestFile=`pwd`/target/jacoco-it.exec -Djvm=/home/hudsonagent/java8/bin/java'
+          properties = '-P-repository-all -Dxwiki.jacoco.itDestFile=`pwd`/target/jacoco-it.exec -Djvm=/home/hudsonagent/java8/bin/java'
           sonar = true
           javadoc = false
           // Build with Java 14 since Sonar requires Java 11+ and we want at the same time to verify that XWiki builds
