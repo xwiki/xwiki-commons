@@ -36,10 +36,6 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
-import org.eclipse.aether.util.version.GenericVersionScheme;
-import org.eclipse.aether.version.InvalidVersionSpecificationException;
-import org.eclipse.aether.version.Version;
-import org.eclipse.aether.version.VersionScheme;
 import org.xwiki.tool.xar.internal.XWikiDocument;
 
 /**
@@ -50,8 +46,6 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
 @Mojo(name = "format", threadSafe = true)
 public class FormatMojo extends AbstractVerifyMojo
 {
-    private static final VersionScheme VERSIONSCHEME = new GenericVersionScheme();
-
     /**
      * If false then don't pretty print the XML.
      */
@@ -85,8 +79,7 @@ public class FormatMojo extends AbstractVerifyMojo
         }
     }
 
-    private void format(File file, String defaultLanguage)
-        throws InvalidVersionSpecificationException, IOException, DocumentException
+    private void format(File file, String defaultLanguage) throws IOException, DocumentException
     {
         SAXReader reader = new SAXReader();
         Document domdoc = reader.read(file);
@@ -101,7 +94,7 @@ public class FormatMojo extends AbstractVerifyMojo
             writer = new XWikiXMLWriter(new FileOutputStream(file));
         }
         try {
-            writer.setVersion(getXMLVersion(domdoc));
+            writer.setVersion("1.1");
             writer.write(domdoc);
         } finally {
             writer.close();
@@ -109,21 +102,6 @@ public class FormatMojo extends AbstractVerifyMojo
 
         String parentName = file.getParentFile().getName();
         getLog().info(String.format("  Formatting [%s/%s]... ok", parentName, file.getName()));
-    }
-
-    private String getXMLVersion(Document domdoc) throws InvalidVersionSpecificationException
-    {
-        String versionString = domdoc.getRootElement().attributeValue("version");
-        if (versionString != null) {
-            Version version13 = VERSIONSCHEME.parseVersion("1.3");
-            Version version = VERSIONSCHEME.parseVersion(versionString);
-
-            if (version.compareTo(version13) >= 0) {
-                return "1.1";
-            }
-        }
-
-        return "1.0";
     }
 
     private void format(String filePath, Document domdoc, String defaultLanguage)

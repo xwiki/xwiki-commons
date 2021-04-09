@@ -48,6 +48,7 @@ public class FormatMojoTest extends AbstractMojoTest
         verifier.executeGoal("xar:format");
         verifier.verifyErrorFreeLog();
 
+        // Also verifies that if the XML version is set to 1.O, it's modified to be 1.1
         String content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/NoStyle/Page1.xml"));
         String expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedNoStylePage1.xml"));
         assertEquals(expected, content);
@@ -66,6 +67,7 @@ public class FormatMojoTest extends AbstractMojoTest
         assertEquals(expected, content);
 
         // Test with document dates present
+        // Also verifies that if the XML version is 1.1, it's not modified
         content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/NoStyle/Page4.xml"));
         expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedNoStylePage4.xml"));
         assertEquals(expected, content);
@@ -90,6 +92,7 @@ public class FormatMojoTest extends AbstractMojoTest
         verifier.executeGoal("xar:format");
         verifier.verifyErrorFreeLog();
 
+        // Also verifies that if the XML version is set to 1.O, it's modified to be 1.1
         String content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/Pretty/Page1.xml"));
         String expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedPrettyPage1.xml"));
         assertEquals(expected, content);
@@ -100,13 +103,9 @@ public class FormatMojoTest extends AbstractMojoTest
         assertEquals(expected, content);
 
         // Test with document dates present
+        // Also verifies that if the XML version is 1.1, it's not modified
         content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/Pretty/Page3.xml"));
         expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedPrettyPage3.xml"));
-        assertEquals(expected, content);
-
-        // Verify the right version of XML is set for XAR 1.3
-        content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/Pretty/Page4.xml"));
-        expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedPrettyPage4.xml"));
         assertEquals(expected, content);
     }
 }
