@@ -36,7 +36,7 @@ stage ('Commons Builds') {
         xwikiBuild('Main') {
           xvnc = false
           mavenOpts = globalMavenOpts
-          profiles = 'legacy,integration-tests'
+          profiles = '-repository-all,legacy,integration-tests'
           properties = '-Dxwiki.checkstyle.skip=true -Dxwiki.surefire.captureconsole.skip=true -Dxwiki.revapi.skip=true'
           javadoc = false
         }
@@ -56,6 +56,7 @@ stage ('Commons Builds') {
         xwikiBuild('Checkstyle') {
           xvnc = false
           mavenOpts = globalMavenOpts
+          profiles = '-repository-all'
           goals = 'checkstyle:check@default'
           javadoc = false
         }
@@ -68,7 +69,7 @@ stage ('Commons Builds') {
           xvnc = false
           mavenOpts = globalMavenOpts
           goals = 'clean install'
-          profiles = 'legacy,integration-tests'
+          profiles = '-repository-all,legacy,integration-tests'
           properties = '-DskipTests -DperformRelease=true -Dgpg.skip=true -Dxwiki.checkstyle.skip=true -Ddoclint=all'
           javadoc = false
         }
