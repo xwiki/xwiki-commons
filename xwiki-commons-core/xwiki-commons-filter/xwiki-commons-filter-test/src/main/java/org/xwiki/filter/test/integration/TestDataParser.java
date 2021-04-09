@@ -105,8 +105,11 @@ public class TestDataParser
                             System.out.println(line);
                         }
                     } else if (line.startsWith(".configuration")) {
-                        StringTokenizer st = new StringTokenizer(line.substring(".configuration".length() + 1), "=");
-                        configuration.put(st.nextToken(), st.nextToken());
+                        int keyIndex = ".configuration".length() + 1;
+                        int index = line.indexOf('=', ".configuration".length() + 1);
+                        if (index != -1) {
+                            configuration.put(line.substring(keyIndex, index), line.substring(index + 1));
+                        }
                     } else {
                         if (!skip) {
                             saveData(data, action, typeId, buffer, configuration);
