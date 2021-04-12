@@ -87,7 +87,7 @@
 
     <!-- Mock libraries -->
     <jmock.version>2.12.0</jmock.version>
-    <mockito.version>3.8.0</mockito.version>
+    <mockito.version>3.9.0</mockito.version>
 
     <!-- Byte Buddy -->
     <bytebuddy.version>1.10.22</bytebuddy.version>
