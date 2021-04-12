@@ -264,7 +264,7 @@ class UpgradePlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    void testUpgradePlanSkipOptionalDependencies() throws Throwable
+    void testUpgradePlanSkipOptionalDependenciesOnRoot() throws Throwable
     {
         // Make sure to uninstall everything to avoid pollution from initial setup
         resetInstalledExtensions();
@@ -275,6 +275,24 @@ class UpgradePlanJobTest extends AbstractExtensionHandlerTest
         // check upgrade
 
         ExtensionPlan plan = upgradePlan();
+
+        // Tree
+
+        assertEquals(0, plan.getTree().size());
+    }
+
+    @Test
+    void testUpgradePlanSkipOptionalDependenciesOnNamespace() throws Throwable
+    {
+        // Make sure to uninstall everything to avoid pollution from initial setup
+        resetInstalledExtensions();
+
+        // install first version
+        install(new ExtensionId("rwithupgradableoptionaldependency", "version"), "namespace");
+
+        // check upgrade
+
+        ExtensionPlan plan = upgradePlan("namespace");
 
         // Tree
 
