@@ -38,6 +38,7 @@ import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.internal.ExtensionUtils;
+import org.xwiki.extension.internal.converter.ExtensionComponentConverter;
 import org.xwiki.extension.rating.DefaultExtensionRating;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionAuthor;
@@ -184,6 +185,12 @@ public class XWikiExtension extends AbstractRatingExtension
         setSummary(ExtensionUtils.importProperty(this, Extension.FIELD_SUMMARY, getSummary()));
         setWebsite(ExtensionUtils.importProperty(this, Extension.FIELD_WEBSITE, getWebSite()));
         setAllowedNamespaces(ExtensionUtils.importProperty(this, Extension.FIELD_NAMESPACES, getAllowedNamespaces()));
+        String componentsString = ExtensionUtils.importProperty(this, Extension.FIELD_COMPONENTS);
+        if (StringUtils.isNotBlank(componentsString)) {
+            Collection<String> components =
+                ExtensionUtils.importPropertyStringList(componentsString, true, ExtensionUtils.CLASS_DELIMITERS);
+            setComponents(ExtensionComponentConverter.toExtensionComponentList(components));
+        }
     }
 
     private Collection<XWikiExtensionDependency> toXWikiExtensionDependencies(

@@ -107,6 +107,26 @@ public interface MutableExtension extends Extension
     void addAuthor(ExtensionAuthor author);
 
     /**
+     * @param component the components provided by the extension
+     * @since 13.3RC1
+     */
+    default void setComponents(Collection<? extends ExtensionComponent> component)
+    {
+
+    }
+
+    /**
+     * Add a new component to the extension.
+     *
+     * @param component a component provided by the extension
+     * @since 13.3RC1
+     */
+    default void addComponent(ExtensionComponent component)
+    {
+
+    }
+
+    /**
      * @param website an URL for the extension website
      */
     void setWebsite(String website);

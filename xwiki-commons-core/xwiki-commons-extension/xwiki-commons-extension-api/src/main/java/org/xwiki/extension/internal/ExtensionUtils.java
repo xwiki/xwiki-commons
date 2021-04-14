@@ -33,7 +33,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.xwiki.extension.CoreExtension;
-import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionManagerConfiguration;
@@ -61,6 +60,20 @@ import org.xwiki.properties.converter.ConversionException;
  */
 public final class ExtensionUtils
 {
+    /**
+     * The default delimiters when none is provided.
+     * 
+     * @since 13.3RC1
+     */
+    public static final int[] STANDARD_DELIMITERS = new int[] {',', ' ', '\t', '\n', '\r'};
+
+    /**
+     * Delimiters for lists containing class names.
+     * 
+     * @since 13.3RC1
+     */
+    public static final int[] CLASS_DELIMITERS = new int[] {'|', '\t', '\n', '\r'};
+
     private ExtensionUtils()
     {
         // Utility class
@@ -207,6 +220,18 @@ public final class ExtensionUtils
      */
     public static List<String> importPropertyStringList(String str, boolean trim)
     {
+        return importPropertyStringList(str, trim, STANDARD_DELIMITERS);
+    }
+
+    /**
+     * @param str the String to parse
+     * @param trim true if the passed String should be trimmed
+     * @param delimiters the delimiters
+     * @return the collection of Strings extracted from the passed String
+     * @since 13.3RC1
+     */
+    public static List<String> importPropertyStringList(String str, boolean trim, int[] delimiters)
+    {
         try {
             String cleanedString = str;
 
@@ -227,13 +252,11 @@ public final class ExtensionUtils
             st.quoteChar('\'');
 
             // And delimiters
-            st.whitespaceChars(',', ',');
-            st.whitespaceChars(' ', ' ');
-            st.whitespaceChars('\t', '\t');
-            st.whitespaceChars('\n', '\n');
-            st.whitespaceChars('\r', '\r');
+            for (int delimiter : delimiters) {
+                st.whitespaceChars(delimiter, delimiter);
+            }
 
-            // Split comma-delimited tokens into a List
+            // Split delimited tokens into a List
             List<String> collection = new ArrayList<>();
             while (true) {
                 int ttype = st.nextToken();

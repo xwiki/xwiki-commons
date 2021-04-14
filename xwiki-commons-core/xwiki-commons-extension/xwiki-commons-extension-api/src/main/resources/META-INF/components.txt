@@ -9,6 +9,7 @@ org.xwiki.extension.internal.DefaultExtensionLicenseManager
 org.xwiki.extension.internal.DefaultExtensionManager
 org.xwiki.extension.internal.DefaultExtensionManagerConfiguration
 org.xwiki.extension.internal.converter.ExtensionAuthorConverter
+org.xwiki.extension.internal.converter.ExtensionComponentConverter
 org.xwiki.extension.internal.converter.ExtensionConverter
 org.xwiki.extension.internal.converter.ExtensionIdConverter
 org.xwiki.extension.internal.converter.VersionConverter

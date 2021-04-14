@@ -45,6 +45,7 @@ import org.apache.maven.model.Scm;
 import org.xwiki.extension.DefaultExtensionPattern;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionComponent;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionFeaturesInjector;
 import org.xwiki.extension.ExtensionId;
@@ -53,6 +54,7 @@ import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ExtensionScmConnection;
 import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.internal.ExtensionUtils;
+import org.xwiki.extension.internal.converter.ExtensionComponentConverter;
 import org.xwiki.extension.internal.converter.ExtensionIdConverter;
 import org.xwiki.extension.maven.internal.DefaultMavenExtension;
 import org.xwiki.extension.maven.internal.DefaultMavenExtensionDependency;
@@ -168,6 +170,14 @@ public class AbstractModelConverter<T> extends AbstractConverter<T>
             }
         }
         extension.setExtensionFeatures(extensionFeatures);
+
+        // components
+        String componentsString = getProperty(properties, Extension.FIELD_COMPONENTS, true);
+        if (StringUtils.isNotBlank(componentsString)) {
+            Collection<String> components =
+                ExtensionUtils.importPropertyStringList(componentsString, true, ExtensionUtils.CLASS_DELIMITERS);
+            extension.setComponents(ExtensionComponentConverter.toExtensionComponentList(components));
+        }
 
         // category
         String categoryString = getProperty(properties, Extension.FIELD_CATEGORY, true);

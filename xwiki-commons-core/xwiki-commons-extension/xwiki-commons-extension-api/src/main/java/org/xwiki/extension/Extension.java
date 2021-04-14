@@ -202,6 +202,18 @@ public interface Extension extends Comparable<Extension>
     String FIELD_DEPENDENCIES = "dependencies";
 
     /**
+     * @see #getComponents()
+     * @since 13.3RC1
+     */
+    String FIELD_COMPONENT = "component";
+
+    /**
+     * @see #getComponents()
+     * @since 13.3RC1
+     */
+    String FIELD_COMPONENTS = "components";
+
+    /**
      * Prefix to use for custom properties names in external systems (Maven, etc).
      * 
      * @since 8.3M1
@@ -359,6 +371,15 @@ public interface Extension extends Comparable<Extension>
      * @since 7.3M1
      */
     Collection<ExtensionRepositoryDescriptor> getRepositories();
+
+    /**
+     * @return the XWiki components provided by the extension
+     * @since 13.3RC1
+     */
+    default Collection<ExtensionComponent> getComponents()
+    {
+        return Collections.emptyList();
+    }
 
     // Custom properties
 

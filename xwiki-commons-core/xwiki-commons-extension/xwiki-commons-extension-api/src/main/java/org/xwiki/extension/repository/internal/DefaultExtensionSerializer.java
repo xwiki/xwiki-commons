@@ -57,10 +57,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.extension.DefaultExtensionComponent;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionAuthor;
+import org.xwiki.extension.ExtensionComponent;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionIssueManagement;
@@ -120,6 +122,14 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     private static final String ELEMENT_AANAME = "name";
 
     private static final String ELEMENT_AAURL = "url";
+
+    private static final String ELEMENT_COMPONENTS = "components";
+
+    private static final String ELEMENT_CCOMPONENT = "component";
+
+    private static final String ELEMENT_CCTYPE = "type";
+
+    private static final String ELEMENT_CCHINT = "hint";
 
     private static final String ELEMENT_DEPENDENCIES = "dependencies";
 
@@ -377,6 +387,30 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                     }
 
                     extension.addAuthor(this.factory.getExtensionAuthor(authorName, authorURL));
+                }
+            }
+        }
+
+        // Components
+        Node componentsNode = getNode(extensionElement, ELEMENT_COMPONENTS);
+        if (componentsNode != null) {
+            NodeList components = componentsNode.getChildNodes();
+            for (int i = 0; i < components.getLength(); ++i) {
+                Node componentNode = components.item(i);
+
+                if (componentNode.getNodeName().equals(ELEMENT_CCOMPONENT)) {
+                    Node roleTypeNode = getNode(componentNode, ELEMENT_CCTYPE);
+                    Node roleHintNode = getNode(componentNode, ELEMENT_CCHINT);
+
+                    String roleType = roleTypeNode != null ? roleTypeNode.getTextContent() : null;
+                    String roleHint;
+                    if (roleHintNode != null) {
+                        roleHint = roleHintNode.getTextContent();
+                    } else {
+                        roleHint = null;
+                    }
+
+                    extension.addComponent(new DefaultExtensionComponent(roleType, roleHint));
                 }
             }
         }
@@ -804,6 +838,27 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                 String authorURL = author.getURLString();
                 if (authorURL != null) {
                     addElement(document, authorElement, ELEMENT_AAURL, authorURL);
+                }
+            }
+        }
+    }
+
+    private void addComponents(Document document, Element parentElement, Extension extension)
+    {
+        Collection<ExtensionComponent> components = extension.getComponents();
+        if (!components.isEmpty()) {
+            Element componentsElement = document.createElement(ELEMENT_COMPONENTS);
+            parentElement.appendChild(componentsElement);
+
+            for (ExtensionComponent component : components) {
+                Element componentElement = document.createElement(ELEMENT_CCOMPONENT);
+                componentsElement.appendChild(componentElement);
+
+                addElement(document, componentElement, ELEMENT_CCTYPE, component.getRoleType());
+
+                String roleHint = component.getRoleHint();
+                if (roleHint != null) {
+                    addElement(document, componentElement, ELEMENT_CCHINT, roleHint);
                 }
             }
         }

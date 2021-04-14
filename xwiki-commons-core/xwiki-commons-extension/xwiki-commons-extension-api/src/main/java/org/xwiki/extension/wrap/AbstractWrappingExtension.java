@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.commons.lang3.ObjectUtils;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionAuthor;
+import org.xwiki.extension.ExtensionComponent;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionFile;
 import org.xwiki.extension.ExtensionId;
@@ -187,6 +188,16 @@ public abstract class AbstractWrappingExtension<E extends Extension> extends Abs
         }
 
         return getWrapped().getAuthors();
+    }
+
+    @Override
+    public Collection<ExtensionComponent> getComponents()
+    {
+        if (this.overwrites.containsKey(Extension.FIELD_COMPONENTS)) {
+            return (Collection<ExtensionComponent>) this.overwrites.get(Extension.FIELD_COMPONENTS);
+        }
+
+        return getWrapped().getComponents();
     }
 
     @Override

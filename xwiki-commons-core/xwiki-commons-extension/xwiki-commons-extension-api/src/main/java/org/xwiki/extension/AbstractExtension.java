@@ -90,6 +90,11 @@ public abstract class AbstractExtension implements MutableExtension
     protected List<ExtensionAuthor> authors;
 
     /**
+     * @see #getComponents()
+     */
+    protected List<ExtensionComponent> components;
+
+    /**
      * @see #getWebSite()
      */
     protected String website;
@@ -190,6 +195,7 @@ public abstract class AbstractExtension implements MutableExtension
         setCategory(extension.getCategory());
         setExtensionFeatures(extension.getExtensionFeatures());
         setAllowedNamespaces(extension.getAllowedNamespaces());
+        setComponents(extension.getComponents());
 
         setDependencies(extension.getDependencies());
         setManagedDependencies(extension.getManagedDependencies());
@@ -228,6 +234,9 @@ public abstract class AbstractExtension implements MutableExtension
             case FIELD_AUTHOR:
             case FIELD_AUTHORS:
                 return (T) getAuthors();
+            case FIELD_COMPONENT:
+            case FIELD_COMPONENTS:
+                return (T) getComponents();
             case FIELD_CATEGORY:
                 return (T) getCategory();
             case FIELD_LICENSE:
@@ -451,6 +460,27 @@ public abstract class AbstractExtension implements MutableExtension
         newAuthors.add(author);
 
         this.authors = Collections.unmodifiableList(newAuthors);
+    }
+
+    @Override
+    public List<ExtensionComponent> getComponents()
+    {
+        return this.components != null ? this.components : Collections.<ExtensionComponent>emptyList();
+    }
+
+    @Override
+    public void setComponents(Collection<? extends ExtensionComponent> components)
+    {
+        this.components = Collections.unmodifiableList(new ArrayList<ExtensionComponent>(components));
+    }
+
+    @Override
+    public void addComponent(ExtensionComponent component)
+    {
+        List<ExtensionComponent> newComponents = new ArrayList<>(getComponents());
+        newComponents.add(component);
+
+        this.components = Collections.unmodifiableList(newComponents);
     }
 
     @Override

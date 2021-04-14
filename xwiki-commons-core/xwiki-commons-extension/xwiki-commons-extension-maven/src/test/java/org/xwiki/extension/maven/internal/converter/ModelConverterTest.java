@@ -35,7 +35,9 @@ import org.apache.maven.model.Exclusion;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Repository;
 import org.junit.jupiter.api.Test;
+import org.xwiki.extension.DefaultExtensionComponent;
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionComponent;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionFeaturesInjector;
 import org.xwiki.extension.ExtensionId;
@@ -92,6 +94,9 @@ class ModelConverterTest
         model.addProperty(Extension.IKEYPREFIX + Extension.FIELD_NAMESPACES,
             "namespace1, namespace2,\r\n\t {root}, \"namespace3\", 'namespace4'");
         model.addProperty(Extension.IKEYPREFIX + Extension.FIELD_FEATURES, "feature1/1.0");
+        model.addProperty(Extension.IKEYPREFIX + Extension.FIELD_COMPONENTS,
+            "org.xwiki.contib.MyClassName<Generic1, Generic2>/hint\n"
+                + "org.xwiki.contib.MyClassName2<Generic12, Generic22>/hint2");
         Repository repository = new Repository();
         repository.setId("repository-id");
         repository.setUrl("http://url");
@@ -142,6 +147,10 @@ class ModelConverterTest
         assertEquals(".*:\\Qexcludedartifact2\\E", pattern.getIdPattern().toString());
         pattern = patternIt.next();
         assertEquals("\\Qexcludedgroup3\\E:.*", pattern.getIdPattern().toString());
+        assertEquals(
+            Arrays.asList(new DefaultExtensionComponent("org.xwiki.contib.MyClassName<Generic1, Generic2>", "hint"),
+                new DefaultExtensionComponent("org.xwiki.contib.MyClassName2<Generic12, Generic22>", "hint2")),
+            extension.getComponents());
     }
 
     @Test
