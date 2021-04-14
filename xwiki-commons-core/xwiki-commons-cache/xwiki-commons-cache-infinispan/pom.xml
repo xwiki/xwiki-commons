@@ -50,6 +50,11 @@
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-core</artifactId>
     </dependency>
+    <!-- Needed for JMX access to the Infinispan Statistics MBeans - XCOMMONS-2188 -->
+    <dependency>
+      <groupId>org.eclipse.microprofile.metrics</groupId>
+      <artifactId>microprofile-metrics-api</artifactId>
+    </dependency>
     <!-- Use jakarta.transaction:jakarta.transaction-api instead to not have duplicate JARs in generated WARs -->
     <dependency>
       <groupId>jakarta.transaction</groupId>
