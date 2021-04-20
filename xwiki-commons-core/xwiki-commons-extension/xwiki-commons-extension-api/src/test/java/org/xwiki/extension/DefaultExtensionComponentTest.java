@@ -41,5 +41,7 @@ class DefaultExtensionComponentTest
 
         assertEquals(new DefaultExtensionComponent("typewithwhitespace", "hint"),
             new DefaultExtensionComponent("type with white space", "hint"));
+        assertEquals(new DefaultExtensionComponent("type", "default"), new DefaultExtensionComponent("type", ""));
+        assertEquals(new DefaultExtensionComponent("type", "default"), new DefaultExtensionComponent("type", null));
     }
 }

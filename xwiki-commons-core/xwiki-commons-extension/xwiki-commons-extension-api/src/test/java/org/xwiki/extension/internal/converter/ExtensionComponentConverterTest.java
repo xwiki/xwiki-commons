@@ -67,8 +67,10 @@ class ExtensionComponentConverterTest
     @Test
     void convertToString()
     {
-        assertEquals("name", this.manager.getConverter(ExtensionComponent.class).convert(String.class,
+        assertEquals("name/default", this.manager.getConverter(ExtensionComponent.class).convert(String.class,
             new DefaultExtensionComponent("name", (String) null)));
+        assertEquals("name/default", this.manager.getConverter(ExtensionComponent.class).convert(String.class,
+            new DefaultExtensionComponent("name", "")));
         assertEquals("name/hint", this.manager.getConverter(ExtensionComponent.class).convert(String.class,
             new DefaultExtensionComponent("name", "hint")));
     }
