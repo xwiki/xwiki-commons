@@ -46,7 +46,7 @@ public class DefaultExtensionComponent implements ExtensionComponent
     {
         // Remove white spaces from the type to make sure the same type is always giving the same String
         this.roleType = toCanonicalComponentType(roleType);
-        this.roleHint = roleHint;
+        this.roleHint = toCanonicalComponentHint(roleHint);
     }
 
     /**
@@ -56,6 +56,16 @@ public class DefaultExtensionComponent implements ExtensionComponent
     public static String toCanonicalComponentType(String componentType)
     {
         return componentType != null ? WHITE_SPACES_PATTEN.matcher(componentType).replaceAll("") : null;
+    }
+
+    /**
+     * @param componentHint the component hint to clean
+     * @return the canonical version of the component hint
+     * @since 13.3
+     */
+    public static String toCanonicalComponentHint(String componentHint)
+    {
+        return StringUtils.isEmpty(componentHint) ? "default" : componentHint;
     }
 
     @Override
@@ -112,12 +122,9 @@ public class DefaultExtensionComponent implements ExtensionComponent
         StringBuilder builder = new StringBuilder();
 
         builder.append(getRoleType());
-
-        if (getRoleHint() != null) {
-            builder.append('(');
-            builder.append(getRoleHint());
-            builder.append(')');
-        }
+        builder.append('(');
+        builder.append(getRoleHint());
+        builder.append(')');
 
         return builder.toString();
     }
