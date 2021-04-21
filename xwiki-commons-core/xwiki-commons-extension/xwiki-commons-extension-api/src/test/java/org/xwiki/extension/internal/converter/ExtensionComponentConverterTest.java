@@ -62,6 +62,9 @@ class ExtensionComponentConverterTest
             this.manager.convert(ExtensionComponent.class, "\\/hint"));
         assertEquals(new DefaultExtensionComponent("name\\/hint", (String) null),
             this.manager.convert(ExtensionComponent.class, "name\\\\\\/hint"));
+
+        assertEquals(new DefaultExtensionComponent("name", "hint/with/slash"),
+            this.manager.convert(ExtensionComponent.class, "name/hint/with/slash"));
     }
 
     @Test
@@ -73,5 +76,7 @@ class ExtensionComponentConverterTest
             new DefaultExtensionComponent("name", "")));
         assertEquals("name/hint", this.manager.getConverter(ExtensionComponent.class).convert(String.class,
             new DefaultExtensionComponent("name", "hint")));
+        assertEquals("name/hint/with/slash", this.manager.getConverter(ExtensionComponent.class).convert(String.class,
+            new DefaultExtensionComponent("name", "hint/with/slash")));
     }
 }
