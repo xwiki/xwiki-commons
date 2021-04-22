@@ -39,6 +39,12 @@ public abstract class AbstractContextStore implements ContextStore
     @FunctionalInterface
     protected interface SubContextStore
     {
+        /**
+         * Javadoc here.
+         *
+         * @param key the key to save
+         * @param subkey the subkey to save
+         */
         void save(String key, String subkey);
     }
 
