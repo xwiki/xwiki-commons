@@ -42,8 +42,8 @@ public abstract class AbstractContextStore implements ContextStore
         /**
          * Put in the context the value associated with the provided key prefix and suffix.
          *
-         * @param key the key to save
-         * @param subkey the subkey to save
+         * @param key the main key (key prefix) of the value to save
+         * @param subkey the sub key (key suffix) of the value to save
          */
         void save(String key, String subkey);
     }
