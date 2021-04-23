@@ -40,7 +40,7 @@ public abstract class AbstractContextStore implements ContextStore
     protected interface SubContextStore
     {
         /**
-         * Javadoc here.
+         * Put in the context the value associated with the provided key prefix and suffix.
          *
          * @param key the key to save
          * @param subkey the subkey to save
