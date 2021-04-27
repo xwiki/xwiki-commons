@@ -100,7 +100,7 @@
     <jacoco.version>0.8.6</jacoco.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>8.41.1</checkstyle.version>
+    <checkstyle.version>8.42</checkstyle.version>
 
     <!-- Spoon -->
     <spoon.version>7.5.0</spoon.version>
