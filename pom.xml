@@ -212,7 +212,7 @@
     <maven.maven-enforcer.version>2.2.1</maven.maven-enforcer.version>
 
     <!-- The version of the Maven Plugin Tools -->
-    <maven.plugin.tools.version>3.6.0</maven.plugin.tools.version>
+    <maven.plugin.tools.version>3.6.1</maven.plugin.tools.version>
 
     <!-- The version of the Maven Remote Resource plugin -->
     <maven-remote-resources-plugin.version>1.7.0</maven-remote-resources-plugin.version>
