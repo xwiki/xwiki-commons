@@ -22,17 +22,26 @@ package org.xwiki.filter.internal.output;
 import java.io.File;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.filter.FilterException;
 import org.xwiki.filter.output.DefaultFileOutputTarget;
 import org.xwiki.filter.output.DefaultOutputStreamOutputTarget;
 import org.xwiki.filter.output.DefaultWriterOutputTarget;
 import org.xwiki.filter.output.OutputTarget;
-import org.xwiki.filter.output.StringWriterOutputTarget;
+import org.xwiki.filter.output.OutputTargetReferenceParser;
 import org.xwiki.properties.converter.AbstractConverter;
+import org.xwiki.properties.converter.ConversionException;
 
 /**
  * @version $Id$
@@ -42,6 +51,13 @@ import org.xwiki.properties.converter.AbstractConverter;
 @Singleton
 public class OutputTargetConverter extends AbstractConverter<OutputTarget>
 {
+    @Inject
+    @Named("context")
+    private Provider<ComponentManager> contextComponentManagerProvider;
+
+    @Inject
+    private OutputTargetReferenceParser parser;
+
     @Override
     protected <G extends OutputTarget> G convertToType(Type targetType, Object value)
     {
@@ -55,14 +71,34 @@ public class OutputTargetConverter extends AbstractConverter<OutputTarget>
 
         OutputTarget outputTarget;
 
-        if (value instanceof OutputStream) {
+        if (value instanceof String) {
+            outputTarget = fromString(value.toString());
+        } else if (value instanceof OutputStream) {
             outputTarget = new DefaultOutputStreamOutputTarget((OutputStream) value);
         } else if (value instanceof File) {
             outputTarget = new DefaultFileOutputTarget((File) value);
         } else if (value instanceof Writer) {
             outputTarget = new DefaultWriterOutputTarget((Writer) value);
         } else {
-            outputTarget = fromString(value.toString());
+            ParameterizedType componentRole =
+                TypeUtils.parameterize(org.xwiki.filter.output.OutputTargetConverter.class, value.getClass());
+
+            ComponentManager componentManager = this.contextComponentManagerProvider.get();
+
+            if (componentManager.hasComponent(componentRole)) {
+                try {
+                    org.xwiki.filter.output.OutputTargetConverter converter =
+                        componentManager.getInstance(componentRole);
+
+                    outputTarget = converter.convert(value);
+                } catch (ComponentLookupException e) {
+                    throw new ConversionException(
+                        "Failed to get the output target converter component for type [" + value.getClass() + "]", e);
+                }
+            } else {
+                // Fallback on the String logic
+                outputTarget = fromString(value.toString());
+            }
         }
 
         return (G) outputTarget;
@@ -70,15 +106,10 @@ public class OutputTargetConverter extends AbstractConverter<OutputTarget>
 
     private OutputTarget fromString(String target)
     {
-        OutputTarget outputTarget;
-
-        // TODO: use some OutputTargetParser instead to make it extensible
-        if (target.startsWith("file:")) {
-            outputTarget = new DefaultFileOutputTarget(new File(target.substring("file:".length())));
-        } else {
-            outputTarget = new StringWriterOutputTarget();
+        try {
+            return this.parser.parse(target);
+        } catch (FilterException e) {
+            throw new ConversionException("Failed to parse the output target reference [" + target + "]", e);
         }
-
-        return outputTarget;
     }
 }

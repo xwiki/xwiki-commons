@@ -1,6 +1,8 @@
 org.xwiki.filter.internal.DefaultFilterDescriptorManager
 org.xwiki.filter.internal.converter.FilterEventParametersConverter
+org.xwiki.filter.internal.input.DefaultInputSourceReferenceParser
 org.xwiki.filter.internal.input.InputSourceConverter
 org.xwiki.filter.internal.job.FilterStreamConverterJob
+org.xwiki.filter.internal.output.DefaultOutputTargetReferenceParser
 org.xwiki.filter.internal.output.OutputTargetConverter
 org.xwiki.filter.internal.type.FilterStreamTypeConverter

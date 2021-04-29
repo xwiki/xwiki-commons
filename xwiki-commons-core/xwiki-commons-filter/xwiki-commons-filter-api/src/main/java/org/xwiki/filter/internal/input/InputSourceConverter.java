@@ -22,18 +22,26 @@ package org.xwiki.filter.internal.input;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.filter.FilterException;
 import org.xwiki.filter.input.DefaultFileInputSource;
 import org.xwiki.filter.input.DefaultInputStreamInputSource;
 import org.xwiki.filter.input.DefaultReaderInputSource;
 import org.xwiki.filter.input.DefaultURLInputSource;
 import org.xwiki.filter.input.InputSource;
-import org.xwiki.filter.input.StringInputSource;
+import org.xwiki.filter.input.InputSourceReferenceParser;
 import org.xwiki.properties.converter.AbstractConverter;
 import org.xwiki.properties.converter.ConversionException;
 
@@ -45,6 +53,13 @@ import org.xwiki.properties.converter.ConversionException;
 @Singleton
 public class InputSourceConverter extends AbstractConverter<InputSource>
 {
+    @Inject
+    @Named("context")
+    private Provider<ComponentManager> contextComponentManagerProvider;
+
+    @Inject
+    private InputSourceReferenceParser parser;
+
     @Override
     protected <G extends InputSource> G convertToType(Type targetType, Object value)
     {
@@ -58,7 +73,9 @@ public class InputSourceConverter extends AbstractConverter<InputSource>
 
         InputSource inputSource;
 
-        if (value instanceof InputStream) {
+        if (value instanceof String) {
+            inputSource = fromString(value.toString());
+        } else if (value instanceof InputStream) {
             inputSource = new DefaultInputStreamInputSource((InputStream) value);
         } else if (value instanceof File) {
             inputSource = new DefaultFileInputSource((File) value);
@@ -67,7 +84,24 @@ public class InputSourceConverter extends AbstractConverter<InputSource>
         } else if (value instanceof URL) {
             inputSource = new DefaultURLInputSource((URL) value);
         } else {
-            inputSource = fromString(value.toString());
+            ParameterizedType componentRole =
+                TypeUtils.parameterize(org.xwiki.filter.input.InputSourceConverter.class, value.getClass());
+
+            ComponentManager componentManager = this.contextComponentManagerProvider.get();
+
+            if (componentManager.hasComponent(componentRole)) {
+                try {
+                    org.xwiki.filter.input.InputSourceConverter converter = componentManager.getInstance(componentRole);
+
+                    inputSource = converter.convert(value);
+                } catch (ComponentLookupException e) {
+                    throw new ConversionException(
+                        "Failed to get the input source converter component for type [" + value.getClass() + "]", e);
+                }
+            } else {
+                // Fallback on the String logic
+                inputSource = fromString(value.toString());
+            }
         }
 
         return (G) inputSource;
@@ -75,27 +109,10 @@ public class InputSourceConverter extends AbstractConverter<InputSource>
 
     private InputSource fromString(String source)
     {
-        InputSource inputSource;
-
-        // TODO: use some InputSourceParser instead to make it extensible
-        if (source.startsWith("url:")) {
-            try {
-                inputSource = new DefaultURLInputSource(new URL(source.substring("url:".length())));
-            } catch (Exception e) {
-                throw new ConversionException("Failed to create input source for URL [" + source + "]", e);
-            }
-        } else if (source.startsWith("file:")) {
-            inputSource = new DefaultFileInputSource(new File(source.substring("file:".length())));
-        } else if (source.startsWith("string:")) {
-            inputSource = new DefaultFileInputSource(new File(source.substring("string:".length())));
-        } else if (source.startsWith("resource:")) {
-            ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-            URL resource = classloader.getResource(source.substring("resource:".length()));
-            inputSource = new DefaultURLInputSource(resource);
-        } else {
-            inputSource = new StringInputSource(source);
+        try {
+            return this.parser.parse(source);
+        } catch (FilterException e) {
+            throw new ConversionException("Failed to parse the inut source reference [" + source + "]", e);
         }
-
-        return inputSource;
     }
 }
