@@ -2277,12 +2277,12 @@
           <groupId>org.revapi</groupId>
           <artifactId>revapi-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.14.0</version>
+          <version>0.14.2</version>
           <dependencies>
             <dependency>
               <groupId>org.revapi</groupId>
               <artifactId>revapi-java</artifactId>
-              <version>0.24.0</version>
+              <version>0.24.1</version>
             </dependency>
           </dependencies>
           <executions>
