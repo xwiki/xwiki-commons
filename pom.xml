@@ -2092,10 +2092,13 @@
                 <value>${xwiki.test.verifyRunningXWikiAtStart}</value>
               </property>
             </systemProperties>
-            <!-- Explicitly define how much memory to give to the forked JVM process for the tests, as otherwise
-                 Java will give about 1/4th of the physical memory which can be not enough or too much (e.g. on a CI
-                 agent too much means we cannot run as many jobs in parallel as we could). -->
-            <argLine>@{argLine} -Xmx1024m</argLine>
+            <!--
+                 - Explicitly define how much memory to give to the forked JVM process for the tests, as otherwise
+                   Java will give about 1/4th of the physical memory which can be not enough or too much (e.g. on a CI
+                   agent too much means we cannot run as many jobs in parallel as we could).
+                 - Take a heap dump on low memory to diagnose issues
+            -->
+            <argLine>@{argLine} -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory}</argLine>
           </configuration>
         </plugin>
         <plugin>
@@ -2127,10 +2130,13 @@
                 <value>true</value>
               </property>
             </systemProperties>
-            <!-- Explicitly define how much memory to give to the forked JVM process for the tests, as otherwise
-                 Java will give about 1/4th of the physical memory which can be not enough or too much (e.g. on a CI
-                 agent too much means we cannot run as many jobs in parallel as we could). -->
-            <argLine>@{argLine} -Xmx1024m</argLine>
+            <!--
+                 - Explicitly define how much memory to give to the forked JVM process for the tests, as otherwise
+                   Java will give about 1/4th of the physical memory which can be not enough or too much (e.g. on a CI
+                   agent too much means we cannot run as many jobs in parallel as we could).
+                 - Take a heap dump on low memory to diagnose issues
+            -->
+            <argLine>@{argLine} -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory}</argLine>
           </configuration>
           <executions>
             <execution>
