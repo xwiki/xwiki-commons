@@ -60,6 +60,11 @@
       <artifactId>xwiki-commons-configuration-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-environment-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

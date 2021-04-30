@@ -31,15 +31,6 @@
   <name>XWiki Commons - Environment - Parent POM</name>
   <packaging>pom</packaging>
   <description>XWiki Commons - Environment - Parent POM</description>
-  <dependencies>
-    <!-- Test dependencies -->
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-tool-test-component</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
   <modules>
     <module>xwiki-commons-environment-api</module>
     <module>xwiki-commons-environment-common</module>
