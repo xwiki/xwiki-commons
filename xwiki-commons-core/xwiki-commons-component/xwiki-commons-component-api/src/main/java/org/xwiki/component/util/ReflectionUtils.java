@@ -143,9 +143,9 @@ public final class ReflectionUtils
         } else if (type instanceof ParameterizedType) {
             typeClassClass = (Class) ((ParameterizedType) type).getRawType();
         } else if (type instanceof GenericArrayType) {
-            Class<?> arrrayParameter = getTypeClass(((GenericArrayType) type).getGenericComponentType());
-            if (arrrayParameter != null) {
-                typeClassClass = Array.newInstance(arrrayParameter, 0).getClass();
+            Class<?> arrayParameter = getTypeClass(((GenericArrayType) type).getGenericComponentType());
+            if (arrayParameter != null) {
+                typeClassClass = Array.newInstance(arrayParameter, 0).getClass();
             }
         }
 
