@@ -17,7 +17,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.xwiki.blame;
 
 import java.util.Iterator;
@@ -47,9 +46,4 @@ public interface AnnotatedContent<R, E> extends Iterable<AnnotatedElement<R, E>>
      *              are useless.
      */
     boolean isEntirelyAnnotated();
-
-    /**
-     * hello.
-     */
-    void xxx();
 }
