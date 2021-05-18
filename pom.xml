@@ -138,8 +138,6 @@
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
     <xwiki.enforcer.enforce-jsr305.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jsr305.skip>
     <xwiki.enforcer.enforce-jta.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jta.skip>
-    <xwiki.enforcer.enforce-jboss-marshalling-osgi.skip>${xwiki.enforcer.skip}
-    </xwiki.enforcer.enforce-jboss-marshalling-osgi.skip>
     <xwiki.enforcer.enforce-jakarta.validation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.validation-api.skip>
     <xwiki.enforcer.enforce-hibernate-validator.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-hibernate-validator.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}
@@ -899,12 +897,6 @@
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging</artifactId>
         <version>3.4.1.Final</version>
-      </dependency>
-      <!-- Make sure everyone use the same version of JBoss Marshalling -->
-      <dependency>
-        <groupId>org.jboss.marshalling</groupId>
-        <artifactId>jboss-marshalling-osgi</artifactId>
-        <version>2.0.11.Final</version>
       </dependency>
 
       <!-- Javassist -->
@@ -1873,25 +1865,6 @@
                     <exclude>javax.transaction:jta</exclude>
                     <exclude>org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec</exclude>
                     <exclude>javax.transaction:javax.transaction-api</exclude>
-                  </excludes>
-                </bannedDependencies>
-              </rules>
-            </configuration>
-          </execution>
-          <!-- Check that we use the right version of the JBoss Marshalling -->
-          <execution>
-            <id>enforce-jboss-marshalling-osgi</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <skip>${xwiki.enforcer.enforce-jboss-marshalling-osgi.skip}</skip>
-              <rules>
-                <bannedDependencies>
-                  <searchTransitive>true</searchTransitive>
-                  <message>Use org.jboss.marshalling:jboss-marshalling-osgi instead</message>
-                  <excludes>
-                    <exclude>org.jboss.marshalling:jboss-marshalling</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
