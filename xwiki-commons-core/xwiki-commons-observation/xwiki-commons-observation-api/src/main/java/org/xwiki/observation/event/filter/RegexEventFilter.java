@@ -23,6 +23,9 @@ import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * An {@link EventFilter} that selects only events whose affected document name matches a regular expression.
  *
@@ -37,10 +40,10 @@ public class RegexEventFilter implements EventFilter, Serializable
     private static final long serialVersionUID = 1L;
 
     /** The regular expression, as a string. */
-    private String filter;
+    private final String filter;
 
     /** The regular expression, as a regexp Pattern object. */
-    private Pattern pattern;
+    private final Pattern pattern;
 
     /**
      * Constructor initializing this event filter with a regular expression that should be matched.
@@ -64,5 +67,39 @@ public class RegexEventFilter implements EventFilter, Serializable
     {
         Matcher matcher = this.pattern.matcher(eventFilter.getFilter());
         return matcher.matches();
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @since 13.4
+     * @since 12.10.8
+     */
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        RegexEventFilter that = (RegexEventFilter) o;
+
+        return new EqualsBuilder().append(this.filter, that.filter).isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 13.4
+     * @since 12.10.8
+     */
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder(17, 37).append(this.filter).toHashCode();
     }
 }

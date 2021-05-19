@@ -25,6 +25,7 @@ import org.xwiki.observation.event.filter.RegexEventFilter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -32,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class RegexEventFilterTest
+class RegexEventFilterTest
 {
     @Test
     void testRegexEventFilter()
@@ -43,5 +44,34 @@ public class RegexEventFilterTest
 
         assertTrue(regex.matches(new FixedNameEventFilter("aa")));
         assertFalse(regex.matches(new FixedNameEventFilter("bb")));
+    }
+
+    @Test
+    void equals()
+    {
+        RegexEventFilter regexA1 = new RegexEventFilter("a.*");
+        RegexEventFilter regexA2 = new RegexEventFilter("a.*");
+        RegexEventFilter regexB1 = new RegexEventFilter("b.*");
+        RegexEventFilter regexB2 = new RegexEventFilter("b.*");
+
+        assertEquals(regexA1, regexA2);
+        assertEquals(regexA1, regexA1);
+        assertNotEquals(regexA1, regexB1);
+        assertNotEquals(null, regexA1);
+        assertNotEquals(regexA1, new Object());
+        assertEquals(regexB1, regexB2);
+    }
+
+    @Test
+    void testHashCode()
+    {
+        int regexA1 = new RegexEventFilter("a.*").hashCode();
+        int regexA2 = new RegexEventFilter("a.*").hashCode();
+        int regexB1 = new RegexEventFilter("b.*").hashCode();
+        int regexB2 = new RegexEventFilter("b.*").hashCode();
+
+        assertEquals(regexA1, regexA2);
+        assertNotEquals(regexA1, regexB1);
+        assertEquals(regexB1, regexB2);
     }
 }
