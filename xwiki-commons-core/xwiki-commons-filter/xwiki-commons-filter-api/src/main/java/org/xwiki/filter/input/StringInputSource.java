@@ -30,6 +30,9 @@ public class StringInputSource extends AbstractReaderInputSource
 {
     private String source;
 
+    /**
+     * @param source the source data
+     */
     public StringInputSource(String source)
     {
         this.source = source;
@@ -39,6 +42,16 @@ public class StringInputSource extends AbstractReaderInputSource
     protected Reader openReader()
     {
         return new StringReader(this.source);
+    }
+
+    /**
+     * @return the source data
+     * @since 13.4RC1
+     * @since 12.10.8
+     */
+    public String getSource()
+    {
+        return this.source;
     }
 
     @Override
