@@ -35,6 +35,8 @@ import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanTree;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.version.Version;
+import org.xwiki.extension.version.VersionConstraint;
+import org.xwiki.extension.version.internal.VersionUtils;
 import org.xwiki.job.Request;
 
 /**
@@ -120,7 +122,30 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
     protected void upgradeExtension(InstalledExtension extension, String namespace)
     {
         if (!isSkipped(extension, namespace)) {
+            // Get recommended version
+            VersionConstraint recommendedVersionConstraint =
+                this.configuration.getRecomendedVersionConstraint(extension.getId().getId());
+            Version recommendedVersion = VersionUtils.getUniqueVersion(recommendedVersionConstraint);
+
+            if (recommendedVersion != null) {
+                // No reason for search something else if the installed version is already the recommended one
+                if (recommendedVersion.equals(extension.getId().getVersion())) {
+                    return;
+                }
+
+                // Validate the recommended version
+                if (tryInstallExtension(new ExtensionId(extension.getId().getId(), recommendedVersion), namespace)) {
+                    return;
+                }
+            }
+
+            // Get available versions
             NavigableSet<Version> versions = getVersions(extension, namespace);
+
+            // If the recommended version is available don't try others
+            if (recommendedVersion != null && versions.contains(recommendedVersion)) {
+                return;
+            }
 
             // Useless to continue if the extension does not have any available version
             if (!versions.isEmpty()) {

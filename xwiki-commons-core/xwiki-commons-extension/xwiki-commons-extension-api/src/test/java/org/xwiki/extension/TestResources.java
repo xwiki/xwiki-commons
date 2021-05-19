@@ -108,6 +108,8 @@ public class TestResources
 
     public static final ExtensionId REMOTE_UPGRADE10_ID = new ExtensionId("upgrade", "1.0");
 
+    public static final ExtensionId REMOTE_UPGRADE11_ID = new ExtensionId("upgrade", "1.1");
+
     public static final ExtensionId REMOTE_UPGRADE20_ID = new ExtensionId("upgrade", "2.0");
 
     public static final ExtensionId REMOTE_UPGRADEFEATURE20_ID = new ExtensionId("upgrade-feature", "2.0");
