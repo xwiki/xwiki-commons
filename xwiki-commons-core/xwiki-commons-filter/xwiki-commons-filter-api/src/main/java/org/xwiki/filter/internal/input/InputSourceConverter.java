@@ -87,7 +87,7 @@ public class InputSourceConverter extends AbstractConverter<InputSource>
         } else if (source.startsWith("file:")) {
             inputSource = new DefaultFileInputSource(new File(source.substring("file:".length())));
         } else if (source.startsWith("string:")) {
-            inputSource = new DefaultFileInputSource(new File(source.substring("string:".length())));
+            inputSource = new StringInputSource(source.substring("string:".length()));
         } else if (source.startsWith("resource:")) {
             ClassLoader classloader = Thread.currentThread().getContextClassLoader();
             URL resource = classloader.getResource(source.substring("resource:".length()));
