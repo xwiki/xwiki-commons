@@ -46,7 +46,7 @@ public class StringInputSource extends AbstractReaderInputSource
 
     /**
      * @return the source data
-     * @since 13.4RC1
+     * @since 13.4
      */
     public String getSource()
     {
