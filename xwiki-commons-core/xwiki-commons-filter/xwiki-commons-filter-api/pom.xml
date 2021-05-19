@@ -108,7 +108,6 @@
             org/xwiki/filter/input/AbstractBeanInputFilterStream.java,
             org/xwiki/filter/input/AbstractBeanInputFilterStreamFactory.java,
             org/xwiki/filter/input/AbstractReaderInputSource.java,
-            org/xwiki/filter/input/StringInputSource.java,
             org/xwiki/filter/internal/CompositeFilter.java,
             org/xwiki/filter/internal/FilterProxy.java,
             org/xwiki/filter/internal/input/InputSourceConverter.java,

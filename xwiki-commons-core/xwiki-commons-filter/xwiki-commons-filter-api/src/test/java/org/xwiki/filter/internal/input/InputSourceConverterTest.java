@@ -77,6 +77,15 @@ class InputSourceConverterTest
     }
 
     @Test
+    void convertFromStringString()
+    {
+        InputSource source = this.converter.convert(InputSource.class, "string:content");
+
+        assertThat(source, instanceOf(StringInputSource.class));
+        assertEquals("content", ((StringInputSource) source).getSource());
+    }
+
+    @Test
     void convertFromFile()
     {
         File file = new File("myfile");

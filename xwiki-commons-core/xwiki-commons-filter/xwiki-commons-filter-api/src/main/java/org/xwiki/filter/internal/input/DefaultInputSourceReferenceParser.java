@@ -75,7 +75,7 @@ public class DefaultInputSourceReferenceParser implements InputSourceReferencePa
             } else if (prefix.equals("file")) {
                 inputSource = new DefaultFileInputSource(new File(value));
             } else if (prefix.equals("string")) {
-                inputSource = new DefaultFileInputSource(new File(value));
+                inputSource = new StringInputSource(value);
             } else if (prefix.equals("resource")) {
                 ClassLoader classloader = Thread.currentThread().getContextClassLoader();
                 URL resource = classloader.getResource(value);
