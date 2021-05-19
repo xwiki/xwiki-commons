@@ -108,6 +108,52 @@ class UpgradePlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
+    void testUpgradePlanOnRootWhenAlreadyTheRecommendedVersion() throws Throwable
+    {
+        resetInstalledExtensions();
+
+        this.memoryConfigurationSource.setProperty("extension.recommendedVersions",
+            TestResources.REMOTE_UPGRADE10_ID.getId() + "/[1.0]");
+
+        // Install first version
+        InstalledExtension extension = install(TestResources.REMOTE_UPGRADE10_ID);
+        // Tag it as dependency
+        this.installedExtensionRepository.installExtension(extension, null, true);
+
+        // check upgrade
+
+        ExtensionPlan plan = upgradePlan();
+
+        // Tree
+
+        assertEquals(0, plan.getTree().size());
+    }
+
+    @Test
+    void testUpgradePlanOnRootWhenValidRecommendedVersion() throws Throwable
+    {
+        resetInstalledExtensions();
+
+        this.memoryConfigurationSource.setProperty("extension.recommendedVersions",
+            TestResources.REMOTE_UPGRADE10_ID.getId() + "/[1.1]");
+
+        // Install first version
+        InstalledExtension extension = install(TestResources.REMOTE_UPGRADE10_ID);
+        // Tag it as dependency
+        this.installedExtensionRepository.installExtension(extension, null, true);
+
+        // check upgrade
+
+        ExtensionPlan plan = upgradePlan();
+
+        // Tree
+
+        assertEquals(1, plan.getTree().size());
+        assertEquals(TestResources.REMOTE_UPGRADE11_ID,
+            plan.getTree().iterator().next().getAction().getExtension().getId());
+    }
+
+    @Test
     void testUpgradePlanOnNamespaceWithExtensionOnRoot() throws Throwable
     {
         // install first version
