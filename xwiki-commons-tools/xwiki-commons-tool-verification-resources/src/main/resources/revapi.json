@@ -17,6 +17,17 @@
             "match": "type ^com.xpn.xwiki.** {}"
           }
         ],
+        // Note: We don't exclude code annotated with @Unstable to force the build to break on it even if it's not a
+        // breakage in order to:
+        // - make sure we add the info about the changed API for young APIs in the release note page
+        // - make sure that the developer was aware about the change (just in case, even though the developer is
+        //   highly encouraged to change the API if it results in a better API; backward compatibility must not be
+        //   taken into account here and the only criteria should be the quality of the API).
+        // In case we want to exclude @Unstable-annotated code in the future, here's how we would do it:
+        //   {
+        //     "matcher": "java",
+        //     "match": "@org.xwiki.stability.Unstable ^*;"
+        //   }
         "exclude": [
           {
             "matcher": "java",
@@ -29,10 +40,6 @@
           {
             "matcher": "java",
             "match": "type ^com.xpn.xwiki.**.internal.** {}"
-          },
-          {
-            "matcher": "java",
-            "match": "@org.xwiki.stability.Unstable ^*;"
           }
         ]
       }
