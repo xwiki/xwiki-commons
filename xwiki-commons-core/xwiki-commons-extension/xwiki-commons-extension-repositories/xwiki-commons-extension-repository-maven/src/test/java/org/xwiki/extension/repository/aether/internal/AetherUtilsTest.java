@@ -26,11 +26,11 @@ import org.xwiki.extension.ExtensionId;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Validate {@link AetherUtils}.
+ * Unit tests for {@link AetherUtils}.
  * 
  * @version $Id$
  */
-public class AetherUtilsTest
+class AetherUtilsTest
 {
     @Test
     void createExtensionId()

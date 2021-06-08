@@ -19,55 +19,71 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.http.client.ClientProtocolException;
-import org.junit.Rule;
-import org.junit.Test;
-import org.xwiki.component.manager.ComponentLookupException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryException;
-import org.xwiki.extension.repository.ExtensionRepositoryFactory;
 import org.xwiki.test.annotation.AllComponents;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.WireMockServer;
 
-import static com.github.tomakehurst.wiremock.client.RequestPatternBuilder.allRequests;
-import static com.github.tomakehurst.wiremock.client.WireMock.findAll;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.allRequests;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Unit tests for {@link AetherExtensionRepositoryFactory}.
+ *
+ * @version $Id$
+ */
 @AllComponents
-public class SystemHTTPProxyTest
+@ComponentTest
+class SystemHTTPProxyTest
 {
-    @Rule
-    public WireMockRule proxyWireMockRule = new WireMockRule(8888);
+    @InjectMockComponents
+    private AetherExtensionRepositoryFactory repositoryFactory;
 
-    @Rule
-    public MockitoComponentMockingRule<ExtensionRepositoryFactory> repositoryFactory =
-        new MockitoComponentMockingRule<>(AetherExtensionRepositoryFactory.class);
+    private WireMockServer wireMockServer;
+
+    @BeforeEach
+    void proxyToWireMock()
+    {
+        this.wireMockServer = new WireMockServer(8888);
+        this.wireMockServer.start();
+    }
+
+    @AfterEach
+    void noMoreWireMock()
+    {
+        this.wireMockServer.stop();
+        this.wireMockServer = null;
+    }
 
     @Test
-    public void testProxy() throws ClientProtocolException, IOException, ExtensionRepositoryException,
-        ComponentLookupException, URISyntaxException
+    void proxy() throws ExtensionRepositoryException, URISyntaxException
     {
-        ExtensionRepository repository =
-            this.repositoryFactory.getComponentUnderTest().createRepository(
-                new DefaultExtensionRepositoryDescriptor("id", "maven", new URI("http://unknownhostforxwikitest")));
+        ExtensionRepository repository = this.repositoryFactory.createRepository(
+            new DefaultExtensionRepositoryDescriptor("id", "maven", new URI("http://unknownhostforxwikitest")));
 
+        // Simulate a remote server not responding.
         try {
             repository.resolveVersions("groupid:artifactid", 0, -1);
         } catch (ResolveException e) {
             // We don't really care if the target artifact exist
         }
 
-        assertTrue("The repository did not requested the proxy server", findAll(allRequests()).isEmpty());
+        assertTrue(this.wireMockServer.findAll(allRequests()).isEmpty(), "The repository did not request the "
+            + "proxy server");
 
+        // Set the proxy to be wiremock so that it answers.
         System.setProperty("http.proxyHost", "localhost");
         System.setProperty("http.proxyPort", "8888");
 
@@ -77,6 +93,7 @@ public class SystemHTTPProxyTest
             // We don't really care if the target artifact exist
         }
 
-        assertFalse("The repository did not requested the proxy server", findAll(allRequests()).isEmpty());
+        assertFalse(this.wireMockServer.findAll(allRequests()).isEmpty(),
+            "The repository did not request the proxy server");
     }
 }
