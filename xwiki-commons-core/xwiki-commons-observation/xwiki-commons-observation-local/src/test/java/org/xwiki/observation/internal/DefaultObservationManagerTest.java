@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.observation;
+package org.xwiki.observation.internal;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.event.ComponentDescriptorAddedEvent;
+import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.ActionExecutionEvent;
 import org.xwiki.observation.event.AllEvent;
 import org.xwiki.observation.event.Event;

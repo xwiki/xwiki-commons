@@ -92,7 +92,7 @@ public class ObservationContextListener extends AbstractEventListener
 
             if (events == null) {
                 events = new Stack<>();
-                context.setProperty(DefaultObservationContext.KEY_EVENTS, events);
+                context.newProperty(DefaultObservationContext.KEY_EVENTS).initial(events).inherited().declare();
             }
 
             events.push(event);

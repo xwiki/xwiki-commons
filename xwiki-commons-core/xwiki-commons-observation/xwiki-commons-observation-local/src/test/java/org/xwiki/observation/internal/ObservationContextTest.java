@@ -17,11 +17,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.observation;
+package org.xwiki.observation.internal;
 
 import org.junit.jupiter.api.Test;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
+import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.BeginEvent;
 import org.xwiki.observation.event.EndEvent;
 import org.xwiki.observation.event.Event;
