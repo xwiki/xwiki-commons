@@ -19,7 +19,7 @@
  */
 package org.xwiki.observation.internal;
 
-import java.util.Stack;
+import java.util.Deque;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -54,13 +54,13 @@ public class DefaultObservationContext implements ObservationContext
     /**
      * @return the events stacked in the execution context
      */
-    private Stack<BeginEvent> getCurrentEvents()
+    private Deque<BeginEvent> getCurrentEvents()
     {
-        Stack<BeginEvent> events = null;
+        Deque<BeginEvent> events = null;
 
         ExecutionContext context = this.execution.getContext();
         if (context != null) {
-            events = (Stack<BeginEvent>) context.getProperty(KEY_EVENTS);
+            events = (Deque<BeginEvent>) context.getProperty(KEY_EVENTS);
         }
 
         return events;
@@ -69,7 +69,7 @@ public class DefaultObservationContext implements ObservationContext
     @Override
     public boolean isIn(BeginEvent event)
     {
-        Stack<BeginEvent> events = getCurrentEvents();
+        Deque<BeginEvent> events = getCurrentEvents();
 
         if (events != null) {
             for (BeginEvent currentEvent : events) {

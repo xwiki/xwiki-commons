@@ -21,7 +21,7 @@ package org.xwiki.observation.internal;
 
 import java.lang.reflect.Field;
 import java.util.Map;
-import java.util.Stack;
+import java.util.Deque;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -105,20 +105,25 @@ class ObservationContextListenerTest
     {
         BeginEvent myBeginEvent = mock(BeginEvent.class);
         this.contextListener.onEvent(myBeginEvent, null, null);
-        Stack<BeginEvent> events = new Stack<>();
-        events.add(myBeginEvent);
-        assertEquals(events, this.executionContext.getProperty(DefaultObservationContext.KEY_EVENTS));
+        Deque<BeginEvent> events =
+            (Deque<BeginEvent>) this.executionContext.getProperty(DefaultObservationContext.KEY_EVENTS);
+        assertEquals(1, events.size());
+        assertEquals(myBeginEvent, events.getFirst());
 
         ExecutionContextProperty executionContextProperty = this.fetch(DefaultObservationContext.KEY_EVENTS);
         assertTrue(executionContextProperty.isInherited());
 
         BeginEvent myOtherBeginEvent = mock(BeginEvent.class);
         this.contextListener.onEvent(myOtherBeginEvent, null, null);
-        events.add(myOtherBeginEvent);
-        assertEquals(events, this.executionContext.getProperty(DefaultObservationContext.KEY_EVENTS));
+        events =
+            (Deque<BeginEvent>) this.executionContext.getProperty(DefaultObservationContext.KEY_EVENTS);
+        assertEquals(2, events.size());
+        assertEquals(myOtherBeginEvent, events.pop());
+        assertEquals(myBeginEvent, events.pop());
 
         executionContextProperty = this.fetch(DefaultObservationContext.KEY_EVENTS);
         assertTrue(executionContextProperty.isInherited());
+        assertTrue(executionContextProperty.isFinal());
     }
 
     @Test
@@ -134,13 +139,15 @@ class ObservationContextListenerTest
         this.contextListener.onEvent(myBeginEvent, null, null);
         this.contextListener.onEvent(myBeginEvent, null, null);
 
-        Stack<BeginEvent> events = new Stack<>();
-        events.add(myBeginEvent);
+        this.contextListener.onEvent(myEndEvent, null, null);
+        Deque<BeginEvent> events =
+            (Deque<BeginEvent>) this.executionContext.getProperty(DefaultObservationContext.KEY_EVENTS);
+        assertEquals(1, events.size());
+        assertEquals(myBeginEvent, events.getFirst());
 
         this.contextListener.onEvent(myEndEvent, null, null);
-        assertEquals(events, this.executionContext.getProperty(DefaultObservationContext.KEY_EVENTS));
-
-        this.contextListener.onEvent(myEndEvent, null, null);
-        assertEquals(new Stack<>(), this.executionContext.getProperty(DefaultObservationContext.KEY_EVENTS));
+        events =
+            (Deque<BeginEvent>) this.executionContext.getProperty(DefaultObservationContext.KEY_EVENTS);
+        assertTrue(events.isEmpty());
     }
 }
