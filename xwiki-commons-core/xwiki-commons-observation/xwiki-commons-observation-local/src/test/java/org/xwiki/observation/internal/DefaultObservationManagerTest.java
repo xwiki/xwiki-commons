@@ -24,14 +24,12 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.event.ComponentDescriptorAddedEvent;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.ActionExecutionEvent;
 import org.xwiki.observation.event.AllEvent;
 import org.xwiki.observation.event.Event;
-import org.xwiki.observation.internal.DefaultObservationManager;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -54,7 +52,7 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  */
 @ComponentTest
-public class DefaultObservationManagerTest
+class DefaultObservationManagerTest
 {
     @InjectMockComponents
     private DefaultObservationManager manager;
@@ -249,7 +247,7 @@ public class DefaultObservationManagerTest
     }
 
     @Test
-    public void onComponentEventWhenRuntimeExceptionInListenerGetName(MockitoComponentManager componentManager)
+    void onComponentEventWhenRuntimeExceptionInListenerGetName(MockitoComponentManager componentManager)
         throws Exception
     {
         ComponentDescriptorAddedEvent cdae = new ComponentDescriptorAddedEvent(EventListener.class,
@@ -267,14 +265,16 @@ public class DefaultObservationManagerTest
 
         this.manager.notify(cdae, componentManager, cd);
 
-        assertEquals("Failed to notify some event listeners about component [role = "
-            + "[interface org.xwiki.observation.EventListener], hint = [default]], implementation = "
-            + "[org.xwiki.observation.EventListener], instantiation = [SINGLETON]] being added or removed. Root cause: "
-            + "[RuntimeException: error]", logCapture.getMessage(0));
+        assertEquals("Failed to notify some event listeners about component ["
+            + "role = [interface org.xwiki.observation.EventListener], "
+            + "hint = [default], "
+            + "implementation = [org.xwiki.observation.EventListener], "
+            + "instantiation = [SINGLETON]"
+            + "] being added or removed. Root cause: [RuntimeException: error]", logCapture.getMessage(0));
     }
 
     @Test
-    public void addListenerWhenRuntimeExceptionInListenerGetName(MockitoComponentManager componentManager)
+    void addListenerWhenRuntimeExceptionInListenerGetName(MockitoComponentManager componentManager)
         throws Exception
     {
         EventListener eventListener = componentManager.registerMockComponent(EventListener.class,

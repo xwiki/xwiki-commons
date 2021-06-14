@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  * @version $Id$
  * @since 3.3M1
  */
-public class DefaultComponentDescriptorTest
+class DefaultComponentDescriptorTest
 {
     private interface Role
     {
@@ -147,7 +147,10 @@ public class DefaultComponentDescriptorTest
         cd.addComponentDependency(dep);
 
         assertEquals(
-            "role = [interface org.xwiki.component.descriptor.DefaultComponentDescriptorTest$Role], hint = [hint]], implementation = [org.xwiki.component.descriptor.DefaultComponentDescriptorTest$ImplRole], instantiation = [SINGLETON]",
+            "role = [interface org.xwiki.component.descriptor.DefaultComponentDescriptorTest$Role], "
+            + "hint = [hint], "
+            + "implementation = [org.xwiki.component.descriptor.DefaultComponentDescriptorTest$ImplRole], "
+            + "instantiation = [SINGLETON]",
             cd.toString());
     }
 }
