@@ -52,7 +52,7 @@ public class ExecutionContext
         ExecutionContextProperty property = this.properties.get(key);
 
         if (property == null) {
-            LOGGER.debug("Getting undefined property {} from execution context.", key);
+            LOGGER.debug("Getting undefined property [{}] from execution context.", key);
             return null;
         }
 
