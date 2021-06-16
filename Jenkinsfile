@@ -23,8 +23,6 @@
 // @Library("XWiki@<branch, tag, sha1>") _
 // See https://github.com/jenkinsci/workflow-cps-global-lib-plugin for details.
 
-def globalMavenOpts = '-Xmx1024m -Xms256m'
-
 stage ('Commons Builds') {
   parallel(
     'main': {
@@ -33,13 +31,11 @@ stage ('Commons Builds') {
         // In addition, we want the generated artifacts to be deployed to our remote Maven repository so that developers
         // can benefit from them even though some quality checks have not yet passed. In // we start a build with the
         // quality profile that executes various quality checks.
-        xwikiBuild('Main') {
-          xvnc = false
-          mavenOpts = globalMavenOpts
-          profiles = '-repository-all,legacy,integration-tests'
-          properties = '-Dxwiki.checkstyle.skip=true -Dxwiki.surefire.captureconsole.skip=true -Dxwiki.revapi.skip=true'
-          javadoc = false
-        }
+        build(
+          name: 'Main',
+          profiles: 'legacy,integration-tests',
+          properties: '-Dxwiki.checkstyle.skip=true -Dxwiki.surefire.captureconsole.skip=true -Dxwiki.revapi.skip=true'
+        )
 
         // If the "main" build has succeeded then trigger the rendering pipeline.
         // Note: we don't wait for the other builds to have finished since we want rendering to be triggered ASAP and
@@ -53,26 +49,21 @@ stage ('Commons Builds') {
         // Build with checkstyle. Make sure "mvn checkstyle:check" passes so that we don't cause false positive on
         // Checkstyle side. This is for the Checkstyle project itself so that they can verify that when they bring
         // changes to Checkstyle, there's no regression to the XWiki build.
-        xwikiBuild('Checkstyle') {
-          xvnc = false
-          mavenOpts = globalMavenOpts
-          profiles = '-repository-all'
-          goals = 'checkstyle:check@default'
-          javadoc = false
-        }
+        build(
+          name: 'Checkstyle',
+          goals: 'checkstyle:check@default'
+        )
       }
     },
     'testrelease': {
       node {
         // Simulate a release and verify all is fine, in preparation for the release day.
-        xwikiBuild('TestRelease') {
-          xvnc = false
-          mavenOpts = globalMavenOpts
-          goals = 'clean install'
-          profiles = '-repository-all,legacy,integration-tests'
-          properties = '-DskipTests -DperformRelease=true -Dgpg.skip=true -Dxwiki.checkstyle.skip=true -Ddoclint=all'
-          javadoc = false
-        }
+        build(
+          name: 'TestRelease',
+          goals: 'clean install',
+          profiles: 'legacy,integration-tests',
+          properties: '-DskipTests -DperformRelease=true -Dgpg.skip=true -Dxwiki.checkstyle.skip=true -Ddoclint=all'
+        )
       }
     },
     'quality': {
@@ -85,26 +76,52 @@ stage ('Commons Builds') {
         // - we need -Pcoverage and -Dxwiki.jacoco.itDestFile to tell Jacoco to compute a single global Jacoco
         //   coverage for the full reactor (so that the coverage percentage computed takes into account module tests
         //   which cover code in other modules)
-        xwikiBuild('Quality') {
-          xvnc = false
-          mavenOpts = globalMavenOpts
-          goals = 'clean install jacoco:report sonar:sonar'
-          profiles = '-repository-all,quality,legacy,coverage'
+        build(
+          name: 'Quality',
+          goals: 'clean install jacoco:report sonar:sonar',
+          profiles: 'quality,legacy,coverage',
           // Note: We specify the "jvm" system property to to execute the tests with Java 8 in order to limit problems
           // with more recent versions of Java. In the future, we'll need to be able to also execute the tests with
           // Java 14+. Remove that when we support it. See for example https://jira.xwiki.org/browse/XCOMMONS-2136
-          properties = '-Dxwiki.jacoco.itDestFile=`pwd`/target/jacoco-it.exec -Djvm=/home/hudsonagent/java8/bin/java'
-          sonar = true
-          javadoc = false
+          properties: '-Dxwiki.jacoco.itDestFile=`pwd`/target/jacoco-it.exec -Djvm=/home/hudsonagent/java8/bin/java',
+          sonar: true,
           // Build with Java 14 since Sonar requires Java 11+ and we want at the same time to verify that XWiki builds
           // with the latest Java version.
-          javaTool = 'java14'
-        }
+          javaTool: 'java14'
+        )
       }
     }
   )
 }
 
+private void build(map)
+{
+    xwikiBuild(map.name) {
+      mavenOpts = map.mavenOpts ?: '-Xmx1024m -Xms256m'
+      javadoc = false
+      xvnc = false
+      if (map.goals != null) {
+        goals = map.goals
+      }
+      // We automatically remove the "repository-all" profile since that's the profile defined in the settings.xml
+      // on the CI agents that is configured for nexus.xwiki.org. By doing so, we ensure that we don't need any
+      // dependency other than Maven Central for the build.
+      if (map.profiles != null) {
+        profiles = "-repository-all,${map.profiles}"
+      } else {
+        profiles = '-repository-all'
+      }
+      if (map.properties != null) {
+        properties = map.properties
+      }
+      if (map.sonar != null) {
+        sonar = map.sonar
+      }
+      if (map.javaTool != null) {
+        javaTool = map.javaTool
+      }
+    }
+}
 
 
 
