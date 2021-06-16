@@ -115,7 +115,7 @@ public class ExecutionContext
         ExecutionContextProperty property = this.properties.get(key);
 
         if (property == null) {
-            LOGGER.debug("Implicit declaration of property {}.", key);
+            LOGGER.debug("Implicit declaration of property [{}] in the Execution Context", key);
             newProperty(key).declare();
             property = this.properties.get(key);
         } else if (property.isFinal()) {
