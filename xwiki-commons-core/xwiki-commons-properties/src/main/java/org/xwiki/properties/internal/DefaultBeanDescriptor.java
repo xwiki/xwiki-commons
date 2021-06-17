@@ -22,6 +22,7 @@ package org.xwiki.properties.internal;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -35,6 +36,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.util.DefaultParameterizedType;
@@ -98,16 +100,23 @@ public class DefaultBeanDescriptor implements BeanDescriptor
     {
         Object defaultInstance = null;
 
-        try {
-            defaultInstance = getBeanClass().newInstance();
-        } catch (Exception e) {
-            LOGGER.debug("Failed to create a new default instance for class [{}]. The BeanDescriptor will not "
-                + "contains any default value information.", this.beanClass.getName(), e);
+        // Try to get an instance of the bean class to get default values of the bean properties in the property
+        // descriptor. Note that a java bean is supposed to always have an empty public constructor but we want to
+        // support the use cases where it's not the case and still make it work. In this case, we simply don't
+        // set default values.
+        Constructor<?> constructor = ConstructorUtils.getAccessibleConstructor(getBeanClass());
+        if (constructor != null) {
+            try {
+                defaultInstance = constructor.newInstance();
+            } catch (Exception e) {
+                LOGGER.debug("Failed to create a new default instance for class [{}]. The BeanDescriptor will not "
+                    + "contains any default value information.", getBeanClass().getName(), e);
+            }
         }
 
         try {
             // Get public fields
-            for (Class<?> currentClass = this.beanClass; currentClass != null; currentClass =
+            for (Class<?> currentClass = getBeanClass(); currentClass != null; currentClass =
                     currentClass.getSuperclass()) {
                 Field[] fields = currentClass.getFields();
                 for (Field field : fields) {
@@ -118,7 +127,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             }
 
             // Get getter/setter based properties
-            BeanInfo beanInfo = Introspector.getBeanInfo(this.beanClass);
+            BeanInfo beanInfo = Introspector.getBeanInfo(getBeanClass());
             java.beans.PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
             if (propertyDescriptors != null) {
                 for (java.beans.PropertyDescriptor propertyDescriptor : propertyDescriptors) {
@@ -129,7 +138,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             }
         } catch (Exception e) {
             LOGGER.warn("Failed to load bean descriptor for class [{}]. Ignoring it. Root cause: [{}]",
-                this.beanClass.getName(), ExceptionUtils.getRootCauseMessage(e));
+                getBeanClass().getName(), ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -190,7 +199,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                         desc.setDefaultValue(readMethod.invoke(defaultInstance));
                     } catch (Exception e) {
                         LOGGER.warn("Failed to get default property value from getter [{}] in class [{}]. Ignoring it. "
-                            + "Root cause [{}]", readMethod.getName(), this.beanClass,
+                            + "Root cause [{}]", readMethod.getName(), getBeanClass(),
                             ExceptionUtils.getRootCauseMessage(e));
                     }
                 }
@@ -248,7 +257,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                     desc.setDefaultValue(field.get(defaultInstance));
                 } catch (Exception e) {
                     LOGGER.warn("Failed to get default property value from field [{}] in class [{}]. Ignoring it. "
-                        + "Root cause: [{}]", field.getName(), this.beanClass, ExceptionUtils.getRootCauseMessage(e));
+                        + "Root cause: [{}]", field.getName(), getBeanClass(), ExceptionUtils.getRootCauseMessage(e));
                 }
             }
 

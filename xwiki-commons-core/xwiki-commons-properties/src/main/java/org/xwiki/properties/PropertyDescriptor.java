@@ -64,7 +64,7 @@ public interface PropertyDescriptor
     Type getPropertyType();
 
     /**
-     * @return the default value of the property.
+     * @return the default value of the property or null if no default value has been defined
      */
     Object getDefaultValue();
 
