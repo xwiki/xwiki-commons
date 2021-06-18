@@ -2113,9 +2113,11 @@
                  - Explicitly define how much memory to give to the forked JVM process for the tests, as otherwise
                    Java will give about 1/4th of the physical memory which can be not enough or too much (e.g. on a CI
                    agent too much means we cannot run as many jobs in parallel as we could).
+                 - TODO: Put back -Xmx1024m once https://github.com/testcontainers/testcontainers-java/issues/4203 is
+                   fixed as we should use the lowest possible value to use less memory.
                  - Take a heap dump on low memory to diagnose issues
             -->
-            <argLine>@{argLine} -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory}</argLine>
+            <argLine>@{argLine} -Xmx1536m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory}</argLine>
           </configuration>
           <executions>
             <execution>
