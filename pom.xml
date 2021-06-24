@@ -90,7 +90,7 @@
     <mockito.version>3.11.1</mockito.version>
 
     <!-- Byte Buddy -->
-    <bytebuddy.version>1.11.2</bytebuddy.version>
+    <bytebuddy.version>1.11.5</bytebuddy.version>
 
     <!-- AspectJ -->
     <aspectj.version>1.9.6</aspectj.version>
