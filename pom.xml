@@ -46,7 +46,7 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>13.4.1-SNAPSHOT</commons.version>
+    <commons.version>13.4.1</commons.version>
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
