@@ -26,7 +26,7 @@
   <parent>
     <artifactId>xwiki-commons-crypto-store</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>7.4.1</version>
+    <version>7.4.1-struts2-1-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-crypto-store-filesystem</artifactId>
   <packaging>jar</packaging>
