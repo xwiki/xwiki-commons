@@ -26,7 +26,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>7.4.1-struts2-1-SNAPSHOT</version>
+  <version>7.4.1-struts2-1</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -155,7 +155,7 @@
     <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki/xwiki-commons.git</developerConnection>
     <url>https://github.com/xwiki/xwiki-commons/tree/master/</url>
-    <tag>xwiki-commons-7.4.1</tag>
+    <tag>xwiki-commons-7.4.1-struts2-1</tag>
   </scm>
   <mailingLists>
     <mailingList>
