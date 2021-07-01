@@ -31,7 +31,7 @@ stage ('Commons Builds') {
         // In addition, we want the generated artifacts to be deployed to our remote Maven repository so that developers
         // can benefit from them even though some quality checks have not yet passed. In // we start a build with the
         // quality profile that executes various quality checks.
-        build(
+        buildInternal(
           name: 'Main',
           profiles: 'legacy,integration-tests',
           properties: '-Dxwiki.checkstyle.skip=true -Dxwiki.surefire.captureconsole.skip=true -Dxwiki.revapi.skip=true'
@@ -49,7 +49,7 @@ stage ('Commons Builds') {
         // Build with checkstyle. Make sure "mvn checkstyle:check" passes so that we don't cause false positive on
         // Checkstyle side. This is for the Checkstyle project itself so that they can verify that when they bring
         // changes to Checkstyle, there's no regression to the XWiki build.
-        build(
+        buildInternal(
           name: 'Checkstyle',
           goals: 'checkstyle:check@default'
         )
@@ -58,7 +58,7 @@ stage ('Commons Builds') {
     'testrelease': {
       node {
         // Simulate a release and verify all is fine, in preparation for the release day.
-        build(
+        buildInternal(
           name: 'TestRelease',
           goals: 'clean install',
           profiles: 'legacy,integration-tests',
@@ -76,7 +76,7 @@ stage ('Commons Builds') {
         // - we need -Pcoverage and -Dxwiki.jacoco.itDestFile to tell Jacoco to compute a single global Jacoco
         //   coverage for the full reactor (so that the coverage percentage computed takes into account module tests
         //   which cover code in other modules)
-        build(
+        buildInternal(
           name: 'Quality',
           goals: 'clean install jacoco:report sonar:sonar',
           profiles: 'quality,legacy,coverage',
@@ -94,7 +94,7 @@ stage ('Commons Builds') {
   )
 }
 
-private void build(map)
+private void buildInternal(map)
 {
     xwikiBuild(map.name) {
       mavenOpts = map.mavenOpts ?: '-Xmx1024m -Xms256m'
