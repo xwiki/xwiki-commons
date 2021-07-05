@@ -24,7 +24,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>7.4.6</version>
+  <version>7.4.6-struts2-1-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -46,7 +46,7 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>7.4.6</commons.version>
+    <commons.version>7.4.6-struts2-1</commons.version>
 
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
     <xwiki.clirr.previous.version>7.4.5</xwiki.clirr.previous.version>
