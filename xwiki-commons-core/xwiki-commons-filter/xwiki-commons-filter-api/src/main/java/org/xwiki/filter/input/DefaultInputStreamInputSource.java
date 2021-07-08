@@ -54,7 +54,7 @@ public class DefaultInputStreamInputSource implements InputStreamInputSource
     @Override
     public InputStream getInputStream()
     {
-        return this.close ? this.inputStream : new CloseShieldInputStream(this.inputStream);
+        return this.close ? this.inputStream : CloseShieldInputStream.wrap(this.inputStream);
     }
 
     @Override
