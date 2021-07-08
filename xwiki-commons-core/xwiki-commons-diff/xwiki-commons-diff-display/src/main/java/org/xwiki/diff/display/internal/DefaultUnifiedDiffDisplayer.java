@@ -426,7 +426,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
         // Add the unmodified elements before the given delta.
         int count = state.getBlocks().peek().isEmpty() ? contextSize : contextSize * 2;
         int lastChangeIndex = state.getLastDelta() == null ? -1 : state.getLastDelta().getPrevious().getLastIndex();
-        int end = delta.getPrevious().getIndex();
+        int end = Math.min(delta.getPrevious().getIndex(), state.getPrevious().size());
         int start = Math.max(end - count, lastChangeIndex + 1);
         state.getBlocks().peek().addAll(this.<E, F>getUnmodifiedElements(state.getPrevious(), start, end));
 
@@ -500,7 +500,9 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
     private <E, F> List<UnifiedDiffElement<E, F>> getUnmodifiedElements(List<E> previous, int start, int end)
     {
         List<UnifiedDiffElement<E, F>> unmodifiedElements = new ArrayList<>();
-        for (int i = start; i < end; i++) {
+        // Prevent exceeding the size of the previous list in the loop.
+        int realEnd = Math.min(end, previous.size());
+        for (int i = start; i < realEnd; i++) {
             unmodifiedElements.add(new UnifiedDiffElement<>(i, Type.CONTEXT, previous.get(i)));
         }
         return unmodifiedElements;
