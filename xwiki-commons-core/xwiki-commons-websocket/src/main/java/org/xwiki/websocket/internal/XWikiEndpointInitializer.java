@@ -103,7 +103,7 @@ public class XWikiEndpointInitializer implements Initializable
     {
         ServerEndpoint endPointConfig = implementation.getAnnotation(ServerEndpoint.class);
         if (endPointConfig != null) {
-            initialize(ServerEndpointConfig.Builder.create(implementation, endPointConfig.value())
+            initialize(ServerEndpointConfig.Builder.create(implementation, "/websocket" + endPointConfig.value())
                 .subprotocols(Arrays.asList(endPointConfig.subprotocols()))
                 .encoders(Arrays.asList(endPointConfig.encoders())).decoders(Arrays.asList(endPointConfig.decoders())),
                 container);
