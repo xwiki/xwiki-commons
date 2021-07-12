@@ -60,6 +60,7 @@
     <module>xwiki-commons-stability</module>
     <module>xwiki-commons-text</module>
     <module>xwiki-commons-velocity</module>
+    <module>xwiki-commons-websocket</module>
     <module>xwiki-commons-xml</module>
     <module>xwiki-commons-xstream</module>
   </modules>

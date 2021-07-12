@@ -1,0 +1,4 @@
+org.xwiki.websocket.internal.XWikiEndpointConfigurator
+org.xwiki.websocket.internal.XWikiEndpointDispatcher
+org.xwiki.websocket.internal.XWikiEndpointInitializer
+org.xwiki.websocket.internal.XWikiEndpointListener
