@@ -82,8 +82,8 @@ public class XWikiEndpointDispatcher extends Endpoint implements EndpointCompone
                 this.endPoint = (Endpoint) endPointComponent;
                 this.endPoint.onOpen(session, config);
             } else {
-                closeReason = new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT,
-                    String.format("The component [%s] doesn't extend Endpoint.", endPoint.getClass().getName()));
+                closeReason = new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, String
+                    .format("The component [%s] doesn't extend Endpoint.", endPointComponent.getClass().getName()));
             }
         } catch (ComponentLookupException e) {
             closeReason = new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, ExceptionUtils.getRootCauseMessage(e));
