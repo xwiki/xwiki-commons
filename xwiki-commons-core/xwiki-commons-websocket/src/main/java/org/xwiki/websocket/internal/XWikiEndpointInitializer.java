@@ -125,7 +125,7 @@ public class XWikiEndpointInitializer implements Initializable
         try {
             container.addEndpoint(config);
         } catch (DeploymentException e) {
-            this.logger.warn("Failed to deploy WebSocket end-point implemented by []. Root cause is [{}].",
+            this.logger.warn("Failed to deploy WebSocket end-point implemented by [{}]. Root cause is [{}].",
                 config.getEndpointClass().getName(), ExceptionUtils.getRootCauseMessage(e));
         }
     }
