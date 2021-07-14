@@ -37,7 +37,6 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.job.event.JobFinishedEvent;
-import org.xwiki.job.event.JobStartedEvent;
 import org.xwiki.observation.ObservationContext;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
@@ -110,7 +109,7 @@ class XWikiEndpointListenerTest
     @Test
     void onInstall() throws Exception
     {
-        when(this.observationContext.isIn(new JobStartedEvent())).thenReturn(true);
+        when(this.observationContext.isIn(XWikiEndpointListener.PARENT)).thenReturn(true);
 
         this.listener.onEvent(new ComponentDescriptorAddedEvent(), null, null);
         this.listener.onEvent(new JobFinishedEvent(), null, null);

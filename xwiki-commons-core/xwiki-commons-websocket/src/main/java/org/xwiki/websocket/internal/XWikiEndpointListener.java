@@ -55,9 +55,9 @@ public class XWikiEndpointListener extends AbstractEventListener
      */
     public static final String HINT = "org.xwiki.websocket.internal.XWikiEndpointListener";
 
-    private static final String UPDATE = "websocket.update";
+    static final JobStartedEvent PARENT = new JobStartedEvent();
 
-    private static final JobStartedEvent PARENT = new JobStartedEvent();
+    private static final String UPDATE = "websocket.update";
 
     @Inject
     private Logger logger;
