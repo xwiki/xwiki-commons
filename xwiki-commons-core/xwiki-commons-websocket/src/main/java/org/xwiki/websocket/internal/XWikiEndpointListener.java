@@ -43,7 +43,7 @@ import org.xwiki.websocket.EndpointComponent;
  * installed or uninstalled.
  * 
  * @version $Id$
- * @since 13.6RC1
+ * @since 13.7RC1
  */
 @Component
 @Named(XWikiEndpointListener.HINT)

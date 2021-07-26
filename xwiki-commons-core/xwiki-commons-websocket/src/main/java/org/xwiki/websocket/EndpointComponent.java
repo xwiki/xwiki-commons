@@ -29,7 +29,7 @@ import org.xwiki.stability.Unstable;
  * Marks WebSocket end-points that are implemented as XWiki components.
  * 
  * @version $Id$
- * @since 13.6RC1
+ * @since 13.7RC1
  * @see ServerEndpoint
  * @see Endpoint
  */

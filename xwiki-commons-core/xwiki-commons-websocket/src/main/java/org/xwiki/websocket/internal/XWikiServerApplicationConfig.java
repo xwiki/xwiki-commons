@@ -31,7 +31,7 @@ import javax.websocket.server.ServerEndpointConfig;
  * {@link XWikiEndpointInitializer}.
  * 
  * @version $Id$
- * @since 13.6RC1
+ * @since 13.7RC1
  */
 public class XWikiServerApplicationConfig implements ServerApplicationConfig
 {

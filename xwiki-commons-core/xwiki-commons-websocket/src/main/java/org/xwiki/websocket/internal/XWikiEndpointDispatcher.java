@@ -46,7 +46,7 @@ import org.xwiki.websocket.EndpointComponent;
  * A static WebSocket end-point that dispatches the requests to the dynamic end-point specified in the URL.
  * 
  * @version $Id$
- * @since 13.6RC1
+ * @since 13.7RC1
  */
 @Component
 @Named("org.xwiki.websocket.internal.XWikiEndpointDispatcher")

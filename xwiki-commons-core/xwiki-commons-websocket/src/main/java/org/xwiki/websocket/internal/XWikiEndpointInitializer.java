@@ -48,7 +48,7 @@ import org.xwiki.websocket.EndpointComponent;
  * Initializes the WebSocket end-points defined using {@link EndpointComponent}.
  * 
  * @version $Id$
- * @since 13.6RC1
+ * @since 13.7RC1
  */
 @Component(roles = XWikiEndpointInitializer.class)
 @Singleton

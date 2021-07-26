@@ -34,7 +34,7 @@ import org.xwiki.stability.Unstable;
  * that context when a WebSocket session is opened or when receiving messages.
  * 
  * @version $Id$
- * @since 13.6RC1
+ * @since 13.7RC1
  */
 @Role
 @Unstable
