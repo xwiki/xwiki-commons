@@ -63,6 +63,15 @@ class DefaultVersionTest
 
         assertFalse(version.equals(null));
         assertTrue(version.equals(version));
+
+        assertEquals(new DefaultVersion("1.1"), new DefaultVersion("1.1"));
+        assertEquals(new DefaultVersion("1a"), new DefaultVersion("1-a"));
+        assertEquals(new DefaultVersion("1m2"), new DefaultVersion("1-m-2"));
+        assertEquals(new DefaultVersion("1M2"), new DefaultVersion("1-M-2"));
+        assertEquals(new DefaultVersion("1-M2"), new DefaultVersion("1-M-2"));
+        assertEquals(new DefaultVersion("1a2"), new DefaultVersion("1-alpha-2"));
+        assertEquals(new DefaultVersion("1b2"), new DefaultVersion("1-beta-2"));
+        assertEquals(new DefaultVersion("1m2"), new DefaultVersion("1-milestone-2"));
     }
 
     @Test
@@ -88,6 +97,9 @@ class DefaultVersionTest
         assertEquals(Version.Type.SNAPSHOT, new DefaultVersion("1.1-SNAPSHOT").getType());
         assertEquals(Version.Type.BETA, new DefaultVersion("1.1-milestone-1").getType());
         assertEquals(Version.Type.STABLE, new DefaultVersion("1.1").getType());
+        assertEquals(Version.Type.BETA, new DefaultVersion("1.1A2").getType());
+        assertEquals(Version.Type.BETA, new DefaultVersion("1.1B2").getType());
+        assertEquals(Version.Type.BETA, new DefaultVersion("1.1M2").getType());
     }
 
     @Test

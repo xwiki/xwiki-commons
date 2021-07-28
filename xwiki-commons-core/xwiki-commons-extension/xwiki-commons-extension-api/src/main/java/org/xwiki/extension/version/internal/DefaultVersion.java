@@ -237,6 +237,7 @@ public class DefaultVersion implements Version
             QUALIFIERS.put("beta", Integer.valueOf(-4));
             QUALIFIERS.put("b", Integer.valueOf(-4));
             QUALIFIERS.put("milestone", Integer.valueOf(-3));
+            QUALIFIERS.put("m", Integer.valueOf(-3));
             QUALIFIERS.put("cr", Integer.valueOf(-2));
             QUALIFIERS.put("rc", Integer.valueOf(-2));
             QUALIFIERS.put("snapshot", Integer.valueOf(-1));
