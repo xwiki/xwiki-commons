@@ -440,7 +440,7 @@ class DefaultJobStatusStoreTest
 
         // Verify that the status has been serialized, indirectly verifying that isSerializable() has been called and
         // returned true.
-        assertTrue(new File(this.storeDirectory, "newstatus/status.xml").exists());
+        assertTrue(new File(this.storeDirectory, "newstatus/status.xml.zip").exists());
     }
 
     @Test

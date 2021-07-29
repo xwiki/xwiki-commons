@@ -74,9 +74,14 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     private static final int VERSION = 1;
 
     /**
-     * The name of the file where the job status is stored.
+     * The name of the file where the job status is stored as XML.
      */
-    private static final String FILENAME_STATUS = "status.xml";
+    private static final String FILENAME_STATUS_XML = "status.xml";
+
+    /**
+     * The name of the file where the job status is ZIPPED.
+     */
+    private static final String FILENAME_STATUS_ZIP = FILENAME_STATUS_XML + ".zip";
 
     /**
      * The name of the file where various information about the status store are stored (like the version of the store).
@@ -245,7 +250,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         for (File file : folder.listFiles()) {
             if (file.isDirectory()) {
                 repairFolder(file);
-            } else if (file.getName().equals(FILENAME_STATUS)) {
+            } else if (file.getName().equals(FILENAME_STATUS_ZIP) || file.getName().equals(FILENAME_STATUS_XML)) {
                 try {
                     JobStatus status = loadStatus(folder);
 
@@ -268,20 +273,26 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         }
     }
 
-    private JobStatus loadStatus(List<String> id)
+    private JobStatus loadStatus(List<String> id) throws IOException
     {
         return loadStatus(getJobFolder(id));
     }
 
     /**
      * @param folder the folder from where to load the job status
+     * @throws IOException when failing to load the status file
      */
-    private JobStatus loadStatus(File folder)
+    private JobStatus loadStatus(File folder) throws IOException
     {
         this.readLock.lock();
 
         try {
-            File statusFile = new File(folder, FILENAME_STATUS);
+            // First try as ZIP
+            File statusFile = new File(folder, FILENAME_STATUS_ZIP);
+            if (!statusFile.exists()) {
+                // Then try as XML
+                statusFile = new File(folder, FILENAME_STATUS_XML);
+            }
             if (statusFile.exists()) {
                 JobStatus status = loadJobStatus(statusFile);
 
@@ -314,9 +325,9 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     /**
      * @param statusFile the file containing job status to load
      * @return the job status
-     * @throws Exception when failing to load the job status from the file
+     * @throws IOException when failing to load the job status from the file
      */
-    private JobStatus loadJobStatus(File statusFile)
+    private JobStatus loadJobStatus(File statusFile) throws IOException
     {
         return this.serializer.read(statusFile);
     }
@@ -347,7 +358,6 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
     /**
      * @param status the job status to save
-     * @throws IOException when falling to store the provided status
      */
     private void saveJobStatus(JobStatus status)
     {
@@ -356,7 +366,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
             try {
                 File statusFile = getJobFolder(status.getRequest().getId());
-                statusFile = new File(statusFile, FILENAME_STATUS);
+                statusFile = new File(statusFile, FILENAME_STATUS_ZIP);
 
                 this.logger.debug("Serializing status [{}] in [{}]", status.getRequest().getId(), statusFile);
 

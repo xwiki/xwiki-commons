@@ -20,9 +20,8 @@
 package org.xwiki.job.internal;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
@@ -34,7 +33,12 @@ import java.nio.file.StandardCopyOption;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.xstream.internal.SafeXStream;
@@ -54,6 +58,8 @@ public class JobStatusSerializer
      */
     private static final Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
 
+    private static final String ZIP_EXTENSION = "zip";
+
     /**
      * Used to serialize and unserialize status.
      */
@@ -69,8 +75,12 @@ public class JobStatusSerializer
     {
         File tempFile = File.createTempFile(file.getName(), ".tmp");
 
-        try (FileOutputStream stream = FileUtils.openOutputStream(tempFile)) {
+        try (OutputStream stream = getOutputStream(tempFile, isZip(file))) {
             write(status, stream);
+
+            if (stream instanceof ArchiveOutputStream) {
+                ((ArchiveOutputStream) stream).closeArchiveEntry();
+            }
         }
 
         // Copy the file to its final destination
@@ -93,6 +103,18 @@ public class JobStatusSerializer
         }
     }
 
+    private OutputStream getOutputStream(File tempFile, boolean zip) throws IOException
+    {
+        if (zip) {
+            ZipArchiveOutputStream archive = new ZipArchiveOutputStream(tempFile);
+            archive.putArchiveEntry(new ZipArchiveEntry("status.xml"));
+
+            return archive;
+        } else {
+            return FileUtils.openOutputStream(tempFile);
+        }
+    }
+
     /**
      * @param status the status to serialize
      * @param stream the stream to serialize the status to
@@ -109,18 +131,26 @@ public class JobStatusSerializer
     /**
      * @param file the file to read
      * @return the status
+     * @throws IOException when failing to read the status file
      */
-    public JobStatus read(File file)
+    public JobStatus read(File file) throws IOException
     {
-        return (JobStatus) this.xstream.fromXML(file);
+        if (isZip(file)) {
+            try (ZipArchiveInputStream stream = new ZipArchiveInputStream(new FileInputStream(file))) {
+                ZipArchiveEntry entry = stream.getNextZipEntry();
+                if (entry == null) {
+                    throw new IOException("Missing entry in the status zip file");
+                }
+
+                return (JobStatus) this.xstream.fromXML(stream);
+            }
+        } else {
+            return (JobStatus) this.xstream.fromXML(file);
+        }
     }
 
-    /**
-     * @param stream the stream to read
-     * @return the status
-     */
-    public JobStatus read(InputStream stream)
+    private boolean isZip(File file)
     {
-        return (JobStatus) this.xstream.fromXML(stream);
+        return FilenameUtils.getExtension(file.getName()).equals(ZIP_EXTENSION);
     }
 }
