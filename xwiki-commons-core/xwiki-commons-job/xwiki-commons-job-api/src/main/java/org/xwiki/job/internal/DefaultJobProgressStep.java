@@ -42,27 +42,23 @@ public class DefaultJobProgressStep implements JobProgressStep
 
     protected transient boolean levelStep;
 
+    protected transient int maximumChildren = -1;
+
+    protected transient double childSize;
+
     // Stored data
 
     protected final Message message;
 
-    protected final int index;
-
     protected double offset;
-
-    protected int maximumChildren = -1;
-
-    protected double childSize;
 
     protected List<DefaultJobProgressStep> children;
 
     private final long startTime;
 
-    private boolean finished;
-
     private boolean levelFinished;
 
-    private long elapsedTime;
+    private long elapsedTime = -1;
 
     /**
      * @param message the message associated to the step
@@ -76,10 +72,8 @@ public class DefaultJobProgressStep implements JobProgressStep
         this.source = source;
 
         if (this.parent != null) {
-            this.index = this.parent.children.size();
-            this.startTime = this.index == 0 ? this.parent.startTime : System.nanoTime();
+            this.startTime = this.parent.children.isEmpty() ? this.parent.startTime : System.nanoTime();
         } else {
-            this.index = 0;
             this.startTime = System.nanoTime();
         }
 
@@ -121,7 +115,7 @@ public class DefaultJobProgressStep implements JobProgressStep
     @Override
     public long getElapsedTime()
     {
-        return isFinished() ? this.elapsedTime : System.nanoTime() - this.startTime;
+        return this.elapsedTime != -1 ? this.elapsedTime : System.nanoTime() - this.startTime;
     }
 
     /**
@@ -263,7 +257,7 @@ public class DefaultJobProgressStep implements JobProgressStep
      */
     public boolean isFinished()
     {
-        return this.finished || isVirtual();
+        return this.elapsedTime != -1 || isVirtual();
     }
 
     /**
@@ -304,10 +298,9 @@ public class DefaultJobProgressStep implements JobProgressStep
             // Calculate the elapsed time
             this.elapsedTime = getElapsedTime();
 
+            // We don't need the source anymore and it could be expensive from memory point of view to keep a pointer on
+            // it
             this.source = null;
-
-            // Mark it as finished
-            this.finished = true;
         }
     }
 }
