@@ -76,6 +76,10 @@ public class JobStatusSerializer
         File tempFile = File.createTempFile(file.getName(), ".tmp");
 
         try (OutputStream stream = getOutputStream(tempFile, isZip(file))) {
+            if (stream instanceof ArchiveOutputStream) {
+                ((ArchiveOutputStream) stream).putArchiveEntry(new ZipArchiveEntry("status.xml"));
+            }
+
             write(status, stream);
 
             if (stream instanceof ArchiveOutputStream) {
@@ -106,10 +110,7 @@ public class JobStatusSerializer
     private OutputStream getOutputStream(File tempFile, boolean zip) throws IOException
     {
         if (zip) {
-            ZipArchiveOutputStream archive = new ZipArchiveOutputStream(tempFile);
-            archive.putArchiveEntry(new ZipArchiveEntry("status.xml"));
-
-            return archive;
+            return new ZipArchiveOutputStream(tempFile);
         } else {
             return FileUtils.openOutputStream(tempFile);
         }
