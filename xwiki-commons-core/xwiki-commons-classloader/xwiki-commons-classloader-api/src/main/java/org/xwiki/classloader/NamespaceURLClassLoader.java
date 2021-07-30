@@ -19,6 +19,7 @@
  */
 package org.xwiki.classloader;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -40,6 +41,8 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
      * @see #getNamespace()
      */
     private String namespace;
+
+    private boolean closed;
 
     /**
      * @param uris the search path
@@ -90,5 +93,23 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
     public String getNamespace()
     {
         return this.namespace;
+    }
+
+    /**
+     * @return true of the class loader is closed
+     * @since 13.7RC1
+     */
+    @Unstable
+    public boolean isClosed()
+    {
+        return this.closed;
+    }
+
+    @Override
+    public void close() throws IOException
+    {
+        super.close();
+
+        this.closed = true;
     }
 }
