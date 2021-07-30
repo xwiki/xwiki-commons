@@ -36,7 +36,7 @@ import org.xwiki.component.annotation.Component;
 @Singleton
 public class ChannelStore
 {
-    private final Map<String, Channel> channelByKey = new ConcurrentHashMap<String, Channel>();
+    private final Map<String, Channel> channelByKey = new ConcurrentHashMap<>();
 
     /**
      * Creates a new channel with a randomly generated key.
