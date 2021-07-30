@@ -53,6 +53,7 @@
     <module>xwiki-commons-job</module>
     <module>xwiki-commons-logging</module>
     <module>xwiki-commons-management</module>
+    <module>xwiki-commons-netflux</module>
     <module>xwiki-commons-observation</module>
     <module>xwiki-commons-properties</module>
     <module>xwiki-commons-repository</module>
