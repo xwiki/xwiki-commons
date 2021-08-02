@@ -123,6 +123,7 @@
     <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}
     </xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
     <xwiki.enforcer.enforce-glasshfish-jaxb.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glasshfish-jaxb.skip>
+    <xwiki.enforcer.enforce-jaxrs1.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jaxrs1.skip>
     <xwiki.enforcer.enforce-open-json.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-open-json.skip>
     <xwiki.enforcer.enforce-glassfish-el.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glassfish-el.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
@@ -1508,6 +1509,25 @@
                     <exclude>com.sun.xml.bind:jaxb-impl</exclude>
                     <exclude>com.sun.xml.bind:jaxb-core</exclude>
                     <exclude>org.glassfish.jaxb:jaxb-core</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- TODO: invert when https://jira.xwiki.org/browse/XWIKI-12955 is fixed -->
+          <execution>
+            <id>enforce-jaxrs1</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jaxrs1.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>XWiki only support JAX-RS 1 (javax.ws.rs:jsr311-api) for now</message>
+                  <excludes>
+                    <exclude>javax.ws.rs:javax.ws.rs-api</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
