@@ -2217,7 +2217,7 @@
           <version>2.8.2</version>
         </plugin>
         <plugin>
-          <groupId>com.nickwongdev</groupId>
+          <groupId>org.codehaus.mojo</groupId>
           <artifactId>aspectj-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>1.14.0</version>
