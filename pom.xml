@@ -1192,6 +1192,11 @@
         <artifactId>byte-buddy</artifactId>
         <version>${bytebuddy.version}</version>
       </dependency>
+      <dependency>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy-agent</artifactId>
+        <version>${bytebuddy.version}</version>
+      </dependency>
 
       <!-- Several modules depend on the servlet API -->
       <dependency>
