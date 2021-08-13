@@ -19,6 +19,7 @@
  */
 package org.xwiki.classloader;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -28,9 +29,8 @@ import java.util.stream.Collectors;
 import org.xwiki.stability.Unstable;
 
 /**
- * An {@link ExtendedURLClassLoader} associated with a namespace. The namespace can be anything.
- * For example it's used by the Extension Manager to have one classloader per wiki using a
- * namespace of the type {@code wiki:wikiname}.
+ * An {@link ExtendedURLClassLoader} associated with a namespace. The namespace can be anything. For example it's used
+ * by the Extension Manager to have one classloader per wiki using a namespace of the type {@code wiki:wikiname}.
  *
  * @version $Id$
  * @since 4.0M1
@@ -42,12 +42,14 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
      */
     private String namespace;
 
+    private boolean closed;
+
     /**
      * @param uris the search path
      * @param parent the parent class loader
      * @param namespace see {@link #getNamespace()}
      * @deprecated since 12.5RC1 prefer using
-     *      {@link NamespaceURLClassLoader#NamespaceURLClassLoader(URL[], ClassLoader, String)}.
+     *             {@link NamespaceURLClassLoader#NamespaceURLClassLoader(URL[], ClassLoader, String)}.
      */
     @Deprecated
     public NamespaceURLClassLoader(URI[] uris, ClassLoader parent, String namespace)
@@ -82,7 +84,7 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
     @Unstable
     public NamespaceURLClassLoader(ClassLoader parent, String namespace)
     {
-        this(new URL[]{}, parent, namespace);
+        this(new URL[] {}, parent, namespace);
     }
 
     /**
@@ -91,5 +93,23 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
     public String getNamespace()
     {
         return this.namespace;
+    }
+
+    /**
+     * @return true of the class loader is closed
+     * @since 13.7RC1
+     */
+    @Unstable
+    public boolean isClosed()
+    {
+        return this.closed;
+    }
+
+    @Override
+    public void close() throws IOException
+    {
+        super.close();
+
+        this.closed = true;
     }
 }

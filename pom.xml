@@ -90,7 +90,7 @@
     <mockito.version>3.11.2</mockito.version>
 
     <!-- Byte Buddy -->
-    <bytebuddy.version>1.11.9</bytebuddy.version>
+    <bytebuddy.version>1.11.12</bytebuddy.version>
 
     <!-- AspectJ -->
     <aspectj.version>1.9.7</aspectj.version>
@@ -100,7 +100,7 @@
     <jacoco.version>0.8.7</jacoco.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>8.44</checkstyle.version>
+    <checkstyle.version>8.45.1</checkstyle.version>
 
     <!-- Spoon -->
     <spoon.version>7.5.0</spoon.version>
@@ -123,8 +123,7 @@
     <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}
     </xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
     <xwiki.enforcer.enforce-glasshfish-jaxb.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glasshfish-jaxb.skip>
-    <xwiki.enforcer.enforce-jakarta.xml.bind-api.skip>${xwiki.enforcer.skip}
-    </xwiki.enforcer.enforce-jakarta.xml.bind-api.skip>
+    <xwiki.enforcer.enforce-jaxrs1.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jaxrs1.skip>
     <xwiki.enforcer.enforce-open-json.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-open-json.skip>
     <xwiki.enforcer.enforce-glassfish-el.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glassfish-el.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
@@ -362,6 +361,11 @@
         <artifactId>commons-text</artifactId>
         <version>1.9</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-csv</artifactId>
+        <version>1.9.0</version>
+      </dependency>
       <!-- Apache HttpComponents 5 -->
       <dependency>
         <groupId>org.apache.httpcomponents.client5</groupId>
@@ -417,7 +421,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-dbcp2</artifactId>
-        <version>2.8.0</version>
+        <version>2.9.0</version>
         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
         <exclusions>
           <exclusion>
@@ -621,7 +625,7 @@
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
-        <version>2.3.4</version>
+        <version>2.3.5</version>
       </dependency>
       <!-- ICU -->
       <dependency>
@@ -1188,6 +1192,11 @@
         <artifactId>byte-buddy</artifactId>
         <version>${bytebuddy.version}</version>
       </dependency>
+      <dependency>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy-agent</artifactId>
+        <version>${bytebuddy.version}</version>
+      </dependency>
 
       <!-- Several modules depend on the servlet API -->
       <dependency>
@@ -1361,12 +1370,12 @@
       <dependency>
         <groupId>org.checkerframework</groupId>
         <artifactId>checker-qual</artifactId>
-        <version>3.16.0</version>
+        <version>3.17.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.errorprone</groupId>
         <artifactId>error_prone_annotations</artifactId>
-        <version>2.8.0</version>
+        <version>2.8.1</version>
       </dependency>
       <!-- The maven remote resource plugin is also used as dependency -->
       <dependency>
@@ -1505,6 +1514,25 @@
                     <exclude>com.sun.xml.bind:jaxb-impl</exclude>
                     <exclude>com.sun.xml.bind:jaxb-core</exclude>
                     <exclude>org.glassfish.jaxb:jaxb-core</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- TODO: invert when https://jira.xwiki.org/browse/XWIKI-12955 is fixed -->
+          <execution>
+            <id>enforce-jaxrs1</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jaxrs1.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>XWiki only support JAX-RS 1 (javax.ws.rs:jsr311-api) for now</message>
+                  <excludes>
+                    <exclude>javax.ws.rs:javax.ws.rs-api</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
@@ -2194,10 +2222,10 @@
           <version>2.8.2</version>
         </plugin>
         <plugin>
-          <groupId>com.nickwongdev</groupId>
+          <groupId>org.codehaus.mojo</groupId>
           <artifactId>aspectj-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.12.6</version>
+          <version>1.14.0</version>
           <configuration>
             <complianceLevel>${java.version}</complianceLevel>
             <source>${java.version}</source>
