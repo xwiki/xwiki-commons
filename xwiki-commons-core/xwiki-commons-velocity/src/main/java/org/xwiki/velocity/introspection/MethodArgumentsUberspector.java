@@ -23,7 +23,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Iterator;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.velocity.runtime.RuntimeServices;
@@ -49,7 +51,6 @@ import org.xwiki.velocity.internal.inrospection.WrappingVelMethod;
  * // if obj has someMethod(SomeEnum) and not someMethod(String)}
  * </pre>
  * <p>
- *
  * Also handle Optional return values and unwraps them.
  *
  * @since 4.1M2
@@ -73,9 +74,10 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
         try {
             this.converterManager = componentManager.getInstance(ConverterManager.class);
         } catch (ComponentLookupException e) {
-            this.log.warn("Failed to find an implementation for [{}]. Working in degraded mode without Velocity "
-                + "parameter conversion. Root cause: [{}]", ConverterManager.class.getName(),
-                ExceptionUtils.getRootCauseMessage(e));
+            this.log.warn(
+                "Failed to find an implementation for [{}]. Working in degraded mode without Velocity "
+                    + "parameter conversion. Root cause: [{}]",
+                ConverterManager.class.getName(), ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -138,18 +140,106 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
      */
     private Object[] convertArguments(Object obj, String methodName, Object[] args)
     {
-        for (Method method : obj.getClass().getMethods()) {
-            if (method.getName().equalsIgnoreCase(methodName)
-                && (method.getGenericParameterTypes().length == args.length || method.isVarArgs())) {
-                try {
-                    return convertArguments(args, method.getGenericParameterTypes(), method.isVarArgs());
-                } catch (Exception e) {
-                    // Ignore and try the next method.
-                }
+        for (Iterator<Method> it =
+            Arrays.stream(obj.getClass().getMethods()).filter(m -> isSupported(m, methodName, args))
+                .sorted((m1, m2) -> compare(m1, m2, methodName, args)).iterator(); it.hasNext();) {
+            Method method = it.next();
+
+            try {
+                return convertArguments(args, method.getGenericParameterTypes(), method.isVarArgs());
+            } catch (Exception e) {
+                // Ignore and try the next method.
             }
         }
 
         return null;
+    }
+
+    private boolean isSupported(Method method, String methodName, Object[] args)
+    {
+        return method.getName().equalsIgnoreCase(methodName)
+            && (method.getGenericParameterTypes().length == args.length || method.isVarArgs());
+    }
+
+    private int compare(Method method1, Method method2, String methodName, Object[] args)
+    {
+        // Compare method names
+        int value = compareMethodNames(method1, method2, methodName);
+        if (value != 0) {
+            return value;
+        }
+
+        // Compare compatible number of parameters
+        value = compareMethodArguments(method1, method2, methodName, args);
+        if (value != 0) {
+            return value;
+        }
+
+        // Compare tostring to maintain the stable priority list across environments
+        return method1.toString().compareTo(method2.toString());
+    }
+
+    private int compareMethodNames(Method method1, Method method2, String methodName)
+    {
+        if (!method1.getName().equals(method2.getName())) {
+            if (methodName.equals(method1.getName())) {
+                // Priority to exact matching method name
+                return -1;
+            } else if (methodName.equals(method2.getName())) {
+                // Priority to exact matching method name
+                return 1;
+            }
+        }
+
+        return 0;
+    }
+
+    private int compareMethodArguments(Method method1, Method method2, String methodName, Object[] args)
+    {
+        double compatibleArtgumentsCount1 = countCompatibleParameters(method1, args);
+        double compatibleArtgumentsCount2 = countCompatibleParameters(method2, args);
+        if (compatibleArtgumentsCount1 > compatibleArtgumentsCount2) {
+            // Priority to higher number of compatible parameters
+            return -1;
+        } else if (compatibleArtgumentsCount1 < compatibleArtgumentsCount2) {
+            // Priority to higher number of compatible parameters
+            return 1;
+        } else if (!method1.isVarArgs() && method2.isVarArgs()) {
+            // Priority to non vararg method in case of same number of compatible parameters
+            return -1;
+        } else if (method1.isVarArgs() && !method2.isVarArgs()) {
+            // Priority to non vararg method in case of same number of compatible parameters
+            return 1;
+        }
+
+        return 0;
+    }
+
+    private double countCompatibleParameters(Method method, Object[] args)
+    {
+        double number = 0;
+
+        Type[] types = method.getGenericParameterTypes();
+        for (int i = 0; i < args.length && i < types.length; ++i) {
+            Type type = types[i];
+            Object arg = args[i];
+
+            if (TypeUtils.isInstance(arg, type)) {
+                number += 1;
+            } else if (arg != null && type instanceof Class) {
+                Class typeClass = (Class) type;
+                if (typeClass.isPrimitive() && ClassUtils.primitiveToWrapper(typeClass) == arg.getClass()) {
+                    // Class wrapper and corresponding primitive are interpreted as same type
+                    number += 1;
+                } else if (ClassUtils.isAssignable(typeClass, Number.class)
+                    && TypeUtils.isInstance(arg, Number.class)) {
+                    // Give slight priority to number conversion since it's very common use cases
+                    number += 0.5;
+                }
+            }
+        }
+
+        return number;
     }
 
     /**
