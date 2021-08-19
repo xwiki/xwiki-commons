@@ -224,22 +224,37 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
             Type type = types[i];
             Object arg = args[i];
 
-            if (TypeUtils.isInstance(arg, type)) {
-                number += 1;
-            } else if (arg != null && type instanceof Class) {
-                Class typeClass = (Class) type;
-                if (typeClass.isPrimitive() && ClassUtils.primitiveToWrapper(typeClass) == arg.getClass()) {
-                    // Class wrapper and corresponding primitive are interpreted as same type
+            if (arg != null) {
+                if (arg.getClass() == type) {
+                    // Give high priority to exact same type
+                    number += 10;
+                } else if (TypeUtils.isInstance(arg, type)) {
+                    // Give normal priority to compatible type
                     number += 1;
-                } else if (ClassUtils.isAssignable(typeClass, Number.class)
-                    && TypeUtils.isInstance(arg, Number.class)) {
-                    // Give slight priority to number conversion since it's very common use cases
-                    number += 0.5;
+                } else if (type instanceof Class) {
+                    Class typeClass = (Class) type;
+                    if (isPrimitive(typeClass, arg)) {
+                        // Class wrapper and corresponding primitive are interpreted as compatible type
+                        number += 1;
+                    } else if (isNumber(typeClass, arg)) {
+                        // Give slight priority to number conversion since it's a very common use cases
+                        number += 0.5;
+                    }
                 }
             }
         }
 
         return number;
+    }
+
+    private boolean isPrimitive(Class typeClass, Object arg)
+    {
+        return typeClass.isPrimitive() && ClassUtils.primitiveToWrapper(typeClass) == arg.getClass();
+    }
+
+    private boolean isNumber(Class typeClass, Object arg)
+    {
+        return ClassUtils.isAssignable(typeClass, Number.class) && TypeUtils.isInstance(arg, Number.class);
     }
 
     /**
