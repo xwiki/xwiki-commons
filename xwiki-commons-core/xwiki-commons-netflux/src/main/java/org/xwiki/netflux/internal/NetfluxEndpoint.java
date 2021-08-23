@@ -121,6 +121,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
     public void onError(Session session, Throwable e)
     {
         this.logger.debug("Session closed with error.", e);
+        onClose(session, null);
     }
 
     private void handleMessage(Session session, String message)
@@ -369,7 +370,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
      * 
      * @return the created channel
      */
-    public Channel createChannel()
+    private Channel createChannel()
     {
         Channel channel = this.channels.create();
         if (USE_HISTORY_KEEPER) {
