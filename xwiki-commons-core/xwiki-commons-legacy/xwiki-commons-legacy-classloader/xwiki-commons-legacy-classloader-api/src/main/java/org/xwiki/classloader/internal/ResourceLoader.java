@@ -536,13 +536,7 @@ public class ResourceLoader
                 URLConnection connection = this.base.openConnection();
                 this.perm = connection.getPermission();
 
-                JarFile jar;
-
-                if (connection instanceof org.xwiki.classloader.internal.JarURLConnection) {
-                    jar = ((org.xwiki.classloader.internal.JarURLConnection) connection).getJarFile();
-                } else {
-                    jar = ((java.net.JarURLConnection) connection).getJarFile();
-                }
+                JarFile jar = ((java.net.JarURLConnection) connection).getJarFile();
 
                 // conservatively check if index is accurate, that is, does not
                 // contain entries which are not in the JAR file

@@ -20,6 +20,7 @@
 package org.xwiki.classloader.internal;
 
 import java.io.IOException;
+import java.net.URLStreamHandlerFactory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -55,14 +56,20 @@ public class DefaultClassLoaderManager implements ClassLoaderManager, Initializa
      */
     private volatile NamespaceURLClassLoader rootClassLoader;
 
+    /**
+     * The Stream handler factory to use in the created classloader in order to be able to load our custom handlers
+     * protocol.
+     */
+    @Inject
+    private URLStreamHandlerFactory streamHandlerFactory;
+
     @Inject
     private Logger logger;
 
     /**
      * The classloaders stored by namespace.
      */
-    private Map<String, NamespaceURLClassLoader> wikiClassLoaderMap =
-        new ConcurrentHashMap<>();
+    private Map<String, NamespaceURLClassLoader> wikiClassLoaderMap = new ConcurrentHashMap<>();
 
     @Override
     public void initialize() throws InitializationException
@@ -87,7 +94,8 @@ public class DefaultClassLoaderManager implements ClassLoaderManager, Initializa
         if (this.rootClassLoader == null) {
             synchronized (this) {
                 if (this.rootClassLoader == null) {
-                    this.rootClassLoader = new NamespaceURLClassLoader(getContainerClassLoader(), null);
+                    this.rootClassLoader =
+                        new NamespaceURLClassLoader(getContainerClassLoader(), this.streamHandlerFactory, null);
                 }
             }
         }
@@ -102,7 +110,8 @@ public class DefaultClassLoaderManager implements ClassLoaderManager, Initializa
             if (wikiClassLoader == null) {
                 if (create) {
                     // Create classloader
-                    wikiClassLoader = new NamespaceURLClassLoader(this.rootClassLoader, namespace);
+                    wikiClassLoader =
+                        new NamespaceURLClassLoader(this.rootClassLoader, this.streamHandlerFactory, namespace);
 
                     // Store new classloader
                     this.wikiClassLoaderMap.put(namespace, wikiClassLoader);

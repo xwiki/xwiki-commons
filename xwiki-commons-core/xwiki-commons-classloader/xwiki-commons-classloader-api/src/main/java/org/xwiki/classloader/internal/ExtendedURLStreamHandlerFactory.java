@@ -25,6 +25,7 @@ import java.net.URLStreamHandlerFactory;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
 import org.xwiki.classloader.ExtendedURLStreamHandler;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -36,7 +37,7 @@ import org.xwiki.component.manager.ComponentManager;
  * @version $Id$
  * @since 2.0.1
  */
-@Component(roles = { URLStreamHandlerFactory.class })
+@Component(roles = {URLStreamHandlerFactory.class})
 @Singleton
 public class ExtendedURLStreamHandlerFactory implements URLStreamHandlerFactory
 {
@@ -46,21 +47,22 @@ public class ExtendedURLStreamHandlerFactory implements URLStreamHandlerFactory
     @Inject
     private ComponentManager componentManager;
 
+    @Inject
+    private Logger logger;
+
     @Override
     public URLStreamHandler createURLStreamHandler(String protocol)
     {
-        ExtendedURLStreamHandler result;
-        try {
-            result = this.componentManager.getInstance(ExtendedURLStreamHandler.class, protocol);
-        } catch (ComponentLookupException cle) {
-            // No special protocol handler found, return null since code using this factory
-            // should know how to deal when no protocol handler is found.
-            result = null;
+        if (this.componentManager.hasComponent(ExtendedURLStreamHandler.class, protocol)) {
+            try {
+                return this.componentManager.getInstance(ExtendedURLStreamHandler.class, protocol);
+            } catch (ComponentLookupException e) {
+                this.logger.error("Failed to lookup ExtendedURLStreamHandler or protocol [{}]", protocol, e);
+            }
         }
 
-        // All implementations of ExtendedURLStreamHandler must also extend URLStreamHandler
-        // Note: we could make ExtendedURLStreamHandler extend URLStreamHandler since URLStreamHandler
-        // is an abstract class and not an interface...
-        return (URLStreamHandler) result;
+        // No special protocol handler found, return null since code using this factory
+        // should know how to deal when no protocol handler is found.
+        return null;
     }
 }
