@@ -33,6 +33,5 @@
   <description>Legacy modules for xwiki-commons-classloader-*</description>
   <modules>
     <module>xwiki-commons-legacy-classloader-api</module>
-    <module>xwiki-commons-legacy-classloader-protocols</module>
   </modules>
 </project>
