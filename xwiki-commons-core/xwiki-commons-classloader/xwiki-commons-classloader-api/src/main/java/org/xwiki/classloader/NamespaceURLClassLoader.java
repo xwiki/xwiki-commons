@@ -22,6 +22,7 @@ package org.xwiki.classloader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLStreamHandlerFactory;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,8 @@ import org.xwiki.stability.Unstable;
  */
 public class NamespaceURLClassLoader extends ExtendedURLClassLoader
 {
+    private static final URL[] EMPTY_URIS = new URL[] {};
+
     /**
      * @see #getNamespace()
      */
@@ -70,7 +73,22 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
     @Unstable
     public NamespaceURLClassLoader(URL[] urls, ClassLoader parent, String namespace)
     {
-        super(urls, parent);
+        this(urls, parent, null, namespace);
+    }
+
+    /**
+     * @param urls the search path.
+     * @param parent the parent class loader
+     * @param factory the URLStreamHandlerFactory to use when creating URLs
+     * @param namespace see {@link #getNamespace()}
+     * @since 12.7
+     * @since 12.10.10
+     * @since 13.4.4
+     */
+    @Unstable
+    public NamespaceURLClassLoader(URL[] urls, ClassLoader parent, URLStreamHandlerFactory factory, String namespace)
+    {
+        super(urls, parent, factory);
         this.namespace = namespace;
     }
 
@@ -82,7 +100,21 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
     @Unstable
     public NamespaceURLClassLoader(ClassLoader parent, String namespace)
     {
-        this(new URL[]{}, parent, namespace);
+        this(EMPTY_URIS, parent, namespace);
+    }
+
+    /**
+     * @param parent the parent class loader
+     * @param factory the URLStreamHandlerFactory to use when creating URLs
+     * @param namespace see {@link #getNamespace()}
+     * @since 12.7
+     * @since 12.10.10
+     * @since 13.4.4
+     */
+    @Unstable
+    public NamespaceURLClassLoader(ClassLoader parent, URLStreamHandlerFactory factory, String namespace)
+    {
+        this(EMPTY_URIS, parent, factory, namespace);
     }
 
     /**
