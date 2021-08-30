@@ -62,7 +62,6 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
      * Customize the eviction configuration.
      * 
      * @param builder the configuration builder
-     * @return the configuration builder
      */
     private void customizeEviction(ConfigurationBuilder builder)
     {
@@ -122,7 +121,7 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
 
     /**
      * @param configuration the configuration to check
-     * @return true if one of the loader is an incomplete {@link FileCacheStoreConfiguration}
+     * @return true if one of the loader is an incomplete {@link SingleFileStoreConfiguration}
      */
     private boolean containsIncompleteFileLoader(Configuration configuration)
     {
