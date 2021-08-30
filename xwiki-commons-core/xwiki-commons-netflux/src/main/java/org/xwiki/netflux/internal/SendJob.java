@@ -25,7 +25,7 @@ import java.util.List;
  * Encapsulates the messages that are pending to be sent.
  * 
  * @version $Id$
- * @since 13.7RC1
+ * @since 13.8RC1
  */
 public class SendJob
 {

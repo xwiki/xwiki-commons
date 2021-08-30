@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Unit tests for {@link Utils}.
  * 
  * @version $Id$
- * @since 13.7RC1
+ * @since 13.8RC1
  */
 class UtilsTest
 {

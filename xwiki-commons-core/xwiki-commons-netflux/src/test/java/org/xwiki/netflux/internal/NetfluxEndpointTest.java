@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
  * Unit tests for {@link NetfluxEndpoint}.
  * 
  * @version $Id$
- * @since 13.7RC1
+ * @since 13.8RC1
  */
 @ComponentTest
 @ComponentList(ChannelStore.class)
