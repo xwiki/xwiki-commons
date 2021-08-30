@@ -133,6 +133,31 @@ class MethodArgumentUberspectorTest
             }
             return builder.toString();
         }
+
+        public String conflictingcasemethod(Integer param)
+        {
+            return "conflictlowercase";
+        }
+
+        public String conflictingCaseMethod(Integer param)
+        {
+            return "conflictuppercase";
+        }
+
+        public String conflictingMethod(String param1, String param2)
+        {
+            return "conflict1";
+        }
+
+        public String conflictingMethod(Integer param1, Integer param2)
+        {
+            return "conflict2";
+        }
+
+        public String conflictingMethod(String param1, String param2, String... vararg)
+        {
+            return "conflict3";
+        }
     }
 
     @BeforeEach
@@ -252,5 +277,65 @@ class MethodArgumentUberspectorTest
         this.engine.evaluate(this.context, this.writer, "template",
             new StringReader("$var.methodWithGeneric('en, fr')"));
         assertEquals("success", this.writer.toString());
+    }
+
+    @Test
+    void getConflictingLowercaseMethod() throws Exception
+    {
+        when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
+
+        this.engine.evaluate(this.context, this.writer, "template",
+            new StringReader("$var.conflictingcasemethod('10')"));
+        assertEquals("conflictlowercase", this.writer.toString());
+    }
+
+    @Test
+    void getConflictingUppercaseMethod() throws Exception
+    {
+        when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
+
+        this.engine.evaluate(this.context, this.writer, "template",
+            new StringReader("$var.conflictingCaseMethod('10')"));
+        assertEquals("conflictuppercase", this.writer.toString());
+    }
+
+    @Test
+    void getConflictingMethodWithMatchingStringArguments() throws Exception
+    {
+        when(this.converterManager.convert(String.class, true)).thenReturn("true");
+
+        this.engine.evaluate(this.context, this.writer, "template",
+            new StringReader("$var.conflictingMethod('test1', true)"));
+        assertEquals("conflict1", this.writer.toString());
+    }
+
+    @Test
+    void getConflictingMethodWithMatchingIntegerArguments() throws Exception
+    {
+        when(this.converterManager.convert(Integer.class, true)).thenReturn(1);
+
+        this.engine.evaluate(this.context, this.writer, "template",
+            new StringReader("$var.conflictingMethod(10, true)"));
+        assertEquals("conflict2", this.writer.toString());
+    }
+
+    @Test
+    void getConflictingMethodWithMatchingIntArguments() throws Exception
+    {
+        when(this.converterManager.convert(Integer.class, true)).thenReturn(1);
+
+        this.engine.evaluate(this.context, this.writer, "template",
+            new StringReader("#set($integer = 10)$var.conflictingMethod($integer.intValue(), true)"));
+        assertEquals("conflict2", this.writer.toString());
+    }
+
+    @Test
+    void getConflictingMethodWithMatchingDoubleArguments() throws Exception
+    {
+        when(this.converterManager.convert(Integer.class, 10.0D)).thenReturn(1);
+
+        this.engine.evaluate(this.context, this.writer, "template",
+            new StringReader("$var.conflictingMethod(10.0, 10.0)"));
+        assertEquals("conflict2", this.writer.toString());
     }
 }
