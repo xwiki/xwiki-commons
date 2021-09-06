@@ -78,7 +78,7 @@ public class TestEnvironment implements Environment
             Path classesDirectory = Paths.get(resource.toURI())
                 .getParent()
                 .resolve("classes");
-            // Replace the absolute path the relative one to be able to resolve it relatively to the classes directory.
+            // Update the absolute path to a relative one to be able to resolve it relatively to the classes directory.
             String cleanResourceName = resourceName;
             if (resourceName.startsWith(File.pathSeparator)) {
                 cleanResourceName = resourceName.substring(1);
