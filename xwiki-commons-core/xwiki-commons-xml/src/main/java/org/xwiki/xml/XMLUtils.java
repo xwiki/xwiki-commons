@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -63,6 +64,59 @@ import org.xwiki.stability.Unstable;
  */
 public final class XMLUtils
 {
+    /**
+     * A simple error logging helper to suppress expected error messages.
+     * While extracting text excerpts via the {@link #extractXML} method
+     * the extraction throws expected exceptions eg. in case a text node
+     * is too long. The default ErrorListener writes these errors to the console.
+     * However as these errors are expected under normal conditions
+     * and are either handled in the {@link #extractXML} method
+     * or passed up in the chain of commands it is ok to log these
+     * at a much lower level, where users normally never see them.
+     */
+    private static class RelaxedErrorListener implements ErrorListener
+    {
+        private static final String STACK_TRACE_NOTE = "stack trace for information only";
+
+        /**
+         * Fatal errors are unexpected and are logged as warnings here.
+         * They are not really fatal to XWiki but should be handled
+         * up the command chain later, or maybe propagated to the UI level.
+         */
+        @Override
+        public void fatalError(TransformerException exception) throws TransformerException
+        {
+            LOGGER.warn("fatal error from xml transformer", exception);
+        }
+
+        /**
+         * Errors are expected and are only logged as debug.
+         * These errors happen e.g. if a text node exceeds the expected
+         * maximal length.
+         */
+        @Override
+        public void error(TransformerException exception) throws TransformerException
+        {
+            LOGGER.debug("error [{}] from xml transformer", exception.getMessage());
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace(STACK_TRACE_NOTE, exception);
+            }
+        }
+
+        /**
+         * Warnings are logged at debug level.
+         * They might be of concern for the developers but not the end users.
+         */
+        @Override
+        public void warning(TransformerException exception) throws TransformerException
+        {
+            LOGGER.debug("warning [{}] from xml transformer", exception.getMessage());
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace(STACK_TRACE_NOTE, exception);
+            }
+        }
+    }
+
     /** Logging helper object. */
     private static final Logger LOGGER = LoggerFactory.getLogger(XMLUtils.class);
 
@@ -110,6 +164,9 @@ public final class XMLUtils
     /** Xerces configuration parameter for disabling fetching and checking XMLs against their DTD. */
     private static final String DISABLE_DTD_PARAM = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
 
+    /** Helper to log expected errors at an appropriate level. */
+    private static final ErrorListener RELAXED_ERROR_LISTENER = new RelaxedErrorListener();
+
     static {
         DOMImplementationLS implementation = null;
         try {
@@ -145,6 +202,7 @@ public final class XMLUtils
         try {
             handler = new ExtractHandler(start, length);
             Transformer xformer = TransformerFactory.newInstance().newTransformer();
+            xformer.setErrorListener(RELAXED_ERROR_LISTENER);
             xformer.transform(new DOMSource(node), new SAXResult(handler));
             return handler.getResult();
         } catch (Throwable t) {
