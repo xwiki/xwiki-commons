@@ -310,7 +310,7 @@ public class XMLUtilsTest
         LSInput input = inputForExtractXML("<root>whatever</root>");
         Document document = XMLUtils.parse(input);
 
-        Throwable exception = assertThrows(RuntimeException.class, () -> {
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             XMLUtils.extractXML(document, -2, 40);
         });
         assertEquals("Failed to extract XML", exception.getMessage());
@@ -324,7 +324,7 @@ public class XMLUtilsTest
         LSInput input = inputForExtractXML("<root>whatever</root>");
         Document document = XMLUtils.parse(input);
 
-        Throwable exception = assertThrows(RuntimeException.class, () -> {
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             XMLUtils.extractXML(document, 0, 0);
         });
         assertEquals("Failed to extract XML", exception.getMessage());
@@ -340,7 +340,7 @@ public class XMLUtilsTest
 
         assertEquals("<root>llo</root>", XMLUtils.extractXML(document, 2, 4));
         assertEquals(Level.DEBUG, logCapture.getLogEvent(0).getLevel());
-        assertEquals(String.format("Error [%s] from xml transformer", "Length limit reached"),
+        assertEquals("Error [TransformerException: Length limit reached] from xml transformer",
             logCapture.getMessage(0));
     }
 
@@ -351,23 +351,24 @@ public class XMLUtilsTest
         LSInput input = inputForExtractXML("<root>hello <b>world</a></root><garbage/>");
         Document document = XMLUtils.parse(input);
 
-        assertNull(document, "we should not parse broken XML sucessfully ");
+        assertNull(document, "we should not parse broken XML sucessfully");
         assertEquals("", XMLUtils.extractXML(document, 2, 40));
 
         // XXX: we expect the corresponding error message to go through our error listener
         // but it does not.
         // instead our code logs as warning:
         assertEquals(Level.WARN, logCapture.getLogEvent(0).getLevel());
-        assertEquals(String.format("Cannot parse XML document: [%s]", "null"),
+        assertEquals(
+            "Cannot parse XML document: [The element type \"b\" must be terminated by the matching end-tag \"</b>\".]",
             logCapture.getMessage(0));
         // but then another part of the code writes to the console; something like
-        //  [[Fatal Error] :1:23: The element type "b" must be terminated by the matching end-tag "</b>"
+        // [[Fatal Error] :1:23: The element type "b" must be terminated by the matching end-tag "</b>"
     }
 
     private LSInput inputForExtractXML(String xmlContent) throws Exception
     {
-        DOMImplementationLS lsImpl =
-            (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS 3.0");
+        DOMImplementationLS lsImpl = (DOMImplementationLS) DOMImplementationRegistry.newInstance()
+            .getDOMImplementation("LS 3.0");
         LSInput input = lsImpl.createLSInput();
         input.setStringData(xmlContent);
         return input;
