@@ -32,7 +32,7 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - XML</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.66</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.72</xwiki.jacoco.instructionRatio>
     <!-- There's a utility class with lots of features, allow it to have many dependencies;
          There's a SAX event listener, which requires complex code -->
     <checkstyle.suppressions.location>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml

@@ -82,22 +82,29 @@ public final class XMLUtils
          * Fatal errors are unexpected and are logged as warnings here.
          * They are not really fatal to XWiki but should be handled
          * up the command chain later, or maybe propagated to the UI level.
+         *
+         * @param exception the exception to be logged
          */
         @Override
         public void fatalError(TransformerException exception) throws TransformerException
         {
-            LOGGER.warn("fatal error from xml transformer", exception);
+            LOGGER.warn("Fatal error from xml transformer: ", getRootMessage(exception));
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace(STACK_TRACE_NOTE, exception);
+            }
         }
 
         /**
-         * Errors are expected and are only logged as debug.
+         * Errors are expected and are only logged as debug
          * These errors happen e.g. if a text node exceeds the expected
          * maximal length.
+         *
+         * @param exception the exception to be logged
          */
         @Override
         public void error(TransformerException exception) throws TransformerException
         {
-            LOGGER.debug("error [{}] from xml transformer", exception.getMessage());
+            LOGGER.debug("Error [{}] from xml transformer", getRootMessage(exception));
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace(STACK_TRACE_NOTE, exception);
             }
@@ -106,14 +113,27 @@ public final class XMLUtils
         /**
          * Warnings are logged at debug level.
          * They might be of concern for the developers but not the end users.
+         *
+         * @param exception the exception to be logged
          */
         @Override
         public void warning(TransformerException exception) throws TransformerException
         {
-            LOGGER.debug("warning [{}] from xml transformer", exception.getMessage());
+            LOGGER.debug("Warning [{}] from xml transformer", getRootMessage(exception));
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace(STACK_TRACE_NOTE, exception);
             }
+        }
+
+        private String getRootMessage(Throwable t)
+        {
+            Throwable current = t;
+            Throwable last = null;
+            while (current != null) {
+                last = current;
+                current = current.getCause();
+            }
+            return (last == null) ? "<null>" : last.getMessage();
         }
     }
 
