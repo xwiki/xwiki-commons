@@ -53,7 +53,7 @@
             <mojos>
               <mojo>
                 <!-- Quality checks. -->
-                <goal>com.cj.jshintmojo:jshint-maven-plugin:lint</goal>
+                <goal>org.xwiki.contrib:jshint-maven-plugin:lint</goal>
               </mojo>
               <mojo>
                 <!-- Minify and optimize all JavaScript files and generate source maps. -->
