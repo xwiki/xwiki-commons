@@ -41,6 +41,7 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -88,7 +89,7 @@ public final class XMLUtils
         @Override
         public void fatalError(TransformerException exception) throws TransformerException
         {
-            LOGGER.warn("Fatal error from xml transformer: ", getRootMessage(exception));
+            LOGGER.warn("Fatal error from xml transformer: [{}]", ExceptionUtils.getRootCauseMessage(exception));
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace(STACK_TRACE_NOTE, exception);
             }
@@ -104,7 +105,7 @@ public final class XMLUtils
         @Override
         public void error(TransformerException exception) throws TransformerException
         {
-            LOGGER.debug("Error [{}] from xml transformer", getRootMessage(exception));
+            LOGGER.debug("Error [{}] from xml transformer", ExceptionUtils.getRootCauseMessage(exception));
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace(STACK_TRACE_NOTE, exception);
             }
@@ -119,21 +120,10 @@ public final class XMLUtils
         @Override
         public void warning(TransformerException exception) throws TransformerException
         {
-            LOGGER.debug("Warning [{}] from xml transformer", getRootMessage(exception));
+            LOGGER.debug("Warning [{}] from xml transformer", ExceptionUtils.getRootCauseMessage(exception));
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace(STACK_TRACE_NOTE, exception);
             }
-        }
-
-        private String getRootMessage(Throwable t)
-        {
-            Throwable current = t;
-            Throwable last = null;
-            while (current != null) {
-                last = current;
-                current = current.getCause();
-            }
-            return (last == null) ? "<null>" : last.getMessage();
         }
     }
 
