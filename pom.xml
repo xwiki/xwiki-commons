@@ -2570,7 +2570,7 @@
           <configuration>
             <globals>require,define</globals>
             <!-- See https://github.com/jshint/jshint/blob/master/examples/.jshintrc -->
-            <options>esnext,camelcase,maxparams:5,maxdepth:3,maxstatements:20,maxcomplexity:10,maxlen:120</options>
+            <options>esversion:11,maxparams:5,maxdepth:3,maxstatements:20,maxcomplexity:10,camelcase,maxlen:120</options>
           </configuration>
         </plugin>
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
