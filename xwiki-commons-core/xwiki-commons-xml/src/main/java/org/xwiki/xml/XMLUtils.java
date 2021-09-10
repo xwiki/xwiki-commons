@@ -110,6 +110,18 @@ public final class XMLUtils
     /** Xerces configuration parameter for disabling fetching and checking XMLs against their DTD. */
     private static final String DISABLE_DTD_PARAM = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
 
+    /** Xerces configuration parameter for prevent DOCTYPE definition. */
+    private static final String DISABLE_EXTERNAL_DOCTYPE_DECLARATION =
+        "http://apache.org/xml/features/disallow-doctype-decl";
+
+    /** Xerces configuration parameter for disabling inserting entities defined in external files. */
+    private static final String DISABLE_EXTERNAL_PARAMETER_ENTITIES =
+        "http://xml.org/sax/features/external-parameter-entities";
+
+    /** Xerces configuration parameter for disabling inserting entities defined in external files. */
+    private static final String DISABLE_EXTERNAL_GENERAL_ENTITIES =
+        "http://xml.org/sax/features/external-general-entities";
+
     static {
         DOMImplementationLS implementation = null;
         try {
@@ -515,6 +527,17 @@ public final class XMLUtils
             p.getDomConfig().setParameter("validate", false);
             if (p.getDomConfig().canSetParameter(DISABLE_DTD_PARAM, false)) {
                 p.getDomConfig().setParameter(DISABLE_DTD_PARAM, false);
+            }
+
+            // Avoid XML eXternal Entity injection (XXE)
+            if (p.getDomConfig().canSetParameter(DISABLE_EXTERNAL_DOCTYPE_DECLARATION, false)) {
+                p.getDomConfig().setParameter(DISABLE_EXTERNAL_DOCTYPE_DECLARATION, false);
+            }
+            if (p.getDomConfig().canSetParameter(DISABLE_EXTERNAL_PARAMETER_ENTITIES, false)) {
+                p.getDomConfig().setParameter(DISABLE_EXTERNAL_PARAMETER_ENTITIES, false);
+            }
+            if (p.getDomConfig().canSetParameter(DISABLE_EXTERNAL_GENERAL_ENTITIES, false)) {
+                p.getDomConfig().setParameter(DISABLE_EXTERNAL_GENERAL_ENTITIES, false);
             }
             return p.parse(source);
         } catch (Exception ex) {
