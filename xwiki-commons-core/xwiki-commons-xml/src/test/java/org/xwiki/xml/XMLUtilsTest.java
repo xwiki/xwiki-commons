@@ -19,10 +19,19 @@
  */
 package org.xwiki.xml;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.html.dom.HTMLDocumentImpl;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.html.HTMLElement;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSInput;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -278,5 +287,23 @@ public class XMLUtilsTest
         body.setAttribute("class", "toto");
         serialize = XMLUtils.serialize(node, false);
         assertEquals("<HTML><HEAD/><BODY class=\"toto\"/></HTML>", serialize);
+    }
+
+    @Test
+    void disableExternalEntities()
+        throws ClassNotFoundException, InstantiationException, IllegalAccessException, ClassCastException, IOException
+    {
+        File tempFile = File.createTempFile("file", ".txt");
+
+        FileUtils.write(tempFile, "external", StandardCharsets.UTF_8);
+
+        DOMImplementationLS ls =
+            (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS 3.0");
+        LSInput input = ls.createLSInput();
+        input.setStringData("<?xml version='1.0' encoding='UTF-8'?>" + "<!DOCTYPE root[<!ENTITY xxe SYSTEM 'file://"
+            + tempFile.getAbsolutePath() + "' >]><root>&xxe;</root>");
+
+        Document result = XMLUtils.parse(input);
+        assertNotEquals("external", result.getDocumentElement().getTextContent());
     }
 }
