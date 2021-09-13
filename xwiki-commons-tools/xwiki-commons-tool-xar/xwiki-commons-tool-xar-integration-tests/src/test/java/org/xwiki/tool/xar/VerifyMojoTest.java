@@ -120,7 +120,7 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    void executeWithWronPageTitle() throws Exception
+    void executeWithWrongPageTitle() throws Exception
     {
         verifyExecution("/wrongPageTitle", "Verifying [Space/WebPreferences.xml]... errors",
             "- [WebPreferences.xml] ([Space.WebPreferences]) page must have a title matching regex "
