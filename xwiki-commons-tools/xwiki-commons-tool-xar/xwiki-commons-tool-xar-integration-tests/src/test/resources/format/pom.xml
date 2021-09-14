@@ -33,6 +33,11 @@
   <version>1.0</version>
   <name>Test for XAR Plugin</name>
   <packaging>pom</packaging>
+  <properties>
+    <!-- Prevents Gradle Enterprise build scan from scanning this maven execution since it's not real pom.xml; it's
+         used for testing. -->
+    <scan>false</scan>
+  </properties>
   <build>
     <plugins>
       <plugin>
