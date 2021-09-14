@@ -55,6 +55,11 @@ public abstract class AbstractMojoTest
 
         verifier.addCliOption("-Dxar.force=true");
 
+        // Prevents Gradle Enterprise build scan from scanning this maven execution since it's not real pom.xml
+        // it's used for testing and we don't want to see it in the GE web site. In addition it's reported as a failure
+        // for our tests testing failure conditions...
+        verifier.addCliOption("-Dscan=false");
+
         return verifier;
     }
 }

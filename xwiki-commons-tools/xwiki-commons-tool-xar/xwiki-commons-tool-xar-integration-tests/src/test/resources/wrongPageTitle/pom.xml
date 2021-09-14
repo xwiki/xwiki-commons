@@ -28,11 +28,6 @@
   <version>1.0</version>
   <name>Test for XAR Plugin</name>
   <packaging>pom</packaging>
-  <properties>
-    <!-- Prevents Gradle Enterprise build scan from scanning this maven execution and report a false positive since
-         this module voluntary fails (we're testing for failure). -->
-    <scan>false</scan>
-  </properties>
   <build>
     <plugins>
       <plugin>
