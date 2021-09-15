@@ -301,7 +301,6 @@ public class XMLUtilsTest
     }
 
     @Test
-<<<<<<< HEAD
     void disableExternalEntities()
         throws ClassNotFoundException, InstantiationException, IllegalAccessException, ClassCastException, IOException
     {
@@ -378,7 +377,7 @@ public class XMLUtilsTest
         assertNull(document, "we should not parse broken XML sucessfully");
         assertEquals("", XMLUtils.extractXML(document, 2, 40));
 
-        // XXX: we expect the corresponding error message to go through our error listener
+        // TODO: we expect the corresponding error message to go through our error listener
         // but it does not.
         // instead our code logs as warning:
         assertEquals(Level.WARN, logCapture.getLogEvent(0).getLevel());
