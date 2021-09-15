@@ -25,19 +25,27 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.html.dom.HTMLDocumentImpl;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.html.HTMLElement;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSInput;
+import org.xml.sax.SAXException;
+import org.xwiki.test.LogLevel;
+import org.xwiki.test.junit5.LogCaptureExtension;
+
+import ch.qos.logback.classic.Level;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -48,6 +56,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class XMLUtilsTest
 {
+    @RegisterExtension
+    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.DEBUG);
+
     @Test
     void escapeXMLComment()
     {
@@ -305,5 +316,84 @@ public class XMLUtilsTest
 
         Document result = XMLUtils.parse(input);
         assertNotEquals("external", result.getDocumentElement().getTextContent());
+    }
+
+    @Test
+    void extractXML() throws Exception
+    {
+        LSInput input = inputForExtractXML("<root>hello world</root>");
+        Document document = XMLUtils.parse(input);
+
+        assertEquals("<root>llo world</root>", XMLUtils.extractXML(document, 2, 40));
+    }
+
+    @Test
+    void extractXMLWithIllegalStart() throws Exception
+    {
+        LSInput input = inputForExtractXML("<root>whatever</root>");
+        Document document = XMLUtils.parse(input);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            XMLUtils.extractXML(document, -2, 40);
+        });
+        assertEquals("Failed to extract XML", exception.getMessage());
+        assertEquals(SAXException.class, exception.getCause().getClass());
+        assertEquals("Start must be greater than or equal to 0", exception.getCause().getMessage());
+    }
+
+    @Test
+    void extractXMLWithIllegalLength() throws Exception
+    {
+        LSInput input = inputForExtractXML("<root>whatever</root>");
+        Document document = XMLUtils.parse(input);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            XMLUtils.extractXML(document, 0, 0);
+        });
+        assertEquals("Failed to extract XML", exception.getMessage());
+        assertEquals(SAXException.class, exception.getCause().getClass());
+        assertEquals("Length must be greater than 0", exception.getCause().getMessage());
+    }
+
+    @Test
+    void extractXMLWithTooLongTextNode() throws Exception
+    {
+        LSInput input = inputForExtractXML("<root>hello world</root>");
+        Document document = XMLUtils.parse(input);
+
+        assertEquals("<root>llo</root>", XMLUtils.extractXML(document, 2, 4));
+        assertEquals(Level.DEBUG, logCapture.getLogEvent(0).getLevel());
+        assertEquals("Error [TransformerException: Length limit reached] from xml transformer",
+            logCapture.getMessage(0));
+    }
+
+    @Test
+    @Disabled("because of unidentified location where code writes directly to the console")
+    void extractXMLWithBrokenInput() throws Exception
+    {
+        LSInput input = inputForExtractXML("<root>hello <b>world</a></root><garbage/>");
+        Document document = XMLUtils.parse(input);
+
+        assertNull(document, "we should not parse broken XML sucessfully");
+        assertEquals("", XMLUtils.extractXML(document, 2, 40));
+
+        // TODO: we expect the corresponding error message to go through our error listener
+        // but it does not.
+        // instead our code logs as warning:
+        assertEquals(Level.WARN, logCapture.getLogEvent(0).getLevel());
+        assertEquals(
+            "Cannot parse XML document: [The element type \"b\" must be terminated by the matching end-tag \"</b>\".]",
+            logCapture.getMessage(0));
+        // but then another part of the code writes to the console; something like
+        // [[Fatal Error] :1:23: The element type "b" must be terminated by the matching end-tag "</b>"
+    }
+
+    private LSInput inputForExtractXML(String xmlContent) throws Exception
+    {
+        DOMImplementationLS lsImpl = (DOMImplementationLS) DOMImplementationRegistry.newInstance()
+            .getDOMImplementation("LS 3.0");
+        LSInput input = lsImpl.createLSInput();
+        input.setStringData(xmlContent);
+        return input;
     }
 }
