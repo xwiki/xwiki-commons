@@ -90,15 +90,13 @@ public final class XMLUtils
         public void fatalError(TransformerException exception) throws TransformerException
         {
             LOGGER.warn("Fatal error from xml transformer: [{}]", ExceptionUtils.getRootCauseMessage(exception));
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(STACK_TRACE_NOTE, exception);
-            }
+            LOGGER.trace(STACK_TRACE_NOTE, exception);
         }
 
         /**
-         * Errors are expected and are only logged as debug
+         * Errors are expected and are only logged as debug.
          * These errors happen e.g. if a text node exceeds the expected
-         * maximal length.
+         * maximal length, which can happen in regular usage.
          *
          * @param exception the exception to be logged
          */
@@ -106,9 +104,7 @@ public final class XMLUtils
         public void error(TransformerException exception) throws TransformerException
         {
             LOGGER.debug("Error [{}] from xml transformer", ExceptionUtils.getRootCauseMessage(exception));
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(STACK_TRACE_NOTE, exception);
-            }
+            LOGGER.trace(STACK_TRACE_NOTE, exception);
         }
 
         /**
@@ -121,9 +117,7 @@ public final class XMLUtils
         public void warning(TransformerException exception) throws TransformerException
         {
             LOGGER.debug("Warning [{}] from xml transformer", ExceptionUtils.getRootCauseMessage(exception));
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(STACK_TRACE_NOTE, exception);
-            }
+            LOGGER.trace(STACK_TRACE_NOTE, exception);
         }
     }
 
