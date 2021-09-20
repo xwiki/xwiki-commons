@@ -27,9 +27,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
+import java.nio.file.Files;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.io.FileUtils;
@@ -68,7 +70,7 @@ public class JarExtendedURLStreamHandler extends URLStreamHandler
     private URLStreamHandlerFactory handlerFactory;
 
     @Inject
-    private Environment environment;
+    private Provider<Environment> environmentProvider;
 
     @Inject
     private Logger logger;
@@ -112,7 +114,20 @@ public class JarExtendedURLStreamHandler extends URLStreamHandler
     @Override
     public void initialize() throws InitializationException
     {
-        this.jarsDirectory = new File(this.environment.getTemporaryDirectory(), JARS_FOLDER);
+        File temporaryDirectory;
+        try {
+            Environment environment = this.environmentProvider.get();
+
+            temporaryDirectory = environment.getTemporaryDirectory();
+        } catch (Exception e) {
+            try {
+                temporaryDirectory = Files.createTempDirectory("xwiki").toFile();
+            } catch (IOException e1) {
+                throw new InitializationException(JARS_FOLDER);
+            }
+        }
+
+        this.jarsDirectory = new File(temporaryDirectory, JARS_FOLDER);
     }
 
     @Override
