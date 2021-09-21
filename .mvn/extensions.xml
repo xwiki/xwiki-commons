@@ -21,7 +21,8 @@
 -->
 
 <extensions>
-  <extension>
+  <!-- TODO: Temporarily removing it to test if the release works better without it. -->
+  <!--extension>
     <groupId>com.gradle</groupId>
     <artifactId>gradle-enterprise-maven-extension</artifactId>
     <version>1.10.5</version>
@@ -30,5 +31,5 @@
     <groupId>com.gradle</groupId>
     <artifactId>common-custom-user-data-maven-extension</artifactId>
     <version>1.7.3</version>
-  </extension>
+  </extension-->
 </extensions>
