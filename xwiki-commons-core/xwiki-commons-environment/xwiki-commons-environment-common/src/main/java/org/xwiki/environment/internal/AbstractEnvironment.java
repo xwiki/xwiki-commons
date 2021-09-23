@@ -143,7 +143,7 @@ public abstract class AbstractEnvironment implements Environment
      * Rather than overriding this, it is safer to override {@link #getTemporaryDirectoryName()} This is
      * because this function does a number of checks to make sure the directory exists, is a directory (not a file) and
      * the XWiki process has permission to write to it. If the directory doesn't exist it is created and if it cannot be
-     * written to, an erroris printed in the log and it is passed over for the default temporary directory.
+     * written to, an error is printed in the log and it is passed over for the default temporary directory.
      * </p>
      *
      * @see Environment#getTemporaryDirectory()
