@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Provides conversion between a JSON string and a list of Java objects.
  * 
  * @version $Id$
- * @since 13.8RC1
+ * @since 13.9RC1
  */
 public class JsonConverter implements Decoder.Text<List<Object>>, Encoder.Text<List<Object>>
 {

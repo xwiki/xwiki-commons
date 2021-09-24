@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
  * Unit tests for {@link Channel}.
  * 
  * @version $Id$
- * @since 13.8RC1
+ * @since 13.9RC1
  */
 class ChannelTest
 {

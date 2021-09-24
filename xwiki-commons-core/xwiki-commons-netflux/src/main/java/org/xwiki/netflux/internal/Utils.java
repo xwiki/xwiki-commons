@@ -25,7 +25,7 @@ import java.util.Random;
  * Utility methods.
  * 
  * @version $Id$
- * @since 13.8RC1
+ * @since 13.9RC1
  */
 public final class Utils
 {

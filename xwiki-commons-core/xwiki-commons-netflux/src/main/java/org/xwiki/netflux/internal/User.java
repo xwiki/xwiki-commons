@@ -30,7 +30,7 @@ import javax.websocket.Session;
  * Represents an user connected to a Netflux channel.
  * 
  * @version $Id$
- * @since 13.8RC1
+ * @since 13.9RC1
  */
 public class User
 {
