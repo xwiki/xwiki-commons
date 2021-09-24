@@ -1,2 +1,3 @@
 org.xwiki.netflux.internal.ChannelStore
+org.xwiki.netflux.internal.HistoryKeeper
 org.xwiki.netflux.internal.NetfluxEndpoint

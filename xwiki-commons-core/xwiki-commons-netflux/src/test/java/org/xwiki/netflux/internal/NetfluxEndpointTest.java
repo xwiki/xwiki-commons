@@ -32,6 +32,7 @@ import org.mockito.Captor;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,6 +54,9 @@ class NetfluxEndpointTest
     @InjectMockComponents
     private NetfluxEndpoint endPoint;
 
+    @MockComponent
+    private HistoryKeeper historyKeeper;
+
     private final JsonConverter jsonConverter = new JsonConverter();
 
     @Captor
@@ -61,6 +65,8 @@ class NetfluxEndpointTest
     @Test
     void joinMessagePingLeave(MockitoComponentManager componentManager) throws Exception
     {
+        when(this.historyKeeper.getKey()).thenReturn("historyKeeper");
+
         // Alice opens a new session.
         Session aliceSession = mockSession("alice");
         this.endPoint.onOpen(aliceSession, null);
@@ -116,12 +122,14 @@ class NetfluxEndpointTest
         //
 
         ArgumentCaptor<String> aliceMessageCaptor = ArgumentCaptor.forClass(String.class);
-        verify(aliceSession.getBasicRemote(), times(8)).sendText(aliceMessageCaptor.capture());
+        verify(aliceSession.getBasicRemote(), times(9)).sendText(aliceMessageCaptor.capture());
         assertEquals(Arrays.asList(
             // Alice receives an identity.
             "[0,\"\",\"IDENT\",\"" + aliceId + "\"]",
             // Join acknowledgement on the created channel.
             "[1,\"JACK\",\"" + channel.getKey() + "\"]",
+            // History keeper is in the channel.
+            "[0,\"" + this.historyKeeper.getKey() + "\",\"JOIN\",\"" + channel.getKey() + "\"]",
             // Alice joined the channel.
             "[0,\"" + aliceId + "\",\"JOIN\",\"" + channel.getKey() + "\"]",
             // Bob joined the channel.
@@ -133,16 +141,17 @@ class NetfluxEndpointTest
             // Ping acknowledgement.
             "[3,\"ACK\"]",
             // Bob left the channel.
-            "[0,\"" + bobId + "\",\"LEAVE\",\"" + channel.getKey() + "\",\"\"]"
-        ), aliceMessageCaptor.getAllValues());
+            "[0,\"" + bobId + "\",\"LEAVE\",\"" + channel.getKey() + "\",\"\"]"), aliceMessageCaptor.getAllValues());
 
         ArgumentCaptor<String> bobMessageCaptor = ArgumentCaptor.forClass(String.class);
-        verify(bobSession.getBasicRemote(), times(7)).sendText(bobMessageCaptor.capture());
+        verify(bobSession.getBasicRemote(), times(8)).sendText(bobMessageCaptor.capture());
         assertEquals(Arrays.asList(
             // Bob receives an identity.
             "[0,\"\",\"IDENT\",\"" + bobId + "\"]",
             // Join acknowledgement on the created channel.
             "[1,\"JACK\",\"" + channel.getKey() + "\"]",
+            // History keeper is in the channel.
+            "[0,\"" + this.historyKeeper.getKey() + "\",\"JOIN\",\"" + channel.getKey() + "\"]",
             // Alice joined the channel.
             "[0,\"" + aliceId + "\",\"JOIN\",\"" + channel.getKey() + "\"]",
             // Bob joined the channel.
@@ -152,8 +161,7 @@ class NetfluxEndpointTest
             // Private message acknowledgement.
             "[2,\"ACK\"]",
             // Leave acknowledgement.
-            "[3,\"ACK\"]"
-        ), bobMessageCaptor.getAllValues());
+            "[3,\"ACK\"]"), bobMessageCaptor.getAllValues());
     }
 
     private Session mockSession(String name)

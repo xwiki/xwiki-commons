@@ -22,6 +22,7 @@ package org.xwiki.netflux.internal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
@@ -36,6 +37,9 @@ import org.xwiki.component.annotation.Component;
 @Singleton
 public class ChannelStore
 {
+    @Inject
+    private HistoryKeeper historyKeeper;
+
     private final Map<String, Channel> channelByKey = new ConcurrentHashMap<>();
 
     /**
@@ -46,6 +50,11 @@ public class ChannelStore
     public Channel create()
     {
         Channel channel = new Channel();
+        String historyKeeperKey = this.historyKeeper.getKey();
+        if (historyKeeperKey != null) {
+            // Add the history keeper fake user.
+            channel.getUsers().put(historyKeeperKey, null);
+        }
         this.channelByKey.put(channel.getKey(), channel);
         return channel;
     }

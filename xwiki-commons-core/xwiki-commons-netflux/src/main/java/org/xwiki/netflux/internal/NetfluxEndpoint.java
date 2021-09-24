@@ -58,8 +58,6 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
 {
     private static final long TIMEOUT_MILLISECONDS = 30000;
 
-    private static final boolean USE_HISTORY_KEEPER = true;
-
     private static final String NETFLUX_USER = "netflux.user";
 
     private static final String COMMAND_LEAVE = "LEAVE";
@@ -72,8 +70,6 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
 
     private static final String ERROR_NO_ENTITY = "ENOENT";
 
-    private final String historyKeeper = Utils.getRandomHexString(16);
-
     private final Object bigLock = new Object();
 
     private final Map<String, User> users = new HashMap<>();
@@ -85,6 +81,9 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
 
     @Inject
     private ChannelStore channels;
+
+    @Inject
+    private HistoryKeeper historyKeeper;
 
     @Override
     public void onOpen(Session session, EndpointConfig config)
@@ -248,7 +247,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
         Channel channel = (channelKey == null) ? null : this.channels.get(channelKey);
         // No key provided: create a new channel.
         if (channel == null && StringUtils.isEmpty(channelKey)) {
-            channel = createChannel();
+            channel = this.channels.create();
         } else if (channel == null) {
             ArrayList<Object> errorMsg = buildError(seq, ERROR_NO_ENTITY, "");
             addMessage(user, display(errorMsg));
@@ -303,7 +302,8 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
     {
         ArrayList<Object> ackMsg = buildAck(seq);
         addMessage(user, display(ackMsg));
-        if (USE_HISTORY_KEEPER && channelKeyOrUserName.equals(this.historyKeeper)) {
+        String historyKeeperKey = this.historyKeeper.getKey();
+        if (historyKeeperKey != null && channelKeyOrUserName.equals(historyKeeperKey)) {
             List<Object> msgHistory;
             try {
                 msgHistory = this.converter.decode(msg.get(3).toString());
@@ -319,7 +319,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
                     channel.getMessages().forEach(msgStr -> addMessage(user, msgStr));
                 }
                 String endHistoryMsg = "{\"state\":1, \"channel\":\"" + channelKey + "\"}";
-                ArrayList<Object> msgEndHistory = buildMessage(0, this.historyKeeper, user.getName(), endHistoryMsg);
+                ArrayList<Object> msgEndHistory = buildMessage(0, historyKeeperKey, user.getName(), endHistoryMsg);
                 addMessage(user, display(msgEndHistory));
             }
         } else if (this.channels.get(channelKeyOrUserName) != null) {
@@ -363,20 +363,6 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
             }
             return null;
         }
-    }
-
-    /**
-     * Create a new channel with a randomly generated key.
-     * 
-     * @return the created channel
-     */
-    private Channel createChannel()
-    {
-        Channel channel = this.channels.create();
-        if (USE_HISTORY_KEEPER) {
-            channel.getUsers().put(this.historyKeeper, null);
-        }
-        return channel;
     }
 
     private String display(List<Object> list)
@@ -423,7 +409,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
         channel.getUsers().values().stream().filter(Objects::nonNull)
             .filter(user -> !(COMMAND_MSG.equals(cmd) && user.equals(me))).forEach(user -> addMessage(user, message));
 
-        if (USE_HISTORY_KEEPER && (COMMAND_MSG.equals(cmd) || COMMAND_LEAVE.equals(cmd))) {
+        if (this.historyKeeper.getKey() != null && (COMMAND_MSG.equals(cmd) || COMMAND_LEAVE.equals(cmd))) {
             this.logger.debug("Added in history: [{}]", message);
             if (COMMAND_MSG.equals(cmd) && isCheckpoint(message)) {
                 // Prune old messages from memory.
