@@ -2021,7 +2021,6 @@
             <preparationGoals>clean install</preparationGoals>
             <!-- Avoid site generation during the release:perform to speed up release process -->
             <goals>deploy</goals>
-            <mavenExecutorId>forked-path</mavenExecutorId>
             <!-- We always use the same version for submodules -->
             <autoVersionSubmodules>true</autoVersionSubmodules>
           </configuration>
