@@ -20,17 +20,15 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-filter</artifactId>
-    <version>13.9-SNAPSHOT</version>
-  </parent>
-  <artifactId>xwiki-commons-filter-events</artifactId>
-  <packaging>pom</packaging>
-  <name>XWiki Commons - Filter - Events</name>
-  <modules>
-    <module>xwiki-commons-filter-event-extension</module>
-  </modules>
-</project>
+<extensions>
+  <extension>
+    <groupId>com.gradle</groupId>
+    <artifactId>gradle-enterprise-maven-extension</artifactId>
+    <version>1.10.5</version>
+  </extension>
+  <extension>
+    <groupId>com.gradle</groupId>
+    <artifactId>common-custom-user-data-maven-extension</artifactId>
+    <version>1.7.3</version>
+  </extension>
+</extensions>

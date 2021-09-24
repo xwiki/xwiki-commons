@@ -19,6 +19,7 @@
  */
 package org.xwiki.filter.internal.input;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
@@ -32,9 +33,11 @@ import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.filter.input.DefaultByteArrayInputSource;
 import org.xwiki.filter.input.FileInputSource;
 import org.xwiki.filter.input.InputSource;
 import org.xwiki.filter.input.InputSourceReferenceParser;
+import org.xwiki.filter.input.InputStreamInputSource;
 import org.xwiki.filter.input.ReaderInputSource;
 import org.xwiki.filter.input.StringInputSource;
 import org.xwiki.filter.input.URLInputSource;
@@ -99,12 +102,17 @@ class InputSourceConverterTest
     @Test
     void convertFromInputStream()
     {
-        File file = new File("myfile");
+        InputSource source = this.converter.convert(InputSource.class, new ByteArrayInputStream(new byte[] {1, 2, 3}));
 
-        InputSource source = this.converter.convert(InputSource.class, file);
+        assertThat(source, instanceOf(InputStreamInputSource.class));
+    }
 
-        assertThat(source, instanceOf(FileInputSource.class));
-        assertSame(file, ((FileInputSource) source).getFile());
+    @Test
+    void convertFromByteArray()
+    {
+        InputSource source = this.converter.convert(InputSource.class, new byte[] {1, 2, 3});
+
+        assertThat(source, instanceOf(DefaultByteArrayInputSource.class));
     }
 
     @Test

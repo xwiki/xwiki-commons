@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -40,6 +41,7 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -63,6 +65,62 @@ import org.xwiki.stability.Unstable;
  */
 public final class XMLUtils
 {
+    /**
+     * A simple error logging helper to suppress expected error messages.
+     * While extracting text excerpts via the {@link #extractXML} method
+     * the extraction throws expected exceptions eg. in case a text node
+     * is too long. The default ErrorListener writes these errors to the console.
+     * However as these errors are expected under normal conditions
+     * and are either handled in the {@link #extractXML} method
+     * or passed up in the chain of commands it is ok to log these
+     * at a much lower level, where users normally never see them.
+     */
+    private static class RelaxedErrorListener implements ErrorListener
+    {
+        private static final String STACK_TRACE_NOTE = "stack trace for information only";
+
+        /**
+         * Fatal errors are unexpected and are logged as warnings here.
+         * They are not really fatal to XWiki but should be handled
+         * up the command chain later, or maybe propagated to the UI level.
+         *
+         * @param exception the exception to be logged
+         */
+        @Override
+        public void fatalError(TransformerException exception) throws TransformerException
+        {
+            LOGGER.warn("Fatal error from xml transformer: [{}]", ExceptionUtils.getRootCauseMessage(exception));
+            LOGGER.trace(STACK_TRACE_NOTE, exception);
+        }
+
+        /**
+         * Errors are expected and are only logged as debug.
+         * These errors happen e.g. if a text node exceeds the expected
+         * maximal length, which can happen in regular usage.
+         *
+         * @param exception the exception to be logged
+         */
+        @Override
+        public void error(TransformerException exception) throws TransformerException
+        {
+            LOGGER.debug("Error [{}] from xml transformer", ExceptionUtils.getRootCauseMessage(exception));
+            LOGGER.trace(STACK_TRACE_NOTE, exception);
+        }
+
+        /**
+         * Warnings are logged at debug level.
+         * They might be of concern for the developers but not the end users.
+         *
+         * @param exception the exception to be logged
+         */
+        @Override
+        public void warning(TransformerException exception) throws TransformerException
+        {
+            LOGGER.debug("Warning [{}] from xml transformer", ExceptionUtils.getRootCauseMessage(exception));
+            LOGGER.trace(STACK_TRACE_NOTE, exception);
+        }
+    }
+
     /** Logging helper object. */
     private static final Logger LOGGER = LoggerFactory.getLogger(XMLUtils.class);
 
@@ -110,6 +168,21 @@ public final class XMLUtils
     /** Xerces configuration parameter for disabling fetching and checking XMLs against their DTD. */
     private static final String DISABLE_DTD_PARAM = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
 
+    /** Xerces configuration parameter for prevent DOCTYPE definition. */
+    private static final String DISABLE_EXTERNAL_DOCTYPE_DECLARATION =
+        "http://apache.org/xml/features/disallow-doctype-decl";
+
+    /** Xerces configuration parameter for disabling inserting entities defined in external files. */
+    private static final String DISABLE_EXTERNAL_PARAMETER_ENTITIES =
+        "http://xml.org/sax/features/external-parameter-entities";
+
+    /** Xerces configuration parameter for disabling inserting entities defined in external files. */
+    private static final String DISABLE_EXTERNAL_GENERAL_ENTITIES =
+        "http://xml.org/sax/features/external-general-entities";
+
+    /** Helper to log expected errors at an appropriate level. */
+    private static final ErrorListener RELAXED_ERROR_LISTENER = new RelaxedErrorListener();
+
     static {
         DOMImplementationLS implementation = null;
         try {
@@ -145,6 +218,7 @@ public final class XMLUtils
         try {
             handler = new ExtractHandler(start, length);
             Transformer xformer = TransformerFactory.newInstance().newTransformer();
+            xformer.setErrorListener(RELAXED_ERROR_LISTENER);
             xformer.transform(new DOMSource(node), new SAXResult(handler));
             return handler.getResult();
         } catch (Throwable t) {
@@ -515,6 +589,17 @@ public final class XMLUtils
             p.getDomConfig().setParameter("validate", false);
             if (p.getDomConfig().canSetParameter(DISABLE_DTD_PARAM, false)) {
                 p.getDomConfig().setParameter(DISABLE_DTD_PARAM, false);
+            }
+
+            // Avoid XML eXternal Entity injection (XXE)
+            if (p.getDomConfig().canSetParameter(DISABLE_EXTERNAL_DOCTYPE_DECLARATION, false)) {
+                p.getDomConfig().setParameter(DISABLE_EXTERNAL_DOCTYPE_DECLARATION, false);
+            }
+            if (p.getDomConfig().canSetParameter(DISABLE_EXTERNAL_PARAMETER_ENTITIES, false)) {
+                p.getDomConfig().setParameter(DISABLE_EXTERNAL_PARAMETER_ENTITIES, false);
+            }
+            if (p.getDomConfig().canSetParameter(DISABLE_EXTERNAL_GENERAL_ENTITIES, false)) {
+                p.getDomConfig().setParameter(DISABLE_EXTERNAL_GENERAL_ENTITIES, false);
             }
             return p.parse(source);
         } catch (Exception ex) {

@@ -24,7 +24,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>13.8-SNAPSHOT</version>
+  <version>13.9-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -46,7 +46,7 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>13.8-SNAPSHOT</commons.version>
+    <commons.version>13.9-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
@@ -2035,7 +2035,6 @@
             <preparationGoals>clean install</preparationGoals>
             <!-- Avoid site generation during the release:perform to speed up release process -->
             <goals>deploy</goals>
-            <mavenExecutorId>forked-path</mavenExecutorId>
             <!-- We always use the same version for submodules -->
             <autoVersionSubmodules>true</autoVersionSubmodules>
           </configuration>

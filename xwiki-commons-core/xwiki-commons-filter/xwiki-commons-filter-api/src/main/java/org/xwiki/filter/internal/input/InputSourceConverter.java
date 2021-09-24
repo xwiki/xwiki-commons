@@ -36,6 +36,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.filter.FilterException;
+import org.xwiki.filter.input.DefaultByteArrayInputSource;
 import org.xwiki.filter.input.DefaultFileInputSource;
 import org.xwiki.filter.input.DefaultInputStreamInputSource;
 import org.xwiki.filter.input.DefaultReaderInputSource;
@@ -77,6 +78,8 @@ public class InputSourceConverter extends AbstractConverter<InputSource>
             inputSource = fromString(value.toString());
         } else if (value instanceof InputStream) {
             inputSource = new DefaultInputStreamInputSource((InputStream) value);
+        } else if (value instanceof byte[]) {
+            inputSource = new DefaultByteArrayInputSource((byte[]) value);
         } else if (value instanceof File) {
             inputSource = new DefaultFileInputSource((File) value);
         } else if (value instanceof Reader) {
