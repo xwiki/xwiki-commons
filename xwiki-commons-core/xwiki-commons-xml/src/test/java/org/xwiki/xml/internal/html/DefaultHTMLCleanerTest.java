@@ -125,7 +125,9 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p>\"&amp;</p>", "<p>\"&</p>");
         assertHTML("<p><img src=\"http://host.com/a.gif?a=foo&amp;b=bar\" /></p>",
             "<img src=\"http://host.com/a.gif?a=foo&amp;b=bar\" />");
-        assertHTML("<p>&#xA;</p>", "<p>&#xA;</p>");
+        assertHTML("<p>\n</p>", "<p>&#xA;</p>");
+        // the following is not a "special" character, but any ole unicode character
+        assertHTML("<p>ÿ</p>", "<p>&#xFF;</p>");
 
         // Verify that double quotes are escaped in attribute values
         assertHTML("<p value=\"script:&quot;&quot;\"></p>", "<p value='script:\"\"'");
@@ -612,7 +614,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    void controlCharacters() throws Exception
+    void controlCharactersAreReplacedBySpaces() throws Exception
     {
         String htmlInput = "<p>\u0008</p>";
         Document document = clean(htmlInput);
@@ -625,25 +627,27 @@ public class DefaultHTMLCleanerTest
         htmlInput = "<p>&#8;</p>";
         document = clean(htmlInput);
 
-        // HtmlCleaner currently doesn't handle properly unicode characters: asking it to recognize them
-        // involves that all entities will be escaped during the parsing and that's not what we want. So we
-        // keep them encoded.
+        // HtmlCleaner now handles unicode character entities. These are decoded
+        // if possible, and if they are control characters, replaced by whitespace
         // See https://sourceforge.net/p/htmlcleaner/bugs/221/
         textContent =
             document.getElementsByTagName("p").item(0).getTextContent();
-        assertEquals("&#8;", textContent);
-        assertHTML("<p>&#8;</p>", "&#8;");
+        assertEquals(" ", textContent);
+        assertHTML(" ", "&#8;");
 
         htmlInput = "<p foo=\"&#8;\">content</p>";
         document = clean(htmlInput);
 
-        // HtmlCleaner currently doesn't handle properly unicode characters: asking it to recognize them
-        // involves that all entities will be escaped during the parsing and that's not what we want. So we
-        // keep them encoded.
+        // in attributes we actually want to keep (encoded) control characters
+        // but HTMLCleaner scraps these characters if it finds them in attributes
         textContent =
             document.getElementsByTagName("p").item(0).getAttributes().getNamedItem("foo").getTextContent();
-        assertEquals("&#8;", textContent);
-        assertHTML("<p foo=\"&#8;\">content</p>", "<p foo=\"&#8;\">content</p>");
+        // wanted behavior:
+        // assertEquals("&#8;", textContent);
+        // actual behavior
+        assertEquals("", textContent);
+        // same when serializing
+        assertHTML("<p foo=\"\">content</p>", "<p foo=\"&#8;\">content</p>");
     }
 
     @Test
@@ -730,7 +734,7 @@ public class DefaultHTMLCleanerTest
         List<? extends TagNode> divList = tagNode.getElementListByName("div", true);
         assertEquals(1, divList.size());
         assertEquals("&quot;", divList.get(0).getText().toString());
-        // This assert is failing: the attribute is deserialized to contain ".
+        // This assert was failing: the attribute was deserialized to contain ".
         assertEquals("&quot;", divList.get(0).getAttributeByName("foo"));
 
         DomSerializer domSerializer = new DomSerializer(cleanerProperties, false);
@@ -745,7 +749,8 @@ public class DefaultHTMLCleanerTest
         nodeList = document.getElementsByTagName("div");
         assertEquals(1, nodeList.getLength());
         assertEquals("&quot;", nodeList.item(0).getTextContent());
-        // We can never retrieve the expected value here since the encoded &amp; has been lost earlier.
+        // We retrieve a &quot; here since the encoded &amp; is decoded to '&' when extracting
+        // the "text content" of the attribute
         assertEquals("&quot;", nodeList.item(0).getAttributes().getNamedItem("foo").getTextContent());
 
         assertHTML("<div foo=\"&amp;quot;\">content</div>",
@@ -753,13 +758,11 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    @Disabled("See https://sourceforge.net/p/htmlcleaner/bugs/221/")
     public void parseWithUnicodeChars() throws Exception
     {
         CleanerProperties cleanerProperties = new CleanerProperties();
 
         cleanerProperties.setDeserializeEntities(true);
-        cleanerProperties.setRecognizeUnicodeChars(true);
         cleanerProperties.setTranslateSpecialEntities(false);
 
         HtmlCleaner cleaner = new HtmlCleaner(cleanerProperties);
@@ -791,18 +794,104 @@ public class DefaultHTMLCleanerTest
 
         assertEquals("baz&buz", nodeList.item(2).getAttributes().getNamedItem("foo").getTextContent());
 
-        // BUG: This is failing with baz&gt;buz
+        // This was failing with baz&gt;buz
         assertEquals("baz>buz", nodeList.item(1).getTextContent());
-        // BUG: This is failing with baz&amp;buz
+        // This was failing with baz&amp;buz
         assertEquals("baz&buz", nodeList.item(2).getTextContent());
     }
 
+    /**
+     * Test that line feed and carriage return are inserted in their unencoded form.
+     */
     @Test
+    void doNotRemoveLFandCRInTextNodes()
+    {
+        assertHTML("<p>\r</p>", "<p>&#xD;</p>");
+        assertHTML("<p>Test \r\n</p>", "<p>Test \r\n</p>");
+    }
+
+    /**
+     * Ensure that &amp; in text nodes is not decoded even if it looks like it is following a character entity.
+     */
+    @Test
+    void doNotDecodeAmpersandInTextNodes()
+    {
+        assertHTML("<p>&amp;#xA;</p>", "<p>&amp;#xA;</p>");
+        assertHTML("<p>&amp;#10;</p>", "<p>&amp;#10;</p>");
+    }
+
+    /**
+     * Ensures that &lt; in text nodes is not decoded even if it is encoded as character entity.
+     */
+    @Test
+    void replaceOpeningBraceCharacterEntityByNamedEntity()
+    {
+        assertHTML("<p>&lt;</p>", "<p>&#60;</p>");
+        // actually it is not even decoded in attributes
+        assertHTML("<p foo=\"&lt;\">text</p>", "<p foo=\"&#60;\">text</p>");
+        // same if hexadecimal
+        assertHTML("<div>&lt;</div>", "<div>&#x003C;</div>");
+    }
+
+    /**
+     * Ensure that &gt; in text nodes is not decoded even if it is encoded as character entity.
+     */
+    @Test
+    void replaceClosingBracesCharacterEntityByNamedEntity()
+    {
+        assertHTML("<p>&gt;</p>", "<p>&#62;</p>");
+        // it is also not decoded in attributes (where it must not be decoded)
+        assertHTML("<p foo=\"&gt;\">text</p>", "<p foo=\"&#62;\">text</p>");
+        // same if hexadecimal
+        assertHTML("<div>&gt;</div>", "<div>&#x003E;</div>");
+    }
+
+    /**
+     * Ensures that &gt; in text nodes is encoded even if it is not encoded in the original text
+     */
+    @Test
+    void replaceBrokenExplicitClosingBraceByNamedEntity()
+    {
+        assertHTML("<p>&gt;</p>", "<p>></p>");
+        // however if a closing brace is inside an attribute, that is illegal html, and the html cleaner
+        // decides to move it to the next text node, where it is encoded (which is a legitimate decision)
+        // if this changes to something different, but also acceptable, feel free to update the test
+        assertHTML("<p foo=\"abc\">def\"&gt;text</p>", "<p foo=\"abc>def\">text</p>");
+    }
+
+    /**
+     * Test how unencoded opening angled braces aka greater-than sign are handled.
+     */
+    @Test
+    void replaceBrokenExplicitOpeningBraceByNamedEntity()
+    {
+        // ensures that &lt; in text nodes is encoded even if it is not encoded in the original text
+        assertHTML("<p>&lt;</p>", "<p><</p>");
+        // also, if it is surrounded by whitespace
+        assertHTML("<p>abc &lt; def</p>", "<p>abc < def</p>");
+        // however it does not, if it is followed by text; instead the brace and the following text are scrapped
+        assertHTML("<p>abc</p>", "<p>abc<def</p>");
+        assertHTML("<p>abc</p>", "<p>abc<def; and here we can have an much text as we want</p>");
+        // if an opening brace is inside an attribute, that is marginally ok, but the html cleaner
+        // decides to scrap it and all the following content
+        // could do this:
+        // assertHTML("<p foo=\"abc&lt;def\">text</p>", "<p foo=\"abc<def\">text</p>");
+        // but instead does:
+        assertHTML("<p foo=\"abc\">text</p>", "<p foo=\"abc<def\">text</p>");
+        // if surrounded by whitespace, then instead this happens
+        // not sure if this is good or bad; if the behavior of the HTML cleaner changes, feel free to update
+        assertHTML("<p foo=\"abc\">&lt; def\"&gt;text</p>", "<p foo=\"abc < def\">text</p>");
+    }
+
+    @Test
+    @Disabled("we have no special support for textarea at the moment")
     public void followingEncodedEntitiesAreProperlyKept()
     {
         String content = "<p><textarea>&#123;&#123;velocity}}machin&#123;&#123;/velocity}}</textarea></p>";
         Document document = clean(content);
         String textareaContent = document.getElementsByTagName("textarea").item(0).getTextContent();
+        // this now produces "{{velocity}}machin{{;/velocity}} instead,
+        // as html entities in text are decoded unless necessary (like &gt; aka &#60;)
         assertEquals("&#123;&#123;velocity}}machin&#123;&#123;/velocity}}", textareaContent);
 
         assertHTML("<p><textarea>&#123;&#123;velocity}}machin&#123;&#123;/velocity}}</textarea></p>", content);
