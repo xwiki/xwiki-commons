@@ -262,6 +262,10 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         // See TrimAttributeCleanerTransformation for more information.
         defaultProperties.setTrimAttributeValues(false);
 
+        // Replace all unicode character entities by their actual unicode character, if possible.
+        // This flag is set to true since https://sourceforge.net/p/htmlcleaner/bugs/221/ is fixed in 2.25.
+        defaultProperties.setRecognizeUnicodeChars(true);
+
         param = configuration.getParameters().get(HTMLCleanerConfiguration.TRANSLATE_SPECIAL_ENTITIES);
         boolean translateSpecialEntities = (param != null) && Boolean.parseBoolean(param);
         defaultProperties.setTranslateSpecialEntities(translateSpecialEntities);
