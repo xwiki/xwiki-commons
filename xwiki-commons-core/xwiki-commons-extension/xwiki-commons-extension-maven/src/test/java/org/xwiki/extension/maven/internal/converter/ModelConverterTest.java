@@ -37,7 +37,6 @@ import org.apache.maven.model.Repository;
 import org.junit.jupiter.api.Test;
 import org.xwiki.extension.DefaultExtensionComponent;
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.ExtensionComponent;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionFeaturesInjector;
 import org.xwiki.extension.ExtensionId;

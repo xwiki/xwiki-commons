@@ -26,7 +26,6 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.internal.ContextComponentManagerProvider;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.properties.BeanManager;
 import org.xwiki.properties.PropertyException;

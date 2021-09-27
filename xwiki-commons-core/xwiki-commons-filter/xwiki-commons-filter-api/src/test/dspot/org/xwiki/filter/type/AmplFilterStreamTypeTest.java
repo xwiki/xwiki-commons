@@ -21,7 +21,6 @@ package org.xwiki.filter.type;
 
 
 import org.junit.Assert;
-import org.junit.jupiter.api.Test;
 
 
 /**
