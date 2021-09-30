@@ -70,7 +70,7 @@ stage ('Commons Builds') {
           mavenOpts = globalMavenOpts
           goals = 'clean install'
           profiles = '-repository-all,legacy,integration-tests'
-          properties = '-DskipTests -DperformRelease=true -Dgpg.skip=true -Dxwiki.checkstyle.skip=true -Ddoclint=all'
+          properties = '-DskipTests -DperformRelease=true -Dgpg.skip=true -Dxwiki.checkstyle.skip=true -Dxwiki.revapi.skip=true -Dxwiki.enforcer.skip=true -Dxwiki.spoon.skip=true -Ddoclint=all'
           javadoc = false
         }
       }
