@@ -62,7 +62,7 @@ stage ('Commons Builds') {
           name: 'TestRelease',
           goals: 'clean install',
           profiles: 'legacy,integration-tests',
-          properties: '-DskipTests -DperformRelease=true -Dgpg.skip=true -Dxwiki.checkstyle.skip=true -Ddoclint=all'
+          properties: '-DskipTests -DperformRelease=true -Dgpg.skip=true -Dxwiki.checkstyle.skip=true -Dxwiki.revapi.skip=true -Dxwiki.enforcer.skip=true -Dxwiki.spoon.skip=true -Ddoclint=all'
         )
       }
     },
