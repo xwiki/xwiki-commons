@@ -215,7 +215,7 @@
     <maven-remote-resources-plugin.version>1.7.0</maven-remote-resources-plugin.version>
 
     <!-- The version of Eclipse Sisu to use-->
-    <sisu.version>0.3.4</sisu.version>
+    <sisu.version>0.3.5</sisu.version>
 
     <!-- The version of Antlr4 to bundle -->
     <antlr4.version>4.9.2</antlr4.version>
