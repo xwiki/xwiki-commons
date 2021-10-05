@@ -968,10 +968,10 @@
         <artifactId>org.eclipse.sisu.plexus</artifactId>
         <version>${sisu.version}</version>
         <exclusions>
-          <!-- This dependency is now deprecated and replaced by annotation-api. -->
+          <!-- This dependency is now deprecated and replaced by jakarta.annotation-api. -->
           <exclusion>
             <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
+            <artifactId>javax.annotation-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
