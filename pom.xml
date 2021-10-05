@@ -789,7 +789,7 @@
       <dependency>
         <groupId>org.reflections</groupId>
         <artifactId>reflections</artifactId>
-        <version>0.9.11</version>
+        <version>0.10</version>
       </dependency>
 
       <!-- Used by reflections and other projects in commons, platform and rendering -->
@@ -996,13 +996,6 @@
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-core</artifactId>
         <version>${maven.version}</version>
-        <exclusions>
-          <!-- Remove exclusion when https://jira.xwiki.org/browse/XCOMMONS-1155 is fixed -->
-          <exclusion>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>

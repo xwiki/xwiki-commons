@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.reflections.Reflections;
-import org.reflections.scanners.ResourcesScanner;
+import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
@@ -198,8 +198,8 @@ public class RepositoryUtils
                 prefix = prefix + '.';
             }
 
-            Reflections reflections = new Reflections(new ConfigurationBuilder().setScanners(new ResourcesScanner())
-                .setUrls(urls).filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(prefix))));
+            Reflections reflections = new Reflections(new ConfigurationBuilder().setScanners(Scanners.Resources)
+                .setUrls(urls).filterInputsBy(new FilterBuilder().includePackage(prefix)));
 
             for (String resource : reflections.getResources(Pattern.compile(".*"))) {
                 targetFolder.mkdirs();

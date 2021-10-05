@@ -43,7 +43,7 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.reflections.Reflections;
-import org.reflections.scanners.ResourcesScanner;
+import org.reflections.scanners.Scanners;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.xwiki.component.annotation.Component;
@@ -58,8 +58,6 @@ import org.xwiki.extension.repository.internal.core.DefaultCoreExtension;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
 import org.xwiki.extension.repository.internal.core.ExtensionScanner;
 import org.xwiki.properties.ConverterManager;
-
-import com.google.common.base.Predicates;
 
 /**
  * Implementation of {@link ExtensionScanner} based on Maven pom.xml descriptors.
@@ -143,14 +141,14 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
         DefaultCoreExtensionRepository repository)
     {
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.setScanners(new ResourcesScanner());
+        configurationBuilder.setScanners(Scanners.Resources);
         configurationBuilder.setUrls(jarURL);
-        configurationBuilder.filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(MavenUtils.MAVENPACKAGE)));
+        configurationBuilder.filterInputsBy(new FilterBuilder().includePackage(MavenUtils.MAVENPACKAGE));
 
         Reflections reflections = new Reflections(configurationBuilder);
 
         // We can get several pom.xml because the jar might embed several extensions
-        Set<String> descriptors = reflections.getResources(Predicates.equalTo("pom.xml"));
+        Set<String> descriptors = reflections.getResources("pom.xml");
 
         boolean found = false;
         for (String descriptor : descriptors) {

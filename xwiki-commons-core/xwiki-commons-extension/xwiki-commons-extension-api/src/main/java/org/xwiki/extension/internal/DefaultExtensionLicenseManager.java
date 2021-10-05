@@ -35,7 +35,7 @@ import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
 import org.reflections.Reflections;
-import org.reflections.scanners.ResourcesScanner;
+import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
@@ -83,8 +83,8 @@ public class DefaultExtensionLicenseManager implements ExtensionLicenseManager, 
         Collection<URL> licenseURLs = ClasspathHelper.forPackage(LICENSE_PACKAGE);
 
         Reflections reflections =
-            new Reflections(new ConfigurationBuilder().setScanners(new ResourcesScanner()).setUrls(licenseURLs)
-                .filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(LICENSE_PACKAGE))));
+            new Reflections(new ConfigurationBuilder().setScanners(Scanners.Resources).setUrls(licenseURLs)
+                .filterInputsBy(new FilterBuilder().includePackage(LICENSE_PACKAGE)));
 
         for (String licenseFile : reflections.getResources(Pattern.compile(".*\\.license"))) {
             URL licenseUrl = getClass().getClassLoader().getResource(licenseFile);
