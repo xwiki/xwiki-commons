@@ -21,7 +21,6 @@ package org.xwiki.xml.html;
 
 import java.io.StringReader;
 
-import org.apache.xerces.dom.DocumentImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -29,7 +28,6 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.context.internal.DefaultExecution;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
-import org.xwiki.xml.XMLUtils;
 import org.xwiki.xml.internal.html.DefaultHTMLCleaner;
 import org.xwiki.xml.internal.html.DefaultHTMLCleanerTest;
 import org.xwiki.xml.internal.html.filter.AttributeFilter;

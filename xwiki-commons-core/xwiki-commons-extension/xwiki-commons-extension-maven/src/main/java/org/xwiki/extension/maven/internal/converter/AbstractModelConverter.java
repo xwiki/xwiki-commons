@@ -45,7 +45,6 @@ import org.apache.maven.model.Scm;
 import org.xwiki.extension.DefaultExtensionPattern;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.ExtensionComponent;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionFeaturesInjector;
 import org.xwiki.extension.ExtensionId;

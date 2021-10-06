@@ -26,9 +26,6 @@ import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.BeginEvent;
 import org.xwiki.observation.event.EndEvent;
 import org.xwiki.observation.event.Event;
-import org.xwiki.observation.internal.DefaultObservationContext;
-import org.xwiki.observation.internal.DefaultObservationManager;
-import org.xwiki.observation.internal.ObservationContextListener;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.mockito.MockitoComponentManager;
@@ -45,13 +42,13 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  */
 @ComponentTest
-public class ObservationContextTest
+class ObservationContextTest
 {
     @InjectMockComponents
     private DefaultObservationContext observationContext;
 
     @Test
-    public void test(MockitoComponentManager componentManager) throws Exception
+    void test(MockitoComponentManager componentManager) throws Exception
     {
         componentManager.registerComponent(ObservationContextListener.class);
         componentManager.registerComponent(DefaultObservationManager.class);

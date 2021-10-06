@@ -49,7 +49,6 @@ import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.component.util.ReflectionUtils;
-import org.xwiki.stability.Unstable;
 
 /**
  * Dynamically loads all components defined using Annotations and declared in META-INF/components.txt files.

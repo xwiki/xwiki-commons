@@ -27,7 +27,6 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.ComponentRole;

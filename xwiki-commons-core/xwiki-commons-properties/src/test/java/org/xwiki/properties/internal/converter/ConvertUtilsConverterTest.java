@@ -20,7 +20,6 @@
 package org.xwiki.properties.internal.converter;
 
 import org.junit.jupiter.api.Test;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.properties.internal.DefaultConverterManager;
 import org.xwiki.test.annotation.AllComponents;

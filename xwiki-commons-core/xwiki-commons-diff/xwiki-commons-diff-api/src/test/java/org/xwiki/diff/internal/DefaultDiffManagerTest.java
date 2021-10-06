@@ -42,7 +42,6 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ComponentTest
@@ -154,7 +153,7 @@ public class DefaultDiffManagerTest
 
     @ParameterizedTest
     @MethodSource("createConfigurations")
-    public void mergeStringList(MergeConfiguration<String> mergeConfiguration) throws Exception
+    void mergeStringList(MergeConfiguration<String> mergeConfiguration) throws Exception
     {
         MergeResult<String> result;
 
@@ -206,7 +205,7 @@ public class DefaultDiffManagerTest
 
     @ParameterizedTest
     @MethodSource("createConfigurations")
-    public void mergeCharListNoConflict(MergeConfiguration<Character> mergeConfiguration) throws Exception
+    void mergeCharListNoConflict(MergeConfiguration<Character> mergeConfiguration) throws Exception
     {
         MergeResult<Character> result;
 

@@ -20,10 +20,8 @@
 package org.xwiki.extension.job.plan.internal;
 
 import org.junit.jupiter.api.Test;
-import org.xwiki.extension.AbstractExtensionTest;
 import org.xwiki.extension.AbstractExtensionTest.TestExtension;
 import org.xwiki.extension.ExtensionId;
-import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  *
  * @version $Id$
  */
-public class DefaultExtensionPlanActionTest
+class DefaultExtensionPlanActionTest
 {
     @Test
     void equals()
