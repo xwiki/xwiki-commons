@@ -115,13 +115,13 @@
             <configuration>
               <skip>${xwiki.enforcer.no-legacy-dependencies.skip}</skip>
               <rules>
-                <xwikiBannedDependencies implementation="org.xwiki.tool.enforcer.XWikiBannedDependencies">
+                <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
                   <message>Don't depend on a XWiki Legacy module!</message>
                   <excludes>
-                    <exclude>.*xwiki.*:.*-legacy-.*</exclude>
+                    <exclude>*xwiki*:*-legacy-*</exclude>
                   </excludes>
-                </xwikiBannedDependencies>
+                </bannedDependencies>
               </rules>
             </configuration>
           </execution>
