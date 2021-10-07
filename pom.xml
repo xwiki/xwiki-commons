@@ -2639,6 +2639,21 @@
                     </directories>
                   </outputs>
                 </plugin>
+                <!-- Make the Failsafe plugin cacheable when used in functional tests to work around the issue:
+                       Goal execution marked as not cacheable: Build caching was not enabled for this goal execution
+                       because '/root/workspace/XWiki_xwiki-platform_master/xwiki-platform-core/.../target/screenshots'
+                       was used as a command line argument, but not declared as an input or output. -->
+                <plugin>
+                  <artifactId>maven-failsafe-plugin</artifactId>
+                  <outputs>
+                    <directories>
+                      <directory>
+                        <name>screenshots</name>
+                        <path>${project.build.directory}/screenshots</path>
+                      </directory>
+                    </directories>
+                  </outputs>
+                </plugin>
                 <!-- Make the Revapi plugin cacheable -->
                 <plugin>
                   <groupId>org.revapi</groupId>
