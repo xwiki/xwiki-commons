@@ -46,7 +46,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -82,8 +81,8 @@ public class DefaultJobStatusTest
         verify(parentJobStatus).answered();
 
         // Only the parent job status should fire QuestionAsked/Answered events.
-        verify(this.observationManager, never()).notify(any(Event.class), anyObject());
-        verify(this.observationManager, never()).notify(any(Event.class), anyObject(), anyObject());
+        verify(this.observationManager, never()).notify(any(Event.class), any());
+        verify(this.observationManager, never()).notify(any(Event.class), any(), any());
     }
 
     @Test
