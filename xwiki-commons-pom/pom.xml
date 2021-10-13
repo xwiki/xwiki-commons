@@ -20,8 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xmlns="https://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+<modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons</artifactId>
@@ -55,7 +56,7 @@
                  is why we're ignoring the warning (since we want warnings to fail the build...).
                  For more details, see:
                  - https://blogs.oracle.com/darcy/entry/bootclasspath_older_source
-                 - http://stackoverflow.com/questions/9164625/maven-use-jdk-7-to-compile-for-jvm-5
+                 - https://stackoverflow.com/questions/9164625/maven-use-jdk-7-to-compile-for-jvm-5
             -->
             <arg>-Xlint:-options</arg>
             <!-- Tell the compiler to preserve parameter names in the bytecode -->

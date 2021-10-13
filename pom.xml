@@ -18,8 +18,9 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xmlns="https://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+<modelVersion>4.0.0</modelVersion>
   <groupId>org.xwiki.commons</groupId>
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
@@ -38,10 +39,10 @@
          and the javadoc produce external link using a path like for example:
          "/xwiki-commons-pom/.../apidocs/org/xwiki/model/reference/DocumentReference.html?is-external=true"
        - Ideally we would use instead a generic URL like:
-         "http://extensions.xwiki.org?id=${project.groupId}:${project.artifactId}&amp;path="
-         However this makes the site plugin fails, see http://jira.codehaus.org/browse/MNG-5242
+         "https://extensions.xwiki.org?id=${project.groupId}:${project.artifactId}&amp;path="
+         However this makes the site plugin fails, see https://jira.codehaus.org/browse/MNG-5242
   -->
-  <url>http://extensions.xwiki.org?id=${project.groupId}:${project.artifactId}:${project.version}:::</url>
+  <url>https://extensions.xwiki.org?id=${project.groupId}:${project.artifactId}:${project.version}:::</url>
   <inceptionYear>2004</inceptionYear>
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
@@ -180,7 +181,7 @@
          Example:
             mvn clean install -Pcoverage -Dxwiki.jacoco.itDestFile=`pwd`/target/jacoco-it.exec
          Note that unfortunately using the following does not work because of
-         http://jira.codehaus.org/browse/SONAR-3427:
+         https://jira.codehaus.org/browse/SONAR-3427:
             <xwiki.jacoco.itDestFile>
               ${session.executionRootDirectory}/target/xwiki-jacoco-it.exec
             </xwiki.jacoco.itDestFile>
@@ -251,7 +252,7 @@
   <licenses>
     <license>
       <name>LGPL 2.1</name>
-      <url>http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
+      <url>https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -263,7 +264,7 @@
     <!-- Note that this information is read by XWiki's Extension Manager and passed to the XWiki Repository Application
          to mention who developed the various published XWiki extensions. We use a fake Developer who represents the
          whole team because it's simpler to manage only one developer at this level and instead use the wiki at
-         http://dev.xwiki.org/xwiki/bin/view/Community/HallOfFame to provide an up to date view of all XWiki devs. -->
+         https://dev.xwiki.org/xwiki/bin/view/Community/HallOfFame to provide an up to date view of all XWiki devs. -->
     <developer>
       <id>devs</id>
       <name>XWiki Development Team</name>
@@ -271,7 +272,7 @@
   </developers>
   <organization>
     <name>XWiki</name>
-    <url>http://xwiki.org/</url>
+    <url>https://xwiki.org/</url>
   </organization>
   <scm>
     <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
@@ -283,25 +284,21 @@
     <mailingList>
       <name>XWiki Users List</name>
       <post>users@xwiki.org</post>
-      <subscribe>http://lists.xwiki.org/mailman/listinfo/users</subscribe>
-      <unsubscribe>http://lists.xwiki.org/mailman/listinfo/users</unsubscribe>
-      <archive>http://lists.xwiki.org/pipermail/users/</archive>
+      <subscribe>https://lists.xwiki.org/mailman/listinfo/users</subscribe>
+      <unsubscribe>https://lists.xwiki.org/mailman/listinfo/users</unsubscribe>
+      <archive>https://lists.xwiki.org/pipermail/users/</archive>
       <otherArchives>
-        <otherArchive>http://xwiki.markmail.org/</otherArchive>
-        <otherArchive>http://www.nabble.com/XWiki-f2563.html</otherArchive>
-        <otherArchive>http://gmane.org/find.php?list=xwiki</otherArchive>
+        <otherArchive>https://xwiki.markmail.org/</otherArchive>
       </otherArchives>
     </mailingList>
     <mailingList>
       <name>XWiki Developers List</name>
       <post>devs@xwiki.org</post>
-      <subscribe>http://lists.xwiki.org/mailman/listinfo/devs</subscribe>
-      <unsubscribe>http://lists.xwiki.org/mailman/listinfo/devs</unsubscribe>
-      <archive>http://lists.xwiki.org/pipermail/devs/</archive>
+      <subscribe>https://lists.xwiki.org/mailman/listinfo/devs</subscribe>
+      <unsubscribe>https://lists.xwiki.org/mailman/listinfo/devs</unsubscribe>
+      <archive>https://lists.xwiki.org/pipermail/devs/</archive>
       <otherArchives>
-        <otherArchive>http://xwiki.markmail.org/</otherArchive>
-        <otherArchive>http://www.nabble.com/XWiki-f2563.html</otherArchive>
-        <otherArchive>http://gmane.org/find.php?list=xwiki</otherArchive>
+        <otherArchive>https://xwiki.markmail.org/</otherArchive>
       </otherArchives>
     </mailingList>
   </mailingLists>
@@ -318,7 +315,7 @@
       <!-- We don't use Commons Lang 2.x ourselves (we use Commons Lang 3.x) but some of our transitive dependencies
            require Commons Lang. The issue is that Maven uses a "closest-to-root" strategy to resolve dependency
            versions and since the transitive dependencies that require Commons Lang don't use version ranges we need
-           to help them... (see http://guntherpopp.blogspot.fr/2011/02/understanding-maven-dependency.html). Since
+           to help them... (see https://guntherpopp.blogspot.fr/2011/02/understanding-maven-dependency.html). Since
            the Commons Lang project takes a lot of care of preserving backward compatibility we force to use the
            latest version which is the version that has the least chance of causing problems! -->
       <dependency>
@@ -2023,7 +2020,7 @@
           <configuration>
             <!-- By default the release plugin will execute the "clean" and "verify" goals but won't perform an
                  "install". This is causing problems since several modules will fail to build during release:prepare.
-                 See http://tinyurl.com/354vwe for more details. Thus we're forcing the execution of the "install"
+                 See https://tinyurl.com/354vwe for more details. Thus we're forcing the execution of the "install"
                  goal. -->
             <preparationGoals>clean install</preparationGoals>
             <!-- Avoid site generation during the release:perform to speed up release process -->
@@ -2413,7 +2410,7 @@
             <excludes>
               <!-- Don't run Jacoco on com/steadystate/css/parser/SACParserCSS21TokenManager since it generates an
                    error, see
-                   http://stackoverflow.com/questions/14559117/how-do-i-disable-jacoco-agent-after-jacocoreport
+                   https://stackoverflow.com/questions/14559117/how-do-i-disable-jacoco-agent-after-jacocoreport
                    TODO: remove when https://sourceforge.net/p/cssparser/bugs/53/ is fixed -->
               <exclude>**com.steadystate.css.parser.SACParserCSS21TokenManager</exclude>
 
@@ -2901,7 +2898,7 @@
               </execution>
             </executions>
           </plugin>
-          <!-- Because of http://jira.codehaus.org/browse/MJAVADOC-329 we need to find a workaround to create a Javadoc
+          <!-- Because of https://jira.codehaus.org/browse/MJAVADOC-329 we need to find a workaround to create a Javadoc
                JAR to satisfy the Maven Central Repository requirements. We do this by creating an apidocs/ dir in the
                target directory.
                Note that even though this "hack" is only needed for java projects having all their sources in the
@@ -2963,7 +2960,7 @@
         </plugins>
       </build>
     </profile>
-    <!-- To generate Clover reports, see http://dev.xwiki.org/xwiki/bin/view/Community/Testing#HTestCoverage -->
+    <!-- To generate Clover reports, see https://dev.xwiki.org/xwiki/bin/view/Community/Testing#HTestCoverage -->
     <profile>
       <id>clover</id>
       <properties>
@@ -3131,7 +3128,7 @@
   <distributionManagement>
     <site>
       <id>nexus.xwiki.org</id>
-      <url>dav:http://nexus.xwiki.org/nexus/content/sites/site/</url>
+      <url>dav:https://nexus.xwiki.org/nexus/content/sites/site/</url>
     </site>
     <snapshotRepository>
       <id>nexus.xwiki.org</id>
