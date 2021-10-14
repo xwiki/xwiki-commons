@@ -19,13 +19,7 @@
  */
 package org.xwiki.filter.xml.internal.parameter;
 
-import java.io.InputStream;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -39,8 +33,6 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.component.util.ReflectionUtils;
-import org.xwiki.filter.FilterEventParameters;
-import org.xwiki.filter.input.InputSource;
 import org.xwiki.filter.xml.internal.XMLUtils;
 
 import com.thoughtworks.xstream.XStream;
@@ -85,27 +77,7 @@ public class XStreamParameterManager implements ParameterManager, Initializable
     public void initialize() throws InitializationException
     {
         this.staxDriver = new StaxDriver();
-        this.xstream = new NoWarningXStream(this.staxDriver);
-
-        this.xstream.setMarshallingStrategy(new XMLTreeMarshallingStrategy());
-
-        this.xstream.addDefaultImplementation(LinkedHashMap.class, Map.class);
-        this.xstream.addDefaultImplementation(ArrayList.class, Collection.class);
-        this.xstream.addDefaultImplementation(ArrayList.class, List.class);
-
-        this.xstream.registerConverter(new XMLFilterElementParametersConverter(this.xstream.getMapper()));
-        this.xstream.registerConverter(new InputStreamConverter());
-        this.xstream.registerConverter(new InputSourceConverter());
-
-        // XStream does not register converter for their associated interface
-        this.xstream.registerConverter(new MapConverter(this.xstream.getMapper()));
-        this.xstream.registerConverter(new CollectionConverter(this.xstream.getMapper()));
-        this.xstream.registerConverter(new ListConverter(this.xstream.getMapper()));
-
-        this.xstream.alias("parameters", FilterEventParameters.class);
-        this.xstream.alias("map", LinkedHashMap.class);
-        this.xstream.alias("input-stream", InputStream.class);
-        this.xstream.alias("input-source", InputSource.class);
+        this.xstream = new ParameterXStream(this.staxDriver);
     }
 
     @Override
