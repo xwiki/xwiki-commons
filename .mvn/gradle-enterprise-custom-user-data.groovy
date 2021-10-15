@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,20 +16,19 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+import com.gradle.maven.extension.api.scan.BuildScanApi
 
-<project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-legacy</artifactId>
-    <version>13.9-SNAPSHOT</version>
-  </parent>
-  <artifactId>xwiki-commons-legacy-classloader</artifactId>
-  <name>XWiki Commons - Legacy - Classloader - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>Legacy modules for xwiki-commons-classloader-*</description>
-  <modules>
-    <module>xwiki-commons-legacy-classloader-api</module>
-  </modules>
-</project>
+/**
+ * Captures the Maven active profiles and add them as tags to the Build Scan. The goal is to make it simpler to
+ * filter builds by filtering on Maven profiles.
+ */
+
+BuildScanApi buildScan = session.lookup('com.gradle.maven.extension.api.scan.BuildScanApi')
+if (!buildScan) {
+    return
+}
+
+buildScan.executeOnce('tag-profiles') { BuildScanApi buildScanApi ->
+    project.activeProfiles.each { profile -> buildScanApi.tag profile.id }
+}
