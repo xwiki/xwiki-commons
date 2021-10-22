@@ -60,7 +60,7 @@ class GroovyExecutionTest
     private GroovyConfiguration configuration;
 
     @Test
-    void execute()
+    void executeWhenCompilationCustomizerThrowsException()
     {
         CompilationCustomizer customizer = mock(CompilationCustomizer.class);
         when(this.configuration.getCompilationCustomizers()).thenReturn(Arrays.asList(customizer));
