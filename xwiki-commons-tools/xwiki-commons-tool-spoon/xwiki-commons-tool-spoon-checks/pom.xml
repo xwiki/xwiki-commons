@@ -42,6 +42,13 @@
       <artifactId>spoon-core</artifactId>
       <version>${spoon.version}</version>
       <scope>provided</scope>
+      <!-- TODO: Remove when https://github.com/INRIA/spoon/issues/4248 is fixed -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-model</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>

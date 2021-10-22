@@ -103,7 +103,7 @@
     <checkstyle.version>9.0.1</checkstyle.version>
 
     <!-- Spoon -->
-    <spoon.version>7.5.0</spoon.version>
+    <spoon.version>9.1.0</spoon.version>
 
     <!-- Groovy -->
     <groovy.version>3.0.9</groovy.version>
@@ -1983,7 +1983,7 @@
         <plugin>
           <groupId>fr.inria.gforge.spoon</groupId>
           <artifactId>spoon-maven-plugin</artifactId>
-          <version>3.4.2</version>
+          <version>3.5</version>
           <dependencies>
             <dependency>
               <groupId>fr.inria.gforge.spoon</groupId>
