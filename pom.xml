@@ -112,7 +112,7 @@
     <ivy.version>2.5.0</ivy.version>
 
     <!-- Closure compiler -->
-    <closure-compiler.version>v20211006</closure-compiler.version>
+    <closure-compiler.version>v20210202</closure-compiler.version>
 
     <!-- By default Checkstyle, Backward compatibility check, Enforcer, License plugins, etc are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
@@ -2503,7 +2503,7 @@
           <groupId>com.github.blutorange</groupId>
           <artifactId>closure-compiler-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.22.0</version>
+          <version>2.21.0</version>
           <configuration>
             <skip>${xwiki.minification.skip}</skip>
             <sourceDir>resources</sourceDir>
