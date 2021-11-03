@@ -768,18 +768,18 @@ public class DefaultHTMLCleanerTest
         HtmlCleaner cleaner = new HtmlCleaner(cleanerProperties);
         TagNode tagNode = cleaner.clean("<?xml version = \"1.0\"?>"
             + "<div foo=\"&#169;\">&#169;</div>"
-            + "<div foo=\"baz&gt;buz\">baz&gt;buz</div>"
-            + "<div foo=\"baz&buz\">baz&buz</div>");
+            + "<div foo=\"baz&gt;buz\">boz&gt;buz</div>"
+            + "<div foo=\"baz&buz\">boz&buz</div>");
         List<? extends TagNode> divList = tagNode.getElementListByName("div", true);
         assertEquals(3, divList.size());
 
         assertEquals("©", divList.get(0).getText().toString());
         assertEquals("©", divList.get(0).getAttributeByName("foo"));
 
-        assertEquals("baz>buz", divList.get(1).getText().toString());
+        assertEquals("boz>buz", divList.get(1).getText().toString());
         assertEquals("baz>buz", divList.get(1).getAttributeByName("foo"));
 
-        assertEquals("baz&buz", divList.get(2).getText().toString());
+        assertEquals("boz&buz", divList.get(2).getText().toString());
         assertEquals("baz&buz", divList.get(2).getAttributeByName("foo"));
 
         DomSerializer domSerializer = new DomSerializer(cleanerProperties, false);
@@ -794,10 +794,9 @@ public class DefaultHTMLCleanerTest
 
         assertEquals("baz&buz", nodeList.item(2).getAttributes().getNamedItem("foo").getTextContent());
 
-        // This was failing with baz&gt;buz
-        assertEquals("baz>buz", nodeList.item(1).getTextContent());
-        // This was failing with baz&amp;buz
-        assertEquals("baz&buz", nodeList.item(2).getTextContent());
+        assertEquals("boz>buz", nodeList.item(1).getTextContent());
+
+        assertEquals("boz&buz", nodeList.item(2).getTextContent());
     }
 
     /**
@@ -811,7 +810,10 @@ public class DefaultHTMLCleanerTest
     }
 
     /**
-     * Ensure that &amp; in text nodes is not decoded even if it looks like it is following a character entity.
+     * Ensure that &amp; in text nodes is not decoded twice even if it looks like it is following a character entity.
+     * Even if it looks like a double encoding in the text we trust it is meant literally an ampersand
+     * followed by e.g. "#10;". This allows to display text in the browser like "&#10; is the entity for a line break"
+     * (saved as HTML: "<p>&amp;#10; is the entity for a line break</p>").
      */
     @Test
     void doNotDecodeAmpersandInTextNodes()
@@ -822,6 +824,10 @@ public class DefaultHTMLCleanerTest
 
     /**
      * Ensures that &lt; in text nodes is not decoded even if it is encoded as character entity.
+     * With the setRecognizeUnicodeChars(true) for the HTML cleaner the cleaner usually replaces
+     * all entity notations by their actual unicode characters, except those who need escaping.
+     * This test checks that the HTML cleaner is not fooled by using the corresponding character entity
+     * to insert a literal lower-than sign in HTML text nodes.
      */
     @Test
     void replaceOpeningBraceCharacterEntityByNamedEntity()
@@ -835,6 +841,7 @@ public class DefaultHTMLCleanerTest
 
     /**
      * Ensure that &gt; in text nodes is not decoded even if it is encoded as character entity.
+     * @see DefaultHTMLCleanerTest#replaceOpeningBraceCharacterEntityByNamedEntity()
      */
     @Test
     void replaceClosingBracesCharacterEntityByNamedEntity()
@@ -860,7 +867,7 @@ public class DefaultHTMLCleanerTest
     }
 
     /**
-     * Test how unencoded opening angled braces aka greater-than sign are handled.
+     * Test how unencoded opening angled braces aka lower-than sign are handled.
      */
     @Test
     void replaceBrokenExplicitOpeningBraceByNamedEntity()
@@ -884,13 +891,13 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    @Disabled("we have no special support for textarea at the moment")
+    @Disabled("we have no special handling for curly braces in textareas at the moment")
     public void followingEncodedEntitiesAreProperlyKept()
     {
         String content = "<p><textarea>&#123;&#123;velocity}}machin&#123;&#123;/velocity}}</textarea></p>";
         Document document = clean(content);
         String textareaContent = document.getElementsByTagName("textarea").item(0).getTextContent();
-        // this now produces "{{velocity}}machin{{;/velocity}} instead,
+        // this now produces "{{velocity}}machin{{/velocity}} instead,
         // as html entities in text are decoded unless necessary (like &gt; aka &#60;)
         assertEquals("&#123;&#123;velocity}}machin&#123;&#123;/velocity}}", textareaContent);
 
