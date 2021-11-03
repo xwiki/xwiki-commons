@@ -866,30 +866,6 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p foo=\"abc\">def\"&gt;text</p>", "<p foo=\"abc>def\">text</p>");
     }
 
-    /**
-     * Test how unencoded opening angled braces aka lower-than sign are handled.
-     */
-    @Test
-    void replaceBrokenExplicitOpeningBraceByNamedEntity()
-    {
-        // ensures that &lt; in text nodes is encoded even if it is not encoded in the original text
-        assertHTML("<p>&lt;</p>", "<p><</p>");
-        // also, if it is surrounded by whitespace
-        assertHTML("<p>abc &lt; def</p>", "<p>abc < def</p>");
-        // however it does not, if it is followed by text; instead the brace and the following text are scrapped
-        assertHTML("<p>abc</p>", "<p>abc<def</p>");
-        assertHTML("<p>abc</p>", "<p>abc<def; and here we can have an much text as we want</p>");
-        // if an opening brace is inside an attribute, that is marginally ok, but the html cleaner
-        // decides to scrap it and all the following content
-        // could do this:
-        // assertHTML("<p foo=\"abc&lt;def\">text</p>", "<p foo=\"abc<def\">text</p>");
-        // but instead does:
-        assertHTML("<p foo=\"abc\">text</p>", "<p foo=\"abc<def\">text</p>");
-        // if surrounded by whitespace, then instead this happens
-        // not sure if this is good or bad; if the behavior of the HTML cleaner changes, feel free to update
-        assertHTML("<p foo=\"abc\">&lt; def\"&gt;text</p>", "<p foo=\"abc < def\">text</p>");
-    }
-
     @Test
     @Disabled("we have no special handling for curly braces in textareas at the moment")
     public void followingEncodedEntitiesAreProperlyKept()
