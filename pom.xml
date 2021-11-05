@@ -1356,7 +1356,7 @@
       <dependency>
         <groupId>com.google.errorprone</groupId>
         <artifactId>error_prone_annotations</artifactId>
-        <version>2.9.0</version>
+        <version>2.10.0</version>
       </dependency>
       <!-- The maven remote resource plugin is also used as dependency -->
       <dependency>
