@@ -21,7 +21,7 @@ import com.gradle.maven.extension.api.scan.BuildScanApi
 
 /**
  * Captures the Maven active profiles and add them as tags to the Build Scan. The goal is to make it simpler to
- * filter builds by filtering on Maven profiles.
+ * filter builds on <a href="ge.xwiki.org">https://ge.xwiki.org</a> by filtering on Maven profiles.
  */
 
 BuildScanApi buildScan = session.lookup('com.gradle.maven.extension.api.scan.BuildScanApi')
