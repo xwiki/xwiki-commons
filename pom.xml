@@ -215,7 +215,7 @@
     <sisu.version>0.3.5</sisu.version>
 
     <!-- The version of Antlr4 to bundle -->
-    <antlr4.version>4.9.2</antlr4.version>
+    <antlr4.version>4.9.3</antlr4.version>
 
     <!-- The recommended version of known extensions to use -->
     <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]
