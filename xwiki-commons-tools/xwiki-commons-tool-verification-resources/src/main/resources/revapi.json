@@ -68,7 +68,7 @@
           "ignore": true,
           "code": "java.annotation.(added|removed)",
           "annotationType": "org\\.xwiki\\.properties\\.annotation\\.PropertyDescription",
-          "justification": "Not a breakage.	Give more information about a specific property. It has no semantic consequences."
+          "justification": "Not a breakage. Give more information about a specific property. It has no semantic consequences."
         },
         {
           // The "externalClassExposedInAPI" check is used to detect code smells. It's documented as:
