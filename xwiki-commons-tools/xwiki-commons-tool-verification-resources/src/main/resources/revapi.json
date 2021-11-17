@@ -61,14 +61,14 @@
           "ignore": true,
           "code": "java.annotation.(added|removed)",
           "annotationType": "org\\.xwiki\\.properties\\.annotation\\.PropertyName",
-          "justification": "Not a breakage. Indicates that the body of the annotated method or constructor does not perform potentially unsafe operations on its varargs parameter. It has no semantic consequences."
+          "justification": "Not a breakage. The display name of a property. It has no semantic consequences."
         },
         {
           "regex": true,
           "ignore": true,
           "code": "java.annotation.(added|removed)",
           "annotationType": "org\\.xwiki\\.properties\\.annotation\\.PropertyDescription",
-          "justification": "Not a breakage. Indicates that the body of the annotated method or constructor does not perform potentially unsafe operations on its varargs parameter. It has no semantic consequences."
+          "justification": "Not a breakage.	Give more information about a specific property. It has no semantic consequences."
         },
         {
           "regex": true,
