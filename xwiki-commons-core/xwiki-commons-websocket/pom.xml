@@ -30,8 +30,10 @@
   <artifactId>xwiki-commons-websocket</artifactId>
   <name>XWiki Commons - WebSocket</name>
   <packaging>jar</packaging>
-  <description>XWiki Commons - WebSocket</description>
+  <description>Adds support for writing WebSocket end-points as XWiki components.</description>
   <properties>
+    <!-- Name to display by the Extension Manager -->
+    <xwiki.extension.name>WebSocket API</xwiki.extension.name>
     <xwiki.jacoco.instructionRatio>0.90</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>

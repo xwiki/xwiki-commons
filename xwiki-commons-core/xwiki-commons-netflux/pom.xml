@@ -30,8 +30,10 @@
   <artifactId>xwiki-commons-netflux</artifactId>
   <name>XWiki Commons - Netflux</name>
   <packaging>jar</packaging>
-  <description>XWiki Commons - Netflux</description>
+  <description>Provides the WebSocket server end-point used to join Netflux channels and to exchange channel or direct messages.</description>
   <properties>
+    <!-- Name to display by the Extension Manager -->
+    <xwiki.extension.name>Netflux Server</xwiki.extension.name>
     <xwiki.jacoco.instructionRatio>0.78</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
