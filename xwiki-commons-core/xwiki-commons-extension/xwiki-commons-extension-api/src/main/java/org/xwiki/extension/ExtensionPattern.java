@@ -21,15 +21,12 @@ package org.xwiki.extension;
 
 import java.util.regex.Pattern;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * An extension exclusion.
  *
  * @version $Id$
  * @since 12.2
  */
-@Unstable
 public interface ExtensionPattern
 {
     /**

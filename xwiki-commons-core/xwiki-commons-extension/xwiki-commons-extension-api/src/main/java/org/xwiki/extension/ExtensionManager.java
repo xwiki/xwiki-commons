@@ -28,7 +28,6 @@ import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
-import org.xwiki.stability.Unstable;
 
 /**
  * Main entry point for some extensions management tasks.
@@ -44,7 +43,6 @@ public interface ExtensionManager
      * @return true if the extension exists in the repository
      * @since 12.10
      */
-    @Unstable
     default boolean exists(ExtensionId extensionId)
     {
         try {

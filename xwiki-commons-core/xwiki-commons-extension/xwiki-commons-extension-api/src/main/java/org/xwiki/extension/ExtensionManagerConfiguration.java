@@ -26,7 +26,6 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
 import org.xwiki.extension.version.VersionConstraint;
-import org.xwiki.stability.Unstable;
 
 /**
  * Provide some general extension manager configuration.
@@ -113,7 +112,6 @@ public interface ExtensionManagerConfiguration
      * @return the number of seconds between two extension indexing
      * @since 12.10
      */
-    @Unstable
     default int getIndexInterval()
     {
         return DEFAULT_INDEX_INTERVAL;

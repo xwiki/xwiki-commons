@@ -30,7 +30,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.version.VersionConstraint;
-import org.xwiki.stability.Unstable;
 
 /**
  * Base class for {@link ExtensionDependency} implementations.
@@ -187,7 +186,6 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
      * @param exclusions the exclusions patterns to apply to transitive dependencies
      * @since 12.2
      */
-    @Unstable
     public void setExclusions(Collection<? extends ExtensionPattern> exclusions)
     {
         this.exclusions = exclusions != null ? Collections.unmodifiableList(new ArrayList<>(exclusions)) : null;
@@ -197,7 +195,6 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
      * @param exclusion an exclusion pattern to apply to transitive dependencies
      * @since 12.2
      */
-    @Unstable
     public void addExclusion(ExtensionPattern exclusion)
     {
         List<ExtensionPattern> newexclusions = new ArrayList<>(getExclusions());

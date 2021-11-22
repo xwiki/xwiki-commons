@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.xwiki.component.namespace.Namespace;
 import org.xwiki.extension.repository.search.ExtensionQuery;
-import org.xwiki.stability.Unstable;
 
 /**
  * Extends {@link ExtensionQuery} with extension index specific criteria.
@@ -33,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 12.10
  */
-@Unstable
 public class IndexedExtensionQuery extends ExtensionQuery
 {
     private final List<String> repositories = new ArrayList<>();

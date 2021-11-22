@@ -21,7 +21,6 @@ package org.xwiki.diff.xml;
 
 import org.w3c.dom.Document;
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Filters the XML documents before and after they are compared.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @since 12.0RC1
  */
 @Role
-@Unstable
 public interface XMLDiffFilter
 {
     /**

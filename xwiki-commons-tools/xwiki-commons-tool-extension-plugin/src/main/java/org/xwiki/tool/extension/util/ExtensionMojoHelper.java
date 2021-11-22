@@ -79,7 +79,6 @@ import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
 import org.xwiki.extension.version.internal.DefaultVersion;
 import org.xwiki.job.Job;
 import org.xwiki.properties.converter.Converter;
-import org.xwiki.stability.Unstable;
 import org.xwiki.tool.extension.ComponentRepresentation;
 import org.xwiki.tool.extension.ExtensionOverride;
 import org.xwiki.tool.extension.internal.ExtensionMojoCoreExtensionRepository;
@@ -201,7 +200,6 @@ public class ExtensionMojoHelper implements AutoCloseable
      * @throws MojoExecutionException in case of error when deserializing the component types.
      * @since 12.2
      */
-    @Unstable
     public void disableComponents(List<ComponentRepresentation> componentList) throws MojoExecutionException
     {
         if (componentList != null) {

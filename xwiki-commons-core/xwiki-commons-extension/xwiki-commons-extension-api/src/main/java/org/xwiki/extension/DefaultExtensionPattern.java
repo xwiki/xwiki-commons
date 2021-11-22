@@ -21,15 +21,12 @@ package org.xwiki.extension;
 
 import java.util.regex.Pattern;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Default implementation of {@link ExtensionPattern}.
  *
  * @version $Id$
  * @since 12.2
  */
-@Unstable
 public class DefaultExtensionPattern extends AbstractExtensionPattern
 {
     /**

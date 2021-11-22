@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.xwiki.stability.Unstable;
 
 /**
  * Represents an XML attribute value.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 12.8RC1
  */
-@Unstable
 public class XMLAttributeValue
 {
     /**

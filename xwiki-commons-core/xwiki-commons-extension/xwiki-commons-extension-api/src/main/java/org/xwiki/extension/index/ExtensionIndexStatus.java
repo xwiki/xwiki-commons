@@ -20,7 +20,6 @@
 package org.xwiki.extension.index;
 
 import org.xwiki.job.event.status.JobStatus;
-import org.xwiki.stability.Unstable;
 
 /**
  * The status of the currently running or last indexing process.
@@ -28,7 +27,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 12.10
  */
-@Unstable
 public interface ExtensionIndexStatus extends JobStatus
 {
     /**

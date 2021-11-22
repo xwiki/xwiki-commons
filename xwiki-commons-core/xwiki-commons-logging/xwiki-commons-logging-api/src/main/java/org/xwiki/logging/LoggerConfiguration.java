@@ -20,7 +20,6 @@
 package org.xwiki.logging;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Expose various logging related configurations.
@@ -28,7 +27,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 12.0RC1
  */
-@Unstable
 @Role
 public interface LoggerConfiguration
 {

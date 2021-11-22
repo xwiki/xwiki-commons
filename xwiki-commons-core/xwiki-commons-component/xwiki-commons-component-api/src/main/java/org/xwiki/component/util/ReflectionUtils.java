@@ -43,8 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Various Reflection utilities.
  *
@@ -678,7 +676,6 @@ public final class ReflectionUtils
      * @return the collections of methods (in the defined order from current to superclasses)
      * @since 12.5RC1
      */
-    @Unstable
     public static Collection<Method> getAllMethods(Class<?> clazz)
     {
         Set<Method> methods = new LinkedHashSet<>();

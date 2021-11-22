@@ -29,7 +29,6 @@ import org.xwiki.diff.DiffException;
 import org.xwiki.diff.xml.XMLDiffConfiguration;
 import org.xwiki.diff.xml.XMLDiffManager;
 import org.xwiki.script.service.ScriptService;
-import org.xwiki.stability.Unstable;
 
 /**
  * Provides script oriented APIs to compute and display the changes between HTML documents.
@@ -74,7 +73,6 @@ public class DiffHTMLScriptService implements ScriptService
      * @since 11.10.1
      * @since 12.0RC1
      */
-    @Unstable
     public String unified(String previousHTML, String nextHTML, XMLDiffConfiguration config)
     {
         try {
@@ -90,7 +88,6 @@ public class DiffHTMLScriptService implements ScriptService
      * @since 11.10.1
      * @since 12.0RC1
      */
-    @Unstable
     public XMLDiffConfiguration getDefaultConfiguration()
     {
         return this.configurationProvider.get();

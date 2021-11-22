@@ -34,7 +34,6 @@ import org.jdom.output.XMLOutputter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xwiki.stability.Unstable;
 import org.xwiki.xml.XMLUtils;
 
 /**
@@ -305,7 +304,6 @@ public final class HTMLUtils
      * @since 12.6.3
      * @since 11.10.11
      */
-    @Unstable
     public static String escapeElementText(String content)
     {
         return XMLUtils.escapeElementText(content);
@@ -320,7 +318,6 @@ public final class HTMLUtils
      * @since 12.10
      * @since 12.6.5
      */
-    @Unstable
     public static boolean containsElementText(CharSequence content)
     {
         return XMLUtils.containsElementText(content);

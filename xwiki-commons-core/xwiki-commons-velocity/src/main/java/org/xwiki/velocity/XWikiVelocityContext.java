@@ -24,7 +24,6 @@ import org.apache.velocity.context.Context;
 import org.apache.velocity.runtime.directive.ForeachScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xwiki.stability.Unstable;
 
 /**
  * Extends the standard {@link VelocityContext} to add some retro compatibility (for example support for $velocityCount
@@ -33,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 12.0RC1
  */
-@Unstable
 public class XWikiVelocityContext extends VelocityContext
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(XWikiVelocityContext.class);

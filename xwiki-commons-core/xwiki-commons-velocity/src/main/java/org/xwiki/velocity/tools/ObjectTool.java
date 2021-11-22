@@ -20,7 +20,6 @@
 package org.xwiki.velocity.tools;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.xwiki.stability.Unstable;
 
 /**
  * Miscellaneous methods around objects, including checks for null.
@@ -28,7 +27,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 12.1
  */
-@Unstable
 public class ObjectTool extends ObjectUtils
 {
     /**
