@@ -23,8 +23,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Describe a property in a bean.
  *
@@ -137,7 +135,6 @@ public interface PropertyDescriptor
      *         uses it to decide whether to display or not a Macro property in the Macro editor UI.
      * @since 12.4RC1
      */
-    @Unstable
     default boolean isDisplayHidden()
     {
         return false;
