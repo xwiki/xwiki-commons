@@ -32,6 +32,14 @@ import javax.script.SimpleScriptContext;
  */
 public class CloneableSimpleScriptContext extends SimpleScriptContext implements Cloneable
 {
+    /**
+     * Initialize a GLOBAL scope bindings store.
+     */
+    public CloneableSimpleScriptContext()
+    {
+        setBindings(new SimpleBindings(), GLOBAL_SCOPE);
+    }
+
     @Override
     public CloneableSimpleScriptContext clone() throws CloneNotSupportedException
     {
