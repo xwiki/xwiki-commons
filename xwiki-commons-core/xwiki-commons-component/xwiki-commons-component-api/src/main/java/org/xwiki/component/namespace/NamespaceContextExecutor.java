@@ -39,7 +39,7 @@ public interface NamespaceContextExecutor
      *
      * @param namespace the namespace to use
      * @param callable the task to execute
-     * @param <V> the result type of method <tt>call</tt>
+     * @param <V> the result type of method {@code call}
      * @return computed result
      * @throws Exception if unable to compute a result
      */

@@ -117,7 +117,7 @@ public interface ExtensionManager
     /**
      * Return a repository based on its id.
      * <p>
-     * This method also return <tt>local</tt>, <tt>installed</tt> and <tt>core</tt> repositories.
+     * This method also return {@code local}, {@code installed} and {@code core} repositories.
      *
      * @param repositoryId the id of the repository
      * @return the repository

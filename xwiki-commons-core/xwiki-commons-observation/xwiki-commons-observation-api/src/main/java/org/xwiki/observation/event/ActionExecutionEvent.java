@@ -22,8 +22,8 @@ package org.xwiki.observation.event;
 import java.io.Serializable;
 
 /**
- * An event triggered whenever a client request (action) is processed, like <tt>/upload/</tt> or <tt>/view/</tt>. A
- * specific event corresponds to only one {@link #actionName action type}.
+ * An event triggered whenever a client request (action) is processed, like {@code /upload/} or {@code /view/}.
+ * A specific event corresponds to only one {@link #actionName action type}.
  *
  * @version $Id$
  * @deprecated since 3.2M3, use the {@code org.xwiki.bridge.event.ActionExecutedEvent} class from XWiki Platform instead

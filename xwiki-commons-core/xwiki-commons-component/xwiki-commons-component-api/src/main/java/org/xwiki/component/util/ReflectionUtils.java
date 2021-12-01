@@ -189,7 +189,7 @@ public final class ReflectionUtils
     }
 
     /**
-     * Extract the last generic type from the passed field. For example <tt>private List&lt;A, B&gt; field</tt> would
+     * Extract the last generic type from the passed field. For example {@code private List<A, B> field} would
      * return the {@code B} class.
      *
      * @param field the field from which to extract the generic type
@@ -201,7 +201,7 @@ public final class ReflectionUtils
     }
 
     /**
-     * Extract the last generic type from the passed field. For example <tt>private List&lt;A, B&gt; field</tt> would
+     * Extract the last generic type from the passed field. For example {@code private List<A, B> field} would
      * return the {@code B} class.
      *
      * @param field the field from which to extract the generic type
@@ -214,7 +214,7 @@ public final class ReflectionUtils
     }
 
     /**
-     * Extract the last generic type from the passed Type. For example <tt>private List&lt;A, B&gt; field</tt> would
+     * Extract the last generic type from the passed Type. For example {@code private List<A, B> field} would
      * return the {@code B} class.
      *
      * @param type the type from which to extract the generic type
@@ -236,7 +236,8 @@ public final class ReflectionUtils
 
     /**
      * Extract the last generic type from the passed class. For example
-     * <tt>public Class MyClass implements FilterClass&lt;A, B&gt;, SomeOtherClass&lt;C&gt;</tt> will return {@code B}.
+     * {@code public Class MyClass implements FilterClass<A, B>, SomeOtherClass<C>} will return {@code
+     * B}.
      *
      * @param clazz the class to extract from
      * @param filterClass the class of the generic type we're looking for
@@ -261,8 +262,8 @@ public final class ReflectionUtils
 
     /**
      * Extract the real Type from the passed class. For example
-     * <tt>public Class MyClass implements FilterClass&lt;A, B&gt;, SomeOtherClass&lt;C&gt;</tt> will return
-     * <tt>FilterClass&lt;A, B&gt;, SomeOtherClass&lt;C&gt;</tt>.
+     * {@code public Class MyClass implements FilterClass<A, B>, SomeOtherClass<C>} will return
+     * {@code FilterClass<A, B>, SomeOtherClass<C>}.
      *
      * @param clazz the class to extract from
      * @param filterClass the class of the generic type we're looking for
