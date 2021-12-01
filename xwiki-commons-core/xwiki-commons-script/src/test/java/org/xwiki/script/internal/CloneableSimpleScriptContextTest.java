@@ -20,7 +20,6 @@
 package org.xwiki.script.internal;
 
 import javax.script.ScriptContext;
-import javax.script.SimpleBindings;
 
 import org.junit.jupiter.api.Test;
 
@@ -44,12 +43,11 @@ class CloneableSimpleScriptContextTest
 
         assertEquals(context.getAttribute("engine1"), context2.getAttribute("engine1"));
 
-        context.setBindings(new SimpleBindings(), ScriptContext.GLOBAL_SCOPE);
         context.setAttribute("global1", "global1", ScriptContext.GLOBAL_SCOPE);
         context2 = context.clone();
 
-        assertEquals(context.getAttribute("engine1"), context2.getAttribute("engine1"));
-        assertEquals(context.getAttribute("global1"), context2.getAttribute("global1"));
+        assertEquals("engine1", context2.getAttribute("engine1"));
+        assertEquals("global1", context2.getAttribute("global1"));
 
         context2.setAttribute("engine2", "engine2", ScriptContext.ENGINE_SCOPE);
         context2.setAttribute("global2", "global2", ScriptContext.GLOBAL_SCOPE);
