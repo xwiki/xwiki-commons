@@ -215,7 +215,11 @@
     <module name="MissingJavadocMethod"/>
     <module name="MissingJavadocType"/>
 
-    <module name="JavadocStyle"/>
+    <module name="JavadocStyle">
+      <!-- Disabled since it's buggy, see
+           https://forum.xwiki.org/t/disable-the-html-check-from-the-javadocstyle-rule/9513 -->
+      <property name="checkHtml" value="false"/>
+    </module>
 
     <module name="JavadocType">
       <property name="scope" value="public"/>
