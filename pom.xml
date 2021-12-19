@@ -229,7 +229,7 @@
 
     <!-- Control Nexus staging (release on Maven Central for xwiki-commons and xwiki-rendering) -->
     <xwiki.nexus.serverId>ossrh</xwiki.nexus.serverId>
-    <xwiki.nexus.nexusUrl>https://oss.sonatype.org/</xwiki.nexus.nexusUrl>
+    <xwiki.nexus.nexusUrl>https://s01.oss.sonatype.org/</xwiki.nexus.nexusUrl>
     <xwiki.nexus.autoReleaseAfterClose>true</xwiki.nexus.autoReleaseAfterClose>
     <xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure>true</xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure>
     <xwiki.nexus.skipLocalStaging>false</xwiki.nexus.skipLocalStaging>
