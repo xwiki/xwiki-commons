@@ -45,7 +45,7 @@ public class DeleteDelta<E> extends AbstractDelta<E>
      * @param original the chunk before the modification
      * @param revised the chunk after the modification
      */
-    public DeleteDelta(difflib.Chunk<E> original, difflib.Chunk<E> revised)
+    public DeleteDelta(com.github.difflib.patch.Chunk<E> original, com.github.difflib.patch.Chunk<E> revised)
     {
         super(original, revised, Type.DELETE);
     }

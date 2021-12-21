@@ -40,7 +40,7 @@ import org.xwiki.diff.MergeException;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.diff.Patch;
 
-import difflib.DiffUtils;
+import com.github.difflib.DiffUtils;
 
 /**
  * Default implementation of {@link DiffManager}.
