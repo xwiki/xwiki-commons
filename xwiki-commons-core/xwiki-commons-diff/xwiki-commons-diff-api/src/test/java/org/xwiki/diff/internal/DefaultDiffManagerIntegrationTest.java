@@ -55,4 +55,16 @@ public class DefaultDiffManagerIntegrationTest
             this.defaultDiffManager.merge(previous, next, current, new MergeConfiguration<>());
         assertEquals(4, mergeResult.getConflicts().size());
     }
+
+    @Test
+    void mergeOther() throws Exception
+    {
+        List<String> previous = Files.readAllLines(new File("src/test/resources/integration2/previous.txt").toPath());
+        List<String> current = Files.readAllLines(new File("src/test/resources/integration2/current.txt").toPath());
+        List<String> next = Files.readAllLines(new File("src/test/resources/integration2/next.txt").toPath());
+
+        MergeResult<String> mergeResult =
+            this.defaultDiffManager.merge(previous, next, current, new MergeConfiguration<>());
+        assertEquals(3, mergeResult.getConflicts().size());
+    }
 }

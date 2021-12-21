@@ -533,4 +533,19 @@ class DefaultUnifiedDiffDisplayerTest
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         return IOUtils.toString(reader);
     }
+
+    @Test
+    void displayWithConflictsOther() throws Exception
+    {
+        List<String> previous = readLines("integration3/previous.txt");
+        List<String> current = readLines("integration3/current.txt");
+        List<String> next = readLines("integration3/next.txt");
+        MergeResult<String> mergeResult = getDiffManager().merge(previous, next, current, null);
+        assertEquals(3, mergeResult.getConflicts().size());
+
+        DiffResult<String> diffResult = getDiffManager().diff(previous, current, null);
+        List<UnifiedDiffBlock<String, Object>> unifiedDiffBlocks = unifiedDiffDisplayer.display(diffResult);
+
+        unifiedDiffBlocks = unifiedDiffDisplayer.display(diffResult, mergeResult.getConflicts());
+    }
 }

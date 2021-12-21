@@ -240,6 +240,11 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
 
         // chunk concerned by the conflict
         int listLastIndex = Math.min(elements.size(), listIndex + conflictSize);
+
+        // There's probably a problem in the chunk computation.
+        if (listLastIndex < listIndex) {
+            return Collections.emptyList();
+        }
         result.add(new DefaultChunk<>(index, elements.subList(listIndex, listLastIndex)));
         index += conflictSize;
         listIndex = listLastIndex;
@@ -259,10 +264,15 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
      * @param conflict the conflict which is related to this delta.
      * @param <E> the type of element we manipulate.
      * @return a list of 2 or 3 deltas, depending if the conflict is on the middle of the delta, or on top/bottom side.
+     * @throws IllegalArgumentException if the delta concerns another type than {@link Delta.Type#CHANGE}.
      */
     private <E> List<Delta<E>> splitDelta(Delta<E> delta, Conflict<E> conflict)
     {
         List<Delta<E>> result = new ArrayList<>();
+        if (delta.getType() != Delta.Type.CHANGE) {
+            throw new IllegalArgumentException(
+                String.format("Only delta concerning change can be splitted: [%s]", delta));
+        }
         List<Chunk<E>> previousChunks = splitChunk(delta.getPrevious(), conflict.getIndex(), conflict.getMaxSize());
         List<Chunk<E>> nextChunks = splitChunk(delta.getNext(), conflict.getIndex(), conflict.getMaxSize());
 
@@ -296,6 +306,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
             }
             result.add(DeltaFactory.createDelta(previousChunk, nextChunk, deltaType));
         }
+
         return result;
     }
 
@@ -341,13 +352,14 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
     private <E> boolean canDeltaSplitted(Conflict<E> conflict, Delta<E> delta)
     {
         if (conflict != null) {
-            // a delta can be splitted only if one of its chunk is > 1
+            // a delta can be splitted only if it concerns a change
+            boolean isChange = delta.getType() == Delta.Type.CHANGE;
             boolean deltaCanBeSplitted = (delta.getPrevious().size() > 1 || delta.getNext().size() > 1)
                 && conflict.getMaxSize() < delta.getMaxChunkSize();
             boolean conflictIsSubpartOfDelta = (conflict.getMaxSize() != delta.getNext().size()
                 || conflict.getMaxSize() != delta.getPrevious().size());
 
-            return deltaCanBeSplitted && conflictIsSubpartOfDelta;
+            return isChange && deltaCanBeSplitted && conflictIsSubpartOfDelta;
         }
         return false;
     }
