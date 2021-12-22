@@ -469,8 +469,9 @@ public class DefaultDiffManager implements DiffManager
                 previousChangeSize = delta.getPrevious().size();
                 remainingChunkSize = chunkSize - previousChangeSize;
                 // We only perform the extract if there's actually something to extract.
-                if (remainingChunkSize > 0) {
-                    result = extractFromList(previous, index + previousChangeSize, index + remainingChunkSize);
+                if (remainingChunkSize > previousChangeSize) {
+                    int offsetEnd = Math.min(previous.size(), index + remainingChunkSize);
+                    result = extractFromList(previous, index + previousChangeSize, offsetEnd);
                 }
                 break;
 
@@ -520,7 +521,7 @@ public class DefaultDiffManager implements DiffManager
 
         int prevMinIndex = Math.min(deltaCurrent.getPrevious().getIndex(), deltaNext.getPrevious().getIndex());
         int nextMinIndex = Math.min(deltaCurrent.getNext().getIndex(), deltaNext.getNext().getIndex());
-        int newIndex = index;
+        int newIndex;
         if (deltaCurrent.getType() == Type.INSERT && deltaNext.getType() == Type.INSERT) {
             subsetPrevious = Collections.emptyList();
         } else {
