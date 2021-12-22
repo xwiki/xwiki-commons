@@ -325,7 +325,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
             // If we found a conflict, but it only concerns a subpart of the delta, then we need to split this
             // delta, so we can associate the conflict with only the part of the delta concerned by
             // the conflict.
-            if (canDeltaSplitted(conflict, delta)) {
+            if (canDeltaBeSplit(conflict, delta)) {
                 result.putAll(buildDeltaConflictMap(splitDelta(delta, conflict), conflicts));
                 // Else the conflict concerns the whole delta, so we can add it to the map and associate it
                 // with the delta. We remove the conflict from our list, since it's already associated
@@ -345,10 +345,11 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
         return delta.getType() == Delta.Type.CHANGE;
     }
 
-    private <E> boolean canDeltaSplitted(Conflict<E> conflict, Delta<E> delta)
+    private <E> boolean canDeltaBeSplit(Conflict<E> conflict, Delta<E> delta)
     {
         if (conflict != null) {
-            // a delta can be splitted only if it concerns a change
+            // a delta can be split only if one of its chunk is > 1
+            // a delta can be split only if it concerns a change
             boolean isChange = isDeltaChange(delta) && isDeltaChange(conflict.getDeltaCurrent())
                 && isDeltaChange(conflict.getDeltaNext());
             boolean deltaCanBeSplitted = (delta.getPrevious().size() > 1 || delta.getNext().size() > 1)

@@ -463,7 +463,7 @@ public class DefaultDiffManager implements DiffManager
     {
         int previousChangeSize;
         int remainingChunkSize;
-        List<E> result = Collections.emptyList();
+        List<E> result = new ArrayList<>();
         switch (delta.getType()) {
             case DELETE:
                 previousChangeSize = delta.getPrevious().size();
@@ -499,9 +499,9 @@ public class DefaultDiffManager implements DiffManager
 
     private <E> List<E> extractFromList(List<E> list, int startOffset, int endOffset)
     {
-        List<E> result = Collections.emptyList();
+        List<E> result = new ArrayList<>();
         if (startOffset >= 0 && startOffset <= endOffset && endOffset <= list.size()) {
-            result = list.subList(startOffset, endOffset);
+            result = new ArrayList<>(list.subList(startOffset, endOffset));
         } else {
             logger.info("Trying to extract data from a list [{}] with wrong offsets [{}, {}].",
                 list, startOffset, endOffset);
@@ -530,14 +530,14 @@ public class DefaultDiffManager implements DiffManager
             if (newOffsetEnd > previous.size()) {
                 newOffsetEnd = previous.size();
             }
-            subsetPrevious = new ArrayList<>(extractFromList(previous, newIndex, newOffsetEnd));
+            subsetPrevious = extractFromList(previous, newIndex, newOffsetEnd);
         }
 
         // We need to always use the minimum index to extract the conflict.
         newIndex = Math.min(prevMinIndex, nextMinIndex);
-        List<E> subsetNext = new ArrayList<>(extractConflictPart(deltaNext, previous, next, chunkSize, newIndex));
-        List<E> subsetCurrent = new ArrayList<>(extractConflictPart(deltaCurrent, previous, current, chunkSize,
-            newIndex));
+        List<E> subsetNext = extractConflictPart(deltaNext, previous, next, chunkSize, newIndex);
+        List<E> subsetCurrent = extractConflictPart(deltaCurrent, previous, current, chunkSize,
+            newIndex);
 
         // We might have found a conflict such as [a, b], [b, c], [d, c].
         // In that case we only want to record the conflict between b and d VS a.
