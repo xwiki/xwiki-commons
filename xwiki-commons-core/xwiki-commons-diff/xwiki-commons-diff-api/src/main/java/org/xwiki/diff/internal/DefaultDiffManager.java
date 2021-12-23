@@ -23,8 +23,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.diff.Chunk;
 import org.xwiki.diff.ConflictDecision;
@@ -39,6 +41,7 @@ import org.xwiki.diff.MergeConfiguration.Version;
 import org.xwiki.diff.MergeException;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.diff.Patch;
+import org.xwiki.text.StringUtils;
 
 import com.github.difflib.DiffUtils;
 
@@ -51,6 +54,9 @@ import com.github.difflib.DiffUtils;
 @Singleton
 public class DefaultDiffManager implements DiffManager
 {
+    @Inject
+    private Logger logger;
+
     @Override
     public <E> DiffResult<E> diff(List<E> previous, List<E> next, DiffConfiguration<E> diff) throws DiffException
     {
@@ -457,31 +463,50 @@ public class DefaultDiffManager implements DiffManager
     {
         int previousChangeSize;
         int remainingChunkSize;
-
+        List<E> result = new ArrayList<>();
         switch (delta.getType()) {
             case DELETE:
                 previousChangeSize = delta.getPrevious().size();
                 remainingChunkSize = chunkSize - previousChangeSize;
-                return (remainingChunkSize > 0) ?
-                    previous.subList(index + previousChangeSize, index + remainingChunkSize) : Collections.emptyList();
+                // We only perform the extract if there's actually something to extract.
+                if (remainingChunkSize > previousChangeSize) {
+                    int offsetEnd = Math.min(previous.size(), index + remainingChunkSize);
+                    result = extractFromList(previous, index + previousChangeSize, offsetEnd);
+                }
+                break;
 
             case CHANGE:
                 int endOffset = index + Math.min(chunkSize, next.size());
                 if (endOffset > next.size()) {
                     endOffset = next.size();
                 }
-                return next.subList(index, endOffset);
+                result = extractFromList(next, index, endOffset);
+                break;
 
             case INSERT:
                 int newIndex = Math.min(delta.getNext().getIndex(), index);
                 int indexOffset = delta.getNext().getIndex() - newIndex;
                 int listSize = Math.min(chunkSize, delta.getNext().size());
-                return next.subList(newIndex, newIndex + indexOffset + Math.min(listSize, next.size()));
+                result = extractFromList(next, newIndex, newIndex + indexOffset + Math.min(listSize, next.size()));
+                break;
 
             default:
                 throw new IllegalArgumentException(
                     String.format("Cannot extract conflict part for unknown type [%s]", delta.getType()));
         }
+        return result;
+    }
+
+    private <E> List<E> extractFromList(List<E> list, int startOffset, int endOffset)
+    {
+        List<E> result = new ArrayList<>();
+        if (startOffset >= 0 && startOffset <= endOffset && endOffset <= list.size()) {
+            result = new ArrayList<>(list.subList(startOffset, endOffset));
+        } else {
+            logger.info("Trying to extract data from a list [{}] with wrong offsets [{}, {}].",
+                list, startOffset, endOffset);
+        }
+        return result;
     }
 
     private <E> void logConflict(DefaultMergeResult<E> mergeResult, Delta<E> deltaCurrent, Delta<E> deltaNext,
@@ -494,19 +519,25 @@ public class DefaultDiffManager implements DiffManager
 
         chunkSize = Math.max(deltaCurrent.getMaxChunkSize(), deltaNext.getMaxChunkSize());
 
+        int prevMinIndex = Math.min(deltaCurrent.getPrevious().getIndex(), deltaNext.getPrevious().getIndex());
+        int nextMinIndex = Math.min(deltaCurrent.getNext().getIndex(), deltaNext.getNext().getIndex());
+        int newIndex;
         if (deltaCurrent.getType() == Type.INSERT && deltaNext.getType() == Type.INSERT) {
             subsetPrevious = Collections.emptyList();
         } else {
-            int newIndex = Math.min(deltaCurrent.getPrevious().getIndex(), deltaNext.getPrevious().getIndex());
+            newIndex = prevMinIndex;
             int newOffsetEnd = Math.min(chunkSize, previous.size()) + newIndex;
             if (newOffsetEnd > previous.size()) {
                 newOffsetEnd = previous.size();
             }
-            subsetPrevious = new ArrayList<>(previous.subList(newIndex, newOffsetEnd));
+            subsetPrevious = extractFromList(previous, newIndex, newOffsetEnd);
         }
 
-        List<E> subsetNext = new ArrayList<>(extractConflictPart(deltaNext, previous, next, chunkSize, index));
-        List<E> subsetCurrent = new ArrayList<>(extractConflictPart(deltaCurrent, previous, current, chunkSize, index));
+        // We need to always use the minimum index to extract the conflict.
+        newIndex = Math.min(prevMinIndex, nextMinIndex);
+        List<E> subsetNext = extractConflictPart(deltaNext, previous, next, chunkSize, newIndex);
+        List<E> subsetCurrent = extractConflictPart(deltaCurrent, previous, current, chunkSize,
+            newIndex);
 
         // We might have found a conflict such as [a, b], [b, c], [d, c].
         // In that case we only want to record the conflict between b and d VS a.
@@ -525,10 +556,26 @@ public class DefaultDiffManager implements DiffManager
         Chunk<E> nextChunk = new DefaultChunk<>(index, subsetNext);
         Chunk<E> currentChunk = new DefaultChunk<>(index, subsetCurrent);
 
-        conflictDeltaCurrent = DeltaFactory.createDelta(previousChunk, currentChunk, Type.CHANGE);
-        conflictDeltaNext = DeltaFactory.createDelta(previousChunk, nextChunk, Type.CHANGE);
+        conflictDeltaCurrent = DeltaFactory.createDelta(
+            previousChunk,
+            currentChunk,
+            getDeltaType(previousChunk, currentChunk));
+        conflictDeltaNext = DeltaFactory.createDelta(
+            previousChunk,
+            nextChunk, getDeltaType(previousChunk, nextChunk));
         mergeResult.getLog().error("Conflict between [{}] and [{}]", conflictDeltaCurrent, conflictDeltaNext);
         mergeResult.addConflict(new DefaultConflict<>(index, conflictDeltaCurrent, conflictDeltaNext));
+    }
+
+    private <E> Type getDeltaType(Chunk<E> previousChunk, Chunk<E> nextChunk)
+    {
+        if (previousChunk.size() == 0) {
+            return Type.INSERT;
+        } else if (nextChunk.size() == 0) {
+            return Type.DELETE;
+        } else {
+            return Type.CHANGE;
+        }
     }
 
     private <E> int apply(Delta<E> delta, List<E> merged, int currentIndex)

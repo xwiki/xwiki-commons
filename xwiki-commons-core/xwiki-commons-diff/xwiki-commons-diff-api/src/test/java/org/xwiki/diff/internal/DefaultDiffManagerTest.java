@@ -319,7 +319,7 @@ public class DefaultDiffManagerTest
         result = this.diffManager.merge(onlyA, emptyList, onlyB, mergeConfiguration);
         conflict = createConflict(0,
             Type.CHANGE, 0, 0, onlyA, onlyB,
-            Type.CHANGE, 0, 0, onlyA, emptyList);
+            Type.DELETE, 0, 0, onlyA, emptyList);
         assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
         assertEquals(1, result.getConflicts().size());
         assertEquals(conflict, result.getConflicts().get(0));
@@ -585,7 +585,7 @@ public class DefaultDiffManagerTest
             Type.CHANGE, 2, 2, Arrays.asList('c'), Arrays.asList('c', 'd'),
             Type.CHANGE, 2, 2, Arrays.asList('c'), Arrays.asList('d'));
         conflict1 = createConflict(4,
-            Type.CHANGE, 4, 4, Arrays.asList('f'), Collections.emptyList(),
+            Type.DELETE, 4, 4, Arrays.asList('f'), Collections.emptyList(),
             Type.CHANGE, 4, 4, Arrays.asList('f'), Arrays.asList('f'));
         mergeConfiguration = null;
         result = this.diffManager
@@ -627,8 +627,8 @@ public class DefaultDiffManagerTest
 
         mergeConfiguration = null;
         conflict = createConflict(1,
-            Type.CHANGE, 1, 1, Collections.emptyList(), Arrays.asList('i'),
-            Type.CHANGE, 1, 1, Collections.emptyList(), Arrays.asList('j'));
+            Type.INSERT, 1, 1, Collections.emptyList(), Arrays.asList('i'),
+            Type.INSERT, 1, 1, Collections.emptyList(), Arrays.asList('j'));
         result = this.diffManager
             .merge(toCharacters("abc"), toCharacters("ajbc"), toCharacters("aibc"), mergeConfiguration);
         assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
@@ -664,8 +664,8 @@ public class DefaultDiffManagerTest
 
         mergeConfiguration = null;
         conflict = createConflict(1,
-            Type.CHANGE, 1, 1, Collections.emptyList(), Arrays.asList('i'),
-            Type.CHANGE, 1, 1, Collections.emptyList(), Arrays.asList('i', 'j'));
+            Type.INSERT, 1, 1, Collections.emptyList(), Arrays.asList('i'),
+            Type.INSERT, 1, 1, Collections.emptyList(), Arrays.asList('i', 'j'));
         result = this.diffManager
             .merge(toCharacters("ab"), toCharacters("aijb"), toCharacters("aib"), mergeConfiguration);
         assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
@@ -701,8 +701,8 @@ public class DefaultDiffManagerTest
 
         mergeConfiguration = null;
         conflict = createConflict(1,
-            Type.CHANGE, 1, 1, Collections.emptyList(), Arrays.asList('i', 'j'),
-            Type.CHANGE, 1, 1, Collections.emptyList(), Arrays.asList('j'));
+            Type.INSERT, 1, 1, Collections.emptyList(), Arrays.asList('i', 'j'),
+            Type.INSERT, 1, 1, Collections.emptyList(), Arrays.asList('j'));
         result = this.diffManager
             .merge(toCharacters("ab"), toCharacters("ajb"), toCharacters("aijb"), mergeConfiguration);
         assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
@@ -766,7 +766,7 @@ public class DefaultDiffManagerTest
         // New empty
         conflict = createConflict(0,
             Type.CHANGE, 0, 0, onlyA, onlyB,
-            Type.CHANGE, 0, 0, onlyA, emptyList);
+            Type.DELETE, 0, 0, onlyA, emptyList);
         conflictDecision = new DefaultConflictDecision<>(conflict);
         conflictDecision.setType(ConflictDecision.DecisionType.UNDECIDED);
         allConflictDecisions = Collections.singletonList(conflictDecision);
@@ -1318,7 +1318,7 @@ public class DefaultDiffManagerTest
             Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
             Collections.emptyList(), null);
         conflict = createConflict(0,
-            Type.CHANGE, 0, 0, Arrays.asList("Line 1", "Line 2", "Line 3"), Collections.emptyList(),
+            Type.DELETE, 0, 0, Arrays.asList("Line 1", "Line 2", "Line 3"), Collections.emptyList(),
             Type.CHANGE, 0, 0, Arrays.asList("Line 1", "Line 2", "Line 3"), Arrays.asList("Line 1", "Line 2 modified",
                 "Line 3"));
         assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
@@ -1354,7 +1354,7 @@ public class DefaultDiffManagerTest
         conflict = createConflict(0,
             Type.CHANGE, 0, 0, Arrays.asList("Line 1", "Line 2", "Line 3"),
             Arrays.asList("Line 1", "Line 2 modified", "Line 3"),
-            Type.CHANGE, 0, 0, Arrays.asList("Line 1", "Line 2", "Line 3"), Collections.emptyList());
+            Type.DELETE, 0, 0, Arrays.asList("Line 1", "Line 2", "Line 3"), Collections.emptyList());
         assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
         assertTrue(result.getLog().getLogs(LogLevel.ERROR).get(0).toString()
             .contains("Conflict between"));
@@ -1505,7 +1505,7 @@ public class DefaultDiffManagerTest
                 "Another line.",
                 "Yet another line edited from the first tab."
             ),
-            Type.CHANGE, 0, 0, Arrays.asList(
+            Type.DELETE, 0, 0, Arrays.asList(
                 "A fifth edit from another tab.",
                 "Another line.",
                 "Yet another line with other few changes."
@@ -1564,8 +1564,8 @@ public class DefaultDiffManagerTest
             Type.CHANGE, 1, 1, Arrays.asList("Second line.", "Third line."), Arrays.asList("Line N°2", "Third line."));
 
         Conflict<String> conflict2 = this.createConflict(5,
-            Type.CHANGE, 5, 5, Collections.emptyList(), Arrays.asList("6th line."),
-            Type.CHANGE, 5, 5, Collections.emptyList(), Arrays.asList("Sixth line."));
+            Type.INSERT, 5, 5, Collections.emptyList(), Arrays.asList("6th line."),
+            Type.INSERT, 5, 5, Collections.emptyList(), Arrays.asList("Sixth line."));
         result = this.diffManager.merge(
             Arrays.asList(
                 "First line.",
