@@ -198,7 +198,7 @@
     <maven.resolver.version>${maven.resolver.build.version}</maven.resolver.version>
 
     <!-- Plexus -->
-    <plexus-containers.version>2.1.0</plexus-containers.version>
+    <plexus-containers.version>2.1.1</plexus-containers.version>
 
     <!-- The version of Maven Enforcer plugin -->
     <maven-enforcer.version>1.4.1</maven-enforcer.version>
