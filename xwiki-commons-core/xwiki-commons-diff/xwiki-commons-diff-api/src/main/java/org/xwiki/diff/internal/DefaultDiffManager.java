@@ -41,7 +41,6 @@ import org.xwiki.diff.MergeConfiguration.Version;
 import org.xwiki.diff.MergeException;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.diff.Patch;
-import org.xwiki.text.StringUtils;
 
 import com.github.difflib.DiffUtils;
 
@@ -95,7 +94,7 @@ public class DefaultDiffManager implements DiffManager
         try {
             diffNextResult = diff(commonAncestor, next, null);
         } catch (DiffException e) {
-            throw new MergeException("Faile to diff between common ancestor and next version", e);
+            throw new MergeException("Fail to diff between common ancestor and next version", e);
         }
         mergeResult.getLog().addAll(diffNextResult.getLog());
 
