@@ -226,20 +226,17 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
         int index = originalChunk.getIndex();
         int listIndex = 0;
 
-        // if the conflict is not about the current chunk we directly leave.
-        if (index + conflictSize < conflictIndex) {
-            return Collections.emptyList();
-        }
-
         // prefix chunk.
-        if (index < conflictIndex) {
-            result.add(new DefaultChunk<>(index, elements.subList(0, conflictIndex - index)));
+        int prefixEnd = conflictIndex - index;
+        if (prefixEnd > 0 && elements.size() > prefixEnd) {
+            result.add(new DefaultChunk<>(index, elements.subList(0, prefixEnd)));
             index = conflictIndex;
-            listIndex = conflictIndex;
+            listIndex = prefixEnd;
         }
 
         // chunk concerned by the conflict
         int listLastIndex = Math.min(elements.size(), listIndex + conflictSize);
+
         result.add(new DefaultChunk<>(index, elements.subList(listIndex, listLastIndex)));
         index += conflictSize;
         listIndex = listLastIndex;
@@ -259,10 +256,15 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
      * @param conflict the conflict which is related to this delta.
      * @param <E> the type of element we manipulate.
      * @return a list of 2 or 3 deltas, depending if the conflict is on the middle of the delta, or on top/bottom side.
+     * @throws IllegalArgumentException if the delta concerns another type than {@link Delta.Type#CHANGE}.
      */
     private <E> List<Delta<E>> splitDelta(Delta<E> delta, Conflict<E> conflict)
     {
         List<Delta<E>> result = new ArrayList<>();
+        if (delta.getType() != Delta.Type.CHANGE) {
+            throw new IllegalArgumentException(
+                String.format("Only delta concerning change can be splitted: [%s]", delta));
+        }
         List<Chunk<E>> previousChunks = splitChunk(delta.getPrevious(), conflict.getIndex(), conflict.getMaxSize());
         List<Chunk<E>> nextChunks = splitChunk(delta.getNext(), conflict.getIndex(), conflict.getMaxSize());
 
@@ -296,6 +298,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
             }
             result.add(DeltaFactory.createDelta(previousChunk, nextChunk, deltaType));
         }
+
         return result;
     }
 
@@ -322,9 +325,8 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
             // If we found a conflict, but it only concerns a subpart of the delta, then we need to split this
             // delta, so we can associate the conflict with only the part of the delta concerned by
             // the conflict.
-            if (canDeltaSplitted(conflict, delta)) {
-                List<Delta<E>> splittedDeltas = splitDelta(delta, conflict);
-                result.putAll(buildDeltaConflictMap(splittedDeltas, conflicts));
+            if (canDeltaBeSplit(conflict, delta)) {
+                result.putAll(buildDeltaConflictMap(splitDelta(delta, conflict), conflicts));
                 // Else the conflict concerns the whole delta, so we can add it to the map and associate it
                 // with the delta. We remove the conflict from our list, since it's already associated
                 // with a delta.
@@ -338,16 +340,24 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
         return result;
     }
 
-    private <E> boolean canDeltaSplitted(Conflict<E> conflict, Delta<E> delta)
+    private <E> boolean isDeltaChange(Delta<E> delta)
+    {
+        return delta.getType() == Delta.Type.CHANGE;
+    }
+
+    private <E> boolean canDeltaBeSplit(Conflict<E> conflict, Delta<E> delta)
     {
         if (conflict != null) {
-            // a delta can be splitted only if one of its chunk is > 1
+            // a delta can be split only if one of its chunk is > 1
+            // a delta can be split only if it concerns a change
+            boolean isChange = isDeltaChange(delta) && isDeltaChange(conflict.getDeltaCurrent())
+                && isDeltaChange(conflict.getDeltaNext());
             boolean deltaCanBeSplitted = (delta.getPrevious().size() > 1 || delta.getNext().size() > 1)
                 && conflict.getMaxSize() < delta.getMaxChunkSize();
             boolean conflictIsSubpartOfDelta = (conflict.getMaxSize() != delta.getNext().size()
                 || conflict.getMaxSize() != delta.getPrevious().size());
 
-            return deltaCanBeSplitted && conflictIsSubpartOfDelta;
+            return isChange && deltaCanBeSplitted && conflictIsSubpartOfDelta;
         }
         return false;
     }
@@ -500,8 +510,10 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
     private <E, F> List<UnifiedDiffElement<E, F>> getUnmodifiedElements(List<E> previous, int start, int end)
     {
         List<UnifiedDiffElement<E, F>> unmodifiedElements = new ArrayList<>();
-        for (int i = start; i < end; i++) {
-            unmodifiedElements.add(new UnifiedDiffElement<>(i, Type.CONTEXT, previous.get(i)));
+        if (start < previous.size()) {
+            for (int i = start; i < Math.min(end, previous.size()); i++) {
+                unmodifiedElements.add(new UnifiedDiffElement<>(i, Type.CONTEXT, previous.get(i)));
+            }
         }
         return unmodifiedElements;
     }
