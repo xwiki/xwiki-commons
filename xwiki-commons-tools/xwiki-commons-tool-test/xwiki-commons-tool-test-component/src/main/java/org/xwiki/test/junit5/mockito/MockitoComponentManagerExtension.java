@@ -154,14 +154,18 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
 
         // Register a mock component for all fields annotated with @MockComponent
         for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
-            if (field.isAnnotationPresent(MockComponent.class)) {
+            MockComponent mockComponentAnnotation = field.getAnnotation(MockComponent.class);
+            if (mockComponentAnnotation != null) {
                 // Get the hint from the @Named annotation (if any)
                 Named namedAnnotation = field.getAnnotation(Named.class);
+                Class<?> classToMock = mockComponentAnnotation.classToMock() != MockComponent.class
+                    ? mockComponentAnnotation.classToMock() : null;
                 Object mockComponent;
                 if (namedAnnotation != null) {
-                    mockComponent = mcm.registerMockComponent(field.getGenericType(), namedAnnotation.value());
+                    mockComponent =
+                        mcm.registerMockComponent(field.getGenericType(), namedAnnotation.value(), classToMock, true);
                 } else {
-                    mockComponent = mcm.registerMockComponent(field.getGenericType());
+                    mockComponent = mcm.registerMockComponent(field.getGenericType(), null, classToMock, true);
                 }
                 ReflectionUtils.setFieldValue(testInstance, field.getName(), mockComponent);
             }
