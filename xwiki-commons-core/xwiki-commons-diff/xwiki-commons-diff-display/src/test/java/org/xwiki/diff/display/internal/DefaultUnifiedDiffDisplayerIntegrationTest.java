@@ -20,17 +20,14 @@
 package org.xwiki.diff.display.internal;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.diff.Chunk;
@@ -55,7 +52,6 @@ import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Integration tests on {@link DefaultUnifiedDiffDisplayer} that performs check by reading on files,
@@ -321,31 +317,5 @@ class DefaultUnifiedDiffDisplayerIntegrationTest
 
         unifiedDiffBlocks = this.defaultUnifiedDiffDisplayer.display(diffResult, mergeResult.getConflicts());
         assertEquals(6, unifiedDiffBlocks.size());
-    }
-
-    /**
-     * Test to ensure that no error occur on a large number of files automatically created with a script.
-     * This test has been used to detect issues leading to the selection of most of the integration tests there.
-     * The script used to generate files can be found in https://gist.github.com/surli/5506e2427daa4cad6279fbfea8f7f172
-     */
-    @Disabled
-    @Test
-    void displayWithConflictsLoop() throws Exception
-    {
-        for (int i = 0; i < 1000; i++) {
-            List<String> previous = readLines(String.format("integrationsloop/loop%s/previous.txt", i));
-            List<String> current = readLines(String.format("integrationsloop/loop%s/current.txt", i));
-            List<String> next = readLines(String.format("integrationsloop/loop%s/next.txt", i));
-            MergeResult<String> mergeResult = getDiffManager().merge(previous, next, current, null);
-
-            DiffResult<String> diffResult = getDiffManager().diff(current, mergeResult.getMerged(), null);
-            List<UnifiedDiffBlock<String, Object>> unifiedDiffBlocks =
-                this.defaultUnifiedDiffDisplayer.display(diffResult);
-            unifiedDiffBlocks = this.defaultUnifiedDiffDisplayer.display(diffResult, mergeResult.getConflicts());
-            // this assert is a bit useless, it's mainly here to keep a good sonar quality gate
-            // the main goal of this test was to ensure that the algorithm was not crashing when processing a large
-            // number of files and to process them when it was.
-            assertNotNull(unifiedDiffBlocks);
-        }
     }
 }
