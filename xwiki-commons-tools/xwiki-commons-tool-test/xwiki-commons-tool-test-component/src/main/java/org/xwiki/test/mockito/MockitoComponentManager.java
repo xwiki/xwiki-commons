@@ -64,6 +64,27 @@ public class MockitoComponentManager extends TestComponentManager
      */
     public <T> T registerMockComponent(Type roleType, String roleHint, boolean force) throws Exception
     {
+        return registerMockComponent(roleType, roleHint, null, force);
+    }
+
+    /**
+     * Registers a Mock component.
+     * <p>
+     * If <code>force</code> is false the method will do nothing if there is already a mock and will return it.
+     *
+     * @param roleType the type of the component role to register
+     * @param roleHint the role hint of the component to register
+     * @param classToMock the class to mock for this component
+     * @param force force registering a new mock even if there is already one
+     * @param <T> the mock
+     * @return the mock
+     * @throws Exception in case of an error during registration
+     * @since 14.0RC1
+     * @since 13.10.2
+     */
+    public <T> T registerMockComponent(Type roleType, String roleHint, Class classToMock, boolean force)
+        throws Exception
+    {
         // Check if the component is already mocked
         if (!force) {
             ComponentDescriptor<?> descriptor = getComponentDescriptor(roleType, roleHint);
@@ -75,7 +96,7 @@ public class MockitoComponentManager extends TestComponentManager
 
         // Mock the component and register it
         @SuppressWarnings("unchecked")
-        T mock = (T) mock(ReflectionUtils.getTypeClass(roleType));
+        T mock = (T) mock(classToMock != null ? classToMock : ReflectionUtils.getTypeClass(roleType));
         registerComponent(roleType, roleHint, mock);
         return mock;
     }
