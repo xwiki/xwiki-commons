@@ -100,7 +100,7 @@
     <jacoco.version>0.8.7</jacoco.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>9.2</checkstyle.version>
+    <checkstyle.version>9.2.1</checkstyle.version>
 
     <!-- Groovy -->
     <groovy.version>3.0.9</groovy.version>
