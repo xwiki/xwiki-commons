@@ -55,11 +55,17 @@ public class BodyFilter extends AbstractHTMLFilter
      * "P | %heading; | %list; | %preformatted; | DL | DIV | NOSCRIPT |
      * BLOCKQUOTE | FORM | HR | TABLE | FIELDSET | ADDRESS">
      * }</pre>
+     *
+     * We also use this list for HTML5 where in theory everything is allowed, but we instead only allow flow content
+     * that is not also phrasing content except for {@code <ins>} and {@code <del>} that were already allowed in HTML 4.
      */
     private static final List<String> ALLOWED_BODY_TAGS = Arrays.asList(HTMLConstants.TAG_ADDRESS,
-        HTMLConstants.TAG_BLOCKQUOTE, HTMLConstants.TAG_DEL, HTMLConstants.TAG_DIV, HTMLConstants.TAG_FIELDSET,
-        HTMLConstants.TAG_FORM, HTMLConstants.TAG_HR, HTMLConstants.TAG_INS, HTMLConstants.TAG_NOSCRIPT,
-        HTMLConstants.TAG_P, HTMLConstants.TAG_PRE, HTMLConstants.TAG_SCRIPT, HTMLConstants.TAG_TABLE,
+        HTMLConstants.TAG_ARTICLE, HTMLConstants.TAG_ASIDE, HTMLConstants.TAG_BLOCKQUOTE, HTMLConstants.TAG_DEL,
+        HTMLConstants.TAG_DETAILS, HTMLConstants.TAG_DIV, HTMLConstants.TAG_FIELDSET, HTMLConstants.TAG_FIGURE,
+        HTMLConstants.TAG_FOOTER, HTMLConstants.TAG_FORM, HTMLConstants.TAG_HEADER, HTMLConstants.TAG_HGROUP,
+        HTMLConstants.TAG_HR, HTMLConstants.TAG_INS, HTMLConstants.TAG_MAIN, HTMLConstants.TAG_MENU,
+        HTMLConstants.TAG_NAV, HTMLConstants.TAG_NOSCRIPT, HTMLConstants.TAG_P, HTMLConstants.TAG_PRE,
+        HTMLConstants.TAG_SCRIPT, HTMLConstants.TAG_SECTION, HTMLConstants.TAG_TABLE, HTMLConstants.TAG_TEMPLATE,
         HTMLConstants.TAG_H1, HTMLConstants.TAG_H2, HTMLConstants.TAG_H3, HTMLConstants.TAG_H4, HTMLConstants.TAG_H5,
         HTMLConstants.TAG_H6, HTMLConstants.TAG_DL, HTMLConstants.TAG_OL, HTMLConstants.TAG_UL);
 

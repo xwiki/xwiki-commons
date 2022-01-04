@@ -19,17 +19,21 @@
  */
 package org.xwiki.xml.internal.html.filter;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.xerces.util.DOMUtil;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.xml.html.filter.AbstractHTMLFilter;
+import org.xwiki.xml.internal.html.FontTagTransformation;
 
 /**
  * Replaces invalid &lt;font&gt; tags with equivalent &lt;span&gt; tags using inline css rules.
@@ -43,28 +47,6 @@ import org.xwiki.xml.html.filter.AbstractHTMLFilter;
 public class FontFilter extends AbstractHTMLFilter
 {
     /**
-     * A map holding the translation from 'size' attribute of html font tag to 'font-size' css property.
-     */
-    private static final Map<String, String> FONT_SIZE_MAP;
-
-    static {
-        FONT_SIZE_MAP = new HashMap<>();
-        FONT_SIZE_MAP.put("1", "0.6em");
-        FONT_SIZE_MAP.put("2", "0.8em");
-        FONT_SIZE_MAP.put("3", "1.0em");
-        FONT_SIZE_MAP.put("4", "1.2em");
-        FONT_SIZE_MAP.put("5", "1.4em");
-        FONT_SIZE_MAP.put("6", "1.6em");
-        FONT_SIZE_MAP.put("7", "1.8em");
-        FONT_SIZE_MAP.put("-3", "0.4em");
-        FONT_SIZE_MAP.put("-2", FONT_SIZE_MAP.get("1"));
-        FONT_SIZE_MAP.put("-1", FONT_SIZE_MAP.get("2"));
-        FONT_SIZE_MAP.put("+1", FONT_SIZE_MAP.get("4"));
-        FONT_SIZE_MAP.put("+2", FONT_SIZE_MAP.get("5"));
-        FONT_SIZE_MAP.put("+3", FONT_SIZE_MAP.get("6"));
-    }
-
-    /**
      * {@inheritDoc}
      *
      * <p>The {@link FontFilter} does not use any cleaningParameters passed in.</p>
@@ -76,25 +58,13 @@ public class FontFilter extends AbstractHTMLFilter
         for (Element fontTag : fontTags) {
             Element span = document.createElement(TAG_SPAN);
             moveChildren(fontTag, span);
-            StringBuilder builder = new StringBuilder();
-            if (fontTag.hasAttribute(ATTRIBUTE_FONTCOLOR)) {
-                builder.append(String.format("color:%s;", fontTag.getAttribute(ATTRIBUTE_FONTCOLOR)));
-            }
-            if (fontTag.hasAttribute(ATTRIBUTE_FONTFACE)) {
-                builder.append(String.format("font-family:%s;", fontTag.getAttribute(ATTRIBUTE_FONTFACE)));
-            }
-            if (fontTag.hasAttribute(ATTRIBUTE_FONTSIZE)) {
-                String fontSize = fontTag.getAttribute(ATTRIBUTE_FONTSIZE);
-                String fontSizeCss = FONT_SIZE_MAP.get(fontSize);
-                fontSizeCss = (fontSizeCss != null) ? fontSizeCss : fontSize;
-                builder.append(String.format("font-size:%s;", fontSizeCss));
-            }
-            if (fontTag.hasAttribute(ATTRIBUTE_STYLE) && fontTag.getAttribute(ATTRIBUTE_STYLE).trim().length() == 0) {
-                builder.append(fontTag.getAttribute(ATTRIBUTE_STYLE));
-            }
-            if (builder.length() > 0) {
-                span.setAttribute(ATTRIBUTE_STYLE, builder.toString());
-            }
+
+            Map<String, String> attributes =
+                Arrays.stream(DOMUtil.getAttrs(fontTag)).collect(Collectors.toMap(Attr::getName,
+                Attr::getValue));
+
+            (new FontTagTransformation()).applyTagTransformations(attributes).forEach(span::setAttribute);
+
             fontTag.getParentNode().insertBefore(span, fontTag);
             fontTag.getParentNode().removeChild(fontTag);
         }
