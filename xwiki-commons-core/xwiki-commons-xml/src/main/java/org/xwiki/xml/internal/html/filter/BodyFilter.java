@@ -57,7 +57,8 @@ public class BodyFilter extends AbstractHTMLFilter
      * }</pre>
      *
      * We also use this list for HTML5 where in theory everything is allowed, but we instead only allow flow content
-     * that is not also phrasing content except for {@code <ins>} and {@code <del>} that were already allowed in HTML 4.
+     * that is not also phrasing content except for {@code <ins>} and {@code <del>} that were already allowed in HTML
+     * 4 and {@code <template>} which is not rendered and thus no extra paragraph should be created for it.
      */
     private static final List<String> ALLOWED_BODY_TAGS = Arrays.asList(HTMLConstants.TAG_ADDRESS,
         HTMLConstants.TAG_ARTICLE, HTMLConstants.TAG_ASIDE, HTMLConstants.TAG_BLOCKQUOTE, HTMLConstants.TAG_DEL,

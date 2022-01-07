@@ -318,8 +318,8 @@ public class DefaultHTMLCleaner implements HTMLCleaner
     {
         String param = configuration.getParameters().get(HTMLCleanerConfiguration.HTML_VERSION);
         int htmlVersion = 4;
-        if (param != null) {
-            htmlVersion = Integer.parseInt(param);
+        if ("5".equals(param)) {
+            htmlVersion = 5;
         }
         return htmlVersion;
     }
