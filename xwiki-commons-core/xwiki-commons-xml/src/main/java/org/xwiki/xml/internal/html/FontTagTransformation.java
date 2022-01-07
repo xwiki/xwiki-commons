@@ -77,8 +77,7 @@ public class FontTagTransformation extends TagTransformation
         }
         if (attributes.containsKey(HTMLConstants.ATTRIBUTE_FONTSIZE)) {
             String fontSize = attributes.get(HTMLConstants.ATTRIBUTE_FONTSIZE);
-            String fontSizeCss = FONT_SIZE_MAP.get(fontSize);
-            fontSizeCss = (fontSizeCss != null) ? fontSizeCss : fontSize;
+            String fontSizeCss = FONT_SIZE_MAP.getOrDefault(fontSize, fontSize);
             builder.append(String.format("font-size:%s;", fontSizeCss));
         }
         if (attributes.containsKey(HTMLConstants.ATTRIBUTE_STYLE)
