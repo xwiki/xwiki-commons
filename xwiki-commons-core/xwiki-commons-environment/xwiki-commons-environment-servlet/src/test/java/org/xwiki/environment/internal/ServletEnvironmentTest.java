@@ -21,6 +21,7 @@ package org.xwiki.environment.internal;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.servlet.ServletContext;
 
@@ -89,8 +90,9 @@ public class ServletEnvironmentTest
     {
         ServletContext servletContext = mock(ServletContext.class);
         this.environment.setServletContext(servletContext);
-        this.environment.getResource("/test");
+        when(servletContext.getResource("/test")).thenReturn(new URL("file:/path/../test"));
 
+        assertEquals(new URL("file:/test"), this.environment.getResource("/test"));
         verify(servletContext).getResource("/test");
     }
 
