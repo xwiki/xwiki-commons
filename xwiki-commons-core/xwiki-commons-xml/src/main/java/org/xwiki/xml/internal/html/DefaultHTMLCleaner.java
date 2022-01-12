@@ -162,10 +162,11 @@ public class DefaultHTMLCleaner implements HTMLCleaner
             //   result = new DomSerializer(cleanerProperties, false).createDOM(cleanedNode);
 
             if (getHTMLVersion(configuration) == 5) {
-                cleanedNode.setDocType(new DoctypeToken("HTML", null, null, null));
+                cleanedNode.setDocType(new DoctypeToken(HTMLConstants.TAG_HTML, null, null, null));
             } else {
-                cleanedNode.setDocType(new DoctypeToken("html", "PUBLIC", "-//W3C//DTD XHTML 1.0 Strict//EN",
-                    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"));
+                cleanedNode.setDocType(
+                    new DoctypeToken(HTMLConstants.TAG_HTML, "PUBLIC", "-//W3C//DTD XHTML 1.0 Strict//EN",
+                        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"));
             }
             result =
                 new XWikiDOMSerializer(cleanerProperties).createDOM(getAvailableDocumentBuilder(), cleanedNode);
