@@ -84,7 +84,9 @@ public class ServletEnvironment extends AbstractEnvironment
             if (url != null) {
                 url = url.toURI().normalize().toURL();
             }
-        } catch (MalformedURLException | URISyntaxException e) {
+        // We're catching IllegalArgumentException which might be thrown by Tomcat when trying to resolve path such as
+        // `templates/../..`
+        } catch (MalformedURLException | URISyntaxException | IllegalArgumentException e) {
             url = null;
             this.logger.warn("Error getting resource [{}] because of invalid path format. Reason: [{}]",
                 resourceName, e.getMessage());
