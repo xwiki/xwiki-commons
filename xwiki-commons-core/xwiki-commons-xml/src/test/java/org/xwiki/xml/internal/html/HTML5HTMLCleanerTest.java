@@ -67,21 +67,44 @@ public class HTML5HTMLCleanerTest extends DefaultHTMLCleanerTest
         this.cleanerConfiguration.setParameters(parameters);
     }
 
+    /**
+     * Disable SVG test until https://sourceforge.net/p/htmlcleaner/bugs/228/ is fixed.
+     *
+     * This test should be removed again once it has been fixed to re-enable the parent test.
+     */
     @Test
     @Override
     @Disabled("See https://sourceforge.net/p/htmlcleaner/bugs/228/")
     void cleanSVGTags() throws Exception
     {
-        super.cleanSVGTags();
+        String input =
+            "<p>before</p>\n" + "<p><svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
+                + "<circle cx=\"100\" cy=\"50\" fill=\"red\" r=\"40\" stroke=\"black\" stroke-width=\"2\"></circle>\n"
+                + "</svg></p>\n" + "<p>after</p>\n";
+        assertHTML(input, getHeaderFull() + input + FOOTER);
     }
 
-
+    /**
+     * Disable style test until https://sourceforge.net/p/htmlcleaner/bugs/229/ is fixed.
+     *
+     * This test should be removed again once it has been fixed to re-enable the parent test.
+     */
     @Test
     @Override
     @Disabled("See https://sourceforge.net/p/htmlcleaner/bugs/229/")
     void styleAndCData()
     {
-        super.styleAndCData();
+        assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>",
+            "<style type=\"text/css\"><![CDATA[\na { color: red; }\n]]></style>");
+
+        assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>",
+            "<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>");
+
+        assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na>span { color: blue;}\n/*]]>*/</style>",
+            "<style type=\"text/css\">a&gt;span { color: blue;}</style>");
+
+        assertHTMLWithHeadContent("<style>/*<![CDATA[*/\n<>\n/*]]>*/</style>", "<style>&lt;&gt;</style>");
+        assertHTMLWithHeadContent("<style>/*<![CDATA[*/\n<>\n/*]]>*/</style>", "<style><></style>");
     }
 
     /**
