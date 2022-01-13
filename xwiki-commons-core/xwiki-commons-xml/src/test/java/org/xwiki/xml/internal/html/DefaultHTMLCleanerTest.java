@@ -81,7 +81,7 @@ public class DefaultHTMLCleanerTest
 
     private static final String HEADER_FULL = HEADER + "<html><head></head><body>";
 
-    private static final String FOOTER = "</body></html>\n";
+    protected static final String FOOTER = "</body></html>\n";
 
     @InjectMockComponents
     protected DefaultHTMLCleaner cleaner;
@@ -601,7 +601,7 @@ public class DefaultHTMLCleanerTest
         assertEquals(getHeaderFull() + expected + FOOTER, HTMLUtils.toString(documentValue));
     }
 
-    private void assertHTMLWithHeadContent(String expected, String actual)
+    protected void assertHTMLWithHeadContent(String expected, String actual)
     {
         assertEquals(getHeader() + "<html><head>" + expected + "</head><body>" + FOOTER,
             HTMLUtils.toString(clean(actual)));
