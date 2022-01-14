@@ -27,6 +27,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
@@ -68,21 +69,7 @@ public class AttributeFilter extends AbstractHTMLFilter
      */
     private static final String VERTICAL_ALIGN = "vertical-align";
 
-    /**
-     * The logger.
-     */
-    @Inject
-    private Logger logger;
-
-    {
-        ATTRIBUTE_TO_CSS_PROPERTY.put("align", "text-align");
-        ATTRIBUTE_TO_CSS_PROPERTY.put("valign", VERTICAL_ALIGN);
-        ATTRIBUTE_TO_CSS_PROPERTY.put("bgcolor", "background-color");
-    }
-
-    @Override
-    public void filter(Document document, Map<String, String> cleaningParameters)
-    {
+    private final ThreadLocal<XPathExpression> attributeMatcher = ThreadLocal.withInitial(() -> {
         StringBuilder xpathExpression = new StringBuilder();
         for (String attributeName : ATTRIBUTE_TO_CSS_PROPERTY.keySet()) {
             if (xpathExpression.length() > 0) {
@@ -91,10 +78,33 @@ public class AttributeFilter extends AbstractHTMLFilter
             xpathExpression.append("//@").append(attributeName);
         }
 
-        NodeList attributes = null;
         XPath xpath = XPathFactory.newInstance().newXPath();
         try {
-            attributes = (NodeList) xpath.evaluate(xpathExpression.toString(), document, XPathConstants.NODESET);
+            return xpath.compile(xpathExpression.toString());
+        } catch (XPathExpressionException e) {
+            return null;
+        }
+    });
+
+    /**
+     * The logger.
+     */
+    @Inject
+    private Logger logger;
+
+    static {
+        ATTRIBUTE_TO_CSS_PROPERTY.put("align", "text-align");
+        ATTRIBUTE_TO_CSS_PROPERTY.put("valign", VERTICAL_ALIGN);
+        ATTRIBUTE_TO_CSS_PROPERTY.put("bgcolor", "background-color");
+    }
+
+    @Override
+    public void filter(Document document, Map<String, String> cleaningParameters)
+    {
+        NodeList attributes;
+
+        try {
+            attributes = (NodeList) attributeMatcher.get().evaluate(document, XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             // Shouldn't happen.
             this.logger.error("Failed to apply the HTML attribute cleaning filter.", e);
