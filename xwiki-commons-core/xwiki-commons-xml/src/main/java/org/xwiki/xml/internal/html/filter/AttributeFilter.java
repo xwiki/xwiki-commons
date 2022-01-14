@@ -27,7 +27,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
@@ -37,6 +36,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
 import org.xwiki.xml.html.HTMLConstants;
 import org.xwiki.xml.html.filter.AbstractHTMLFilter;
 
@@ -69,28 +70,14 @@ public class AttributeFilter extends AbstractHTMLFilter
      */
     private static final String VERTICAL_ALIGN = "vertical-align";
 
-    private final ThreadLocal<XPathExpression> attributeMatcher = ThreadLocal.withInitial(() -> {
-        StringBuilder xpathExpression = new StringBuilder();
-        for (String attributeName : ATTRIBUTE_TO_CSS_PROPERTY.keySet()) {
-            if (xpathExpression.length() > 0) {
-                xpathExpression.append('|');
-            }
-            xpathExpression.append("//@").append(attributeName);
-        }
-
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        try {
-            return xpath.compile(xpathExpression.toString());
-        } catch (XPathExpressionException e) {
-            return null;
-        }
-    });
-
     /**
      * The logger.
      */
     @Inject
     private Logger logger;
+
+    @Inject
+    private Execution execution;
 
     static {
         ATTRIBUTE_TO_CSS_PROPERTY.put("align", "text-align");
@@ -101,10 +88,39 @@ public class AttributeFilter extends AbstractHTMLFilter
     @Override
     public void filter(Document document, Map<String, String> cleaningParameters)
     {
-        NodeList attributes;
+        ExecutionContext executionContext = this.execution.getContext();
+        XPathFactory xPathFactory;
 
+        if (executionContext != null) {
+            xPathFactory = (XPathFactory) executionContext.getProperty(XPathFactory.class.getName());
+
+            if (xPathFactory == null) {
+                synchronized (XPathFactory.class) {
+                    xPathFactory = XPathFactory.newInstance();
+                }
+                executionContext.newProperty(XPathFactory.class.getName()).type(XPathFactory.class).inherited()
+                    .nonNull().initial(xPathFactory).makeFinal().declare();
+            }
+        } else {
+            synchronized (XPathFactory.class) {
+                xPathFactory = XPathFactory.newInstance();
+            }
+        }
+
+
+        StringBuilder xpathExpression = new StringBuilder();
+        for (String attributeName : ATTRIBUTE_TO_CSS_PROPERTY.keySet()) {
+            if (xpathExpression.length() > 0) {
+                xpathExpression.append('|');
+            }
+            xpathExpression.append("//@").append(attributeName);
+        }
+
+        XPath xpath = xPathFactory.newXPath();
+
+        NodeList attributes;
         try {
-            attributes = (NodeList) attributeMatcher.get().evaluate(document, XPathConstants.NODESET);
+            attributes = (NodeList) xpath.evaluate(xpathExpression.toString(), document, XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             // Shouldn't happen.
             this.logger.error("Failed to apply the HTML attribute cleaning filter.", e);
