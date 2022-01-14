@@ -35,6 +35,7 @@ import org.xwiki.properties.internal.converter.ConvertUtilsConverter;
 import org.xwiki.properties.internal.converter.EnumConverter;
 import org.xwiki.properties.test.GenericTestConverter;
 import org.xwiki.properties.test.TestBean;
+import org.xwiki.properties.test.TestBeanValidation;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectComponentManager;
@@ -106,6 +107,25 @@ class DefaultBeanManagerTest
         assertNull(beanTest.getHiddenProperty());
         assertEquals("publicFieldvalue", beanTest.publicField);
         assertEquals(Arrays.asList(1, 2), beanTest.getGenericProp());
+    }
+
+    @Test
+    void populateWithValidation() throws PropertyException
+    {
+        TestBeanValidation beanTest = new TestBeanValidation();
+
+        Map<String, String> values = new HashMap<>();
+
+        values.put("working", "true");
+
+        this.defaultBeanManager.populate(beanTest, values);
+
+        assertTrue(beanTest.isWorking());
+
+        values.put("working", "false");
+
+        assertThrows(PropertyException.class, () -> this.defaultBeanManager.populate(beanTest, values),
+            "No Bean Validation was executed");
     }
 
     @Test

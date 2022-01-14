@@ -73,6 +73,13 @@
       <artifactId>hibernate-validator</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- Hibernate Validator needs a EL implementation,
+         use the same as Jetty and Tomcat (which are the most used application servers with XWiki) for the tests -->
+    <dependency>
+      <groupId>org.mortbay.jasper</groupId>
+      <artifactId>apache-el</artifactId>
+      <version>9.0.52</version>
+    </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
