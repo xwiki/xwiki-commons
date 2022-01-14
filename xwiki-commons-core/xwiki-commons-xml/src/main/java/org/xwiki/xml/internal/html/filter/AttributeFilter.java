@@ -95,16 +95,12 @@ public class AttributeFilter extends AbstractHTMLFilter
             xPathFactory = (XPathFactory) executionContext.getProperty(XPathFactory.class.getName());
 
             if (xPathFactory == null) {
-                synchronized (XPathFactory.class) {
-                    xPathFactory = XPathFactory.newInstance();
-                }
+                xPathFactory = XPathFactory.newInstance();
                 executionContext.newProperty(XPathFactory.class.getName()).type(XPathFactory.class).inherited()
                     .nonNull().initial(xPathFactory).makeFinal().declare();
             }
         } else {
-            synchronized (XPathFactory.class) {
-                xPathFactory = XPathFactory.newInstance();
-            }
+            xPathFactory = XPathFactory.newInstance();
         }
 
 
