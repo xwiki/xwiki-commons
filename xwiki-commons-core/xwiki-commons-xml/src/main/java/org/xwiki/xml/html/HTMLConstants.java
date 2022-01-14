@@ -385,6 +385,12 @@ public interface HTMLConstants
     String TAG_TEMPLATE = "template";
 
     /**
+     * HTML &lt;svg&gt; tag.
+     * @since 14.0RC1
+     */
+    String TAG_SVG = "svg";
+
+    /**
      * HTML id attribute name.
      */
     String ATTRIBUTE_ID = "id";
