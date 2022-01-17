@@ -68,6 +68,29 @@ class HTML5HTMLCleanerTest extends DefaultHTMLCleanerTest
     }
 
     /**
+     * In HTML5, some elements that were deprecated/removed in XHTML 1.0 are not deprecated anymore. This overrides
+     * the test to ensure they are not removed.
+     */
+    @Override
+    @Test
+    void conversionsFromHTML()
+    {
+        assertHTML("<p>this <b>is</b> highlighted but not important</p>",
+            "this <b>is</b> highlighted but not important");
+        assertHTML("<p><i>alternate voice</i></p>", "<i>alternate voice</i>");
+        assertHTML("<del>strike</del>", "<strike>strike</strike>");
+        assertHTML("<p><s>no longer relevant</s></p>", "<s>no longer relevant</s>");
+        assertHTML("<p><u>misspell</u></p>", "<u>misspell</u>");
+        assertHTML("<p style=\"text-align:center\">center</p>", "<center>center</center>");
+        assertHTML("<p><span style=\"color:red;font-family:Arial;font-size:1.0em;\">This is some text!</span></p>",
+            "<font face=\"Arial\" size=\"3\" color=\"red\">This is some text!</font>");
+        assertHTML("<p><span style=\"font-size:1.6em;\">This is some text!</span></p>",
+            "<font size=\"+3\">This is some text!</font>");
+        assertHTML("<table><tbody><tr><td style=\"text-align:right;background-color:red;vertical-align:top\">"
+            + "x</td></tr></tbody></table>", "<table><tr><td align=right valign=top bgcolor=red>x</td></tr></table>");
+    }
+
+    /**
      * This tests various invalid list usages. With HTML5, the lists are cleaned by HTMLCleaner sometimes and thus the
      * list-style-type is not set to none as in the custom filter in XWiki. Further, HTML comments are not moved
      * around as it was the case with HTML 4.
