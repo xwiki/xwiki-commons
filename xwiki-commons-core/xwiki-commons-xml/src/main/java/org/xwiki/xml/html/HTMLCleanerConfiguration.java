@@ -56,7 +56,7 @@ public interface HTMLCleanerConfiguration
     String TRANSLATE_SPECIAL_ENTITIES = "translateSpecialEntities";
 
     /**
-     * The HTML (major) version. Should be "5" for HTML5 and "4" otherwise for the default implementation.
+     * The HTML (major) version. Should be "5" for HTML5 and "4" (default) otherwise for the default implementation.
      * @since 14.0RC1
      */
     @Unstable

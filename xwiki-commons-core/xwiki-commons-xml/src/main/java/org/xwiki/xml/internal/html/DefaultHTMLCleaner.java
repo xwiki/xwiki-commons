@@ -30,7 +30,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.htmlcleaner.CleanerProperties;
-import org.htmlcleaner.CleanerTransformations;
 import org.htmlcleaner.DoctypeToken;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
@@ -44,6 +43,7 @@ import org.xwiki.context.ExecutionContext;
 import org.xwiki.xml.html.HTMLCleaner;
 import org.xwiki.xml.html.HTMLCleanerConfiguration;
 import org.xwiki.xml.html.HTMLConstants;
+import org.xwiki.xml.html.XWikiHTML5TagProvider;
 import org.xwiki.xml.html.filter.HTMLFilter;
 
 /**
@@ -144,7 +144,13 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         // especially since this makes it extra safe with regards to multithreading (even though HTML Cleaner is
         // already supposed to be thread safe).
         CleanerProperties cleanerProperties = getDefaultCleanerProperties(configuration);
-        HtmlCleaner cleaner = new HtmlCleaner(cleanerProperties);
+        HtmlCleaner cleaner;
+        if (isHTML5(configuration)) {
+            // Use our custom provider to fix bugs, should be checked on each upgrade if still necessary.
+            cleaner = new HtmlCleaner(new XWikiHTML5TagProvider(), cleanerProperties);
+        }  else {
+            cleaner = new HtmlCleaner(cleanerProperties);
+        }
 
         TagNode cleanedNode;
         try {
@@ -161,7 +167,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner
             // Replace by the following when fixed:
             //   result = new DomSerializer(cleanerProperties, false).createDOM(cleanedNode);
 
-            if (getHTMLVersion(configuration) == 5) {
+            if (isHTML5(configuration)) {
                 cleanedNode.setDocType(new DoctypeToken(HTMLConstants.TAG_HTML, null, null, null));
             } else {
                 cleanedNode.setDocType(
@@ -237,7 +243,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         boolean useCharacterReferences = (param != null) && Boolean.parseBoolean(param);
         defaultProperties.setTransResCharsToNCR(useCharacterReferences);
 
-        // By default, we are cleaning XHTML 1.0 code, not HTML 5.
+        // Sets the HTML version from the configuration (by default 4).
         defaultProperties.setHtmlVersion(getHTMLVersion(configuration));
 
         // We trim values by default for all attributes but the input value attribute.
@@ -262,23 +268,27 @@ public class DefaultHTMLCleaner implements HTMLCleaner
      * @return the default cleaning transformations to perform on tags, in addition to the base transformations done by
      *         HTML Cleaner
      */
-    private CleanerTransformations getDefaultCleanerTransformations(HTMLCleanerConfiguration configuration)
+    private TrimAttributeCleanerTransformations getDefaultCleanerTransformations(HTMLCleanerConfiguration configuration)
     {
-        CleanerTransformations defaultTransformations = new TrimAttributeCleanerTransformations();
+        TrimAttributeCleanerTransformations defaultTransformations = new TrimAttributeCleanerTransformations();
+
+        TagTransformation tt;
 
         // note that we do not care here to use a TrimAttributeTagTransformation, since the attributes are not preserved
-        TagTransformation tt = new TagTransformation(HTMLConstants.TAG_B,
-            HTMLConstants.TAG_STRONG, false);
-        defaultTransformations.addTransformation(tt);
+        if (!isHTML5(configuration)) {
+            // These tags are not obsolete in HTML5.
+            tt = new TagTransformation(HTMLConstants.TAG_B, HTMLConstants.TAG_STRONG, false);
+            defaultTransformations.addTransformation(tt);
 
-        tt = new TagTransformation(HTMLConstants.TAG_I, HTMLConstants.TAG_EM, false);
-        defaultTransformations.addTransformation(tt);
+            tt = new TagTransformation(HTMLConstants.TAG_I, HTMLConstants.TAG_EM, false);
+            defaultTransformations.addTransformation(tt);
 
-        tt = new TagTransformation(HTMLConstants.TAG_U, HTMLConstants.TAG_INS, false);
-        defaultTransformations.addTransformation(tt);
+            tt = new TagTransformation(HTMLConstants.TAG_U, HTMLConstants.TAG_INS, false);
+            defaultTransformations.addTransformation(tt);
 
-        tt = new TagTransformation(HTMLConstants.TAG_S, HTMLConstants.TAG_DEL, false);
-        defaultTransformations.addTransformation(tt);
+            tt = new TagTransformation(HTMLConstants.TAG_S, HTMLConstants.TAG_DEL, false);
+            defaultTransformations.addTransformation(tt);
+        }
 
         tt = new TagTransformation(HTMLConstants.TAG_STRIKE, HTMLConstants.TAG_DEL, false);
         defaultTransformations.addTransformation(tt);
@@ -287,12 +297,12 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         tt.addAttributeTransformation(HTMLConstants.ATTRIBUTE_STYLE, "text-align:center");
         defaultTransformations.addTransformation(tt);
 
-        if (getHTMLVersion(configuration) == 5) {
+        if (isHTML5(configuration)) {
             // Font tags are removed before the filters are applied in HTML5, we thus need a transformation here.
             defaultTransformations.addTransformation(new FontTagTransformation());
 
-            tt = new TrimAttributeTagTransformation(HTMLConstants.TAG_TT,
-                HTMLConstants.TAG_SPAN);
+            // The tt-tag is obsolete in HTML5
+            tt = new TrimAttributeTagTransformation(HTMLConstants.TAG_TT, HTMLConstants.TAG_SPAN);
             tt.addAttributeTransformation(HTMLConstants.ATTRIBUTE_CLASS, "${class} monospace");
             defaultTransformations.addTransformation(tt);
         }
@@ -312,8 +322,16 @@ public class DefaultHTMLCleaner implements HTMLCleaner
 
     /**
      * @param configuration The configuration to parse.
+     * @return If the configuration specifies HTML 5 as version.
+     */
+    private boolean isHTML5(HTMLCleanerConfiguration configuration)
+    {
+        return getHTMLVersion(configuration) == 5;
+    }
+
+    /**
+     * @param configuration The configuration to parse.
      * @return The HTML version specified in the configuration.
-     * @since 14.0RC1
      */
     private int getHTMLVersion(HTMLCleanerConfiguration configuration)
     {

@@ -32,7 +32,7 @@ import org.xwiki.xml.html.HTMLCleanerConfiguration;
  * @version $Id$
  * @since 14.0RC1
  */
-public class HTML5HTMLCleanerTest extends DefaultHTMLCleanerTest
+class HTML5HTMLCleanerTest extends DefaultHTMLCleanerTest
 {
     public static final String HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         + "<!DOCTYPE html>\n";
@@ -68,43 +68,26 @@ public class HTML5HTMLCleanerTest extends DefaultHTMLCleanerTest
     }
 
     /**
-     * Disable SVG test until https://sourceforge.net/p/htmlcleaner/bugs/228/ is fixed.
-     *
-     * This test should be removed again once it has been fixed to re-enable the parent test.
+     * In HTML5, some elements that were deprecated/removed in XHTML 1.0 are not deprecated anymore. This overrides
+     * the test to ensure they are not removed.
      */
-    @Test
     @Override
-    @Disabled("See https://sourceforge.net/p/htmlcleaner/bugs/228/")
-    void cleanSVGTags() throws Exception
-    {
-        String input =
-            "<p>before</p>\n" + "<p><svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
-                + "<circle cx=\"100\" cy=\"50\" fill=\"red\" r=\"40\" stroke=\"black\" stroke-width=\"2\"></circle>\n"
-                + "</svg></p>\n" + "<p>after</p>\n";
-        assertHTML(input, getHeaderFull() + input + FOOTER);
-    }
-
-    /**
-     * Disable style test until https://sourceforge.net/p/htmlcleaner/bugs/229/ is fixed.
-     *
-     * This test should be removed again once it has been fixed to re-enable the parent test.
-     */
     @Test
-    @Override
-    @Disabled("See https://sourceforge.net/p/htmlcleaner/bugs/229/")
-    void styleAndCData()
+    void conversionsFromHTML()
     {
-        assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>",
-            "<style type=\"text/css\"><![CDATA[\na { color: red; }\n]]></style>");
-
-        assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>",
-            "<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>");
-
-        assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na>span { color: blue;}\n/*]]>*/</style>",
-            "<style type=\"text/css\">a&gt;span { color: blue;}</style>");
-
-        assertHTMLWithHeadContent("<style>/*<![CDATA[*/\n<>\n/*]]>*/</style>", "<style>&lt;&gt;</style>");
-        assertHTMLWithHeadContent("<style>/*<![CDATA[*/\n<>\n/*]]>*/</style>", "<style><></style>");
+        assertHTML("<p>this <b>is</b> highlighted but not important</p>",
+            "this <b>is</b> highlighted but not important");
+        assertHTML("<p><i>alternate voice</i></p>", "<i>alternate voice</i>");
+        assertHTML("<del>strike</del>", "<strike>strike</strike>");
+        assertHTML("<p><s>no longer relevant</s></p>", "<s>no longer relevant</s>");
+        assertHTML("<p><u>misspell</u></p>", "<u>misspell</u>");
+        assertHTML("<p style=\"text-align:center\">center</p>", "<center>center</center>");
+        assertHTML("<p><span style=\"color:red;font-family:Arial;font-size:1.0em;\">This is some text!</span></p>",
+            "<font face=\"Arial\" size=\"3\" color=\"red\">This is some text!</font>");
+        assertHTML("<p><span style=\"font-size:1.6em;\">This is some text!</span></p>",
+            "<font size=\"+3\">This is some text!</font>");
+        assertHTML("<table><tbody><tr><td style=\"text-align:right;background-color:red;vertical-align:top\">"
+            + "x</td></tr></tbody></table>", "<table><tr><td align=right valign=top bgcolor=red>x</td></tr></table>");
     }
 
     /**
