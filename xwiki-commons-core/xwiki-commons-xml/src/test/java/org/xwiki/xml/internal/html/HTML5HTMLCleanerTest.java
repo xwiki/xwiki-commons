@@ -22,7 +22,6 @@ package org.xwiki.xml.internal.html;
 import java.util.HashMap;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.xwiki.xml.html.HTMLCleanerConfiguration;
 
