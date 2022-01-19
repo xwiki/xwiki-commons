@@ -565,18 +565,6 @@
         <artifactId>xpp3_min</artifactId>
         <version>1.1.4c</version>
       </dependency>
-      <!-- What is included in the JRE is too old and Oracle does not seems to plan to upgrade it anytime soon -->
-      <dependency>
-        <groupId>xerces</groupId>
-        <artifactId>xercesImpl</artifactId>
-        <version>2.12.1</version>
-      </dependency>
-      <!-- xerces require this version of xml-apis -->
-      <dependency>
-        <groupId>xml-apis</groupId>
-        <artifactId>xml-apis</artifactId>
-        <version>1.4.01</version>
-      </dependency>
       <dependency>
         <groupId>org.codehaus.woodstox</groupId>
         <artifactId>stax2-api</artifactId>
@@ -1852,6 +1840,11 @@
                     <!-- Xalan is not in a very good shape compare to the default implementation -->
                     <exclude>xalan:xalan</exclude>
                     <exclude>xalan:serializer</exclude>
+                    <!-- Xerces is not in a very good shape compare to the default implementation -->
+                    <exclude>xerces:xercesImpl</exclude>
+                    <exclude>xerces:xerces-impl</exclude>
+                    <exclude>xml-apis:xml-apis</exclude>
+                    <exclude>xerces:xmlParserAPIs</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>

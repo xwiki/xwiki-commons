@@ -32,7 +32,6 @@ import java.util.regex.Matcher;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.xerces.parsers.XMLParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
