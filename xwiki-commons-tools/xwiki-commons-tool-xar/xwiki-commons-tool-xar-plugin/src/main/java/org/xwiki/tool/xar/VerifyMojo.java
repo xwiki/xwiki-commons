@@ -135,13 +135,14 @@ public class VerifyMojo extends AbstractVerifyMojo
             }
 
             // Verification 2: Verify authors
-            verifyAuthor(errors, xdoc.getAuthor(), String.format("Author must be [%s] but was [%s]",
-                AUTHOR, xdoc.getAuthor()));
+            verifyAuthor(errors, xdoc.getEffectiveMetadataAuthor(),
+                String.format("Effective author must be [%s] but was [%s]", AUTHOR, xdoc.getEffectiveMetadataAuthor()));
+            verifyAuthor(errors, xdoc.getOriginalMetadataAuthor(),
+                String.format("Original author must be [%s] but was [%s]", AUTHOR, xdoc.getOriginalMetadataAuthor()));
             verifyAuthor(errors, xdoc.getContentAuthor(),
-                String.format("Content Author must be [%s] but was [%s]",
-                    AUTHOR, xdoc.getContentAuthor()));
-            verifyAuthor(errors, xdoc.getCreator(), String.format("Creator must be [%s] but was [%s]",
-                AUTHOR, xdoc.getCreator()));
+                String.format("Content Author must be [%s] but was [%s]", AUTHOR, xdoc.getContentAuthor()));
+            verifyAuthor(errors, xdoc.getCreator(),
+                String.format("Creator must be [%s] but was [%s]", AUTHOR, xdoc.getCreator()));
             verifyAttachmentAuthors(errors, xdoc.getAttachmentData());
 
             // Verification 3: Check for orphans, except for Main.WebHome since it's the topmost document

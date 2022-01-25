@@ -68,9 +68,14 @@ public class XWikiDocument
     private String creator;
 
     /**
-     * @see #getAuthor()
+     * @see #getEffectiveMetadataAuthor()
      */
-    private String author;
+    private String effectiveMetadataAuthor;
+
+    /**
+     * @see #getOriginalMetadataAuthor()
+     */
+    private String originalMetadataAuthor;
 
     /**
      * @see #getContentAuthor()
@@ -210,7 +215,7 @@ public class XWikiDocument
 
         this.defaultLanguage = readElement(rootElement, "defaultLanguage");
         this.creator = readElement(rootElement, "creator");
-        this.author = readElement(rootElement, AUTHOR_TAG);
+        this.effectiveMetadataAuthor = readElement(rootElement, AUTHOR_TAG);
         this.contentAuthor = readElement(rootElement, "contentAuthor");
         this.version = readElement(rootElement, "version");
         this.parent = readElement(rootElement, "parent");
@@ -392,11 +397,19 @@ public class XWikiDocument
     }
 
     /**
-     * @return the author of the document
+     * @return the effective metadata author of the document
      */
-    public String getAuthor()
+    public String getEffectiveMetadataAuthor()
     {
-        return this.author;
+        return this.effectiveMetadataAuthor;
+    }
+
+    /**
+     * @return the original metadata author of the document
+     */
+    public String getOriginalMetadataAuthor()
+    {
+        return this.originalMetadataAuthor;
     }
 
     /**

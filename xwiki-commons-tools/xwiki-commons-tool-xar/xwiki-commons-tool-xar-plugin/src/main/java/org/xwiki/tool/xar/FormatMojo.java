@@ -110,6 +110,10 @@ public class FormatMojo extends AbstractVerifyMojo
         if (node != null) {
             node.setText(AUTHOR);
         }
+        node = domdoc.selectSingleNode("xwikidoc/originalMetadataAuthor");
+        if (node != null) {
+            node.setText(AUTHOR);
+        }
         node = domdoc.selectSingleNode("xwikidoc/contentAuthor");
         if (node != null) {
             node.setText(AUTHOR);
