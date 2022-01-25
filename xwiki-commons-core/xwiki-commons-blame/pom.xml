@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-core</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>14.0-SNAPSHOT</version>
+    <version>14.0-rc-1</version>
   </parent>
   <artifactId>xwiki-commons-blame</artifactId>
   <name>XWiki Commons - Blame</name>
