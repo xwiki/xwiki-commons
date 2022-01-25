@@ -19,18 +19,17 @@
  */
 package org.xwiki.xml.internal.html.filter;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.xerces.util.DOMUtil;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.xml.html.filter.AbstractHTMLFilter;
 import org.xwiki.xml.internal.html.FontTagTransformation;
@@ -59,9 +58,12 @@ public class FontFilter extends AbstractHTMLFilter
             Element span = document.createElement(TAG_SPAN);
             moveChildren(fontTag, span);
 
-            Map<String, String> attributes =
-                Arrays.stream(DOMUtil.getAttrs(fontTag)).collect(Collectors.toMap(Attr::getName,
-                Attr::getValue));
+            Map<String, String> attributes = new HashMap<>();
+            NamedNodeMap domAttributes = fontTag.getAttributes();
+            for (int i = 0; i < domAttributes.getLength(); ++i) {
+                Attr domAttribute = (Attr) domAttributes.item(i);
+                attributes.put(domAttribute.getName(), domAttribute.getValue());
+            }
 
             (new FontTagTransformation()).applyTagTransformations(attributes).forEach(span::setAttribute);
 
