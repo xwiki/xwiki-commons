@@ -41,7 +41,7 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  * <ul>
  *   <li>ensure that the encoding is UTF8</li>
  *   <li>(optional) ensure that all pages have a parent (except for {@code Main.WebHome})</li>
- *   <li>ensure that the author/contentAuthor/creator/attachment authors are {@code xwiki:XWiki.Admin}</li>
+ *   <li>ensure that the author/originalAuthor/contentAuthor/creator/attachment authors are {@code xwiki:XWiki.Admin}</li>
  *   <li>ensure that the version is {@code 1.1}</li>
  *   <li>ensure that comment is empty</li>
  *   <li>ensure that minor edit is false</li>
@@ -136,13 +136,15 @@ public class VerifyMojo extends AbstractVerifyMojo
 
             // Verification 2: Verify authors
             verifyAuthor(errors, xdoc.getEffectiveMetadataAuthor(),
-                String.format("Effective author must be [%s] but was [%s]", AUTHOR, xdoc.getEffectiveMetadataAuthor()));
+                String.format("Effective author must be [%s] but was [%s]", AUTHOR, xdoc.getEffectiveMetadataAuthor()),
+                true);
             verifyAuthor(errors, xdoc.getOriginalMetadataAuthor(),
-                String.format("Original author must be [%s] but was [%s]", AUTHOR, xdoc.getOriginalMetadataAuthor()));
+                String.format("Original author must be [%s] but was [%s]", AUTHOR, xdoc.getOriginalMetadataAuthor()),
+                false);
             verifyAuthor(errors, xdoc.getContentAuthor(),
-                String.format("Content Author must be [%s] but was [%s]", AUTHOR, xdoc.getContentAuthor()));
+                String.format("Content Author must be [%s] but was [%s]", AUTHOR, xdoc.getContentAuthor()), true);
             verifyAuthor(errors, xdoc.getCreator(),
-                String.format("Creator must be [%s] but was [%s]", AUTHOR, xdoc.getCreator()));
+                String.format("Creator must be [%s] but was [%s]", AUTHOR, xdoc.getCreator()), true);
             verifyAttachmentAuthors(errors, xdoc.getAttachmentData());
 
             // Verification 3: Check for orphans, except for Main.WebHome since it's the topmost document
@@ -289,9 +291,9 @@ public class VerifyMojo extends AbstractVerifyMojo
         }
     }
 
-    private void verifyAuthor(List<String> errors, String author, String message)
+    private void verifyAuthor(List<String> errors, String author, String message, boolean mandatory)
     {
-        if (!AUTHOR.equals(author)) {
+        if ((author != null || mandatory) && !AUTHOR.equals(author)) {
             errors.add(message);
         }
     }
@@ -300,7 +302,8 @@ public class VerifyMojo extends AbstractVerifyMojo
     {
         for (Map<String, String> data : attachmentData) {
             String author = data.get("author");
-            verifyAuthor(errors, author, String.format("Attachment author must be [%s] but was [%s]", AUTHOR, author));
+            verifyAuthor(errors, author, String.format("Attachment author must be [%s] but was [%s]", AUTHOR, author),
+                true);
         }
     }
 
