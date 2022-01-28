@@ -285,7 +285,8 @@ public class DefaultVelocityEngine implements VelocityEngine
             // Someone explicitly stopped the script with something like #stop. No reason to make a scene.
             return true;
         } catch (Exception e) {
-            throw new XWikiVelocityException("Failed to evaluate content with namespace [" + namespace + "]", e);
+            throw new XWikiVelocityException(
+                String.format("Failed to evaluate content with namespace [%s]", namespace), e);
         } finally {
             if (StringUtils.isNotEmpty(namespace)) {
                 stoppedUsingMacroNamespace(namespace);
@@ -307,7 +308,7 @@ public class DefaultVelocityEngine implements VelocityEngine
             Map introspectionCache = (Map) FieldUtils.readField(context, "introspectionCache", true);
             introspectionCache.clear();
         } catch (IllegalAccessException e) {
-            this.logger.warn("Failed to clean the Velocity context introspection cache: ",
+            this.logger.warn("Failed to clean the Velocity context introspection cache. Root error: [{}]",
                 ExceptionUtils.getRootCauseMessage(e));
         }
     }
