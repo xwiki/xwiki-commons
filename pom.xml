@@ -522,7 +522,7 @@
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
-        <version>1.4.17</version>
+        <version>1.4.19</version>
       </dependency>
       <!-- Note: The DOM4J project has been dead for several years and we've decided to not use it in any new code and
            over time to refactor existing code to use JDOM or other XML techniques (such as STaX). When all code has
