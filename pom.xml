@@ -2719,8 +2719,8 @@
                   <skip>${xwiki.enforcer.enforce-java.skip}</skip>
                   <rules>
                     <requireJavaVersion>
-                      <message>You must release with Java 8!</message>
-                      <version>[1.8, 1.9)</version>
+                      <message>You must release with Java ${java.version}!</message>
+                      <version>${java.version}</version>
                     </requireJavaVersion>
                   </rules>
                 </configuration>
