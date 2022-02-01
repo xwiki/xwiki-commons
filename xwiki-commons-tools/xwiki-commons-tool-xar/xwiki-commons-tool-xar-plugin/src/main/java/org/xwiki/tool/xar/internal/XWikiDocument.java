@@ -216,6 +216,7 @@ public class XWikiDocument
         this.defaultLanguage = readElement(rootElement, "defaultLanguage");
         this.creator = readElement(rootElement, "creator");
         this.effectiveMetadataAuthor = readElement(rootElement, AUTHOR_TAG);
+        this.originalMetadataAuthor = readElement(rootElement, "originalMetadataAuthor");
         this.contentAuthor = readElement(rootElement, "contentAuthor");
         this.version = readElement(rootElement, "version");
         this.parent = readElement(rootElement, "parent");

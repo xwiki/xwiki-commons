@@ -45,6 +45,13 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
+    void executeWithWrongOriginalAuthor() throws Exception
+    {
+        verifyExecution("/wrongOriginalAuthor", "Verifying [Space/WebHome.xml]... errors",
+            "- Original author must be [xwiki:XWiki.Admin] but was [wrongAuthor]", "There are errors in the XAR XML files!");
+    }
+
+    @Test
     void executeWithWrongAttachmentAuthorsAndMimetypes() throws Exception
     {
         verifyExecution("/wrongAttachmentAuthorsAndMimetypes", "Verifying [Space/WebHome.xml]... errors",
