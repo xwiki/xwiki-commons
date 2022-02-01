@@ -2778,6 +2778,7 @@
               <execution>
                 <phase>deploy</phase>
                 <goals>
+                  <goal>create-new-jira-version</goal>
                   <goal>release-jira-version</goal>
                 </goals>
               </execution>
