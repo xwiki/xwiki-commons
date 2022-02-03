@@ -59,7 +59,8 @@ public interface Environment
 
     /**
      * @param resourceName the full name of the resource to access (eg "/somefile.properties")
-     * @return the resource location as an {@link InputStream}
+     * @return the resource location as an {@link InputStream} or <code>null</code> if no resource exists at the
+     *         specified name
      */
     InputStream getResourceAsStream(String resourceName);
 }
