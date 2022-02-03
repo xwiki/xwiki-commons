@@ -97,7 +97,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty("numbertool", NumberTool.class.getName());
         this.defaultTools.setProperty("datetool", ComparisonDateTool.class.getName());
         this.defaultTools.setProperty("mathtool", MathTool.class.getName());
-        this.defaultTools.setProperty("escapetool", EscapeTool.class.getName());
+        this.defaultTools.setProperty(EscapeTool.DEFAULT_KEY, EscapeTool.class.getName());
         this.defaultTools.setProperty("regextool", RegexTool.class.getName());
         this.defaultTools.setProperty("collectiontool", CollectionTool.class.getName());
         this.defaultTools.setProperty("stringtool", StringUtils.class.getName());

@@ -253,4 +253,10 @@ class EscapeToolTest
         assertEquals("Failed to escape CSS identifier. Root cause: [Invalid character: the input contains U+0000.]",
             this.logCapture.getMessage(0));
     }
+
+    @Test
+    void velocity()
+    {
+        assertEquals("one${escapetool.h}${escapetool.h}two", this.tool.velocity("one##two"));        
+    }
 }
