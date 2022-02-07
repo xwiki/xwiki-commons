@@ -36,7 +36,7 @@ import org.xwiki.test.internal.MockConfigurationSource;
  * <p>
  * Consider using this class only for integration tests.
  *
- * @deprecated use {@link org.xwiki.test.ComponentManagerRule} instead
+ * @deprecated use {@link org.xwiki.test.junit5.mockito.ComponentTest} instead
  */
 @Deprecated(since = "4.3.1")
 public abstract class AbstractComponentTestCase extends AbstractMockingTestCase
