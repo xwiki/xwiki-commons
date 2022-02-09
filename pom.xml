@@ -71,7 +71,7 @@
     <guava.version>31.0.1-jre</guava.version>
 
     <!-- SLF4J -->
-    <slf4j.version>1.7.35</slf4j.version>
+    <slf4j.version>1.7.36</slf4j.version>
 
     <!-- Hamcrest -->
     <hamcrest.version>2.2</hamcrest.version>
