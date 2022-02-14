@@ -2515,10 +2515,10 @@
             <closureRewritePolyfills>false</closureRewritePolyfills>
             <!-- Support the latest stable ECMAScript features (excludes drafts) as input. -->
             <closureLanguageIn>STABLE</closureLanguageIn>
-            <!-- The output language must match the highest ECMAScript version supported by all the browsers we support.
-              See https://dev.xwiki.org/xwiki/bin/view/Community/SupportStrategy/BrowserSupportStrategy
-              As long as we support IE11 we need to output a lower version of ECMAScript. -->
-            <closureLanguageOut>ECMASCRIPT5_STRICT</closureLanguageOut>
+            <!-- Use the same version of ECMAScript for output (no transpiling) because the web browsers we support are
+              implementing the latest ECMAScript stable specifications.
+              See https://dev.xwiki.org/xwiki/bin/view/Community/SupportStrategy/BrowserSupportStrategy -->
+            <closureLanguageOut>STABLE</closureLanguageOut>
             <!-- Generate the source maps in order to have better error reporting on minified JavaScript files and in
               order to ease the debuggging of these files. Note that the path to the source file from the generated
               source map won't work on the server (and thus you won't be able to debug the source code) unless the
