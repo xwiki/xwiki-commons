@@ -17,8 +17,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.test.junit5.mockito;
+package org.xwiki.test.junit5.mockito.better;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +32,9 @@ import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
-import org.xwiki.component.annotation.Role;
+import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.junit5.mockito.MockComponent;
+import org.xwiki.test.junit5.mockito.MockitoComponentManagerExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -41,12 +47,6 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
  */
 public class BetterMockitoComponentManagerExtensionTest
 {
-    @Role
-    public interface ComponentRole
-    {
-        String getValue();
-    }
-
     @ExtendWith(MockitoComponentManagerExtension.class)
     public static class NestedComponentsTestCase
     {
@@ -75,6 +75,28 @@ public class BetterMockitoComponentManagerExtensionTest
         }
     }
 
+    @ExtendWith(MockitoComponentManagerExtension.class)
+    @ComponentList({
+        DefaultComponentRole.class,
+        TestComponentRole.class
+    })
+    public static class InjectComponentsTestCase
+    {
+        @Inject
+        private ComponentRole componentRole1;
+
+        @Inject
+        @Named("test")
+        private ComponentRole componentRole2;
+
+        @Test
+        void test()
+        {
+            assertNotNull(this.componentRole1);
+            assertNotNull(this.componentRole2);
+        }
+    }
+
     /**
      * Verify that we can have nested components and that they're all injected.
      */
@@ -82,6 +104,15 @@ public class BetterMockitoComponentManagerExtensionTest
     void nestedComponents()
     {
         execute(NestedComponentsTestCase.class);
+    }
+
+    /**
+     * Verify that {@code @Inject} annotations are supported.
+     */
+    @Test
+    void injectComponents()
+    {
+        execute(InjectComponentsTestCase.class);
     }
 
     private void execute(Class testClass)
@@ -94,6 +125,8 @@ public class BetterMockitoComponentManagerExtensionTest
         launcher.execute(request, summaryListener);
 
         TestExecutionSummary summary = summaryListener.getSummary();
-        assertEquals(0, summary.getFailures().size());
+        String message = summary.getFailures().size() > 0
+            ? ExceptionUtils.getStackTrace(summary.getFailures().get(0).getException()) : "";
+        assertEquals(0, summary.getFailures().size(), message);
     }
 }

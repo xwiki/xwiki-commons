@@ -1,0 +1,2 @@
+org.xwiki.test.junit5.mockito.better.DefaultComponentRole
+org.xwiki.test.junit5.mockito.better.TestComponentRole
