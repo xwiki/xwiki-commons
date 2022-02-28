@@ -223,18 +223,7 @@
               </differences>
             </revapi.differences>
             -->
-            <revapi.differences>
-              <differences>
-              <item>
-                <ignore>true</ignore>
-                <code>java.field.constantValueChanged</code>
-                <old>field org.apache.velocity.tools.generic.EscapeTool.DEFAULT_KEY @ org.xwiki.velocity.tools.EscapeTool</old>
-                <new>field org.xwiki.velocity.tools.EscapeTool.DEFAULT_KEY</new>
-                <criticality>allowed</criticality>
-                <justification>Not a breakage</justification>
-              </item>
-              </differences>
-            </revapi.differences>
+            
           </analysisConfiguration>
         </configuration>
       </plugin>
