@@ -50,7 +50,7 @@
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
-    <xwiki.compatibility.previous.version>14.0</xwiki.compatibility.previous.version>
+    <xwiki.compatibility.previous.version>14.1</xwiki.compatibility.previous.version>
 
     <!-- Java -->
     <xwiki.java.version>11</xwiki.java.version>
