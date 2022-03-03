@@ -131,4 +131,14 @@ class HTML5HTMLCleanerTest extends DefaultHTMLCleanerTest
     {
         assertHTML("<p><span class=\"monospace\">Monospace Text</span></p>", "<tt>Monospace Text</tt>");
     }
+
+    /**
+     * Check that a dl tag is added when a dt-tag is inside a div. Here, HTML 5 cleaning is more strict (and better).
+     */
+    @Override
+    void divWithDt()
+    {
+        assertHTML("<div><dl><dt>HTML</dt><dd>Hypertext Markup Language</dd></dl></div>",
+            "<div><dt>HTML<dd>Hypertext Markup Language</div>");
+    }
 }

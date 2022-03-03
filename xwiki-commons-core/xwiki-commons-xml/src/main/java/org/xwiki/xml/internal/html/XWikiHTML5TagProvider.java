@@ -17,16 +17,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.xml.html;
+package org.xwiki.xml.internal.html;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Singleton;
+
 import org.htmlcleaner.BelongsTo;
 import org.htmlcleaner.Html5TagProvider;
 import org.htmlcleaner.TagInfo;
-import org.xwiki.stability.Unstable;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.xml.html.HTMLConstants;
 
 /**
  * List the tags allowed in HTML5 with custom bug fixes for &lt;style&gt; and &lt;svg&gt;-tags.
@@ -38,7 +41,8 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 14.0RC1
  */
-@Unstable
+@Component(roles = XWikiHTML5TagProvider.class)
+@Singleton
 public class XWikiHTML5TagProvider extends Html5TagProvider
 {
     private static final List<String> TAGS_WITH_EXPLICIT_PHRASING_CHILDREN =
@@ -68,6 +72,10 @@ public class XWikiHTML5TagProvider extends Html5TagProvider
         // Allow the SVG tag as child everywhere, where HTML5TagProvider explicitly allows phrasing content.
         // Note: unfortunately, we cannot iterate over the tags, otherwise we could have avoided copying this list.
         TAGS_WITH_EXPLICIT_PHRASING_CHILDREN.forEach(this::allowSVGChild);
+
+        // Fix https://jira.xwiki.org/browse/XCOMMONS-2375 / https://sourceforge.net/p/htmlcleaner/bugs/230/.
+        TagInfo dlTag = this.getTagInfo(HTMLConstants.TAG_DL);
+        dlTag.getChildTags().add(HTMLConstants.TAG_DIV);
     }
 
     /**

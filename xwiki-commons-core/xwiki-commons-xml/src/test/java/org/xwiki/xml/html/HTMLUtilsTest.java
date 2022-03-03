@@ -30,6 +30,7 @@ import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.xml.internal.html.DefaultHTMLCleaner;
 import org.xwiki.xml.internal.html.DefaultHTMLCleanerTest;
+import org.xwiki.xml.internal.html.XWikiHTML5TagProvider;
 import org.xwiki.xml.internal.html.filter.AttributeFilter;
 import org.xwiki.xml.internal.html.filter.BodyFilter;
 import org.xwiki.xml.internal.html.filter.ControlCharactersFilter;
@@ -58,7 +59,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     AttributeFilter.class,
     ControlCharactersFilter.class,
     DefaultHTMLCleaner.class,
-    DefaultExecution.class
+    DefaultExecution.class,
+    XWikiHTML5TagProvider.class
 })
 class HTMLUtilsTest
 {

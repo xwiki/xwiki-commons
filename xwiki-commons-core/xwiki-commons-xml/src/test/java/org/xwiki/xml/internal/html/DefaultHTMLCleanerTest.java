@@ -70,7 +70,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
     UniqueIdFilter.class,
     DefaultHTMLCleaner.class,
     LinkFilter.class,
-    ControlCharactersFilter.class
+    ControlCharactersFilter.class,
+    XWikiHTML5TagProvider.class
 })
 // @formatter:on
 public class DefaultHTMLCleanerTest
@@ -593,6 +594,38 @@ public class DefaultHTMLCleanerTest
     void ttElement()
     {
         assertHTML("<p><tt>Monospace Text</tt></p>", "<tt>Monospace Text</tt>");
+    }
+
+    @Test
+    void divInsideDl()
+    {
+        // Check for https://jira.xwiki.org/browse/XCOMMONS-2375
+        assertHTML(
+            "<dl><div><dt>HTML</dt><dd>Hypertext Markup Language</dd></div><dt>another</dt><dd>entry</dd></dl>",
+            "<dl><div><dt>HTML<dd>Hypertext Markup Language</div><dt>another<dd>entry</dl>");
+    }
+
+    /**
+     * Check what happens when the dt-tag is inside div.
+     *
+     * This should add a wrapping dl but doesn't for HTML 5, but it works in HTML5, see
+     * {@link HTML5HTMLCleanerTest#divWithDt()}.
+     */
+    @Test
+    void divWithDt()
+    {
+        assertHTML("<div><dt>HTML</dt><dd>Hypertext Markup Language</dd></div>",
+            "<div><dt>HTML<dd>Hypertext Markup Language</div>");
+    }
+
+    /**
+     * Check if plain text is allowed inside a div in dl - it shouldn't be but isn't filtered currently.
+     */
+    @Test
+    void dlWithoutDt()
+    {
+        String htmlInput = "<dl><div><strong>Hello!</strong></div></dl>";
+        assertHTML(htmlInput, htmlInput);
     }
 
     protected void assertHTML(String expected, String actual)

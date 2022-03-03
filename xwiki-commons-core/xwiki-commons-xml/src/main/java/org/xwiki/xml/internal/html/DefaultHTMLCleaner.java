@@ -43,7 +43,6 @@ import org.xwiki.context.ExecutionContext;
 import org.xwiki.xml.html.HTMLCleaner;
 import org.xwiki.xml.html.HTMLCleanerConfiguration;
 import org.xwiki.xml.html.HTMLConstants;
-import org.xwiki.xml.html.XWikiHTML5TagProvider;
 import org.xwiki.xml.html.filter.HTMLFilter;
 
 /**
@@ -111,6 +110,9 @@ public class DefaultHTMLCleaner implements HTMLCleaner
     @Inject
     private Execution execution;
 
+    @Inject
+    private XWikiHTML5TagProvider html5TagInfoProvider;
+
     @Override
     public Document clean(Reader originalHtmlContent)
     {
@@ -147,7 +149,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         HtmlCleaner cleaner;
         if (isHTML5(configuration)) {
             // Use our custom provider to fix bugs, should be checked on each upgrade if still necessary.
-            cleaner = new HtmlCleaner(new XWikiHTML5TagProvider(), cleanerProperties);
+            cleaner = new HtmlCleaner(this.html5TagInfoProvider, cleanerProperties);
         }  else {
             cleaner = new HtmlCleaner(cleanerProperties);
         }

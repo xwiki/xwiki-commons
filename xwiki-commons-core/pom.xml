@@ -223,7 +223,19 @@
               </differences>
             </revapi.differences>
             -->
-            
+            <revapi.differences>
+              <differences>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.class.removed</code>
+                  <old>class org.xwiki.xml.html.XWikiHTML5TagProvider</old>
+                  <justification>This class was meant to be internal and is internal now. This should
+                    not cause breakages as it was documented that the class would be removed at some
+                    point (and marked as unstable).</justification>
+                  <criticality>documented</criticality>
+                </item>
+              </differences>
+            </revapi.differences>
           </analysisConfiguration>
         </configuration>
       </plugin>

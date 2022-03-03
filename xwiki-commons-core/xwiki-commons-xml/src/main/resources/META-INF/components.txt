@@ -7,5 +7,6 @@ org.xwiki.xml.internal.html.filter.ControlCharactersFilter
 org.xwiki.xml.internal.html.filter.AttributeFilter
 org.xwiki.xml.internal.html.filter.UniqueIdFilter
 org.xwiki.xml.internal.html.DefaultHTMLCleaner
+org.xwiki.xml.internal.html.XWikiHTML5TagProvider
 org.xwiki.xml.internal.LocalEntityResolver
 org.xwiki.xml.internal.DefaultXMLReaderFactory
