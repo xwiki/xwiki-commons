@@ -59,10 +59,11 @@ public class XWikiHTML5TagProvider extends Html5TagProvider
     {
         super();
 
-        // Fix https://sourceforge.net/p/htmlcleaner/bugs/229/.
+        // Fix https://sourceforge.net/p/htmlcleaner/bugs/229/, style tags are (wrongly) allowed in the HTML body.
         this.getTagInfo(HTMLConstants.TAG_STYLE).setBelongsTo(BelongsTo.HEAD);
 
-        // Fix https://sourceforge.net/p/htmlcleaner/bugs/228/.
+        // Fix https://sourceforge.net/p/htmlcleaner/bugs/228/, SVG is not marked as phrasing content and not allowed
+        // where phrasing content is allowed.
         TagInfo svgTag = this.getTagInfo(HTMLConstants.TAG_SVG);
         // Do not close other tags before SVG apart from svg.
         svgTag.setMustCloseTags(Collections.singleton(HTMLConstants.TAG_SVG));
@@ -73,7 +74,8 @@ public class XWikiHTML5TagProvider extends Html5TagProvider
         // Note: unfortunately, we cannot iterate over the tags, otherwise we could have avoided copying this list.
         TAGS_WITH_EXPLICIT_PHRASING_CHILDREN.forEach(this::allowSVGChild);
 
-        // Fix https://jira.xwiki.org/browse/XCOMMONS-2375 / https://sourceforge.net/p/htmlcleaner/bugs/230/.
+        // Fix https://jira.xwiki.org/browse/XCOMMONS-2375 / https://sourceforge.net/p/htmlcleaner/bugs/230/, the dl
+        // tag doesn't permit div as child even though it is valid HTML.
         TagInfo dlTag = this.getTagInfo(HTMLConstants.TAG_DL);
         dlTag.getChildTags().add(HTMLConstants.TAG_DIV);
     }

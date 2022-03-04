@@ -599,7 +599,7 @@ public class DefaultHTMLCleanerTest
     @Test
     void divInsideDl()
     {
-        // Check for https://jira.xwiki.org/browse/XCOMMONS-2375
+        // Check for https://jira.xwiki.org/browse/XCOMMONS-2375 - div inside dl should be allowed.
         assertHTML(
             "<dl><div><dt>HTML</dt><dd>Hypertext Markup Language</dd></div><dt>another</dt><dd>entry</dd></dl>",
             "<dl><div><dt>HTML<dd>Hypertext Markup Language</div><dt>another<dd>entry</dl>");
@@ -608,8 +608,10 @@ public class DefaultHTMLCleanerTest
     /**
      * Check what happens when the dt-tag is inside div.
      *
-     * This should add a wrapping dl but doesn't for HTML 5, but it works in HTML5, see
+     * This should add a wrapping dl but doesn't for HTML 4, but it works in HTML5, see
      * {@link HTML5HTMLCleanerTest#divWithDt()}.
+     *
+     * @todo Replace by {@link HTML5HTMLCleanerTest#divWithDt()} if this should be fixed and this test is failing.
      */
     @Test
     void divWithDt()
@@ -620,6 +622,10 @@ public class DefaultHTMLCleanerTest
 
     /**
      * Check if plain text is allowed inside a div in dl - it shouldn't be but isn't filtered currently.
+     * <p>
+     * Note: even though this test is passing XWiki should not depend on this behavior.
+     *
+     * @todo Test with a valid expected HTML string when HTMLCleaner starts cleaning this.
      */
     @Test
     void dlWithoutDt()
