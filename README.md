@@ -21,6 +21,7 @@ Read our [Release Notes](http://www.xwiki.org/xwiki/bin/view/ReleaseNotes/).
 * [Continuous Integration](http://ci.xwiki.org/) setup launches a build for each commit
 * [Issue Tracker](http://jira.xwiki.org/browse/XCOMMONS) if you want to report an issue
 * [Development Flow](http://dev.xwiki.org/xwiki/bin/view/Community/DevelopmentPractices#HGeneralDevelopmentFlow) to see the full list of tools we use to build XWiki
+* [![Revved up by Gradle Enterprise](https://img.shields.io/badge/Revved%20up%20by-Gradle%20Enterprise-06A0CE?logo=Gradle&labelColor=02303A)](https://ge.xwiki.org/scans)
 
 ## Community
 We're always looking for contributors! 
