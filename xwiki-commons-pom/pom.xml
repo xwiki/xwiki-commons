@@ -321,6 +321,7 @@
               <java>SLASHSTAR_STYLE</java>
               <aj>SLASHSTAR_STYLE</aj>
               <vm>SHARPSHARP_STYLE</vm>
+              <vue>XML_STYLE</vue>
             </mapping>
             <!-- We're only interested in checking our sources and our POMs -->
             <includes>
@@ -332,6 +333,7 @@
               <include>src/**/ApplicationResources.properties</include>
               <include>src/**/*.vm</include>
               <include>src/**/*.js</include>
+              <include>src/**/*.vue</include>
             </includes>
             <excludes>
               <!-- At the moment we don't have a comment syntax for components.txt files so we need to exclude them
