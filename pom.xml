@@ -2500,10 +2500,13 @@
             <closureRewritePolyfills>false</closureRewritePolyfills>
             <!-- Support the latest stable ECMAScript features (excludes drafts) as input. -->
             <closureLanguageIn>STABLE</closureLanguageIn>
-            <!-- Use the same version of ECMAScript for output (no transpiling) because the web browsers we support are
-              implementing the latest ECMAScript stable specifications.
+            <!-- Don't transpile the code (i.e. use the same version of ECMAScript for output as we do for input)
+              because the web browsers we support are implementing the latest ECMAScript stable specifications. Note
+              that we don't use STABLE because it means different things for input language and output language (see
+              https://github.com/google/closure-compiler/issues/3679#issuecomment-689925089) which means the code would
+              still be transpiled (even if both input and output are set to STABLE).
               See https://dev.xwiki.org/xwiki/bin/view/Community/SupportStrategy/BrowserSupportStrategy -->
-            <closureLanguageOut>STABLE</closureLanguageOut>
+            <closureLanguageOut>NO_TRANSPILE</closureLanguageOut>
             <!-- Generate the source maps in order to have better error reporting on minified JavaScript files and in
               order to ease the debuggging of these files. Note that the path to the source file from the generated
               source map won't work on the server (and thus you won't be able to debug the source code) unless the
