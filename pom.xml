@@ -2360,7 +2360,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.10.0</version>
+          <version>3.11.0</version>
           <!-- Site Plugin doesn’t automatically pull the Apache Wagon Dav implementation which is needed for
                site:deploy goal when using Dav protocol. -->
           <dependencies>
