@@ -214,7 +214,7 @@
     <maven-remote-resources-plugin.version>1.7.0</maven-remote-resources-plugin.version>
 
     <!-- The version of the Maven Compiler Plugin -->
-    <maven.compiler.version>3.9.0</maven.compiler.version>
+    <maven.compiler.version>3.10.1</maven.compiler.version>
 
     <!-- The version of Eclipse Sisu to use-->
     <sisu.version>0.3.5</sisu.version>
