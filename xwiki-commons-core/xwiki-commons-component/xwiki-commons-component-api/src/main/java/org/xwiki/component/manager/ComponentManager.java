@@ -57,7 +57,8 @@ public interface ComponentManager
      * @param <T> the component role type
      * @param roleType the class (aka role) that the component implements
      * @return the component instance
-     * @throws ComponentLookupException in case the component cannot be found
+     * @throws ComponentLookupException if any error happen during component search (the component does not exist, the
+     *             instance fail to initialize)
      * @since 4.0RC1
      */
     <T> T getInstance(Type roleType) throws ComponentLookupException;
@@ -71,7 +72,8 @@ public interface ComponentManager
      * @param roleHint the hint that differentiates a component implementation from another one (each component is
      *            registered with a hint; the "default" hint being the default)
      * @return the component instance
-     * @throws ComponentLookupException in case the component cannot be found
+     * @throws ComponentLookupException if any error happen during component search (the component does not exist, the
+     *             instance fail to initialize)
      * @since 4.0RC1
      */
     <T> T getInstance(Type roleType, String roleHint) throws ComponentLookupException;
