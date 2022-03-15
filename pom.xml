@@ -2395,11 +2395,8 @@
           <groupId>com.github.searls</groupId>
           <artifactId>jasmine-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.1</version>
+          <version>3.0-beta-02</version>
           <configuration>
-            <phantomjs>
-              <version>2.1.1</version>
-            </phantomjs>
             <specRunnerTemplate>REQUIRE_JS</specRunnerTemplate>
             <preloadSources>
               <source>/webjars/require.js</source>
@@ -3018,6 +3015,42 @@
             </plugin>
           </plugins>
         </pluginManagement>
+      </build>
+    </profile>
+    <profile>
+      <!-- We don't use the 'integration-tests' profile because we cannot run the tests on CI (Chrome is not installed)
+        and we're waiting for this issue https://github.com/searls/jasmine-maven-plugin/issues/349 to use docker. -->
+      <id>integration-tests-chrome</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>properties-maven-plugin</artifactId>
+            <version>1.0.0</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>set-system-properties</goal>
+                </goals>
+                <configuration>
+                  <properties>
+                    <property>
+                      <!-- Force a slightly older version of the Chrome Driver in case we don't have the latest Chrome
+                        installed locally. -->
+                      <name>wdm.chromeDriverVersion</name>
+                      <value>99.0.4844.51</value>
+                    </property>
+                    <property>
+                      <!-- Try to work around error: "[SEVERE]: bind() failed: Cannot assign requested address (99)" -->
+                      <name>webdriver.chrome.whitelistedIps</name>
+                      <value />
+                    </property>
+                  </properties>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
       </build>
     </profile>
   </profiles>
