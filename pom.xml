@@ -2045,8 +2045,7 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>${maven.compiler.version}</version>
           <configuration>
-            <source>${java.version}</source>
-            <target>${java.version}</target>
+            <release>${java.version}</release>
 
             <!-- Avoid surprises. If a module needs annotation processing it can enabled it easily -->
             <proc>none</proc>
