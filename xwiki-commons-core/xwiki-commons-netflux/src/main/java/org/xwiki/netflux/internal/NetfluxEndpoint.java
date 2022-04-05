@@ -37,12 +37,12 @@ import javax.websocket.DecodeException;
 import javax.websocket.EncodeException;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
-import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.websocket.AbstractPartialStringMessageHandler;
 import org.xwiki.websocket.EndpointComponent;
 
 /**
@@ -97,7 +97,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
                 return;
             }
 
-            session.addMessageHandler(new MessageHandler.Whole<String>()
+            session.addMessageHandler(new AbstractPartialStringMessageHandler()
             {
                 @Override
                 public void onMessage(String message)

@@ -22,7 +22,6 @@ package org.xwiki.netflux.internal;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import javax.websocket.MessageHandler;
 import javax.websocket.RemoteEndpoint.Basic;
 import javax.websocket.Session;
 
@@ -34,6 +33,7 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.test.mockito.MockitoComponentManager;
+import org.xwiki.websocket.AbstractPartialStringMessageHandler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -60,7 +60,7 @@ class NetfluxEndpointTest
     private final JsonConverter jsonConverter = new JsonConverter();
 
     @Captor
-    private ArgumentCaptor<MessageHandler.Whole<String>> messageHandlerCaptor;
+    private ArgumentCaptor<AbstractPartialStringMessageHandler> messageHandlerCaptor;
 
     @Test
     void joinMessagePingLeave(MockitoComponentManager componentManager) throws Exception
@@ -72,14 +72,14 @@ class NetfluxEndpointTest
         this.endPoint.onOpen(aliceSession, null);
 
         verify(aliceSession).addMessageHandler(this.messageHandlerCaptor.capture());
-        MessageHandler.Whole<String> aliceMessageHandler = this.messageHandlerCaptor.getValue();
+        AbstractPartialStringMessageHandler aliceMessageHandler = this.messageHandlerCaptor.getValue();
 
         // Bob opens a new session.
         Session bobSession = mockSession("bob");
         this.endPoint.onOpen(bobSession, null);
 
         verify(bobSession).addMessageHandler(this.messageHandlerCaptor.capture());
-        MessageHandler.Whole<String> bobMessageHandler = this.messageHandlerCaptor.getValue();
+        AbstractPartialStringMessageHandler bobMessageHandler = this.messageHandlerCaptor.getValue();
 
         // Create a new channel.
         ChannelStore channelStore = componentManager.getInstance(ChannelStore.class);
