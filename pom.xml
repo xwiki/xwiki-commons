@@ -68,7 +68,7 @@
     <asm.version>9.2</asm.version>
 
     <!-- Guava -->
-    <guava.version>31.0.1-jre</guava.version>
+    <guava.version>31.1-jre</guava.version>
 
     <!-- SLF4J -->
     <slf4j.version>1.7.36</slf4j.version>
