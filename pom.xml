@@ -244,7 +244,7 @@
          plugin executes before, the property is undefined and makes the tests fail. Thus we define an empty property
          here to make sure it doesn't fail. See also https://issues.apache.org/jira/browse/SUREFIRE-1431
     -->
-    <argLine/>
+    <argLine />
 
   </properties>
   <prerequisites>
@@ -279,7 +279,7 @@
     <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki/xwiki-commons.git</developerConnection>
     <url>https://github.com/xwiki/xwiki-commons/tree/master/</url>
-    <tag>stable-11.9.x</tag>
+    <tag>stable-14.3.x</tag>
   </scm>
   <mailingLists>
     <mailingList>
@@ -1947,7 +1947,7 @@
             <configuration>
               <skip>${xwiki.enforcer.enforce-upper-bounds.skip}</skip>
               <rules>
-                <requireUpperBoundDeps/>
+                <requireUpperBoundDeps />
               </rules>
             </configuration>
           </execution>
@@ -2552,7 +2552,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore/>
+                    <ignore />
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -2567,7 +2567,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore/>
+                    <ignore />
                   </action>
                 </pluginExecution>
               </pluginExecutions>
@@ -2739,7 +2739,7 @@
                 <phase>generate-resources</phase>
                 <configuration>
                   <target>
-                    <mkdir dir="${project.build.directory}/apidocs"/>
+                    <mkdir dir="${project.build.directory}/apidocs" />
                   </target>
                 </configuration>
                 <goals>
@@ -3042,7 +3042,7 @@
                     <property>
                       <!-- Try to work around error: "[SEVERE]: bind() failed: Cannot assign requested address (99)" -->
                       <name>webdriver.chrome.whitelistedIps</name>
-                      <value/>
+                      <value />
                     </property>
                   </properties>
                 </configuration>
