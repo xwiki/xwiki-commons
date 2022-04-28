@@ -23,19 +23,19 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.job.event.status.CancelableJobStatus;
-import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.job.Request;
 import org.xwiki.script.internal.safe.ScriptSafeProvider;
 
 /**
- * Provide safe JobStatus.
+ * Provide safe Request.
  * 
  * @version $Id$
- * @since 4.0M2
+ * @since 14.4RC1
+ * @since 13.10.6
  */
 @Component
 @Singleton
-public class JobStatusScriptSafeProvider implements ScriptSafeProvider<JobStatus>
+public class RequestScriptSafeProvider implements ScriptSafeProvider<Request>
 {
     /**
      * The provider of instances safe for public scripts.
@@ -45,12 +45,8 @@ public class JobStatusScriptSafeProvider implements ScriptSafeProvider<JobStatus
     private ScriptSafeProvider defaultSafeProvider;
 
     @Override
-    public <S> S get(JobStatus unsafe)
+    public <S> S get(Request unsafe)
     {
-        if (unsafe instanceof CancelableJobStatus) {
-            return (S) new SafeCancelableJobStatus((CancelableJobStatus) unsafe, this.defaultSafeProvider);
-        }
-
-        return (S) new SafeJobStatus(unsafe, this.defaultSafeProvider);
+        return (S) new SafeRequest(unsafe, this.defaultSafeProvider);
     }
 }
