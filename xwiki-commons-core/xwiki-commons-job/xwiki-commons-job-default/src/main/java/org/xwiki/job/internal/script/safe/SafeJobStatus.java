@@ -71,7 +71,7 @@ public class SafeJobStatus<J extends JobStatus> extends AbstractSafeObject<J> im
     @Override
     public Request getRequest()
     {
-        return getWrapped().getRequest();
+        return new SafeRequest(getWrapped().getRequest(), this.safeProvider);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class SafeJobStatus<J extends JobStatus> extends AbstractSafeObject<J> im
     @Override
     public void ask(Object question) throws InterruptedException
     {
-        getWrapped().ask(question);
+        throw new UnsupportedOperationException(FORBIDDEN);
     }
 
     @Override
