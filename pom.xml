@@ -110,7 +110,7 @@
     <ivy.version>2.5.0</ivy.version>
 
     <!-- Closure compiler -->
-    <closure-compiler.version>v20220405</closure-compiler.version>
+    <closure-compiler.version>v20220502</closure-compiler.version>
     <closure-compiler-maven-plugin.version>2.22.0</closure-compiler-maven-plugin.version>
 
     <!-- By default Checkstyle, Backward compatibility check, Enforcer, License plugins, etc are on -->
