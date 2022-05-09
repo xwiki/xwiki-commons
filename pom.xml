@@ -203,7 +203,7 @@
     <plexus-containers.version>2.1.1</plexus-containers.version>
 
     <!-- The version of Maven Enforcer plugin -->
-    <maven-enforcer.version>1.4.1</maven-enforcer.version>
+    <maven-enforcer.version>3.0.0</maven-enforcer.version>
     <!-- The version of Maven used by enforcer plugin -->
     <maven.maven-enforcer.version>2.2.1</maven.maven-enforcer.version>
 
