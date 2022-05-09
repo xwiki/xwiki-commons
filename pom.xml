@@ -103,6 +103,9 @@
     <!-- Checkstyle -->
     <checkstyle.version>10.1</checkstyle.version>
 
+    <!-- Spoon -->
+    <spoon.version>10.1.1</spoon.version>
+
     <!-- Groovy -->
     <groovy.version>3.0.10</groovy.version>
 
@@ -1222,7 +1225,7 @@
       <dependency>
         <groupId>org.hibernate.validator</groupId>
         <artifactId>hibernate-validator</artifactId>
-        <version>6.2.2.Final</version>
+        <version>7.0.4.Final</version>
         <scope>runtime</scope>
       </dependency>
       <!-- Mail -->
@@ -2660,7 +2663,7 @@
             <dependency>
               <groupId>fr.inria.gforge.spoon</groupId>
               <artifactId>spoon-core</artifactId>
-              <version>10.1.1</version>
+              <version>${spoon.version}</version>
             </dependency>
           </dependencies>
         </plugin>
