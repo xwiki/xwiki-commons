@@ -195,7 +195,7 @@
     <maven.minimum.version>3.6.0</maven.minimum.version>
     <!-- The current Maven version declared in the dependency management (so that it can be change for the distribution
          for example) -->
-    <maven.version>${maven.build.version}</maven.version>
+    <maven.version>3.8.5</maven.version>
     <maven.resolver.build.version>1.3.1</maven.resolver.build.version>
     <maven.resolver.version>${maven.resolver.build.version}</maven.resolver.version>
 
