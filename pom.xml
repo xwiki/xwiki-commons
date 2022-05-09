@@ -2645,6 +2645,19 @@
             </gradleEnterprise>
           </configuration>
         </plugin>
+        <!-- The version of Spoon and Spoon Maven plugin to use -->
+        <plugin>
+          <groupId>fr.inria.gforge.spoon</groupId>
+          <artifactId>spoon-maven-plugin</artifactId>
+          <version>3.5</version>
+          <dependencies>
+            <dependency>
+              <groupId>fr.inria.gforge.spoon</groupId>
+              <artifactId>spoon-core</artifactId>
+              <version>10.1.1</version>
+            </dependency>
+          </dependencies>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -2951,70 +2964,6 @@
           </snapshots>
         </repository>
       </repositories>
-    </profile>
-    <profile>
-      <!-- Spoon 10.0.0+ only supports Java 11+
-           TODO: Remove these 2 profiles when XWiki drops building with Java 8.
-      -->
-      <id>spoon-jdk11+</id>
-      <activation>
-        <jdk>[11,)</jdk>
-      </activation>
-      <properties>
-        <!-- Spoon -->
-        <spoon.version>10.0.0</spoon.version>
-        <spoon.maven.version>3.5</spoon.maven.version>
-      </properties>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <!-- The version of Spoon and Spoon Maven plugin to use -->
-            <plugin>
-              <groupId>fr.inria.gforge.spoon</groupId>
-              <artifactId>spoon-maven-plugin</artifactId>
-              <version>${spoon.maven.version}</version>
-              <dependencies>
-                <dependency>
-                  <groupId>fr.inria.gforge.spoon</groupId>
-                  <artifactId>spoon-core</artifactId>
-                  <version>${spoon.version}</version>
-                </dependency>
-              </dependencies>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-    </profile>
-    <profile>
-      <!-- Spoon 9.1.0 is the last version supported by Spoon for Java 8 -->
-      <id>spoon-jdk11-</id>
-      <activation>
-        <jdk>(,11)</jdk>
-      </activation>
-      <properties>
-        <!-- Spoon -->
-        <spoon.version>9.1.0</spoon.version>
-        <spoon.maven.version>3.5</spoon.maven.version>
-      </properties>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <!-- The version of Spoon and Spoon Maven plugin to use -->
-            <plugin>
-              <groupId>fr.inria.gforge.spoon</groupId>
-              <artifactId>spoon-maven-plugin</artifactId>
-              <version>${spoon.maven.version}</version>
-              <dependencies>
-                <dependency>
-                  <groupId>fr.inria.gforge.spoon</groupId>
-                  <artifactId>spoon-core</artifactId>
-                  <version>${spoon.version}</version>
-                </dependency>
-              </dependencies>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
     </profile>
     <profile>
       <!-- We don't use the 'integration-tests' profile because we cannot run the tests on CI (Chrome is not installed)
