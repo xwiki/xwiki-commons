@@ -219,7 +219,8 @@
     <!-- The version of Eclipse Sisu to use-->
     <sisu.version>0.3.5</sisu.version>
 
-    <!-- The version of Antlr4 to bundle -->
+    <!-- The versions of Antlr to bundle -->
+    <antlr3.version>3.5.3</antlr3.version>
     <antlr4.version>4.9.3</antlr4.version>
 
     <!-- The recommended version of known extensions to use -->
@@ -1322,8 +1323,13 @@
       <!-- ANTLR -->
       <dependency>
         <groupId>org.antlr</groupId>
+        <artifactId>antlr</artifactId>
+        <version>${antlr3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.antlr</groupId>
         <artifactId>antlr-runtime</artifactId>
-        <version>3.5.2</version>
+        <version>${antlr3.version}</version>
       </dependency>
       <dependency>
         <groupId>antlr</groupId>
