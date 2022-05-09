@@ -869,7 +869,7 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.2.10</version>
+        <version>1.2.11</version>
       </dependency>
       <!-- External libraries using Commons Logging will delegate to SLF4J -->
       <dependency>
