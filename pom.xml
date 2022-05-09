@@ -2962,7 +2962,7 @@
       </activation>
       <properties>
         <!-- Spoon -->
-        <spoon.version>10.0.0</spoon.version>
+        <spoon.version>10.1.1</spoon.version>
         <spoon.maven.version>3.5</spoon.maven.version>
       </properties>
       <build>
