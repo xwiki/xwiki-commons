@@ -1408,7 +1408,7 @@
       <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-api</artifactId>
-        <version>2.3.3</version>
+        <version>3.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
