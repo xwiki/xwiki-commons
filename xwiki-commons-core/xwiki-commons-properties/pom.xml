@@ -79,6 +79,7 @@
       <groupId>org.mortbay.jasper</groupId>
       <artifactId>apache-el</artifactId>
       <version>9.0.52</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
