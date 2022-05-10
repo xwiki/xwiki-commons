@@ -2370,15 +2370,6 @@
           <artifactId>maven-site-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>3.12.0</version>
-          <!-- Site Plugin doesn’t automatically pull the Apache Wagon Dav implementation which is needed for
-               site:deploy goal when using Dav protocol. -->
-          <dependencies>
-            <dependency>
-              <groupId>org.apache.maven.wagon</groupId>
-              <artifactId>wagon-webdav-jackrabbit</artifactId>
-              <version>2.6</version>
-            </dependency>
-          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>
