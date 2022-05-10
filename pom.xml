@@ -560,16 +560,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <dependency>
-        <groupId>xpp3</groupId>
-        <artifactId>xpp3</artifactId>
-        <version>1.1.4c</version>
-      </dependency>
-      <dependency>
-        <groupId>xpp3</groupId>
-        <artifactId>xpp3_min</artifactId>
-        <version>1.1.4c</version>
-      </dependency>
       <!-- What is included in the JRE is too old and Oracle does not seems to plan to upgrade it anytime soon -->
       <dependency>
         <groupId>xerces</groupId>
