@@ -29,4 +29,4 @@ updates:
       # Ignore XWiki dependencies since we always keep them up to date and Dependabot has problems with maven properties
       # defined in parent poms.
       - dependency-name: "org.xwiki.*:*"
-    open-pull-requests-limit: 15
+    open-pull-requests-limit: 30
