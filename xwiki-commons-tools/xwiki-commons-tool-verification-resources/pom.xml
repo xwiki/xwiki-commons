@@ -62,11 +62,13 @@
       </exclusions>
       <scope>provided</scope>
     </dependency>
+
     <!-- Testing -->
     <dependency>
       <groupId>com.puppycrawl.tools</groupId>
       <artifactId>checkstyle</artifactId>
       <type>test-jar</type>
+      <scope>test</scope>
       <version>${checkstyle.version}</version>
       <exclusions>
         <!-- Exclude some frequently upgraded dependencies to make easier to test with Checkstyle SNAPSHOT (Checkstyle project use XWiki to execute non-regression tests) -->
@@ -89,6 +91,9 @@
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr4-runtime</artifactId>
+      <!-- Checkstyle on a more recent and incompatible version of antlr -->
+      <!-- TODO: remove when https://jira.xwiki.org/browse/XCOMMONS-2407 is fixed -->
+      <version>4.10.1</version>
       <scope>provided</scope>
     </dependency>
 
