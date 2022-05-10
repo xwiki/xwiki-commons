@@ -1192,7 +1192,7 @@
         <groupId>javax.websocket</groupId>
         <artifactId>javax.websocket-api</artifactId>
         <!-- We can't use v1.1 yet because the version of Jetty we currently use doesn't support it. -->
-        <version>1.0</version>
+        <version>1.1</version>
         <scope>provided</scope>
       </dependency>
       <!-- Needed for Legacy modules. The version needs to be in sync with the one used by the AspectJ plugin -->
@@ -3046,11 +3046,6 @@
             </reports>
           </reportSet>
         </reportSets>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.5.1</version>
       </plugin>
     </plugins>
   </reporting>
