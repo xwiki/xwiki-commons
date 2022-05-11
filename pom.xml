@@ -1222,6 +1222,15 @@
         <version>6.2.2.Final</version>
         <scope>runtime</scope>
       </dependency>
+      <dependency>
+        <groupId>org.mortbay.jasper</groupId>
+        <artifactId>apache-el</artifactId>
+        <!-- Use the same version as the one that comes with the custom XWiki Jetty application server -->
+        <version>9.0.52</version>
+        <!-- The EL implementation is supposed to come with the application server but we need one for tests -->
+        <scope>test</scope>
+      </dependency>
+
       <!-- Mail -->
       <dependency>
         <groupId>jakarta.mail</groupId>
