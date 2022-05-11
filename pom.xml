@@ -1226,7 +1226,7 @@
         <groupId>org.mortbay.jasper</groupId>
         <artifactId>apache-el</artifactId>
         <!-- Use the same version as the one that comes with the custom XWiki Jetty application server -->
-        <version>9.0.52</version>
+        <version>10.0.14</version>
         <!-- The EL implementation is supposed to come with the application server but we need one for tests -->
         <scope>test</scope>
       </dependency>
