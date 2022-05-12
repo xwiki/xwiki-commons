@@ -33,6 +33,7 @@ import javax.xml.transform.TransformerException;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.AbstractExtensionTest;
+import org.xwiki.extension.DefaultExtensionComponent;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
 import org.xwiki.extension.DefaultExtensionPattern;
 import org.xwiki.extension.DefaultExtensionScm;
@@ -84,6 +85,7 @@ class DefaultExtensionSerializerTest
             assertNull(unserializedExtension.getAllowedNamespaces());
         }
         assertEquals(new ArrayList<>(extension.getLicenses()), new ArrayList<>(unserializedExtension.getLicenses()));
+        assertEquals(extension.getComponents(), unserializedExtension.getComponents());
         assertEquals(extension.getScm(), unserializedExtension.getScm());
         assertEquals(extension.getIssueManagement(), unserializedExtension.getIssueManagement());
         assertEquals(extension.getProperties(), unserializedExtension.getProperties());
@@ -155,6 +157,9 @@ class DefaultExtensionSerializerTest
         extension.addAllowedNamespace("namespae1");
         extension.addLicense(AbstractExtensionTest.LICENSE1);
         extension.addLicense(AbstractExtensionTest.LICENSE2);
+
+        extension.addComponent(new DefaultExtensionComponent("roletype1", "rolehint1"));
+        extension.addComponent(new DefaultExtensionComponent("roletype2", "rolehint2"));
 
         extension.setScm(new DefaultExtensionScm("url", new DefaultExtensionScmConnection("system", "path"),
             new DefaultExtensionScmConnection("system2", "path2")));

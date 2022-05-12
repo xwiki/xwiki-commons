@@ -735,6 +735,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
         addIssueManagement(document, extensionElement, extension);
 
+        addComponents(document, extensionElement, extension);
+
         addDependencies(document, extensionElement, extension);
         addManagedDependencies(document, extensionElement, extension);
 
