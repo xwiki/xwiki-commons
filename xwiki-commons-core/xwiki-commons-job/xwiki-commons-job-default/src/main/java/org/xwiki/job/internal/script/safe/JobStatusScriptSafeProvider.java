@@ -28,7 +28,7 @@ import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.script.internal.safe.ScriptSafeProvider;
 
 /**
- * Provide safe JobStatus.
+ * Provide safe Extension.
  * 
  * @version $Id$
  * @since 4.0M2
