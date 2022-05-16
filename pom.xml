@@ -63,7 +63,7 @@
 
     <!-- Jackson -->
     <jackson.version>2.13.2</jackson.version>
-    <jackson.databind.version>2.13.2.2</jackson.databind.version>
+    <jackson.databind.version>2.13.3</jackson.databind.version>
 
     <!-- ASM -->
     <asm.version>9.3</asm.version>
