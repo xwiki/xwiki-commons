@@ -30,5 +30,29 @@ if (!buildScan) {
 }
 
 buildScan.executeOnce('tag-profiles') { BuildScanApi buildScanApi ->
-    project.activeProfiles.each { profile -> buildScanApi.tag profile.id }
+
+    // Add all maven profile names as tags
+    project.activeProfiles.each { buildScanApi.tag(it.id) }
+
+    // Add all system properties starting with "xwiki" as custom values
+    project.properties.find { it.key.startsWith('xwiki') }.each { buildScanApi.value(it.key, it.value) }
+
+    // Add specific tags to make it easy to recognize with wich environment a docker functional tests has been executed
+    def servletContainer = project.properties.'xwiki.test.ui.servletEngine'.toLowerCase()
+    def servletContainerTag = project.properties.'xwiki.test.ui.servletEngineTag'.toLowerCase()
+    if (servletContainer && servletContainerTag) {
+        buildScanApi.tag("${servletContainer} ${servletContainerTag}")
+    }
+    def database = project.properties.'xwiki.test.ui.database'.toLowerCase()
+    def databaseTag = project.properties.'xwiki.test.ui.databaseTag'.toLowerCase()
+    if (database && databaseTag) {
+        buildScanApi.tag("${database} ${databaseTag}")
+    }
+    def browser = project.properties.'xwiki.test.ui.browser'.toLowerCase()
+    if (browser) {
+        buildScanApi.tag(browser)
+    }
+
 }
+
+
