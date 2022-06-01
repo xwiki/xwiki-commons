@@ -171,6 +171,9 @@ public class FormatMojo extends AbstractVerifyMojo
             removeNodes("xwikidoc/contentUpdateDate", domdoc);
             removeNodes("xwikidoc//attachment/date", domdoc);
         }
+        if (!this.skipAuthors && !this.skipAuthorsDocumentList.contains(documentName)) {
+            removeNodes("xwikidoc/originalMetadataAuthor", domdoc);            
+        }
     }
 
     private void removeContent(Element element)

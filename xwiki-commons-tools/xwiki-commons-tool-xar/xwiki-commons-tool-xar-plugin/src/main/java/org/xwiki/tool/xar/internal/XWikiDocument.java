@@ -73,11 +73,6 @@ public class XWikiDocument
     private String effectiveMetadataAuthor;
 
     /**
-     * @see #getOriginalMetadataAuthor()
-     */
-    private String originalMetadataAuthor;
-
-    /**
      * @see #getContentAuthor()
      */
     private String contentAuthor;
@@ -159,6 +154,11 @@ public class XWikiDocument
     private boolean creationDatePresent;
 
     /**
+     * @see #isOriginalMetadataAuthorPresent()
+     */
+    private boolean originalMetadataAuthorPresent;
+
+    /**
      * @see #isObjectPresent()
      */
     private boolean objectPresent;
@@ -216,7 +216,6 @@ public class XWikiDocument
         this.defaultLanguage = readElement(rootElement, "defaultLanguage");
         this.creator = readElement(rootElement, "creator");
         this.effectiveMetadataAuthor = readElement(rootElement, AUTHOR_TAG);
-        this.originalMetadataAuthor = readElement(rootElement, "originalMetadataAuthor");
         this.contentAuthor = readElement(rootElement, "contentAuthor");
         this.version = readElement(rootElement, "version");
         this.parent = readElement(rootElement, "parent");
@@ -231,6 +230,7 @@ public class XWikiDocument
         this.datePresent = isElementPresent(rootElement, "date");
         this.contentUpdateDatePresent = isElementPresent(rootElement, "contentUpdateDate");
         this.creationDatePresent = isElementPresent(rootElement, "creationDate");
+        this.originalMetadataAuthorPresent = isElementPresent(rootElement, "originalMetadataAuthor");
         this.objectPresent = isElementPresent(rootElement, "object");
         this.attachmentDatePresent = rootElement.selectSingleNode("//attachment/date") != null;
 
@@ -406,14 +406,6 @@ public class XWikiDocument
     }
 
     /**
-     * @return the original metadata author of the document
-     */
-    public String getOriginalMetadataAuthor()
-    {
-        return this.originalMetadataAuthor;
-    }
-
-    /**
      * @return the content author of the document
      */
     public String getContentAuthor()
@@ -577,6 +569,15 @@ public class XWikiDocument
     public boolean isCreationDatePresent()
     {
         return creationDatePresent;
+    }
+
+    /**
+     * @return {@code true} if the original metadata author is present in the document; false otherwise
+     * @since 14.5RC1
+     */
+    public boolean isOriginalMetadataAuthorPresent()
+    {
+        return originalMetadataAuthorPresent;
     }
 
     /**

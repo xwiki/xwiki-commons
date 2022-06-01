@@ -41,7 +41,7 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  * <ul>
  *   <li>ensure that the encoding is UTF8</li>
  *   <li>(optional) ensure that all pages have a parent (except for {@code Main.WebHome})</li>
- *   <li>ensure that the author/originalAuthor/contentAuthor/creator/attachment authors are {@code xwiki:XWiki.Admin}</li>
+ *   <li>ensure that the author/contentAuthor/creator/attachment authors are {@code xwiki:XWiki.Admin}</li>
  *   <li>ensure that the version is {@code 1.1}</li>
  *   <li>ensure that comment is empty</li>
  *   <li>ensure that minor edit is false</li>
@@ -138,9 +138,6 @@ public class VerifyMojo extends AbstractVerifyMojo
             verifyAuthor(errors, xdoc.getEffectiveMetadataAuthor(),
                 String.format("Effective author must be [%s] but was [%s]", AUTHOR, xdoc.getEffectiveMetadataAuthor()),
                 true);
-            verifyAuthor(errors, xdoc.getOriginalMetadataAuthor(),
-                String.format("Original author must be [%s] but was [%s]", AUTHOR, xdoc.getOriginalMetadataAuthor()),
-                false);
             verifyAuthor(errors, xdoc.getContentAuthor(),
                 String.format("Content Author must be [%s] but was [%s]", AUTHOR, xdoc.getContentAuthor()), true);
             verifyAuthor(errors, xdoc.getCreator(),
@@ -224,6 +221,11 @@ public class VerifyMojo extends AbstractVerifyMojo
                 verifyDateFields(errors, xdoc);
             }
 
+            // Verification 16: Verify that author fields are not set.
+            if (!skipAuthors) {
+                verifyAuthorFields(errors, xdoc);
+            }
+
             // Display errors
             if (errors.isEmpty()) {
                 getLog().info(String.format("  Verifying [%s/%s]... ok", parentName, file.getName()));
@@ -287,6 +289,15 @@ public class VerifyMojo extends AbstractVerifyMojo
 
             if (xdoc.isAttachmentDatePresent()) {
                 errors.add("'attachment/date' field is present");
+            }
+        }
+    }
+
+    private void verifyAuthorFields(List<String> errors, XWikiDocument xdoc)
+    {
+        if (!skipAuthorsDocumentList.contains(xdoc.getReference())) {
+            if (xdoc.isOriginalMetadataAuthorPresent()) {
+                errors.add("'originalMetadataAuthor' field is present");
             }
         }
     }
