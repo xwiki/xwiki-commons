@@ -191,7 +191,7 @@ public class VerifyMojo extends AbstractVerifyMojo
             }
 
             // Verification 11: Verify that Translations documents don't use GLOBAL or USER visibility
-            if (!translationVisibilitySkip && xdoc.containsTranslations()) {
+            if (!this.translationVisibilitySkip && xdoc.containsTranslations()) {
                 for (String visibility : xdoc.getTranslationVisibilities()) {
                     if (visibility.equals("USER") || visibility.equals("GLOBAL")) {
                         errors.add(String.format("[%s] ([%s]) page contains a translation using a wrong visibility "
@@ -217,12 +217,12 @@ public class VerifyMojo extends AbstractVerifyMojo
             verifyAttachmentMimetypes(errors, xdoc.getAttachmentData());
 
             // Verification 15: Verify that date fields are not set.
-            if (!skipDates) {
+            if (!this.skipDates) {
                 verifyDateFields(errors, xdoc);
             }
 
             // Verification 16: Verify that author fields are not set.
-            if (!skipAuthors) {
+            if (!this.skipAuthors) {
                 verifyAuthorFields(errors, xdoc);
             }
 
@@ -274,7 +274,7 @@ public class VerifyMojo extends AbstractVerifyMojo
 
     private void verifyDateFields(List<String> errors, XWikiDocument xdoc)
     {
-        if (!skipDatesDocumentList.contains(xdoc.getReference())) {
+        if (!this.skipDatesDocumentList.contains(xdoc.getReference())) {
             if (xdoc.isDatePresent()) {
                 errors.add("'date' field is present");
             }
@@ -295,10 +295,8 @@ public class VerifyMojo extends AbstractVerifyMojo
 
     private void verifyAuthorFields(List<String> errors, XWikiDocument xdoc)
     {
-        if (!skipAuthorsDocumentList.contains(xdoc.getReference())) {
-            if (xdoc.isOriginalMetadataAuthorPresent()) {
-                errors.add("'originalMetadataAuthor' field is present");
-            }
+        if (!this.skipAuthorsDocumentList.contains(xdoc.getReference()) && xdoc.isOriginalMetadataAuthorPresent()) {
+            errors.add("'originalMetadataAuthor' field is present");
         }
     }
 
@@ -337,5 +335,4 @@ public class VerifyMojo extends AbstractVerifyMojo
         }
         return true;
     }
-
 }
