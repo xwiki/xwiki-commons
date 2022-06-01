@@ -77,4 +77,8 @@ public interface TestFilter
     void onChildWithDefaultValue(@Name("int") @Default("42") int integer,
         @Name("string") @Default("default value") String string, @Name("color") @Default("#ffffff") Color color,
         @Name("map") @Default("") Map<String, String> map);
+
+    void beginContainerWithMultilineParameter(String multi);
+
+    void endContainerWithMultilineParameter(String multi);
 }

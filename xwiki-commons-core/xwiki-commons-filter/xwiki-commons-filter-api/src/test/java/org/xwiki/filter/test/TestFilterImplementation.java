@@ -108,6 +108,18 @@ public class TestFilterImplementation implements TestFilter
 
     }
 
+    @Override
+    public void beginContainerWithMultilineParameter(String multiline)
+    {
+
+    }
+
+    @Override
+    public void endContainerWithMultilineParameter(String multiline)
+    {
+
+    }
+
     // Reserved names
 
     @Override

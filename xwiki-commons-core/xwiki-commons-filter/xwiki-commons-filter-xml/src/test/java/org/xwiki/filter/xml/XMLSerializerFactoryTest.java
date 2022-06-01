@@ -154,6 +154,13 @@ class XMLSerializerFactoryTest
     }
 
     @Test
+    void containerWithMultilineParameter() throws Exception
+    {
+        assertParseAndSerialize("<containerWithMultilineParameter><p><multi>line1\n"
+            + "line2</multi></p></containerWithMultilineParameter>");
+    }
+
+    @Test
     void customData() throws Exception
     {
         assertParseAndSerializeFromSAX("<customData><p><custom><field1>5</field1></custom></p></customData>");
