@@ -238,7 +238,7 @@ public class VerifyMojoTest extends AbstractMojoTest
     void executeWithOriginalAuthorPresent() throws Exception
     {
         // @formatter:off
-        verifyExecution("/wrongOriginalAuthor",
+        verifyExecution("/originalAuthorPresent",
             "Verifying [Space/WebHome.xml]... errors",
             "- 'originalMetadataAuthor' field is present",
             "There are errors in the XAR XML files!");
