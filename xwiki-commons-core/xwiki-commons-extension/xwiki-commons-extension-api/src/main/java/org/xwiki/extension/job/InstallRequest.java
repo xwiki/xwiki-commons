@@ -38,6 +38,11 @@ public class InstallRequest extends AbstractExtensionRequest
     public static final String PROPERTY_EXTENSION_PROPERTIES = "extension.properties";
 
     /**
+     * @see #isFailOnExist()
+     */
+    public static final String PROPERTY_EXTENSION_FAIL_ON_EXIST = "extension.failOnExist";
+
+    /**
      * Serialization identifier.
      */
     private static final long serialVersionUID = 1L;
@@ -55,6 +60,24 @@ public class InstallRequest extends AbstractExtensionRequest
     public InstallRequest(Request request)
     {
         super(request);
+    }
+
+    /**
+     * @return whether or not the wiki creation should fail if the database already exists
+     * @since 14.5RC1
+     */
+    public boolean isFailOnExist()
+    {
+        return getProperty(PROPERTY_EXTENSION_FAIL_ON_EXIST, true);
+    }
+
+    /**
+     * @param failOnExist whether or not the wiki creation should fail if the database already exists
+     * @since 14.5RC1
+     */
+    public void setFailOnExist(boolean failOnExist)
+    {
+        setProperty(PROPERTY_EXTENSION_FAIL_ON_EXIST, failOnExist);
     }
 
     /**
