@@ -61,14 +61,21 @@
           "ignore": true,
           "code": "java.annotation.(added|removed)",
           "annotationType": "org\\.xwiki\\.properties\\.annotation\\.PropertyName",
-          "justification": "Not a breakage. Indicates that the body of the annotated method or constructor does not perform potentially unsafe operations on its varargs parameter. It has no semantic consequences."
+          "justification": "Not a breakage. The display name of a property. It has no semantic consequences."
         },
         {
           "regex": true,
           "ignore": true,
           "code": "java.annotation.(added|removed)",
           "annotationType": "org\\.xwiki\\.properties\\.annotation\\.PropertyDescription",
-          "justification": "Not a breakage. Indicates that the body of the annotated method or constructor does not perform potentially unsafe operations on its varargs parameter. It has no semantic consequences."
+          "justification": "Not a breakage. Give more information about a specific property. It has no semantic consequences."
+        },
+        {
+          "regex": true,
+          "ignore": true,
+          "code": "java.annotation.(added|removed)",
+          "annotationType": "org\\.xwiki\\.stability\\.Unstable",
+          "justification": "Not a breakage. Indicates that a java type API is still unstable and subject to change at any time. It has no semantic consequences."
         },
         {
           // The "externalClassExposedInAPI" check is used to detect code smells. It's documented as:
@@ -81,7 +88,7 @@
           "regex": true,
           "ignore": true,
           "code": "java\\.class\\.externalClassExposedInAPI",
-          "package": "org\\.xwiki\\..*",
+          "package": "org\\.xwiki(\\..*)?",
           "justification": "Dragging of other XWiki types to the API is OK."
         },
         // Same rule for the old com.xpn.xwiki package.
@@ -89,8 +96,16 @@
           "regex": true,
           "ignore": true,
           "code": "java\\.class\\.externalClassExposedInAPI",
-          "package": "com\\.xpn\\.xwiki\\..*",
+          "package": "com\\.xpn\\.xwiki(\\..*)?",
           "justification": "Dragging of other XWiki types to the API is OK."
+        },
+        {
+          "regex": true,
+          "ignore": true,
+          "code": "java\\.annotation\\.attributeAdded",
+          "annotation": "@java\\.lang\\.Deprecated.*",
+          "attribute": "since",
+          "justification": "There's no risk about semantic change since before XWiki moved to Java 11, the @Deprecated annotation didn't support any parameter."
         },
         {
           // We reclassify all source compatibility checks to be of EQUIVALENT severity so that the build doesn't fail

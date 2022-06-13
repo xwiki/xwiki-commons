@@ -30,6 +30,7 @@ import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.DomSerializer;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -69,7 +70,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
     UniqueIdFilter.class,
     DefaultHTMLCleaner.class,
     LinkFilter.class,
-    ControlCharactersFilter.class
+    ControlCharactersFilter.class,
+    XWikiHTML5TagProvider.class
 })
 // @formatter:on
 public class DefaultHTMLCleanerTest
@@ -80,10 +82,47 @@ public class DefaultHTMLCleanerTest
 
     private static final String HEADER_FULL = HEADER + "<html><head></head><body>";
 
-    private static final String FOOTER = "</body></html>\n";
+    protected static final String FOOTER = "</body></html>\n";
 
     @InjectMockComponents
-    private DefaultHTMLCleaner cleaner;
+    protected DefaultHTMLCleaner cleaner;
+
+    protected HTMLCleanerConfiguration cleanerConfiguration;
+
+    /**
+     * @return The expected XHTML 1.0 header.
+     */
+    public String getHeader()
+    {
+        return HEADER;
+    }
+
+    /**
+     * @return The expected full XHTML 1.0 header up to &lt;body&gt;.
+     */
+    public String getHeaderFull()
+    {
+        return HEADER_FULL;
+    }
+
+    /**
+     * Cleans using the cleaner configuration {@link DefaultHTMLCleanerTest#cleanerConfiguration}.
+     *
+     * Ensures that always the correct configuration is used and allows executing the same tests for HTML 4 and HTML 5.
+     *
+     * @param originalHtmlContent The content to clean as string.
+     * @return The cleaned document.
+     */
+    protected Document clean(String originalHtmlContent)
+    {
+        return this.cleaner.clean(new StringReader(originalHtmlContent), cleanerConfiguration);
+    }
+
+    @BeforeEach
+    void setUpCleaner()
+    {
+        this.cleanerConfiguration = this.cleaner.getDefaultConfiguration();
+    }
 
     @Test
     void elementExpansion()
@@ -248,12 +287,11 @@ public class DefaultHTMLCleanerTest
     @Test
     void explicitFilterList()
     {
-        HTMLCleanerConfiguration configuration = this.cleaner.getDefaultConfiguration();
-        configuration.setFilters(Collections.emptyList());
-        String result = HTMLUtils.toString(this.cleaner.clean(new StringReader("something"), configuration));
+        this.cleanerConfiguration.setFilters(Collections.emptyList());
+        String result = HTMLUtils.toString(clean("something"));
         // Note that if the default Body filter had been executed the result would have been:
         // <p>something</p>.
-        assertEquals(HEADER_FULL + "something" + FOOTER, result);
+        assertEquals(getHeaderFull() + "something" + FOOTER, result);
     }
 
     /**
@@ -262,28 +300,26 @@ public class DefaultHTMLCleanerTest
     @Test
     void restrictedHtml()
     {
-        HTMLCleanerConfiguration configuration = this.cleaner.getDefaultConfiguration();
-        Map<String, String> parameters = new HashMap<>();
-        parameters.putAll(configuration.getParameters());
+        Map<String, String> parameters = new HashMap<>(this.cleanerConfiguration.getParameters());
         parameters.put("restricted", "true");
-        configuration.setParameters(parameters);
-        Document document = this.cleaner.clean(new StringReader("<script>alert(\"foo\")</script>"), configuration);
+        this.cleanerConfiguration.setParameters(parameters);
+        Document document = clean("<script>alert(\"foo\")</script>");
 
         String textContent =
             document.getElementsByTagName("pre").item(0).getTextContent();
         assertEquals("alert(\"foo\")", textContent);
 
         String result = HTMLUtils.toString(document);
-        assertEquals(HEADER_FULL + "<pre>alert(\"foo\")</pre>" + FOOTER, result);
+        assertEquals(getHeaderFull() + "<pre>alert(\"foo\")</pre>" + FOOTER, result);
 
-        document = this.cleaner.clean(new StringReader("<style>p {color:white;}</style>"), configuration);
+        document = clean("<style>p {color:white;}</style>");
 
         textContent =
             document.getElementsByTagName("pre").item(0).getTextContent();
         assertEquals("p {color:white;}", textContent);
 
         result = HTMLUtils.toString(document);
-        assertEquals(HEADER_FULL + "<pre>p {color:white;}</pre>" + FOOTER, result);
+        assertEquals(getHeaderFull() + "<pre>p {color:white;}</pre>" + FOOTER, result);
     }
 
     /**
@@ -292,7 +328,7 @@ public class DefaultHTMLCleanerTest
     @Test
     void fullXHTMLHeader()
     {
-        assertHTML("<p>test</p>", HEADER_FULL + "<p>test</p>" + FOOTER);
+        assertHTML("<p>test</p>", getHeaderFull() + "<p>test</p>" + FOOTER);
     }
 
     /**
@@ -303,12 +339,11 @@ public class DefaultHTMLCleanerTest
     {
         String actual = "<p id=\"x\">1</p><p id=\"xy\">2</p><p id=\"x\">3</p>";
         String expected = "<p id=\"x\">1</p><p id=\"xy\">2</p><p id=\"x0\">3</p>";
-        HTMLCleanerConfiguration config = this.cleaner.getDefaultConfiguration();
-        List<HTMLFilter> filters = new ArrayList<>(config.getFilters());
+        List<HTMLFilter> filters = new ArrayList<>(this.cleanerConfiguration.getFilters());
         filters.add(componentManager.getInstance(HTMLFilter.class, "uniqueId"));
-        config.setFilters(filters);
-        assertEquals(HEADER_FULL + expected + FOOTER,
-            HTMLUtils.toString(this.cleaner.clean(new StringReader(actual), config)));
+        this.cleanerConfiguration.setFilters(filters);
+        assertEquals(getHeaderFull() + expected + FOOTER,
+            HTMLUtils.toString(clean(actual)));
     }
 
     /**
@@ -322,7 +357,7 @@ public class DefaultHTMLCleanerTest
             "<p>before</p>\n" + "<p><svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
                 + "<circle cx=\"100\" cy=\"50\" fill=\"red\" r=\"40\" stroke=\"black\" stroke-width=\"2\"></circle>\n"
                 + "</svg></p>\n" + "<p>after</p>\n";
-        assertHTML(input, HEADER_FULL + input + FOOTER);
+        assertHTML(input, getHeaderFull() + input + FOOTER);
     }
 
     /**
@@ -348,8 +383,8 @@ public class DefaultHTMLCleanerTest
                 + "        <title>SVG Title Demo example</title>\n"
                 + "        <rect height=\"50\" style=\"fill:none; stroke:blue; stroke-width:1px\" width=\"200\" x=\"10\" "
                 + "y=\"10\"></rect>\n" + "      </g>\n" + "    </svg>\n" + "    <p>after</p>\n";
-        assertEquals(HEADER + input + FOOTER,
-            HTMLUtils.toString(this.cleaner.clean(new StringReader(input))));
+        assertEquals(getHeader() + input + FOOTER,
+            HTMLUtils.toString(clean(input)));
     }
 
     /**
@@ -362,14 +397,15 @@ public class DefaultHTMLCleanerTest
         String input = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body>";
 
         // Default
-        assertEquals(HEADER + input + FOOTER,
-            HTMLUtils.toString(this.cleaner.clean(new StringReader(input))));
+        assertEquals(getHeader() + input + FOOTER,
+            HTMLUtils.toString(clean(input)));
 
         // Configured for namespace awareness being false
-        HTMLCleanerConfiguration config = this.cleaner.getDefaultConfiguration();
-        config.setParameters(Collections.singletonMap(HTMLCleanerConfiguration.NAMESPACES_AWARE, "false"));
-        assertEquals(HEADER + "<html><head></head><body>" + FOOTER,
-            HTMLUtils.toString(this.cleaner.clean(new StringReader(input), config)));
+        Map<String, String> parameters = new HashMap<>(this.cleanerConfiguration.getParameters());
+        parameters.put(HTMLCleanerConfiguration.NAMESPACES_AWARE, "false");
+        this.cleanerConfiguration.setParameters(parameters);
+        assertEquals(getHeader() + "<html><head></head><body>" + FOOTER,
+            HTMLUtils.toString(clean(input)));
     }
 
     /**
@@ -379,14 +415,14 @@ public class DefaultHTMLCleanerTest
     void cleanEmptyDIV()
     {
         String input = "<div id=\"y\"></div><div id=\"z\">something</div>";
-        assertHTML(input, HEADER_FULL + input + FOOTER);
+        assertHTML(input, getHeaderFull() + input + FOOTER);
     }
 
     @Test
     void verifyLegendTagNotStripped()
     {
         String input = "<fieldset><legend>test</legend><div>content</div></fieldset>";
-        assertHTML(input, HEADER_FULL + input + FOOTER);
+        assertHTML(input, getHeaderFull() + input + FOOTER);
     }
 
     @Test
@@ -421,22 +457,22 @@ public class DefaultHTMLCleanerTest
     @Test
     void verifyEntitiesAreNotBroken()
     {
-        Document document = this.cleaner.clean(new StringReader("<p>&Eacute;</p>"));
+        Document document = clean("<p>&Eacute;</p>");
         String content = document.getElementsByTagName("p").item(0).getTextContent();
         assertEquals("É", content);
         assertHTML("<p>É</p>", "&Eacute;");
 
-        document = this.cleaner.clean(new StringReader("<p>&frac14;</p>"));
+        document = clean("<p>&frac14;</p>");
         content = document.getElementsByTagName("p").item(0).getTextContent();
         assertEquals("¼", content);
         assertHTML("<p>¼</p>", "&frac14;");
 
-        document = this.cleaner.clean(new StringReader("<p>&f!rac14;</p>"));
+        document = clean("<p>&f!rac14;</p>");
         content = document.getElementsByTagName("p").item(0).getTextContent();
         assertEquals("&f!rac14;", content);
         assertHTML("<p>&amp;f!rac14;</p>", "&f!rac14;");
 
-        document = this.cleaner.clean(new StringReader("<p>&frac12;</p>"));
+        document = clean("<p>&frac12;</p>");
         content = document.getElementsByTagName("p").item(0).getTextContent();
         assertEquals("½", content);
         assertHTML("<p>½</p>", "&frac12;");
@@ -447,16 +483,16 @@ public class DefaultHTMLCleanerTest
     {
         String content = "<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>";
         String expectedContent = "1>2&3 4½5öüäăâîș";
-        Document document = this.cleaner.clean(new StringReader(content));
+        Document document = clean(content);
         String obtainedContent = document.getElementsByTagName("p").item(0).getTextContent();
         assertEquals(expectedContent, obtainedContent);
         assertHTML("<p>1&gt;2&amp;3 4½5öüäăâîș</p>", content);
 
-        HTMLCleanerConfiguration htmlCleanerConfiguration = new DefaultHTMLCleanerConfiguration();
-        htmlCleanerConfiguration
-            .setParameters(Collections.singletonMap(HTMLCleanerConfiguration.TRANSLATE_SPECIAL_ENTITIES, "true"));
+        Map<String, String> parameters = new HashMap<>(this.cleanerConfiguration.getParameters());
+        parameters.put(HTMLCleanerConfiguration.TRANSLATE_SPECIAL_ENTITIES, "true");
+        this.cleanerConfiguration.setParameters(parameters);
         assertHTML("<p>1&amp;gt;2&amp;amp;3 4½5öüäăâîș</p>",
-            "<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>", htmlCleanerConfiguration);
+            "<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>");
     }
 
     @Test
@@ -500,14 +536,14 @@ public class DefaultHTMLCleanerTest
         // Note: single quotes are not escaped since they're valid chars in attribute values that are surrounded by
         // quotes. And HTMLCleaner will convert single quoted attributes into double-quoted ones.
         String htmlInput = "<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff\">content</div>";
-        Document document = this.cleaner.clean(new StringReader(htmlInput));
+        Document document = clean(htmlInput);
 
         String textContent =
             document.getElementsByTagName("div").item(0).getAttributes().getNamedItem("foo").getTextContent();
         assertEquals("aaa\"bbb&ccc>ddd<eee'fff", textContent);
 
         htmlInput = "<div foo='aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff'>content</div>";
-        document = this.cleaner.clean(new StringReader(htmlInput));
+        document = clean(htmlInput);
 
         textContent =
             document.getElementsByTagName("div").item(0).getAttributes().getNamedItem("foo").getTextContent();
@@ -523,7 +559,7 @@ public class DefaultHTMLCleanerTest
     void controlCharacters() throws Exception
     {
         String htmlInput = "<p>\u0008</p>";
-        Document document = this.cleaner.clean(new StringReader(htmlInput));
+        Document document = clean(htmlInput);
 
         String textContent =
             document.getElementsByTagName("p").item(0).getTextContent();
@@ -531,7 +567,7 @@ public class DefaultHTMLCleanerTest
         assertHTML(" ", "\u0008");
 
         htmlInput = "<p>&#8;</p>";
-        document = this.cleaner.clean(new StringReader(htmlInput));
+        document = clean(htmlInput);
 
         // HtmlCleaner currently doesn't handle properly unicode characters: asking it to recognize them
         // involves that all entities will be escaped during the parsing and that's not what we want. So we
@@ -543,7 +579,7 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p>&#8;</p>", "&#8;");
 
         htmlInput = "<p foo=\"&#8;\">content</p>";
-        document = this.cleaner.clean(new StringReader(htmlInput));
+        document = clean(htmlInput);
 
         // HtmlCleaner currently doesn't handle properly unicode characters: asking it to recognize them
         // involves that all entities will be escaped during the parsing and that's not what we want. So we
@@ -554,36 +590,74 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p foo=\"&#8;\">content</p>", "<p foo=\"&#8;\">content</p>");
     }
 
-    private void assertHTML(String expected, String actual)
+    @Test
+    void ttElement()
     {
-        Document documentValue = this.cleaner.clean(new StringReader(actual));
-        assertEquals(HEADER_FULL + expected + FOOTER, HTMLUtils.toString(documentValue));
+        assertHTML("<p><tt>Monospace Text</tt></p>", "<tt>Monospace Text</tt>");
     }
 
-    private void assertHTML(String expected, String actual, HTMLCleanerConfiguration configuration)
+    @Test
+    void divInsideDl()
     {
-        assertEquals(HEADER_FULL + expected + FOOTER,
-            HTMLUtils.toString(this.cleaner.clean(new StringReader(actual), configuration)));
+        // Check for https://jira.xwiki.org/browse/XCOMMONS-2375 - div inside dl should be allowed.
+        assertHTML(
+            "<dl><div><dt>HTML</dt><dd>Hypertext Markup Language</dd></div><dt>another</dt><dd>entry</dd></dl>",
+            "<dl><div><dt>HTML<dd>Hypertext Markup Language</div><dt>another<dd>entry</dl>");
     }
 
-    private void assertHTMLWithHeadContent(String expected, String actual)
+    /**
+     * Check what happens when the dt-tag is inside div.
+     *
+     * This should add a wrapping dl but doesn't for HTML 4, but it works in HTML5, see
+     * {@link HTML5HTMLCleanerTest#divWithDt()}.
+     *
+     * @todo Replace by {@link HTML5HTMLCleanerTest#divWithDt()} if this should be fixed and this test is failing.
+     */
+    @Test
+    void divWithDt()
     {
-        assertEquals(HEADER + "<html><head>" + expected + "</head><body>" + FOOTER,
-            HTMLUtils.toString(this.cleaner.clean(new StringReader(actual))));
+        assertHTML("<div><dt>HTML</dt><dd>Hypertext Markup Language</dd></div>",
+            "<div><dt>HTML<dd>Hypertext Markup Language</div>");
+    }
+
+    /**
+     * Check if plain text is allowed inside a div in dl - it shouldn't be but isn't filtered currently.
+     * <p>
+     * Note: even though this test is passing XWiki should not depend on this behavior.
+     *
+     * @todo Test with a valid expected HTML string when HTMLCleaner starts cleaning this.
+     */
+    @Test
+    void dlWithoutDt()
+    {
+        String htmlInput = "<dl><div><strong>Hello!</strong></div></dl>";
+        assertHTML(htmlInput, htmlInput);
+    }
+
+    protected void assertHTML(String expected, String actual)
+    {
+        Document documentValue = clean(actual);
+        assertEquals(getHeaderFull() + expected + FOOTER, HTMLUtils.toString(documentValue));
+    }
+
+    protected void assertHTMLWithHeadContent(String expected, String actual)
+    {
+        assertEquals(getHeader() + "<html><head>" + expected + "</head><body>" + FOOTER,
+            HTMLUtils.toString(clean(actual)));
     }
 
     @Test
     void transformedDOMContent()
     {
         String htmlInput = "<img src=\"http://host.com/a.gif?a=foo&b=bar\" />";
-        Document document = this.cleaner.clean(new StringReader(htmlInput));
+        Document document = clean(htmlInput);
 
         String textContent =
             document.getElementsByTagName("img").item(0).getAttributes().getNamedItem("src").getTextContent();
         assertEquals("http://host.com/a.gif?a=foo&b=bar", textContent);
 
         htmlInput = "<img src=\"http://host.com/a.gif?a=foo&amp;b=bar\" />";
-        document = this.cleaner.clean(new StringReader(htmlInput));
+        document = clean(htmlInput);
 
         textContent =
             document.getElementsByTagName("img").item(0).getAttributes().getNamedItem("src").getTextContent();
@@ -611,7 +685,7 @@ public class DefaultHTMLCleanerTest
         assertEquals("&quot;", nodeList.item(0).getTextContent());
         assertEquals("&quot;", nodeList.item(0).getAttributes().getNamedItem("foo").getTextContent());
 
-        document = this.cleaner.clean(new StringReader("<div foo=\"&amp;quot;\">&amp;quot;</div>"));
+        document = clean("<div foo=\"&amp;quot;\">&amp;quot;</div>");
         nodeList = document.getElementsByTagName("div");
         assertEquals(1, nodeList.getLength());
         assertEquals("&quot;", nodeList.item(0).getTextContent());
@@ -671,7 +745,7 @@ public class DefaultHTMLCleanerTest
     public void followingEncodedEntitiesAreProperlyKept()
     {
         String content = "<p><textarea>&#123;&#123;velocity}}machin&#123;&#123;/velocity}}</textarea></p>";
-        Document document = this.cleaner.clean(new StringReader(content));
+        Document document = clean(content);
         String textareaContent = document.getElementsByTagName("textarea").item(0).getTextContent();
         assertEquals("&#123;&#123;velocity}}machin&#123;&#123;/velocity}}", textareaContent);
 

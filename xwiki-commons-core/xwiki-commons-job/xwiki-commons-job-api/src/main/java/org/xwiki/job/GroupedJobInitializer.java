@@ -20,7 +20,6 @@
 package org.xwiki.job;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * An initializer that provides the information to create the appropriate executor for a given {@link GroupedJob}.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @since 12.5RC1
  * @version $Id$
  */
-@Unstable
 @Role
 public interface GroupedJobInitializer
 {

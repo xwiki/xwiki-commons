@@ -22,8 +22,6 @@ package org.xwiki.job.internal;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * A specific concurrency implementation for managing Semaphore with Read/Write lock capabilities.
  * This semaphore allows several process to access a resource in read only, but lock it for accessing it in write when
@@ -32,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 12.5RC1
  */
-@Unstable
 public class ReadWriteSemaphore
 {
     private final AtomicInteger readCounter;

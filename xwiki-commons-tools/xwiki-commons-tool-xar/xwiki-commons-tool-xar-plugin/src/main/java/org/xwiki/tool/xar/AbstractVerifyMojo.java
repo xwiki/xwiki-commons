@@ -112,6 +112,22 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     protected Set<String> skipDatesDocumentList;
 
     /**
+     * Disables the check for the existence of the author fields.
+     *
+     * @since 14.5RC1
+     */
+    @Parameter(property = "xar.authors.skip", defaultValue = "false")
+    protected boolean skipAuthors;
+
+    /**
+     * Disables the check for the existence of the author fields.
+     *
+     * @since 14.5RC1
+     */
+    @Parameter(property = "xar.authors.skip.documentList")
+    protected Set<String> skipAuthorsDocumentList;
+
+    /**
      * Explicitly define a list of pages (it's a regex) that should be considered as content pages (rather than
      * technical pages which is the default). Note that content pages must have a non-empty default language specified.
      *

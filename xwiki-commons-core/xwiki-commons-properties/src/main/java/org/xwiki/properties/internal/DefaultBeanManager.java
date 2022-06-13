@@ -29,6 +29,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.ConstraintViolation;
+import javax.validation.NoProviderFoundException;
 import javax.validation.Validation;
 import javax.validation.ValidationException;
 import javax.validation.Validator;
@@ -92,8 +93,12 @@ public class DefaultBeanManager implements BeanManager
         if (this.validatorFactory == null) {
             try {
                 this.validatorFactory = Validation.buildDefaultValidatorFactory();
+            } catch (NoProviderFoundException e) {
+                this.logger.debug("Unable to find a Bean Validation provider. There will be no Java bean validation.",
+                    e);
             } catch (ValidationException e) {
-                this.logger.debug("Unable to find default JSR 303 provider. There will be no Java bean validation.");
+                this.logger
+                    .error("Failed to build the Bean Validation provider. There will be no Java bean validation.", e);
             }
         }
 

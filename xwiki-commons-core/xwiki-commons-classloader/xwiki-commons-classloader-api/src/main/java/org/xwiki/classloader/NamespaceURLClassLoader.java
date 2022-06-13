@@ -72,7 +72,6 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
      * @param namespace see {@link #getNamespace()}
      * @since 12.5RC1
      */
-    @Unstable
     public NamespaceURLClassLoader(URL[] urls, ClassLoader parent, String namespace)
     {
         this(urls, parent, null, namespace);
@@ -99,7 +98,6 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
      * @param namespace see {@link #getNamespace()}
      * @since 12.5RC1
      */
-    @Unstable
     public NamespaceURLClassLoader(ClassLoader parent, String namespace)
     {
         this(EMPTY_URIS, parent, namespace);

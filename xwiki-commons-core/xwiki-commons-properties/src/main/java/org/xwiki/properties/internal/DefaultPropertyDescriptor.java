@@ -26,7 +26,6 @@ import java.lang.reflect.Type;
 
 import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.PropertyGroupDescriptor;
-import org.xwiki.stability.Unstable;
 
 /**
  * Default implementation for {@link PropertyDescriptor}.
@@ -342,7 +341,6 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
      * @param isDisplayHidden see {@link #isDisplayHidden()}
      * @since 12.4RC1
      */
-    @Unstable
     public void setDisplayHidden(boolean isDisplayHidden)
     {
         this.displayHidden = isDisplayHidden;

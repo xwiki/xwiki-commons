@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-extension-repositories</artifactId>
-    <version>13.9-SNAPSHOT</version>
+    <version>14.5-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-extension-repository-xwiki</artifactId>
   <name>XWiki Commons - Extension - Repository - XWiki</name>
@@ -51,6 +51,10 @@
       <artifactId>xwiki-commons-repository-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
@@ -73,6 +77,11 @@
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-environment-standard</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

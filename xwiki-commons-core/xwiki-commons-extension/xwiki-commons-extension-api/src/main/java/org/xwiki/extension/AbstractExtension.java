@@ -284,7 +284,7 @@ public abstract class AbstractExtension implements MutableExtension
     @Deprecated
     public Collection<String> getFeatures()
     {
-        return this.features != null ? this.features : Collections.<String>emptyList();
+        return this.features != null ? this.features : Collections.emptyList();
     }
 
     @Override
@@ -309,7 +309,7 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public Collection<ExtensionId> getExtensionFeatures()
     {
-        return this.featuresMap != null ? this.featuresMap.values() : Collections.<ExtensionId>emptyList();
+        return this.featuresMap != null ? this.featuresMap.values() : Collections.emptyList();
     }
 
     @Override
@@ -399,7 +399,7 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public Collection<ExtensionLicense> getLicenses()
     {
-        return this.licenses != null ? this.licenses : Collections.<ExtensionLicense>emptyList();
+        return this.licenses != null ? this.licenses : Collections.emptyList();
     }
 
     @Override
@@ -444,7 +444,7 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public List<ExtensionAuthor> getAuthors()
     {
-        return this.authors != null ? this.authors : Collections.<ExtensionAuthor>emptyList();
+        return this.authors != null ? this.authors : Collections.emptyList();
     }
 
     @Override
@@ -465,7 +465,7 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public List<ExtensionComponent> getComponents()
     {
-        return this.components != null ? this.components : Collections.<ExtensionComponent>emptyList();
+        return this.components != null ? this.components : Collections.emptyList();
     }
 
     @Override
@@ -536,7 +536,7 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public List<ExtensionDependency> getDependencies()
     {
-        return this.dependencies != null ? this.dependencies : Collections.<ExtensionDependency>emptyList();
+        return this.dependencies != null ? this.dependencies : Collections.emptyList();
     }
 
     @Override
@@ -561,8 +561,7 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public List<ExtensionDependency> getManagedDependencies()
     {
-        return this.managedDependencies != null ? this.managedDependencies
-            : Collections.<ExtensionDependency>emptyList();
+        return this.managedDependencies != null ? this.managedDependencies : Collections.emptyList();
     }
 
     @Override
@@ -649,7 +648,7 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public Collection<ExtensionRepositoryDescriptor> getRepositories()
     {
-        return this.repositories != null ? this.repositories : Collections.<ExtensionRepositoryDescriptor>emptyList();
+        return this.repositories != null ? this.repositories : Collections.emptyList();
     }
 
     /**
@@ -676,7 +675,7 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public Map<String, Object> getProperties()
     {
-        return this.properties != null ? this.properties : Collections.<String, Object>emptyMap();
+        return this.properties != null ? this.properties : Collections.emptyMap();
     }
 
     @Override

@@ -22,9 +22,9 @@ package org.xwiki.component.phase;
 import org.xwiki.component.logging.Logger;
 
 /**
- * @deprecated starting with 3.1M2 use {@link javax.inject.Inject} annotation to get injected a SLF4J Logger instead
+ * @deprecated use {@link javax.inject.Inject} annotation to get injected a SLF4J Logger instead
  */
-@Deprecated
+@Deprecated(since = "3.1M2")
 public interface LogEnabled
 {
     void enableLogging(Logger logger);

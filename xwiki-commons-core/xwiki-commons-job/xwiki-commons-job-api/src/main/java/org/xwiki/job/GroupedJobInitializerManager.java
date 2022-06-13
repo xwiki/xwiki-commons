@@ -20,7 +20,6 @@
 package org.xwiki.job;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * A component dedicated to find the appropriate {@link GroupedJobInitializer} based on a {@link JobGroupPath}.
@@ -28,7 +27,6 @@ import org.xwiki.stability.Unstable;
  * @since 12.5RC1
  * @version $Id$
  */
-@Unstable
 @Role
 public interface GroupedJobInitializerManager
 {

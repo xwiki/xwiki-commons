@@ -90,7 +90,7 @@ public interface Request extends Serializable
 
     /**
      * @param key the name of the property
-     * @return <tt>true</tt> if this map contains a property for the specified key
+     * @return {@code true} if this map contains a property for the specified key
      * @since 4.2M2
      */
     boolean containsProperty(String key);

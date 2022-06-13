@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.xwiki.stability.Unstable;
 
 /**
  * Default implementation of {@link ExtensionRepositoryDescriptor}.
@@ -98,7 +97,6 @@ public class DefaultExtensionRepositoryDescriptor implements ExtensionRepository
      * @param properties the properties
      * @since 12.2
      */
-    @Unstable
     public DefaultExtensionRepositoryDescriptor(String id, String type, URI uri, Map<String, String> properties)
     {
         this.id = id;

@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.version.VersionConstraint;
-import org.xwiki.stability.Unstable;
 
 /**
  * An extension dependency.
@@ -49,7 +48,6 @@ public interface ExtensionDependency
      * @return the exclusions patterns to apply to transitive dependencies
      * @since 12.2
      */
-    @Unstable
     default Collection<ExtensionPattern> getExclusions()
     {
         return Collections.emptyList();

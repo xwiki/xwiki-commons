@@ -20,7 +20,6 @@
 package org.xwiki.diff.xml.internal;
 
 import java.io.StringReader;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -83,9 +82,12 @@ public class UnifiedHTMLDiffManager implements XMLDiffManager, Initializable
         } catch (Exception exception) {
             throw new InitializationException("Failed to initialize DOM Level 3 Load and Save APIs.", exception);
         }
-        htmlCleanerParametersMap = new HashMap<>();
-        // We need to parse the clean HTML as XML later and we don't want to resolve the entity references from the DTD.
-        htmlCleanerParametersMap.put(HTMLCleanerConfiguration.USE_CHARACTER_REFERENCES, Boolean.toString(true));
+        this.htmlCleanerParametersMap = Map.of(
+            // We need to parse the clean HTML as XML later and we don't want to resolve the entity references from the
+            // DTD.
+            HTMLCleanerConfiguration.USE_CHARACTER_REFERENCES, Boolean.toString(true),
+            HTMLCleanerConfiguration.HTML_VERSION, "5"
+        );
     }
 
     @Override
@@ -110,7 +112,7 @@ public class UnifiedHTMLDiffManager implements XMLDiffManager, Initializable
     private String cleanHTML(String html)
     {
         HTMLCleanerConfiguration config = this.htmlCleaner.getDefaultConfiguration();
-        config.setParameters(htmlCleanerParametersMap);
+        config.setParameters(this.htmlCleanerParametersMap);
         Document htmlDoc = this.htmlCleaner.clean(new StringReader(wrap(html)), config);
         // We serialize and parse again the HTML as XML because the HTML Cleaner doesn't handle entity and character
         // references very well: they all end up as plain text (they are included in the value returned by

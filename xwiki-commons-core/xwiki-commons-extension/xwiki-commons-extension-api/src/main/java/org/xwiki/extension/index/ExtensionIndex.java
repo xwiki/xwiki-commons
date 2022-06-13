@@ -27,7 +27,6 @@ import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.search.AdvancedSearchable;
 import org.xwiki.job.JobException;
-import org.xwiki.stability.Unstable;
 
 /**
  * A local index of extensions coming from various repositories.
@@ -35,7 +34,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 12.10
  */
-@Unstable
 @Role
 public interface ExtensionIndex extends ExtensionRepository, AdvancedSearchable
 {

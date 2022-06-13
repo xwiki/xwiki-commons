@@ -55,7 +55,6 @@ import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xwiki.stability.Unstable;
 
 /**
  * XML Utility methods.
@@ -354,7 +353,6 @@ public final class XMLUtils
      * @since 12.6.3
      * @since 11.10.11
      */
-    @Unstable
     public static String escape(String content)
     {
         return escapeAttributeValue(content);
@@ -404,7 +402,6 @@ public final class XMLUtils
      * @since 12.6.3
      * @since 11.10.11
      */
-    @Unstable
     public static String escapeAttributeValue(String content)
     {
         if (content == null) {
@@ -454,7 +451,6 @@ public final class XMLUtils
      * @since 12.6.3
      * @since 11.10.11
      */
-    @Unstable
     public static String escapeElementText(String content)
     {
         if (content == null) {
@@ -489,7 +485,6 @@ public final class XMLUtils
      * @since 12.10
      * @since 12.6.5
      */
-    @Unstable
     public static boolean containsElementText(CharSequence content)
     {
         return StringUtils.containsAny(content, ELEMENT_SYNTAX);

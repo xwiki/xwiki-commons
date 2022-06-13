@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.inject.Singleton;
@@ -78,7 +79,14 @@ public class ServletEnvironment extends AbstractEnvironment
         URL url;
         try {
             url = getServletContext().getResource(resourceName);
-        } catch (MalformedURLException e) {
+
+            // ensure to normalize the URI, we don't want relative path.
+            if (url != null) {
+                url = url.toURI().normalize().toURL();
+            }
+        // We're catching IllegalArgumentException which might be thrown by Tomcat when trying to resolve path such as
+        // `templates/../..`
+        } catch (MalformedURLException | URISyntaxException | IllegalArgumentException e) {
             url = null;
             this.logger.warn("Error getting resource [{}] because of invalid path format. Reason: [{}]",
                 resourceName, e.getMessage());

@@ -25,10 +25,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.classgen.GeneratorContext;
 import org.codehaus.groovy.control.CompilePhase;
-import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.junit.jupiter.api.Test;
 import org.xwiki.groovy.GroovyConfiguration;
@@ -38,9 +35,6 @@ import org.xwiki.test.junit5.mockito.MockComponent;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -60,16 +54,12 @@ class GroovyExecutionTest
     private GroovyConfiguration configuration;
 
     @Test
-    void execute()
+    void executeWhenCompilationCustomizerThrowsException()
     {
-        CompilationCustomizer customizer = mock(CompilationCustomizer.class);
-        when(this.configuration.getCompilationCustomizers()).thenReturn(Arrays.asList(customizer));
         // Simulate a Compilation Customizer that throws an error. This would happen for example with a Secure
         // Customizer that would prevent executing some statements for example.
-        when(customizer.getPhase()).thenReturn(CompilePhase.CANONICALIZATION);
-        when(customizer.needSortedInput()).thenReturn(false);
-        doThrow(new SecurityException("test exception")).when(customizer).call(any(SourceUnit.class),
-            any(GeneratorContext.class), any(ClassNode.class));
+        CompilationCustomizer customizer = new ErrorThrowingTestCompilationCustomizer(CompilePhase.CANONICALIZATION);
+        when(this.configuration.getCompilationCustomizers()).thenReturn(Arrays.asList(customizer));
 
         ScriptEngineManager manager = new ScriptEngineManager();
         manager.registerEngineName("groovy", this.factory);

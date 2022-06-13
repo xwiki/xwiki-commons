@@ -57,7 +57,7 @@ public class DefaultChunk<E> implements Chunk<E>
     /**
      * @param chunk the chunk to convert
      */
-    public DefaultChunk(difflib.Chunk<E> chunk)
+    public DefaultChunk(com.github.difflib.patch.Chunk<E> chunk)
     {
         this(chunk.getPosition(), chunk.getLines());
     }

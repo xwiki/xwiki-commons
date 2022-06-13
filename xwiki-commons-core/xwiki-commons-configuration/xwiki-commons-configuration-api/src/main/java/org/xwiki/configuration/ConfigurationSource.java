@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * @version $Id$
@@ -63,7 +62,6 @@ public interface ConfigurationSource
      * @return the property value is found or the default value if the key wasn't found.
      * @since 12.0RC1
      */
-    @Unstable
     default <T> T getProperty(String key, Class<T> valueClass, T defaultValue)
     {
         if (containsKey(key)) {
@@ -102,7 +100,6 @@ public interface ConfigurationSource
      * @throws ConfigurationSaveException when an error occurs during persistence
      * @since 12.4RC1
      */
-    @Unstable
     default void setProperties(Map<String, Object> properties) throws ConfigurationSaveException
     {
         throw new UnsupportedOperationException("Set operation not supported");

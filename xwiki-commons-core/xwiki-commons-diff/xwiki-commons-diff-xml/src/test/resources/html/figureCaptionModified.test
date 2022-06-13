@@ -1,0 +1,23 @@
+##--------------------
+## left
+##--------------------
+<figure>
+<img src="/xwiki/bin/download/Sandbox/WebHome/XWikiLogo.png?rev=1.1" alt="XWiki Logo" />
+<figcaption>Hello World</figcaption>
+</figure>
+##--------------------
+## right
+##--------------------
+<figure>
+<img src="/xwiki/bin/download/Sandbox/WebHome/XWikiLogo.png?rev=1.1" alt="XWiki Logo" />
+<figcaption>Hello World!</figcaption>
+</figure>
+##--------------------
+## expected-marker
+##--------------------
+<figure>
+<img alt="XWiki Logo" src="/xwiki/bin/download/Sandbox/WebHome/XWikiLogo.png?rev=1.1" />
+<figcaption data-xwiki-html-diff-block="deleted">Hello World</figcaption>
+<figcaption data-xwiki-html-diff-block="inserted">Hello World<span data-xwiki-html-diff="inserted">!</span>
+</figcaption>
+</figure>

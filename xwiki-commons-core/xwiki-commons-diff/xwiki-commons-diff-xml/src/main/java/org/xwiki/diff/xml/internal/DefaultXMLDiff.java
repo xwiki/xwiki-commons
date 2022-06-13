@@ -49,7 +49,7 @@ import org.xwiki.diff.xml.StringSplitter;
 import org.xwiki.diff.xml.XMLDiff;
 import org.xwiki.diff.xml.XMLDiffConfiguration;
 
-import difflib.DiffUtils;
+import com.github.difflib.DiffUtils;
 
 /**
  * Default implementation of {@link XMLDiff}.

@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
@@ -70,6 +71,9 @@ import org.xwiki.test.mockito.MockitoComponentMocker;
  *
  *     &#64;InjectComponentManager
  *     private MockitoComponentManager componentManager;
+ *
+ *     &#64;Inject
+ *     private SomeComponentRole someComponent;
  *
  *     &#64;BeforeEach
  *     public void before(MockitoComponentManager componentManager)
@@ -121,7 +125,7 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
         // Make sure tests don't leak one on another
         removeComponentManager(context);
 
-        // We initialize the CM in 4 steps:
+        // We initialize the CM with the following steps:
         // - We create an empty instance of it
         // - We inject the component manager in the @InjectComponentManager annotated fields
         // - We create mocks for all @MockComponent annotations.
@@ -132,6 +136,8 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
         //   - @AfterComponent
         //   - @AfterComponent("<testname>")
         // - We inject @InjectMockComponents fields
+        // - We inject @Inject fields (this is just a shortcut to using @InjectComponentManager and then calling
+        //   getInstance() on it)
         //
         // Note: We handle @MockComponent before @InjectMockComponents to allow the test to have methods annotated with
         // @BeforeComponent which can configure mocks defined with @MockComponent annotations, so that when
@@ -154,14 +160,18 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
 
         // Register a mock component for all fields annotated with @MockComponent
         for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
-            if (field.isAnnotationPresent(MockComponent.class)) {
+            MockComponent mockComponentAnnotation = field.getAnnotation(MockComponent.class);
+            if (mockComponentAnnotation != null) {
                 // Get the hint from the @Named annotation (if any)
                 Named namedAnnotation = field.getAnnotation(Named.class);
+                Class<?> classToMock = mockComponentAnnotation.classToMock() != MockComponent.class
+                    ? mockComponentAnnotation.classToMock() : null;
                 Object mockComponent;
                 if (namedAnnotation != null) {
-                    mockComponent = mcm.registerMockComponent(field.getGenericType(), namedAnnotation.value());
+                    mockComponent =
+                        mcm.registerMockComponent(field.getGenericType(), namedAnnotation.value(), classToMock, true);
                 } else {
-                    mockComponent = mcm.registerMockComponent(field.getGenericType());
+                    mockComponent = mcm.registerMockComponent(field.getGenericType(), null, classToMock, true);
                 }
                 ReflectionUtils.setFieldValue(testInstance, field.getName(), mockComponent);
             }
@@ -171,12 +181,10 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
 
         // Create & register a component instance of all fields annotated with @InjectMockComponents with all its
         // @Inject-annotated fields injected with mocks or real implementations.
-        for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
-            InjectMockComponents annotation = field.getAnnotation(InjectMockComponents.class);
-            if (annotation != null) {
-                processInjectMockComponents(testInstance, field, annotation, mcm);
-            }
-        }
+        processInjectMockComponents(testInstance, mcm);
+
+        // Handle @Inject fields
+        processInjectAnnotations(testInstance, mcm);
 
         // Make sure this is executed last since if we want to combine it with @InjectMockComponents annotation, we
         // need the field to be non-null when this line executes or otherwise Mockito will not inject anything...
@@ -185,7 +193,17 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
         saveMockitoAutoCloseable(context, MockitoAnnotations.openMocks(testInstance));
     }
 
-    protected void processInjectMockComponents(Object testInstance, Field field, InjectMockComponents annotation,
+    private void processInjectMockComponents(Object testInstance, MockitoComponentManager mcm) throws Exception
+    {
+        for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
+            InjectMockComponents annotation = field.getAnnotation(InjectMockComponents.class);
+            if (annotation != null) {
+                processSingleInjectMockComponents(testInstance, field, annotation, mcm);
+            }
+        }
+    }
+
+    protected void processSingleInjectMockComponents(Object testInstance, Field field, InjectMockComponents annotation,
         MockitoComponentManager mcm) throws Exception
     {
         // Must not be an instance
@@ -201,6 +219,31 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
             new MockitoComponentMocker<>(mcm, field.getType(), descriptor.getRoleType(), descriptor.getRoleHint());
         mocker.mockComponent(testInstance);
         Object component = mcm.getInstance(descriptor.getRoleType(), descriptor.getRoleHint());
+        ReflectionUtils.setFieldValue(testInstance, field.getName(), component);
+    }
+
+    private void processInjectAnnotations(Object testInstance, MockitoComponentManager mcm) throws Exception
+    {
+        for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
+            Inject injectAnnotation = field.getAnnotation(Inject.class);
+            if (injectAnnotation != null) {
+                Named namedAnnotation = field.getAnnotation(Named.class);
+                processSingleInjectAnnotations(testInstance, field, injectAnnotation, namedAnnotation, mcm);
+            }
+        }
+    }
+
+    private void processSingleInjectAnnotations(Object testInstance, Field field, Inject injectAnnotation,
+        Named namedAnnotation, MockitoComponentManager mcm) throws Exception
+    {
+        // Must  be an instance
+        if (!field.getType().isInterface()) {
+            throw new Exception(String.format("The type of the field [%s] annotated with @%s must be an interface.",
+                Inject.class.getSimpleName(), field.getName()));
+        }
+
+        Object component = (namedAnnotation == null) ? mcm.getInstance(field.getType())
+            : mcm.getInstance(field.getType(), namedAnnotation.value());
         ReflectionUtils.setFieldValue(testInstance, field.getName(), component);
     }
 

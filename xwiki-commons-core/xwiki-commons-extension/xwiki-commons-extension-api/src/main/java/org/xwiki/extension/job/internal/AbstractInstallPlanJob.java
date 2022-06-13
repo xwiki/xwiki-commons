@@ -48,7 +48,7 @@ import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.ExtensionHandler;
 import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.internal.ExtensionUtils;
-import org.xwiki.extension.job.ExtensionRequest;
+import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
@@ -66,7 +66,7 @@ import org.xwiki.extension.version.VersionConstraint;
  * @version $Id$
  * @since 4.1M1
  */
-public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends AbstractExtensionPlanJob<R>
+public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends AbstractExtensionPlanJob<R>
 {
     protected static class ModifableExtensionPlanNode extends DefaultExtensionPlanNode
     {
@@ -315,8 +315,10 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
         ModifableExtensionPlanNode node = installExtension(extensionId, dependency, namespace);
 
-        addExtensionNode(node);
-        parentBranch.add(node);
+        if (node != null) {
+            addExtensionNode(node);
+            parentBranch.add(node);
+        }
     }
 
     private boolean checkCoreDependency(ExtensionDependency extensionDependency,
@@ -716,10 +718,12 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         ModifableExtensionPlanNode node =
             installExtensionDependency(targetDependency, true, namespace, extensionContext, parents);
 
-        node.versionConstraint = versionConstraint;
+        if (node != null) {
+            node.versionConstraint = versionConstraint;
 
-        addExtensionNode(node);
-        parentBranch.add(node);
+            addExtensionNode(node);
+            parentBranch.add(node);
+        }
     }
 
     /**
@@ -993,7 +997,9 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
         // Check if the extension is already installed
         Extension installedExtension = checkInstalledExtension(rewrittenExtension, namespace);
-        if (installedExtension != rewrittenExtension) {
+        if (installedExtension == null) {
+            return null;
+        } else if (installedExtension != rewrittenExtension) {
             sourceExtension = installedExtension;
 
             // Rewrite the extension
@@ -1155,8 +1161,15 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             this.installedExtensionRepository.getInstalledExtension(extension.getId());
         if (installedExtension != null && installedExtension.isInstalled(namespace)) {
             if (installedExtension.isValid(namespace)) {
-                throw new InstallException(String.format("Extension [%s] is already installed on namespace [%s]",
-                    extension.getId(), namespace));
+                if (this.getRequest().isFailOnExist()) {
+                    throw new InstallException(String.format("Extension [%s] is already installed on namespace [%s]",
+                        extension.getId(), namespace));
+                } else {
+                    this.logger.warn("Extension [{}] is already installed on namespace [{}]",
+                        installedExtension.getId(), namespace);
+
+                    return null;
+                }
             }
 
             // In case the extension is already installed on the namespace but is invalid continue with it to make clear

@@ -19,6 +19,8 @@
  */
 package org.xwiki.logging;
 
+import java.util.Arrays;
+
 import org.slf4j.Marker;
 import org.xwiki.logging.event.BeginLogEvent;
 import org.xwiki.logging.event.EndLogEvent;
@@ -26,6 +28,7 @@ import org.xwiki.logging.event.LogEvent;
 import org.xwiki.logging.internal.helpers.MessageParser;
 import org.xwiki.logging.internal.helpers.MessageParser.MessageElement;
 import org.xwiki.logging.internal.helpers.MessageParser.MessageIndex;
+import org.xwiki.stability.Unstable;
 
 /**
  * @version $Id$
@@ -78,6 +81,33 @@ public final class LogUtils
         }
 
         return new LogEvent(marker, level, message, argumentArray, throwable, timeStamp);
+    }
+
+    /**
+     * Create and return a new {@link LogEvent} instance based on the passed parameters.
+     *
+     * @param marker the log marker
+     * @param level the log level
+     * @param message the log message
+     * @param arguments the event arguments to insert in the message and/or the {@link Throwable} associated with the
+     *            message
+     * @return the {@link LogEvent}
+     * @since 14.0RC1
+     */
+    @Unstable
+    public static LogEvent newLogEvent(Marker marker, LogLevel level, String message, Object[] arguments)
+    {
+        Object[] actualArray;
+        Throwable throwable;
+        if (arguments.length > 0 && arguments[arguments.length - 1] instanceof Throwable) {
+            actualArray = Arrays.copyOf(arguments, arguments.length - 1);
+            throwable = (Throwable) arguments[arguments.length - 1];
+        } else {
+            actualArray = arguments;
+            throwable = null;
+        }
+
+        return newLogEvent(marker, level, message, actualArray, throwable);
     }
 
     /**

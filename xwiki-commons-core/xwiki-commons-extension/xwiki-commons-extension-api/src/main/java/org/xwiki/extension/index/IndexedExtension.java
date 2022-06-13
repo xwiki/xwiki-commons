@@ -20,7 +20,6 @@
 package org.xwiki.extension.index;
 
 import org.xwiki.extension.rating.RatingExtension;
-import org.xwiki.stability.Unstable;
 
 /**
  * An extension stored in the {@link ExtensionIndex}.
@@ -28,7 +27,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 12.10
  */
-@Unstable
 public interface IndexedExtension extends RatingExtension
 {
     /**

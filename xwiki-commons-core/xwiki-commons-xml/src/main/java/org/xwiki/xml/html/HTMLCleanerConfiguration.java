@@ -22,6 +22,7 @@ package org.xwiki.xml.html;
 import java.util.List;
 import java.util.Map;
 
+import org.xwiki.stability.Unstable;
 import org.xwiki.xml.html.filter.HTMLFilter;
 
 /**
@@ -53,6 +54,13 @@ public interface HTMLCleanerConfiguration
      * @since 12.3RC1
      */
     String TRANSLATE_SPECIAL_ENTITIES = "translateSpecialEntities";
+
+    /**
+     * The HTML (major) version. Should be "5" for HTML5 and "4" (default) otherwise for the default implementation.
+     * @since 14.0RC1
+     */
+    @Unstable
+    String HTML_VERSION = "htmlVersion";
 
     /**
      * @return the ordered list of filters to use for cleaning the HTML content

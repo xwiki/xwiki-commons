@@ -21,11 +21,11 @@
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons</artifactId>
-    <version>13.9-SNAPSHOT</version>
+    <version>14.5-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-pom</artifactId>
   <name>XWiki Commons - Root POM</name>
@@ -55,7 +55,7 @@
                  is why we're ignoring the warning (since we want warnings to fail the build...).
                  For more details, see:
                  - https://blogs.oracle.com/darcy/entry/bootclasspath_older_source
-                 - http://stackoverflow.com/questions/9164625/maven-use-jdk-7-to-compile-for-jvm-5
+                 - https://stackoverflow.com/questions/9164625/maven-use-jdk-7-to-compile-for-jvm-5
             -->
             <arg>-Xlint:-options</arg>
             <!-- Tell the compiler to preserve parameter names in the bytecode -->
@@ -72,12 +72,12 @@
       <plugin>
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-tool-remote-resource-plugin</artifactId>
-        <version>13.9-SNAPSHOT</version>
+        <version>14.5-SNAPSHOT</version>
         <dependencies>
           <dependency>
             <groupId>org.xwiki.commons</groupId>
             <artifactId>xwiki-commons-tool-license-resources</artifactId>
-            <version>13.9-SNAPSHOT</version>
+            <version>14.5-SNAPSHOT</version>
           </dependency>
         </dependencies>
         <executions>
@@ -103,7 +103,7 @@
           <dependency>
             <groupId>org.xwiki.commons</groupId>
             <artifactId>xwiki-commons-tool-enforcer-dependencies</artifactId>
-            <version>13.9-SNAPSHOT</version>
+            <version>14.5-SNAPSHOT</version>
           </dependency>
         </dependencies>
         <executions>
@@ -147,7 +147,7 @@
           <dependency>
             <groupId>org.xwiki.commons</groupId>
             <artifactId>xwiki-commons-tool-verification-resources</artifactId>
-            <version>13.9-SNAPSHOT</version>
+            <version>14.5-SNAPSHOT</version>
           </dependency>
         </dependencies>
         <configuration>
@@ -200,15 +200,6 @@
                 <processorProperty>
                   <name>org.xwiki.tool.spoon.ComponentAnnotationProcessor</name>
                   <properties>
-                    <!-- TODO: Remove when Spoon is fixed and doesn't emit the following warning when this property is
-                         not specified:
-                           warning: No value found for property 'componentsTxtPath' in processor ...
-                         See https://github.com/INRIA/spoon/issues/3339
-                    -->
-                    <property>
-                      <name>componentsTxtPath</name>
-                      <value>target/classes/META-INF/components.txt</value>
-                    </property>
                     <property>
                       <name>skipForeignDeclarations</name>
                       <value>false</value>
@@ -254,7 +245,7 @@
           <dependency>
             <groupId>org.xwiki.commons</groupId>
             <artifactId>xwiki-commons-tool-spoon-checks</artifactId>
-            <version>13.9-SNAPSHOT</version>
+            <version>14.5-SNAPSHOT</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -270,7 +261,7 @@
             <dependency>
               <groupId>org.xwiki.commons</groupId>
               <artifactId>xwiki-commons-tool-verification-resources</artifactId>
-              <version>13.9-SNAPSHOT</version>
+              <version>14.5-SNAPSHOT</version>
             </dependency>
           </dependencies>
           <configuration>
@@ -321,6 +312,7 @@
               <java>SLASHSTAR_STYLE</java>
               <aj>SLASHSTAR_STYLE</aj>
               <vm>SHARPSHARP_STYLE</vm>
+              <vue>XML_STYLE</vue>
             </mapping>
             <!-- We're only interested in checking our sources and our POMs -->
             <includes>
@@ -332,6 +324,7 @@
               <include>src/**/ApplicationResources.properties</include>
               <include>src/**/*.vm</include>
               <include>src/**/*.js</include>
+              <include>src/**/*.vue</include>
             </includes>
             <excludes>
               <!-- At the moment we don't have a comment syntax for components.txt files so we need to exclude them
@@ -341,10 +334,6 @@
               <!-- Since there's no comment syntax for Maven IT tests's goal.txt file we need to exclude it -->
               <exclude>**/it/**/goals.txt</exclude>
               <exclude>**/goal.txt</exclude>
-              <!-- Don't check DSpot-generated tests for license headers. DSpot does keep license headers but it
-                   modifies their styles, thus leading this plugin to think there's no license header.
-                   See https://github.com/STAMP-project/dspot/issues/538 -->
-              <exclude>src/test/dspot/**/*.*</exclude>
             </excludes>
           </configuration>
           <!-- Add a dependency since this is where the license-maven-plugin plugin will find the license.txt file -->
@@ -352,7 +341,7 @@
             <dependency>
               <groupId>org.xwiki.commons</groupId>
               <artifactId>xwiki-commons-tool-verification-resources</artifactId>
-              <version>13.9-SNAPSHOT</version>
+              <version>14.5-SNAPSHOT</version>
             </dependency>
           </dependencies>
           <executions>
@@ -366,7 +355,7 @@
         <plugin>
           <groupId>org.xwiki.commons</groupId>
           <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
-          <version>13.9-SNAPSHOT</version>
+          <version>14.5-SNAPSHOT</version>
           <configuration>
             <!-- Add missing license headers by default -->
             <formatLicense>true</formatLicense>
@@ -389,7 +378,7 @@
             <dependency>
               <groupId>org.xwiki.commons</groupId>
               <artifactId>xwiki-commons-tool-archiver</artifactId>
-              <version>13.9-SNAPSHOT</version>
+              <version>14.5-SNAPSHOT</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -401,7 +390,7 @@
             <dependency>
               <groupId>org.xwiki.commons</groupId>
               <artifactId>xwiki-commons-tool-archiver</artifactId>
-              <version>13.9-SNAPSHOT</version>
+              <version>14.5-SNAPSHOT</version>
             </dependency>
           </dependencies>
         </plugin>

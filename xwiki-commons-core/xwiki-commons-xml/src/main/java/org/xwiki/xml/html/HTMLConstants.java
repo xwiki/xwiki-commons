@@ -176,6 +176,12 @@ public interface HTMLConstants
     String TAG_STRONG = "strong";
 
     /**
+     * HTML &lt;tt&gt; tag name.
+     * @since 14.0RC1
+     */
+    String TAG_TT = "tt";
+
+    /**
      * HTML &lt;p&gt; tag name.
      */
     String TAG_P = "p";
@@ -299,6 +305,90 @@ public interface HTMLConstants
      * HTML &lt;dl&gt; tag name.
      */
     String TAG_DL = "dl";
+
+    /**
+     * HTML &lt;article&gt; tag.
+     * @since 14.0RC1
+     */
+    String TAG_ARTICLE = "article";
+
+    /**
+     * HTML &lt;aside&gt; tag.
+     * @since 14.0RC1
+     */
+    String TAG_ASIDE = "aside";
+
+    /**
+     * HTML &lt;details&gt; tag.
+     * @since 14.0RC1
+     */
+    String TAG_DETAILS = "details";
+
+    /**
+     * HTML &lt;figure&gt; tag.
+     * @since 14.0RC1
+     */
+    String TAG_FIGURE = "figure";
+
+    /**
+     * HTML &lt;figcaption&gt; tag.
+     * @since 14.0RC1
+     */
+    String TAG_FIGCAPTION = "figcaption";
+
+    /**
+     * HTML &lt;footer&gt; tag.
+     * @since 14.0RC1
+     */
+    String TAG_FOOTER = "footer";
+
+    /**
+     * HTML &lt;header&gt; tag.
+     * @since 14.0RC1
+     */
+    String TAG_HEADER = "header";
+
+    /**
+     * HTML &lt;hgroup&gt; tag.
+     * @since 14.0RC1
+     */
+    String TAG_HGROUP = "hgroup";
+
+    /**
+     * HTML &lt;main&gt; tag.
+     * @since 14.0RC1
+     */
+    String TAG_MAIN = "main";
+
+    /**
+     * HTML &lt;menu&gt; tag.
+     * @since 14.0RC1
+     */
+    String TAG_MENU = "menu";
+
+    /**
+     * HTML &lt;nav&gt; tag.
+     * @since 14.0RC1
+     */
+    String TAG_NAV = "nav";
+
+    /**
+     * HTML &lt;section&gt; tag.
+     * @since 14.0RC1
+     */
+    String TAG_SECTION = "section";
+
+    /**
+     * HTML &lt;template&gt; tag.
+     * @since 14.0RC1
+     */
+    String TAG_TEMPLATE = "template";
+
+    /**
+     * HTML &lt;svg&gt; tag.
+     * @since 14.0RC1
+     */
+    String TAG_SVG = "svg";
 
     /**
      * HTML id attribute name.

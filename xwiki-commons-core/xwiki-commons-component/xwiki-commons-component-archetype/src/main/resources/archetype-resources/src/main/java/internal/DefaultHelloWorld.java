@@ -25,7 +25,7 @@ import org.xwiki.component.annotation.Component;
 import javax.inject.Singleton;
 
 /**
- * Implementation of a <tt>HelloWorld</tt> component.
+ * Implementation of a {@code HelloWorld} component.
  *
  * @version $Id$
  */

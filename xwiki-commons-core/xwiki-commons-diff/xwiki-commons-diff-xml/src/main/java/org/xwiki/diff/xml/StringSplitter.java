@@ -22,7 +22,6 @@ package org.xwiki.diff.xml;
 import java.util.List;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Used to split strings before computing their changes and to re-create the strings after applying patches.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @since 12.0RC1
  */
 @Role
-@Unstable
 public interface StringSplitter
 {
     /**

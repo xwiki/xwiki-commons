@@ -50,6 +50,14 @@ import org.xwiki.xml.XMLUtils;
  */
 public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
 {
+    /**
+     * The name of the standard binding to access this tool in XWiki.
+     * 
+     * @since 14.1RC1
+     * @since 13.10.3
+     */
+    public static final String DEFAULT_KEY = "escapetool";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(EscapeTool.class);
 
     /** Equals sign. */
@@ -57,6 +65,14 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
 
     /** And sign. */
     private static final String AND = "&";
+
+    /**
+     * Change the default key defined in {@link org.apache.velocity.tools.generic.EscapeTool}.
+     */
+    public EscapeTool()
+    {
+        setKey(DEFAULT_KEY);
+    }
 
     /**
      * Escapes the XML special characters in a <code>String</code> using numerical XML entities. This overrides the base

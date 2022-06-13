@@ -36,8 +36,16 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Documented
 @Retention(RUNTIME)
-@Target({ FIELD, ANNOTATION_TYPE })
+@Target({FIELD, ANNOTATION_TYPE})
 @Inherited
 public @interface MockComponent
 {
+    /**
+     * The class to mock for this component.
+     * 
+     * @return the list of roles
+     * @since 14.0RC1
+     * @since 13.10.2
+     */
+    Class<?> classToMock() default MockComponent.class;
 }

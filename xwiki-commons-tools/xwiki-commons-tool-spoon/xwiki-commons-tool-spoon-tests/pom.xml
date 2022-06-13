@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-tool-spoon</artifactId>
-    <version>13.9-SNAPSHOT</version>
+    <version>14.5-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-tool-spoon-tests</artifactId>
   <name>XWiki Commons - Tools - Spoon - Tests</name>
@@ -40,6 +40,13 @@
       <artifactId>spoon-core</artifactId>
       <version>${spoon.version}</version>
       <scope>test</scope>
+      <!-- TODO: Remove when https://github.com/INRIA/spoon/issues/4248 is fixed -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-model</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>

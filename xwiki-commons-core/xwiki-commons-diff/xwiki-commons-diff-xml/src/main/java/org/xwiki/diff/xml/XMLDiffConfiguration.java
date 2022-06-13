@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Used to configure the way we compute changes between two XML documents.
@@ -33,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @since 12.0RC1
  */
 @Role
-@Unstable
 public interface XMLDiffConfiguration
 {
     /**

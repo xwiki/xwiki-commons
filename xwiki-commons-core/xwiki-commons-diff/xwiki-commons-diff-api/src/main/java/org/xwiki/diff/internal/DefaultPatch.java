@@ -49,30 +49,30 @@ public class DefaultPatch<E> extends LinkedList<Delta<E>> implements Patch<E>
     }
 
     /**
-     * Convert {@link difflib.Patch} into {@link Patch}.
+     * Convert {@link com.github.difflib.patch.Patch} into {@link Patch}.
      *
-     * @param patch the {@link difflib.Patch} to convert
+     * @param patch the {@link com.github.difflib.patch.Patch} to convert
      * @throws DiffException error when converting the patch
      */
-    public DefaultPatch(difflib.Patch<E> patch) throws DiffException
+    public DefaultPatch(com.github.difflib.patch.Patch<E> patch) throws DiffException
     {
-        for (difflib.Delta<E> delta : patch.getDeltas()) {
+        for (com.github.difflib.patch.AbstractDelta<E> delta : patch.getDeltas()) {
             add(toDelta(delta));
         }
     }
 
     /**
-     * Convert {@link difflib.Delta} into {@link Delta}.
+     * Convert {@link com.github.difflib.patch.AbstractDelta} into {@link Delta}.
      *
-     * @param delta the {@link difflib.Delta} to convert
+     * @param delta the {@link com.github.difflib.patch.AbstractDelta} to convert
      * @return the {@link Delta}
      * @throws DiffException error when converting the delta
      */
-    private Delta<E> toDelta(difflib.Delta<E> delta) throws DiffException
+    private Delta<E> toDelta(com.github.difflib.patch.AbstractDelta<E> delta) throws DiffException
     {
         try {
             return DeltaFactory
-                .createDelta(delta.getOriginal(), delta.getRevised(), Delta.Type.valueOf(delta.getType().name()));
+                .createDelta(delta.getSource(), delta.getTarget(), Delta.Type.valueOf(delta.getType().name()));
         } catch (IllegalArgumentException e) {
             throw new DiffException(String.format("Failed to convert [%s] info [%s]. Unknown type [%s]", delta
                 .getClass().getName(), Delta.class.getName(), delta.getType().toString()), e);

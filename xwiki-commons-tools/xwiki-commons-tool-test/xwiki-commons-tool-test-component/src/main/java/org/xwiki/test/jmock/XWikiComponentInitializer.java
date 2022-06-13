@@ -29,9 +29,9 @@ import org.xwiki.test.internal.MockConfigurationSource;
  * Initialize a component manager used in unit tests.
  *
  * @version $Id$
- * @deprecated starting with 4.3.1 use {@link org.xwiki.test.ComponentManagerRule} instead
+ * @deprecated use {@link org.xwiki.test.junit5.mockito.ComponentTest} instead
  */
-@Deprecated
+@Deprecated(since = "4.3.1")
 public class XWikiComponentInitializer
 {
     private MockingComponentManager componentManager;
@@ -44,11 +44,16 @@ public class XWikiComponentInitializer
         this.configurationSource = new MockConfigurationSource();
 
         getComponentManager().registerComponent(MockConfigurationSource.getDescriptor(null), this.configurationSource);
-        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("xwikiproperties"), this.configurationSource);
-        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("xwikicfg"), this.configurationSource);
-        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("wiki"), this.configurationSource);
-        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("space"), this.configurationSource);
-        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("user"), this.configurationSource);
+        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("xwikiproperties"),
+            this.configurationSource);
+        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("xwikicfg"),
+            this.configurationSource);
+        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("wiki"),
+            this.configurationSource);
+        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("space"),
+            this.configurationSource);
+        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("user"),
+            this.configurationSource);
         getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("all"), this.configurationSource);
     }
 

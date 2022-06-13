@@ -23,15 +23,17 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.io.FileUtils;
-import org.apache.html.dom.HTMLDocumentImpl;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.html.HTMLElement;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSInput;
 import org.xml.sax.SAXException;
@@ -287,17 +289,22 @@ public class XMLUtilsTest
     }
 
     @Test
-    void serializeNode()
+    void serializeNode() throws ParserConfigurationException
     {
-        HTMLDocumentImpl node = new HTMLDocumentImpl();
-        String serialize = XMLUtils.serialize(node, false);
+        DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+        Document document = documentBuilder.newDocument();
+
+        String serialize = XMLUtils.serialize(document, false);
         assertEquals("", serialize);
 
-        Element body = node.createElement("body");
-        node.setBody((HTMLElement) body);
+        Element html = document.createElement("html");
+        document.appendChild(html);
+        Element body = document.createElement("body");
+        html.appendChild(body);
         body.setAttribute("class", "toto");
-        serialize = XMLUtils.serialize(node, false);
-        assertEquals("<HTML><HEAD/><BODY class=\"toto\"/></HTML>", serialize);
+        serialize = XMLUtils.serialize(document, false);
+        assertEquals("<html><body class=\"toto\"/></html>", serialize);
     }
 
     @Test

@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.xwiki.component.namespace.Namespace;
 import org.xwiki.extension.repository.search.ExtensionQuery;
-import org.xwiki.stability.Unstable;
 
 /**
  * Extends {@link ExtensionQuery} with extension index specific criteria.
@@ -33,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 12.10
  */
-@Unstable
 public class IndexedExtensionQuery extends ExtensionQuery
 {
     private final List<String> repositories = new ArrayList<>();
@@ -41,6 +39,10 @@ public class IndexedExtensionQuery extends ExtensionQuery
     private Boolean compatible;
 
     private List<Namespace> compatibleNamespaces;
+
+    private Boolean installed;
+
+    private List<Namespace> installedNamespaces;
 
     /**
      * No filtering. Usually return everything.
@@ -82,7 +84,7 @@ public class IndexedExtensionQuery extends ExtensionQuery
     }
 
     /**
-     * @return true if only compatible extension should be returned
+     * @return true if only compatible extensions should be returned
      */
     public Boolean getCompatible()
     {
@@ -95,5 +97,37 @@ public class IndexedExtensionQuery extends ExtensionQuery
     public List<Namespace> getCompatibleNamespaces()
     {
         return this.compatibleNamespaces;
+    }
+
+    /**
+     * @param installed true if only installed extensions should be returned
+     * @param namespaces the namespaces on which the extensions should be installed
+     * @return this
+     * @since 14.0RC1
+     */
+    public IndexedExtensionQuery setInstalled(boolean installed, Namespace... namespaces)
+    {
+        this.installed = installed;
+        this.installedNamespaces = Arrays.asList(namespaces);
+
+        return this;
+    }
+
+    /**
+     * @return true if only installed extension should be returned
+     * @since 14.0RC1
+     */
+    public Boolean getInstalled()
+    {
+        return this.installed;
+    }
+
+    /**
+     * @return the namespace on which the extensions should be installed
+     * @since 14.0RC1
+     */
+    public List<Namespace> getInstalledNamespaces()
+    {
+        return this.installedNamespaces;
     }
 }

@@ -27,9 +27,9 @@ import java.util.NoSuchElementException;
 import org.xwiki.blame.AnnotatedContent;
 import org.xwiki.blame.AnnotatedElement;
 
-import difflib.Chunk;
-import difflib.Delta;
-import difflib.DiffUtils;
+import com.github.difflib.patch.Chunk;
+import com.github.difflib.patch.AbstractDelta;
+import com.github.difflib.DiffUtils;
 
 /**
  * Hold content during blame analysis and provides actual results.
@@ -142,13 +142,13 @@ public class DefaultAnnotatedContent<R, E> implements AnnotatedContent<R, E>
      *
      * @param deltas the delta to apply to current content to move to previous revision.
      */
-    private void resolveToCurrent(List<Delta<E>> deltas)
+    private void resolveToCurrent(List<AbstractDelta<E>> deltas)
     {
         int lineOffset = 0;
 
-        for (Delta<E> d : deltas) {
-            Chunk<E> original = d.getOriginal();
-            Chunk<E> revised = d.getRevised();
+        for (AbstractDelta<E> d : deltas) {
+            Chunk<E> original = d.getSource();
+            Chunk<E> revised = d.getTarget();
 
             int pos = original.getPosition() + lineOffset;
             // delete lines

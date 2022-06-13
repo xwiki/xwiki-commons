@@ -128,7 +128,7 @@ public final class ExtensionUtils
 
     /**
      * @param readonly the exclusions
-     * @param extension the extension for which to append extension exclusions
+     * @param dependency the dependency from which to append extension exclusions
      * @return the new map of managed dependencies
      * @since 12.2
      */

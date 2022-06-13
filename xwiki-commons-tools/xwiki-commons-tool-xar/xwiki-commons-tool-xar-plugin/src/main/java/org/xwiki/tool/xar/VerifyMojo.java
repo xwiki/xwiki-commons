@@ -135,13 +135,13 @@ public class VerifyMojo extends AbstractVerifyMojo
             }
 
             // Verification 2: Verify authors
-            verifyAuthor(errors, xdoc.getAuthor(), String.format("Author must be [%s] but was [%s]",
-                AUTHOR, xdoc.getAuthor()));
+            verifyAuthor(errors, xdoc.getEffectiveMetadataAuthor(),
+                String.format("Effective author must be [%s] but was [%s]", AUTHOR, xdoc.getEffectiveMetadataAuthor()),
+                true);
             verifyAuthor(errors, xdoc.getContentAuthor(),
-                String.format("Content Author must be [%s] but was [%s]",
-                    AUTHOR, xdoc.getContentAuthor()));
-            verifyAuthor(errors, xdoc.getCreator(), String.format("Creator must be [%s] but was [%s]",
-                AUTHOR, xdoc.getCreator()));
+                String.format("Content Author must be [%s] but was [%s]", AUTHOR, xdoc.getContentAuthor()), true);
+            verifyAuthor(errors, xdoc.getCreator(),
+                String.format("Creator must be [%s] but was [%s]", AUTHOR, xdoc.getCreator()), true);
             verifyAttachmentAuthors(errors, xdoc.getAttachmentData());
 
             // Verification 3: Check for orphans, except for Main.WebHome since it's the topmost document
@@ -191,7 +191,7 @@ public class VerifyMojo extends AbstractVerifyMojo
             }
 
             // Verification 11: Verify that Translations documents don't use GLOBAL or USER visibility
-            if (!translationVisibilitySkip && xdoc.containsTranslations()) {
+            if (!this.translationVisibilitySkip && xdoc.containsTranslations()) {
                 for (String visibility : xdoc.getTranslationVisibilities()) {
                     if (visibility.equals("USER") || visibility.equals("GLOBAL")) {
                         errors.add(String.format("[%s] ([%s]) page contains a translation using a wrong visibility "
@@ -217,8 +217,13 @@ public class VerifyMojo extends AbstractVerifyMojo
             verifyAttachmentMimetypes(errors, xdoc.getAttachmentData());
 
             // Verification 15: Verify that date fields are not set.
-            if (!skipDates) {
+            if (!this.skipDates) {
                 verifyDateFields(errors, xdoc);
+            }
+
+            // Verification 16: Verify that author fields are not set.
+            if (!this.skipAuthors) {
+                verifyAuthorFields(errors, xdoc);
             }
 
             // Display errors
@@ -269,7 +274,7 @@ public class VerifyMojo extends AbstractVerifyMojo
 
     private void verifyDateFields(List<String> errors, XWikiDocument xdoc)
     {
-        if (!skipDatesDocumentList.contains(xdoc.getReference())) {
+        if (!this.skipDatesDocumentList.contains(xdoc.getReference())) {
             if (xdoc.isDatePresent()) {
                 errors.add("'date' field is present");
             }
@@ -288,9 +293,16 @@ public class VerifyMojo extends AbstractVerifyMojo
         }
     }
 
-    private void verifyAuthor(List<String> errors, String author, String message)
+    private void verifyAuthorFields(List<String> errors, XWikiDocument xdoc)
     {
-        if (!AUTHOR.equals(author)) {
+        if (!this.skipAuthorsDocumentList.contains(xdoc.getReference()) && xdoc.isOriginalMetadataAuthorPresent()) {
+            errors.add("'originalMetadataAuthor' field is present");
+        }
+    }
+
+    private void verifyAuthor(List<String> errors, String author, String message, boolean mandatory)
+    {
+        if ((author != null || mandatory) && !AUTHOR.equals(author)) {
             errors.add(message);
         }
     }
@@ -299,7 +311,8 @@ public class VerifyMojo extends AbstractVerifyMojo
     {
         for (Map<String, String> data : attachmentData) {
             String author = data.get("author");
-            verifyAuthor(errors, author, String.format("Attachment author must be [%s] but was [%s]", AUTHOR, author));
+            verifyAuthor(errors, author, String.format("Attachment author must be [%s] but was [%s]", AUTHOR, author),
+                true);
         }
     }
 
@@ -322,5 +335,4 @@ public class VerifyMojo extends AbstractVerifyMojo
         }
         return true;
     }
-
 }

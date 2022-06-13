@@ -72,7 +72,8 @@ public final class DeltaFactory
      * @param <E> the type of element being compared.
      * @return a new instance of a delta.
      */
-    public static <E> Delta<E> createDelta(difflib.Chunk<E> original, difflib.Chunk<E> revised, Delta.Type type)
+    public static <E> Delta<E> createDelta(com.github.difflib.patch.Chunk<E> original,
+        com.github.difflib.patch.Chunk<E> revised, Delta.Type type)
     {
         switch (type)
         {

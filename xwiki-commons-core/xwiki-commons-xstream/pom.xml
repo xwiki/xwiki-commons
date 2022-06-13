@@ -25,14 +25,14 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-core</artifactId>
-    <version>13.9-SNAPSHOT</version>
+    <version>14.5-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-xstream</artifactId>
   <name>XWiki Commons - XStream</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - XStream</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.52</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.51</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>

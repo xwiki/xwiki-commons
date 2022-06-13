@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-component</artifactId>
-    <version>13.9-SNAPSHOT</version>
+    <version>14.5-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-component-archetype</artifactId>
   <name>XWiki Commons - Component - Component Archetype</name>
@@ -77,7 +77,7 @@
       <extension>
         <groupId>org.apache.maven.archetype</groupId>
         <artifactId>archetype-packaging</artifactId>
-        <version>2.1</version>
+        <version>${maven.archetype.version}</version>
       </extension>
     </extensions>
     <plugins>

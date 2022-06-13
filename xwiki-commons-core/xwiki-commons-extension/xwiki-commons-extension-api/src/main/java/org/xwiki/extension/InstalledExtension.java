@@ -67,6 +67,12 @@ public interface InstalledExtension extends LocalExtension
     String PKEY_DEPENDENCY = PKEY_PREFIX + "dependency";
 
     /**
+     * @see #getNamespaces()
+     * @since 14.0RC1
+     */
+    String FIELD_INSTALLED_NAMESPACES = "installedNamespaces";
+
+    /**
      * @return the actual extension
      */
     LocalExtension getLocalExtension();

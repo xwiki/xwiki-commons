@@ -37,7 +37,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.PlexusContainer;
 import org.xwiki.extension.Extension;
-import org.xwiki.stability.Unstable;
 import org.xwiki.tool.extension.ComponentRepresentation;
 import org.xwiki.tool.extension.ExtensionOverride;
 import org.xwiki.tool.extension.internal.ExtensionMojoCoreExtensionRepository;
@@ -96,7 +95,6 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
      *
      * @since 12.2
      */
-    @Unstable
     @Parameter
     protected List<ComponentRepresentation> disabledComponents;
 

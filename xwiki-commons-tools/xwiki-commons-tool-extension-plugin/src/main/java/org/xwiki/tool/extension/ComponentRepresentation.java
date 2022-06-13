@@ -21,7 +21,6 @@ package org.xwiki.tool.extension;
 
 import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.internal.RoleHint;
-import org.xwiki.stability.Unstable;
 
 /**
  * A class to represent a {@link org.xwiki.component.descriptor.ComponentRole} with a serialized type.
@@ -29,7 +28,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 12.2
  */
-@Unstable
 public class ComponentRepresentation
 {
     private String role;

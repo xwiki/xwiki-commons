@@ -92,8 +92,9 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
 
     private static final String CK_IGNORED_DEPENDENCIES = CK_PREFIX + "ignoredDependencies";
 
-    private static final Set<String> DEFAULT_IGNORED_DEPENDENCIES = new HashSet<>(
-        Arrays.asList("stax:stax", "javax.xml.stream:stax-api", "stax:stax-api", "xalan:xalan", "xalan:serializer"));
+    private static final Set<String> DEFAULT_IGNORED_DEPENDENCIES =
+        new HashSet<>(Arrays.asList("stax:stax", "javax.xml.stream:stax-api", "stax:stax-api", "xalan:xalan",
+            "xalan:serializer", "xml-apis:xml-apis", "xerces:xmlParserAPIs"));
 
     /**
      * The logger to log.

@@ -30,9 +30,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * @version $Id$
  * @since 4.2M3
- * @deprecated starting with 4.3.1 use {@link org.xwiki.test.mockito.MockitoComponentMockingRule} instead
+ * @deprecated use {@link org.xwiki.test.junit5.mockito.InjectMockComponents} instead
  */
-@Deprecated
+@Deprecated(since = "4.3.1")
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface MockingRequirements

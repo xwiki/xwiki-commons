@@ -72,7 +72,7 @@ public class XWikiExtensionRepositoryFactory extends AbstractExtensionRepository
      * JAXBContext is thread safe but Marshaller is not.
      * 
      * @return a new instance of Marshaller
-     * @throws JAXBException if an error was encountered while creating the <tt>Marshaller</tt> object
+     * @throws JAXBException if an error was encountered while creating the {@code Marshaller} object
      */
     public Marshaller createMarshaller() throws JAXBException
     {
@@ -83,7 +83,7 @@ public class XWikiExtensionRepositoryFactory extends AbstractExtensionRepository
      * JAXBContext is thread safe but Unmarshaller is not.
      * 
      * @return a new instance of Unmarshaller
-     * @throws JAXBException if an error was encountered while creating the <tt>Unmarshaller</tt> object
+     * @throws JAXBException if an error was encountered while creating the {@code Unmarshaller} object
      */
     public Unmarshaller createUnmarshaller() throws JAXBException
     {

@@ -217,8 +217,7 @@ public interface MutableExtension extends Extension
      * 
      * @param <T> type of the property value
      * @param key the property key
-     * @return the previous value associated with <tt>key</tt>, or <tt>null</tt> if there was no mapping for
-     *         <tt>key</tt>;
+     * @return the previous value associated with {@code key}, or {@code null} if there was no mapping for {@code key}
      */
     <T> T removeProperty(String key);
 }

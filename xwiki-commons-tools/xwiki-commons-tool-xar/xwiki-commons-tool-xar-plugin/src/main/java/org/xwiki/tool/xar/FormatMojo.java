@@ -110,6 +110,10 @@ public class FormatMojo extends AbstractVerifyMojo
         if (node != null) {
             node.setText(AUTHOR);
         }
+        node = domdoc.selectSingleNode("xwikidoc/originalMetadataAuthor");
+        if (node != null) {
+            node.setText(AUTHOR);
+        }
         node = domdoc.selectSingleNode("xwikidoc/contentAuthor");
         if (node != null) {
             node.setText(AUTHOR);
@@ -166,6 +170,9 @@ public class FormatMojo extends AbstractVerifyMojo
             removeNodes("xwikidoc/date", domdoc);
             removeNodes("xwikidoc/contentUpdateDate", domdoc);
             removeNodes("xwikidoc//attachment/date", domdoc);
+        }
+        if (!this.skipAuthors && !this.skipAuthorsDocumentList.contains(documentName)) {
+            removeNodes("xwikidoc/originalMetadataAuthor", domdoc);            
         }
     }
 

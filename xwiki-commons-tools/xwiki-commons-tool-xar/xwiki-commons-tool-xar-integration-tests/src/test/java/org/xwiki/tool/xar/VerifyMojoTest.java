@@ -41,7 +41,7 @@ public class VerifyMojoTest extends AbstractMojoTest
     void executeWithWrongAuthor() throws Exception
     {
         verifyExecution("/wrongAuthor", "Verifying [Space/WebHome.xml]... errors",
-            "- Author must be [xwiki:XWiki.Admin] but was [wrongAuthor]", "There are errors in the XAR XML files!");
+            "- Effective author must be [xwiki:XWiki.Admin] but was [wrongAuthor]", "There are errors in the XAR XML files!");
     }
 
     @Test
@@ -230,6 +230,17 @@ public class VerifyMojoTest extends AbstractMojoTest
             "- 'date' field is present",
             "- 'contentUpdateDate' field is present",
             "- 'creationDate' field is present",
+            "There are errors in the XAR XML files!");
+        // @formatter:on
+    }
+
+    @Test
+    void executeWithOriginalAuthorPresent() throws Exception
+    {
+        // @formatter:off
+        verifyExecution("/originalAuthorPresent",
+            "Verifying [Space/WebHome.xml]... errors",
+            "- 'originalMetadataAuthor' field is present",
             "There are errors in the XAR XML files!");
         // @formatter:on
     }

@@ -46,9 +46,8 @@ import org.xwiki.test.jmock.annotation.MockingRequirement;
 import org.xwiki.test.jmock.annotation.MockingRequirements;
 
 /**
- * Unit tests for Components should extend this class instead of the older
- * {@link org.xwiki.test.jmock.AbstractComponentTestCase} test class. To use this class, annotate your test class with
- * with {@link org.xwiki.test.jmock.annotation.MockingRequirement}, passing the implementation class you're testing.
+ * To use this class, annotate your test class with {@link org.xwiki.test.jmock.annotation.MockingRequirement},
+ * passing the implementation class you're testing.
  * Then in your test code, do a lookup of your component under test and you'll get a component instance which has all
  * its injected dependencies mocked automatically. For example:
  * <pre>{@code
@@ -77,9 +76,9 @@ import org.xwiki.test.jmock.annotation.MockingRequirements;
  *
  * @version $Id$
  * @since 2.2M1
- * @deprecated starting with 4.3.1 use {@link org.xwiki.test.mockito.MockitoComponentMockingRule} instead
+ * @deprecated use {@link org.xwiki.test.junit5.mockito.ComponentTest} instead
  */
-@Deprecated
+@Deprecated(since = "4.3.1")
 public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockingTestCase
 {
     private MockingComponentManager componentManager;

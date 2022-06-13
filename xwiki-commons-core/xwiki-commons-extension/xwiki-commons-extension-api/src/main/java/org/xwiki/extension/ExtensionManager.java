@@ -28,7 +28,6 @@ import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
-import org.xwiki.stability.Unstable;
 
 /**
  * Main entry point for some extensions management tasks.
@@ -44,7 +43,6 @@ public interface ExtensionManager
      * @return true if the extension exists in the repository
      * @since 12.10
      */
-    @Unstable
     default boolean exists(ExtensionId extensionId)
     {
         try {
@@ -119,7 +117,7 @@ public interface ExtensionManager
     /**
      * Return a repository based on its id.
      * <p>
-     * This method also return <tt>local</tt>, <tt>installed</tt> and <tt>core</tt> repositories.
+     * This method also return {@code local}, {@code installed} and {@code core} repositories.
      *
      * @param repositoryId the id of the repository
      * @return the repository

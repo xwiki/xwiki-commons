@@ -19,7 +19,7 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import java.awt.*;
+import java.awt.Color;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

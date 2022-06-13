@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-pom</artifactId>
-    <version>13.9-SNAPSHOT</version>
+    <version>14.5-SNAPSHOT</version>
     <relativePath>../xwiki-commons-pom</relativePath>
   </parent>
   <artifactId>xwiki-commons-core</artifactId>
@@ -53,6 +53,7 @@
     <module>xwiki-commons-job</module>
     <module>xwiki-commons-logging</module>
     <module>xwiki-commons-management</module>
+    <module>xwiki-commons-netflux</module>
     <module>xwiki-commons-observation</module>
     <module>xwiki-commons-properties</module>
     <module>xwiki-commons-repository</module>
@@ -76,6 +77,32 @@
               <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
             </archive>
           </configuration>
+        </plugin>
+        <!-- Used to automatically register our custom JUnit5 Extensions using the service loader mechanism.
+             We also need to have the JAR containing our extensions visible to JUnit5's ClassLoader. This is
+             done here and not in the top level pom.xml, as otherwise it would cause a cyclic dependency.
+        -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <dependencies>
+            <dependency>
+              <groupId>org.xwiki.commons</groupId>
+              <artifactId>xwiki-commons-tool-test-simple</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <dependencies>
+            <dependency>
+              <groupId>org.xwiki.commons</groupId>
+              <artifactId>xwiki-commons-tool-test-simple</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+          </dependencies>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -165,65 +192,40 @@
 
                  Common justification example:
 
-                 <revapi.differences>
-                   <justification>This change is necessary to fix bug #1234</justification>
-                   <criticality>highlight</criticality>
-                   <differences>
-                     <item>
-                       <code>java.method.addToInterface</code>
-                       <fullQualifiedClassName>com.acme.ToolInterface</fullyQualifiedClassName>
-                       <new>method void com.acme.ToolInterface::setup()</new>
-                     </item>
-                     <item>
-                       <code>java.method.removed</code>
-                       <fullQualifiedClassName>com.acme.ToolInterface</fullyQualifiedClassName>
-                       <old>method void com.acme.ToolInterface::initialize()</old>
-                       <justification>...</justification>
-                     </item>
-                   </differences>
-                 </revapi.differences>
+            <revapi.differences>
+              <justification>This change is necessary to fix bug #1234</justification>
+              <criticality>highlight</criticality>
+              <differences>
+                <item>
+                  <code>java.method.addToInterface</code>
+                  <fullQualifiedClassName>com.acme.ToolInterface</fullyQualifiedClassName>
+                  <new>method void com.acme.ToolInterface::setup()</new>
+                </item>
+                <item>
+                  <code>java.method.removed</code>
+                  <fullQualifiedClassName>com.acme.ToolInterface</fullyQualifiedClassName>
+                  <old>method void com.acme.ToolInterface::initialize()</old>
+                  <justification>...</justification>
+                </item>
+              </differences>
+            </revapi.differences>
 
                  Single justification example:
 
-                 <revapi.differences>
-                   <differences>
-                     <item>
-                       <code>java.method.removed</code>
-                       <old>method void org.xwiki.diff.xml.XMLDiff::xxx()</old>
-                       <justification>Unstable API added by mistake.</justification>
-                       <criticality>highlight</criticality>
-                     </item>
-                   </differences>
-                 </revapi.differences>
+            <revapi.differences>
+              <differences>
+                <item>
+                  <code>java.method.removed</code>
+                  <old>method void org.xwiki.diff.xml.XMLDiff::xxx()</old>
+                  <justification>Unstable API added by mistake.</justification>
+                  <criticality>highlight</criticality>
+                </item>
+              </differences>
+            </revapi.differences>
             -->
+            
           </analysisConfiguration>
         </configuration>
-      </plugin>
-      <!-- Used to automatically register our custom JUnit5 Extensions using the service loader mechanism.
-           We also need to have the JAR containing our extensions visible to JUnit5's ClassLoader. This is
-           done here and not in the top level pom.xml, as otherwise it would cause a cyclic dependency.
-      -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>org.xwiki.commons</groupId>
-            <artifactId>xwiki-commons-tool-test-simple</artifactId>
-            <version>${project.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>org.xwiki.commons</groupId>
-            <artifactId>xwiki-commons-tool-test-simple</artifactId>
-            <version>${project.version}</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
   </build>
