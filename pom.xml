@@ -115,7 +115,7 @@
 
     <!-- Closure compiler -->
     <closure-compiler.version>v20220601</closure-compiler.version>
-    <closure-compiler-maven-plugin.version>2.22.0</closure-compiler-maven-plugin.version>
+    <closure-compiler-maven-plugin.version>2.23.0</closure-compiler-maven-plugin.version>
 
     <!-- Maven Archetype -->
     <maven.archetype.version>3.2.1</maven.archetype.version>
