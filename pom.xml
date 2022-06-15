@@ -210,7 +210,9 @@
     <plexus-containers.version>2.1.1</plexus-containers.version>
 
     <!-- The version of Maven Enforcer plugin -->
-    <maven-enforcer.version>3.0.0</maven-enforcer.version>
+    <maven-enforcer.version>1.4.1</maven-enforcer.version>
+    <!-- The version of Maven used by enforcer plugin -->
+    <maven.maven-enforcer.version>2.2.1</maven.maven-enforcer.version>
 
     <!-- The version of the Maven Plugin Tools (maven-plugin-*) -->
     <maven.plugin.tools.version>3.6.4</maven.plugin.tools.version>
@@ -253,6 +255,9 @@
     <argLine/>
 
   </properties>
+  <prerequisites>
+    <maven>${maven.minimum.version}</maven>
+  </prerequisites>
   <licenses>
     <license>
       <name>LGPL 2.1</name>
@@ -1432,20 +1437,6 @@
           <skip>${xwiki.enforcer.skip}</skip>
         </configuration>
         <executions>
-          <!-- Make sure the right version of Maven is used -->
-          <execution>
-            <id>enforce-maven</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireMavenVersion>
-                  <version>${maven.minimum.version}</version>
-                </requireMavenVersion>
-              </rules>
-            </configuration>
-          </execution>
           <!-- Check that all Maven plugins have versions defined -->
           <execution>
             <id>enforce-plugins</id>
@@ -1719,7 +1710,7 @@
               </rules>
             </configuration>
           </execution>
-          <!-- Check that we're using latest version of Jakarta Annotation -->
+          <!-- Check that we're using latest version of Jakarta Mail -->
           <execution>
             <id>enforce-jakarta.annotation-api</id>
             <goals>
