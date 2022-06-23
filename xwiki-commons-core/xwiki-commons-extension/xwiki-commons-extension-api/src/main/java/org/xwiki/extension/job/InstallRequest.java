@@ -64,7 +64,7 @@ public class InstallRequest extends AbstractExtensionRequest
 
     /**
      * @return whether or not the wiki creation should fail if the database already exists
-     * @since 14.5RC1
+     * @since 14.5
      */
     public boolean isFailOnExist()
     {
@@ -73,7 +73,7 @@ public class InstallRequest extends AbstractExtensionRequest
 
     /**
      * @param failOnExist whether or not the wiki creation should fail if the database already exists
-     * @since 14.5RC1
+     * @since 14.5
      */
     public void setFailOnExist(boolean failOnExist)
     {

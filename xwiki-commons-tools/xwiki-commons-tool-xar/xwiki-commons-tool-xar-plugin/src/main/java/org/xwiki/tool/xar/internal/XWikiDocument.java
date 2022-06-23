@@ -573,7 +573,7 @@ public class XWikiDocument
 
     /**
      * @return {@code true} if the original metadata author is present in the document; false otherwise
-     * @since 14.5RC1
+     * @since 14.5
      */
     public boolean isOriginalMetadataAuthorPresent()
     {

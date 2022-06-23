@@ -114,7 +114,7 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     /**
      * Disables the check for the existence of the author fields.
      *
-     * @since 14.5RC1
+     * @since 14.5
      */
     @Parameter(property = "xar.authors.skip", defaultValue = "false")
     protected boolean skipAuthors;
@@ -122,7 +122,7 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     /**
      * Disables the check for the existence of the author fields.
      *
-     * @since 14.5RC1
+     * @since 14.5
      */
     @Parameter(property = "xar.authors.skip.documentList")
     protected Set<String> skipAuthorsDocumentList;
