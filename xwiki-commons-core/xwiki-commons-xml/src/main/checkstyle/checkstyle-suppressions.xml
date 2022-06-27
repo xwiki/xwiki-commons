@@ -36,4 +36,9 @@
   <!-- XWikiDomSerializer copied from DomSerializer -->
   <suppress checks="CyclomaticComplexity" files="XWikiDOMSerializer" />
   <suppress checks="NPathComplexity" files="XWikiDOMSerializer" />
+
+  <!-- These files have lists of strings copied from a source, making them constants would complicate updating from
+   upstream. -->
+  <suppress checks="MultipleStringLiterals"
+    files="SecureHTMLElementSanitizer.java|HTMLDefinitions.java|MathMLDefinitions.java|SVGDefinitions.java"/>
 </suppressions>
