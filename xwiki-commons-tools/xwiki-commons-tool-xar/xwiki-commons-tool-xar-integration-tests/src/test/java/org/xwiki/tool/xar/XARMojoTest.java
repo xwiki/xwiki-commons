@@ -32,8 +32,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
-import org.codehaus.plexus.logging.Logger;
-import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
 import org.junit.jupiter.api.Test;
@@ -78,7 +76,6 @@ public class XARMojoTest extends AbstractMojoTest
         // Extract the generated XAR so that we verify its content easily
         File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
         ZipUnArchiver unarchiver = new ZipUnArchiver(xarFile);
-        unarchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_ERROR, "xar"));
         unarchiver.setDestDirectory(tempDir);
         unarchiver.extract();
 
@@ -130,7 +127,6 @@ public class XARMojoTest extends AbstractMojoTest
             // Extract package.xml and extract all the entries one by one and read them as a XWiki Document to verify
             // they're valid.
             ZipUnArchiver unarchiver = new ZipUnArchiver(xarFile);
-            unarchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_ERROR, "xar"));
             unarchiver.setDestDirectory(tempDir);
             unarchiver.extract();
 
@@ -169,7 +165,6 @@ public class XARMojoTest extends AbstractMojoTest
         // Extract the generated XAR so that we verify its content easily
         File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
         ZipUnArchiver unarchiver = new ZipUnArchiver(xarFile);
-        unarchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_ERROR, "xar"));
         unarchiver.setDestDirectory(tempDir);
         unarchiver.extract();
 
@@ -195,7 +190,6 @@ public class XARMojoTest extends AbstractMojoTest
         // Extract the generated XAR so that we verify its content easily
         File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
         ZipUnArchiver unarchiver = new ZipUnArchiver(xarFile);
-        unarchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_ERROR, "xar"));
         unarchiver.setDestDirectory(tempDir);
         unarchiver.extract();
 
@@ -226,7 +220,6 @@ public class XARMojoTest extends AbstractMojoTest
         // Extract the generated XAR so that we verify its content easily
         File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
         ZipUnArchiver unarchiver = new ZipUnArchiver(xarFile);
-        unarchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_ERROR, "xar"));
         unarchiver.setDestDirectory(tempDir);
         unarchiver.extract();
 

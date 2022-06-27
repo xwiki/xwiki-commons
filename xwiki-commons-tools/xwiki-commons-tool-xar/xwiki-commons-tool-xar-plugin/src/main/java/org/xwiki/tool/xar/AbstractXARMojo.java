@@ -46,7 +46,6 @@ import org.apache.maven.project.artifact.InvalidDependencyVersionException;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.components.io.fileselectors.FileSelector;
 import org.codehaus.plexus.components.io.fileselectors.IncludeExcludeFileSelector;
-import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.xwiki.tool.xar.internal.XWikiDocument;
 
@@ -215,7 +214,6 @@ abstract class AbstractXARMojo extends AbstractMojo
         try {
             ZipUnArchiver unArchiver = new ZipUnArchiver();
             unArchiver.setEncoding(this.encoding);
-            unArchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_ERROR, logName));
             unArchiver.setSourceFile(file);
             unArchiver.setDestDirectory(location);
 
