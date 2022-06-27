@@ -25,11 +25,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.configuration.internal.RestrictedConfigurationSourceProvider;
 import org.xwiki.context.internal.DefaultExecution;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.xml.internal.html.DefaultHTMLCleaner;
 import org.xwiki.xml.internal.html.DefaultHTMLCleanerTest;
+import org.xwiki.xml.internal.html.DefaultHTMLElementSanitizer;
+import org.xwiki.xml.internal.html.HTMLDefinitions;
+import org.xwiki.xml.internal.html.HTMLElementSanitizerConfiguration;
+import org.xwiki.xml.internal.html.MathMLDefinitions;
+import org.xwiki.xml.internal.html.SVGDefinitions;
+import org.xwiki.xml.internal.html.SecureHTMLElementSanitizer;
 import org.xwiki.xml.internal.html.XWikiHTML5TagProvider;
 import org.xwiki.xml.internal.html.filter.AttributeFilter;
 import org.xwiki.xml.internal.html.filter.BodyFilter;
@@ -38,6 +45,7 @@ import org.xwiki.xml.internal.html.filter.FontFilter;
 import org.xwiki.xml.internal.html.filter.LinkFilter;
 import org.xwiki.xml.internal.html.filter.ListFilter;
 import org.xwiki.xml.internal.html.filter.ListItemFilter;
+import org.xwiki.xml.internal.html.filter.SanitizerFilter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -58,6 +66,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     BodyFilter.class,
     AttributeFilter.class,
     ControlCharactersFilter.class,
+    SanitizerFilter.class,
+    DefaultHTMLElementSanitizer.class,
+    SecureHTMLElementSanitizer.class,
+    HTMLElementSanitizerConfiguration.class,
+    RestrictedConfigurationSourceProvider.class,
+    HTMLDefinitions.class,
+    MathMLDefinitions.class,
+    SVGDefinitions.class,
     DefaultHTMLCleaner.class,
     DefaultExecution.class,
     XWikiHTML5TagProvider.class

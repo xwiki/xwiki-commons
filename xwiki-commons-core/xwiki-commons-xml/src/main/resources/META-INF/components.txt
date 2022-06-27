@@ -6,6 +6,7 @@ org.xwiki.xml.internal.html.filter.BodyFilter
 org.xwiki.xml.internal.html.filter.ControlCharactersFilter
 org.xwiki.xml.internal.html.filter.AttributeFilter
 org.xwiki.xml.internal.html.filter.UniqueIdFilter
+org.xwiki.xml.internal.html.filter.SanitizerFilter
 org.xwiki.xml.internal.html.DefaultHTMLCleaner
 org.xwiki.xml.internal.html.XWikiHTML5TagProvider
 org.xwiki.xml.internal.html.DefaultHTMLElementSanitizer

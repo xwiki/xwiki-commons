@@ -108,6 +108,10 @@ public class DefaultHTMLCleaner implements HTMLCleaner
     private HTMLFilter controlFilter;
 
     @Inject
+    @Named("sanitizer")
+    private HTMLFilter sanitizerFilter;
+
+    @Inject
     private Execution execution;
 
     @Inject
@@ -201,7 +205,8 @@ public class DefaultHTMLCleaner implements HTMLCleaner
             this.listFilter,
             this.fontFilter,
             this.attributeFilter,
-            this.linkFilter));
+            this.linkFilter,
+            this.sanitizerFilter));
         return configuration;
     }
 
