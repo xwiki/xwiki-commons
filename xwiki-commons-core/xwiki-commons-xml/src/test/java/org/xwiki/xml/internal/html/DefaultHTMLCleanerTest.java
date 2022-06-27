@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.configuration.internal.RestrictedConfigurationSourceProvider;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
@@ -49,6 +50,7 @@ import org.xwiki.xml.internal.html.filter.FontFilter;
 import org.xwiki.xml.internal.html.filter.LinkFilter;
 import org.xwiki.xml.internal.html.filter.ListFilter;
 import org.xwiki.xml.internal.html.filter.ListItemFilter;
+import org.xwiki.xml.internal.html.filter.SanitizerFilter;
 import org.xwiki.xml.internal.html.filter.UniqueIdFilter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -71,6 +73,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
     DefaultHTMLCleaner.class,
     LinkFilter.class,
     ControlCharactersFilter.class,
+    SanitizerFilter.class,
+    DefaultHTMLElementSanitizer.class,
+    SecureHTMLElementSanitizer.class,
+    HTMLElementSanitizerConfiguration.class,
+    RestrictedConfigurationSourceProvider.class,
+    HTMLDefinitions.class,
+    MathMLDefinitions.class,
+    SVGDefinitions.class,
     XWikiHTML5TagProvider.class
 })
 // @formatter:on
@@ -107,7 +117,7 @@ public class DefaultHTMLCleanerTest
 
     /**
      * Cleans using the cleaner configuration {@link DefaultHTMLCleanerTest#cleanerConfiguration}.
-     *
+     * <p>
      * Ensures that always the correct configuration is used and allows executing the same tests for HTML 4 and HTML 5.
      *
      * @param originalHtmlContent The content to clean as string.
@@ -323,6 +333,31 @@ public class DefaultHTMLCleanerTest
     }
 
     /**
+     * Verify that the restricted parameter forbids dangerous attributes and tags.
+     */
+    @Test
+    void restrictedAttributesAndTags() throws Exception
+    {
+        Map<String, String> parameters = new HashMap<>(this.cleanerConfiguration.getParameters());
+        parameters.put("restricted", "true");
+        this.cleanerConfiguration.setParameters(parameters);
+
+        assertHTML("<p><img src=\"img.png\" /></p>", "<img onerror=\"alert(1)\" src=img.png />");
+        assertHTML("<p><a>Hello!</a></p>", "<a href=\"javascript:alert(1)\">Hello!</a>");
+        assertHTML("<p></p>", "<iframe src=\"whatever\"/>");
+
+        // Check that SVG is still working in restricted mode.
+        cleanSVGTags();
+        cleanTitleWithNamespace();
+
+        // Check that MathML is still working in restricted mode.
+        assertHTML("<p><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mtext>X</mtext><mi><span>foo</span>"
+                + "</mi></math></p>",
+            "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><span></span><mtext>X</mtext><mi><span>foo</span>"
+                + "</mi></math>");
+    }
+
+    /**
      * Verify that passing a fully-formed XHTML header works fine.
      */
     @Test
@@ -366,30 +401,29 @@ public class DefaultHTMLCleanerTest
      * also
      * <a href="https://jira.xwiki.org/browse/XWIKI-9753">XWIKI-9753</a>).
      */
-    @Disabled("See https://jira.xwiki.org/browse/XWIKI-9753")
     @Test
     void cleanTitleWithNamespace()
     {
         // Test with TITLE in HEAD
         String input =
-            "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en\" xml:lang=\"en\">\n"
-                + "  <head>\n"
+            "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en\">"
+                + "<head>\n"
                 + "    <title>Title test</title>\n"
-                + "  </head>\n"
-                + "  <body>\n"
+                + "  </head>"
+                + "<body>\n"
                 + "    <p>before</p>\n"
-                + "    <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"300\" width=\"500\">\n"
+                + "    <p><svg xmlns=\"http://www.w3.org/2000/svg\" height=\"300\" width=\"500\">\n"
                 + "      <g>\n"
                 + "        <title>SVG Title Demo example</title>\n"
                 + "        <rect height=\"50\" style=\"fill:none; stroke:blue; stroke-width:1px\" width=\"200\" x=\"10\" "
-                + "y=\"10\"></rect>\n" + "      </g>\n" + "    </svg>\n" + "    <p>after</p>\n";
+                + "y=\"10\"></rect>\n" + "      </g>\n" + "    </svg></p>\n" + "    <p>after</p>\n";
         assertEquals(getHeader() + input + FOOTER,
             HTMLUtils.toString(clean(input)));
     }
 
     /**
-     * Verify that a xmlns namespace set on the HTML element is not removed by default and it's removed if {@link
-     * HTMLCleanerConfiguration#NAMESPACES_AWARE} is set to false.
+     * Verify that a xmlns namespace set on the HTML element is not removed by default and it's removed if
+     * {@link HTMLCleanerConfiguration#NAMESPACES_AWARE} is set to false.
      */
     @Test
     void cleanHTMLTagWithNamespace()
@@ -409,7 +443,19 @@ public class DefaultHTMLCleanerTest
     }
 
     /**
-     * Test that cleaning an empty DIV works (it used to fail, see <a href="https://jira.xwiki.org/browse/XWIKI-4007">XWIKI-4007</a>).
+     * Check that template tags inside select don't survive, might be security-relevant, DOMPurify contains a similar
+     * check, see <a href="https://github.com/cure53/DOMPurify/commit/e32ca248c0e9450fb182e52e978631cbd78f1123">commit
+     * e32ca248c0 in DOMPurify</a>.
+     */
+    @Test
+    void cleanTemplateInsideSelect()
+    {
+        assertHTML("<p><select></select></p>", "<select><template></template></select>");
+    }
+
+    /**
+     * Test that cleaning an empty DIV works (it used to fail, see <a
+     * href="https://jira.xwiki.org/browse/XWIKI-4007">XWIKI-4007</a>).
      */
     @Test
     void cleanEmptyDIV()
@@ -607,7 +653,7 @@ public class DefaultHTMLCleanerTest
 
     /**
      * Check what happens when the dt-tag is inside div.
-     *
+     * <p>
      * This should add a wrapping dl but doesn't for HTML 4, but it works in HTML5, see
      * {@link HTML5HTMLCleanerTest#divWithDt()}.
      *
