@@ -25,18 +25,20 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 
 /**
- * Performs checks on the version specified for dependencies in pom.xml files. For example if we're in XWiki Rendering
- * and there's a dependency on some XWiki Commons module we might want to ensure that it uses a variable (such as
- * {@code ${commons.version}}) and not {@code ${project.version}}. To achieve this you would use:
+ * Performs checks on the type specified for dependencies in pom.xml files. For example in XWiki Standard we want to
+ * prevent extension with package {@code jar} and {@code webjar} to depend on {@code xar} extensions. To achieve this
+ * you would use:
  *
  * <pre>
  * <code>
  *   &lt;rules&gt;
  *     &lt;validateDependencyVersion implementation="org.xwiki.tool.enforcer.BannedDependencyType"&gt;
- *       &lt;versionCheck&gt;
- *         &lt;projectPackaging&gt;jar&lt;/projectPackaging&gt;
- *         &lt;dependencyType&gt;xar&lt;/dependencyType&gt;
- *       &lt;/versionCheck&gt;
+ *       &lt;projectPackaging&gt;jar&lt;/projectPackaging&gt;
+ *       &lt;dependencyType&gt;xar&lt;/dependencyType&gt;
+ *     &lt;/validateDependencyVersion&gt;
+ *     &lt;validateDependencyVersion implementation="org.xwiki.tool.enforcer.BannedDependencyType"&gt;
+ *       &lt;projectPackaging&gt;webjar&lt;/projectPackaging&gt;
+ *       &lt;dependencyType&gt;xar&lt;/dependencyType&gt;
  *     &lt;/validateDependencyVersion&gt;
  *   &lt;/rules&gt;
  * </code>
