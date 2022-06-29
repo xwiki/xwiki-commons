@@ -26,8 +26,8 @@ import org.apache.maven.model.Model;
 
 /**
  * Performs checks on the type specified for dependencies in pom.xml files. For example in XWiki Standard we want to
- * prevent extension with package {@code jar} and {@code webjar} to depend on {@code xar} extensions. To achieve this
- * you would use:
+ * prevent extension with package {@code jar} and {@code webjar} to depend on {@code xar} extensions but only if the
+ * module does not ends with -test-docker or -test-tests. To achieve this you would use:
  *
  * <pre>
  * <code>
@@ -51,6 +51,18 @@ import org.apache.maven.model.Model;
  */
 public class BannedDependencyType extends AbstractPomCheck
 {
+    private static final String JAR = "jar";
+
+    /**
+     * The group id pattern of the project to check.
+     */
+    private String projectGroupId;
+
+    /**
+     * The artifact id pattern of the project to check.
+     */
+    private String projectArtifactId;
+
     /**
      * The packaging of the project to check.
      */
@@ -63,32 +75,68 @@ public class BannedDependencyType extends AbstractPomCheck
     {
         Model model = getModel(helper);
 
-        if (this.projectPackaging == null || model.getPackaging().equals(projectPackaging)) {
-            for (Dependency dependency : model.getDependencies()) {
-                if (isRuntime(dependency) && getType(dependency).equals(this.dependencyType)) {
-                    StringBuilder builder = new StringBuilder("Found dependency with banned type [");
-                    builder.append(this.dependencyType);
-                    builder.append("]");
-                    if (this.projectPackaging != null) {
-                        builder.append(" for a project with packaging [");
-                        builder.append(this.projectPackaging);
-                        builder.append("]");
-                    }
-                    builder.append(": ");
-                    builder.append(dependency);
-                    throw new EnforcerRuleException(builder.toString());
-                }
+        // Check the packaging
+        if (skipProjectPackaging(model)) {
+            helper.getLog().info("Skipping as the packaging does not match [" + this.projectPackaging + "]");
+
+            return;
+        }
+
+        // Check the group id
+        if (skipProjectGroupId(model)) {
+            helper.getLog().info("Skipping as the group id does not match [" + this.projectGroupId + "]");
+
+            return;
+        }
+
+        // Check the artifact id
+        if (skiphProjectArtifactId(model)) {
+            helper.getLog().info("Skipping as the artifact id does not match [" + this.projectArtifactId + "]");
+
+            return;
+        }
+
+        for (Dependency dependency : model.getDependencies()) {
+            if (isRuntime(dependency) && getType(dependency).equals(this.dependencyType)) {
+                throw new EnforcerRuleException(
+                    "Found dependency with banned type [" + this.dependencyType + "]: " + dependency);
             }
         }
     }
 
+    private boolean skipPattern(String value, String pattern)
+    {
+        return pattern != null && !value.matches(pattern);
+    }
+
+    private boolean skipProjectPackaging(Model model)
+    {
+        return skipPattern(getPackaging(model), this.projectPackaging);
+    }
+
+    private boolean skipProjectGroupId(Model model)
+    {
+        return skipPattern(model.getGroupId(), this.projectGroupId);
+    }
+
+    private boolean skiphProjectArtifactId(Model model)
+    {
+        return skipPattern(model.getArtifactId(), this.projectArtifactId);
+    }
+
     private boolean isRuntime(Dependency dependency)
     {
-        return dependency.getScope() == null || dependency.getScope().equals("runtime");
+        return dependency.getScope() == null || dependency.getScope().equals("runtime")
+            || dependency.getScope().equals("build");
+    }
+
+    private String getPackaging(Model model)
+    {
+        return model.getPackaging() != null ? model.getPackaging() : JAR;
     }
 
     private String getType(Dependency dependency)
     {
-        return dependency.getType() != null ? dependency.getType() : "jar";
+        return dependency.getType() != null ? dependency.getType() : JAR;
     }
 }
