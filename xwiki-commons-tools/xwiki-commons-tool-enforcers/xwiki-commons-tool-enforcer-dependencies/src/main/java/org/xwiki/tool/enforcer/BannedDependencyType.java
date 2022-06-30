@@ -45,7 +45,7 @@ import org.apache.maven.model.Model;
  * </pre>
  *
  * @version $Id$
- * @since 14.5RC1
+ * @since 14.6RC1
  * @since 14.4.3
  * @since 13.10.8
  */
