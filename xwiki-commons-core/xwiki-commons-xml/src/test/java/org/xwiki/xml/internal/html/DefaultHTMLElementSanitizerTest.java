@@ -30,15 +30,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.configuration.ConfigurationSource;
-import org.xwiki.configuration.internal.RestrictedConfigurationSourceProvider;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.test.LogLevel;
-import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.test.mockito.MockitoComponentManager;
+import org.xwiki.xml.html.DefaultHTMLElementSanitizerComponentList;
 import org.xwiki.xml.html.HTMLConstants;
 import org.xwiki.xml.html.HTMLElementSanitizer;
 
@@ -57,15 +56,7 @@ import static org.mockito.Mockito.when;
  * @since 14.6RC1
  */
 @ComponentTest
-@ComponentList({ DefaultHTMLElementSanitizer.class,
-    SecureHTMLElementSanitizer.class,
-    InsecureHTMLElementSanitizer.class,
-    HTMLElementSanitizerConfiguration.class,
-    RestrictedConfigurationSourceProvider.class,
-    HTMLDefinitions.class,
-    MathMLDefinitions.class,
-    SVGDefinitions.class
-})
+@DefaultHTMLElementSanitizerComponentList
 class DefaultHTMLElementSanitizerTest
 {
     private static final String EXPECTED_ERROR_LOADING_FOO =
@@ -88,9 +79,6 @@ class DefaultHTMLElementSanitizerTest
     @MockComponent
     @Named("restricted")
     private ConfigurationSource configurationSource;
-
-    @MockComponent
-    private Execution execution;
 
     @BeforeEach
     void mockConfiguration()
@@ -147,34 +135,38 @@ class DefaultHTMLElementSanitizerTest
     }
 
     @Test
-    void customFromExecutionContext(MockitoComponentManager componentManager) throws ComponentLookupException
+    void customFromExecutionContext(MockitoComponentManager componentManager) throws Exception
     {
         when(this.configurationSource.getProperty(any(), eq(SecureHTMLElementSanitizer.HINT)))
             .thenReturn(SecureHTMLElementSanitizer.HINT);
+
+        Execution mockExecution = componentManager.registerMockComponent(Execution.class, true);
 
         HTMLElementSanitizer htmlElementSanitizer = componentManager.getInstance(HTMLElementSanitizer.class);
         assertFalse(htmlElementSanitizer.isElementAllowed(FOO));
 
         ExecutionContext context = new ExecutionContext();
         context.setProperty(HTMLElementSanitizer.EXECUTION_CONTEXT_HINT_KEY, INSECURE);
-        when(this.execution.getContext()).thenReturn(context);
+        when(mockExecution.getContext()).thenReturn(context);
 
         assertTrue(htmlElementSanitizer.isElementAllowed(FOO));
     }
 
     @Test
     void fallBackToConfiguredWhenExecutionContextHintIsInvalid(MockitoComponentManager componentManager)
-        throws ComponentLookupException
+        throws Exception
     {
         when(this.configurationSource.getProperty(any(), eq(SecureHTMLElementSanitizer.HINT)))
             .thenReturn(SecureHTMLElementSanitizer.HINT);
+
+        Execution mockExecution = componentManager.registerMockComponent(Execution.class, true);
 
         HTMLElementSanitizer htmlElementSanitizer = componentManager.getInstance(HTMLElementSanitizer.class);
         assertFalse(htmlElementSanitizer.isElementAllowed(FOO));
 
         ExecutionContext context = new ExecutionContext();
         context.setProperty(HTMLElementSanitizer.EXECUTION_CONTEXT_HINT_KEY, FOO);
-        when(this.execution.getContext()).thenReturn(context);
+        when(mockExecution.getContext()).thenReturn(context);
 
         assertFalse(htmlElementSanitizer.isElementAllowed(FOO));
 

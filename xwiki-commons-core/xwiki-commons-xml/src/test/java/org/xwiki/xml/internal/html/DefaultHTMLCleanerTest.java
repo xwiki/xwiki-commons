@@ -36,21 +36,12 @@ import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.configuration.internal.RestrictedConfigurationSourceProvider;
-import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.xml.html.DefaultHTMLCleanerComponentList;
 import org.xwiki.xml.html.HTMLCleanerConfiguration;
 import org.xwiki.xml.html.HTMLUtils;
 import org.xwiki.xml.html.filter.HTMLFilter;
-import org.xwiki.xml.internal.html.filter.AttributeFilter;
-import org.xwiki.xml.internal.html.filter.BodyFilter;
-import org.xwiki.xml.internal.html.filter.ControlCharactersFilter;
-import org.xwiki.xml.internal.html.filter.FontFilter;
-import org.xwiki.xml.internal.html.filter.LinkFilter;
-import org.xwiki.xml.internal.html.filter.ListFilter;
-import org.xwiki.xml.internal.html.filter.ListItemFilter;
-import org.xwiki.xml.internal.html.filter.SanitizerFilter;
 import org.xwiki.xml.internal.html.filter.UniqueIdFilter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,28 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @since 1.6M1
  */
 @ComponentTest
-// @formatter:off
-@ComponentList({
-    ListFilter.class,
-    ListItemFilter.class,
-    FontFilter.class,
-    BodyFilter.class,
-    AttributeFilter.class,
-    UniqueIdFilter.class,
-    DefaultHTMLCleaner.class,
-    LinkFilter.class,
-    ControlCharactersFilter.class,
-    SanitizerFilter.class,
-    DefaultHTMLElementSanitizer.class,
-    SecureHTMLElementSanitizer.class,
-    HTMLElementSanitizerConfiguration.class,
-    RestrictedConfigurationSourceProvider.class,
-    HTMLDefinitions.class,
-    MathMLDefinitions.class,
-    SVGDefinitions.class,
-    XWikiHTML5TagProvider.class
-})
-// @formatter:on
+@DefaultHTMLCleanerComponentList
 public class DefaultHTMLCleanerTest
 {
     public static final String HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
