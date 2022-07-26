@@ -35,11 +35,10 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.project.DefaultProjectBuildingRequest;
+import org.apache.maven.project.InvalidProjectModelException;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
-import org.apache.maven.project.ProjectBuildingResult;
 
 /**
  * Extends the Maven Remote Resources plugin to fix memory issue found in it, see
@@ -88,8 +87,8 @@ public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
     @Parameter(defaultValue = "${localRepository}", readonly = true, required = true)
     private ArtifactRepository localRepositoryThis;
 
-    @Component(role = ProjectBuilder.class)
-    private ProjectBuilder mavenProjectBuilderThis;
+    @Component(role = MavenProjectBuilder.class)
+    private MavenProjectBuilder mavenProjectBuilderThis;
 
     /**
      * List of Remote Repositories used by the resolver.
@@ -121,39 +120,40 @@ public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
         List<MavenProject> licenses = new ArrayList<>(artifacts.size());
 
         for (Artifact artifact : artifacts) {
-            getLog().debug(String.format("Building project for [%s]", artifact));
-
-            MavenProject dependencyProject;
             try {
-                DefaultProjectBuildingRequest request = new DefaultProjectBuildingRequest();
-                request.setLocalRepository(this.localRepositoryThis);
-                request.setRemoteRepositories(this.remoteArtifactRepositoriesThis);
-                ProjectBuildingResult result = this.mavenProjectBuilderThis.build(artifact, request);
-                dependencyProject = result.getProject();
-            } catch (ProjectBuildingException e) {
-                getLog().warn(String.format(
-                    "Invalid project model for artifact [%s:%s:%s]. "
-                        + "It will be ignored by the remote resources Mojo.",
-                    artifact.getArtifactId(), artifact.getGroupId(), artifact.getVersion()));
-                continue;
-            }
+                getLog().debug(String.format("Building project for [%s]", artifact));
 
-            // Extract license and a summary of the project metadata
-            Model miniModel = new Model();
-            MavenProject miniProject = new MavenProject(miniModel);
-            miniProject.setArtifact(dependencyProject.getArtifact());
-            miniProject.setGroupId(dependencyProject.getGroupId());
-            miniProject.setArtifactId(dependencyProject.getArtifactId());
-            miniProject.setVersion(dependencyProject.getVersion());
-            miniProject.setUrl(dependencyProject.getUrl());
-            for (License license : dependencyProject.getLicenses()) {
+                MavenProject dependencyProject = null;
+                try {
+                    dependencyProject = this.mavenProjectBuilderThis.buildFromRepository(artifact,
+                        this.remoteArtifactRepositoriesThis, this.localRepositoryThis);
+                } catch (InvalidProjectModelException e) {
+                    getLog().warn(String.format(
+                        "Invalid project model for artifact [%s:%s:%s]. It will be ignored by "
+                            + "the remote resources Mojo.",
+                        artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion()));
+                    continue;
+                }
+
+                // Extract license and a summary of the project metadata
+                Model miniModel = new Model();
+                MavenProject miniProject = new MavenProject(miniModel);
+                miniProject.setArtifact(dependencyProject.getArtifact());
+                miniProject.setGroupId(dependencyProject.getGroupId());
+                miniProject.setArtifactId(dependencyProject.getArtifactId());
+                miniProject.setVersion(dependencyProject.getVersion());
+                miniProject.setUrl(dependencyProject.getUrl());
+                for (License license : dependencyProject.getLicenses()) {
+                    // Get rid of XML source metadata
+                    miniProject.addLicense(cloneLicense(license));
+                }
                 // Get rid of XML source metadata
-                miniProject.addLicense(cloneLicense(license));
-            }
-            // Get rid of XML source metadata
-            miniProject.setOrganization(cloneOrganization(dependencyProject.getOrganization()));
+                miniProject.setOrganization(cloneOrganization(dependencyProject.getOrganization()));
 
-            licenses.add(miniProject);
+                licenses.add(miniProject);
+            } catch (ProjectBuildingException e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            }
         }
 
         return licenses;
