@@ -41,5 +41,6 @@
     <module>xwiki-commons-legacy-configuration</module>
     <module>xwiki-commons-legacy-properties</module>
     <module>xwiki-commons-legacy-velocity</module>
+    <module>xwiki-commons-legacy-velocity-tools</module>
   </modules>
 </project>
