@@ -79,8 +79,8 @@
 
     <!-- JUnit -->
     <junit.version>4.13.2</junit.version>
-    <junit5.version>5.8.2</junit5.version>
-    <junit.platform.version>1.8.2</junit.platform.version>
+    <junit5.version>5.9.0</junit5.version>
+    <junit.platform.version>1.9.0</junit.platform.version>
     <junit.vintage.version>${junit5.version}</junit.vintage.version>
 
     <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
@@ -1357,7 +1357,7 @@
       <dependency>
         <groupId>org.jgroups</groupId>
         <artifactId>jgroups</artifactId>
-        <version>4.2.6.Final</version>
+        <version>5.2.4.Final</version>
       </dependency>
       <!-- Used by Solr and Infinispan -->
       <dependency>
@@ -2184,7 +2184,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.3.0</version>
+          <version>3.4.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
