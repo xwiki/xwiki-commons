@@ -42,11 +42,4 @@
     <module>xwiki-commons-legacy-properties</module>
     <module>xwiki-commons-legacy-velocity</module>
   </modules>
-  <dependencies>
-    <!-- Needed for backward compatibility Aspects -->
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjrt</artifactId>
-    </dependency>
-  </dependencies>
 </project>
