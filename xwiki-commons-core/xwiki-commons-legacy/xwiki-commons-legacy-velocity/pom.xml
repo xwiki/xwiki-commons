@@ -51,6 +51,11 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-legacy-velocity-tools</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-legacy-component-api</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -70,44 +75,5 @@
       </exclusions>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <!-- Add specific excludes for this module for license checks -->
-      <plugin>
-        <groupId>com.mycila</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <!-- ListTool is code from old Velocity version embedded here for retro compatibility -->
-            <exclude>**/org/apache/velocity/tools/generic/ListTool.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <executions>
-          <execution>
-            <!-- Specify the "default" execution id so that the "blocker" one is always executed -->
-            <id>default</id>
-            <configuration>
-              <excludes>
-                <!-- ListTool is code from old Velocity version embedded here for retro compatibility -->
-                org/apache/velocity/tools/generic/ListTool.java
-              </excludes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <!-- ListTool is code from old Velocity version embedded here for retro compatibility  -->
-          <excludePackageNames combine.children="append">org.apache.*</excludePackageNames>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
        
