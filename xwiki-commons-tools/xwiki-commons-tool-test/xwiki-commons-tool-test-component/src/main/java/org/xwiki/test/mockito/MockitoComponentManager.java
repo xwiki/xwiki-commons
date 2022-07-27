@@ -21,6 +21,7 @@ package org.xwiki.test.mockito;
 
 import java.lang.reflect.Type;
 
+import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.test.TestComponentManager;
@@ -94,10 +95,18 @@ public class MockitoComponentManager extends TestComponentManager
             }
         }
 
-        // Mock the component and register it
+        T mock;
         @SuppressWarnings("unchecked")
-        T mock = (T) mock(classToMock != null ? classToMock : ReflectionUtils.getTypeClass(roleType));
+        Class<T> type = classToMock != null ? classToMock : ReflectionUtils.getTypeClass(roleType);
+
+        // Mock the component and register it
+        if (!StringUtils.isEmpty(roleHint)) {
+            mock = mock(type, roleHint);
+        } else {
+            mock = mock(type);
+        }
         registerComponent(roleType, roleHint, mock);
+
         return mock;
     }
 
