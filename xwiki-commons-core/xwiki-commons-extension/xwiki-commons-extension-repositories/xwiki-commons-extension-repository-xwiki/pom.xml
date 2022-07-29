@@ -38,7 +38,7 @@
       org.xwiki.platform:xwiki-platform-extension-repository-xwiki-handler,org.xwiki.commons:xwiki-commons-extension-repository-xwiki-handler
     </xwiki.extension.features>
     <!-- Name to display by the Extension Manager -->
-    <xwiki.extension.name>Extension Repository Connector - XWiki</xwiki.extension.name>
+    <xwiki.extension.name>XWiki connector for Extension Repository</xwiki.extension.name>
   </properties>
   <dependencies>
     <dependency>

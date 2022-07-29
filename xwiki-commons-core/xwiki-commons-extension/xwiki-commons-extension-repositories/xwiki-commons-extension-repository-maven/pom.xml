@@ -38,7 +38,7 @@
       org.xwiki.platform:xwiki-platform-extension-repository-aether,org.xwiki.commons:xwiki-commons-extension-repository-maven
     </xwiki.extension.features>
     <!-- Name to display by the Extension Manager -->
-    <xwiki.extension.name>Extension Repository Connector - Maven</xwiki.extension.name>
+    <xwiki.extension.name>Maven connector for Extension Repository</xwiki.extension.name>
     <!-- TODO: Remove once the tests have been fixed to not output anything to the console! -->
     <xwiki.surefire.captureconsole.skip>true</xwiki.surefire.captureconsole.skip>
   </properties>
