@@ -122,7 +122,7 @@ private void buildInternal(map)
       }
       // Keep builds for 7 days since we want to be able to see all builds if there are a lot at a given time, to be
       // able to identify flickers, etc.
-      daysToKeepStr = env.BRANCH_NAME == 'master' ? '7' : null
+      daysToKeepStr = '7'
     }
 }
 
