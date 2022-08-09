@@ -28,7 +28,6 @@ import javax.inject.Named;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.job.InstallRequest;
-import org.xwiki.job.Request;
 
 /**
  * Create an Extension installation plan.
@@ -49,19 +48,6 @@ public class InstallPlanJob extends AbstractInstallPlanJob<InstallRequest>
     public String getType()
     {
         return JOBTYPE;
-    }
-
-    @Override
-    protected InstallRequest castRequest(Request request)
-    {
-        InstallRequest installRequest;
-        if (request instanceof InstallRequest) {
-            installRequest = (InstallRequest) request;
-        } else {
-            installRequest = new InstallRequest(request);
-        }
-
-        return installRequest;
     }
 
     @Override

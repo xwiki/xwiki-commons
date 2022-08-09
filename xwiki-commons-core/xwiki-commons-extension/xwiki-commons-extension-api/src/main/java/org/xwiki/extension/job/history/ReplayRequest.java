@@ -22,6 +22,7 @@ package org.xwiki.extension.job.history;
 import java.util.List;
 
 import org.xwiki.job.AbstractRequest;
+import org.xwiki.job.Request;
 
 /**
  * The request used for replaying records from the extension job history.
@@ -37,6 +38,24 @@ public class ReplayRequest extends AbstractRequest
     private static final long serialVersionUID = 1L;
 
     private static final String PROPERTY_RECORDS = "records";
+
+    /**
+     * Default constructor.
+     */
+    public ReplayRequest()
+    {
+    }
+
+    /**
+     * @param request the request to copy
+     * @since 14.7RC1
+     * @since 14.4.4
+     * @since 13.10.9
+     */
+    public ReplayRequest(Request request)
+    {
+        super(request);
+    }
 
     /**
      * @return the list of history records that are being replayed
