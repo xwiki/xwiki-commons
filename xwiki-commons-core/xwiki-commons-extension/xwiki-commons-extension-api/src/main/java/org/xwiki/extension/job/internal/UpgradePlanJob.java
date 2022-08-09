@@ -37,7 +37,6 @@ import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
 import org.xwiki.extension.version.internal.VersionUtils;
-import org.xwiki.job.Request;
 
 /**
  * Create an Extension upgrade plan.
@@ -60,19 +59,6 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
     public String getType()
     {
         return JOBTYPE;
-    }
-
-    @Override
-    protected InstallRequest castRequest(Request request)
-    {
-        InstallRequest installRequest;
-        if (request instanceof InstallRequest) {
-            installRequest = (InstallRequest) request;
-        } else {
-            installRequest = new InstallRequest(request);
-        }
-
-        return installRequest;
     }
 
     private boolean isSkipped(InstalledExtension extension, String namespace)
