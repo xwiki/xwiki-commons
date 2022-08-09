@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension;
 
+import java.util.Optional;
+
 import org.xwiki.component.annotation.Role;
 
 /**
@@ -41,4 +43,15 @@ public interface ExtensionContext
      * Decrement by 1 the session level and destroy the current session when reaching the first level.
      */
     void popSession();
+
+    /**
+     * @return the current {@link ExtensionSession}
+     * @since 14.7RC1
+     * @since 14.4.4
+     * @since 13.10.9
+     */
+    default Optional<ExtensionSession> getExtensionSession()
+    {
+        return null;
+    }
 }

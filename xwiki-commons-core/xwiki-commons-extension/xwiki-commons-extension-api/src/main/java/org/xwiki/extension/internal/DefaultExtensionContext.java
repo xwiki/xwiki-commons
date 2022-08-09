@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension.internal;
 
+import java.util.Optional;
+
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
@@ -73,5 +75,13 @@ public class DefaultExtensionContext implements ExtensionContext
                 this.threadLocal.remove();
             }
         }
+    }
+
+    @Override
+    public Optional<ExtensionSession> getExtensionSession()
+    {
+        ExtensionSessionEntry entry = this.threadLocal.get();
+
+        return entry != null ? Optional.of(entry.session) : Optional.empty();
     }
 }
