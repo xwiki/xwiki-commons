@@ -28,7 +28,6 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.job.UninstallRequest;
-import org.xwiki.job.Request;
 
 /**
  * Create an Extension uninstallation plan.
@@ -49,19 +48,6 @@ public class UninstallPlanJob extends AbstractExtensionPlanJob<UninstallRequest>
     public String getType()
     {
         return JOBTYPE;
-    }
-
-    @Override
-    protected UninstallRequest castRequest(Request request)
-    {
-        UninstallRequest uninstallRequest;
-        if (request instanceof UninstallRequest) {
-            uninstallRequest = (UninstallRequest) request;
-        } else {
-            uninstallRequest = new UninstallRequest(request);
-        }
-
-        return uninstallRequest;
     }
 
     @Override

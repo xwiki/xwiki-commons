@@ -20,6 +20,8 @@
 package org.xwiki.job;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.ParameterizedType;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +37,7 @@ import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextException;
@@ -346,6 +349,22 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
     @SuppressWarnings("unchecked")
     protected R castRequest(Request request)
     {
+        // Get the type of the request
+        ParameterizedType genericType = (ParameterizedType) ReflectionUtils.resolveType(AbstractJob.class, getClass());
+        Class<R> propertiesType = ReflectionUtils.getTypeClass(genericType.getActualTypeArguments()[0]);
+
+        // Make sure the passed request is compatible with the expected type, if not try to convert it
+        if (!propertiesType.isInstance(request)) {
+            try {
+                Constructor<R> constructor = propertiesType.getConstructor(Request.class);
+
+                return constructor.newInstance(request);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to convert the input request [" + request + "] into the expected ["
+                    + propertiesType + "] type.");
+            }
+        }
+
         return (R) request;
     }
 

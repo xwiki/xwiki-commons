@@ -34,7 +34,6 @@ import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.Job;
-import org.xwiki.job.Request;
 
 /**
  * Extension uninstallation related task.
@@ -70,19 +69,6 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest, Default
     public String getType()
     {
         return JOBTYPE;
-    }
-
-    @Override
-    protected UninstallRequest castRequest(Request request)
-    {
-        UninstallRequest uninstallRequest;
-        if (request instanceof UninstallRequest) {
-            uninstallRequest = (UninstallRequest) request;
-        } else {
-            uninstallRequest = new UninstallRequest(request);
-        }
-
-        return uninstallRequest;
     }
 
     @Override

@@ -37,7 +37,6 @@ import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.repository.LocalExtensionRepositoryException;
 import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.Job;
-import org.xwiki.job.Request;
 import org.xwiki.logging.marker.TranslationMarker;
 
 /**
@@ -76,19 +75,6 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
     public String getType()
     {
         return JOBTYPE;
-    }
-
-    @Override
-    protected InstallRequest castRequest(Request request)
-    {
-        InstallRequest installRequest;
-        if (request instanceof InstallRequest) {
-            installRequest = (InstallRequest) request;
-        } else {
-            installRequest = new InstallRequest(request);
-        }
-
-        return installRequest;
     }
 
     @Override
