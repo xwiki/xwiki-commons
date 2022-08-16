@@ -432,6 +432,8 @@ public final class XMLUtils
                     result.append(GT);
                     break;
                 case '{':
+                    // Not needed from XML point of view but escaping xwiki/2.x macro syntax helps avoid countless
+                    // security problems easily
                     result.append(LCURL);
                     break;
                 default:
@@ -447,6 +449,8 @@ public final class XMLUtils
      * For instance, {@code Jim & John} will be escaped and can thus be put inside an XML tag, such as the {@code p}
      * tag, as in {@code <p>Jim &amp; John</p>}.
      * Specifically, escapes &lt; to {@code &lt;}, and &amp; to {@code &amp;}.
+     * <p>
+     * Since 13.10.9, 14.4.4 and 14.7RC1 the character { is also escaped.
      *
      * @param content the text to escape, may be {@code null}.
      * @return a new escaped {@code String}, {@code null} if {@code null} input
@@ -472,6 +476,11 @@ public final class XMLUtils
                     break;
                 case '<':
                     result.append(LT);
+                    break;
+                case '{':
+                    // Not needed from XML point of view but escaping xwiki/2.x macro syntax helps avoid countless
+                    // security problems easily
+                    result.append(LCURL);
                     break;
                 default:
                     result.append(c);
