@@ -31,8 +31,10 @@ import javax.inject.Singleton;
 import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
+import org.xwiki.component.descriptor.ComponentRole;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.stability.Unstable;
 
 /**
  * Constructs a Component Descriptor out of a class definition that contains Annotations.
@@ -81,17 +83,36 @@ public class ComponentDescriptorFactory
     public <T> List<ComponentDescriptor<T>> createComponentDescriptors(Class<? extends T> componentClass,
         Type componentRoleType)
     {
+        return this.createComponentDescriptors(componentClass, componentRoleType, ComponentRole.DEFAULT_PRIORITY);
+    }
+
+    /**
+     * Create component descriptors for the passed component implementation class and component role class. There can be
+     * more than one descriptor if the component class has specified several hints.
+     *
+     * @param componentClass the component implementation class
+     * @param componentRoleType the component role type
+     * @param roleHintPriority the priority to use for comparing components sharing the same type and hint
+     * @param <T> the described class type
+     * @return the component descriptors with resolved component dependencies
+     * @since 14.8RC1
+     */
+    @Unstable
+    public <T> List<ComponentDescriptor<T>> createComponentDescriptors(Class<? extends T> componentClass,
+        Type componentRoleType, int roleHintPriority)
+    {
         List<ComponentDescriptor<T>> descriptors = new ArrayList<>();
 
         // If there's a @Named annotation, use it and ignore hints specified in the @Component annotation.
         String[] hints;
         Named named = componentClass.getAnnotation(Named.class);
+        Component component = componentClass.getAnnotation(Component.class);
+
         if (named != null) {
             hints = new String[] {named.value()};
         } else {
             // If the Component annotation has several hints specified ignore the default hint value and for each
             // specified hint create a Component Descriptor
-            Component component = componentClass.getAnnotation(Component.class);
             if (component != null && component.hints().length > 0) {
                 hints = component.hints();
             } else {
@@ -103,9 +124,17 @@ public class ComponentDescriptorFactory
             }
         }
 
+        int roleTypePriority;
+        if (component != null) {
+            roleTypePriority = component.roleTypePriority();
+        } else {
+            roleTypePriority = ComponentRole.DEFAULT_PRIORITY;
+        }
+
         // Create the descriptors
         for (String hint : hints) {
-            descriptors.add(createComponentDescriptor(componentClass, hint, componentRoleType));
+            descriptors.add(
+                createComponentDescriptor(componentClass, hint, componentRoleType, roleTypePriority, roleHintPriority));
         }
 
         return descriptors;
@@ -120,13 +149,15 @@ public class ComponentDescriptorFactory
      * @return the component descriptor with resolved component dependencies
      */
     private <T> ComponentDescriptor<T> createComponentDescriptor(Class<? extends T> componentClass, String hint,
-        Type componentRoleType)
+        Type componentRoleType, int roleTypePriority, int roleHintPriority)
     {
         DefaultComponentDescriptor<T> descriptor = new DefaultComponentDescriptor<>();
         descriptor.setRoleType(componentRoleType);
         descriptor.setImplementation(componentClass);
         descriptor.setRoleHint(hint);
         descriptor.setInstantiationStrategy(createComponentInstantiationStrategy(componentClass));
+        descriptor.setRoleTypePriority(roleTypePriority);
+        descriptor.setRoleHintPriority(roleHintPriority);
 
         // Set the injected fields.
         // Note: that we need to find all fields since we can have some inherited fields which are annotated in a

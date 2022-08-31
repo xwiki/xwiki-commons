@@ -25,6 +25,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.stability.Unstable;
 import org.xwiki.text.XWikiToStringBuilder;
 
 /**
@@ -42,6 +43,9 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
      * @see #getRoleHint()
      */
     private String roleHint = "default";
+
+    private int roleTypePriority = DEFAULT_PRIORITY;
+    private int roleHintPriority = DEFAULT_PRIORITY;
 
     /**
      * Default constructor.
@@ -98,6 +102,40 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
     public String getRoleHint()
     {
         return this.roleHint;
+    }
+
+    @Override
+    public int getRoleTypePriority()
+    {
+        return roleTypePriority;
+    }
+
+    /**
+     * @see #getRoleTypePriority()
+     * @param roleTypePriority the priority of the component to order components sharing same type
+     * @since 14.8RC1
+     */
+    @Unstable
+    public void setRoleTypePriority(int roleTypePriority)
+    {
+        this.roleTypePriority = roleTypePriority;
+    }
+
+    @Override
+    public int getRoleHintPriority()
+    {
+        return roleHintPriority;
+    }
+
+    /**
+     * @see #getRoleHintPriority()
+     * @param roleHintPriority the priority of the component to order components sharing same type and hint
+     * @since 14.8RC1
+     */
+    @Unstable
+    public void setRoleHintPriority(int roleHintPriority)
+    {
+        this.roleHintPriority = roleHintPriority;
     }
 
     @Override

@@ -58,6 +58,7 @@ import static org.mockito.Mockito.verify;
  * @version $Id$
  * @since 2.0M1
  */
+// This class needs to remain public because some interfaces are reused in ProviderIntegrationTest
 public class EmbeddableComponentManagerTest
 {
     @RegisterExtension
@@ -303,26 +304,39 @@ public class EmbeddableComponentManagerTest
         DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<>();
         cd1.setRoleType(Role.class);
         cd1.setImplementation(RoleImpl.class);
-        Role roleImpl = new RoleImpl();
-        ecm.registerComponent(cd1, roleImpl);
+        cd1.setRoleHintPriority(800);
+        Role roleImpl1 = new RoleImpl();
+        ecm.registerComponent(cd1, roleImpl1);
 
         // Register a component with the same Role as in the parent but with a different hint
+        // No priority defined here, the default one (1000) should be used
         DefaultComponentDescriptor<Role> cd2 = new DefaultComponentDescriptor<>();
         cd2.setRoleType(Role.class);
         cd2.setRoleHint("hint");
         cd2.setImplementation(RoleImpl.class);
         ecm.registerComponent(cd2);
+        Role roleImpl2 = new RoleImpl();
+        ecm.registerComponent(cd2, roleImpl2);
+
+        // Register a third component with the same Role as in the parent but with a different hint, for checking order
+        DefaultComponentDescriptor<Role> cd3 = new DefaultComponentDescriptor<>();
+        cd3.setRoleType(Role.class);
+        cd3.setRoleHint("hint2");
+        cd3.setImplementation(RoleImpl.class);
+        cd3.setRoleHintPriority(200);
+        ecm.registerComponent(cd3);
+        Role roleImpl3 = new RoleImpl();
+        ecm.registerComponent(cd3, roleImpl3);
 
         // Verify that the components are found
         // Note: We find only 2 components since 2 components are registered with the same Role and Hint.
 
         List<Role> instanceList = ecm.getInstanceList(Role.class);
-        assertEquals(2, instanceList.size());
-        assertSame(roleImpl, instanceList.get(0));
+        assertEquals(List.of(roleImpl3, roleImpl1, roleImpl2), instanceList);
 
         Map<String, Role> instances = ecm.getInstanceMap(Role.class);
-        assertEquals(2, instances.size());
-        assertSame(roleImpl, instances.get("default"));
+        assertEquals(3, instances.size());
+        assertSame(roleImpl1, instances.get("default"));
     }
 
     @Test
