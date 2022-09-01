@@ -196,7 +196,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
      * @param extension the extension for which to resolve the exclusive dependencies
      * @param namespace the namespace where to search for orphan extension dependencies
      * @return the extensions installed as dependency in the passed namespace and which no longer have backward
-     *         dependencies
+     *         dependencies if the extension is uninstalled
      * @since 11.10
      */
     default ExtensionNode<InstalledExtension> getOrphanedDependencies(InstalledExtension extension, Namespace namespace)
