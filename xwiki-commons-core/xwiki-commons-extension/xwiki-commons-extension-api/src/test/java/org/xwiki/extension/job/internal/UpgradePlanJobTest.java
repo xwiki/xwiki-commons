@@ -64,7 +64,7 @@ class UpgradePlanJobTest extends AbstractExtensionHandlerTest
 
         // Tree
 
-        assertEquals(2, plan.getTree().size());
+        assertEquals(3, plan.getTree().size());
 
         ExtensionPlanNode node = getNode(TestResources.REMOTE_UPGRADE20_ID, plan.getTree());
         ExtensionPlanAction action = node.getAction();
@@ -94,17 +94,17 @@ class UpgradePlanJobTest extends AbstractExtensionHandlerTest
 
         // Actions
 
-        assertEquals(3, plan.getActions().size());
+        assertEquals(5, plan.getActions().size());
 
         // //////////////////////
         // Exclude extension
 
-        assertEquals(0,
+        assertEquals(1,
             upgradePlan(null,
                 Arrays.asList(TestResources.REMOTE_UPGRADE10_ID, TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID))
                     .getTree().size());
-        assertEquals(1, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE10_ID)).getTree().size());
-        assertEquals(2, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE20_ID)).getTree().size());
+        assertEquals(2, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE10_ID)).getTree().size());
+        assertEquals(3, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE20_ID)).getTree().size());
     }
 
     @Test
@@ -181,7 +181,7 @@ class UpgradePlanJobTest extends AbstractExtensionHandlerTest
         // Tree
         // ////////
 
-        assertEquals(2, plan.getTree().size());
+        assertEquals(3, plan.getTree().size());
 
         // First node
         ExtensionPlanNode node = getNode(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, plan.getTree());
@@ -223,7 +223,7 @@ class UpgradePlanJobTest extends AbstractExtensionHandlerTest
         // Actions
         // ////////
 
-        assertEquals(4, plan.getActions().size());
+        assertEquals(6, plan.getActions().size());
     }
 
     @Test
