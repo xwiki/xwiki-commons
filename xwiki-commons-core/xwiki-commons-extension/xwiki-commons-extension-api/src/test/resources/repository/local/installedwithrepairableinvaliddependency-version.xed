@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<extension>
+  <id>installedwithrepairableinvaliddependency</id>
+  <version>version</version>
+  <type>test</type>
+  <dependencies>
+    <dependency>
+      <id>installeddepwithmissingdependency</id>
+      <version>version</version>
+    </dependency>
+  </dependencies>
+  <properties>
+    <installed.installed type="boolean">true</installed.installed>
+  </properties>
+</extension>

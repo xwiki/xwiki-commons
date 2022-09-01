@@ -95,7 +95,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
 
             this.optionalBackwardDependencies.add(extension);
 
-            if (!optional) {
+            if (!optional && extension.isValid(this.namespace)) {
                 this.backwardDependencies.add(extension);
             }
         }
@@ -629,14 +629,10 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
         Collection<String> namespaces = installedExtension.getNamespaces();
 
         if (namespaces == null) {
-            if (installedExtension.isValid(null)) {
-                updateMissingBackwardDependencies(installedExtension, null);
-            }
+            updateMissingBackwardDependencies(installedExtension, null);
         } else {
             for (String namespace : namespaces) {
-                if (installedExtension.isValid(namespace)) {
-                    updateMissingBackwardDependencies(installedExtension, namespace);
-                }
+                updateMissingBackwardDependencies(installedExtension, namespace);
             }
         }
     }
