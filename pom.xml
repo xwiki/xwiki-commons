@@ -1072,6 +1072,13 @@
         <version>${maven.resolver.version}</version>
       </dependency>
 
+      <!-- @API Guardian -->
+      <dependency>
+        <groupId>org.apiguardian</groupId>
+        <artifactId>apiguardian-api</artifactId>
+        <version>1.1.2</version>
+      </dependency>
+
       <!-- Everybody tests -->
       <dependency>
         <groupId>org.hamcrest</groupId>
