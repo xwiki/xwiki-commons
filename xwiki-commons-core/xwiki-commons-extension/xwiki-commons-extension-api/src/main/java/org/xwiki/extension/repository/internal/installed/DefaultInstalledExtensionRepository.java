@@ -63,7 +63,7 @@ import org.xwiki.extension.version.VersionConstraint;
 @Component
 @Singleton
 public class DefaultInstalledExtensionRepository extends AbstractInstalledExtensionRepository<DefaultInstalledExtension>
-    implements InstalledExtensionRepository, Initializable
+    implements Initializable
 {
     private static class InstalledRootFeature
     {
