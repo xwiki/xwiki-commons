@@ -538,9 +538,11 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
         }
 
         // VALID
-        // We cannot calculate the validity of a dependency before of dependency management and exclusions
-        if (!dependency) {
-            installedExtension.setValid(namespace, isValid(installedExtension, namespace, extensionContext));
+        boolean valid = isValid(installedExtension, namespace, extensionContext);
+        // It's not really possible to be sure if a dependency is valid or not at this level so we don't take into account invalid results
+        // TODO: find a better way to make sure dependency validity is fully accurately evaluated since it's possible to have dependency marked as valid while there are actually invalid
+        if (valid || !dependency) {
+            installedExtension.setValid(namespace, valid);
         }
 
         // Update caches
