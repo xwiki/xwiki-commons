@@ -52,6 +52,9 @@ public class TestResources
     public static final ExtensionId INSTALLED_DEPENDENCY_WITHMISSINDEPENDENCY_ID =
         new ExtensionId("installeddepwithmissingdependency", "version");
 
+    public static final ExtensionId INSTALLED_INVALID_DEPENDENCY_WITHMISSINDEPENDENCY_ID =
+        new ExtensionId("invalidinstalleddepwithmissingdependency", "version");
+
     public static final ExtensionId INSTALLED_WITHREPAIRABLEINVALIDDEPENDENCY_ID =
         new ExtensionId("installedwithrepairableinvaliddependency", "version");
 

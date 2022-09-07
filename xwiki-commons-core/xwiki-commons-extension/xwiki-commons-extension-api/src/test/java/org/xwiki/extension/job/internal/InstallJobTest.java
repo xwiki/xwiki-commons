@@ -397,4 +397,26 @@ class InstallJobTest extends AbstractExtensionHandlerTest
         assertNull(
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(), null));
     }
+
+    @Test
+    void testRepairWithInvalidDependency() throws Throwable
+    {
+        InstalledExtension installedExtension = this.installedExtensionRepository
+            .getInstalledExtension(TestResources.INSTALLED_WITHREPAIRABLEINVALIDDEPENDENCY_ID.getId(), null);
+        assertFalse(installedExtension.isValid(null));
+
+        installedExtension = this.installedExtensionRepository
+            .getInstalledExtension(TestResources.INSTALLED_INVALID_DEPENDENCY_WITHMISSINDEPENDENCY_ID.getId(), null);
+        assertFalse(installedExtension.isValid(null));
+
+        install(TestResources.INSTALLED_WITHREPAIRABLEINVALIDDEPENDENCY_ID);
+
+        installedExtension = this.installedExtensionRepository
+            .getInstalledExtension(TestResources.INSTALLED_WITHREPAIRABLEINVALIDDEPENDENCY_ID.getId(), null);
+        assertTrue(installedExtension.isValid(null));
+
+        installedExtension = this.installedExtensionRepository
+            .getInstalledExtension(TestResources.INSTALLED_INVALID_DEPENDENCY_WITHMISSINDEPENDENCY_ID.getId(), null);
+        assertTrue(installedExtension.isValid(null));
+    }
 }
