@@ -34,6 +34,9 @@
   <properties>
     <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
     <xwiki.jacoco.instructionRatio>0.33</xwiki.jacoco.instructionRatio>
+
+    <!-- Avoid breaking Checkstyle build when they upgrade some dependency -->
+    <xwiki.enforcer.enforce-upper-bounds.skip>true</xwiki.enforcer.enforce-upper-bounds.skip>
   </properties>
   <dependencies>
     <dependency>
@@ -91,9 +94,9 @@
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr4-runtime</artifactId>
-      <!-- Checkstyle on a more recent and incompatible version of antlr -->
+      <!-- Checkstyle needs a more recent and incompatible version of antlr -->
       <!-- TODO: remove when https://jira.xwiki.org/browse/XCOMMONS-2407 is fixed -->
-      <version>4.10.1</version>
+      <version>4.11.1</version>
       <scope>provided</scope>
     </dependency>
 
