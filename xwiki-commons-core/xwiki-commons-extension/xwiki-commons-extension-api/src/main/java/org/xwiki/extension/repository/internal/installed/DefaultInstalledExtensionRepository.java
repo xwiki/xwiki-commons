@@ -241,7 +241,6 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
      *
      * @param localExtension the extension to validate
      * @param dependencies true if dependencies should be validated
-     * @throws InvalidExtensionException when the passed extension is fond invalid
      */
     private void validateExtension(LocalExtension localExtension, boolean dependencies)
     {
@@ -466,7 +465,6 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
      *
      * @param installedExtension the extension to uninstall
      * @param namespace the namespace
-     * @see #uninstallExtension(LocalExtension, String)
      */
     private void removeInstalledExtension(DefaultInstalledExtension installedExtension, String namespace)
     {
@@ -488,7 +486,6 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
      *
      * @param feature the feature to uninstall
      * @param namespace the namespace
-     * @see #uninstallExtension(LocalExtension, String)
      */
     private void removeInstalledFeature(String feature, String namespace)
     {
@@ -512,7 +509,6 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
      * @param properties the custom properties to set on the installed extension for the specified namespace
      * @param extensionContext the current extension context
      * @throws InstallException error when trying to uninstall extension
-     * @see #installExtension(LocalExtension, String)
      */
     private void applyInstallExtension(DefaultInstalledExtension installedExtension, String namespace,
         boolean dependency, Map<String, Object> properties, ExtensionPlanContext extensionContext)
@@ -544,7 +540,6 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
         }
 
         // Update caches
-
         addInstalledExtension(installedExtension, namespace);
     }
 
