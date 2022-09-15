@@ -905,7 +905,7 @@
       <dependency>
         <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
-        <version>3.29.1-GA</version>
+        <version>3.29.2-GA</version>
       </dependency>
 
       <!-- Triggered by several Maven related projects (Doxia, Maven, Aether) as transitive dependency. We need
