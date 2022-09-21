@@ -763,18 +763,18 @@
       <!-- Bouncy Castle -->
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-jdk15on</artifactId>
-        <version>1.70</version>
+        <artifactId>bcprov-jdk18on</artifactId>
+        <version>1.71</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcpkix-jdk15on</artifactId>
-        <version>1.70</version>
+        <artifactId>bcpkix-jdk18on</artifactId>
+        <version>1.71</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcmail-jdk15on</artifactId>
-        <version>1.70</version>
+        <artifactId>bcmail-jdk18on</artifactId>
+        <version>1.71</version>
       </dependency>
 
       <!-- Various project are using it to scan the classpath -->
@@ -1755,31 +1755,37 @@
                     Wrong Bouncy Castle dependency used
                   </message>
                   <excludes>
+                    <exclude>bouncycastle:bcprov-jdk15on</exclude>
                     <exclude>bouncycastle:bcprov-jdk16</exclude>
                     <exclude>bouncycastle:bcprov-jdk15</exclude>
                     <exclude>bouncycastle:bcprov-jdk14</exclude>
                     <exclude>bouncycastle:bcprov-jdk13</exclude>
                     <exclude>bouncycastle:bcprov-jdk12</exclude>
+                    <exclude>org.bouncycastle:bcprov-jdk15on</exclude>
                     <exclude>org.bouncycastle:bcprov-jdk16</exclude>
                     <exclude>org.bouncycastle:bcprov-jdk15</exclude>
                     <exclude>org.bouncycastle:bcprov-jdk14</exclude>
                     <exclude>org.bouncycastle:bcprov-jdk13</exclude>
                     <exclude>org.bouncycastle:bcprov-jdk12</exclude>
+                    <exclude>bouncycastle:bcpkix-jdk15on</exclude>
                     <exclude>bouncycastle:bcpkix-jdk16</exclude>
                     <exclude>bouncycastle:bcpkix-jdk15</exclude>
                     <exclude>bouncycastle:bcpkix-jdk14</exclude>
                     <exclude>bouncycastle:bcpkix-jdk13</exclude>
                     <exclude>bouncycastle:bcpkix-jdk12</exclude>
+                    <exclude>org.bouncycastle:bcpkix-jdk15on</exclude>
                     <exclude>org.bouncycastle:bcpkix-jdk16</exclude>
                     <exclude>org.bouncycastle:bcpkix-jdk15</exclude>
                     <exclude>org.bouncycastle:bcpkix-jdk14</exclude>
                     <exclude>org.bouncycastle:bcpkix-jdk13</exclude>
                     <exclude>org.bouncycastle:bcpkix-jdk12</exclude>
+                    <exclude>bouncycastle:bcmail-jdk15on</exclude>
                     <exclude>bouncycastle:bcmail-jdk16</exclude>
                     <exclude>bouncycastle:bcmail-jdk15</exclude>
                     <exclude>bouncycastle:bcmail-jdk14</exclude>
                     <exclude>bouncycastle:bcmail-jdk13</exclude>
                     <exclude>bouncycastle:bcmail-jdk12</exclude>
+                    <exclude>org.bouncycastle:bcmail-jdk15on</exclude>
                     <exclude>org.bouncycastle:bcmail-jdk16</exclude>
                     <exclude>org.bouncycastle:bcmail-jdk15</exclude>
                     <exclude>org.bouncycastle:bcmail-jdk14</exclude>
