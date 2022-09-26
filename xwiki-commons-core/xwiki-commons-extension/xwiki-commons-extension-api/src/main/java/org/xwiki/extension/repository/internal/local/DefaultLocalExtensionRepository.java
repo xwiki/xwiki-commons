@@ -62,6 +62,11 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
     private static final String ID = "local";
 
     /**
+     * Used to manipulate filesystem repository storage.
+     */
+    protected transient LocalExtensionStorage storage;
+
+    /**
      * Used to get repository path.
      */
     @Inject
@@ -78,11 +83,6 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
      */
     @Inject
     private transient ComponentManager componentManager;
-
-    /**
-     * Used to manipulate filesystem repository storage.
-     */
-    private transient LocalExtensionStorage storage;
 
     /**
      * Make the repository ignore features.

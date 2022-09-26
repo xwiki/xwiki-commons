@@ -685,8 +685,8 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
         }
 
         // Check installed extensions
-        InstalledExtension installedExtension =
-            this.installedExtensionRepository.getInstalledExtension(extensionDependency.getId(), namespace);
+        InstalledExtension installedExtension = getRequest().isInstalledIgnored() ? null
+            : this.installedExtensionRepository.getInstalledExtension(extensionDependency.getId(), namespace);
         ExtensionDependency targetDependency =
             checkInstalledDependency(installedExtension, extensionDependency, versionConstraint, namespace);
         if (targetDependency == null) {
@@ -708,7 +708,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
 
         // For root dependency make sure to generate a version constraint compatible with any already existing
         // namespace extension backward dependency
-        if (namespace == null) {
+        if (!getRequest().isInstalledIgnored() && namespace == null) {
             versionConstraint = mergeBackwardDependenciesVersionConstraints(targetDependency.getId(), namespace,
                 targetDependency.getVersionConstraint());
             targetDependency = new DefaultExtensionDependency(targetDependency, versionConstraint);
@@ -996,17 +996,19 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
         }
 
         // Check if the extension is already installed
-        Extension installedExtension = checkInstalledExtension(rewrittenExtension, namespace);
-        if (installedExtension == null) {
-            return null;
-        } else if (installedExtension != rewrittenExtension) {
-            sourceExtension = installedExtension;
+        if (!getRequest().isInstalledIgnored()) {
+            Extension installedExtension = checkInstalledExtension(rewrittenExtension, namespace);
+            if (installedExtension == null) {
+                return null;
+            } else if (installedExtension != rewrittenExtension) {
+                sourceExtension = installedExtension;
 
-            // Rewrite the extension
-            if (getRequest().getRewriter() != null) {
-                rewrittenExtension = getRequest().getRewriter().rewrite(installedExtension);
-            } else {
-                rewrittenExtension = installedExtension;
+                // Rewrite the extension
+                if (getRequest().getRewriter() != null) {
+                    rewrittenExtension = getRequest().getRewriter().rewrite(installedExtension);
+                } else {
+                    rewrittenExtension = installedExtension;
+                }
             }
         }
 
@@ -1193,15 +1195,17 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
 
     private boolean checkRootExtension(String feature) throws InstallException
     {
-        InstalledExtension rootExtension = this.installedExtensionRepository.getInstalledExtension(feature, null);
-        if (rootExtension != null) {
-            if (!getRequest().isRootModificationsAllowed()) {
-                throw new InstallException(
-                    String.format("An extension with feature [%s] is already installed on root namespace ([%s])",
-                        feature, rootExtension.getId()));
-            }
+        if (!getRequest().isInstalledIgnored()) {
+            InstalledExtension rootExtension = this.installedExtensionRepository.getInstalledExtension(feature, null);
+            if (rootExtension != null) {
+                if (!getRequest().isRootModificationsAllowed()) {
+                    throw new InstallException(
+                        String.format("An extension with feature [%s] is already installed on root namespace ([%s])",
+                            feature, rootExtension.getId()));
+                }
 
-            return true;
+                return true;
+            }
         }
 
         return false;
@@ -1235,6 +1239,10 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
     private Set<InstalledExtension> getReplacedInstalledExtensions(Extension extension, String namespace)
         throws IncompatibleVersionConstraintException, ResolveException, InstallException
     {
+        if (getRequest().isInstalledIgnored()) {
+            return Set.of();
+        }
+
         // If a namespace extension already exist on root, fail the install
         if (namespace != null) {
             checkRootExtension(extension.getId().getId());

@@ -27,7 +27,9 @@ import java.util.List;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionRewriter;
+import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.job.Request;
+import org.xwiki.stability.Unstable;
 
 /**
  * Extension manipulation related {@link Request}.
@@ -116,6 +118,14 @@ public interface ExtensionRequest extends Request
     {
         return null;
     }
+    
+    /**
+     * @return the repository to use to find core extensions
+     */
+    default CoreExtensionRepository getCoreExtensionRepository()
+    {
+        return null;
+    }
 
     /**
      * @return true if it's allowed remove extension in conflict with the new extension(s)
@@ -124,5 +134,16 @@ public interface ExtensionRequest extends Request
     default boolean isUninstallAllowed()
     {
         return true;
+    }
+
+    /**
+     * @return true true if already installed extensions should not be taken into account while resolving the install
+     *         plan
+     * @since 14.9RC1
+     */
+    @Unstable
+    default boolean isInstalledIgnored()
+    {
+        return false;
     }
 }

@@ -20,7 +20,6 @@
 package org.xwiki.extension.repository.aether.internal;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -77,7 +76,7 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
 
     private final RepositorySystemSession session;
 
-    private final boolean closable;
+    private final boolean closeable;
 
     /**
      * @param session a pre-existing session
@@ -85,7 +84,7 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
     public XWikiRepositorySystemSession(RepositorySystemSession session)
     {
         this.session = session;
-        this.closable = false;
+        this.closeable = false;
 
         // Add various type descriptors
         addTypes(session);
@@ -98,16 +97,27 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
      */
     public XWikiRepositorySystemSession(RepositorySystem repositorySystem, Environment enviroment) throws IOException
     {
+        this(repositorySystem, createTemporaryDownloadDirectory(enviroment), true);
+    }
+
+    /**
+     * @param repositorySystem the AETHER repository system component
+     * @param path the path where to store files
+     * @param closeable true if the content should be deleted when the {@link XWikiRepositorySystemSession} instance is
+     *            closed
+     * @throws IOException when failing to create a temporary directory to download the required files
+     */
+    public XWikiRepositorySystemSession(RepositorySystem repositorySystem, Path path, boolean closeable)
+        throws IOException
+    {
         DefaultRepositorySystemSession wsession = MavenRepositorySystemUtils.newSession();
         this.session = wsession;
-        this.closable = true;
+        this.closeable = closeable;
 
         // Local repository
 
-        Path downloadDirectory = getDownloadDirectory(enviroment);
-        Files.createDirectories(downloadDirectory);
-        File localDir = Files.createTempDirectory(downloadDirectory, "repository").toFile();
-        LocalRepository localRepository = new LocalRepository(localDir);
+        Files.createDirectories(path);
+        LocalRepository localRepository = new LocalRepository(path.toFile());
         wsession.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(wsession, localRepository));
 
         // Proxy selector
@@ -123,11 +133,21 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
 
         // Fail when the pom is missing or invalid
         wsession.setArtifactDescriptorPolicy(new SimpleArtifactDescriptorPolicy(false, false));
+
+        // Set a default user agent
+        setUserAgent("XWikiExtensionManager");
     }
 
     static Path getDownloadDirectory(Environment enviroment)
     {
         return enviroment.getTemporaryDirectory().toPath().resolve("extension/download");
+    }
+
+    static Path createTemporaryDownloadDirectory(Environment enviroment) throws IOException
+    {
+        Path downloadDirectory = getDownloadDirectory(enviroment);
+        Files.createDirectories(downloadDirectory);
+        return Files.createTempDirectory(downloadDirectory, "repository");
     }
 
     private void addTypes(RepositorySystemSession session)
@@ -153,7 +173,7 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
     @Override
     public void close()
     {
-        if (this.closable) {
+        if (this.closeable) {
             LocalRepository repository = this.session.getLocalRepository();
 
             if (repository.getBasedir().exists()) {

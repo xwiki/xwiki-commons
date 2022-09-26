@@ -27,8 +27,10 @@ import java.util.HashSet;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionRewriter;
+import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.job.AbstractRequest;
 import org.xwiki.job.Request;
+import org.xwiki.stability.Unstable;
 
 /**
  * Base class for extension manipulation related {@link Request} implementations.
@@ -64,9 +66,20 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     public static final String PROPERTY_UNINSTALLALLOWED = "uninstallAllowed";
 
     /**
+     * @see #isInstalledIgnored()
+     */
+    public static final String PROPERTY_INSTALLEDIGNORED = "installedIgnored";
+
+    /**
      * @see #getRewriter()
      */
     public static final String PROPERTY_REWRITER = "rewriter";
+
+    /**
+     * @see #getCoreExtensionRepository()
+     */
+    @Unstable
+    public static final String PROPERTY_COREEXTENSIONREPOSITORY = "coreExtensionRepository";
 
     /**
      * Serialization identifier.
@@ -109,6 +122,16 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
         return getProperty(PROPERTY_EXCLUDEDEXTENSIONS);
     }
 
+    /**
+     * @return extensions to not take into account
+     * @since 14.9RC1
+     */
+    @Unstable
+    public Collection<ExtensionId> getCoreExtensions()
+    {
+        return getProperty(PROPERTY_EXCLUDEDEXTENSIONS);
+    }
+
     @Override
     public Collection<String> getNamespaces()
     {
@@ -137,6 +160,16 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     public void addExcludedExtension(ExtensionId extensionId)
     {
         getExcludedExtensions().add(extensionId);
+    }
+
+    /**
+     * @param extensionId the extension identifier
+     * @since 14.9RC1
+     */
+    @Unstable
+    public void addCoreExtension(ExtensionId extensionId)
+    {
+        getCoreExtensions().add(extensionId);
     }
 
     /**
@@ -189,6 +222,23 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
         return getProperty(PROPERTY_REWRITER);
     }
 
+    /**
+     * @param repository the repository to use to find core extensions
+     * @since 14.9RC1
+     */
+    @Transient
+    public void setCoreExtensionRepository(CoreExtensionRepository repository)
+    {
+        setProperty(PROPERTY_COREEXTENSIONREPOSITORY, repository);
+    }
+
+    @Override
+    @Transient
+    public CoreExtensionRepository getCoreExtensionRepository()
+    {
+        return getProperty(PROPERTY_COREEXTENSIONREPOSITORY);
+    }
+
     @Override
     public boolean isUninstallAllowed()
     {
@@ -202,5 +252,21 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     public void setUninstallAllowed(boolean allowed)
     {
         setProperty(PROPERTY_UNINSTALLALLOWED, allowed);
+    }
+
+    @Override
+    public boolean isInstalledIgnored()
+    {
+        return getProperty(PROPERTY_INSTALLEDIGNORED, false);
+    }
+
+    /**
+     * @param ignored true if already installed extensions should not be taken into account while resolving the install
+     *            plan
+     * @since 14.9RC1
+     */
+    public void setInstalledIgnored(boolean ignored)
+    {
+        setProperty(PROPERTY_INSTALLEDIGNORED, ignored);
     }
 }
