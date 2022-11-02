@@ -126,7 +126,8 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
     {
         super(repositoryDescriptor.getURI().getPath().endsWith("/")
             ? new DefaultExtensionRepositoryDescriptor(repositoryDescriptor.getId(), repositoryDescriptor.getType(),
-                new URI(StringUtils.chop(repositoryDescriptor.getURI().toString())))
+                new URI(StringUtils.chop(repositoryDescriptor.getURI().toString())),
+                repositoryDescriptor.getProperties())
             : repositoryDescriptor);
 
         this.repositoryFactory = repositoryFactory;
