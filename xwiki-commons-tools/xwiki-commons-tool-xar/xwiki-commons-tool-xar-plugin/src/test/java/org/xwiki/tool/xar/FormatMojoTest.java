@@ -33,6 +33,7 @@ import org.dom4j.io.SAXReader;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.xwiki.tool.xar.internal.XMLUtils.getSAXReader;
 
 /**
  * Unit tests for {@link FormatMojo}.
@@ -130,7 +131,7 @@ public class FormatMojoTest
     @Test
     void formatSpecialContentFailingWithXercesFromJDK8() throws Exception
     {
-        SAXReader reader = new SAXReader();
+        SAXReader reader = getSAXReader();
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("XWikiSyntaxLinks.it.xml");
         String expectedContent = IOUtils.toString(is, "UTF-8");
 

@@ -38,6 +38,8 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.xwiki.tool.xar.internal.XWikiDocument;
 
+import static org.xwiki.tool.xar.internal.XMLUtils.getSAXReader;
+
 /**
  * Pretty prints and set valid authors and version to XAR XML files.
  *
@@ -81,7 +83,7 @@ public class FormatMojo extends AbstractVerifyMojo
 
     private void format(File file, String defaultLanguage) throws IOException, DocumentException
     {
-        SAXReader reader = new SAXReader();
+        SAXReader reader = getSAXReader();
         Document domdoc = reader.read(file);
         format(file.getPath(), domdoc, defaultLanguage);
 

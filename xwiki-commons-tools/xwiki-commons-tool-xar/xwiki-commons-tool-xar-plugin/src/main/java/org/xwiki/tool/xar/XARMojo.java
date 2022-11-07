@@ -54,6 +54,8 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.xwiki.tool.xar.internal.XWikiDocument;
 
+import static org.xwiki.tool.xar.internal.XMLUtils.getSAXReader;
+
 /**
  * Gather all resources in a XAR file (which is actually a ZIP file). Also generates a XAR descriptor if none is
  * provided.
@@ -182,7 +184,7 @@ public class XARMojo extends AbstractXARMojo
         // Copy XML pages from dependent XAR if we modify them.
         unpackTransformedXARs();
 
-        SAXReader reader = new SAXReader();
+        SAXReader reader = getSAXReader();
 
         // For each defined file, perform the transformation asked
         for (Transformation transformation : this.transformations) {
@@ -442,7 +444,7 @@ public class XARMojo extends AbstractXARMojo
      */
     public static Map<String, XAREntry> getXarEntriesMapFromXML(InputStream stream) throws Exception
     {
-        SAXReader reader = new SAXReader();
+        SAXReader reader = getSAXReader();
         Document domdoc;
         domdoc = reader.read(stream);
 

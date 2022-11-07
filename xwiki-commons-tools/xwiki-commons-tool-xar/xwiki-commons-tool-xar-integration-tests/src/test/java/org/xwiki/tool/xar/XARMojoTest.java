@@ -194,7 +194,11 @@ public class XARMojoTest extends AbstractMojoTest
         unarchiver.extract();
 
         // check that the transformations have taken place
-        Document document = new SAXReader().read(new File(tempDir, "Blog/WebHome.xml"));
+        SAXReader reader = new SAXReader();
+        // Avoid triggering Sonarqube rules related to XXE attacks, even though this is a test and thus most likely
+        // not subject to XXE attacks.
+        reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        Document document = reader.read(new File(tempDir, "Blog/WebHome.xml"));
         FileUtils.copyFile(new File(tempDir, "Blog/WebHome.xml"), new File("/tmp/WebHome.xml"));
         assertEquals("100", document.selectSingleNode("/xwikidoc/object/property/itemsPerPage").getText(),
             "Transformation of itemsPerPage did not happen?");
