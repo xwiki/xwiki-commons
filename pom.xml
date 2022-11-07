@@ -146,6 +146,7 @@
     <xwiki.enforcer.enforce-jta.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jta.skip>
     <xwiki.enforcer.enforce-jakarta.validation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.validation-api.skip>
     <xwiki.enforcer.enforce-hibernate-validator.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-hibernate-validator.skip>
+    <xwiki.enforcer.closure-compiler.skip>${xwiki.enforcer.skip}</xwiki.enforcer.closure-compiler.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}
     </xwiki.enforcer.enforce-javase-dependencies.skip>
     <xwiki.enforcer.enforce-velocity-engine-core.skip>${xwiki.enforcer.skip}
@@ -1970,6 +1971,25 @@
                   <message>Use org.hibernate.validator:hibernate-validator instead</message>
                   <excludes>
                     <exclude>org.hibernate:hibernate-validator</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we use the right version of the Closure Compiler -->
+          <execution>
+            <id>enforce-closure-compiler</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.closure-compiler.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>Use com.google.javascriptclosure-compiler-unshaded instead</message>
+                  <excludes>
+                    <exclude>com.google.javascript:closure-compiler</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
