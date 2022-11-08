@@ -1,7 +1,7 @@
 <!--
-   Extensible HTML version 1.0 Transitional DTD
+   Extensible HTML version 1.0 Frameset DTD
 
-   This is the same as HTML 4 Transitional except for
+   This is the same as HTML 4 Frameset except for
    changes due to the differences between XML and SGML.
 
    Namespace = http://www.w3.org/1999/xhtml
@@ -13,11 +13,11 @@
 
    This DTD module is identified by the PUBLIC and SYSTEM identifiers:
 
-   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+   PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
+   SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"
 
-   $Revision: 1.2 $
-   $Date: 2002/08/01 18:37:55 $
+   $Revision: 1.1 $
+   $Date: 2018/03/20 03:13:13 $
 
 -->
 
@@ -82,6 +82,9 @@
 
 <!ENTITY % MultiLength "CDATA">
     <!-- pixel, percentage, or relative -->
+
+<!ENTITY % MultiLengths "CDATA">
+    <!-- comma-separated list of MultiLength -->
 
 <!ENTITY % Pixels "CDATA">
     <!-- integer representing length in pixels -->
@@ -213,6 +216,7 @@
 <!-- these can only occur at block level -->
 <!ENTITY % misc "noscript | %misc.inline;">
 
+
 <!ENTITY % inline "a | %special; | %fontstyle; | %phrase; | %inline.forms;">
 
 <!-- %Inline; covers inline or "text-level" elements -->
@@ -222,10 +226,10 @@
 
 <!ENTITY % heading "h1|h2|h3|h4|h5|h6">
 <!ENTITY % lists "ul | ol | dl | menu | dir">
-<!ENTITY % blocktext "pre | hr | blockquote | address | center | noframes">
+<!ENTITY % blocktext "pre | hr | blockquote | address | center">
 
 <!ENTITY % block
-    "p | %heading; | div | %lists; | %blocktext; | isindex |fieldset | table">
+    "p | %heading; | div | %lists; | %blocktext; | isindex | fieldset | table">
 
 <!-- %Flow; mixes block and inline and is used for list items etc. -->
 <!ENTITY % Flow "(#PCDATA | %block; | form | %inline; | %misc;)*">
@@ -238,11 +242,12 @@
    "(#PCDATA | %special; | %fontstyle; | %phrase; | %inline.forms; | %misc.inline;)*">
 
 <!-- pre uses %Inline excluding img, object, applet, big, small,
-     font, or basefont -->
+     sub, sup, font, or basefont -->
 
 <!ENTITY % pre.content
    "(#PCDATA | a | %special.basic; | %fontstyle.basic; | %phrase.basic; |
 	   %inline.forms; | %misc.inline;)*">
+
 
 <!-- form uses %Flow; excluding form -->
 
@@ -259,7 +264,7 @@
 
 <!-- the namespace URI designates the document profile -->
 
-<!ELEMENT html (head, body)>
+<!ELEMENT html (head, frameset)>
 <!ATTLIST html
   %i18n;
   id          ID             #IMPLIED
@@ -372,6 +377,34 @@
 
 <!--======================= Frames =======================================-->
 
+<!-- only one noframes element permitted per document -->
+
+<!ELEMENT frameset (frameset|frame|noframes)*>
+<!ATTLIST frameset
+  %coreattrs;
+  rows        %MultiLengths; #IMPLIED
+  cols        %MultiLengths; #IMPLIED
+  onload      %Script;       #IMPLIED
+  onunload    %Script;       #IMPLIED
+  >
+
+<!-- reserved frame names start with "_" otherwise starts with letter -->
+
+<!-- tiled window within frameset -->
+
+<!ELEMENT frame EMPTY>
+<!ATTLIST frame
+  %coreattrs;
+  longdesc    %URI;          #IMPLIED
+  name        NMTOKEN        #IMPLIED
+  src         %URI;          #IMPLIED
+  frameborder (1|0)          "1"
+  marginwidth %Pixels;       #IMPLIED
+  marginheight %Pixels;      #IMPLIED
+  noresize    (noresize)     #IMPLIED
+  scrolling   (yes|no|auto)  "auto"
+  >
+
 <!-- inline subwindow -->
 
 <!ELEMENT iframe %Flow;>
@@ -391,7 +424,7 @@
 
 <!-- alternate content container for non frame-based rendering -->
 
-<!ELEMENT noframes %Flow;>
+<!ELEMENT noframes (body)>
 <!ATTLIST noframes
   %attrs;
   >
@@ -600,6 +633,7 @@
 
 <!--=================== Inserted/Deleted Text ============================-->
 
+
 <!--
   ins/del are allowed in block and inline content, but its
   inappropriate to include block content within an ins element
@@ -752,7 +786,7 @@
   object element itself when brevity is desired.
 -->
 
-<!ELEMENT object (#PCDATA | param | %block; | form | %inline; | %misc;)*>
+<!ELEMENT object (#PCDATA | param | %block; | form |%inline; | %misc;)*>
 <!ATTLIST object
   %attrs;
   declare     (declare)      #IMPLIED
@@ -831,7 +865,7 @@
   usemap      %URI;          #IMPLIED
   ismap       (ismap)        #IMPLIED
   align       %ImgAlign;     #IMPLIED
-  border      %Length;       #IMPLIED
+  border      %Pixels;       #IMPLIED
   hspace      %Pixels;       #IMPLIED
   vspace      %Pixels;       #IMPLIED
   >
@@ -852,7 +886,7 @@
   class       CDATA          #IMPLIED
   style       %StyleSheet;   #IMPLIED
   title       %Text;         #IMPLIED
-  name        CDATA          #IMPLIED
+  name        NMTOKEN        #IMPLIED
   >
 
 <!ELEMENT area EMPTY>
@@ -1036,7 +1070,7 @@
 
 <!-- horizontal alignment attributes for cell contents
 
-  char        alignment char, e.g. char=':'
+  char        alignment char, e.g. char=":"
   charoff     offset for alignment char
 -->
 <!ENTITY % cellhalign
@@ -1168,8 +1202,8 @@ several semantically related columns together.
   %cellvalign;
   nowrap      (nowrap)       #IMPLIED
   bgcolor     %Color;        #IMPLIED
-  width       %Length;       #IMPLIED
-  height      %Length;       #IMPLIED
+  width       %Pixels;       #IMPLIED
+  height      %Pixels;       #IMPLIED
   >
 
 <!ATTLIST td
@@ -1184,7 +1218,7 @@ several semantically related columns together.
   %cellvalign;
   nowrap      (nowrap)       #IMPLIED
   bgcolor     %Color;        #IMPLIED
-  width       %Length;       #IMPLIED
-  height      %Length;       #IMPLIED
+  width       %Pixels;       #IMPLIED
+  height      %Pixels;       #IMPLIED
   >
 
