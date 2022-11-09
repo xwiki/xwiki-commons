@@ -1,4 +1,5 @@
-The 2 classes named LocalEntityResolver and AgentUtil has been copied from
+The 2 classes named LocalEntityResolver and AgentUtil has been copied (and
+adapted) from
 https://github.com/css4j/xml-dtd and https://github.com/css4j/carte-util
 respectively. See https://github.com/css4j/xml-dtd/issues/7 for the reason
 why we copied it instead of having a dependency on it.
