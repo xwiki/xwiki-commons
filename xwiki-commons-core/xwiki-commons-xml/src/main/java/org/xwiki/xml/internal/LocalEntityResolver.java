@@ -512,7 +512,7 @@ public class LocalEntityResolver implements EntityResolver, EntityResolver2
      *                             to the input source, or when connecting to it.
      */
     @Override
-    public final InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
+    public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
         throws SAXException, IOException
     {
         if (publicId == null) {
@@ -737,7 +737,7 @@ public class LocalEntityResolver implements EntityResolver, EntityResolver2
      *                             to the input source, or when connecting to it.
      */
     @Override
-    public final InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
+    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
     {
         return resolveEntity(null, publicId, null, systemId);
     }
