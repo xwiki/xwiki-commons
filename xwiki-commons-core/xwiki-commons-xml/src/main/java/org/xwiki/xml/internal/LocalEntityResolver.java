@@ -51,6 +51,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.EntityResolver2;
 import org.xml.sax.ext.LexicalHandler;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.xml.EntityResolver;
 
 /**
  * Implements EntityResolver2.
@@ -92,7 +93,7 @@ import org.xwiki.component.annotation.Component;
  */
 @Component
 @Singleton
-public class LocalEntityResolver implements EntityResolver2
+public class LocalEntityResolver implements EntityResolver, EntityResolver2
 {
     private static final DTDLoader dtdLoader = createDTDLoader();
 
