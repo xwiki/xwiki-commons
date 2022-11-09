@@ -22,8 +22,8 @@
  See https://github.com/css4j/xml-dtd/issues/7 for the reason why we copied it instead of having a dependency on it.
 
  Copyright (c) 1998-2022, Carlos Amengual.
- SPDX-License-Identifier: BSD-3-Clause
- Licensed under a BSD-style License. You can find the license here:
+ Originally Licensed under a BSD-style License but relicensed under LGPL for XWiki by Carlos Amengual.
+ You can find the original license here:
  https://css4j.github.io/LICENSE.txt
  */
 package org.xwiki.xml.internal;
