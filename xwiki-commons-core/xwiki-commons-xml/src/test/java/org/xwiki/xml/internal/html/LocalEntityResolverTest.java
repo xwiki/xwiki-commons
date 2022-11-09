@@ -56,9 +56,7 @@ public class LocalEntityResolverTest
             + "<p>&xxe;</p>";
         InputSource source = new InputSource(new ByteArrayInputStream(input.getBytes()));
 
-        Throwable exception = assertThrows(SAXException.class, () -> {
-            xmlReader.parse(source);
-        });
+        Throwable exception = assertThrows(SAXException.class, () -> xmlReader.parse(source));
         assertEquals("Invalid url protocol: file", exception.getMessage());
     }
 }
