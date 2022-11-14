@@ -25,6 +25,7 @@ import java.io.StringWriter;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.ErrorListener;
@@ -32,6 +33,7 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -216,7 +218,7 @@ public final class XMLUtils
         ExtractHandler handler = null;
         try {
             handler = new ExtractHandler(start, length);
-            Transformer xformer = TransformerFactory.newInstance().newTransformer();
+            Transformer xformer = XMLUtils.createTransformerFactory().newTransformer();
             xformer.setErrorListener(RELAXED_ERROR_LISTENER);
             xformer.transform(new DOMSource(node), new SAXResult(handler));
             return handler.getResult();
@@ -670,7 +672,7 @@ public final class XMLUtils
             try {
                 StringWriter output = new StringWriter();
                 Result result = new StreamResult(output);
-                javax.xml.transform.TransformerFactory.newInstance().newTransformer(xslt).transform(xml, result);
+                XMLUtils.createTransformerFactory().newTransformer(xslt).transform(xml, result);
                 return output.toString();
             } catch (Exception ex) {
                 LOGGER.warn("Failed to apply XSLT transformation: [{}]", ex.getMessage());
@@ -692,7 +694,7 @@ public final class XMLUtils
     public static String formatXMLContent(String content) throws TransformerFactoryConfigurationError,
         TransformerException
     {
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        Transformer transformer = XMLUtils.createTransformerFactory().newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
@@ -722,5 +724,12 @@ public final class XMLUtils
         transformer.transform(source, result);
 
         return result.getWriter().toString();
+    }
+
+    private static TransformerFactory createTransformerFactory() throws TransformerConfigurationException
+    {
+        TransformerFactory tf = TransformerFactory.newInstance();
+        tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        return tf;
     }
 }
