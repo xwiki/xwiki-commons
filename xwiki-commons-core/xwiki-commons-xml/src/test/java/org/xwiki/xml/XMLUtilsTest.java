@@ -19,15 +19,24 @@
  */
 package org.xwiki.xml;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -36,7 +45,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSInput;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.junit5.LogCaptureExtension;
 
@@ -56,10 +67,30 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  * @since 1.6M1
  */
-public class XMLUtilsTest
+class XMLUtilsTest
 {
     @RegisterExtension
     LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.DEBUG);
+
+    private PrintStream originalStdErr;
+
+    @BeforeEach
+    void before()
+    {
+        // Capture stderr since tge JDK's XML classes can output to stderr directly. For example:
+        //   ERROR:  'Invalid url protocol: file'
+        //   ERROR:  'com.sun.org.apache.xml.internal.utils.WrappedRuntimeException: Invalid url protocol: file'
+        this.originalStdErr = System.err;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baos);
+        System.setErr(ps);
+    }
+
+    @AfterEach
+    void after()
+    {
+        System.setErr(this.originalStdErr);
+    }
 
     @Test
     void escapeXMLComment()
@@ -308,7 +339,7 @@ public class XMLUtilsTest
     }
 
     @Test
-    void disableExternalEntities()
+    void parseWhenXXEFileAttack()
         throws ClassNotFoundException, InstantiationException, IllegalAccessException, ClassCastException, IOException
     {
         File tempFile = File.createTempFile("file", ".txt");
@@ -323,6 +354,137 @@ public class XMLUtilsTest
 
         Document result = XMLUtils.parse(input);
         assertNotEquals("external", result.getDocumentElement().getTextContent());
+    }
+
+    @Test
+    void transformFailsWhenXXEFileAttackUsingStreamSource()
+    {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"file:///etc/passwd\"> ]>\n"
+            + "\n"
+            + "<p>&xxe;</p>";
+        String xslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
+            + "<xsl:output method=\"text\"/>\n"
+            + "</xsl:stylesheet>";
+
+        assertNull(XMLUtils.transform(new StreamSource(
+            new ByteArrayInputStream(xml.getBytes())), new StreamSource(new ByteArrayInputStream(xslt.getBytes()))));
+
+        assertEquals(1, logCapture.size());
+        assertEquals(Level.WARN, logCapture.getLogEvent(0).getLevel());
+        assertEquals("Failed to apply XSLT transformation: [javax.xml.transform.TransformerException: "
+            + "com.sun.org.apache.xml.internal.utils.WrappedRuntimeException: Invalid url protocol: file]",
+            logCapture.getMessage(0));
+    }
+
+    @Test
+    void transformFailsWhenXXEFileAttackUsingNotSafeSAXSource() throws Exception
+    {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"file:///etc/passwd\"> ]>\n"
+            + "\n"
+            + "<p>&xxe;</p>";
+        String xslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
+            + "<xsl:output method=\"text\"/>\n"
+            + "</xsl:stylesheet>";
+
+        // The next lines creates a voluntarily unsafe SAXParserFactory and XMLReader, to ensure that
+        // XMLUtils.transform() will still protect the user when the SaxSource passed to it is unsafe.
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+        XMLReader xmlReader = spf.newSAXParser().getXMLReader();
+        xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+        SAXSource saxSource = new SAXSource(xmlReader, new InputSource(new ByteArrayInputStream(xml.getBytes())));
+        assertNull(XMLUtils.transform(saxSource, new StreamSource(new ByteArrayInputStream(xslt.getBytes()))));
+
+        assertEquals(1, logCapture.size());
+        assertEquals(Level.WARN, logCapture.getLogEvent(0).getLevel());
+        assertEquals("Failed to apply XSLT transformation: [javax.xml.transform.TransformerException: "
+                + "com.sun.org.apache.xml.internal.utils.WrappedRuntimeException: Invalid url protocol: file]",
+            logCapture.getMessage(0));
+    }
+
+    @Test
+    void transformWhenLocalEntityUsed()
+    {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<!DOCTYPE foo [ <!ENTITY myentity \"my entity value\" > ]>\n"
+            + "\n"
+            + "<p>&myentity;</p>";
+        String xslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
+            + "<xsl:output method=\"text\"/>\n"
+            + "</xsl:stylesheet>";
+
+        assertEquals("my entity value", XMLUtils.transform(new StreamSource(
+            new ByteArrayInputStream(xml.getBytes())), new StreamSource(new ByteArrayInputStream(xslt.getBytes()))));
+    }
+
+    @Test
+    void transformWhenExternalWellKnownEntityUsed()
+    {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n"
+            + "   \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
+            + "\n"
+            + "<p>&amp;</p>";
+        String xslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
+            + "<xsl:output method=\"text\"/>\n"
+            + "</xsl:stylesheet>";
+
+        assertEquals("&", XMLUtils.transform(new StreamSource(
+            new ByteArrayInputStream(xml.getBytes())), new StreamSource(new ByteArrayInputStream(xslt.getBytes()))));
+    }
+
+    @Test
+    void transformWhenJARDecompressionBomb()
+    {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<!DOCTYPE doc PUBLIC \"-//W3C//DTD FOO 1.0//EN\" \"jar:http://www.example.com/evil.jar!/file.dtd\">\n"
+            + "\n"
+            + "<p>&amp;</p>";
+        String xslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
+            + "<xsl:output method=\"text\"/>\n"
+            + "</xsl:stylesheet>";
+
+        assertNull(XMLUtils.transform(new StreamSource(
+            new ByteArrayInputStream(xml.getBytes())), new StreamSource(new ByteArrayInputStream(xslt.getBytes()))));
+
+        assertEquals(1, logCapture.size());
+        assertEquals(Level.WARN, logCapture.getLogEvent(0).getLevel());
+        assertEquals("Failed to apply XSLT transformation: [javax.xml.transform.TransformerException: "
+            + "com.sun.org.apache.xml.internal.utils.WrappedRuntimeException: Invalid url protocol: jar]",
+            logCapture.getMessage(0));
+    }
+
+    @Test
+    void transformAvoidXMLBomb()
+    {
+        String xml = "<?xml version=\"1.0\"?>\n"
+            + "<!DOCTYPE lolz [\n"
+            + "  <!ENTITY lol \"lol\">\n"
+            + "  <!ENTITY lol2 \"&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;\">\n"
+            + "  <!ENTITY lol3 \"&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;\">\n"
+            + "  <!ENTITY lol4 \"&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;\">\n"
+            + "  <!ENTITY lol5 \"&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;\">\n"
+            + "  <!ENTITY lol6 \"&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;\">\n"
+            + "  <!ENTITY lol7 \"&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;\">\n"
+            + "  <!ENTITY lol8 \"&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;\">\n"
+            + "  <!ENTITY lol9 \"&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;\">\n"
+            + "]>\n"
+            + "<lolz>&lol9;</lolz>";
+        String xslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
+            + "<xsl:output method=\"text\"/>\n"
+            + "</xsl:stylesheet>";
+
+        assertNull(XMLUtils.transform(new StreamSource(
+            new ByteArrayInputStream(xml.getBytes())), new StreamSource(new ByteArrayInputStream(xslt.getBytes()))));
+
+        assertEquals(1, logCapture.size());
+        assertEquals(Level.WARN, logCapture.getLogEvent(0).getLevel());
+        assertEquals("Failed to apply XSLT transformation: [javax.xml.transform.TransformerException: "
+            + "com.sun.org.apache.xml.internal.utils.WrappedRuntimeException: The parser has encountered more than "
+            + "\"100,000\" entity expansions in this document; this is the limit imposed by the application.]",
+            logCapture.getMessage(0));
     }
 
     @Test
@@ -375,13 +537,53 @@ public class XMLUtilsTest
     }
 
     @Test
+    void formatXMLContent() throws Exception
+    {
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<root>\n"
+            + "  <item>item1</item>\n"
+            + "  <item>item2</item>\n"
+            + "</root>\n", XMLUtils.formatXMLContent("<root><item>item1</item><item>item2</item></root>"));
+    }
+
+    @Test
+    void formatXMLContentPreventsXXEFileAttack() throws Exception
+    {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"file:///etc/passwd\"> ]>\n"
+            + "\n"
+            + "<p>&xxe;</p>";
+
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<!DOCTYPE foo [\n"
+            + "<!ENTITY xxe SYSTEM 'file:///etc/passwd'>\n"
+            + "]>\n"
+            + "<p />\n", XMLUtils.formatXMLContent(xml));
+    }
+
+    @Test
+    void formatXMLContentWhenExternalWellKnownEntityUsed() throws Exception
+    {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n"
+            + "   \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
+            + "\n"
+            + "<p>&amp;</p>";
+
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\""
+            + " \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
+            + "<p>&amp;</p>\n", XMLUtils.formatXMLContent(xml));
+    }
+
+    @Test
     @Disabled("because of unidentified location where code writes directly to the console")
     void extractXMLWithBrokenInput() throws Exception
     {
         LSInput input = inputForExtractXML("<root>hello <b>world</a></root><garbage/>");
         Document document = XMLUtils.parse(input);
 
-        assertNull(document, "we should not parse broken XML sucessfully");
+        assertNull(document, "we should not parse broken XML successfully");
         assertEquals("", XMLUtils.extractXML(document, 2, 40));
 
         // TODO: we expect the corresponding error message to go through our error listener

@@ -19,7 +19,6 @@
  */
 package org.xwiki.xml;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Objects;
@@ -28,8 +27,8 @@ import java.util.regex.Pattern;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.ErrorListener;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -41,9 +40,13 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.jdom2.input.DOMBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -57,6 +60,7 @@ import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+import org.xwiki.xml.internal.LocalEntityResolver;
 
 /**
  * XML Utility methods.
@@ -183,6 +187,8 @@ public final class XMLUtils
 
     /** Helper to log expected errors at an appropriate level. */
     private static final ErrorListener RELAXED_ERROR_LISTENER = new RelaxedErrorListener();
+
+    private static final String NEWLINE = "\n";
 
     static {
         DOMImplementationLS implementation = null;
@@ -643,7 +649,7 @@ public final class XMLUtils
             output.setCharacterStream(result);
             LSSerializer serializer = LS_IMPL.createLSSerializer();
             serializer.getDomConfig().setParameter("xml-declaration", withXmlDeclaration);
-            serializer.setNewLine("\n");
+            serializer.setNewLine(NEWLINE);
             String encoding = "UTF-8";
             if (node instanceof Document) {
                 encoding = ((Document) node).getXmlEncoding();
@@ -672,7 +678,8 @@ public final class XMLUtils
             try {
                 StringWriter output = new StringWriter();
                 Result result = new StreamResult(output);
-                XMLUtils.createTransformerFactory().newTransformer(xslt).transform(xml, result);
+                Source safeXMLSource = createSafeSource(xml);
+                XMLUtils.createTransformerFactory().newTransformer(xslt).transform(safeXMLSource, result);
                 return output.toString();
             } catch (Exception ex) {
                 LOGGER.warn("Failed to apply XSLT transformation: [{}]", ex.getMessage());
@@ -685,7 +692,7 @@ public final class XMLUtils
      * Parse and pretty print a XML content.
      *
      * @param content the XML content to format
-     * @return the formated version of the passed XML content
+     * @return the formatted version of the passed XML content
      * @throws TransformerFactoryConfigurationError when failing to create a
      *             {@link TransformerFactoryConfigurationError}
      * @throws TransformerException when failing to transform the content
@@ -694,36 +701,43 @@ public final class XMLUtils
     public static String formatXMLContent(String content) throws TransformerFactoryConfigurationError,
         TransformerException
     {
-        Transformer transformer = XMLUtils.createTransformerFactory().newTransformer();
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-
-        StreamResult result = new StreamResult(new StringWriter());
-
-        // Use a SAX Source instead of a StreamSource so that we can control the XMLReader used and set up one that
-        // doesn't resolve entities (and thus doesn't go out on the internet to fetch DTDs!).
-        SAXSource source = new SAXSource(new InputSource(new StringReader(content)));
-        try {
-            XMLReader reader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
-            reader.setEntityResolver(new org.xml.sax.EntityResolver() {
-                @Override
-                public InputSource resolveEntity(String publicId, String systemId)
-                    throws SAXException, IOException
-                {
-                    // Return an empty resolved entity. Note that we don't return null since this would tell the reader
-                    // to go on the internet to fetch the DTD.
-                    return new InputSource(new StringReader(""));
-                }
-            });
-            source.setXMLReader(reader);
-        } catch (Exception e) {
-            throw new TransformerException(String.format(
-                "Failed to create XML Reader while pretty-printing content [%s]", content), e);
+        // TODO: Deprecate and legacify this method and introduce a new signature that doesn't throw any exception
+        // Or better, also change XMLUtils.parse() to throw an exception and throw that exception here. Introduce an
+        // XWiki exception to not be dependent of the XML parsing implementation used.
+        if (content == null) {
+            return null;
         }
+        LSInput input = LS_IMPL.createLSInput();
+        input.setCharacterStream(new StringReader(content));
+        Format format = Format.getPrettyFormat();
+        format.setLineSeparator(NEWLINE);
+        Document document = XMLUtils.parse(input);
+        if (document == null) {
+            throw new TransformerException(String.format("Failed to pretty print XML content [%s]", content));
+        }
+        DOMBuilder builder = new DOMBuilder();
+        return new XMLOutputter(format).outputString(builder.build(document));
+    }
 
-        transformer.transform(source, result);
-
-        return result.getWriter().toString();
+    private static Source createSafeSource(Source originalSource) throws ParserConfigurationException, SAXException
+    {
+        Source safeSource;
+        if (originalSource instanceof StreamSource) {
+            StreamSource stream = (StreamSource) originalSource;
+            InputSource inputSource = new InputSource(stream.getInputStream());
+            inputSource.setPublicId(stream.getPublicId());
+            inputSource.setSystemId(originalSource.getSystemId());
+            safeSource = new SAXSource(XMLUtils.createXMLReader(), inputSource);
+        } else if (originalSource instanceof SAXSource) {
+            SAXSource originalSAXSource = (SAXSource) originalSource;
+            safeSource = new SAXSource(XMLUtils.createXMLReader(), originalSAXSource.getInputSource());
+            safeSource.setSystemId(originalSAXSource.getSystemId());
+        } else {
+            // We don't handle this type of source by using our local resolver but it's still safe since we use the
+            // FEATURE_SECURE_PROCESSING feature in createTransformerFactory().
+            safeSource = originalSource;
+        }
+        return safeSource;
     }
 
     private static TransformerFactory createTransformerFactory() throws TransformerConfigurationException
@@ -731,5 +745,18 @@ public final class XMLUtils
         TransformerFactory tf = TransformerFactory.newInstance();
         tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         return tf;
+    }
+
+    private static XMLReader createXMLReader() throws ParserConfigurationException, SAXException
+    {
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        // Note: the following line is not needed to prevent XXE attacks thanks to the custom entity resolver which
+        // protected against XXE attacks and more. It also allows using entities from well-known DTDs (provided locally
+        // by XWik - no internet access is made to retrieve them).
+        // However, it is needed to protect against XML bombs.
+        spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        XMLReader xmlReader = spf.newSAXParser().getXMLReader();
+        xmlReader.setEntityResolver(new LocalEntityResolver());
+        return xmlReader;
     }
 }
