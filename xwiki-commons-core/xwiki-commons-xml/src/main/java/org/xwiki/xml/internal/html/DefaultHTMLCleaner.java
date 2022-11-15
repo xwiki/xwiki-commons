@@ -268,6 +268,10 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         defaultProperties.setDeserializeEntities(true);
 
         // Omit comments in restricted mode to avoid any potential parser confusion.
+        // Any part of the filtered HTML that contains unfiltered input is potentially dangerous/a candidate for
+        // parser confusion. Comments, style and script elements seem to be frequently found ingredients in successful
+        // attacks against good sanitizers. We're already removing style and script elements, so removing comments
+        // seems like a good defense against future attacks.
         defaultProperties.setOmitComments(isRestricted(configuration));
 
         return defaultProperties;
