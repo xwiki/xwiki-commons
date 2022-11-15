@@ -328,6 +328,40 @@ public class DefaultHTMLCleanerTest
     }
 
     /**
+     * Verify comment handling in restricted mode.
+     */
+    @Test
+    void restrictedComments()
+    {
+        Map<String, String> parameters = new HashMap<>(this.cleanerConfiguration.getParameters());
+        parameters.put("restricted", "true");
+        this.cleanerConfiguration.setParameters(parameters);
+
+        assertHTML("<p><strong>Hello  World</strong></p>", "<strong>Hello <!-- a comment --> World</strong>");
+        assertHTML("", "<!--My favorite operators are > and <!-->");
+
+        // Actually, just the comment should be removed but due to erroneous parsing in HTMLCleaner, the whole thing
+        // is treated as a comment.
+        assertHTML("", "<!--> <a href=\"#\">no comment</a>");
+        assertHTML("", "<!---> <a href=\"#\">no comment</a>");
+    }
+
+    @Test
+    void comments()
+    {
+        assertHTML("<!--My favorite operators are > and <!-->", "<!--My favorite operators are > and <!-->");
+
+        assertHTML("<!-- a comment ==!> not a comment-->", "<!-- a comment --!> not a comment");
+        // FIXME: this is wrongly parsed as a full comment.
+        assertHTML("<!-- <a foo=`bar`>not a comment</a>-->", "<!--> <a foo=`bar`>not a comment</a>");
+        assertHTML("<!--=>-->", "<!--->");
+        // FIXME: according to the HTML specification, this should be a comment.
+        assertHTML("", "<! fake comment >");
+        assertHTML("<!-- <!== comment -->", "<!-- <!-- comment -->");
+        assertHTML("<!--My favorite operators are > and <!=-->", "<!--My favorite operators are > and <!--->");
+    }
+
+    /**
      * Verify that passing a fully-formed XHTML header works fine.
      */
     @Test

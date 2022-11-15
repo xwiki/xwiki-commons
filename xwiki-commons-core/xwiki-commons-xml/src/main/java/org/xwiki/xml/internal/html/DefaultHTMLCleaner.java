@@ -267,6 +267,9 @@ public class DefaultHTMLCleaner implements HTMLCleaner
 
         defaultProperties.setDeserializeEntities(true);
 
+        // Omit comments in restricted mode to avoid any potential parser confusion.
+        defaultProperties.setOmitComments(isRestricted(configuration));
+
         return defaultProperties;
     }
 
@@ -314,8 +317,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner
             defaultTransformations.addTransformation(tt);
         }
 
-        String restricted = configuration.getParameters().get(HTMLCleanerConfiguration.RESTRICTED);
-        if ("true".equalsIgnoreCase(restricted)) {
+        if (isRestricted(configuration)) {
 
             tt = new TagTransformation(HTMLConstants.TAG_SCRIPT, HTMLConstants.TAG_PRE, false);
             defaultTransformations.addTransformation(tt);
@@ -334,6 +336,16 @@ public class DefaultHTMLCleaner implements HTMLCleaner
     private boolean isHTML5(HTMLCleanerConfiguration configuration)
     {
         return getHTMLVersion(configuration) == 5;
+    }
+
+    /**
+     * @param configuration the configuration to parse
+     * @return if the parsing should happen in restricted mode
+     */
+    private boolean isRestricted(HTMLCleanerConfiguration configuration)
+    {
+        String restricted = configuration.getParameters().get(HTMLCleanerConfiguration.RESTRICTED);
+        return "true".equalsIgnoreCase(restricted);
     }
 
     /**
