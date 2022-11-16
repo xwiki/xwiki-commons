@@ -426,12 +426,12 @@ class XMLUtilsTest
             + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n"
             + "   \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
             + "\n"
-            + "<p>&amp;</p>";
+            + "<p>&dollar;</p>";
         String xslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
             + "<xsl:output method=\"text\"/>\n"
             + "</xsl:stylesheet>";
 
-        assertEquals("&", XMLUtils.transform(new StreamSource(
+        assertEquals("$", XMLUtils.transform(new StreamSource(
             new ByteArrayInputStream(xml.getBytes())), new StreamSource(new ByteArrayInputStream(xslt.getBytes()))));
     }
 
@@ -562,18 +562,19 @@ class XMLUtilsTest
     }
 
     @Test
+    @Disabled("Enable when https://jira.xwiki.org/browse/XCOMMONS-2570 is fixed")
     void formatXMLContentWhenExternalWellKnownEntityUsed() throws Exception
     {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
             + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n"
             + "   \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
             + "\n"
-            + "<p>&amp;</p>";
+            + "<p>&dollar;</p>";
 
         assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
             + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\""
             + " \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
-            + "<p>&amp;</p>\n", XMLUtils.formatXMLContent(xml));
+            + "<p>&dollar;</p>\n", XMLUtils.formatXMLContent(xml));
     }
 
     @Test
