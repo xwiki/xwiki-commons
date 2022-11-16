@@ -33,6 +33,8 @@ import org.htmlcleaner.TagNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xwiki.component.manager.ComponentManager;
@@ -330,35 +332,39 @@ public class DefaultHTMLCleanerTest
     /**
      * Verify comment handling in restricted mode.
      */
-    @Test
-    void restrictedComments()
+    @ParameterizedTest
+    @CsvSource({
+        "<p><strong>Hello  World</strong></p>,<strong>Hello <!-- a comment --> World</strong>",
+        "'', <!--My favorite operators are > and <!-->",
+        // FIXME: Actually, just the comment should be removed but due to erroneous parsing in HTMLCleaner, the whole
+        // string is treated as a comment.
+        "'', <!--> <a href=\"#\">no comment</a>",
+        "'', <!---> <a href=\"#\">no comment</a>"
+    })
+    void restrictedComments(String expected, String actual)
     {
         Map<String, String> parameters = new HashMap<>(this.cleanerConfiguration.getParameters());
         parameters.put("restricted", "true");
         this.cleanerConfiguration.setParameters(parameters);
 
-        assertHTML("<p><strong>Hello  World</strong></p>", "<strong>Hello <!-- a comment --> World</strong>");
-        assertHTML("", "<!--My favorite operators are > and <!-->");
-
-        // Actually, just the comment should be removed but due to erroneous parsing in HTMLCleaner, the whole thing
-        // is treated as a comment.
-        assertHTML("", "<!--> <a href=\"#\">no comment</a>");
-        assertHTML("", "<!---> <a href=\"#\">no comment</a>");
+        assertHTML(expected, actual);
     }
 
-    @Test
-    void comments()
-    {
-        assertHTML("<!--My favorite operators are > and <!-->", "<!--My favorite operators are > and <!-->");
-
-        assertHTML("<!-- a comment ==!> not a comment-->", "<!-- a comment --!> not a comment");
+    @ParameterizedTest
+    @CsvSource({
+        "<!--My favorite operators are > and <!-->, <!--My favorite operators are > and <!-->",
+        "<!-- a comment ==!> not a comment-->, <!-- a comment --!> not a comment",
         // FIXME: this is wrongly parsed as a full comment.
-        assertHTML("<!-- <a foo=`bar`>not a comment</a>-->", "<!--> <a foo=`bar`>not a comment</a>");
-        assertHTML("<!--=>-->", "<!--->");
+        "<!-- <a foo=`bar`>not a comment</a>-->, <!--> <a foo=`bar`>not a comment</a>",
+        "<!--=>-->, <!--->",
         // FIXME: according to the HTML specification, this should be a comment.
-        assertHTML("", "<! fake comment >");
-        assertHTML("<!-- <!== comment -->", "<!-- <!-- comment -->");
-        assertHTML("<!--My favorite operators are > and <!=-->", "<!--My favorite operators are > and <!--->");
+        "'', <! fake comment >",
+        "<!-- <!== comment -->, <!-- <!-- comment -->",
+        "<!--My favorite operators are > and <!=-->, <!--My favorite operators are > and <!--->"
+    })
+    void comments(String expected, String actual)
+    {
+        assertHTML(expected, actual);
     }
 
     /**
