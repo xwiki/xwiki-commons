@@ -43,15 +43,11 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map.Entry;
 
-import javax.inject.Singleton;
-
 import org.w3c.dom.DocumentType;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.EntityResolver2;
 import org.xml.sax.ext.LexicalHandler;
-import org.xwiki.component.annotation.Component;
-import org.xwiki.xml.EntityResolver;
 
 /**
  * Implements EntityResolver2.
@@ -91,9 +87,7 @@ import org.xwiki.xml.EntityResolver;
  * @author Carlos Amengual
  * @version $Id$
  */
-@Component
-@Singleton
-public class LocalEntityResolver implements EntityResolver, EntityResolver2
+public class LocalEntityResolver implements EntityResolver2
 {
     private static final DTDLoader dtdLoader = createDTDLoader();
 

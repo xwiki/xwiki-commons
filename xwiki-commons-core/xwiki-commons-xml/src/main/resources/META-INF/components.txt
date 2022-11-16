@@ -16,5 +16,5 @@ org.xwiki.xml.internal.html.HTMLElementSanitizerConfiguration
 org.xwiki.xml.internal.html.HTMLDefinitions
 org.xwiki.xml.internal.html.MathMLDefinitions
 org.xwiki.xml.internal.html.SVGDefinitions
-org.xwiki.xml.internal.LocalEntityResolver
-org.xwiki.xml.internal.DefaultXMLReaderFactory
+org.xwiki.xml.internal.LocalEntityResolverComponent
+org.xwiki.xml.internal.XMLReaderFactoryComponent

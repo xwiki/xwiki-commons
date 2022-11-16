@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -59,8 +58,7 @@ import org.w3c.dom.ls.LSParser;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xwiki.xml.internal.LocalEntityResolver;
+import org.xwiki.xml.internal.DefaultXMLReaderFactory;
 
 /**
  * XML Utility methods.
@@ -190,6 +188,8 @@ public final class XMLUtils
 
     private static final String NEWLINE = "\n";
 
+    private static final DefaultXMLReaderFactory XML_READER_FACTORY = new DefaultXMLReaderFactory();
+
     static {
         DOMImplementationLS implementation = null;
         try {
@@ -199,6 +199,8 @@ public final class XMLUtils
             LOGGER.warn("Cannot initialize the XML Script Service: [{}]", ex.getMessage());
         }
         LS_IMPL = implementation;
+
+        XML_READER_FACTORY.initialize();
     }
 
     /**
@@ -732,10 +734,10 @@ public final class XMLUtils
             }
             inputSource.setPublicId(stream.getPublicId());
             inputSource.setSystemId(originalSource.getSystemId());
-            safeSource = new SAXSource(XMLUtils.createXMLReader(), inputSource);
+            safeSource = new SAXSource(XML_READER_FACTORY.createXMLReader(), inputSource);
         } else if (originalSource instanceof SAXSource) {
             SAXSource originalSAXSource = (SAXSource) originalSource;
-            safeSource = new SAXSource(XMLUtils.createXMLReader(), originalSAXSource.getInputSource());
+            safeSource = new SAXSource(XML_READER_FACTORY.createXMLReader(), originalSAXSource.getInputSource());
             safeSource.setSystemId(originalSAXSource.getSystemId());
         } else {
             // We don't handle this type of source by using our local resolver but it's still safe since we use the
@@ -750,18 +752,5 @@ public final class XMLUtils
         TransformerFactory tf = TransformerFactory.newInstance();
         tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         return tf;
-    }
-
-    private static XMLReader createXMLReader() throws ParserConfigurationException, SAXException
-    {
-        SAXParserFactory spf = SAXParserFactory.newInstance();
-        // Note: the following line is not needed to prevent XXE attacks thanks to the custom entity resolver which
-        // protected against XXE attacks and more. It also allows using entities from well-known DTDs (provided locally
-        // by XWik - no internet access is made to retrieve them).
-        // However, it is needed to protect against XML bombs.
-        spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        XMLReader xmlReader = spf.newSAXParser().getXMLReader();
-        xmlReader.setEntityResolver(new LocalEntityResolver());
-        return xmlReader;
     }
 }
