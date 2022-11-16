@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 
 import javax.xml.XMLConstants;
@@ -354,6 +355,19 @@ class XMLUtilsTest
 
         Document result = XMLUtils.parse(input);
         assertNotEquals("external", result.getDocumentElement().getTextContent());
+    }
+
+    @Test
+    void transformWithReaderUsedInStreamSource()
+    {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><p>hello</p>";
+        String xslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
+            + "<xsl:output method=\"text\"/>\n"
+            + "</xsl:stylesheet>";
+        String result = XMLUtils.transform(
+            // Use a StringReader to test that it works (other tests use an InputStream)
+            new StreamSource(new StringReader(xml)), new StreamSource(new StringReader(xslt)));
+        assertEquals("hello", result);
     }
 
     @Test

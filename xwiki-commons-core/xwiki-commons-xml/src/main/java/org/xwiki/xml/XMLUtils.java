@@ -724,7 +724,12 @@ public final class XMLUtils
         Source safeSource;
         if (originalSource instanceof StreamSource) {
             StreamSource stream = (StreamSource) originalSource;
-            InputSource inputSource = new InputSource(stream.getInputStream());
+            InputSource inputSource;
+            if (stream.getReader() == null) {
+                inputSource = new InputSource(stream.getInputStream());
+            } else {
+                inputSource = new InputSource(stream.getReader());
+            }
             inputSource.setPublicId(stream.getPublicId());
             inputSource.setSystemId(originalSource.getSystemId());
             safeSource = new SAXSource(XMLUtils.createXMLReader(), inputSource);
