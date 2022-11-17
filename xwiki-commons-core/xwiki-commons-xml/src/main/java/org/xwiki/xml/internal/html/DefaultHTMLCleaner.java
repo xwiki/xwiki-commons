@@ -131,6 +131,8 @@ public class DefaultHTMLCleaner implements HTMLCleaner
             DocumentBuilder documentBuilder = (DocumentBuilder) econtext.getProperty(DocumentBuilder.class.getName());
 
             if (documentBuilder == null) {
+                // The following line doesn't allow for XXE attacks since it's used in the clean() method where the
+                // DOCTYPE is set explicitly (and thus cannot be controlled by the user).
                 documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                 econtext.setProperty(DocumentBuilder.class.getName(), documentBuilder);
             }
@@ -138,6 +140,8 @@ public class DefaultHTMLCleaner implements HTMLCleaner
             return documentBuilder;
         }
 
+        // The following line doesn't allow for XXE attacks since it's used in the clean() method where the
+        // DOCTYPE is set explicitly (and thus cannot be controlled by the user).
         return DocumentBuilderFactory.newInstance().newDocumentBuilder();
     }
 
