@@ -57,7 +57,7 @@ class DefaultExtensionSerializerTest
     @InjectMockComponents
     private DefaultExtensionSerializer serializer;
 
-    private DefaultLocalExtension serializeAndUnserialize(DefaultLocalExtension extension)
+    private DefaultLocalExtension performSerializeAndUnserialize(DefaultLocalExtension extension)
         throws ParserConfigurationException, TransformerException, InvalidExtensionException
     {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -109,26 +109,26 @@ class DefaultExtensionSerializerTest
     }
 
     @Test
-    void testSerializeAndUnserialize()
+    void serializeAndUnserialize()
         throws ParserConfigurationException, TransformerException, InvalidExtensionException, ComponentLookupException
     {
         DefaultLocalExtension extension =
             new DefaultLocalExtension(null, new ExtensionId("extensionid", "extensionversion"), "type");
 
         // Minimum extension
-        serializeAndUnserialize(extension);
+        performSerializeAndUnserialize(extension);
 
         extension.addDependency(AbstractExtensionTest.DEPENDENCY1);
 
         // Minimum extension with minimum dependency
-        serializeAndUnserialize(extension);
+        performSerializeAndUnserialize(extension);
 
         AbstractExtensionTest.DEPENDENCY2.addExclusion(new DefaultExtensionPattern("pattern"));
 
         extension.addDependency(AbstractExtensionTest.DEPENDENCY2);
 
         AbstractExtensionTest.DEPENDENCY1
-            .setProperties(Collections.<String, Object>singletonMap("dependencykey", "dependencyvalue"));
+            .setProperties(Collections.singletonMap("dependencykey", "dependencyvalue"));
 
         extension.addManagedDependency(AbstractExtensionTest.DEPENDENCY1);
         extension.addManagedDependency(AbstractExtensionTest.DEPENDENCY2);
@@ -154,7 +154,7 @@ class DefaultExtensionSerializerTest
         extension.addAuthor(AbstractExtensionTest.AUTHOR2);
         extension.addFeature("feature1");
         extension.addExtensionFeature(new ExtensionId("feature2", "version"));
-        extension.addAllowedNamespace("namespae1");
+        extension.addAllowedNamespace("namespace1");
         extension.addLicense(AbstractExtensionTest.LICENSE1);
         extension.addLicense(AbstractExtensionTest.LICENSE2);
 
@@ -166,6 +166,6 @@ class DefaultExtensionSerializerTest
         extension.setIssueManagement(new DefaultExtensionIssueManagement("system", "url"));
 
         // Complete extension
-        serializeAndUnserialize(extension);
+        performSerializeAndUnserialize(extension);
     }
 }
