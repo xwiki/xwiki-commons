@@ -101,8 +101,9 @@ public class DefaultXMLReaderFactory implements XMLReaderFactory, Initializable
             xmlReader = parser.getXMLReader();
         }
 
-        // Protect against XXE attacks and allow resolving well-known entities locally.
-        // See https://css4j.github.io/resolver.html for details.
+        // Protect against XXE attacks except entity expansion (CWE-776). Allows resolving well-known entities
+        // locally. See https://css4j.github.io/resolver.html for details. For entity expansion protection, see above
+        // where we're protected by either the security manager or the FEATURE_SECURE_PROCESSING feature.
         xmlReader.setEntityResolver(new LocalEntityResolver());
 
         return xmlReader;
