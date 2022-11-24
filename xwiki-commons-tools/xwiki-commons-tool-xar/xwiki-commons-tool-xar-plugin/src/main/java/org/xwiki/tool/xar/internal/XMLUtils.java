@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
  * XML Utility methods.
  *
  * @version $Id$
- * @since 14.10RC1
+ * @since 14.10
  */
 public final class XMLUtils
 {
