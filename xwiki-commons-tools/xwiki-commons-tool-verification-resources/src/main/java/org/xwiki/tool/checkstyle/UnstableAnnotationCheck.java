@@ -54,7 +54,11 @@ public class UnstableAnnotationCheck extends AbstractCheck
     public int[] getDefaultTokens()
     {
         return new int[]{
-            TokenTypes.PACKAGE_DEF, TokenTypes.INTERFACE_DEF, TokenTypes.CLASS_DEF, TokenTypes.METHOD_DEF,
+            TokenTypes.PACKAGE_DEF,
+            TokenTypes.INTERFACE_DEF,
+            TokenTypes.CLASS_DEF,
+            TokenTypes.METHOD_DEF,
+            TokenTypes.CTOR_DEF
         };
     }
 

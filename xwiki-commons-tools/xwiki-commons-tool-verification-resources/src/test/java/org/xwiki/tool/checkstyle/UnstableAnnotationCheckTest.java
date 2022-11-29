@@ -129,6 +129,19 @@ class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     }
 
     @Test
+    void checkWithUnstableAnnotationShouldBeRemovedAtConstructorLevel() throws Exception
+    {
+        final String[] expected = {
+            "29:5: The @Unstable annotation for [org.xwiki.tool.checkstyle.test."
+            + "TestClassWithUnstableAnnotationShouldBeRemovedAtMethodLevel] must be removed since it's been there for"
+            + " more than a full development cycle (was introduced in [6.0] and current version is [8.1-SNAPSHOT])"
+        };
+
+        verify(this.checkConfig, getPath("TestClassWithUnstableAnnotationShouldBeRemovedAtConstructorLevel.java"),
+            expected);
+    }
+
+    @Test
     void checkPackageWithUnstable() throws Exception
     {
         final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
