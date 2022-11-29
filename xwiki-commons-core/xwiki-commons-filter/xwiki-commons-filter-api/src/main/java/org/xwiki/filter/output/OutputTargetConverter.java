@@ -20,7 +20,6 @@
 package org.xwiki.filter.output;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Convert a specific type of data into an {@link OutputTarget}.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @since 13.4RC1
  */
 @Role
-@Unstable
 public interface OutputTargetConverter<T>
 {
     /**
