@@ -30,7 +30,9 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.SerializableString;
 import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.core.io.CharacterEscapes;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -50,6 +52,8 @@ public class JSONTool
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(JSONTool.class);
 
+    private static final CustomCharacterEscapes CHARACTER_ESCAPES = new CustomCharacterEscapes();
+
     /**
      * Serialize a Java object to the JSON format.
      * <p>
@@ -61,6 +65,8 @@ public class JSONTool
      * <li>maps: {"number": 23, "boolean": false, "string": "value"}</li>
      * <li>beans: {"enabled": true, "name": "XWiki"} for a bean that has #isEnabled() and #getName() getters</li>
      * </ul>
+     * <p>
+     * The output is escaped to be safe in an HTML element and inside an HTML macro with wiki=false in XWiki.
      *
      * @param object the object to be serialized to the JSON format
      * @return the JSON-verified string representation of the given object
@@ -69,6 +75,7 @@ public class JSONTool
     {
         try {
             ObjectMapper mapper = new ObjectMapper();
+            mapper.getFactory().setCharacterEscapes(CHARACTER_ESCAPES);
             SimpleModule m = new SimpleModule("org.json.* serializer", new Version(1, 0, 0, "", "org.json", "json"));
             m.addSerializer(JSONObject.class, new JSONObjectSerializer());
             m.addSerializer(JSONArray.class, new JSONArraySerializer());
@@ -122,6 +129,38 @@ public class JSONTool
         public void serialize(JSONArray value, JsonGenerator jgen, SerializerProvider provider) throws IOException
         {
             jgen.writeRawValue(value.toString());
+        }
+    }
+
+    /**
+     * Custom character escapes to also escape forward slash.
+     * <p>
+     * Inspired by <a href="https://stackoverflow.com/a/6826587/1293930">this answer on Stack Overflow</a>.
+     *
+     * @since 14.10.1
+     * @since 15.0RC1
+     */
+    private static class CustomCharacterEscapes extends CharacterEscapes
+    {
+        private final int[] asciiEscapes;
+
+        CustomCharacterEscapes()
+        {
+            this.asciiEscapes = standardAsciiEscapesForJSON();
+            // Forward slash can be escaped by \/ according to the JSON specification.
+            this.asciiEscapes['/'] = '/';
+        }
+
+        @Override
+        public int[] getEscapeCodesForAscii()
+        {
+            return this.asciiEscapes;
+        }
+
+        @Override
+        public SerializableString getEscapeSequence(int i)
+        {
+            return null;
         }
     }
 

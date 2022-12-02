@@ -170,6 +170,13 @@ class JSONToolTest
     }
 
     @Test
+    void serializeSpecialCharacters()
+    {
+        assertEquals("\"<\\/\"", this.tool.serialize("</"));
+        assertEquals("\"{{\\/html}}\"", this.tool.serialize("{{/html}}"));
+    }
+
+    @Test
     void parseArray()
     {
         JSON json = this.tool.parse("[1,2,3]");
