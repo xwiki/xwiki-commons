@@ -66,7 +66,7 @@ public class JSONTool
      * <li>beans: {"enabled": true, "name": "XWiki"} for a bean that has #isEnabled() and #getName() getters</li>
      * </ul>
      * <p>
-     * The output is escaped to be safe in an HTML element and inside an HTML macro with wiki=false in XWiki.
+     * This also escapes "/" in the output and thus cannot close HTML tags or wiki macros.
      *
      * @param object the object to be serialized to the JSON format
      * @return the JSON-verified string representation of the given object

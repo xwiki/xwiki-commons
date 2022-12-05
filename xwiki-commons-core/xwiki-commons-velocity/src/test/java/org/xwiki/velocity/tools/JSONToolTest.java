@@ -170,10 +170,10 @@ class JSONToolTest
     }
 
     @Test
-    void serializeSpecialCharacters()
+    void serializeForwardSlash()
     {
         assertEquals("\"<\\/\"", this.tool.serialize("</"));
-        assertEquals("\"{{\\/html}}\"", this.tool.serialize("{{/html}}"));
+        assertEquals("\"{{\\/\"", this.tool.serialize("{{/"));
     }
 
     @Test
