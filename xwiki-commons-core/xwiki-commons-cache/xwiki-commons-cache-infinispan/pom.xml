@@ -61,11 +61,6 @@
       <groupId>jakarta.transaction</groupId>
       <artifactId>jakarta.transaction-api</artifactId>
     </dependency>
-    <!-- Remove when https://jira.xwiki.org/browse/XCOMMONS-2058 or https://jira.xwiki.org/browse/XCOMMONS-2004 are fixed -->
-    <dependency>
-      <groupId>org.jgroups</groupId>
-      <artifactId>jgroups</artifactId>      
-    </dependency>
 
     <!-- Test Dependencies -->
     <dependency>

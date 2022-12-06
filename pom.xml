@@ -1373,13 +1373,13 @@
       <dependency>
         <groupId>org.jgroups</groupId>
         <artifactId>jgroups</artifactId>
-        <version>4.2.6.Final</version>
+        <version>5.2.10.Final</version>
       </dependency>
       <!-- Used by Solr and Infinispan -->
       <dependency>
         <groupId>com.github.ben-manes.caffeine</groupId>
         <artifactId>caffeine</artifactId>
-        <version>2.9.3</version>
+        <version>3.1.2</version>
       </dependency>
       <dependency>
         <groupId>org.checkerframework</groupId>
@@ -1412,17 +1412,12 @@
       <dependency>
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-core</artifactId>
-        <version>13.0.13.Final</version>
+        <version>14.0.3.Final</version>
         <exclusions>
           <!-- We use jakarta.transaction:jakarta.transaction-api (the reference API id) instead in XWiki -->
           <exclusion>
             <groupId>org.jboss.spec.javax.transaction</groupId>
             <artifactId>jboss-transaction-api_1.2_spec</artifactId>
-          </exclusion>
-          <!-- Remove when https://jira.xwiki.org/browse/XCOMMONS-2058 or https://jira.xwiki.org/browse/XCOMMONS-2004 are fixed -->
-          <exclusion>
-            <groupId>org.jgroups</groupId>
-            <artifactId>jgroups</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
