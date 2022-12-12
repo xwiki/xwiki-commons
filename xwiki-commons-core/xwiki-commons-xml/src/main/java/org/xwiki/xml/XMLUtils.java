@@ -265,7 +265,7 @@ public final class XMLUtils
             str.append('\\');
         }
 
-        // Initialize with '-', as "->" isn't allowed at the start of the comment. It is thus be better to start with
+        // Initialize with '-', as "->" isn't allowed at the start of the comment. It is thus better to start with
         // an escape when the comment starts with '-'.
         char lastChar = '-';
         for (char c : buff) {
