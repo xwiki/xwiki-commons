@@ -1425,7 +1425,7 @@
       <dependency>
         <groupId>org.eclipse.microprofile.metrics</groupId>
         <artifactId>microprofile-metrics-api</artifactId>
-        <version>3.0.1</version>
+        <version>5.0.0</version>
       </dependency>
       <dependency>
         <groupId>jakarta.enterprise</groupId>
