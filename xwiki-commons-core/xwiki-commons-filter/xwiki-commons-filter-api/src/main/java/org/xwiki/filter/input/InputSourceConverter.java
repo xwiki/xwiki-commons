@@ -24,7 +24,7 @@ import org.xwiki.component.annotation.Role;
 /**
  * Convert a specific type of data into an {@link InputSource}.
  * 
- * @param <T>
+ * @param <T> the type of the value to convert to {@link InputSourceConverter}
  * @version $Id$
  * @since 13.4RC1
  */
