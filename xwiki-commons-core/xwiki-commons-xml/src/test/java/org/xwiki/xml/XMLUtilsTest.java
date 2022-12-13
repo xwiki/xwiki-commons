@@ -64,11 +64,14 @@ public class XMLUtilsTest
     @Test
     void escapeXMLComment()
     {
-        assertEquals("-\\- ", XMLUtils.escapeXMLComment("-- "));
+        assertEquals(" -\\- ", XMLUtils.escapeXMLComment(" -- "));
         assertEquals("\\\\", XMLUtils.escapeXMLComment("\\"));
-        assertEquals("-\\", XMLUtils.escapeXMLComment("-"));
-        assertEquals("-\\-\\-\\", XMLUtils.escapeXMLComment("---"));
-        assertEquals("- ", XMLUtils.escapeXMLComment("- "));
+        assertEquals("\\-\\", XMLUtils.escapeXMLComment("-"));
+        assertEquals(" -\\-\\-\\", XMLUtils.escapeXMLComment(" ---"));
+        assertEquals(" - ", XMLUtils.escapeXMLComment(" - "));
+        assertEquals("\\>", XMLUtils.escapeXMLComment(">"));
+        assertEquals(" \\{ ", XMLUtils.escapeXMLComment(" { "));
+        assertEquals(" >", XMLUtils.escapeXMLComment(" >"));
     }
 
     @Test
