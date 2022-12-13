@@ -1407,7 +1407,7 @@
       <dependency>
         <groupId>org.infinispan.protostream</groupId>
         <artifactId>protostream</artifactId>
-        <version>4.5.0.Final</version>
+        <version>4.5.1.Final</version>
       </dependency>
       <dependency>
         <groupId>org.infinispan</groupId>
