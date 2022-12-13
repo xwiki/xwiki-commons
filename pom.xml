@@ -1421,12 +1421,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- Needed for exposing JMX access to the Infinispan Statistics MBeans - XCOMMONS-2188 -->
-      <dependency>
-        <groupId>org.eclipse.microprofile.metrics</groupId>
-        <artifactId>microprofile-metrics-api</artifactId>
-        <version>3.0.1</version>
-      </dependency>
       <dependency>
         <groupId>jakarta.enterprise</groupId>
         <artifactId>jakarta.enterprise.cdi-api</artifactId>
