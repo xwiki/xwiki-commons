@@ -245,7 +245,9 @@ public final class XMLUtils
      * <ul>
      *   <li>1) Escape existing \</li>
      *   <li>2) Escape --</li>
-     *   <li>3) Add {@code \} (unescaped as {@code ""}) at the end if the last char is {@code -}</li>
+     *   <li>3) Escape > or - at the start of the comment</li>
+     *   <li>4) Escape { to prevent XWiki macro syntax</li>
+     *   <li>5) Add {@code \} (unescaped as {@code ""}) at the end if the last char is {@code -}</li>
      * </ul>
      *
      * @param content the XML comment content to escape
@@ -254,14 +256,20 @@ public final class XMLUtils
      */
     public static String escapeXMLComment(String content)
     {
-        StringBuffer str = new StringBuffer(content.length());
+        StringBuilder str = new StringBuilder(content.length());
 
         char[] buff = content.toCharArray();
-        char lastChar = 0;
+
+        // At the start of a comment, > isn't allowed.
+        if (buff.length > 0 && buff[0] == '>') {
+            str.append('\\');
+        }
+
+        // Initialize with '-', as "->" isn't allowed at the start of the comment. It is thus better to start with
+        // an escape when the comment starts with '-'.
+        char lastChar = '-';
         for (char c : buff) {
-            if (c == '\\') {
-                str.append('\\');
-            } else if (c == '-' && lastChar == '-') {
+            if (c == '\\' || c == '{' || (c == '-' && lastChar == '-')) {
                 str.append('\\');
             }
 
