@@ -237,7 +237,7 @@ public final class XMLUtils
      * <ul>
      *   <li>1) Escape existing \</li>
      *   <li>2) Escape --</li>
-     *   <li>3) Escape > or - at the start of the comment</li>
+     *   <li>3) Escape &gt; or - at the start of the comment</li>
      *   <li>4) Escape { to prevent XWiki macro syntax</li>
      *   <li>5) Add {@code \} (unescaped as {@code ""}) at the end if the last char is {@code -}</li>
      * </ul>
