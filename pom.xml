@@ -1412,7 +1412,7 @@
       <dependency>
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-core</artifactId>
-        <version>14.0.3.Final</version>
+        <version>14.0.4.Final</version>
         <exclusions>
           <!-- We use jakarta.transaction:jakarta.transaction-api (the reference API id) instead in XWiki -->
           <exclusion>
