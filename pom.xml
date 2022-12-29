@@ -1373,7 +1373,7 @@
       <dependency>
         <groupId>org.jgroups</groupId>
         <artifactId>jgroups</artifactId>
-        <version>5.2.10.Final</version>
+        <version>5.2.11.Final</version>
       </dependency>
       <!-- Used by Solr and Infinispan -->
       <dependency>
