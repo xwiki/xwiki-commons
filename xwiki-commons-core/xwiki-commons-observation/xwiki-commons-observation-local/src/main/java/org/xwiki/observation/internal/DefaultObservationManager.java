@@ -197,8 +197,7 @@ public class DefaultObservationManager implements ObservationManager
                 "The [{}] listener is overwriting a previously "
                     + "registered listener [{}] since they both are registered under the same id [{}]. "
                     + "In the future consider removing a Listener first if you really want to register it again.",
-                new Object[] {eventListener.getClass().getName(), previousListener.getClass().getName(),
-                    eventListener.getName()});
+                eventListener.getClass().getName(), previousListener.getClass().getName(), eventListener.getName());
         }
 
         // Register the listener by name. If already registered, override it.
@@ -320,8 +319,7 @@ public class DefaultObservationManager implements ObservationManager
                         listener.listener.onEvent(event, source, data);
                     } catch (LinkageError | Exception e) {
                         // protect from bad listeners
-                        this.logger.error("Failed to send event [{}] to listener [{}]",
-                            new Object[] {event, listener.listener, e});
+                        this.logger.error("Failed to send event [{}] to listener [{}]", event, listener.listener, e);
                     }
 
                     // Only send the first matching event since the listener should only be called once per event.
