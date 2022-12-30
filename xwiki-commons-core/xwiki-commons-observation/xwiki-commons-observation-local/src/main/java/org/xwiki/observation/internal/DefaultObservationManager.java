@@ -318,7 +318,7 @@ public class DefaultObservationManager implements ObservationManager
                 if (listenerEvent.matches(event)) {
                     try {
                         listener.listener.onEvent(event, source, data);
-                    } catch (Exception e) {
+                    } catch (LinkageError | Exception e) {
                         // protect from bad listeners
                         this.logger.error("Failed to send event [{}] to listener [{}]",
                             new Object[] {event, listener.listener, e});
