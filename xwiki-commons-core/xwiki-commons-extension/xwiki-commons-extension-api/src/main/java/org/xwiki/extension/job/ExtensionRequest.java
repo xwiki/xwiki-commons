@@ -118,10 +118,12 @@ public interface ExtensionRequest extends Request
     {
         return null;
     }
-    
+
     /**
      * @return the repository to use to find core extensions
+     * @since 15.0RC1
      */
+    @Transient
     default CoreExtensionRepository getCoreExtensionRepository()
     {
         return null;
@@ -139,7 +141,7 @@ public interface ExtensionRequest extends Request
     /**
      * @return true true if already installed extensions should not be taken into account while resolving the install
      *         plan
-     * @since 14.9RC1
+     * @since 15.0RC1
      */
     @Unstable
     default boolean isInstalledIgnored()

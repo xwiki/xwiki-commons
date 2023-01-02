@@ -67,7 +67,9 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
 
     /**
      * @see #isInstalledIgnored()
+     * @since 15.0RC1
      */
+    @Unstable
     public static final String PROPERTY_INSTALLEDIGNORED = "installedIgnored";
 
     /**
@@ -77,6 +79,7 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
 
     /**
      * @see #getCoreExtensionRepository()
+     * @since 15.0RC1
      */
     @Unstable
     public static final String PROPERTY_COREEXTENSIONREPOSITORY = "coreExtensionRepository";
@@ -123,8 +126,8 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     }
 
     /**
-     * @return extensions to not take into account
-     * @since 14.9RC1
+     * @return the extension to identify as core extensions
+     * @since 15.0RC1
      */
     @Unstable
     public Collection<ExtensionId> getCoreExtensions()
@@ -164,7 +167,7 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
 
     /**
      * @param extensionId the extension identifier
-     * @since 14.9RC1
+     * @since 15.0RC1
      */
     @Unstable
     public void addCoreExtension(ExtensionId extensionId)
@@ -224,7 +227,7 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
 
     /**
      * @param repository the repository to use to find core extensions
-     * @since 14.9RC1
+     * @since 15.0RC1
      */
     @Transient
     public void setCoreExtensionRepository(CoreExtensionRepository repository)
@@ -263,7 +266,7 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     /**
      * @param ignored true if already installed extensions should not be taken into account while resolving the install
      *            plan
-     * @since 14.9RC1
+     * @since 15.0CR1
      */
     public void setInstalledIgnored(boolean ignored)
     {
