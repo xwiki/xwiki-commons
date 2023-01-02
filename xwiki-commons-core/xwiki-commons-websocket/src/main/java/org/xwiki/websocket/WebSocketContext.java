@@ -27,7 +27,6 @@ import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpointConfig;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Component used to initialize and bind a WebSocket execution context to a WebSocket session, and to run code within
@@ -37,7 +36,6 @@ import org.xwiki.stability.Unstable;
  * @since 13.7RC1
  */
 @Role
-@Unstable
 public interface WebSocketContext
 {
     /**

@@ -19,8 +19,8 @@
  */
 package org.xwiki.tool.checkstyle;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -32,19 +32,19 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * @version $Id$
  * @since 8.1M1
  */
-public class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
+class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
 {
     private DefaultConfiguration checkConfig;
 
-    @Before
-    public void setUp()
+    @BeforeEach
+    void setUp()
     {
         this.checkConfig = createModuleConfig(UnstableAnnotationCheck.class);
         this.checkConfig.addAttribute("currentVersion", "8.1-SNAPSHOT");
     }
 
     @Test
-    public void checkWithNoSinceJavadocTagAtClassLevel() throws Exception
+    void checkWithNoSinceJavadocTagAtClassLevel() throws Exception
     {
         final String[] expected = {
             "24:1: There is an @Unstable annotation for [org.xwiki.tool.checkstyle.test."
@@ -55,7 +55,7 @@ public class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     }
 
     @Test
-    public void checkWithNoSinceJavadocTagAtMethodLevel() throws Exception
+    void checkWithNoSinceJavadocTagAtMethodLevel() throws Exception
     {
         final String[] expected = {
             "26:5: There is an @Unstable annotation for [org.xwiki.tool.checkstyle.test."
@@ -67,7 +67,7 @@ public class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     }
 
     @Test
-    public void checkWithUnstableOkAtClassLevel() throws Exception
+    void checkWithUnstableOkAtClassLevel() throws Exception
     {
         final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
 
@@ -83,7 +83,7 @@ public class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     }
 
     @Test
-    public void checkWithUnstableAnnotationShouldBeRemoved() throws Exception
+    void checkWithUnstableAnnotationShouldBeRemoved() throws Exception
     {
         final String[] expected = {
             "29:1: The @Unstable annotation for [org.xwiki.tool.checkstyle.test."
@@ -95,7 +95,7 @@ public class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     }
 
     @Test
-    public void checkWithUnstableAnnotationShouldBeRemovedMultipleSince() throws Exception
+    void checkWithUnstableAnnotationShouldBeRemovedMultipleSince() throws Exception
     {
         final String[] expected = {
             "30:1: The @Unstable annotation for [org.xwiki.tool.checkstyle.test."
@@ -107,7 +107,7 @@ public class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     }
 
     @Test
-    public void checkWithUnstableAnnotationShouldNotBeRemovedMultipleSince() throws Exception
+    void checkWithUnstableAnnotationShouldNotBeRemovedMultipleSince() throws Exception
     {
         final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
 
@@ -116,7 +116,7 @@ public class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     }
 
     @Test
-    public void checkWithUnstableAnnotationShouldBeRemovedAtMethodLevel() throws Exception
+    void checkWithUnstableAnnotationShouldBeRemovedAtMethodLevel() throws Exception
     {
         final String[] expected = {
             "29:5: The @Unstable annotation for [org.xwiki.tool.checkstyle.test."
@@ -129,7 +129,20 @@ public class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     }
 
     @Test
-    public void checkPackageWithUnstable() throws Exception
+    void checkWithUnstableAnnotationShouldBeRemovedAtConstructorLevel() throws Exception
+    {
+        final String[] expected = {
+            "29:5: The @Unstable annotation for [org.xwiki.tool.checkstyle.test."
+            + "TestClassWithUnstableAnnotationShouldBeRemovedAtMethodLevel] must be removed since it's been there for"
+            + " more than a full development cycle (was introduced in [6.0] and current version is [8.1-SNAPSHOT])"
+        };
+
+        verify(this.checkConfig, getPath("TestClassWithUnstableAnnotationShouldBeRemovedAtConstructorLevel.java"),
+            expected);
+    }
+
+    @Test
+    void checkPackageWithUnstable() throws Exception
     {
         final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
 
@@ -137,7 +150,7 @@ public class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     }
 
     @Test
-    public void checkPackageWithOtherAnnotation() throws Exception
+    void checkPackageWithOtherAnnotation() throws Exception
     {
         final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
 

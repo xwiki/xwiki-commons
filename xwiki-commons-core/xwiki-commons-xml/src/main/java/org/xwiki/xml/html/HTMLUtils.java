@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jdom.Comment;
 import org.jdom.DocType;
 import org.jdom.Element;
 import org.jdom.input.DOMBuilder;
@@ -178,6 +179,22 @@ public final class HTMLUtils
                 // Reset the format
                 currentFormat.setExpandEmptyElements(currentFormatPolicy);
             }
+        }
+
+        @Override
+        protected void printComment(Writer out, Comment comment) throws IOException
+        {
+            String commentText = comment.getText();
+
+            // TODO: remove this again when https://sourceforge.net/p/htmlcleaner/bugs/234/ has been fixed.
+            // Make sure that the comment text conforms to the HTML specification, in particular: "Optionally, text,
+            // with the additional restriction that the text must not start with the string ">", nor start with the
+            // string "->", nor contain the strings "<!--", "-->", or "--!>", nor end with the string "<!-"."
+            while (commentText.startsWith(">") || commentText.startsWith("->")) {
+                commentText = commentText.substring(1);
+            }
+
+            super.printComment(out, new Comment(commentText));
         }
     }
 

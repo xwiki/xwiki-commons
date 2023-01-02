@@ -25,14 +25,14 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-core</artifactId>
-    <version>14.9-SNAPSHOT</version>
+    <version>15.0-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-xml</artifactId>
   <name>XWiki Commons - XML</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - XML</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.82</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.89</xwiki.jacoco.instructionRatio>
     <!-- There's a utility class with lots of features, allow it to have many dependencies;
          There's a SAX event listener, which requires complex code -->
     <checkstyle.suppressions.location>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml
@@ -125,6 +125,34 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <!-- Exclude some classes copied from CSS4J's source repo. See  https://github.com/css4j/xml-dtd/issues/7 -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <executions>
+          <execution>
+            <!-- Specify the "default" execution id so that the "blocker" one is always executed -->
+            <id>default</id>
+            <configuration>
+              <excludes>
+                org/xwiki/xml/internal/AgentUtil.java,
+                org/xwiki/xml/internal/LocalEntityResolver.java
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Exclude some classes copied from CSS4J's source repo. See  https://github.com/css4j/xml-dtd/issues/7 -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/internal/AgentUtil.class</exclude>
+            <exclude>**/internal/LocalEntityResolver.class</exclude>
+          </excludes>
+        </configuration>
       </plugin>
     </plugins>
   </build>

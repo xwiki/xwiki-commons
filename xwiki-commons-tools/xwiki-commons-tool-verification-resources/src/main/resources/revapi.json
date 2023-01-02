@@ -59,14 +59,14 @@
         {
           "regex": true,
           "ignore": true,
-          "code": "java.annotation.(added|removed)",
+          "code": "java.annotation.(added|removed|attributeValueChanged)",
           "annotationType": "org\\.xwiki\\.properties\\.annotation\\.PropertyName",
           "justification": "Not a breakage. The display name of a property. It has no semantic consequences."
         },
         {
           "regex": true,
           "ignore": true,
-          "code": "java.annotation.(added|removed)",
+          "code": "java.annotation.(added|removed|attributeValueChanged)",
           "annotationType": "org\\.xwiki\\.properties\\.annotation\\.PropertyDescription",
           "justification": "Not a breakage. Give more information about a specific property. It has no semantic consequences."
         },

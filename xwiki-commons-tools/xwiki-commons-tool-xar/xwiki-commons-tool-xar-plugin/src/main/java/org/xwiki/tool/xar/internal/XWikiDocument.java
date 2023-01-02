@@ -32,6 +32,8 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
+import static org.xwiki.tool.xar.internal.XMLUtils.getSAXReader;
+
 /**
  * Parse XWiki document from XML.
  *
@@ -176,9 +178,8 @@ public class XWikiDocument
      */
     public void fromXML(File file) throws DocumentException
     {
-        SAXReader reader = new SAXReader();
+        SAXReader reader = getSAXReader();
         fromXML(reader.read(file));
-
     }
 
     /**
@@ -189,7 +190,7 @@ public class XWikiDocument
      */
     public void fromXML(String file) throws DocumentException
     {
-        SAXReader reader = new SAXReader();
+        SAXReader reader = getSAXReader();
         fromXML(reader.read(new StringReader(file)));
     }
 

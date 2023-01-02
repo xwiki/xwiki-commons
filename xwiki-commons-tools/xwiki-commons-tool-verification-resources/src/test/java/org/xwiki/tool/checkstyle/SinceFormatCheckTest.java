@@ -19,8 +19,8 @@
  */
 package org.xwiki.tool.checkstyle;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
@@ -31,18 +31,18 @@ import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
  * @version $Id$
  * @since 8.3
  */
-public class SinceFormatCheckTest extends AbstractModuleTestSupport
+class SinceFormatCheckTest extends AbstractModuleTestSupport
 {
     private DefaultConfiguration checkConfig;
 
-    @Before
-    public void setUp()
+    @BeforeEach
+    void setUp()
     {
         this.checkConfig = createModuleConfig(SinceFormatCheck.class);
     }
 
     @Test
-    public void checkWithMultipleSinceSeparatedByComma() throws Exception
+    void checkWithMultipleSinceSeparatedByComma() throws Exception
     {
         final String[] expected = {
             "29:1: There must be only a single version per @since tag for "
@@ -53,7 +53,7 @@ public class SinceFormatCheckTest extends AbstractModuleTestSupport
     }
 
     @Test
-    public void checkWithMultipleSinceSeparatedBySlash() throws Exception
+    void checkWithMultipleSinceSeparatedBySlash() throws Exception
     {
         final String[] expected = {
             "29:5: There must be only a single version per @since tag for "

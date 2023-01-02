@@ -109,7 +109,8 @@ public class Message implements Serializable, CharSequence
      */
     public Message(String translationKey, String message, Object... arguments)
     {
-        this(new TranslationMarker(translationKey), message, arguments, null);
+        this(new TranslationMarker(translationKey), message, LogUtils.getArgumentArray(arguments),
+            LogUtils.getThrowable(arguments));
     }
 
     /**

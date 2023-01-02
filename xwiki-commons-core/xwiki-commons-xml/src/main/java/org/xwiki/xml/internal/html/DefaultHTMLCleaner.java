@@ -131,6 +131,8 @@ public class DefaultHTMLCleaner implements HTMLCleaner
             DocumentBuilder documentBuilder = (DocumentBuilder) econtext.getProperty(DocumentBuilder.class.getName());
 
             if (documentBuilder == null) {
+                // The following line doesn't allow for XXE attacks since it's used in the clean() method where the
+                // DOCTYPE is set explicitly (and thus cannot be controlled by the user).
                 documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                 econtext.setProperty(DocumentBuilder.class.getName(), documentBuilder);
             }
@@ -138,6 +140,8 @@ public class DefaultHTMLCleaner implements HTMLCleaner
             return documentBuilder;
         }
 
+        // The following line doesn't allow for XXE attacks since it's used in the clean() method where the
+        // DOCTYPE is set explicitly (and thus cannot be controlled by the user).
         return DocumentBuilderFactory.newInstance().newDocumentBuilder();
     }
 
@@ -267,6 +271,13 @@ public class DefaultHTMLCleaner implements HTMLCleaner
 
         defaultProperties.setDeserializeEntities(true);
 
+        // Omit comments in restricted mode to avoid any potential parser confusion.
+        // Any part of the filtered HTML that contains unfiltered input is potentially dangerous/a candidate for
+        // parser confusion. Comments, style and script elements seem to be frequently found ingredients in successful
+        // attacks against good sanitizers. We're already removing style and script elements, so removing comments
+        // seems like a good defense against future attacks.
+        defaultProperties.setOmitComments(isRestricted(configuration));
+
         return defaultProperties;
     }
 
@@ -314,8 +325,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner
             defaultTransformations.addTransformation(tt);
         }
 
-        String restricted = configuration.getParameters().get(HTMLCleanerConfiguration.RESTRICTED);
-        if ("true".equalsIgnoreCase(restricted)) {
+        if (isRestricted(configuration)) {
 
             tt = new TagTransformation(HTMLConstants.TAG_SCRIPT, HTMLConstants.TAG_PRE, false);
             defaultTransformations.addTransformation(tt);
@@ -334,6 +344,16 @@ public class DefaultHTMLCleaner implements HTMLCleaner
     private boolean isHTML5(HTMLCleanerConfiguration configuration)
     {
         return getHTMLVersion(configuration) == 5;
+    }
+
+    /**
+     * @param configuration the configuration to parse
+     * @return if the parsing should happen in restricted mode
+     */
+    private boolean isRestricted(HTMLCleanerConfiguration configuration)
+    {
+        String restricted = configuration.getParameters().get(HTMLCleanerConfiguration.RESTRICTED);
+        return "true".equalsIgnoreCase(restricted);
     }
 
     /**

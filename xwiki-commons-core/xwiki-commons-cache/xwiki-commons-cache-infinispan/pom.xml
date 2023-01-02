@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-cache</artifactId>
-    <version>14.9-SNAPSHOT</version>
+    <version>15.0-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-cache-infinispan</artifactId>
   <name>XWiki Commons - Cache - Infinispan</name>
@@ -50,21 +50,10 @@
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-core</artifactId>
     </dependency>
-    <!-- Needed for JMX access to the Infinispan Statistics MBeans - XCOMMONS-2188 -->
-    <dependency>
-      <groupId>org.eclipse.microprofile.metrics</groupId>
-      <artifactId>microprofile-metrics-api</artifactId>
-      <scope>runtime</scope>
-    </dependency>
     <!-- Use jakarta.transaction:jakarta.transaction-api instead to not have duplicate JARs in generated WARs -->
     <dependency>
       <groupId>jakarta.transaction</groupId>
       <artifactId>jakarta.transaction-api</artifactId>
-    </dependency>
-    <!-- Remove when https://jira.xwiki.org/browse/XCOMMONS-2058 or https://jira.xwiki.org/browse/XCOMMONS-2004 are fixed -->
-    <dependency>
-      <groupId>org.jgroups</groupId>
-      <artifactId>jgroups</artifactId>      
     </dependency>
 
     <!-- Test Dependencies -->

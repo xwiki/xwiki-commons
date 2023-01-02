@@ -81,6 +81,7 @@ public class ComponentRegistrator
         if (roleHint != null) {
             descriptor.setRoleHint(roleHint);
         }
+        descriptor.setImplementation(instance.getClass());
         componentManager.registerComponent(descriptor, instance);
     }
 

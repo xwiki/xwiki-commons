@@ -746,6 +746,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
         // save
 
+        // Note: the following line is not subject to XXE attacks since we fully control the content of the Document
+        // that is serialized and there's no way to inject a DOCTYPE entry in it.
         TransformerFactory transfac = TransformerFactory.newInstance();
         Transformer trans = transfac.newTransformer();
         trans.setOutputProperty(OutputKeys.INDENT, "yes");

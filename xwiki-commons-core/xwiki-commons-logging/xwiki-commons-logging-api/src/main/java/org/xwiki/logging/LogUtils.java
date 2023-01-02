@@ -123,20 +123,39 @@ public final class LogUtils
      */
     public static LogEvent translate(LogEvent logEvent, String translatedMessage)
     {
-        if (translatedMessage != null) {
-            MessageParser parser = new MessageParser(translatedMessage, true);
+        return (LogEvent) translate((Message) logEvent, translatedMessage);
+    }
 
-            Object[] defaultArguments = logEvent.getArgumentArray();
+    /**
+     * Translate the passed {@link Message} based on the passed translation message pattern.
+     * <p>
+     * The translation message pattern use the same syntax than standard message pattern except that it's optionally
+     * possible to provide a custom index as in <code>Some {1} translation {0} message</code> in order to modify the
+     * order of the argument which can be required depending on the language.
+     *
+     * @param message the {@link Message} to translate
+     * @param translatedPattern the translated version of the {@link Message} message
+     * @return the translated version of the passed {@link Message}
+     * @since 15.0RC1
+     * @since 14.10.1
+     */
+    @Unstable
+    public static Message translate(Message message, String translatedPattern)
+    {
+        if (translatedPattern != null) {
+            MessageParser parser = new MessageParser(translatedPattern, true);
+
+            Object[] defaultArguments = message.getArgumentArray();
             Object[] arguments = new Object[defaultArguments.length];
-            StringBuilder message = new StringBuilder();
+            StringBuilder translatedMessage = new StringBuilder();
 
             int index = 0;
             for (MessageElement element = parser.next(); element != null; element = parser.next()) {
                 if (element instanceof MessageIndex) {
-                    message.append(MessageParser.ARGUMENT_STR);
+                    translatedMessage.append(MessageParser.ARGUMENT_STR);
                     arguments[index++] = defaultArguments[((MessageIndex) element).getIndex()];
                 } else {
-                    message.append(element.getString());
+                    translatedMessage.append(element.getString());
                 }
             }
 
@@ -144,10 +163,54 @@ public final class LogUtils
                 arguments[index] = defaultArguments[index];
             }
 
-            return new LogEvent(logEvent.getMarker(), logEvent.getLevel(), message.toString(), arguments,
-                logEvent.getThrowable(), logEvent.getTimeStamp());
+            if (message instanceof LogEvent) {
+                LogEvent logEvent = (LogEvent) message;
+
+                return new LogEvent(logEvent.getMarker(), logEvent.getLevel(), translatedMessage.toString(), arguments,
+                    logEvent.getThrowable(), logEvent.getTimeStamp());
+            } else {
+                return new Message(message.getMarker(), translatedMessage.toString(), arguments,
+                    message.getThrowable());
+            }
         }
 
-        return logEvent;
+        return message;
     }
+
+    /**
+     * Filter out the log {@link Throwable} from passed arguments.
+     * 
+     * @param arguments the passed argument from which to filter out the throwable
+     * @return the actual argument
+     * @since 15.0RC1
+     * @since 14.10.1
+     */
+    @Unstable
+    public static Object[] getArgumentArray(Object... arguments)
+    {
+        if (arguments.length > 0 && arguments[arguments.length - 1] instanceof Throwable) {
+            return Arrays.copyOf(arguments, arguments.length - 1);
+        }
+
+        return arguments;
+    }
+
+    /**
+     * Extract the log {@link Throwable} from passed arguments.
+     * 
+     * @param arguments the passed argument from which to extract the throwable
+     * @return the throwable
+     * @since 15.0RC1
+     * @since 14.10.1
+     */
+    @Unstable
+    public static Throwable getThrowable(Object... arguments)
+    {
+        if (arguments.length > 0 && arguments[arguments.length - 1] instanceof Throwable) {
+            return (Throwable) arguments[arguments.length - 1];
+        }
+
+        return null;
+    }
+
 }

@@ -34,8 +34,8 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
@@ -48,7 +48,7 @@ import org.xwiki.extension.version.internal.DefaultVersion;
 
 import com.google.common.collect.Iterators;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id$
  */
-public class XWikiExtensionRepositoryTest
+class XWikiExtensionRepositoryTest
 {
     /**
      * The object being tested.
@@ -67,7 +67,7 @@ public class XWikiExtensionRepositoryTest
 
     private Unmarshaller unmarshaller = mock(Unmarshaller.class);
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         ExtensionRepositoryDescriptor repositoryDescriptor = mock(ExtensionRepositoryDescriptor.class);
@@ -95,7 +95,7 @@ public class XWikiExtensionRepositoryTest
     }
 
     @Test
-    public void resolveVersions() throws Exception
+    void resolveVersions() throws Exception
     {
         ExtensionVersionSummary v1 = mock(ExtensionVersionSummary.class);
         when(v1.getVersion()).thenReturn("1.3");

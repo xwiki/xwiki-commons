@@ -21,7 +21,6 @@ package org.xwiki.xml.internal;
 
 import java.lang.reflect.Method;
 
-import javax.inject.Singleton;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -30,9 +29,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
-import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
 import org.xwiki.xml.XMLReaderFactory;
 
 /**
@@ -43,8 +40,6 @@ import org.xwiki.xml.XMLReaderFactory;
  * @version $Id$
  * @since 1.7.1
  */
-@Component
-@Singleton
 public class DefaultXMLReaderFactory implements XMLReaderFactory, Initializable
 {
     /**
@@ -55,7 +50,7 @@ public class DefaultXMLReaderFactory implements XMLReaderFactory, Initializable
     private Object xercesGrammarPool;
 
     @Override
-    public void initialize() throws InitializationException
+    public void initialize()
     {
         try {
             this.xercesGrammarPool = Class.forName("org.apache.xerces.util.XMLGrammarPoolImpl").newInstance();
@@ -105,6 +100,11 @@ public class DefaultXMLReaderFactory implements XMLReaderFactory, Initializable
             SAXParser parser = parserFactory.newSAXParser();
             xmlReader = parser.getXMLReader();
         }
+
+        // Protect against XXE attacks except entity expansion (CWE-776). Allows resolving well-known entities
+        // locally. See https://css4j.github.io/resolver.html for details. For entity expansion protection, see above
+        // where we're protected by either the security manager or the FEATURE_SECURE_PROCESSING feature.
+        xmlReader.setEntityResolver(new LocalEntityResolver());
 
         return xmlReader;
     }

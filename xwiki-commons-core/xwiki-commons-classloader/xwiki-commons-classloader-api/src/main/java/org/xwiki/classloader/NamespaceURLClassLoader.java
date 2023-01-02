@@ -27,8 +27,6 @@ import java.net.URLStreamHandlerFactory;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * An {@link ExtendedURLClassLoader} associated with a namespace. The namespace can be anything. For example it's used
  * by the Extension Manager to have one classloader per wiki using a namespace of the type {@code wiki:wikiname}.
@@ -86,7 +84,6 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
      * @since 12.10.10
      * @since 13.4.4
      */
-    @Unstable
     public NamespaceURLClassLoader(URL[] urls, ClassLoader parent, URLStreamHandlerFactory factory, String namespace)
     {
         super(urls, parent, factory);
@@ -111,7 +108,6 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
      * @since 12.10.10
      * @since 13.4.4
      */
-    @Unstable
     public NamespaceURLClassLoader(ClassLoader parent, URLStreamHandlerFactory factory, String namespace)
     {
         this(EMPTY_URIS, parent, factory, namespace);
@@ -129,7 +125,6 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
      * @return true of the class loader is closed
      * @since 13.7RC1
      */
-    @Unstable
     public boolean isClosed()
     {
         return this.closed;

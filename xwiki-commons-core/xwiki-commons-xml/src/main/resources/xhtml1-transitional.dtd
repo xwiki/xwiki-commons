@@ -23,20 +23,9 @@
 
 <!--================ Character mnemonic entities =========================-->
 
-<!ENTITY % HTMLlat1 PUBLIC
-   "-//W3C//ENTITIES Latin 1 for XHTML//EN"
-   "xhtml-lat1.ent">
-%HTMLlat1;
-
-<!ENTITY % HTMLsymbol PUBLIC
-   "-//W3C//ENTITIES Symbols for XHTML//EN"
-   "xhtml-symbol.ent">
-%HTMLsymbol;
-
-<!ENTITY % HTMLspecial PUBLIC
-   "-//W3C//ENTITIES Special for XHTML//EN"
-   "xhtml-special.ent">
-%HTMLspecial;
+<!ENTITY % HTML5 SYSTEM
+   "https://www.w3.org/TR/html5/entities.dtd">
+%HTML5;
 
 <!--================== Imported Names ====================================-->
 
@@ -196,9 +185,9 @@
 
 <!ENTITY % special.extra
    "object | applet | img | map | iframe">
-
+	
 <!ENTITY % special.basic
-   "br | span | bdo">
+	"br | span | bdo">
 
 <!ENTITY % special
    "%special.basic; | %special.extra;">
@@ -253,7 +242,7 @@
 
 <!ENTITY % pre.content
    "(#PCDATA | a | %special.basic; | %fontstyle.basic; | %phrase.basic; |
-       %inline.forms; | %misc.inline;)*">
+	   %inline.forms; | %misc.inline;)*">
 
 <!-- form uses %Flow; excluding form -->
 

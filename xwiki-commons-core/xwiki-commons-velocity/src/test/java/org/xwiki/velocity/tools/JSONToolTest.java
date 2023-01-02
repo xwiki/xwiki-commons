@@ -170,6 +170,13 @@ class JSONToolTest
     }
 
     @Test
+    void serializeForwardSlash()
+    {
+        assertEquals("\"<\\/\"", this.tool.serialize("</"));
+        assertEquals("\"{{\\/\"", this.tool.serialize("{{/"));
+    }
+
+    @Test
     void parseArray()
     {
         JSON json = this.tool.parse("[1,2,3]");

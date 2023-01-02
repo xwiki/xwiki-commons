@@ -24,7 +24,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>14.9-SNAPSHOT</version>
+  <version>15.0-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -38,7 +38,7 @@
          and the javadoc produce external link using a path like for example:
          "/xwiki-commons-pom/.../apidocs/org/xwiki/model/reference/DocumentReference.html?is-external=true"
        - Ideally we would use instead a generic URL like:
-         "https://extensions.xwiki.org?id=${project.groupId}:${project.artifactId}&amp;path="
+         "https://extenions.xwiki.org?id=${project.groupId}:${project.artifactId}&amp;path="
          However this makes the site plugin fails, see https://jira.codehaus.org/browse/MNG-5242
   -->
   <url>https://extensions.xwiki.org?id=${project.groupId}:${project.artifactId}:${project.version}:::</url>
@@ -46,11 +46,11 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>14.9-SNAPSHOT</commons.version>
+    <commons.version>15.0-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
-    <xwiki.compatibility.previous.version>14.7</xwiki.compatibility.previous.version>
+    <xwiki.compatibility.previous.version>14.10.2</xwiki.compatibility.previous.version>
 
     <!-- Java -->
     <xwiki.java.version>11</xwiki.java.version>
@@ -62,18 +62,18 @@
     <jakarta.transaction.version>1.3.3</jakarta.transaction.version>
 
     <!-- Jackson -->
-    <jackson.version>2.13.4</jackson.version>
-    <jackson.databind.version>2.13.4</jackson.databind.version>
+    <jackson.version>2.14.1</jackson.version>
+    <jackson.databind.version>2.14.1</jackson.databind.version>
 
     <!-- ASM -->
-    <asm.version>9.3</asm.version>
+    <asm.version>9.4</asm.version>
 
     <!-- Guava -->
     <guava.version>31.1-jre</guava.version>
 
     <!-- SLF4J -->
-    <slf4j.version>2.0.2</slf4j.version>
-    <logback.version>1.3.1</logback.version>
+    <slf4j.version>2.0.6</slf4j.version>
+    <logback.version>1.3.5</logback.version>
 
     <!-- Hamcrest -->
     <hamcrest.version>2.2</hamcrest.version>
@@ -90,33 +90,33 @@
 
     <!-- Mock libraries -->
     <jmock.version>2.12.0</jmock.version>
-    <mockito.version>4.8.0</mockito.version>
+    <mockito.version>4.11.0</mockito.version>
 
     <!-- Byte Buddy -->
-    <bytebuddy.version>1.12.17</bytebuddy.version>
+    <bytebuddy.version>1.12.20</bytebuddy.version>
 
     <!-- AspectJ -->
-    <aspectj.version>1.9.9.1</aspectj.version>
+    <aspectj.version>1.9.19</aspectj.version>
 
     <!-- Clover & Jacoco -->
     <clover.version>4.4.1</clover.version>
     <jacoco.version>0.8.8</jacoco.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>10.3.3</checkstyle.version>
+    <checkstyle.version>10.6.0</checkstyle.version>
 
     <!-- Spoon -->
-    <spoon.version>10.1.1</spoon.version>
+    <spoon.version>10.2.0</spoon.version>
 
     <!-- Groovy -->
-    <groovy.version>3.0.12</groovy.version>
+    <groovy.version>3.0.14</groovy.version>
 
     <!-- Ivy -->
-    <ivy.version>2.5.0</ivy.version>
+    <ivy.version>2.5.1</ivy.version>
 
     <!-- Closure compiler -->
-    <closure-compiler.version>v20220905</closure-compiler.version>
-    <closure-compiler-maven-plugin.version>2.23.0</closure-compiler-maven-plugin.version>
+    <closure-compiler.version>v20221102</closure-compiler.version>
+    <closure-compiler-maven-plugin.version>2.24.0</closure-compiler-maven-plugin.version>
 
     <!-- Maven Archetype -->
     <maven.archetype.version>3.2.1</maven.archetype.version>
@@ -146,12 +146,14 @@
     <xwiki.enforcer.enforce-jta.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jta.skip>
     <xwiki.enforcer.enforce-jakarta.validation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.validation-api.skip>
     <xwiki.enforcer.enforce-hibernate-validator.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-hibernate-validator.skip>
+    <xwiki.enforcer.closure-compiler.skip>${xwiki.enforcer.skip}</xwiki.enforcer.closure-compiler.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}
     </xwiki.enforcer.enforce-javase-dependencies.skip>
     <xwiki.enforcer.enforce-velocity-engine-core.skip>${xwiki.enforcer.skip}
     </xwiki.enforcer.enforce-velocity-engine-core.skip>
     <xwiki.enforcer.enforce-asm.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-asm.skip>
     <xwiki.enforcer.enforce-cglib.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-cglib.skip>
+    <xwiki.enforcer.enforce-jdom.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jdom.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
     <xwiki.enforcer.enforce-java.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-java.skip>
     <xwiki.license.skip>false</xwiki.license.skip>
@@ -216,7 +218,7 @@
     <maven.maven-enforcer.version>2.2.1</maven.maven-enforcer.version>
 
     <!-- The version of the Maven Plugin Tools (maven-plugin-*) -->
-    <maven.plugin.tools.version>3.6.4</maven.plugin.tools.version>
+    <maven.plugin.tools.version>3.7.0</maven.plugin.tools.version>
 
     <!-- The version of the Maven Remote Resource plugin -->
     <maven-remote-resources-plugin.version>1.7.0</maven-remote-resources-plugin.version>
@@ -230,6 +232,12 @@
     <!-- The versions of Antlr to bundle -->
     <antlr3.version>3.5.3</antlr3.version>
     <antlr4.version>4.9.3</antlr4.version>
+
+    <!-- Servlet specifications -->
+    <servlet.version>3.1.0</servlet.version>
+
+    <!-- EL implementation -->
+    <apachache-el.version>9.0.52</apachache-el.version>
 
     <!-- The recommended version of known extensions to use -->
     <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]
@@ -356,7 +364,7 @@
       <dependency>
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
-        <version>3.8.0</version>
+        <version>3.9.0</version>
       </dependency>
       <dependency>
         <groupId>commons-chain</groupId>
@@ -366,7 +374,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-text</artifactId>
-        <version>1.9</version>
+        <version>1.10.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -377,13 +385,13 @@
       <dependency>
         <groupId>org.apache.httpcomponents.client5</groupId>
         <artifactId>httpclient5</artifactId>
-        <version>5.1.3</version>
+        <version>5.2.1</version>
       </dependency>
       <!-- Apache HttpComponents 4 -->
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.5.13</version>
+        <version>4.5.14</version>
         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
         <exclusions>
           <exclusion>
@@ -395,17 +403,17 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
-        <version>4.5.13</version>
+        <version>4.5.14</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>4.4.15</version>
+        <version>4.4.16</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore-nio</artifactId>
-        <version>4.4.15</version>
+        <version>4.4.16</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -492,7 +500,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
-        <version>1.21</version>
+        <version>1.22</version>
       </dependency>
       <dependency>
         <groupId>commons-validator</groupId>
@@ -584,12 +592,12 @@
       <dependency>
         <groupId>com.fasterxml.woodstox</groupId>
         <artifactId>woodstox-core</artifactId>
-        <version>6.3.1</version>
+        <version>6.4.0</version>
       </dependency>
       <dependency>
         <groupId>jaxen</groupId>
         <artifactId>jaxen</artifactId>
-        <version>1.2.0</version>
+        <version>2.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.simpleframework</groupId>
@@ -617,13 +625,13 @@
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
-        <version>2.3.6</version>
+        <version>2.3.7</version>
       </dependency>
       <!-- ICU -->
       <dependency>
         <groupId>com.ibm.icu</groupId>
         <artifactId>icu4j</artifactId>
-        <version>71.1</version>
+        <version>72.1</version>
       </dependency>
 
       <!-- Json -->
@@ -649,7 +657,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.9.1</version>
+        <version>2.10</version>
       </dependency>
 
       <!-- Jackson -->
@@ -743,7 +751,7 @@
       <dependency>
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
-        <version>1.32</version>
+        <version>1.33</version>
       </dependency>
 
       <!-- JAX-RS -->
@@ -764,17 +772,17 @@
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-jdk18on</artifactId>
-        <version>1.71.1</version>
+        <version>1.72</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcpkix-jdk18on</artifactId>
-        <version>1.71.1</version>
+        <version>1.72</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcmail-jdk18on</artifactId>
-        <version>1.71.1</version>
+        <version>1.72</version>
       </dependency>
 
       <!-- Various project are using it to scan the classpath -->
@@ -886,12 +894,12 @@
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-api</artifactId>
-        <version>2.18.0</version>
+        <version>2.19.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-to-slf4j</artifactId>
-        <version>2.18.0</version>
+        <version>2.19.0</version>
       </dependency>
 
       <!-- Make sure everyone use the same version of JBoss Logging -->
@@ -913,7 +921,7 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
-        <version>3.4.2</version>
+        <version>3.5.0</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -943,12 +951,12 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-archiver</artifactId>
-        <version>4.5.0</version>
+        <version>4.6.0</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-classworlds</artifactId>
-        <version>2.6.0</version>
+        <version>2.7.0</version>
       </dependency>
       <dependency>
         <groupId>org.sonatype.plexus</groupId>
@@ -1194,7 +1202,7 @@
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
-        <version>3.1.0</version>
+        <version>${servlet.version}</version>
         <!-- It should always be provided as the API jar is provided by the Servlet Container in which XWiki is
              deployed -->
         <scope>provided</scope>
@@ -1216,7 +1224,7 @@
       <dependency>
         <groupId>net.sourceforge.cssparser</groupId>
         <artifactId>cssparser</artifactId>
-        <version>0.9.29</version>
+        <version>0.9.30</version>
       </dependency>
       <!-- Bean validation -->
       <dependency>
@@ -1234,7 +1242,7 @@
         <groupId>org.mortbay.jasper</groupId>
         <artifactId>apache-el</artifactId>
         <!-- Use the same version as the one that comes with the custom XWiki Jetty application server -->
-        <version>9.0.52</version>
+        <version>${apachache-el.version}</version>
         <!-- The EL implementation is supposed to come with the application server but we need one for tests -->
         <scope>test</scope>
       </dependency>
@@ -1365,23 +1373,23 @@
       <dependency>
         <groupId>org.jgroups</groupId>
         <artifactId>jgroups</artifactId>
-        <version>4.2.6.Final</version>
+        <version>5.2.11.Final</version>
       </dependency>
       <!-- Used by Solr and Infinispan -->
       <dependency>
         <groupId>com.github.ben-manes.caffeine</groupId>
         <artifactId>caffeine</artifactId>
-        <version>2.9.2</version>
+        <version>3.1.2</version>
       </dependency>
       <dependency>
         <groupId>org.checkerframework</groupId>
         <artifactId>checker-qual</artifactId>
-        <version>3.25.0</version>
+        <version>3.28.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.errorprone</groupId>
         <artifactId>error_prone_annotations</artifactId>
-        <version>2.15.0</version>
+        <version>2.17.0</version>
       </dependency>
       <!-- The maven remote resource plugin is also used as dependency -->
       <dependency>
@@ -1394,35 +1402,24 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>3.21.6</version>
+        <version>3.21.12</version>
       </dependency>
       <dependency>
         <groupId>org.infinispan.protostream</groupId>
         <artifactId>protostream</artifactId>
-        <version>4.4.4.Final</version>
+        <version>4.6.0.Final</version>
       </dependency>
       <dependency>
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-core</artifactId>
-        <version>13.0.11.Final</version>
+        <version>14.0.4.Final</version>
         <exclusions>
           <!-- We use jakarta.transaction:jakarta.transaction-api (the reference API id) instead in XWiki -->
           <exclusion>
             <groupId>org.jboss.spec.javax.transaction</groupId>
             <artifactId>jboss-transaction-api_1.2_spec</artifactId>
           </exclusion>
-          <!-- Remove when https://jira.xwiki.org/browse/XCOMMONS-2058 or https://jira.xwiki.org/browse/XCOMMONS-2004 are fixed -->
-          <exclusion>
-            <groupId>org.jgroups</groupId>
-            <artifactId>jgroups</artifactId>
-          </exclusion>
         </exclusions>
-      </dependency>
-      <!-- Needed for exposing JMX access to the Infinispan Statistics MBeans - XCOMMONS-2188 -->
-      <dependency>
-        <groupId>org.eclipse.microprofile.metrics</groupId>
-        <artifactId>microprofile-metrics-api</artifactId>
-        <version>3.0.1</version>
       </dependency>
       <dependency>
         <groupId>jakarta.enterprise</groupId>
@@ -1969,6 +1966,44 @@
               </rules>
             </configuration>
           </execution>
+          <!-- Check that we use the right version of the Closure Compiler -->
+          <execution>
+            <id>enforce-closure-compiler</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.closure-compiler.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>Use com.google.javascriptclosure-compiler-unshaded instead</message>
+                  <excludes>
+                    <exclude>com.google.javascript:closure-compiler</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we use the right version of the old jdom artifact -->
+          <execution>
+            <id>enforce-jdom</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jdom.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>Use org.jdom:jdom instead</message>
+                  <excludes>
+                    <exclude>org.jdom:jdom-legacy</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
           <!-- Check dependency versions compatibility -->
           <execution>
             <id>enforce-upper-bounds</id>
@@ -2068,7 +2103,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.0.1</version>
+          <version>3.1.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -2179,7 +2214,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.2.2</version>
+          <version>3.3.0</version>
           <configuration>
             <archive>
               <manifest>
@@ -2204,7 +2239,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.3.0</version>
+          <version>3.4.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -2258,7 +2293,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-invoker-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.3.0</version>
+          <version>3.4.0</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -2295,12 +2330,12 @@
           <groupId>org.revapi</groupId>
           <artifactId>revapi-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.14.7</version>
+          <version>0.15.0</version>
           <dependencies>
             <dependency>
               <groupId>org.revapi</groupId>
               <artifactId>revapi-java</artifactId>
-              <version>0.27.0</version>
+              <version>0.28.0</version>
             </dependency>
           </dependencies>
           <executions>
@@ -2445,7 +2480,7 @@
           <groupId>org.jvnet.jaxb2.maven2</groupId>
           <artifactId>maven-jaxb2-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.15.1</version>
+          <version>0.15.2</version>
           <configuration>
             <extension>true</extension>
             <args>
@@ -3002,7 +3037,7 @@
                       <!-- Force a slightly older version of the Chrome Driver in case we don't have the latest Chrome
                         installed locally. -->
                       <name>wdm.chromeDriverVersion</name>
-                      <value>105.0.5195.52</value>
+                      <value>107.0.5304.62</value>
                     </property>
                     <property>
                       <!-- Try to work around error: "[SEVERE]: bind() failed: Cannot assign requested address (99)" -->

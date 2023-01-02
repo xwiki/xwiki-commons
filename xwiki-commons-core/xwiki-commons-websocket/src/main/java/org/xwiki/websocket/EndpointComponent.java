@@ -23,7 +23,6 @@ import javax.websocket.Endpoint;
 import javax.websocket.server.ServerEndpoint;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Marks WebSocket end-points that are implemented as XWiki components.
@@ -34,7 +33,6 @@ import org.xwiki.stability.Unstable;
  * @see Endpoint
  */
 @Role
-@Unstable
 public interface EndpointComponent
 {
 }

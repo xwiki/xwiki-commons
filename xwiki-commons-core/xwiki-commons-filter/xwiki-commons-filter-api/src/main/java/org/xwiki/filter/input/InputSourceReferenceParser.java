@@ -21,7 +21,6 @@ package org.xwiki.filter.input;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.filter.FilterException;
-import org.xwiki.stability.Unstable;
 
 /**
  * Allow converting the {@link String} representation of a {@link InputSource}.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @since 13.4RC1
  */
 @Role
-@Unstable
 public interface InputSourceReferenceParser
 {
     /**
