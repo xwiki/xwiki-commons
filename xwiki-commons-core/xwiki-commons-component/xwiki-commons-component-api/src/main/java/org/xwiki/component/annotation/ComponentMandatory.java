@@ -17,39 +17,33 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.component.descriptor;
+package org.xwiki.component.annotation;
 
-import java.util.Collection;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Represent a component.
- *
+ * Control if failing to initialize the component should fail APIs like
+ * {@link org.xwiki.component.manager.ComponentManager#getInstanceList(java.lang.reflect.Type)}.
+ * 
  * @version $Id$
- * @param <T> the type of the component role
- * @since 1.7M1
+ * @since 15.0RC1
  */
-public interface ComponentDescriptor<T> extends ComponentRole<T>
+@Documented
+@Retention(RUNTIME)
+@Target(TYPE)
+@Inherited
+public @interface ComponentMandatory
 {
     /**
-     * @return the class of the component implementation
-     */
-    Class<? extends T> getImplementation();
-
-    /**
-     * @return the way the component should be instantiated
-     * @see ComponentInstantiationStrategy
-     */
-    ComponentInstantiationStrategy getInstantiationStrategy();
-
-    /**
-     * @return the components on which this component depends
-     */
-    Collection<ComponentDependency<?>> getComponentDependencies();
-
-    /**
      * @return true if failing to initialize the component should fail APIs like
-     *         {@link org.xwiki.component.manager.ComponentManager#getInstanceList(java.lang.reflect.Type)}.
-     * @since 15.0RC1
+     *         {@link org.xwiki.component.manager.ComponentManager#getInstanceList(java.lang.reflect.Type)}
      */
-    boolean isMandatory();
+    boolean value() default true;
+
 }

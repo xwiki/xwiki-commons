@@ -19,22 +19,12 @@
  */
 package org.xwiki.component.embed;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.DisposePriority;
 import org.xwiki.component.descriptor.ComponentDescriptor;
@@ -46,7 +36,21 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Disposable;
 import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
 import org.xwiki.component.util.DefaultParameterizedType;
+import org.xwiki.test.LogLevel;
+import org.xwiki.test.junit5.LogCaptureExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests for {@link EmbeddableComponentManager}.
@@ -56,6 +60,9 @@ import org.xwiki.component.util.DefaultParameterizedType;
  */
 public class EmbeddableComponentManagerTest
 {
+    @RegisterExtension
+    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.ERROR);
+
     public interface Role
     {
     }
@@ -66,6 +73,15 @@ public class EmbeddableComponentManagerTest
 
     public static class OtherRoleImpl implements Role
     {
+    }
+
+    public static class FailingRoleImpl implements Role, Initializable
+    {
+        @Override
+        public void initialize() throws InitializationException
+        {
+            throw new InitializationException("fail");
+        }
     }
 
     private static String lastDisposedComponent;
@@ -307,6 +323,79 @@ public class EmbeddableComponentManagerTest
         Map<String, Role> instances = ecm.getInstanceMap(Role.class);
         assertEquals(2, instances.size());
         assertSame(roleImpl, instances.get("default"));
+    }
+
+    @Test
+    void getInstanceListAndMapWhenFailingComponent() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<>();
+        cd1.setRoleType(Role.class);
+        cd1.setRoleHint("hint1");
+        cd1.setImplementation(RoleImpl.class);
+        ecm.registerComponent(cd1);
+
+        List<Role> instanceList = ecm.getInstanceList(Role.class);
+        assertEquals(1, instanceList.size());
+        assertSame(RoleImpl.class, instanceList.get(0).getClass());
+
+        Map<String, Role> instanceMap = ecm.getInstanceMap(Role.class);
+        assertEquals(1, instanceMap.size());
+        assertSame(RoleImpl.class, instanceMap.get("hint1").getClass());
+
+        // Register a component which fail to initialize but is not mandatory
+        DefaultComponentDescriptor<Role> cd2 = new DefaultComponentDescriptor<>();
+        cd2.setRoleType(Role.class);
+        cd2.setRoleHint("hint2");
+        cd2.setImplementation(FailingRoleImpl.class);
+        ecm.registerComponent(cd2);
+
+        ComponentLookupException exception =
+            assertThrows(ComponentLookupException.class, () -> ecm.getInstance(Role.class, "hint2"));
+        assertEquals("fail", exception.getCause().getMessage());
+
+        instanceList = ecm.getInstanceList(Role.class);
+        assertEquals(1, instanceList.size());
+        assertSame(RoleImpl.class, instanceList.get(0).getClass());
+
+        assertEquals(
+            "Failed to lookup component with"
+                + " type [interface org.xwiki.component.embed.EmbeddableComponentManagerTest$Role] and hint [hint2]",
+            this.logCapture.getMessage(0));
+
+        instanceMap = ecm.getInstanceMap(Role.class);
+        assertEquals(1, instanceMap.size());
+        assertSame(RoleImpl.class, instanceMap.get("hint1").getClass());
+
+        assertEquals(
+            "Failed to lookup component with"
+                + " type [interface org.xwiki.component.embed.EmbeddableComponentManagerTest$Role] and hint [hint2]",
+            this.logCapture.getMessage(1));
+
+        // Register a component which fail to initialize and is mandatory
+        DefaultComponentDescriptor<Role> cd3 = new DefaultComponentDescriptor<>();
+        cd3.setRoleType(Role.class);
+        cd3.setRoleHint("hint3");
+        cd3.setMandatory(true);
+        cd3.setImplementation(FailingRoleImpl.class);
+        ecm.registerComponent(cd3);
+
+        exception = assertThrows(ComponentLookupException.class, () -> ecm.getInstanceList(Role.class));
+        assertEquals("fail", exception.getCause().getMessage());
+
+        assertEquals(
+            "Failed to lookup component with"
+                + " type [interface org.xwiki.component.embed.EmbeddableComponentManagerTest$Role] and hint [hint2]",
+            this.logCapture.getMessage(2));
+
+        exception = assertThrows(ComponentLookupException.class, () -> ecm.getInstanceMap(Role.class));
+        assertEquals("fail", exception.getCause().getMessage());
+
+        assertEquals(
+            "Failed to lookup component with"
+                + " type [interface org.xwiki.component.embed.EmbeddableComponentManagerTest$Role] and hint [hint2]",
+            this.logCapture.getMessage(3));
     }
 
     @Test
@@ -616,7 +705,7 @@ public class EmbeddableComponentManagerTest
         ComponentDescriptorRoleImpl impl = ecm.getInstance(Role.class);
         assertNotNull(impl.getComponentDescriptor());
     }
-    
+
     @Test
     void constructorWithNameSpace()
     {

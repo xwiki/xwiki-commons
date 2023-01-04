@@ -150,7 +150,8 @@ class DefaultComponentDescriptorTest
             "role = [interface org.xwiki.component.descriptor.DefaultComponentDescriptorTest$Role], "
             + "hint = [hint], "
             + "implementation = [org.xwiki.component.descriptor.DefaultComponentDescriptorTest$ImplRole], "
-            + "instantiation = [SINGLETON]",
+            + "instantiation = [SINGLETON], "
+            + "mandatory = [false]",
             cd.toString());
     }
 }

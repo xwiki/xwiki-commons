@@ -53,6 +53,11 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     private List<ComponentDependency<?>> componentDependencies = new ArrayList<>();
 
     /**
+     * @see #isMandatory()
+     */
+    private boolean mandatory;
+
+    /**
      * Default constructor.
      */
     public DefaultComponentDescriptor()
@@ -74,6 +79,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
         for (ComponentDependency<?> dependency : descriptor.getComponentDependencies()) {
             addComponentDependency(new DefaultComponentDependency(dependency));
         }
+        setMandatory(descriptor.isMandatory());
     }
 
     /**
@@ -134,12 +140,29 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     }
 
     @Override
+    public boolean isMandatory()
+    {
+        return this.mandatory;
+    }
+
+    /**
+     * @param mandatory true if failing to initialize the component should fail APIs like
+     *            {@link org.xwiki.component.manager.ComponentManager#getInstanceList(java.lang.reflect.Type)}
+     * @since 15.0RC1
+     */
+    public void setMandatory(boolean mandatory)
+    {
+        this.mandatory = mandatory;
+    }
+
+    @Override
     public String toString()
     {
         ToStringBuilder builder = new XWikiToStringBuilder(this);
         builder.appendSuper(super.toString());
         builder.append("implementation", getImplementation() == null ? null : getImplementation().getName());
         builder.append("instantiation", getInstantiationStrategy());
+        builder.append("mandatory", isMandatory());
         return builder.toString();
     }
 
@@ -163,10 +186,10 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
                 // object must be Syntax at this point
                 ComponentDescriptor cd = (ComponentDescriptor) object;
 
-                result =
-                    super.equals(cd) && Objects.equals(getImplementation(), cd.getImplementation())
-                        && Objects.equals(getInstantiationStrategy(), cd.getInstantiationStrategy())
-                        && Objects.equals(getComponentDependencies(), cd.getComponentDependencies());
+                result = super.equals(cd) && Objects.equals(getImplementation(), cd.getImplementation())
+                    && Objects.equals(getInstantiationStrategy(), cd.getInstantiationStrategy())
+                    && Objects.equals(getComponentDependencies(), cd.getComponentDependencies())
+                    && (isMandatory() == cd.isMandatory());
             }
         }
 
@@ -188,6 +211,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
         builder.append(getImplementation());
         builder.append(getInstantiationStrategy());
         builder.append(getComponentDependencies());
+        builder.append(isMandatory());
 
         return builder.toHashCode();
     }

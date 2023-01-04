@@ -28,6 +28,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
@@ -38,6 +39,8 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentRepositoryException;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.test.LogLevel;
+import org.xwiki.test.junit5.LogCaptureExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -49,6 +52,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 public class ProviderIntegrationTest
 {
+    @RegisterExtension
+    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.ERROR);
+
     @ComponentRole
     public interface TestComponentRole
     {
@@ -196,10 +202,11 @@ public class ProviderIntegrationTest
         cm.initialize(getClass().getClassLoader());
 
         TestComponentWithProviders component = cm.getInstance(TestComponentRole.class);
-        Throwable exception = assertThrows(RuntimeException.class,
-            () -> component.providerList.get());
-        assertEquals("Failed to get [role = "
-            + "[java.util.List<org.xwiki.component.embed.EmbeddableComponentManagerTest$Role>] hint = [default]]",
-            exception.getMessage());
+        List<Role> components = component.providerList.get();
+
+        assertEquals(
+            "Failed to lookup component with"
+                + " type [interface org.xwiki.component.embed.EmbeddableComponentManagerTest$Role] and hint [hint1]",
+            this.logCapture.getMessage(0));
     }
 }

@@ -238,11 +238,19 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         // Add local components
         if (entries != null) {
             for (Map.Entry<String, ComponentEntry<?>> entry : entries.entrySet()) {
+                ComponentEntry<T> componentEntry = (ComponentEntry<T>) entry.getValue();
+
                 try {
-                    components.put(entry.getKey(), getComponentInstance((ComponentEntry<T>) entry.getValue()));
+                    components.put(entry.getKey(), getComponentInstance(componentEntry));
                 } catch (Exception e) {
-                    throw new ComponentLookupException(
-                        "Failed to lookup component with type [" + roleType + "] and hint [" + entry.getKey() + "]", e);
+                    if (componentEntry.descriptor.isMandatory()) {
+                        throw new ComponentLookupException(
+                            "Failed to lookup component with type [" + roleType + "] and hint [" + entry.getKey() + "]",
+                            e);
+                    } else {
+                        this.logger.error("Failed to lookup component with type [{}] and hint [{}]", roleType,
+                            entry.getKey(), e);
+                    }
                 }
             }
         }
