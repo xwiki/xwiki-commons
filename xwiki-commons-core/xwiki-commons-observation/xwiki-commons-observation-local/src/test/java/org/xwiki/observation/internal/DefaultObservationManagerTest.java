@@ -269,7 +269,8 @@ class DefaultObservationManagerTest
             + "role = [interface org.xwiki.observation.EventListener], "
             + "hint = [default], "
             + "implementation = [org.xwiki.observation.EventListener], "
-            + "instantiation = [SINGLETON]"
+            + "instantiation = [SINGLETON], "
+            + "mandatory = [false]"
             + "] being added or removed. Root cause: [RuntimeException: error]", logCapture.getMessage(0));
     }
 
