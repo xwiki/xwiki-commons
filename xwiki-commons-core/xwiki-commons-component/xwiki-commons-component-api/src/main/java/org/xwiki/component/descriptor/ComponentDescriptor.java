@@ -51,5 +51,8 @@ public interface ComponentDescriptor<T> extends ComponentRole<T>
      *         {@link org.xwiki.component.manager.ComponentManager#getInstanceList(java.lang.reflect.Type)}.
      * @since 15.0RC1
      */
-    boolean isMandatory();
+    default boolean isMandatory()
+    {
+        return false;
+    }
 }
