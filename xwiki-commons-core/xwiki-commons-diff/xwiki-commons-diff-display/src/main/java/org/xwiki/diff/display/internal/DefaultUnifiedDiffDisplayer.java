@@ -412,6 +412,77 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
         return state.getBlocks();
     }
 
+    @Override
+    public <E, F> UnifiedDiffBlock<E, F> getContextDiffBlock(
+        List<UnifiedDiffBlock<E, F>> originalDiff, int previousLineNumber, int nextLineNumber,
+        UnifiedDiffConfiguration<E, F> config)
+    {
+        UnifiedDiffBlock<E, F> result;
+        int contextLines = config.getContextSize();
+        if (originalDiff.isEmpty() || previousLineNumber < 0 && nextLineNumber < 0) {
+            result = null;
+        } else {
+            // We set the flag to ignore previous or next number based on which one is an actual positive value.
+            boolean ignorePreviousLineNumber = previousLineNumber < 0;
+            boolean ignoreNextLineNumber = nextLineNumber < 0;
+
+            UnifiedDiffBlock<E, F> block = null;
+
+            // First we look for the actual existing block containing the line requested.
+            for (UnifiedDiffBlock<E, F> unifiedDiffBlock : originalDiff) {
+                int previousStart = unifiedDiffBlock.getPreviousStart();
+                int previousEnd = previousStart + unifiedDiffBlock.getPreviousSize();
+
+                int nextStart = unifiedDiffBlock.getNextStart();
+                int nextEnd = nextStart + unifiedDiffBlock.getNextSize();
+
+                if (ignorePreviousLineNumber && nextStart <= nextLineNumber && nextEnd >= nextLineNumber) {
+                    block = unifiedDiffBlock;
+                    break;
+                } else if (ignoreNextLineNumber && previousStart <= previousLineNumber
+                    && previousEnd >= previousLineNumber) {
+                    block = unifiedDiffBlock;
+                    break;
+                } else if (nextStart <= nextLineNumber && nextEnd >= nextLineNumber
+                    && previousStart <= previousLineNumber && previousEnd >= previousLineNumber) {
+                    block = unifiedDiffBlock;
+                    break;
+                }
+            }
+
+            if (block != null) {
+                // Then when we found the block we only get the elements of the block that are part of the
+                // context: if the block contains changes larger than the context, we ignore them to only take
+                // what's around the selected line.
+                result = new UnifiedDiffBlock<>();
+
+                int wantedIndex;
+                if (ignoreNextLineNumber) {
+                    wantedIndex = previousLineNumber;
+                } else if (ignorePreviousLineNumber) {
+                    wantedIndex = nextLineNumber;
+                } else {
+                    wantedIndex = previousLineNumber;
+                }
+
+                int wantedFirstIndex = wantedIndex - contextLines;
+                if (wantedFirstIndex < 0) {
+                    wantedFirstIndex = 0;
+                }
+
+                int wantedLastIndex = wantedIndex + contextLines;
+                for (UnifiedDiffElement<E, F> element : block) {
+                    if (element.getIndex() >= wantedFirstIndex && element.getIndex() <= wantedLastIndex) {
+                        result.add(element);
+                    }
+                }
+            } else {
+                result = null;
+            }
+        }
+        return result;
+    }
+
     /**
      * Starts a new {@link UnifiedDiffBlock} if the provided change is in a different context, or if it belongs to a
      * conflict. The distance between two changes inside the same block is less than 2 * context size.

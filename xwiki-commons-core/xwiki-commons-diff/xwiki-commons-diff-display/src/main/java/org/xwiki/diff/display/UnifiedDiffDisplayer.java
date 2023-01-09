@@ -24,6 +24,7 @@ import java.util.List;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.diff.Conflict;
 import org.xwiki.diff.DiffResult;
+import org.xwiki.stability.Unstable;
 
 /**
  * Displays a {@link DiffResult} as a <a href="http://en.wikipedia.org/wiki/Diff#Unified_format">unified diff</a>. The
@@ -140,4 +141,26 @@ public interface UnifiedDiffDisplayer
     {
         return display(diffResult, config);
     }
+
+    /**
+     * Allows to retrieve a diff block containing a specific line to be retrieved from an existing diff.
+     * The idea of this method is to compute a specific contextual diff block, based on an already existing list of
+     * diff blocks: this contextual diff block only contains the line to be found and the surrounding lines matching the
+     * context line number given in {@link UnifiedDiffConfiguration#getContextSize()}.
+     *
+     * @param <E> the type of elements that were compared to produce the diff
+     * @param <F> the type of sub-elements that can be compared to produce an in-line diff when an element is modified
+     * @param originalDiff the original list of unified diff blocks computed from
+     *                     {@link #display(DiffResult, UnifiedDiffConfiguration)}.
+     * @param previousLineNumber the index of the line to be retrieved in case of deletion or context change, in case of
+     *                           addition the value should be negative
+     * @param nextLineNumber the index of the line  to be retrieved in case of addition or context change, in case of
+     *                          deletion the value should be negative
+     * @param configuration the same configuration used to compute the original diff
+     * @return a single diff block whose size is based on the selected line and on the size of the context
+     * @since 15.0RC1
+     */
+    @Unstable
+    <E, F> UnifiedDiffBlock<E, F> getContextDiffBlock(List<UnifiedDiffBlock<E, F>>
+        originalDiff, int previousLineNumber, int nextLineNumber, UnifiedDiffConfiguration<E, F> configuration);
 }

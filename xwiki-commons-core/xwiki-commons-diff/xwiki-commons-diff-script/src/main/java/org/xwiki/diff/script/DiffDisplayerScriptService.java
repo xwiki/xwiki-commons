@@ -38,6 +38,7 @@ import org.xwiki.diff.display.UnifiedDiffBlock;
 import org.xwiki.diff.display.UnifiedDiffConfiguration;
 import org.xwiki.diff.display.UnifiedDiffDisplayer;
 import org.xwiki.script.service.ScriptService;
+import org.xwiki.stability.Unstable;
 
 /**
  * Provide script oriented APIs to display diff.
@@ -152,6 +153,28 @@ public class DiffDisplayerScriptService implements ScriptService
             setError(e);
             return null;
         }
+    }
+
+    /**
+     * Compute a diff block containing a line selected from a previously computed diff and the context around this line.
+     * This method should be used to create a single unified diff block that should be kept as context around a line of
+     * change in a diff.
+     *
+     * @param originalDiff the originally computed diff from {@link #unified(String, String)}
+     * @param previousLineNumber if the selected line is an addition change, {@code -1} else the index of the selected
+     *                           line
+     * @param nextLineNumber if the selected line is a deletion change, {@code -1} else the index of the selected line
+     * @return a unified diff block containing the selected line and the context around it, or {@code null} if no block
+     *         can be computed matching the parameters
+     * @since 15.0RC1
+     */
+    @Unstable
+    public UnifiedDiffBlock<String, Character> getContextDiffBlock(List<UnifiedDiffBlock<String, Character>>
+        originalDiff, int previousLineNumber, int nextLineNumber)
+    {
+        UnifiedDiffConfiguration<String, Character> config = this.unifiedDiffDisplayer.getDefaultConfiguration();
+        return this.unifiedDiffDisplayer.getContextDiffBlock(originalDiff, previousLineNumber, nextLineNumber,
+            config);
     }
 
     /**

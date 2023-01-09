@@ -52,6 +52,7 @@ import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Integration tests on {@link DefaultUnifiedDiffDisplayer} that performs check by reading on files,
@@ -317,5 +318,47 @@ class DefaultUnifiedDiffDisplayerIntegrationTest
 
         unifiedDiffBlocks = this.defaultUnifiedDiffDisplayer.display(diffResult, mergeResult.getConflicts());
         assertEquals(6, unifiedDiffBlocks.size());
+    }
+
+    @Test
+    void getContextDiffBlock() throws Exception
+    {
+        String directory = "integration10";
+        List<String> previous = readLines(String.format("%s/previous.txt", directory));
+        List<String> current = readLines(String.format("%s/current.txt", directory));
+
+        DiffResult<String> diff = getDiffManager().diff(previous, current, null);
+        List<UnifiedDiffBlock<String, Character>> unifiedDiffBlocks = this.defaultUnifiedDiffDisplayer.display(diff);
+        assertEquals(4, unifiedDiffBlocks.size());
+
+        UnifiedDiffBlock<String, Character> contextDiffBlock =
+            this.defaultUnifiedDiffDisplayer.getContextDiffBlock(unifiedDiffBlocks, -1, 14,
+                this.defaultUnifiedDiffDisplayer.getDefaultConfiguration());
+        assertNotNull(contextDiffBlock);
+        assertEquals(11, contextDiffBlock.getPreviousStart());
+        assertEquals(7, contextDiffBlock.getPreviousSize());
+
+        assertEquals(11, contextDiffBlock.getNextStart());
+        assertEquals(7, contextDiffBlock.getNextSize());
+
+        contextDiffBlock =
+            this.defaultUnifiedDiffDisplayer.getContextDiffBlock(unifiedDiffBlocks, -1, 15,
+                this.defaultUnifiedDiffDisplayer.getDefaultConfiguration());
+        assertNotNull(contextDiffBlock);
+        assertEquals(12, contextDiffBlock.getPreviousStart());
+        assertEquals(7, contextDiffBlock.getPreviousSize());
+
+        assertEquals(12, contextDiffBlock.getNextStart());
+        assertEquals(7, contextDiffBlock.getNextSize());
+
+        contextDiffBlock =
+            this.defaultUnifiedDiffDisplayer.getContextDiffBlock(unifiedDiffBlocks, 44, 44,
+                this.defaultUnifiedDiffDisplayer.getDefaultConfiguration());
+        assertNotNull(contextDiffBlock);
+        assertEquals(42, contextDiffBlock.getPreviousStart());
+        assertEquals(6, contextDiffBlock.getPreviousSize());
+
+        assertEquals(42, contextDiffBlock.getNextStart());
+        assertEquals(7, contextDiffBlock.getNextSize());
     }
 }
