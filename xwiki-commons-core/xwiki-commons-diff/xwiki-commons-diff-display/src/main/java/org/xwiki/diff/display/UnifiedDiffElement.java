@@ -21,6 +21,9 @@ package org.xwiki.diff.display;
 
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * Wraps the elements that are compared to produce a diff, holding information like their index and type of change
  * (added, removed, unmodified) to simplify the process of displaying them in an unified diff. If the wrapped element is
@@ -170,5 +173,36 @@ public class UnifiedDiffElement<E, F>
     public String toString()
     {
         return this.type.getSymbol() + String.valueOf(this.value) + '\n';
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        UnifiedDiffElement<?, ?> that = (UnifiedDiffElement<?, ?>) o;
+
+        return new EqualsBuilder()
+            .append(index, that.index)
+            .append(type, that.type)
+            .append(value, that.value)
+            .append(chunks, that.chunks).isEquals();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder(65, 41)
+            .append(index)
+            .append(type)
+            .append(value)
+            .append(chunks)
+            .toHashCode();
     }
 }

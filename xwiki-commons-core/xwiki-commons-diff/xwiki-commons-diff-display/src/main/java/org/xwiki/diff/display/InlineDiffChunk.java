@@ -21,6 +21,9 @@ package org.xwiki.diff.display;
 
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * A group of consecutive elements that are targeted by the same operation (add, remove, keep) in an in-line diff.
  *
@@ -118,5 +121,33 @@ public class InlineDiffChunk<E>
             stringBuilder.append(element);
         }
         return stringBuilder.toString();
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        InlineDiffChunk<?> that = (InlineDiffChunk<?>) o;
+
+        return new EqualsBuilder()
+            .append(type, that.type)
+            .append(elements, that.elements)
+            .isEquals();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder(23, 63)
+            .append(type)
+            .append(elements)
+            .toHashCode();
     }
 }
