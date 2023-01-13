@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -30,6 +32,7 @@ import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.xml.html.HTMLConstants;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -132,5 +135,21 @@ class SecureHTMLElementSanitizerTest
             HTMLConstants.ATTRIBUTE_HREF, "xwiki:test"));
         assertFalse(this.secureHTMLElementSanitizer.isAttributeAllowed(HTMLConstants.TAG_A,
             HTMLConstants.ATTRIBUTE_HREF, "http://example.com"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "data-, false",
+        "data-a, true",
+        "data-x-wiki.test_\u0192, true",
+        "data-x\u2713, false",
+        "data-x/test, false",
+        "data-x>test, false",
+        "data-x:y, false"
+    })
+    void dataAttributes(String attribute, boolean accepted)
+    {
+        assertEquals(accepted, this.secureHTMLElementSanitizer.isAttributeAllowed(HTMLConstants.TAG_DIV, attribute,
+            "hello"));
     }
 }
