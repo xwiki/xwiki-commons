@@ -644,19 +644,25 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
         // Add the extension as backward dependency
         for (ExtensionDependency dependency : installedExtension.getDependencies()) {
             if (!this.coreExtensionRepository.exists(dependency.getId())) {
-                // Get the extension for the dependency feature for the provided namespace
-                DefaultInstalledExtension dependencyLocalExtension =
-                    (DefaultInstalledExtension) getInstalledExtension(dependency.getId(), namespace);
+                try {
+                    // Get the extension for the dependency feature for the provided namespace
+                    DefaultInstalledExtension dependencyLocalExtension =
+                        (DefaultInstalledExtension) getInstalledExtension(dependency.getId(), namespace);
 
-                if (dependencyLocalExtension != null) {
-                    ExtensionId feature = dependencyLocalExtension.getExtensionFeature(dependency.getId());
+                    if (dependencyLocalExtension != null) {
+                        ExtensionId feature = dependencyLocalExtension.getExtensionFeature(dependency.getId());
 
-                    // Make sure to register backward dependency on the right namespace
-                    InstalledFeature dependencyInstalledExtension =
-                        addInstalledFeatureToCache(feature, namespace, dependencyLocalExtension, false);
+                        // Make sure to register backward dependency on the right namespace
+                        InstalledFeature dependencyInstalledExtension =
+                            addInstalledFeatureToCache(feature, namespace, dependencyLocalExtension, false);
 
-                    dependencyInstalledExtension.root.addBackwardDependency(installedExtension,
-                        dependency.isOptional());
+                        dependencyInstalledExtension.root.addBackwardDependency(installedExtension,
+                            dependency.isOptional());
+                    }
+                } catch (Exception e) {
+                    this.logger.error(
+                        "Failed to update the backward dependency index dependency [{}] referenced by extension [{}]",
+                        dependency, installedExtension.getId(), e);
                 }
             }
         }
