@@ -65,7 +65,18 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
     static final Pattern ATTR_WHITESPACE =
         Pattern.compile("[\\u0000-\\u0020\\u00A0\\u1680\\u180E\\u2000-\\u2029\\u205F\\u3000]");
 
-    static final Pattern DATA_ATTR = Pattern.compile("^data-[\\-\\w.\\u00B7-\\uFFFF]");
+    /**
+     * Pattern that matches valid data-attributes.
+     * <p>
+     * Following the <a href="https://html.spec.whatwg.org/multipage/dom.html
+     #embedding-custom-non-visible-data-with-the-data-*-attributes">HTML standard</a>
+     * this means that the name starts with "data-", has at least one character after the hyphen and is
+     * <a href="https://html.spec.whatwg.org/multipage/infrastructure.html#xml-compatible">XML-compatible</a>,
+     * i.e., matches the <a href="https://www.w3.org/TR/xml/#NT-Name">Name production</a> without ":".
+     */
+    static final Pattern DATA_ATTR = Pattern.compile("^data-[A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6"
+        + "\\u00F8-\\u02ff\\u0370-\\u037d\\u037f-\\u1fff\\u200c\\u200d\\u2070-\\u218f\\u2c00-\\u2fef\\u3001-\\ud7ff"
+        + "\\uf900-\\ufdcf\\ufdf0-\\ufffd\\x{10000}-\\x{EFFFF}\\-.0-9\\u00b7\\u0300-\\u036f\\u203f-\\u2040]+$");
 
     static final Pattern ARIA_ATTR = Pattern.compile("^aria-[\\-\\w]+$");
 
@@ -182,7 +193,7 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
         String lowerElement = elementName.toLowerCase();
         String lowerAttribute = attributeName.toLowerCase();
 
-        if ((DATA_ATTR.matcher(lowerAttribute).find() || ARIA_ATTR.matcher(lowerAttribute).find())
+        if ((DATA_ATTR.matcher(lowerAttribute).matches() || ARIA_ATTR.matcher(lowerAttribute).matches())
             && !this.forbidAttributes.contains(lowerAttribute))
         {
             result = true;
