@@ -115,8 +115,8 @@
     <ivy.version>2.5.1</ivy.version>
 
     <!-- Closure compiler -->
-    <closure-compiler.version>v20221102</closure-compiler.version>
-    <closure-compiler-maven-plugin.version>2.24.0</closure-compiler-maven-plugin.version>
+    <closure-compiler.version>v20230103</closure-compiler.version>
+    <closure-compiler-maven-plugin.version>2.25.0</closure-compiler-maven-plugin.version>
 
     <!-- Maven Archetype -->
     <maven.archetype.version>3.2.1</maven.archetype.version>
