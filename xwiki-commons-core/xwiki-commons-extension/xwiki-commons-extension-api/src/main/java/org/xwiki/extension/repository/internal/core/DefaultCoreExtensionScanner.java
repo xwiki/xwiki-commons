@@ -274,7 +274,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                     xedStream = xedURL.openStream();
                 } catch (IOException e) {
                     // We assume it means the xed does not exist so we just ignore it
-                    this.logger.debug("Failed to load [{}]", xedURL, e);
+                    this.logger.debug("Failed to load [{}]. This is likely to be normal if matching jar file is not an XWiki extension.", xedURL, e);
                     return null;
                 }
 
