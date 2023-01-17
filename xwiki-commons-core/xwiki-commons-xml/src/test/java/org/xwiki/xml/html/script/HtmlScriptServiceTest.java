@@ -26,7 +26,6 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.xml.html.HTMLElementSanitizer;
-import org.xwiki.xml.internal.html.SecureHTMLElementSanitizer;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -46,7 +45,6 @@ class HtmlScriptServiceTest
     private HtmlScriptService htmlScriptService;
 
     @MockComponent
-    @Named(SecureHTMLElementSanitizer.HINT)
     private HTMLElementSanitizer sanitizer;
 
     @Test

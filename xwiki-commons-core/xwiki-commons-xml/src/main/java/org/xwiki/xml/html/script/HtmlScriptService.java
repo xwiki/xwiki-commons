@@ -43,14 +43,13 @@ import org.xwiki.xml.internal.html.SecureHTMLElementSanitizer;
 public class HtmlScriptService implements ScriptService
 {
     @Inject
-    @Named(SecureHTMLElementSanitizer.HINT)
     private HTMLElementSanitizer sanitizer;
 
     /**
      * Check if the given html element can be considered safe or not.
-     * The definition of safe is based here on the implementation of {@link SecureHTMLElementSanitizer} which itself
-     * relies partly on the configuration of the wiki
-     * (see {@link org.xwiki.xml.internal.html.HTMLElementSanitizerConfiguration}).
+     * The definition of safe is based on the implementation of the configured {@link HTMLElementSanitizer}.
+     * By default it should use {@link SecureHTMLElementSanitizer} which itself relies partly on the configuration of
+     * the wiki (see {@link org.xwiki.xml.internal.html.HTMLElementSanitizerConfiguration}).
      *
      * @param elementName the name of the HTML element
      * @return {@code true} if the given element is allowed in principle (given appropriate attributes)
@@ -62,9 +61,9 @@ public class HtmlScriptService implements ScriptService
 
     /**
      * Check if the attribute and its value can be considered safe or not.
-     * The definition of safe is based here on the implementation of {@link SecureHTMLElementSanitizer} which itself
-     * relies partly on the configuration of the wiki
-     * (see {@link org.xwiki.xml.internal.html.HTMLElementSanitizerConfiguration}).
+     * The definition of safe is based on the implementation of the configured {@link HTMLElementSanitizer}.
+     * By default it should use {@link SecureHTMLElementSanitizer} which itself relies partly on the configuration of
+     * the wiki (see {@link org.xwiki.xml.internal.html.HTMLElementSanitizerConfiguration}).
      *
      * @param elementName the element for which the attributes shall be checked
      * @param attributeName the attributes to check
