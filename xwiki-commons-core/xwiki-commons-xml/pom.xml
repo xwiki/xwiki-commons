@@ -83,6 +83,11 @@
       <groupId>com.fasterxml.woodstox</groupId>
       <artifactId>woodstox-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-script</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Testing dependencies -->
     <dependency>
