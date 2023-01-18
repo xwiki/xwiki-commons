@@ -19,8 +19,6 @@
  */
 package org.xwiki.xml.html.script;
 
-import javax.inject.Named;
-
 import org.junit.jupiter.api.Test;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
