@@ -90,6 +90,11 @@ public interface ComponentManager
 
     /**
      * Find all the components implementing the provided role.
+     * <p>
+     * Since 15.0RC1, by default, if one of the components fail it won't fail the whole {@link #getInstanceList(Type)}
+     * (the failing component simply won't be returned). It's possible to force failing {@link #getInstanceList(Type)}
+     * by using the {@link org.xwiki.component.annotation.ComponentMandatory} annotation either on the component or at a
+     * lower level, like the role interface.
      *
      * @param role the type of the components role
      * @return the components
@@ -101,6 +106,11 @@ public interface ComponentManager
 
     /**
      * Find all the components implementing the provided role and organize then in a {@link Map} with role hint as key.
+     * <p>
+     * Since 15.0RC1, by default, if one of the components fail it won't fail the whole {@link #getInstanceMap(Type)}
+     * (the failing component simply won't be returned). It's possible to force failing {@link #getInstanceMap(Type)} by
+     * using the {@link org.xwiki.component.annotation.ComponentMandatory} annotation either on the component or at a
+     * lower level, like the role interface.
      *
      * @param role the type of the components role
      * @return the components
