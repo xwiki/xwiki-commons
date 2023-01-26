@@ -1,4 +1,4 @@
-org.xwiki.xml.html.script.HtmlScriptService
+org.xwiki.xml.html.script.HTMLScriptService
 org.xwiki.xml.internal.html.filter.ListItemFilter
 org.xwiki.xml.internal.html.filter.ListFilter
 org.xwiki.xml.internal.html.filter.FontFilter
