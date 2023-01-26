@@ -32,17 +32,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for {@link HtmlScriptService}.
+ * Tests for {@link HTMLScriptService}.
  *
  * @version $Id$
  * @since 14.10.4
  * @since 15.0RC1
  */
 @ComponentTest
-class HtmlScriptServiceTest
+class HTMLScriptServiceTest
 {
     @InjectMockComponents
-    private HtmlScriptService htmlScriptService;
+    private HTMLScriptService htmlScriptService;
 
     @MockComponent
     private HTMLElementSanitizer sanitizer;

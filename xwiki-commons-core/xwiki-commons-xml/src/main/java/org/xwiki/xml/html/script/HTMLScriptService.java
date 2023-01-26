@@ -40,7 +40,7 @@ import org.xwiki.xml.internal.html.SecureHTMLElementSanitizer;
 @Component
 @Named("html")
 @Singleton
-public class HtmlScriptService implements ScriptService
+public class HTMLScriptService implements ScriptService
 {
     @Inject
     private HTMLElementSanitizer sanitizer;
