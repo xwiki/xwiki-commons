@@ -98,7 +98,7 @@ class DefaultVelocityEngineTest
     private static final String DEFAULT_TEMPLATE_NAME = "mytemplate";
 
     @RegisterExtension
-    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
     @MockComponent
     private ComponentManager componentManager;

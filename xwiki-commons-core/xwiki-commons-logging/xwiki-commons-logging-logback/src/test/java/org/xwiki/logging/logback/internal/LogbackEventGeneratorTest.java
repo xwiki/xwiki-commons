@@ -72,7 +72,7 @@ class LogbackEventGeneratorTest
     private ComponentManager componentManager;
 
     @RegisterExtension
-    LogCaptureExtension logCapture = new LogCaptureExtension(org.xwiki.test.LogLevel.INFO);
+    private LogCaptureExtension logCapture = new LogCaptureExtension(org.xwiki.test.LogLevel.INFO);
 
     private Logger logger;
 

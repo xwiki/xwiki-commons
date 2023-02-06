@@ -124,7 +124,7 @@ class XWikiEndpointInitializerTest
     }
 
     @RegisterExtension
-    static LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO);
+    private static LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO);
 
     @InjectMockComponents
     private XWikiEndpointInitializer initializer;

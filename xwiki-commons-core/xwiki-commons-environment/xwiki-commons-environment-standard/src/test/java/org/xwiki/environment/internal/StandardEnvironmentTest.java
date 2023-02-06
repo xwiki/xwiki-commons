@@ -56,7 +56,7 @@ public class StandardEnvironmentTest
     private StandardEnvironment environment;
 
     @RegisterExtension
-    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO);
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO);
 
     @BeforeEach
     public void setUp() throws Exception

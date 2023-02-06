@@ -45,7 +45,7 @@ class DefaultJobProgressTest
     private ComponentManager componentManager;
 
     @RegisterExtension
-    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
     private ObservationManager observation;
 

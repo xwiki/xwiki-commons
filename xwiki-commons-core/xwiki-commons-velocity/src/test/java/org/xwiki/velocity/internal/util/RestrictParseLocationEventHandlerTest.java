@@ -41,7 +41,7 @@ public class RestrictParseLocationEventHandlerTest
      * Capture logs with WARN or higher severity to assert them.
      */
     @RegisterExtension
-    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
     @Test
     void includeEventWhenAllowedPath()

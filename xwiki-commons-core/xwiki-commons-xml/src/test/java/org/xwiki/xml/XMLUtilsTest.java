@@ -71,7 +71,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class XMLUtilsTest
 {
     @RegisterExtension
-    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.DEBUG);
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.DEBUG);
 
     private PrintStream originalStdErr;
 

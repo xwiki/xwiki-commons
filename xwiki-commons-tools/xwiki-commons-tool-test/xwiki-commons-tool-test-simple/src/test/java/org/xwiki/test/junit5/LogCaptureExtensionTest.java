@@ -51,7 +51,7 @@ public class LogCaptureExtensionTest
         private static final Logger LOGGER = LoggerFactory.getLogger(SampleTestCase.class);
 
         @RegisterExtension
-        LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
+        private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
         @Test
         @Order(1)
@@ -81,7 +81,7 @@ public class LogCaptureExtensionTest
         private static final Logger LOGGER = LoggerFactory.getLogger(SampleTestCase.class);
 
         @RegisterExtension
-        static LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
+        private static LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
         @BeforeAll
         static void beforeAll()

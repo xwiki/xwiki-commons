@@ -56,7 +56,7 @@ public class ServletEnvironmentTest
     private ServletEnvironment environment;
 
     @RegisterExtension
-    LogCaptureExtension logCapture = new LogCaptureExtension();
+    private LogCaptureExtension logCapture = new LogCaptureExtension();
 
     @BeforeEach
     public void setUp() throws Exception
