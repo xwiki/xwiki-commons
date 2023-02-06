@@ -58,7 +58,7 @@ class DefaultObservationManagerTest
     private DefaultObservationManager manager;
 
     @RegisterExtension
-    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
     @Test
     void notifyWhenMatching()

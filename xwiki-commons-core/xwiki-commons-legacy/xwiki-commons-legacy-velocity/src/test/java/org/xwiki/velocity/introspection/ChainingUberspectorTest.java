@@ -74,7 +74,7 @@ class ChainingUberspectorTest
     VelocityEngine engine;
 
     @RegisterExtension
-    LogCaptureExtension logCapture = new LogCaptureExtension();
+    private LogCaptureExtension logCapture = new LogCaptureExtension();
 
     @BeforeEach
     void beforeEach() throws Exception
