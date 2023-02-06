@@ -41,7 +41,7 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 public class FailingTestDebuggingTestExecutionListenerTest
 {
     @RegisterExtension
-    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO);
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO);
 
     public static class SampleTestCase
     {

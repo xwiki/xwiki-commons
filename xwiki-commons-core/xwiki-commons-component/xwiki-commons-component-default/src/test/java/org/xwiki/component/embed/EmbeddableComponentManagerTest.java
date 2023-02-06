@@ -61,7 +61,7 @@ import static org.mockito.Mockito.verify;
 public class EmbeddableComponentManagerTest
 {
     @RegisterExtension
-    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.ERROR);
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.ERROR);
 
     public interface Role
     {

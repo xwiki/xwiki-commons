@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ProviderIntegrationTest
 {
     @RegisterExtension
-    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.ERROR);
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.ERROR);
 
     @ComponentRole
     public interface TestComponentRole
