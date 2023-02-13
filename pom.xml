@@ -237,7 +237,7 @@
     <servlet.version>3.1.0</servlet.version>
 
     <!-- EL implementation -->
-    <apachache-el.version>9.0.52</apachache-el.version>
+    <apachache-el.version>10.1.5</apachache-el.version>
 
     <!-- The recommended version of known extensions to use -->
     <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]
