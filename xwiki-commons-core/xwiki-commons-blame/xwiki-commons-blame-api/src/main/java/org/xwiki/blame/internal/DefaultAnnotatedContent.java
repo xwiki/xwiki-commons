@@ -62,7 +62,7 @@ public class DefaultAnnotatedContent<R, E> implements AnnotatedContent<R, E>
         }
     }
 
-    private class AnnotatedContentIterator implements Iterator<AnnotatedElement<R, E>>
+    private final class AnnotatedContentIterator implements Iterator<AnnotatedElement<R, E>>
     {
         private int index = -1;
 
