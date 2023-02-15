@@ -37,7 +37,7 @@ import org.xwiki.extension.ExtensionSession;
 @Singleton
 public class DefaultExtensionContext implements ExtensionContext
 {
-    private class ExtensionSessionEntry
+    private final class ExtensionSessionEntry
     {
         private final DefaultExtensionSession session = new DefaultExtensionSession();
 
