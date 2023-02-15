@@ -95,7 +95,7 @@ public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockin
      * Extend EmbeddableComponentManager in order to mock Loggers since they're handled specially and are not
      * components.
      */
-    private class LogSpecificMockingComponentManager extends MockingComponentManager
+    private final class LogSpecificMockingComponentManager extends MockingComponentManager
     {
         private List<Class<?>> mockedComponentClasses = new ArrayList<>();
 

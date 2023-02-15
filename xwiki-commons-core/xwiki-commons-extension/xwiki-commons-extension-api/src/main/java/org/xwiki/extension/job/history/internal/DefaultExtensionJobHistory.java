@@ -60,7 +60,7 @@ import org.xwiki.extension.job.history.ExtensionJobHistorySerializer;
 @Singleton
 public class DefaultExtensionJobHistory implements ExtensionJobHistory, Initializable, Disposable
 {
-    private class SaveRunnable implements Runnable
+    private final class SaveRunnable implements Runnable
     {
         @Override
         public void run()

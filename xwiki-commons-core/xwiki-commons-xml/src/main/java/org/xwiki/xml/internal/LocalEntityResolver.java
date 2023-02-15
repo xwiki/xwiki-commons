@@ -793,7 +793,7 @@ public class LocalEntityResolver implements EntityResolver2
     /**
      * Load DTDs without a Security Manager.
      */
-    private static class SimpleDTDLoader extends DTDLoader
+    private static final class SimpleDTDLoader extends DTDLoader
     {
         @Override
         void connect(final URLConnection con) throws IOException

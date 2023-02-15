@@ -78,7 +78,7 @@ public final class XMLUtils
      * or passed up in the chain of commands it is ok to log these
      * at a much lower level, where users normally never see them.
      */
-    private static class RelaxedErrorListener implements ErrorListener
+    private static final class RelaxedErrorListener implements ErrorListener
     {
         private static final String STACK_TRACE_NOTE = "stack trace for information only";
 
