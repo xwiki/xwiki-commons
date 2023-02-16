@@ -2129,23 +2129,16 @@
             <includes>
               <include>**/*Test.class</include>
             </includes>
-            <systemProperties>
+            <systemPropertyVariables>
               <!-- Used to automatically register our custom JUnit5 Extensions using the service loader mechanism.
                    We also need to have the JAR containing our extensions visible to JUnit5's ClassLoader. This is
                    done in xwiki-commons-core/pom.xml and xwiki-platform/pom.xml as otherwise it would cause a cyclic
                    dependency.
               -->
-              <property>
-                <name>junit.jupiter.extensions.autodetection.enabled</name>
-                <value>true</value>
-              </property>
+		      <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
               <!-- TODO: Remove this property once all functional tests have been moved to use the failsafe plugin -->
-              <property>
-                <!-- See description of the "xwiki.test.verifyRunningXWikiAtStart" property above. -->
-                <name>xwiki.test.verifyRunningXWikiAtStart</name>
-                <value>${xwiki.test.verifyRunningXWikiAtStart}</value>
-              </property>
-            </systemProperties>
+              <xwiki.test.verifyRunningXWikiAtStart>${xwiki.test.verifyRunningXWikiAtStart}</xwiki.test.verifyRunningXWikiAtStart>
+			</systemPropertyVariables>
             <!--
                  - Explicitly define how much memory to give to the forked JVM process for the tests, as otherwise
                    Java will give about 1/4th of the physical memory which can be not enough or too much (e.g. on a CI
