@@ -60,13 +60,13 @@
      <local-cache-configuration name="file-cache-nopath" configuration="default">
         <persistence>
            <!-- Let XWiki cache module set the proper location -->
-           <file-store path="" segmented="false"/>
+           <file-store path=""/>
         </persistence>
      </local-cache-configuration>
 
      <local-cache-configuration name="file-cache-path" configuration="default">
         <persistence>
-           <file-store path="${java.io.tmpdir}" segmented="false"/>
+           <file-store path="${java.io.tmpdir}"/>
         </persistence>
      </local-cache-configuration>
 

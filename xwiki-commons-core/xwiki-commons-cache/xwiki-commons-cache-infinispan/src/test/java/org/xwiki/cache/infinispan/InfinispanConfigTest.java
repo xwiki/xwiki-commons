@@ -25,8 +25,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.infinispan.Cache;
-import org.infinispan.configuration.cache.SingleFileStoreConfiguration;
 import org.infinispan.configuration.cache.StoreConfiguration;
+import org.infinispan.persistence.sifs.configuration.SoftIndexFileStoreConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.cache.config.CacheConfiguration;
@@ -114,7 +114,7 @@ class InfinispanConfigTest extends AbstractTestCache
         List<StoreConfiguration> stores = cache.getCacheConfiguration().persistence().stores();
         assertEquals(1, stores.size());
 
-        String location = ((SingleFileStoreConfiguration) stores.get(0)).location();
+        String location = ((SoftIndexFileStoreConfiguration) stores.get(0)).dataLocation();
         assertEquals(this.environment.getTemporaryDirectory().toString() + "/cache", location);
     }
 
@@ -128,7 +128,7 @@ class InfinispanConfigTest extends AbstractTestCache
         List<StoreConfiguration> stores = cache.getCacheConfiguration().persistence().stores();
         assertEquals(1, stores.size());
 
-        String location = ((SingleFileStoreConfiguration) stores.get(0)).location();
+        String location = ((SoftIndexFileStoreConfiguration) stores.get(0)).dataLocation();
         assertEquals(System.getProperty("java.io.tmpdir"), location);
     }
 }

@@ -30,6 +30,8 @@ import org.infinispan.configuration.cache.SingleFileStoreConfigurationBuilder;
 import org.infinispan.configuration.cache.StoreConfiguration;
 import org.infinispan.configuration.cache.StoreConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
+import org.infinispan.persistence.sifs.configuration.SoftIndexFileStoreConfiguration;
+import org.infinispan.persistence.sifs.configuration.SoftIndexFileStoreConfigurationBuilder;
 import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.cache.eviction.EntryEvictionConfiguration;
 import org.xwiki.cache.eviction.LRUEvictionConfiguration;
@@ -137,6 +139,15 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
                 if (StringUtils.isBlank(location)) {
                     return true;
                 }
+            } else if (storeConfiguration instanceof SoftIndexFileStoreConfiguration) {
+                SoftIndexFileStoreConfiguration softIndexFileStorage =
+                    (SoftIndexFileStoreConfiguration) storeConfiguration;
+
+                String location = softIndexFileStorage.dataLocation();
+
+                if (StringUtils.isBlank(location)) {
+                    return true;
+                }
             }
         }
 
@@ -159,6 +170,13 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
                     SingleFileStoreConfigurationBuilder singleFileStore = (SingleFileStoreConfigurationBuilder) store;
 
                     singleFileStore.location(createTempDir());
+                } else if (store instanceof SoftIndexFileStoreConfigurationBuilder) {
+                    SoftIndexFileStoreConfigurationBuilder softIndexFileStorage =
+                        (SoftIndexFileStoreConfigurationBuilder) store;
+
+                    String location = createTempDir();
+                    softIndexFileStorage.dataLocation(location);
+                    softIndexFileStorage.indexLocation(location);
                 }
             }
         }
