@@ -1145,4 +1145,32 @@ class InstallPlanJobTest extends AbstractExtensionHandlerTest
             installPlan(installRequest);
         });
     }
+
+    @Test
+    void testReplaceFeatureWithConflictingBackwardDependency() throws Throwable
+    {
+        // Install an extension with rsimple as dependency on namespace
+        install(TestResources.REMOTE_WITHRDEPENDENCY_ID);
+
+        assertThrows(InstallException.class, () -> {
+            // Try to replace rsimple with an incompatible extension on root
+            ExtensionPlan plan = installPlan(createInstallRequest(TestResources.REMOTE_SIMPLE_FEATURE_ID));
+
+            assertEquals(null, plan);
+        });
+    }
+
+    @Test
+    void testReplaceFeatureWithConflictingBackwardDependencyOnNamespace() throws Throwable
+    {
+        // Install an extension with rsimple as dependency on namespace
+        install(TestResources.REMOTE_WITHRDEPENDENCY_ID, "namespace");
+
+        assertThrows(InstallException.class, () -> {
+            // Try to replace rsimple with an incompatible extension on root
+            ExtensionPlan plan = installPlan(createInstallRequest(TestResources.REMOTE_SIMPLE_FEATURE_ID));
+
+            assertEquals(null, plan);
+        });
+    }
 }

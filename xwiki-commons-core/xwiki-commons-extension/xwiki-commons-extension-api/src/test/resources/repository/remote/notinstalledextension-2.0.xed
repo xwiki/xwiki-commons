@@ -6,6 +6,7 @@
   <type>test</type>
   <features>
     <feature>installedextension</feature>
+    <feature>installedextension-feature</feature>
   </features>
   <dependencies>
     <dependency>
