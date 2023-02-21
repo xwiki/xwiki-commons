@@ -1236,7 +1236,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
     /**
      * Search and validate existing extensions that will be replaced by the extension.
      */
-    private Set<InstalledExtension> getReplacedInstalledExtensions(Extension extension, String namespace)
+    private Set<InstalledExtension> getReplacedInstalledExtensions(Extension newExtension, String namespace)
         throws IncompatibleVersionConstraintException, ResolveException, InstallException
     {
         if (getRequest().isInstalledIgnored()) {
@@ -1245,36 +1245,91 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
 
         // If a namespace extension already exist on root, fail the install
         if (namespace != null) {
-            checkRootExtension(extension.getId().getId());
+            checkRootExtension(newExtension.getId().getId());
         }
 
         Set<InstalledExtension> previousExtensions = new LinkedHashSet<>();
 
-        Set<InstalledExtension> installedExtensions = getInstalledExtensions(extension.getId().getId(), namespace);
+        // Check installed extensions matching the extension id
+        getReplacedInstalledExtensions(newExtension, newExtension.getId().getId(), namespace, previousExtensions);
 
-        VersionConstraint versionConstraint =
-            checkReplacedInstalledExtensions(installedExtensions, extension.getId(), namespace, null);
-        previousExtensions.addAll(installedExtensions);
-
-        for (ExtensionId feature : extension.getExtensionFeatures()) {
-            // If a namespace extension already exist on root, fail the install
-            if (namespace != null) {
-                checkRootExtension(feature.getId());
-            }
-
-            installedExtensions = getInstalledExtensions(feature.getId(), namespace);
-            versionConstraint =
-                checkReplacedInstalledExtensions(installedExtensions, feature, namespace, versionConstraint);
-            previousExtensions.addAll(installedExtensions);
-        }
-
-        // If the extensions is already installed (usually mean we are trying to repair an invalid extension) it's not
-        // going to replace itself
-        if (extension instanceof InstalledExtension) {
-            previousExtensions.remove(extension);
+        // Check installed extensions matching the extension features
+        for (ExtensionId feature : newExtension.getExtensionFeatures()) {
+            getReplacedInstalledExtensions(newExtension, feature.getId(), namespace, previousExtensions);
         }
 
         return previousExtensions;
+    }
+
+    private void getReplacedInstalledExtensions(Extension newExtension, String newFeature, String namespace,
+        Set<InstalledExtension> previousExtensions)
+        throws IncompatibleVersionConstraintException, ResolveException, InstallException
+    {
+        Set<InstalledExtension> installedExtensions = getInstalledExtensions(newFeature, namespace);
+
+        // For each replaced extension, make sure it does not break a backward dependency
+        for (InstalledExtension installedExtension : installedExtensions) {
+            // If the extensions is already installed (usually mean we are trying to repair an invalid extension) it's
+            // not going to replace itself
+            if (installedExtension != newExtension) {
+                // If a namespace extension already exist on root, fail the install
+                if (namespace != null) {
+                    checkRootExtension(newExtension.getId().getId());
+                }
+
+                checkReplacedInstalledExtension(installedExtension, newExtension, namespace);
+
+                previousExtensions.add(installedExtension);
+            }
+        }
+    }
+
+    private void checkReplacedInstalledExtension(InstalledExtension replacedExtension, Extension newExtension,
+        String namespace) throws IncompatibleVersionConstraintException, ResolveException
+    {
+        // Get all backward dependencies
+        Map<String, Set<InstalledExtension>> backwardDependencies =
+            getBackwardDependencies(replacedExtension, namespace);
+
+        // Make sure the replacement maintain compatibility with existing backward dependencies
+        for (Map.Entry<String, Set<InstalledExtension>> entry : backwardDependencies.entrySet()) {
+            for (InstalledExtension backwardDependency : entry.getValue()) {
+                checkReplacedInstalledExtension(backwardDependency, replacedExtension, newExtension);
+            }
+        }
+    }
+
+    private void checkReplacedInstalledExtension(InstalledExtension backwardDependency, ExtensionDependency dependency,
+        InstalledExtension replacedExtension, String replacedFeature, Extension newExtension)
+        throws IncompatibleVersionConstraintException
+    {
+        // Get the new extension feature corresponding the the checked feature
+        ExtensionId newFeature = newExtension.getExtensionFeature(replacedFeature);
+
+        // Make sure the dependency constraint is matching the new extension feature
+        if (newFeature == null || !dependency.getVersionConstraint().isCompatible(newFeature.getVersion())) {
+            throw new IncompatibleVersionConstraintException(String.format(
+                "Replacing extension [%s] with [%s] would break backward dependency with extension [%s] having as constaint [%s]",
+                replacedExtension.getId(), newExtension.getId(), backwardDependency.getId(), dependency));
+        }
+    }
+
+    private void checkReplacedInstalledExtension(InstalledExtension backwardDependency,
+        InstalledExtension replacedExtension, Extension newExtension) throws IncompatibleVersionConstraintException
+    {
+        for (ExtensionDependency dependency : backwardDependency.getDependencies()) {
+            if (replacedExtension.getId().getId().equals(dependency.getId())) {
+                checkReplacedInstalledExtension(backwardDependency, dependency, replacedExtension,
+                    replacedExtension.getId().getId(), newExtension);
+            }
+
+            for (ExtensionId feature : replacedExtension.getExtensionFeatures()) {
+                if (feature.getId().equals(dependency.getId())) {
+                    checkReplacedInstalledExtension(backwardDependency, dependency, replacedExtension, feature.getId(),
+                        newExtension);
+                }
+            }
+        }
     }
 
     private VersionConstraint mergeBackwardDependenciesVersionConstraints(String feature, String namespace,
@@ -1300,35 +1355,6 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
         // Merge all backward dependencies constraints
         for (Map.Entry<String, Set<InstalledExtension>> entry : backwardDependencies.entrySet()) {
             versionConstraint = mergeVersionConstraints(entry.getValue(), feature, versionConstraint);
-        }
-
-        return versionConstraint;
-    }
-
-    private VersionConstraint checkReplacedInstalledExtensions(Collection<InstalledExtension> installedExtensions,
-        ExtensionId feature, String namespace, VersionConstraint versionConstraint)
-        throws IncompatibleVersionConstraintException, ResolveException
-    {
-        if (installedExtensions.isEmpty()) {
-            return versionConstraint;
-        }
-
-        // Get all backward dependencies
-        Map<String, Set<InstalledExtension>> backwardDependencies =
-            getBackwardDependencies(installedExtensions, namespace);
-
-        // Merge all backward dependencies constraints
-        for (Map.Entry<String, Set<InstalledExtension>> entry : backwardDependencies.entrySet()) {
-            versionConstraint = mergeVersionConstraints(entry.getValue(), feature.getId(), versionConstraint);
-
-            // Validate version constraint
-            if (versionConstraint != null) {
-                if (!versionConstraint.isCompatible(feature.getVersion())) {
-                    throw new IncompatibleVersionConstraintException(String.format(
-                        "The extension with feature [%s] is not compatible with existing backward dependency constraint [%s]",
-                        feature, versionConstraint));
-                }
-            }
         }
 
         return versionConstraint;
@@ -1362,6 +1388,38 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
 
                     namespaceBackwardDependencies.add(backwardDependency);
                 }
+            }
+        }
+
+        return backwardDependencies;
+    }
+
+    private Map<String, Set<InstalledExtension>> getBackwardDependencies(InstalledExtension installedExtension,
+        String namespace) throws ResolveException
+    {
+        Map<String, Set<InstalledExtension>> backwardDependencies = new LinkedHashMap<>();
+
+        if (namespace == null) {
+            for (Map.Entry<String, Collection<InstalledExtension>> entry : this.installedExtensionRepository
+                .getBackwardDependencies(installedExtension.getId(), true).entrySet()) {
+                Set<InstalledExtension> namespaceBackwardDependencies = backwardDependencies.get(entry.getKey());
+                if (namespaceBackwardDependencies == null) {
+                    namespaceBackwardDependencies = new LinkedHashSet<>();
+                    backwardDependencies.put(entry.getKey(), namespaceBackwardDependencies);
+                }
+
+                namespaceBackwardDependencies.addAll(entry.getValue());
+            }
+        } else {
+            for (InstalledExtension backwardDependency : this.installedExtensionRepository
+                .getBackwardDependencies(installedExtension.getId().getId(), namespace, true)) {
+                Set<InstalledExtension> namespaceBackwardDependencies = backwardDependencies.get(namespace);
+                if (namespaceBackwardDependencies == null) {
+                    namespaceBackwardDependencies = new LinkedHashSet<>();
+                    backwardDependencies.put(namespace, namespaceBackwardDependencies);
+                }
+
+                namespaceBackwardDependencies.add(backwardDependency);
             }
         }
 

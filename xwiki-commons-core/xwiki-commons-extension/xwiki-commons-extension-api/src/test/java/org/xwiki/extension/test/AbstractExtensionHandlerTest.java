@@ -115,7 +115,8 @@ public abstract class AbstractExtensionHandlerTest
             installJob.getStatus().getLogTail().getLogEvents(failFrom).stream().findFirst();
         if (errorResult.isPresent()) {
             LogEvent error = errorResult.get();
-            throw error.getThrowable() != null ? error.getThrowable() : new Exception(error.getFormattedMessage());
+
+            throw new Exception(error.getFormattedMessage(), error.getThrowable());
         }
 
         return installJob;
