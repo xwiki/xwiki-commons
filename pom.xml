@@ -2261,8 +2261,6 @@
           <version>1.14.0</version>
           <configuration>
             <complianceLevel>${java.version}</complianceLevel>
-            <source>${java.version}</source>
-            <target>${java.version}</target>
 
             <!-- Avoid surprises. If a module needs annotation processing it can enabled it easily -->
             <proc>none</proc>
@@ -2403,7 +2401,7 @@
             <!-- Enable all doclint checks by default -->
             <doclint>all</doclint>
             <!-- Specify the version of the code so that it doesn't depend on the Java version used to build XWiki -->
-            <source>8</source>
+            <release>${java.version}</release>
           </configuration>
         </plugin>
         <!-- We don't use site plugin but we org.apache.maven.plugins.enforcer.RequirePluginVersions enforcer rule
