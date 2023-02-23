@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
@@ -64,6 +65,8 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
     private static final String TYPE_ECLIPSE_PLUGIN = "eclipse-plugin";
 
     private static final String TYPE_WEBJAR = "webjar";
+
+    private static final Set<String> SYSTEM_PROPERTIES = Set.of("java.version");
 
     static {
         TYPE_MAPPING.put(TYPE_BUNDLE,
@@ -115,18 +118,15 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
         this.closeable = closeable;
 
         // Local repository
-
         Files.createDirectories(path);
         LocalRepository localRepository = new LocalRepository(path.toFile());
         wsession.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(wsession, localRepository));
 
         // Proxy selector
-
         wsession.setProxySelector(JREPROXYSELECTOR);
 
-        // Remove all system properties that could disrupt effective pom resolution
-        wsession.setSystemProperty("version", null);
-        wsession.setSystemProperty("groupId", null);
+        // Copy require system properties
+        SYSTEM_PROPERTIES.forEach(k -> wsession.setSystemProperty(k, System.getProperty(k)));
 
         // Add various type descriptors
         addTypes(wsession);
