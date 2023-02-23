@@ -38,6 +38,7 @@ import org.eclipse.aether.artifact.ArtifactType;
 import org.eclipse.aether.artifact.ArtifactTypeRegistry;
 import org.eclipse.aether.artifact.DefaultArtifactType;
 import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.RepositoryPolicy;
 import org.eclipse.aether.util.artifact.DefaultArtifactTypeRegistry;
 import org.eclipse.aether.util.repository.JreProxySelector;
 import org.eclipse.aether.util.repository.SimpleArtifactDescriptorPolicy;
@@ -133,6 +134,9 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
 
         // Fail when the pom is missing or invalid
         wsession.setArtifactDescriptorPolicy(new SimpleArtifactDescriptorPolicy(false, false));
+
+        // Global checksum and update policy
+        wsession.setChecksumPolicy(RepositoryPolicy.CHECKSUM_POLICY_WARN);
 
         // Set a default user agent
         setUserAgent("XWikiExtensionManager");
