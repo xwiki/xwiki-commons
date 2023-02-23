@@ -66,6 +66,7 @@ import org.eclipse.aether.impl.RepositoryConnectorProvider;
 import org.eclipse.aether.impl.VersionRangeResolver;
 import org.eclipse.aether.impl.VersionResolver;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.repository.RepositoryPolicy;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
@@ -304,6 +305,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         download.setArtifact(artifact);
         download.setRepositories(repositories);
         download.setFile(file);
+        download.setChecksumPolicy(RepositoryPolicy.CHECKSUM_POLICY_WARN);
 
         try {
             connector.get(Arrays.asList(download), null);
