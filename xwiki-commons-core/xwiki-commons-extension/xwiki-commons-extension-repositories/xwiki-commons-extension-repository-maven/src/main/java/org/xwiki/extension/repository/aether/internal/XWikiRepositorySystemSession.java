@@ -126,8 +126,12 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
         // Proxy selector
         wsession.setProxySelector(JREPROXYSELECTOR);
 
-        // Copy require system properties
+        // Copy required system properties (MavenRepositorySystemUtils#newSession does not copy them anymore since Maven
+        // 3.9.0)
         SYSTEM_PROPERTIES.forEach(k -> wsession.setSystemProperty(k, System.getProperty(k)));
+        // Remove all system properties that could disrupt effective pom resolution (required only with Maven < 3.9.0)
+        wsession.setSystemProperty("version", null);
+        wsession.setSystemProperty("groupId", null);
 
         // Add various type descriptors
         addTypes(wsession);
