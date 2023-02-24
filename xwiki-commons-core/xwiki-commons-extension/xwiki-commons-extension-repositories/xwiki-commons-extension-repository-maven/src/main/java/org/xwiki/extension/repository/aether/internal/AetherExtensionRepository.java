@@ -78,9 +78,12 @@ import org.eclipse.aether.resolution.VersionResult;
 import org.eclipse.aether.spi.connector.ArtifactDownload;
 import org.eclipse.aether.spi.connector.RepositoryConnector;
 import org.eclipse.aether.transfer.ArtifactNotFoundException;
+import org.eclipse.aether.transfer.ArtifactTransferException;
 import org.eclipse.aether.transfer.NoRepositoryConnectorException;
 import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.Extension;
@@ -114,6 +117,8 @@ import org.xwiki.properties.converter.Converter;
  */
 public class AetherExtensionRepository extends AbstractExtensionRepository
 {
+    protected static final Logger LOGGER = LoggerFactory.getLogger(AetherExtensionRepository.class);
+
     protected static class AetherExtensionFileInputStream extends FileInputStream
     {
         private final File file;
@@ -254,8 +259,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
                 sessionHttpHeaders.put(headerName, property.getValue());
             }
         }
-        session.addConfigurationProperties(Collections.singletonMap(ConfigurationProperties.HTTP_HEADERS,
-            sessionHttpHeaders));
+        session.addConfigurationProperties(
+            Collections.singletonMap(ConfigurationProperties.HTTP_HEADERS, sessionHttpHeaders));
 
         session.addConfigurationProperties(getDescriptor().getProperties());
 
@@ -288,35 +293,40 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private File getFile(Artifact artifact, XWikiRepositorySystemSession session) throws IOException
     {
-        List<RemoteRepository> repositories = newResolutionRepositories(session);
-        RemoteRepository repository = repositories.get(0);
-
-        RepositoryConnector connector;
-        try {
-            connector = getRepositoryConnectorProvider().newRepositoryConnector(session, repository);
-        } catch (NoRepositoryConnectorException e) {
-            throw new IOException("Failed to download artifact [" + artifact + "]", e);
-        }
+        List<RemoteRepository> repositories = newResolutionRepositories(session, true);
 
         File file = createTemporaryFile(artifact.getArtifactId(), artifact.getExtension());
 
-        ArtifactDownload download = new ArtifactDownload();
-        download.setArtifact(artifact);
-        download.setRepositories(repositories);
-        download.setFile(file);
+        ArtifactTransferException exception = null;
+        for (RemoteRepository repository : repositories) {
+            ArtifactDownload download = new ArtifactDownload();
+            download.setArtifact(artifact);
+            download.setRepositories(repositories);
+            download.setFile(file);
+            download.setChecksumPolicy(RepositoryPolicy.CHECKSUM_POLICY_WARN);
 
-        try {
-            connector.get(Arrays.asList(download), null);
-        } finally {
-            connector.close();
+            try (RepositoryConnector connector =
+                getRepositoryConnectorProvider().newRepositoryConnector(session, repository)) {
+                connector.get(Arrays.asList(download), null);
+            } catch (NoRepositoryConnectorException e) {
+                throw new IOException("Failed to download artifact [" + artifact + "]", e);
+            }
+
+            // Check if the download succeeded
+            if (download.getException() == null) {
+                return file;
+            }
+
+            // Remember the first exception (the from where the descriptor was found)
+            if (exception == null) {
+                exception = download.getException();
+            }
+
+            LOGGER.debug("Failed to download file for artifact [{}] from repository [{}]", artifact, repository,
+                download.getException());
         }
 
-        // Check if the download succeeded
-        if (download.getException() != null) {
-            throw new IOException("Failed to download file for artifact [" + artifact + "]", download.getException());
-        }
-
-        return file;
+        throw new IOException("Failed to download file for artifact [" + artifact + "]", exception);
     }
 
     @Override
@@ -587,7 +597,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         // Set type
 
         // Find the file extension
-        String artifactFileExtension = getExtension(targetMavenExtension != null ? targetMavenExtension : model.getPackaging(), session);
+        String artifactFileExtension =
+            getExtension(targetMavenExtension != null ? targetMavenExtension : model.getPackaging(), session);
 
         Extension mavenExtension = this.extensionConverter.convert(Extension.class, model);
 
@@ -597,8 +608,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         ExtensionId extensionId;
         String extensionType = mavenExtension.getType();
         String extensionFileExtension = getExtension(extensionType, session);
-        if (targetMavenExtension != null
-            && !Objects.equals(targetMavenExtension, extensionFileExtension)
+        if (targetMavenExtension != null && !Objects.equals(targetMavenExtension, extensionFileExtension)
             && !Objects.equals(artifactFileExtension, extensionFileExtension)
             && !Objects.equals(MavenUtils.packagingToType(targetMavenExtension), mavenExtension.getType())
             && !Objects.equals(MavenUtils.packagingToType(artifactFileExtension), mavenExtension.getType())) {

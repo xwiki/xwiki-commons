@@ -523,6 +523,17 @@ public class AetherDefaultRepositoryManagerTest
     }
 
     @Test
+    public void testDownloadWithFileondifferentrepo() throws ExtensionException, IOException
+    {
+        Extension extension =
+            this.repositoryManager.resolve(new ExtensionId(GROUPID + ":fileondifferentrepo", "version"));
+
+        try (InputStream is = extension.getFile().openStream()) {
+            assertEquals("content", IOUtils.toString(is));
+        }
+    }
+
+    @Test
     public void testResolveVersions() throws ExtensionException
     {
         IterableResult<Version> versions = this.repositoryManager.resolveVersions(this.extensionId.getId(), 0, -1);
