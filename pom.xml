@@ -2015,6 +2015,28 @@
               </rules>
             </configuration>
           </execution>
+          <!-- Make sure we don't use old commons dependencies -->
+          <execution>
+            <id>enforce-no-old-xwiki-commons</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-jdom.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>These dependencies don't exist anymore</message>
+                  <excludes>
+                    <exclude>org.xwiki.commons:xwiki-commons-job</exclude>
+                    <exclude>org.xwiki.commons:xwiki-commons-extension-repository-xwiki-handler</exclude>
+                    <exclude>org.xwiki.commons:xwiki-commons-extension-repository-xwiki-api</exclude>
+                    <exclude>org.xwiki.commons:xwiki-commons-extension-repository-xwiki-model</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
           <!-- Check dependency versions compatibility -->
           <execution>
             <id>enforce-upper-bounds</id>
