@@ -154,6 +154,7 @@
     <xwiki.enforcer.enforce-asm.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-asm.skip>
     <xwiki.enforcer.enforce-cglib.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-cglib.skip>
     <xwiki.enforcer.enforce-jdom.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jdom.skip>
+    <xwiki.enforcer.enforce-no-old-xwiki-commons.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-no-old-xwiki-commons.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
     <xwiki.enforcer.enforce-java.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-java.skip>
     <xwiki.license.skip>false</xwiki.license.skip>
@@ -2022,7 +2023,7 @@
               <goal>enforce</goal>
             </goals>
             <configuration>
-              <skip>${xwiki.enforcer.enforce-jdom.skip}</skip>
+              <skip>${xwiki.enforcer.enforce-no-old-xwiki-commons.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
