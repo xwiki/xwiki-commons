@@ -25,6 +25,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -86,6 +87,13 @@ class SecureHTMLElementSanitizerTest
     void forbiddenTags()
     {
         assertFalse(this.secureHTMLElementSanitizer.isElementAllowed(HTMLConstants.TAG_A));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "form", "input", "select", "textarea", "button" })
+    void formTags(String tagName)
+    {
+        assertFalse(this.secureHTMLElementSanitizer.isElementAllowed(tagName));
     }
 
     @Test
