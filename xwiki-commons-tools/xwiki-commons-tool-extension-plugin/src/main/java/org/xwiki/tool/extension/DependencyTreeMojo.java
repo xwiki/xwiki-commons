@@ -34,6 +34,10 @@ import org.xwiki.extension.job.plan.ExtensionPlanTree;
 import org.xwiki.tool.extension.util.AbstractExtensionMojo;
 
 /**
+ * Resolve and print a dependency tree of a module according to XWiki Extension Manager resolution instead of Maven one
+ * since they have some differences (for example optional extension dependencies are selected by default by Extension
+ * Manager).
+ * 
  * @version $Id$
  * @since 15.2RC1
  */
@@ -72,9 +76,8 @@ public class DependencyTreeMojo extends AbstractExtensionMojo
         // Resolve the dependency tree
         List<ExtensionPlan> plans;
         if (this.entryPoint == EntryPoint.PROJECT) {
-            plans = Collections.singletonList(this.extensionHelper
-                .createInstallPlan(
-                    this.extensionHelper.toArtifactModel(this.project.getArtifact(), this.project.getModel())));
+            plans = Collections.singletonList(this.extensionHelper.createInstallPlan(
+                this.extensionHelper.toArtifactModel(this.project.getArtifact(), this.project.getModel())));
         } else {
             plans = this.extensionHelper.resolveDependencies(this.project,
                 this.entryPoint == EntryPoint.DEPENDENCIES_ISOLATED);
