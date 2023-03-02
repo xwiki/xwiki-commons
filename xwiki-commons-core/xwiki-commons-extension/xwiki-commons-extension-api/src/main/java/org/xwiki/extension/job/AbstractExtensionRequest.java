@@ -90,6 +90,40 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     private static final long serialVersionUID = 1L;
 
     /**
+     * Expose an {@link Extension} as an {@link ExtensionId}.
+     * 
+     * @version $Id$
+     * @since 15.2RC1
+     */
+    public class ExtensionExtensionId extends ExtensionId
+    {
+        /**
+         * Serialization identifier.
+         */
+        private static final long serialVersionUID = 1L;
+
+        private final Extension extension;
+
+        /**
+         * @param extension the extension
+         */
+        public ExtensionExtensionId(Extension extension)
+        {
+            super(extension.getId().getId(), extension.getId().getVersion());
+
+            this.extension = extension;
+        }
+
+        /**
+         * @return the extension
+         */
+        public Extension getExtension()
+        {
+            return this.extension;
+        }
+    }
+
+    /**
      * Default constructor.
      */
     public AbstractExtensionRequest()
@@ -155,6 +189,15 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     public void addExtension(ExtensionId extensionId)
     {
         getExtensions().add(extensionId);
+    }
+
+    /**
+     * @param extension the extension to validate and for which to resolve dependencies
+     * @since 15.2RC1
+     */
+    public void addExtension(Extension extension)
+    {
+        getExtensions().add(new ExtensionExtensionId(extension));
     }
 
     /**

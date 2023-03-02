@@ -19,6 +19,8 @@
  */
 package org.xwiki.tool.extension.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * 
  * @version $Id$
@@ -72,5 +74,19 @@ public class ExtensionArtifact
     public void setType(String type)
     {
         this.type = type;
+    }
+
+    public void set(String value)
+    {
+        String[] values = StringUtils.split(value, ':');
+
+        setGrouId(values[0]);
+        setArtifactId(values[1]);
+        if (values.length >= 3) {
+            setVersion(values[2]);
+        }
+        if (values.length >= 4) {
+            setType(values[3]);
+        }
     }
 }

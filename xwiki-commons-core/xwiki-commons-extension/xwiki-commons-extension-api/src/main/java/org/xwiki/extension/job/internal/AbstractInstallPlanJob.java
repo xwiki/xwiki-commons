@@ -48,6 +48,7 @@ import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.ExtensionHandler;
 import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.internal.ExtensionUtils;
+import org.xwiki.extension.job.AbstractExtensionRequest;
 import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
@@ -882,6 +883,11 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
      */
     private Extension resolveExtension(ExtensionId extensionId) throws InstallException
     {
+        // Check if the extension is already resolved
+        if (extensionId instanceof AbstractExtensionRequest.ExtensionExtensionId) {
+            return ((AbstractExtensionRequest.ExtensionExtensionId) extensionId).getExtension();
+        }
+
         // Check if the extension is already in local repository
         Extension extension = this.localExtensionRepository.getLocalExtension(extensionId);
 

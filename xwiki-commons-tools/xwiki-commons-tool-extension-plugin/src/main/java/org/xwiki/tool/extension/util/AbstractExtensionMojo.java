@@ -108,7 +108,7 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
      * 
      * @since 9.5RC1
      */
-    @Parameter
+    @Parameter(property = "coreExtensions")
     private List<ExtensionArtifact> coreExtensions;
 
     /**
@@ -180,6 +180,8 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
 
     private void registerCoreExtensions() throws MojoExecutionException
     {
+        getLog().info(System.getProperty("coreExtensions"));
+
         if (this.coreExtensions != null) {
             getLog().info("Registering core extensions...");
 

@@ -393,7 +393,7 @@ public class ExtensionMojoHelper implements AutoCloseable
         }
     }
 
-    private ExtensionPlan resolve(InstallRequest installRequest)
+    private ExtensionPlan createInstallPlan(InstallRequest installRequest)
     {
         // Minimum job log
         installRequest.setVerbose(false);
@@ -404,6 +404,24 @@ public class ExtensionMojoHelper implements AutoCloseable
         installPlanJob.run();
 
         return (ExtensionPlan) installPlanJob.getStatus();
+    }
+
+    public ExtensionPlan createInstallPlan(ArtifactModel model) throws MojoExecutionException
+    {
+        Extension extension = toExtension(model);
+
+        InstallRequest installRequest = new InstallRequest();
+
+        installRequest.addExtension(extension);
+
+        ExtensionPlan status = createInstallPlan(installRequest);
+        // Deal with errors
+        if (status.getError() != null) {
+            throw new MojoExecutionException(
+                "Failed to create an install plan for Maven model [" + model.getModel() + "]", status.getError());
+        }
+
+        return status;
     }
 
     public List<ExtensionPlan> resolveDependencies(MavenProject project, boolean isolate) throws MojoExecutionException
@@ -418,7 +436,7 @@ public class ExtensionMojoHelper implements AutoCloseable
                 installRequest.addExtension(new ExtensionId(dependency.getGroupId() + ':' + dependency.getArtifactId(),
                     dependency.getVersion()));
 
-                ExtensionPlan status = resolve(installRequest);
+                ExtensionPlan status = createInstallPlan(installRequest);
                 // Deal with errors
                 if (status.getError() != null) {
                     throw new MojoExecutionException(
@@ -444,7 +462,7 @@ public class ExtensionMojoHelper implements AutoCloseable
                 new ExtensionId(dependency.getGroupId() + ':' + dependency.getArtifactId(), dependency.getVersion()));
         }
 
-        ExtensionPlan status = resolve(installRequest);
+        ExtensionPlan status = createInstallPlan(installRequest);
         // Deal with errors
         if (status.getError() != null) {
             throw new MojoExecutionException(
