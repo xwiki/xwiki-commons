@@ -632,12 +632,16 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private String getExtension(String type, RepositorySystemSession session)
     {
-        ArtifactType artifactType = session.getArtifactTypeRegistry().get(type);
-        if (artifactType != null) {
-            return artifactType.getExtension();
+        if (type != null) {
+            ArtifactType artifactType = session.getArtifactTypeRegistry().get(type);
+            if (artifactType != null) {
+                return artifactType.getExtension();
+            }
+
+            return type;
         }
 
-        return type != null ? type : "pom";
+        return "pom";
     }
 
     private List<ExtensionDependency> toAetherDependencies(Collection<ExtensionDependency> mavenDependencies,
