@@ -22,13 +22,13 @@ package org.xwiki.tool.enforcer;
 import java.io.FileReader;
 import java.io.Reader;
 
-import org.apache.maven.enforcer.rule.api.EnforcerRule;
+import javax.inject.Inject;
+
+import org.apache.maven.enforcer.rule.api.AbstractEnforcerRule;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
-import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
 
 /**
  * Allows to write Enforcer Rules that perform checks on the POM.
@@ -36,87 +36,41 @@ import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluatio
  * @version $Id$
  * @since 7.4RC1
  */
-public abstract class AbstractPomCheck implements EnforcerRule
+public abstract class AbstractPomCheck extends AbstractEnforcerRule
 {
-    /**
-     * @param helper the enforcer helper object
-     * @return the MavenProject instance for the current Maven project
-     * @throws EnforcerRuleException if an error occurred getting the MavenProject instance
-     */
-    protected MavenProject getMavenProject(EnforcerRuleHelper helper) throws EnforcerRuleException
-    {
-        MavenProject project;
-        try {
-            project = (MavenProject) helper.evaluate("${project}");
-        } catch (ExpressionEvaluationException e) {
-            throw new EnforcerRuleException("Failed to get Maven project", e);
-        }
-        return project;
-    }
+    @Inject
+    private MavenProject project;
 
     /**
      * The Maven model as it's present in the project's {@code pom.xml} (non resolved).
      *
-     * @param helper the enforcer helper object
-     * @return the Model instance for the current Maven project (this contains the raw data from the pom.xml file
-     *         before any interpolation)
+     * @return the Model instance for the current Maven project (this contains the raw data from the pom.xml file before
+     *         any interpolation)
      * @throws EnforcerRuleException if an error occurred getting the Model instance
      */
-    protected Model getModel(EnforcerRuleHelper helper) throws EnforcerRuleException
+    protected Model getModel() throws EnforcerRuleException
     {
-        MavenProject project = getMavenProject(helper);
         Model model;
-        Reader reader = null;
-        try {
-            reader = new FileReader(project.getFile());
+        try (Reader reader = new FileReader(this.project.getFile())) {
             MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
             model = xpp3Reader.read(reader);
         } catch (Exception e) {
-            throw new EnforcerRuleException("Failed to read pom file [" + project.getFile() + "]", e);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (Exception ee) {
-                    throw new EnforcerRuleException("Failed to close stream after reading pom file ["
-                        + project.getFile() + "]", ee);
-                }
-            }
+            throw new EnforcerRuleException("Failed to read pom file [" + this.project.getFile() + "]", e);
         }
+
         return model;
     }
 
     /**
      * The resolved Maven model (i.e. with parent poms taken into account).
      *
-     * @param helper the enforcer helper object
      * @return the resolved Model instance for the current Maven project (this contains the data from the pom.xml file
      *         after interpolation)
      * @throws EnforcerRuleException if an error occurred getting the Model instance
      */
-    protected Model getResolvedModel(EnforcerRuleHelper helper) throws EnforcerRuleException
+    protected Model getResolvedModel() throws EnforcerRuleException
     {
-        MavenProject project = getMavenProject(helper);
         // Note: the model is resolved at this point, which means the Model contains
-        return project.getModel();
-    }
-
-    @Override
-    public boolean isCacheable()
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isResultValid(EnforcerRule enforcerRule)
-    {
-        return false;
-    }
-
-    @Override
-    public String getCacheId()
-    {
-        // Not used since caching if off for this rule
-        return "";
+        return this.project.getModel();
     }
 }

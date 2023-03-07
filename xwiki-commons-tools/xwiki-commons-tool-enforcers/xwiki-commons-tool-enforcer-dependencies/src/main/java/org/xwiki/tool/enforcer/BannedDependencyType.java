@@ -19,8 +19,9 @@
  */
 package org.xwiki.tool.enforcer;
 
+import javax.inject.Named;
+
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
-import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 
@@ -49,6 +50,7 @@ import org.apache.maven.model.Model;
  * @since 14.4.3
  * @since 13.10.8
  */
+@Named("bannedDependencyType")
 public class BannedDependencyType extends AbstractPomCheck
 {
     private static final String JAR = "jar";
@@ -71,27 +73,27 @@ public class BannedDependencyType extends AbstractPomCheck
     private String dependencyType;
 
     @Override
-    public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException
+    public void execute() throws EnforcerRuleException
     {
-        Model model = getModel(helper);
+        Model model = getModel();
 
         // Check the packaging
         if (skipProjectPackaging(model)) {
-            helper.getLog().info("Skipping as the packaging does not match [" + this.projectPackaging + "]");
+            getLog().info("Skipping as the packaging does not match [" + this.projectPackaging + "]");
 
             return;
         }
 
         // Check the group id
         if (skipProjectGroupId(model)) {
-            helper.getLog().info("Skipping as the group id does not match [" + this.projectGroupId + "]");
+            getLog().info("Skipping as the group id does not match [" + this.projectGroupId + "]");
 
             return;
         }
 
         // Check the artifact id
         if (skiphProjectArtifactId(model)) {
-            helper.getLog().info("Skipping as the artifact id does not match [" + this.projectArtifactId + "]");
+            getLog().info("Skipping as the artifact id does not match [" + this.projectArtifactId + "]");
 
             return;
         }

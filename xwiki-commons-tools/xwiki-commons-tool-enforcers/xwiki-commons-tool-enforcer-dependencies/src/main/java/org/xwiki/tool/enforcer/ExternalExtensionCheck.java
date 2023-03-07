@@ -23,8 +23,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Named;
+
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
-import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.model.Developer;
 import org.apache.maven.model.Model;
 
@@ -38,6 +39,7 @@ import org.apache.maven.model.Model;
  * @version $Id$
  * @since 7.4RC1
  */
+@Named("externalExtensionCheck")
 public class ExternalExtensionCheck extends AbstractPomCheck
 {
     private static final String CORE_GROUP_ID = "org.xwiki";
@@ -72,9 +74,9 @@ public class ExternalExtensionCheck extends AbstractPomCheck
     private static final String CORE_DEVELOPERS = "XWiki Development Team";
 
     @Override
-    public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException
+    public void execute() throws EnforcerRuleException
     {
-        Model model = getResolvedModel(helper);
+        Model model = getResolvedModel();
 
         if (isXWikiCoreCommitterExtension(model)) {
             checkCoreArtifactId(model);

@@ -33,7 +33,6 @@
   <properties>
     <!-- By default legacy dependencies are forbidden -->
     <xwiki.enforcer.no-legacy-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.no-legacy-dependencies.skip>
-    <xwiki.enforcer.no-legacy-dependencies.exclude>.*xwiki.*:.*-legacy-.*</xwiki.enforcer.no-legacy-dependencies.exclude>
     <!-- By default we perform checks on the POM content -->
     <xwiki.enforcer.valid-poms.skip>${xwiki.enforcer.skip}</xwiki.enforcer.valid-poms.skip>
     <!-- By default don't skip Spoon checks -->
@@ -116,13 +115,15 @@
             <configuration>
               <skip>${xwiki.enforcer.no-legacy-dependencies.skip}</skip>
               <rules>
-                <xwikiBannedDependencies implementation="org.xwiki.tool.enforcer.XWikiBannedDependencies">
+                <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
-                  <message>Don't depend on a XWiki Legacy module!</message>
+                  <message>Don't depend on a XWiki Legacy modules!</message>
                   <excludes>
-                    <exclude>${xwiki.enforcer.no-legacy-dependencies.exclude}</exclude>
+                    <exclude>.*xwiki.*:xwiki-commons-legacy-*</exclude>
+                    <exclude>.*xwiki.*:xwiki-rendering-legacy-*</exclude>
+                    <exclude>.*xwiki.*:xwiki-platform-legacy-*</exclude>
                   </excludes>
-                </xwikiBannedDependencies>
+                </bannedDependencies>
               </rules>
             </configuration>
           </execution>
@@ -134,7 +135,7 @@
             <configuration>
               <skip>${xwiki.enforcer.valid-poms.skip}</skip>
               <rules>
-                <externalExtensionCheck implementation="org.xwiki.tool.enforcer.ExternalExtensionCheck" />
+                <externalExtensionCheck />
               </rules>
             </configuration>
           </execution>

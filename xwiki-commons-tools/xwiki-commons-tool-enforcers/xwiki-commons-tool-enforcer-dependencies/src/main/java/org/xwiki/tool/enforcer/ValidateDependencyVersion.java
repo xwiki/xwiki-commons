@@ -24,8 +24,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Named;
+
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
-import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.Model;
@@ -51,6 +52,7 @@ import org.apache.maven.model.Model;
  * @version $Id$
  * @since 4.5RC1
  */
+@Named("validateDependencyVersion")
 public class ValidateDependencyVersion extends AbstractPomCheck
 {
     /**
@@ -77,9 +79,9 @@ public class ValidateDependencyVersion extends AbstractPomCheck
     }
 
     @Override
-    public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException
+    public void execute() throws EnforcerRuleException
     {
-        Model model = getModel(helper);
+        Model model = getModel();
 
         validateDependencies(model.getDependencies());
 

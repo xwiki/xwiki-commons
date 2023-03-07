@@ -32,41 +32,37 @@
   <name>XWiki Commons - Tools - Enforcers</name>
   <packaging>pom</packaging>
   <description>Rule enforcers to verify Maven project validity</description>
-  <properties>
-    <!-- Depend on same Maven version than Enforcer plugin -->
-    <maven.dependencies.version>${maven.maven-enforcer.version}</maven.dependencies.version>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.apache.maven.enforcer</groupId>
-      <artifactId>enforcer-rules</artifactId>
+      <artifactId>enforcer-api</artifactId>
       <version>${maven-enforcer.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-        </exclusion>
-      </exclusions>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
+  <modules>
+    <module>xwiki-commons-tool-enforcer-dependencies</module>
+  </modules>
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
+        <!-- generate index of project components -->
+        <groupId>org.eclipse.sisu</groupId>
+        <artifactId>sisu-maven-plugin</artifactId>
+        <version>0.9.0.M1</version>
         <executions>
           <execution>
-            <id>enforce-jcl-log4j-isolation</id>
-            <configuration>
-              <!-- Since Maven plugins use Commons Logging we need to exclude this enforcer rule -->
-              <skip>true</skip>
-            </configuration>
+            <goals>
+              <goal>main-index</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
-  <modules>
-    <module>xwiki-commons-tool-enforcer-dependencies</module>
-  </modules>
 </project>
