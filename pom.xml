@@ -106,7 +106,7 @@
     <checkstyle.version>10.8.1</checkstyle.version>
 
     <!-- Spoon -->
-    <spoon.version>10.2.0</spoon.version>
+    <spoon.version>10.3.0</spoon.version>
 
     <!-- Groovy -->
     <groovy.version>3.0.15</groovy.version>
