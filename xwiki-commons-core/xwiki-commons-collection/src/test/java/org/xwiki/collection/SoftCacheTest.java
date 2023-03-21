@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  *
  * @version $Id$
  */
-public class SoftCacheTest
+class SoftCacheTest
 {
     private SoftCache<String, String> cache = new SoftCache<>();
 

@@ -19,12 +19,13 @@
  */
 package org.xwiki.collection;
 
-import java.lang.ref.SoftReference;
-import java.util.WeakHashMap;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.collections4.map.ReferenceMap;
+
 /**
- * A concurrent version of {@link WeakHashMap} in which the values are soft references.
+ * A concurrent version of {@link ReferenceMap}.
  * 
  * @param <K> the type of keys maintained by this map
  * @param <V> the type of mapped values
@@ -34,7 +35,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class SoftCache<K, V>
 {
-    private WeakHashMap<K, SoftReference<V>> map = new WeakHashMap<>();
+    private Map<K, V> map = new ReferenceMap<>();
 
     private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -47,9 +48,7 @@ public class SoftCache<K, V>
         this.lock.readLock().lock();
 
         try {
-            SoftReference<V> reference = this.map.get(key);
-
-            return reference != null ? reference.get() : null;
+            return this.map.get(key);
         } finally {
             this.lock.readLock().unlock();
         }
@@ -90,7 +89,7 @@ public class SoftCache<K, V>
         this.lock.writeLock().lock();
 
         try {
-            this.map.put(key, new SoftReference<>(value));
+            this.map.put(key, value);
         } finally {
             this.lock.writeLock().unlock();
         }
