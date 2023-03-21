@@ -110,7 +110,11 @@ public class ExtensionFactory
      */
     public ExtensionPattern getExtensionPattern(Pattern idPattern)
     {
-        String key = idPattern != null ? idPattern.pattern() : null;
+        if (idPattern == null) {
+            return null;
+        }
+
+        String key = idPattern.pattern();
 
         ExtensionPattern pattern = this.patterns.get(key);
 
