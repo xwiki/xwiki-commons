@@ -54,6 +54,8 @@ import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 @Singleton
 public class ExtensionFactory
 {
+    private static final ExtensionPattern NULL_PATTERN = new DefaultExtensionPattern((Pattern) null);
+
     private SoftCache<ExtensionDependency, ExtensionDependency> dependencies = new SoftCache<>();
 
     private SoftCache<String, ExtensionPattern> patterns = new SoftCache<>();
@@ -111,7 +113,7 @@ public class ExtensionFactory
     public ExtensionPattern getExtensionPattern(Pattern idPattern)
     {
         if (idPattern == null) {
-            return null;
+            return NULL_PATTERN;
         }
 
         String key = idPattern.pattern();
