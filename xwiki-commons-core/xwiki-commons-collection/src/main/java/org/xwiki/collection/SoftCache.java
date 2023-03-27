@@ -23,9 +23,10 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.collections4.map.ReferenceMap;
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 
 /**
- * A concurrent version of {@link ReferenceMap}.
+ * A concurrent version of {@link ReferenceMap} with soft reference for both keys and values.
  * 
  * @param <K> the type of keys maintained by this map
  * @param <V> the type of mapped values
@@ -35,7 +36,7 @@ import org.apache.commons.collections4.map.ReferenceMap;
  */
 public class SoftCache<K, V>
 {
-    private Map<K, V> map = new ReferenceMap<>();
+    private Map<K, V> map = new ReferenceMap<>(ReferenceStrength.SOFT, ReferenceStrength.SOFT);
 
     private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
