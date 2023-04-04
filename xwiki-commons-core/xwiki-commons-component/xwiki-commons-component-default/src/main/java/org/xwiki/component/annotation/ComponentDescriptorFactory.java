@@ -25,13 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import javax.annotation.Priority;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
-import org.xwiki.component.descriptor.ComponentRole;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.stability.Unstable;
@@ -50,8 +50,8 @@ public class ComponentDescriptorFactory
      * cannot use Components to do this since it would be a chicken and egg issue since this factory class is used to
      * initialize Components...
      */
-    private ServiceLoader<ComponentDependencyFactory> componentDependencyFactories = ServiceLoader
-        .load(ComponentDependencyFactory.class);
+    private ServiceLoader<ComponentDependencyFactory> componentDependencyFactories =
+        ServiceLoader.load(ComponentDependencyFactory.class);
 
     /**
      * Create component descriptors for the passed component implementation class and component role class. There can be
@@ -83,7 +83,7 @@ public class ComponentDescriptorFactory
     public <T> List<ComponentDescriptor<T>> createComponentDescriptors(Class<? extends T> componentClass,
         Type componentRoleType)
     {
-        return this.createComponentDescriptors(componentClass, componentRoleType, ComponentRole.DEFAULT_PRIORITY);
+        return this.createComponentDescriptors(componentClass, componentRoleType, ComponentDescriptor.DEFAULT_PRIORITY);
     }
 
     /**
@@ -95,7 +95,7 @@ public class ComponentDescriptorFactory
      * @param roleHintPriority the priority to use for comparing components sharing the same type and hint
      * @param <T> the described class type
      * @return the component descriptors with resolved component dependencies
-     * @since 14.8RC1
+     * @since 15.4RC1
      */
     @Unstable
     public <T> List<ComponentDescriptor<T>> createComponentDescriptors(Class<? extends T> componentClass,
@@ -124,11 +124,13 @@ public class ComponentDescriptorFactory
             }
         }
 
+        // Role type priority
+        Priority roleTypePriorityAnnotation = componentClass.getAnnotation(Priority.class);
         int roleTypePriority;
-        if (component != null) {
-            roleTypePriority = component.roleTypePriority();
+        if (roleTypePriorityAnnotation != null) {
+            roleTypePriority = roleTypePriorityAnnotation.value();
         } else {
-            roleTypePriority = ComponentRole.DEFAULT_PRIORITY;
+            roleTypePriority = ComponentDescriptor.DEFAULT_PRIORITY;
         }
 
         // Create the descriptors

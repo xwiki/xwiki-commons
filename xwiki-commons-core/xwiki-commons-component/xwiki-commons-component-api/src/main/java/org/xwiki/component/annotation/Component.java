@@ -23,9 +23,6 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.xwiki.component.descriptor.ComponentRole;
-import org.xwiki.stability.Unstable;
-
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -71,14 +68,4 @@ public @interface Component
      *         {@code components.txt} file.
      */
     boolean staticRegistration() default true;
-
-    /**
-     * Defines the ordering priority for components sharing the same type. The lower the value, the higher the priority.
-     *
-     * @see ComponentRole#getRoleTypePriority()
-     * @return the ordering priority for components sharing the same type.
-     * @since 14.8RC1
-     */
-    @Unstable
-    int roleTypePriority() default ComponentRole.DEFAULT_PRIORITY;
 }
