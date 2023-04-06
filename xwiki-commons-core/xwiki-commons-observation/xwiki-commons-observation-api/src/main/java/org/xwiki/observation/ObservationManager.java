@@ -40,6 +40,18 @@ public interface ObservationManager
     void addListener(EventListener eventListener);
 
     /**
+     * Manually add a listener.
+     *
+     * @param eventListener the listener to register
+     * @param priority the priority of the listener
+     * @since 15.4RC1
+     */
+    default void addListener(EventListener eventListener, int priority)
+    {
+        addListener(eventListener);
+    }
+
+    /**
      * Remove a listener from the list of registered listeners. The removed listener will no longer receive events.
      *
      * @param listenerName the name of the listener to remove (must match {@link EventListener#getName()}

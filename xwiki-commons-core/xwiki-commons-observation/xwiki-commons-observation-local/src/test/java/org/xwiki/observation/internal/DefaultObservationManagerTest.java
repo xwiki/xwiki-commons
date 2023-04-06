@@ -19,11 +19,15 @@
  */
 package org.xwiki.observation.internal;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.event.ComponentDescriptorAddedEvent;
 import org.xwiki.observation.EventListener;
@@ -33,6 +37,7 @@ import org.xwiki.observation.event.Event;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.mockito.MockitoComponentManager;
 
@@ -41,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -54,11 +60,56 @@ import static org.mockito.Mockito.when;
 @ComponentTest
 class DefaultObservationManagerTest
 {
+    @InjectComponentManager
+    private MockitoComponentManager componentManager;
+
     @InjectMockComponents
     private DefaultObservationManager manager;
 
     @RegisterExtension
     private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
+
+    private List<String> calls = new ArrayList<>();
+
+    private EventListener mockListener(String name, List<Event> events)
+    {
+        EventListener listener = mock(EventListener.class);
+        when(listener.getName()).thenReturn(name);
+        when(listener.getEvents()).thenReturn(events);
+        doAnswer(new Answer<Void>()
+        {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable
+            {
+                calls.add(name);
+
+                return null;
+            }
+        }).when(listener).onEvent(any(), any(), any());
+
+        return listener;
+    }
+
+    private EventListener mockListenerComponent(String name, List<Event> events, int priority)
+    {
+        EventListener listener = mockListener(name, events);
+
+        DefaultComponentDescriptor<EventListener> descriptor = new DefaultComponentDescriptor<>();
+        descriptor.setRoleHint(name);
+        descriptor.setRoleType(EventListener.class);
+        descriptor.setRoleTypePriority(priority);
+
+        // Register
+        this.componentManager.registerComponent(descriptor, listener);
+
+        // Notify
+        this.manager.notify(new ComponentDescriptorAddedEvent(EventListener.class, name), this.componentManager,
+            descriptor);
+
+        return listener;
+    }
+
+    ///////////
 
     @Test
     void notifyWhenMatching()
@@ -250,8 +301,8 @@ class DefaultObservationManagerTest
     void onComponentEventWhenRuntimeExceptionInListenerGetName(MockitoComponentManager componentManager)
         throws Exception
     {
-        ComponentDescriptorAddedEvent cdae = new ComponentDescriptorAddedEvent(EventListener.class,
-            "onComponentEventWhenRuntimeExceptionInListener");
+        ComponentDescriptorAddedEvent cdae =
+            new ComponentDescriptorAddedEvent(EventListener.class, "onComponentEventWhenRuntimeExceptionInListener");
 
         // Important: initialize listener cache first so that we can reach the call to onComponentEvent().
         this.manager.notify((Object) -> false, componentManager, null);
@@ -266,17 +317,88 @@ class DefaultObservationManagerTest
         this.manager.notify(cdae, componentManager, cd);
 
         assertEquals("Failed to notify some event listeners about component ["
-            + "role = [interface org.xwiki.observation.EventListener], "
-            + "hint = [default], "
-            + "implementation = [org.xwiki.observation.EventListener], "
-            + "instantiation = [SINGLETON], "
-            + "mandatory = [false]"
+            + "role = [interface org.xwiki.observation.EventListener], " + "hint = [default], "
+            + "implementation = [org.xwiki.observation.EventListener], " + "instantiation = [SINGLETON], "
+            + "mandatory = [false], " + "roleTypePriority = [1000], " + "roleHintPriority = [1000]"
             + "] being added or removed. Root cause: [RuntimeException: error]", logCapture.getMessage(0));
     }
 
     @Test
-    void addListenerWhenRuntimeExceptionInListenerGetName(MockitoComponentManager componentManager)
-        throws Exception
+    void addListenersWithoutSamePriorities() throws Exception
+    {
+        Event event = mock(Event.class);
+        when(event.matches(event)).thenReturn(true);
+        List<Event> events = Collections.singletonList(event);
+        EventListener eventListener1 = mockListener("eventListener1", events);
+        EventListener eventListener2 = mockListener("eventListener2", events);
+        EventListener eventListener3 = mockListener("eventListener3", events);
+
+        this.manager.addListener(eventListener1);
+        this.manager.addListener(eventListener2);
+        this.manager.addListener(eventListener3);
+
+        this.manager.notify(event, null);
+
+        assertEquals(List.of("eventListener1", "eventListener2", "eventListener3"), this.calls);
+    }
+
+    @Test
+    void addListenersWithDifferentPriorities()
+    {
+        Event event = mock(Event.class);
+        when(event.matches(event)).thenReturn(true);
+        List<Event> events = Collections.singletonList(event);
+        EventListener eventListener1 = mockListener("eventListener1", events);
+        EventListener eventListener2 = mockListener("eventListener2", events);
+        EventListener eventListener3 = mockListener("eventListener3", events);
+
+        this.manager.addListener(eventListener1, 3);
+        this.manager.addListener(eventListener2, 1);
+        this.manager.addListener(eventListener3, 2);
+
+        this.manager.notify(event, null);
+
+        assertEquals(List.of("eventListener2", "eventListener3", "eventListener1"), this.calls);
+    }
+
+    @Test
+    void initListenersWithPriorities()
+    {
+        Event event = mock(Event.class);
+        when(event.matches(event)).thenReturn(true);
+        List<Event> events = Collections.singletonList(event);
+        mockListenerComponent("eventListener1", events, 3);
+        mockListenerComponent("eventListener2", events, 1);
+        mockListenerComponent("eventListener3", events, 2);
+
+        this.manager.notify(event, null);
+
+        assertEquals(List.of("eventListener2", "eventListener3", "eventListener1"), this.calls);
+    }
+
+    @Test
+    void registerListenersWithPriorities()
+    {
+        Event event = mock(Event.class);
+        when(event.matches(event)).thenReturn(true);
+
+        // Trigger init
+        this.manager.notify(event, null);
+
+        assertEquals(List.of(), this.calls);
+
+        List<Event> events = Collections.singletonList(event);
+        mockListenerComponent("eventListener1", events, 3);
+        mockListenerComponent("eventListener2", events, 1);
+        mockListenerComponent("eventListener3", events, 2);
+
+        this.manager.notify(event, null);
+
+        assertEquals(List.of("eventListener2", "eventListener3", "eventListener1"), this.calls);
+    }
+
+    @Test
+    void addListenerWhenRuntimeExceptionInListenerGetName(MockitoComponentManager componentManager) throws Exception
     {
         EventListener eventListener = componentManager.registerMockComponent(EventListener.class,
             "onComponentEventWhenRuntimeExceptionInListener");

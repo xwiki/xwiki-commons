@@ -21,7 +21,6 @@ package org.xwiki.component.embed;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -31,13 +30,12 @@ import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 
 import javax.inject.Provider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xwiki.collection.internal.PriorityEntries;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.annotation.DisposePriority;
 import org.xwiki.component.descriptor.ComponentDependency;
@@ -107,55 +105,16 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         }
     }
 
-    private static class ComponentEntries<R>
+    private static class ComponentEntries<R> extends PriorityEntries<ComponentEntry<R>>
     {
-        final Map<String, ComponentEntry<R>> map;
-
-        List<ComponentEntry<R>> sortedList;
-
-        ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-
         ComponentEntries()
         {
-            this.map = new LinkedHashMap<>();
+            super();
         }
 
         ComponentEntries(int initialCapacity)
         {
-            this.map = new LinkedHashMap<>(initialCapacity);
-        }
-
-        ComponentEntry<R> get(String roleHint)
-        {
-            this.lock.readLock().lock();
-
-            try {
-                return this.map.get(roleHint);
-            } finally {
-                this.lock.readLock().unlock();
-            }
-        }
-
-        boolean isEmpty()
-        {
-            this.lock.readLock().lock();
-
-            try {
-                return this.map.isEmpty();
-            } finally {
-                this.lock.readLock().unlock();
-            }
-        }
-
-        int size()
-        {
-            this.lock.readLock().lock();
-
-            try {
-                return this.map.size();
-            } finally {
-                this.lock.readLock().unlock();
-            }
+            super(initialCapacity);
         }
 
         ComponentEntry<R> get(R instance)
@@ -191,34 +150,6 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
             }
         }
 
-        List<ComponentEntry<R>> getSorted()
-        {
-            this.lock.readLock().lock();
-
-            try {
-                if (this.sortedList == null) {
-                    this.sortedList = this.map.values().stream().sorted().collect(Collectors.toList());
-                }
-
-                return this.sortedList;
-            } finally {
-                this.lock.readLock().unlock();
-            }
-        }
-
-        void addTo(Collection<ComponentDescriptor<R>> descriptors)
-        {
-            this.lock.readLock().lock();
-
-            try {
-                for (ComponentEntry<R> entry : getSorted()) {
-                    descriptors.add(entry.descriptor);
-                }
-            } finally {
-                this.lock.readLock().unlock();
-            }
-        }
-
         void put(ComponentDescriptor<R> descriptor)
         {
             put(descriptor, null);
@@ -234,7 +165,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
                 if (currentEntry == null
                     // In case of same priority, first inserted wins
                     || currentEntry.descriptor.getRoleHintPriority() > descriptor.getRoleHintPriority()) {
-                    putInternal(new ComponentEntry<>(descriptor, instance));
+                    put(descriptor.getRoleHint(), new ComponentEntry<>(descriptor, instance));
                 }
             } finally {
                 this.lock.writeLock().unlock();
@@ -252,32 +183,9 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
                     if (currentEntry == null
                         // In case of same priority, first inserted wins
                         || currentEntry.descriptor.getRoleHintPriority() > newEntry.descriptor.getRoleHintPriority()) {
-                        putInternal(newEntry);
+                        put(newEntry.descriptor.getRoleHint(), newEntry);
                     }
                 }
-            } finally {
-                this.lock.writeLock().unlock();
-            }
-        }
-
-        void putInternal(ComponentEntry<R> newEntry)
-        {
-            this.sortedList = null;
-
-            this.map.put(newEntry.descriptor.getRoleHint(), newEntry);
-        }
-
-        ComponentEntry<R> remove(String hint)
-        {
-            this.lock.writeLock().lock();
-
-            try {
-                ComponentEntry<R> entry = this.map.remove(hint);
-                if (entry != null) {
-                    this.sortedList = null;
-                }
-
-                return entry;
             } finally {
                 this.lock.writeLock().unlock();
             }
@@ -459,7 +367,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
                 entries = Collections.emptyMap();
             }
         } else {
-            localEntries.lock.readLock().lock();
+            localEntries.getLock().readLock().lock();
 
             try {
                 // Get parent descriptors
@@ -484,7 +392,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
                     entries = toInstanceMap(localEntries);
                 }
             } finally {
-                localEntries.lock.readLock().unlock();
+                localEntries.getLock().readLock().unlock();
             }
         }
 
@@ -905,14 +813,12 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
     private void addForDisposalReversedOrder(List<RoleHint<?>> keys)
     {
         for (ComponentEntries<?> entries : this.componentEntries.values()) {
-            entries.lock.readLock().lock();
+            entries.getLock().readLock().lock();
 
             try {
-                for (ComponentEntry<?> entry : entries.map.values()) {
-                    addForDisposalReversedOrder(entry, keys);
-                }
+                entries.forEachEntry(e -> addForDisposalReversedOrder(e, keys));
             } finally {
-                entries.lock.readLock().unlock();
+                entries.getLock().readLock().unlock();
             }
         }
     }
@@ -985,14 +891,5 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         for (RoleHint<?> key : keys) {
             this.componentEntries.get(key.getRoleType()).remove(key.getHint());
         }
-    }
-
-    // Deprecated
-
-    @Override
-    @Deprecated
-    public <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Class<T> role)
-    {
-        return getComponentDescriptorList((Type) role);
     }
 }

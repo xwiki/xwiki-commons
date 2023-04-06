@@ -211,8 +211,9 @@ public interface ComponentManager
      * @param <T> the role class for which to return all component implementations
      * @param role the role class for which to return all component implementations
      * @return all component implementations for the passed role
-     * @deprecated since 4.0M1 use {@link #getComponentDescriptorList(Type)} instead
      */
-    @Deprecated
-    <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Class<T> role);
+    default <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Class<T> role)
+    {
+        return getComponentDescriptorList((Type) role);
+    }
 }

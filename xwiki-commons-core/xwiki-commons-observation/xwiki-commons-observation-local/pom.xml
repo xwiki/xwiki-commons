@@ -39,6 +39,11 @@
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-collection</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-observation-api</artifactId>
       <version>${project.version}</version>
     </dependency>
