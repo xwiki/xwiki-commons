@@ -28,6 +28,7 @@ import java.util.Properties;
 
 import javax.inject.Inject;
 
+import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.junit.jupiter.api.BeforeEach;
@@ -583,7 +584,12 @@ class DefaultVelocityEngineTest
     void evaluateMethodCallFromUnaccessibleImplemetation() throws Exception
     {
         this.engine.initialize(new Properties());
-
+        
         assertDoesNotThrow(() -> evaluate("$datetool.timeZone.getOffset($datetool.date.time)"));
+
+        VelocityContext context = this.contextFactory.createContext();
+        context.put("array", new String[] {"value0", "value1"});
+
+        assertEvaluate("value1", "$array.get(1)", context);       
     }
 }
