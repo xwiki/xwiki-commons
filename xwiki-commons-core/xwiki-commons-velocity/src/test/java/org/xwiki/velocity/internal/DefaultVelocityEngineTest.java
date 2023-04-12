@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.inject.Inject;
+
 import org.apache.velocity.context.Context;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,9 +44,11 @@ import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
+import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.XWikiVelocityContext;
 import org.xwiki.velocity.XWikiVelocityException;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -53,7 +57,7 @@ import static org.mockito.Mockito.when;
  * Unit tests for {@link DefaultVelocityEngine}.
  */
 @ComponentTest
-@ComponentList(DefaultVelocityConfiguration.class)
+@ComponentList({DefaultVelocityConfiguration.class, DefaultVelocityContextFactory.class})
 class DefaultVelocityEngineTest
 {
     public class TestClass
@@ -115,10 +119,13 @@ class DefaultVelocityEngineTest
     @MockComponent
     private ConfigurationSource configurationSource;
 
+    @Inject
+    private VelocityContextFactory contextFactory;
+
     @BeforeEach
-    void setUp()
+    void beforeEach()
     {
-        when(execution.getContext()).thenReturn(new ExecutionContext());
+        when(this.execution.getContext()).thenReturn(new ExecutionContext());
         when(this.loggerConfiguration.isDeprecatedLogEnabled()).thenReturn(true);
     }
 
@@ -129,7 +136,7 @@ class DefaultVelocityEngineTest
 
     private void assertEvaluate(String expected, String content, String template) throws XWikiVelocityException
     {
-        assertEvaluate(expected, content, template, new XWikiVelocityContext());
+        assertEvaluate(expected, content, template, this.contextFactory.createContext());
     }
 
     private void assertEvaluate(String expected, String content, Context context) throws XWikiVelocityException
@@ -145,9 +152,14 @@ class DefaultVelocityEngineTest
         assertEquals(expected, result);
     }
 
+    private String evaluate(String content) throws XWikiVelocityException
+    {
+        return evaluate(content, DEFAULT_TEMPLATE_NAME);
+    }
+
     private String evaluate(String content, String template) throws XWikiVelocityException
     {
-        return evaluate(content, template, new XWikiVelocityContext());
+        return evaluate(content, template, this.contextFactory.createContext());
     }
 
     private String evaluate(String content, String template, Context context) throws XWikiVelocityException
@@ -563,5 +575,15 @@ class DefaultVelocityEngineTest
         });
         assertEquals("This Velocity Engine has not yet been initialized. "
             + "You must call its initialize() method before you can use it.", exception.getMessage());
+    }
+
+    // Note that this test is useless in Java 11 since it's not impacted by the same access restriction than more recent
+    // versions of Java but keeping it anyway for when we move to Java 17.
+    @Test
+    void evaluateMethodCallFromUnaccessibleImplemetation() throws Exception
+    {
+        this.engine.initialize(new Properties());
+
+        assertDoesNotThrow(() -> evaluate("$datetool.timeZone.getOffset($datetool.date.time)"));
     }
 }
