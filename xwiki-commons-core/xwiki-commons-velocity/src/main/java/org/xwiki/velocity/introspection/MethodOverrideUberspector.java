@@ -20,6 +20,7 @@
 package org.xwiki.velocity.introspection;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import org.apache.velocity.util.introspection.AbstractChainableUberspector;
 import org.apache.velocity.util.introspection.Info;
@@ -54,7 +55,7 @@ public class MethodOverrideUberspector extends AbstractChainableUberspector
             // Make sure we are not in a case where the method does not match the object (like with arrays manipulated
             // as List)
             // If the method is accessible, there is nothing to do
-            if (method.getDeclaringClass().isInstance(obj) && !method.canAccess(obj)) {
+            if (method.getDeclaringClass().isInstance(obj) && !canAccess(method, obj)) {
                 velMethod = getRootMethod(method, obj);
             }
         }
@@ -112,7 +113,7 @@ public class MethodOverrideUberspector extends AbstractChainableUberspector
     {
         Class<?> methodClass;
         Method rootMethod = method;
-        for (Class<?> superClass = method.getDeclaringClass().getSuperclass(); !rootMethod.canAccess(obj); superClass =
+        for (Class<?> superClass = method.getDeclaringClass().getSuperclass(); !canAccess(rootMethod, obj); superClass =
             methodClass.getSuperclass()) {
             try {
                 rootMethod = superClass.getMethod(method.getName(), method.getParameterTypes());
@@ -123,5 +124,10 @@ public class MethodOverrideUberspector extends AbstractChainableUberspector
         }
 
         return rootMethod;
+    }
+
+    private boolean canAccess(Method method, Object obj)
+    {
+        return Modifier.isStatic(method.getModifiers()) ? method.canAccess(null) : method.canAccess(obj);
     }
 }
