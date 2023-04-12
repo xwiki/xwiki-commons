@@ -584,12 +584,15 @@ class DefaultVelocityEngineTest
     void evaluateMethodCallFromUnaccessibleImplemetation() throws Exception
     {
         this.engine.initialize(new Properties());
-        
+
         assertDoesNotThrow(() -> evaluate("$datetool.timeZone.getOffset($datetool.date.time)"));
 
         VelocityContext context = this.contextFactory.createContext();
+
         context.put("array", new String[] {"value0", "value1"});
 
-        assertEvaluate("value1", "$array.get(1)", context);       
+        assertEvaluate("value1", "$array.get(1)", context);
+
+        assertEvaluate("str", "$stringtool.trim('str')", context);
     }
 }
