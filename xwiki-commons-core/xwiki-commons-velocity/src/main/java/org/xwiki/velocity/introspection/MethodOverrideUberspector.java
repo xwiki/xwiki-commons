@@ -51,8 +51,10 @@ public class MethodOverrideUberspector extends AbstractChainableUberspector
         if (velMethod != null) {
             Method method = velMethod.getMethod();
 
+            // Make sure we are not in a case where the method does not match the object (like with arrays manipulated
+            // as List)
             // If the method is accessible, there is nothing to do
-            if (!method.canAccess(obj)) {
+            if (method.getDeclaringClass().isInstance(obj) && !method.canAccess(obj)) {
                 velMethod = getRootMethod(method, obj);
             }
         }
