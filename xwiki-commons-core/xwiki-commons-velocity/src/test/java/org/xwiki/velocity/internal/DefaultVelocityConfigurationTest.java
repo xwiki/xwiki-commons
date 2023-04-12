@@ -35,6 +35,7 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.velocity.introspection.MethodArgumentsUberspector;
+import org.xwiki.velocity.introspection.MethodOverrideUberspector;
 import org.xwiki.velocity.introspection.SecureUberspector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -81,8 +82,9 @@ public class DefaultVelocityConfigurationTest
     {
         // Verify that the secure uberspector is set by default
         assertEquals(
-            StringUtils.join(new String[]{ SecureUberspector.class.getName(),
-                DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','),
+            StringUtils
+                .join(new String[] {SecureUberspector.class.getName(), DeprecatedCheckUberspector.class.getName(),
+                    MethodArgumentsUberspector.class.getName(), MethodOverrideUberspector.class.getName()}, ','),
             this.configuration.getProperties().getProperty(RuntimeConstants.UBERSPECT_CLASSNAME));
 
         // Verify that Macros are isolated by default
