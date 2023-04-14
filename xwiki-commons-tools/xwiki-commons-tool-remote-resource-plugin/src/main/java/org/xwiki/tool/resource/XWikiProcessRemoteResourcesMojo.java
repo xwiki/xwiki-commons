@@ -81,7 +81,7 @@ public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
     @Parameter(defaultValue = "NONE")
     protected ProjectData projectsData;
 
-    @Component
+    @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject projectThis;
 
     @Parameter(defaultValue = "${localRepository}", readonly = true, required = true)
