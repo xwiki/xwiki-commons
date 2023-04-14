@@ -300,7 +300,33 @@
           <artifactId>license-maven-plugin</artifactId>
           <configuration>
             <skip>${xwiki.license.skip}</skip>
-            <header>license.txt</header>
+            <licenseSets>
+              <licenseSet>
+                <header>license.txt</header>
+                <!-- We're only interested in checking our sources and our POMs -->
+                <includes>
+                  <!-- At the moment, only check the following list of files for license headers -->
+                  <include>pom.xml</include>
+                  <include>src/**/*.java</include>
+                  <include>src/**/*.aj</include>
+                  <include>src/**/*.bat</include>
+                  <include>src/**/*.sh</include>
+                  <include>src/**/ApplicationResources.properties</include>
+                  <include>src/**/*.vm</include>
+                  <include>src/**/*.js</include>
+                  <include>src/**/*.vue</include>
+                </includes>
+                <excludes>
+                  <!-- At the moment we don't have a comment syntax for components.txt files so we need to exclude them
+                       from the check -->
+                  <exclude>**/components.txt</exclude>
+                  <exclude>**/component-overrides.txt</exclude>
+                  <!-- Since there's no comment syntax for Maven IT tests's goal.txt file we need to exclude it -->
+                  <exclude>**/it/**/goals.txt</exclude>
+                  <exclude>**/goal.txt</exclude>
+                </excludes>
+              </licenseSet>
+            </licenseSets>
             <headerDefinitions>
               <!-- Our styles for headers aren't standard so we need to define them in a custom manner.
                    See xwiki-commons-tool-verification-resources module -->
@@ -316,28 +342,6 @@
               <vm>SHARPSHARP_STYLE</vm>
               <vue>XML_STYLE</vue>
             </mapping>
-            <!-- We're only interested in checking our sources and our POMs -->
-            <includes>
-              <!-- At the moment, only check the following list of files for license headers -->
-              <include>pom.xml</include>
-              <include>src/**/*.java</include>
-              <include>src/**/*.aj</include>
-              <include>src/**/*.bat</include>
-              <include>src/**/*.sh</include>
-              <include>src/**/ApplicationResources.properties</include>
-              <include>src/**/*.vm</include>
-              <include>src/**/*.js</include>
-              <include>src/**/*.vue</include>
-            </includes>
-            <excludes>
-              <!-- At the moment we don't have a comment syntax for components.txt files so we need to exclude them
-                   from the check -->
-              <exclude>**/components.txt</exclude>
-              <exclude>**/component-overrides.txt</exclude>
-              <!-- Since there's no comment syntax for Maven IT tests's goal.txt file we need to exclude it -->
-              <exclude>**/it/**/goals.txt</exclude>
-              <exclude>**/goal.txt</exclude>
-            </excludes>
           </configuration>
           <!-- Add a dependency since this is where the license-maven-plugin plugin will find the license.txt file -->
           <dependencies>

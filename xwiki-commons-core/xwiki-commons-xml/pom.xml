@@ -104,14 +104,18 @@
         <groupId>com.mycila</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <configuration>
-          <excludes>
-            <!-- Unfortunately we need to copy some excludes from the top level POM since Maven or the License plugin
-                 don't merge excludes apparently... -->
-            <exclude>**/components.txt</exclude>
-            <!-- Exclude *.ent and *.dtd files since they're not under XWiki's license headers -->
-            <exclude>**/*.ent</exclude>
-            <exclude>**/*.dtd</exclude>
-          </excludes>
+          <licenseSets>
+            <licenseSet>
+              <excludes>
+                <!-- Unfortunately we need to copy some excludes from the top level POM since Maven or the License
+                     plugin don't merge excludes apparently... -->
+                <exclude>**/components.txt</exclude>
+                <!-- Exclude *.ent and *.dtd files since they're not under XWiki's license headers -->
+                <exclude>**/*.ent</exclude>
+                <exclude>**/*.dtd</exclude>
+              </excludes>
+            </licenseSet>
+          </licenseSets>
         </configuration>
       </plugin>
       <plugin>
