@@ -139,8 +139,11 @@ public class PriorityEntries<E extends Comparable<E>>
     /**
      * Performs the given action for each value in this map until all entries have been processed or the action throws
      * an exception.
+     * <p>
+     * In this process, no specific order is guaranteed. If you need a fully sorted version, you should use
+     * {@link #getSorted()}.
      * 
-     * @param action the action to be performed for each element
+     * @param action the action to be performed for each value
      */
     public void forEachEntry(Consumer<E> action)
     {
@@ -156,9 +159,15 @@ public class PriorityEntries<E extends Comparable<E>>
     /**
      * @param key the key to insert
      * @param value the value to insert
+     * @exception NullPointerException if the key or value is {@code null}
      */
     public void put(String key, E value)
     {
+        // Make sure the value is not null
+        if (value == null) {
+            throw new NullPointerException();
+        }
+
         this.lock.writeLock().lock();
 
         try {
