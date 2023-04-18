@@ -23,17 +23,19 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.inject.Provider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xwiki.collection.internal.PriorityEntries;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.annotation.DisposePriority;
 import org.xwiki.component.descriptor.ComponentDependency;
@@ -64,6 +66,132 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
      */
     private static final Logger SHUTDOWN_LOGGER = LoggerFactory.getLogger("org.xwiki.shutdown");
 
+    private static class ComponentEntry<R> implements Comparable<ComponentEntry<R>>
+    {
+        /**
+         * Descriptor of the component.
+         */
+        final ComponentDescriptor<R> descriptor;
+
+        /**
+         * Cached instance of the component. Lazily initialized when needed.
+         * <p>
+         * This variable can be accesses and modified by many different threads at the same time so we make it volatile
+         * to ensure it's really shared and sync between all of them and not in each thread memory.
+         */
+        volatile R instance;
+
+        /**
+         * Flag used when computing the disposal order.
+         */
+        boolean disposing = false;
+
+        ComponentEntry(ComponentDescriptor<R> descriptor, R instance)
+        {
+            this.descriptor = descriptor;
+            this.instance = instance;
+        }
+
+        @Override
+        public int compareTo(ComponentEntry<R> other)
+        {
+            return this.descriptor.getRoleTypePriority() - other.descriptor.getRoleTypePriority();
+        }
+
+        @Override
+        public String toString()
+        {
+            return this.descriptor.toString();
+        }
+    }
+
+    private static class ComponentEntries<R> extends PriorityEntries<ComponentEntry<R>>
+    {
+        ComponentEntries()
+        {
+            super();
+        }
+
+        ComponentEntries(int initialCapacity)
+        {
+            super(initialCapacity);
+        }
+
+        ComponentEntry<R> get(R instance)
+        {
+            this.lock.readLock().lock();
+
+            try {
+                for (ComponentEntry<R> entry : this.map.values()) {
+                    if (entry.instance == instance) {
+                        return entry;
+                    }
+                }
+            } finally {
+                this.lock.readLock().unlock();
+            }
+
+            return null;
+        }
+
+        List<ComponentDescriptor<R>> toComponentDescriptorList()
+        {
+            this.lock.readLock().lock();
+
+            try {
+                List<ComponentDescriptor<R>> list = new ArrayList<>(size());
+                for (ComponentEntry<R> entry : getSorted()) {
+                    list.add(entry.descriptor);
+                }
+
+                return list;
+            } finally {
+                this.lock.readLock().unlock();
+            }
+        }
+
+        void put(ComponentDescriptor<R> descriptor)
+        {
+            put(descriptor, null);
+        }
+
+        void put(ComponentDescriptor<R> descriptor, R instance)
+        {
+            this.lock.writeLock().lock();
+
+            try {
+                ComponentEntry<R> currentEntry = this.map.get(descriptor.getRoleHint());
+
+                if (currentEntry == null
+                    // In case of same priority, first inserted wins
+                    || currentEntry.descriptor.getRoleHintPriority() > descriptor.getRoleHintPriority()) {
+                    put(descriptor.getRoleHint(), new ComponentEntry<>(descriptor, instance));
+                }
+            } finally {
+                this.lock.writeLock().unlock();
+            }
+        }
+
+        void putAll(ComponentEntries<R> newEntries)
+        {
+            this.lock.writeLock().lock();
+
+            try {
+                for (ComponentEntry<R> newEntry : newEntries.map.values()) {
+                    ComponentEntry<R> currentEntry = this.map.get(newEntry.descriptor.getRoleHint());
+
+                    if (currentEntry == null
+                        // In case of same priority, first inserted wins
+                        || currentEntry.descriptor.getRoleHintPriority() > newEntry.descriptor.getRoleHintPriority()) {
+                        put(newEntry.descriptor.getRoleHint(), newEntry);
+                    }
+                }
+            } finally {
+                this.lock.writeLock().unlock();
+            }
+        }
+    }
+
     /**
      * @see #getNamespace()
      */
@@ -76,34 +204,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
      */
     private ComponentManager parent;
 
-    private static class ComponentEntry<R>
-    {
-        /**
-         * Descriptor of the component.
-         */
-        public final ComponentDescriptor<R> descriptor;
-
-        /**
-         * Cached instance of the component. Lazily initialized when needed.
-         * <p>
-         * This variable can be accesses and modified by many different threads at the same time so we make it volatile
-         * to ensure it's really shared and sync between all of them and not in each thread memory.
-         */
-        public volatile R instance;
-
-        /**
-         * Flag used when computing the disposal order.
-         */
-        public boolean disposing = false;
-
-        public ComponentEntry(ComponentDescriptor<R> descriptor, R instance)
-        {
-            this.descriptor = descriptor;
-            this.instance = instance;
-        }
-    }
-
-    private Map<Type, Map<String, ComponentEntry<?>>> componentEntries = new ConcurrentHashMap<>();
+    private ConcurrentMap<Type, ComponentEntries> componentEntries = new ConcurrentHashMap<>();
 
     private Logger logger = LoggerFactory.getLogger(EmbeddableComponentManager.class);
 
@@ -196,25 +297,43 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
 
         ComponentEntry<T> componentEntry = (ComponentEntry<T>) getComponentEntry(roleType, roleHint);
 
-        if (componentEntry != null) {
-            try {
-                instance = getComponentInstance(componentEntry);
-            } catch (Throwable e) {
-                throw new ComponentLookupException(
-                    String.format("Failed to lookup component [%s] identified by type [%s] and hint [%s]",
-                        componentEntry.descriptor.getImplementation().getName(), roleType, roleHint),
-                    e);
-            }
-        } else {
+        if (componentEntry == null) {
             if (getParent() != null) {
                 instance = getParent().getInstance(roleType, roleHint);
             } else {
                 throw new ComponentLookupException(
                     "Can't find descriptor for the component with type [" + roleType + "] and hint [" + roleHint + "]");
             }
+        } else if (getParent() != null) {
+            // Get parent descriptor
+            ComponentDescriptor<T> parentDescriptor = getParent().getComponentDescriptor(roleType, roleHint);
+
+            if (parentDescriptor != null
+                && parentDescriptor.getRoleHintPriority() < componentEntry.descriptor.getRoleHintPriority()) {
+                // The parent component has priority over the current one
+                instance = getParent().getInstance(roleType, roleHint);
+            } else {
+                // The current component has priority over the parent one
+                instance = getInstance(componentEntry);
+            }
+        } else {
+            instance = getInstance(componentEntry);
         }
 
         return instance;
+    }
+
+    private <T> T getInstance(ComponentEntry<T> componentEntry) throws ComponentLookupException
+    {
+        try {
+            return getComponentInstance(componentEntry);
+        } catch (Throwable e) {
+            throw new ComponentLookupException(
+                String.format("Failed to lookup component [%s] identified by type [%s] and hint [%s]",
+                    componentEntry.descriptor.getImplementation().getName(), componentEntry.descriptor.getRoleType(),
+                    componentEntry.descriptor.getRoleHint()),
+                e);
+        }
     }
 
     @Override
@@ -227,50 +346,94 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         return objects.isEmpty() ? Collections.<T>emptyList() : new ArrayList<>(objects.values());
     }
 
+    private <T> List<ComponentDescriptor<T>> getParentDescriptors(Type roleType)
+    {
+        return getParent() != null ? getParent().getComponentDescriptorList(roleType) : Collections.emptyList();
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public <T> Map<String, T> getInstanceMap(Type roleType) throws ComponentLookupException
     {
-        Map<String, T> components = new HashMap<>();
+        Map<String, T> entries;
 
-        Map<String, ComponentEntry<?>> entries = this.componentEntries.get(roleType);
+        ComponentEntries<T> localEntries = this.componentEntries.get(roleType);
+        if (localEntries == null || localEntries.isEmpty()) {
+            if (getParent() != null) {
+                // We have only parent entries
+                entries = getParent().getInstanceMap(roleType);
+            } else {
+                // We have neither parent nor local entries
+                entries = Collections.emptyMap();
+            }
+        } else {
+            localEntries.getLock().readLock().lock();
 
-        // Add local components
-        if (entries != null) {
-            for (Map.Entry<String, ComponentEntry<?>> entry : entries.entrySet()) {
-                ComponentEntry<T> componentEntry = (ComponentEntry<T>) entry.getValue();
+            try {
+                // Get parent descriptors
+                List<ComponentDescriptor<T>> parentDescriptors = getParentDescriptors(roleType);
+                if (!parentDescriptors.isEmpty()) {
+                    // We have both parent and local entries
+                    ComponentEntries<T> mergedEntries =
+                        new ComponentEntries<>(localEntries.size() + parentDescriptors.size());
 
-                try {
-                    components.put(entry.getKey(), getComponentInstance(componentEntry));
-                } catch (Exception e) {
-                    if (componentEntry.descriptor.isMandatory()) {
-                        throw new ComponentLookupException(
-                            "Failed to lookup component with type [" + roleType + "] and hint [" + entry.getKey() + "]",
-                            e);
-                    } else {
-                        this.logger.error("Failed to lookup component with type [{}] and hint [{}]", roleType,
-                            entry.getKey(), e);
+                    // Add local entries
+                    mergedEntries.putAll(localEntries);
+
+                    // Add parent entries
+                    for (ComponentDescriptor<T> parentDescriptor : parentDescriptors) {
+                        mergedEntries.put(parentDescriptor,
+                            getParent().getInstance(roleType, parentDescriptor.getRoleHint()));
                     }
+
+                    entries = toInstanceMap(mergedEntries);
+                } else {
+                    // We have only local entries
+                    entries = toInstanceMap(localEntries);
                 }
+            } finally {
+                localEntries.getLock().readLock().unlock();
             }
         }
 
-        // Add parent components
-        if (getParent() != null) {
-            // If the hint already exists in the children Component Manager then don't add the one from the parent.
-            for (Map.Entry<String, T> entry : getParent().<T>getInstanceMap(roleType).entrySet()) {
-                if (!components.containsKey(entry.getKey())) {
-                    components.put(entry.getKey(), entry.getValue());
-                }
+        return entries;
+    }
+
+    private <T> Map<String, T> toInstanceMap(ComponentEntries<T> componentEntries) throws ComponentLookupException
+    {
+        Map<String, T> map = new LinkedHashMap<>();
+
+        for (ComponentEntry<T> roleEntry : componentEntries.getSorted()) {
+            T instance = getMapInstance(roleEntry);
+            if (instance != null) {
+                map.put(roleEntry.descriptor.getRoleHint(), instance);
             }
         }
 
-        return components;
+        return map;
+    }
+
+    private <T> T getMapInstance(ComponentEntry<T> roleEntry) throws ComponentLookupException
+    {
+        try {
+            return getComponentInstance(roleEntry);
+        } catch (Exception e) {
+            if (roleEntry.descriptor.isMandatory()) {
+                throw new ComponentLookupException("Failed to lookup component with type ["
+                    + roleEntry.descriptor.getRoleType() + "] and hint [" + roleEntry.descriptor.getRoleHint() + "]",
+                    e);
+            } else {
+                this.logger.error("Failed to lookup component with type [{}] and hint [{}]",
+                    roleEntry.descriptor.getRoleType(), roleEntry.descriptor.getRoleHint(), e);
+            }
+        }
+
+        return null;
     }
 
     private ComponentEntry<?> getComponentEntry(Type role, String hint)
     {
-        Map<String, ComponentEntry<?>> entries = this.componentEntries.get(role);
+        ComponentEntries<?> entries = this.componentEntries.get(role);
 
         if (entries != null) {
             return entries.get(hint != null ? hint : RoleHint.DEFAULT_HINT);
@@ -289,6 +452,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         if (componentEntry == null) {
             // Check in parent!
             if (getParent() != null) {
+                // We have only parent entries
                 result = getParent().getComponentDescriptor(role, hint);
             }
         } else {
@@ -300,30 +464,43 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Type role)
+    public <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Type roleType)
     {
-        Map<String, ComponentDescriptor<T>> descriptors = new HashMap<>();
+        List<ComponentDescriptor<T>> descriptors;
 
-        // Add local descriptors
-        Map<String, ComponentEntry<?>> enries = this.componentEntries.get(role);
-        if (enries != null) {
-            for (Map.Entry<String, ComponentEntry<?>> entry : enries.entrySet()) {
-                descriptors.put(entry.getKey(), (ComponentDescriptor<T>) entry.getValue().descriptor);
+        ComponentEntries<T> localEntries = this.componentEntries.get(roleType);
+        List<ComponentDescriptor<T>> parentDescriptors = getParentDescriptors(roleType);
+        if (localEntries == null || localEntries.isEmpty()) {
+            if (!parentDescriptors.isEmpty()) {
+                // We have only parent entries
+                descriptors = parentDescriptors;
+            } else {
+                // We have neither parent nor local entries
+                descriptors = Collections.emptyList();
             }
-        }
+        } else {
+            // Get parent descriptors
+            if (!parentDescriptors.isEmpty()) {
+                // We have both parent and local entries
+                ComponentEntries<T> mergedEntries =
+                    new ComponentEntries<>(localEntries.size() + parentDescriptors.size());
 
-        // Add parent descriptors
-        if (getParent() != null) {
-            List<ComponentDescriptor<T>> parentDescriptors = getParent().getComponentDescriptorList(role);
-            for (ComponentDescriptor<T> parentDescriptor : parentDescriptors) {
-                // If the hint already exists in the children Component Manager then don't add the one from the parent.
-                if (!descriptors.containsKey(parentDescriptor.getRoleHint())) {
-                    descriptors.put(parentDescriptor.getRoleHint(), parentDescriptor);
+                // Add local entries
+                mergedEntries.putAll(localEntries);
+
+                // Add parent entries
+                for (ComponentDescriptor<T> parentDescriptor : parentDescriptors) {
+                    mergedEntries.put(parentDescriptor);
                 }
+
+                descriptors = mergedEntries.toComponentDescriptorList();
+            } else {
+                // We have only local entries
+                descriptors = localEntries.toComponentDescriptorList();
             }
         }
 
-        return new ArrayList<>(descriptors.values());
+        return descriptors;
     }
 
     @Override
@@ -479,24 +656,25 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
     @Override
     public <T> void registerComponent(ComponentDescriptor<T> componentDescriptor, T componentInstance)
     {
-        // Remove any existing component associated to the provided roleHint
-        removeComponentWithoutException(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint());
+        ComponentEntry<?> componentEntry =
+            getComponentEntry(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint());
 
-        // Register new component
-        addComponent(new DefaultComponentDescriptor<>(componentDescriptor), componentInstance);
+        if (componentEntry == null
+            || componentEntry.descriptor.getRoleHintPriority() >= componentDescriptor.getRoleHintPriority()) {
+            // Remove any existing component associated to the provided roleHint
+            removeComponentWithoutException(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint());
+
+            // Register new component
+            addComponent(new DefaultComponentDescriptor<>(componentDescriptor), componentInstance);
+        }
     }
 
     private <T> void addComponent(ComponentDescriptor<T> descriptor, T instance)
     {
-        ComponentEntry<T> componentEntry = new ComponentEntry<>(descriptor, instance);
-
         // Register new component
-        Map<String, ComponentEntry<?>> entries = this.componentEntries.get(descriptor.getRoleType());
-        if (entries == null) {
-            entries = new ConcurrentHashMap<>();
-            this.componentEntries.put(descriptor.getRoleType(), entries);
-        }
-        entries.put(descriptor.getRoleHint(), componentEntry);
+        ComponentEntries<T> entries =
+            this.componentEntries.computeIfAbsent(descriptor.getRoleType(), (k) -> new ComponentEntries());
+        entries.put(descriptor, instance);
 
         // Send event about component registration
         if (this.eventManager != null) {
@@ -526,13 +704,10 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
     {
         // First find the descriptor matching the passed component
         ComponentEntry<?> componentEntry = null;
-        for (Map<String, ComponentEntry<?>> entries : this.componentEntries.values()) {
-            for (ComponentEntry<?> entry : entries.values()) {
-                if (entry.instance == component) {
-                    componentEntry = entry;
-
-                    break;
-                }
+        for (ComponentEntries entries : this.componentEntries.values()) {
+            componentEntry = entries.get(component);
+            if (componentEntry != null) {
+                break;
             }
         }
 
@@ -583,7 +758,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
     {
         // Make sure to remove the entry from the map before destroying it to reduce at the minimum the risk of
         // lookupping something invalid
-        Map<String, ComponentEntry<?>> entries = this.componentEntries.get(role);
+        ComponentEntries<?> entries = this.componentEntries.get(role);
 
         if (entries != null) {
             ComponentEntry<?> componentEntry = entries.remove(hint != null ? hint : RoleHint.DEFAULT_HINT);
@@ -625,12 +800,26 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
             componentEntry.disposing = true;
             ComponentDescriptor<?> descriptor = componentEntry.descriptor;
             for (ComponentDependency<?> dependency : descriptor.getComponentDependencies()) {
-                ComponentEntry<?> dependencyEntry = getComponentEntry(dependency.getRoleType(), dependency.getRoleHint());
+                ComponentEntry<?> dependencyEntry =
+                    getComponentEntry(dependency.getRoleType(), dependency.getRoleHint());
                 if (dependencyEntry != null) {
                     addForDisposalReversedOrder(dependencyEntry, keys);
                 }
             }
             keys.add(new RoleHint<>(descriptor.getRoleType(), descriptor.getRoleHint()));
+        }
+    }
+
+    private void addForDisposalReversedOrder(List<RoleHint<?>> keys)
+    {
+        for (ComponentEntries<?> entries : this.componentEntries.values()) {
+            entries.getLock().readLock().lock();
+
+            try {
+                entries.forEachEntry(e -> addForDisposalReversedOrder(e, keys));
+            } finally {
+                entries.getLock().readLock().unlock();
+            }
         }
     }
 
@@ -640,11 +829,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         List<RoleHint<?>> keys = new ArrayList<>(this.componentEntries.size() * 2);
 
         // Add components based on dependencies relations.
-        for (Map<String, ComponentEntry<?>> entries : this.componentEntries.values()) {
-            for (ComponentEntry<?> entry : entries.values()) {
-                addForDisposalReversedOrder(entry, keys);
-            }
-        }
+        addForDisposalReversedOrder(keys);
         Collections.reverse(keys);
 
         // Exclude this component
@@ -706,14 +891,5 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         for (RoleHint<?> key : keys) {
             this.componentEntries.get(key.getRoleType()).remove(key.getHint());
         }
-    }
-
-    // Deprecated
-
-    @Override
-    @Deprecated
-    public <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Class<T> role)
-    {
-        return getComponentDescriptorList((Type) role);
     }
 }

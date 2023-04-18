@@ -30,6 +30,7 @@ import javax.inject.Singleton;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
+import org.xwiki.collection.internal.PriorityEntries;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.event.ComponentDescriptorAddedEvent;
@@ -58,7 +59,7 @@ public class DefaultObservationManager implements ObservationManager
     /**
      * @see #getListenersByEvent()
      */
-    private volatile Map<Class<? extends Event>, Map<String, RegisteredListener>> listenersByEvent;
+    private volatile Map<Class<? extends Event>, PriorityEntries<RegisteredListener>> listenersByEvent;
 
     /**
      * @see #getListenersByName()
@@ -81,7 +82,7 @@ public class DefaultObservationManager implements ObservationManager
      * Helper class to store the list of events of a given type associated with a given listener. We need this for
      * performance reasons and also in order to be able to add events after a listener has been registered.
      */
-    private static class RegisteredListener
+    private static class RegisteredListener implements Comparable<RegisteredListener>
     {
         /**
          * Events of a given type associated with a given listener.
@@ -93,16 +94,20 @@ public class DefaultObservationManager implements ObservationManager
          */
         private EventListener listener;
 
+        private int priority;
+
         /**
          * @param listener the listener associated with the events.
          * @param event the first event to associate with the passed listener. More events are added by calling
          *            {@link #addEvent(Event)}
+         * @param priority the priority of the listener
          */
-        RegisteredListener(EventListener listener, Event event)
+        RegisteredListener(EventListener listener, Event event, int priority)
         {
             addEvent(event);
 
             this.listener = listener;
+            this.priority = priority;
         }
 
         /**
@@ -120,13 +125,19 @@ public class DefaultObservationManager implements ObservationManager
         {
             this.events.remove(event);
         }
+
+        @Override
+        public int compareTo(RegisteredListener other)
+        {
+            return this.priority - other.priority;
+        }
     }
 
     /**
      * @return the registered listeners indexed on Event classes so that it's fast to find all the listeners registered
      *         for a given event, so that {@link #notify} calls execute fast and in a fixed amount a time.
      */
-    private Map<Class<? extends Event>, Map<String, RegisteredListener>> getListenersByEvent()
+    private Map<Class<? extends Event>, PriorityEntries<RegisteredListener>> getListenersByEvent()
     {
         if (this.listenersByEvent == null) {
             initializeListeners();
@@ -161,13 +172,14 @@ public class DefaultObservationManager implements ObservationManager
 
             // Can be null in unit tests
             if (this.componentManager != null) {
-                try {
-                    for (EventListener listener : this.componentManager
-                        .<EventListener>getInstanceList(EventListener.class)) {
-                        addListener(listener);
+                for (ComponentDescriptor<EventListener> descriptor : this.componentManager
+                    .<EventListener>getComponentDescriptorList(EventListener.class)) {
+                    try {
+                        addListener(this.componentManager.getInstance(EventListener.class, descriptor.getRoleHint()),
+                            descriptor.getRoleTypePriority());
+                    } catch (ComponentLookupException e) {
+                        this.logger.error("Failed to lookup listener with role hint [{}]", descriptor.getRoleHint(), e);
                     }
-                } catch (ComponentLookupException e) {
-                    this.logger.error("Failed to lookup listeners", e);
                 }
             }
         }
@@ -176,15 +188,21 @@ public class DefaultObservationManager implements ObservationManager
     @Override
     public void addListener(EventListener eventListener)
     {
+        addListener(eventListener, ComponentDescriptor.DEFAULT_PRIORITY);
+    }
+
+    @Override
+    public void addListener(EventListener eventListener, int priority)
+    {
         try {
-            addListenerInternal(eventListener);
+            addListenerInternal(eventListener, priority);
         } catch (Exception e) {
             // Protect against bad listeners which have their getName() methods throw some runtime exception.
             this.logger.warn("Failed to add listener. Root cause: [{}]", ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
-    private void addListenerInternal(EventListener eventListener)
+    private void addListenerInternal(EventListener eventListener, int priority)
     {
         Map<String, EventListener> listeners = getListenersByName();
 
@@ -210,18 +228,19 @@ public class DefaultObservationManager implements ObservationManager
             // For each event defined for this listener, add it to the Event Map.
             for (Event event : eventListener.getEvents()) {
                 // Check if this is a new Event type not already registered
-                Map<String, RegisteredListener> eventListeners = this.listenersByEvent.get(event.getClass());
+                PriorityEntries<RegisteredListener> eventListeners = this.listenersByEvent.get(event.getClass());
                 if (eventListeners == null) {
                     // No listener registered for this event yet. Create a map to store listeners for this event.
-                    eventListeners = new ConcurrentHashMap<>();
+                    eventListeners = new PriorityEntries<RegisteredListener>();
                     this.listenersByEvent.put(event.getClass(), eventListeners);
                     // There is no RegisteredListener yet, create one
-                    eventListeners.put(eventListener.getName(), new RegisteredListener(eventListener, event));
+                    eventListeners.put(eventListener.getName(), new RegisteredListener(eventListener, event, priority));
                 } else {
                     // Add an event to existing RegisteredListener object
                     RegisteredListener registeredListener = eventListeners.get(eventListener.getName());
                     if (registeredListener == null) {
-                        eventListeners.put(eventListener.getName(), new RegisteredListener(eventListener, event));
+                        eventListeners.put(eventListener.getName(),
+                            new RegisteredListener(eventListener, event, priority));
                     } else {
                         registeredListener.addEvent(event);
                     }
@@ -234,7 +253,7 @@ public class DefaultObservationManager implements ObservationManager
     public void removeListener(String listenerName)
     {
         getListenersByName().remove(listenerName);
-        for (Map.Entry<Class<? extends Event>, Map<String, RegisteredListener>> entry : this.listenersByEvent
+        for (Map.Entry<Class<? extends Event>, PriorityEntries<RegisteredListener>> entry : this.listenersByEvent
             .entrySet()) {
             entry.getValue().remove(listenerName);
             if (entry.getValue().isEmpty()) {
@@ -246,26 +265,26 @@ public class DefaultObservationManager implements ObservationManager
     @Override
     public void addEvent(String listenerName, Event event)
     {
-        Map<String, RegisteredListener> listeners = getListenersByEvent().get(event.getClass());
-        if (listeners == null) {
-            listeners = new ConcurrentHashMap<>();
-            this.listenersByEvent.put(event.getClass(), listeners);
-        }
+        PriorityEntries<RegisteredListener> listeners =
+            getListenersByEvent().computeIfAbsent(event.getClass(), k -> new PriorityEntries<RegisteredListener>());
         RegisteredListener listener = listeners.get(listenerName);
         if (listener != null) {
             listener.addEvent(event);
         } else {
-            listeners.put(listenerName, new RegisteredListener(this.getListener(listenerName), event));
+            listeners.put(listenerName,
+                new RegisteredListener(this.getListener(listenerName), event, ComponentDescriptor.DEFAULT_PRIORITY));
         }
     }
 
     @Override
     public void removeEvent(String listenerName, Event event)
     {
-        Map<String, RegisteredListener> listeners = getListenersByEvent().get(event.getClass());
-        RegisteredListener listener = listeners.get(listenerName);
-        if (listener != null) {
-            listener.removeEvent(event);
+        PriorityEntries<RegisteredListener> listeners = getListenersByEvent().get(event.getClass());
+        if (listeners != null) {
+            RegisteredListener listener = listeners.get(listenerName);
+            if (listener != null) {
+                listener.removeEvent(event);
+            }
         }
     }
 
@@ -279,15 +298,15 @@ public class DefaultObservationManager implements ObservationManager
     public void notify(Event event, Object source, Object data)
     {
         // Find all listeners for this event
-        Map<String, RegisteredListener> regListeners = getListenersByEvent().get(event.getClass());
+        PriorityEntries<RegisteredListener> regListeners = getListenersByEvent().get(event.getClass());
         if (regListeners != null) {
-            notify(regListeners.values(), event, source, data);
+            notify(regListeners.getSorted(), event, source, data);
         }
 
         // Find listener listening all events
-        Map<String, RegisteredListener> allEventRegListeners = this.listenersByEvent.get(AllEvent.class);
+        PriorityEntries<RegisteredListener> allEventRegListeners = this.listenersByEvent.get(AllEvent.class);
         if (allEventRegListeners != null) {
-            notify(allEventRegListeners.values(), event, source, data);
+            notify(allEventRegListeners.getSorted(), event, source, data);
         }
 
         // We want this Observation Manager to be able to handle new Event Listener components being added or removed
@@ -387,7 +406,7 @@ public class DefaultObservationManager implements ObservationManager
             // initializing DefaultObservationManager to not miss anything and produce ComponentDescriptorAddedEvent
             // events which can be used for other needs).
             if (existingListener != eventListener) {
-                addListener(eventListener);
+                addListener(eventListener, descriptor.getRoleTypePriority());
             }
         } catch (ComponentLookupException e) {
             this.logger.error(

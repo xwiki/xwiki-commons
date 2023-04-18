@@ -151,7 +151,9 @@ class DefaultComponentDescriptorTest
             + "hint = [hint], "
             + "implementation = [org.xwiki.component.descriptor.DefaultComponentDescriptorTest$ImplRole], "
             + "instantiation = [SINGLETON], "
-            + "mandatory = [false]",
+            + "mandatory = [false], "
+            + "roleTypePriority = [1000], "
+            + "roleHintPriority = [1000]",
             cd.toString());
     }
 }

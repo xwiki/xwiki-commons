@@ -152,7 +152,6 @@ public class ComponentAnnotationLoader
         // For each component class name found, load its class and use introspection to find the necessary
         // annotations required to create a Component Descriptor.
         Map<RoleHint<?>, ComponentDescriptor<?>> descriptorMap = new HashMap<>();
-        Map<RoleHint<?>, Integer> priorityMap = new HashMap<>();
 
         for (ComponentDeclaration componentDeclaration : componentDeclarations) {
             Class<?> componentClass;
@@ -167,14 +166,12 @@ public class ComponentAnnotationLoader
             // Look for ComponentRole annotations and register one component per ComponentRole found
             for (Type componentRoleType : findComponentRoleTypes(componentClass)) {
                 for (ComponentDescriptor<?> componentDescriptor : this.factory.createComponentDescriptors(
-                    componentClass, componentRoleType)) {
+                    componentClass, componentRoleType, componentDeclaration.getPriority())) {
                     // If there's already a existing role/hint in the list of descriptors then decide which one
                     // to keep by looking at their priorities. Highest priority wins (i.e. lowest integer value).
                     RoleHint<?> roleHint =
                         new RoleHint(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint());
-
-                    addComponent(descriptorMap, priorityMap, roleHint, componentDescriptor, componentDeclaration,
-                        true);
+                    addComponent(descriptorMap, roleHint, componentDescriptor, componentDeclaration, true);
                 }
             }
         }
@@ -215,18 +212,16 @@ public class ComponentAnnotationLoader
         register(manager, getComponentsDescriptors(classLoader, componentDeclarations));
     }
 
-    private void addComponent(Map<RoleHint<?>, ComponentDescriptor<?>> descriptorMap,
-        Map<RoleHint<?>, Integer> priorityMap, RoleHint<?> roleHint, ComponentDescriptor<?> componentDescriptor,
-        ComponentDeclaration componentDeclaration, boolean warn)
+    private void addComponent(Map<RoleHint<?>, ComponentDescriptor<?>> descriptorMap, RoleHint<?> roleHint,
+        ComponentDescriptor<?> componentDescriptor, ComponentDeclaration componentDeclaration, boolean warn)
     {
         if (descriptorMap.containsKey(roleHint)) {
             // Compare priorities
-            int currentPriority = priorityMap.get(roleHint);
-            if (componentDeclaration.getPriority() < currentPriority) {
+            int currentPriority = descriptorMap.get(roleHint).getRoleHintPriority();
+            if (componentDescriptor.getRoleHintPriority() < currentPriority) {
                 // Override!
                 descriptorMap.put(roleHint, componentDescriptor);
-                priorityMap.put(roleHint, componentDeclaration.getPriority());
-            } else if (componentDeclaration.getPriority() == currentPriority) {
+            } else if (componentDescriptor.getRoleHintPriority() == currentPriority) {
                 if (warn) {
                     // Warning that we're not overwriting since they have the same priorities
                     getLogger().warn(
@@ -240,12 +235,11 @@ public class ComponentAnnotationLoader
                 getLogger().debug(
                     "Ignored component [{}] since its priority level of [{}] is lower "
                         + "than the currently registered component [{}] which has a priority of [{}]",
-                    componentDeclaration.getImplementationClassName(), componentDeclaration.getPriority(),
+                    componentDeclaration.getImplementationClassName(), componentDescriptor.getRoleHintPriority(),
                     descriptorMap.get(roleHint).getImplementation().getName(), currentPriority);
             }
         } else {
             descriptorMap.put(roleHint, componentDescriptor);
-            priorityMap.put(roleHint, componentDeclaration.getPriority());
         }
     }
 

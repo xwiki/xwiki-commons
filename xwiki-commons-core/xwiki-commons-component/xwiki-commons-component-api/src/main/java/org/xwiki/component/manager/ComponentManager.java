@@ -95,6 +95,8 @@ public interface ComponentManager
      * (the failing component simply won't be returned). It's possible to force failing {@link #getInstanceList(Type)}
      * by using the {@link org.xwiki.component.annotation.ComponentMandatory} annotation either on the component or at a
      * lower level, like the role interface.
+     * <p>
+     * Since 15.4RC1, the resulting list is sorted according to components priority.
      *
      * @param role the type of the components role
      * @return the components
@@ -176,6 +178,10 @@ public interface ComponentManager
     <T> ComponentDescriptor<T> getComponentDescriptor(Type role, String hint);
 
     /**
+     * Find all the descriptors of all components implementing the provided role.
+     * <p>
+     * Since 15.4RC1, the resulting list is sorted according to components priority.
+     * 
      * @param <T> the role class for which to return all component implementations
      * @param role the role class for which to return all component implementations
      * @return all component implementations for the passed role
@@ -205,14 +211,19 @@ public interface ComponentManager
      */
     void setParent(ComponentManager parentComponentManager);
 
-    // Deprecated
+    // Legacy
 
     /**
+     * Find all the descriptors of all components implementing the provided role.
+     * <p>
+     * Since 15.4RC1, the resulting list is sorted according to components priority.
+     * 
      * @param <T> the role class for which to return all component implementations
      * @param role the role class for which to return all component implementations
      * @return all component implementations for the passed role
-     * @deprecated since 4.0M1 use {@link #getComponentDescriptorList(Type)} instead
      */
-    @Deprecated
-    <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Class<T> role);
+    default <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Class<T> role)
+    {
+        return getComponentDescriptorList((Type) role);
+    }
 }

@@ -21,6 +21,8 @@ package org.xwiki.component.descriptor;
 
 import java.util.Collection;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * Represent a component.
  *
@@ -30,6 +32,14 @@ import java.util.Collection;
  */
 public interface ComponentDescriptor<T> extends ComponentRole<T>
 {
+    /**
+     * Default priority value for {@link #getRoleTypePriority()} and {@link #getRoleHintPriority()}.
+     * 
+     * @since 15.4RC1
+     */
+    @Unstable
+    int DEFAULT_PRIORITY = 1000;
+
     /**
      * @return the class of the component implementation
      */
@@ -54,5 +64,33 @@ public interface ComponentDescriptor<T> extends ComponentRole<T>
     default boolean isMandatory()
     {
         return false;
+    }
+
+    /**
+     * The role type priority represents the priority for ordering components sharing the same type: it can be used to
+     * order the components when retrieving a list of components of the same type. The lower the value, the higher the
+     * priority.
+     *
+     * @return the role type priority of the component.
+     * @since 15.4RC1
+     */
+    @Unstable
+    default int getRoleTypePriority()
+    {
+        return DEFAULT_PRIORITY;
+    }
+
+    /**
+     * The role hint priority represents the priority for ordering components sharing the same type and hint: it can be
+     * used to decide which component should be overridden when loading them. The lower the value, the higher the
+     * priority.
+     *
+     * @return the role hint priority of the component.
+     * @since 15.4RC1
+     */
+    @Unstable
+    default int getRoleHintPriority()
+    {
+        return DEFAULT_PRIORITY;
     }
 }

@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.xwiki.component.ProviderIntegrationTest;
 import org.xwiki.component.descriptor.ComponentDescriptor;
+import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.ContextComponentManagerProvider;
 import org.xwiki.component.internal.RootComponentManager;
 import org.xwiki.component.internal.embed.EmbeddableComponentManagerFactory;
@@ -190,19 +191,20 @@ public class ComponentAnnotationLoaderTest
     {
         ComponentManager componentManager = mock(ComponentManager.class);
 
-        ComponentDescriptor descriptor1 =
-            this.loader.getComponentsDescriptors(DeprecatedOverrideRole.class).get(0);
-        ComponentDescriptor descriptor2 =
-            this.loader.getComponentsDescriptors(RootComponentManager.class).get(0);
-        ComponentDescriptor descriptor3 = this.loader.getComponentsDescriptors(OverrideRole.class).get(0);
+        DefaultComponentDescriptor descriptor1 =
+            (DefaultComponentDescriptor) this.loader.getComponentsDescriptors(DeprecatedOverrideRole.class).get(0);
+        descriptor1.setRoleHintPriority(0);
+        ComponentDescriptor descriptor2 = this.loader.getComponentsDescriptors(RootComponentManager.class).get(0);
+        DefaultComponentDescriptor descriptor3 =
+            (DefaultComponentDescriptor) this.loader.getComponentsDescriptors(OverrideRole.class).get(0);
+        descriptor3.setRoleHintPriority(500);
         ComponentDescriptor descriptor4 =
             this.loader.getComponentsDescriptors(EmbeddableComponentManagerFactory.class).get(0);
         ComponentDescriptor descriptor5 =
             this.loader.getComponentsDescriptors(DefaultComponentManagerManager.class).get(0);
         ComponentDescriptor descriptor6 =
             this.loader.getComponentsDescriptors(ContextComponentManagerProvider.class).get(0);
-        ComponentDescriptor descriptor7 =
-            this.loader.getComponentsDescriptors(DefaultNamespaceValidator.class).get(0);
+        ComponentDescriptor descriptor7 = this.loader.getComponentsDescriptors(DefaultNamespaceValidator.class).get(0);
 
         ComponentDescriptor descriptor8 =
             this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestProvider1.class).get(0);
@@ -212,10 +214,10 @@ public class ComponentAnnotationLoaderTest
             this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestProvider2.class).get(0);
         ComponentDescriptor descriptor11 =
             this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestComponentWithProviders.class).get(0);
-        ComponentDescriptor descriptor12 =
-            this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestProviderWithExceptionInInitialize.class).get(0);
-        ComponentDescriptor descriptor13 =
-            this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestComponentWithProviderInException.class).get(0);
+        ComponentDescriptor descriptor12 = this.loader
+            .getComponentsDescriptors(ProviderIntegrationTest.TestProviderWithExceptionInInitialize.class).get(0);
+        ComponentDescriptor descriptor13 = this.loader
+            .getComponentsDescriptors(ProviderIntegrationTest.TestComponentWithProviderInException.class).get(0);
 
         this.loader.initialize(componentManager, this.getClass().getClassLoader());
 

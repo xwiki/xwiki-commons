@@ -58,6 +58,7 @@ import static org.mockito.Mockito.verify;
  * @version $Id$
  * @since 2.0M1
  */
+// This class needs to remain public because some interfaces are reused in ProviderIntegrationTest
 public class EmbeddableComponentManagerTest
 {
     @RegisterExtension
@@ -294,35 +295,181 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    void getInstanceListAndMapWhenSomeComponentsInParent() throws Exception
+    void getInstanceListAndMapWhenSameTypeAndHintAndHintPriorityThanParent() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
         ecm.setParent(createParentComponentManager());
 
-        // Register a component with the same Role and Hint as in the parent
+        // Register a component with the same type, hint and hint priority as in the parent
         DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<>();
         cd1.setRoleType(Role.class);
         cd1.setImplementation(RoleImpl.class);
-        Role roleImpl = new RoleImpl();
-        ecm.registerComponent(cd1, roleImpl);
-
-        // Register a component with the same Role as in the parent but with a different hint
-        DefaultComponentDescriptor<Role> cd2 = new DefaultComponentDescriptor<>();
-        cd2.setRoleType(Role.class);
-        cd2.setRoleHint("hint");
-        cd2.setImplementation(RoleImpl.class);
-        ecm.registerComponent(cd2);
-
-        // Verify that the components are found
-        // Note: We find only 2 components since 2 components are registered with the same Role and Hint.
+        Role roleInstance = new RoleImpl();
+        ecm.registerComponent(cd1, roleInstance);
 
         List<Role> instanceList = ecm.getInstanceList(Role.class);
-        assertEquals(2, instanceList.size());
-        assertSame(roleImpl, instanceList.get(0));
+        assertEquals(List.of(roleInstance), instanceList);
+
+        Map<String, Role> instances = ecm.getInstanceMap(Role.class);
+        assertEquals(1, instances.size());
+        assertSame(roleInstance, instances.get("default"));
+    }
+
+    @Test
+    void getInstanceListAndMapWhenSameTypeAndHintAndLowerHintPriorityThanParent() throws Exception
+    {
+        ComponentManager parentcm = createParentComponentManager();
+        Role parentInstance = parentcm.getInstance(Role.class);
+
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+        ecm.setParent(parentcm);
+
+        // Register a component with the same type, hint as in the parent but lower hint priority
+        DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<>();
+        cd1.setRoleType(Role.class);
+        cd1.setImplementation(RoleImpl.class);
+        cd1.setRoleHintPriority(ComponentDescriptor.DEFAULT_PRIORITY + 1);
+        Role roleInstance = new RoleImpl();
+        ecm.registerComponent(cd1, roleInstance);
+
+        List<Role> instanceList = ecm.getInstanceList(Role.class);
+        assertEquals(List.of(parentInstance), instanceList);
+
+        Map<String, Role> instances = ecm.getInstanceMap(Role.class);
+        assertEquals(1, instances.size());
+        assertSame(parentInstance, instances.get("default"));
+    }
+
+    @Test
+    void getInstanceListAndMapWhenSameTypeAndHintPriorityThanParent() throws Exception
+    {
+        ComponentManager parentcm = createParentComponentManager();
+        Role parentInstance = parentcm.getInstance(Role.class);
+
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+        ecm.setParent(parentcm);
+
+        // Register a component with the same type, hint as in the parent but lower hint priority
+        DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<>();
+        cd1.setRoleType(Role.class);
+        cd1.setRoleHint("hint1");
+        cd1.setImplementation(RoleImpl.class);
+        Role roleInstance = new RoleImpl();
+        ecm.registerComponent(cd1, roleInstance);
+
+        List<Role> instanceList = ecm.getInstanceList(Role.class);
+        assertEquals(List.of(roleInstance, parentInstance), instanceList);
 
         Map<String, Role> instances = ecm.getInstanceMap(Role.class);
         assertEquals(2, instances.size());
-        assertSame(roleImpl, instances.get("default"));
+        assertSame(roleInstance, instances.get("hint1"));
+        assertSame(parentInstance, instances.get("default"));
+    }
+
+    @Test
+    void getInstanceListAndMapWhenSameTypeAndLowerHintPriorityThanParent() throws Exception
+    {
+        ComponentManager parentcm = createParentComponentManager();
+        Role parentInstance = parentcm.getInstance(Role.class);
+
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+        ecm.setParent(parentcm);
+
+        // Register a component with the same type, hint as in the parent but lower hint priority
+        DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<>();
+        cd1.setRoleType(Role.class);
+        cd1.setRoleHint("hint1");
+        cd1.setImplementation(RoleImpl.class);
+        cd1.setRoleTypePriority(ComponentDescriptor.DEFAULT_PRIORITY + 1);
+        Role roleInstance = new RoleImpl();
+        ecm.registerComponent(cd1, roleInstance);
+
+        List<Role> instanceList = ecm.getInstanceList(Role.class);
+        assertEquals(List.of(parentInstance, roleInstance), instanceList);
+
+        Map<String, Role> instances = ecm.getInstanceMap(Role.class);
+        assertEquals(2, instances.size());
+        assertSame(roleInstance, instances.get("hint1"));
+        assertSame(parentInstance, instances.get("default"));
+    }
+
+    @Test
+    void getInstanceListAndMapWithoutTypePriorities() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<>();
+        cd1.setRoleType(Role.class);
+        cd1.setRoleHint("hint1");
+        cd1.setImplementation(RoleImpl.class);
+        Role roleImpl1 = new RoleImpl();
+        ecm.registerComponent(cd1, roleImpl1);
+
+        DefaultComponentDescriptor<Role> cd2 = new DefaultComponentDescriptor<>();
+        cd2.setRoleType(Role.class);
+        cd2.setRoleHint("hint2");
+        cd2.setImplementation(RoleImpl.class);
+        ecm.registerComponent(cd2);
+        Role roleImpl2 = new RoleImpl();
+        ecm.registerComponent(cd2, roleImpl2);
+
+        DefaultComponentDescriptor<Role> cd3 = new DefaultComponentDescriptor<>();
+        cd3.setRoleType(Role.class);
+        cd3.setRoleHint("hint3");
+        cd3.setImplementation(RoleImpl.class);
+        ecm.registerComponent(cd3);
+        Role roleImpl3 = new RoleImpl();
+        ecm.registerComponent(cd3, roleImpl3);
+
+        List<Role> instanceList = ecm.getInstanceList(Role.class);
+        assertEquals(List.of(roleImpl1, roleImpl2, roleImpl3), instanceList);
+
+        Map<String, Role> instances = ecm.getInstanceMap(Role.class);
+        assertEquals(3, instances.size());
+        assertSame(roleImpl1, instances.get("hint1"));
+        assertSame(roleImpl2, instances.get("hint2"));
+        assertSame(roleImpl3, instances.get("hint3"));
+    }
+
+    @Test
+    void getInstanceListAndMapWithTypePriorities() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<>();
+        cd1.setRoleType(Role.class);
+        cd1.setRoleHint("hint1");
+        cd1.setRoleTypePriority(3);
+        cd1.setImplementation(RoleImpl.class);
+        Role roleImpl1 = new RoleImpl();
+        ecm.registerComponent(cd1, roleImpl1);
+
+        DefaultComponentDescriptor<Role> cd2 = new DefaultComponentDescriptor<>();
+        cd2.setRoleType(Role.class);
+        cd2.setRoleHint("hint2");
+        cd2.setRoleTypePriority(1);
+        cd2.setImplementation(RoleImpl.class);
+        ecm.registerComponent(cd2);
+        Role roleImpl2 = new RoleImpl();
+        ecm.registerComponent(cd2, roleImpl2);
+
+        DefaultComponentDescriptor<Role> cd3 = new DefaultComponentDescriptor<>();
+        cd3.setRoleType(Role.class);
+        cd3.setRoleHint("hint3");
+        cd3.setRoleTypePriority(2);
+        cd3.setImplementation(RoleImpl.class);
+        ecm.registerComponent(cd3);
+        Role roleImpl3 = new RoleImpl();
+        ecm.registerComponent(cd3, roleImpl3);
+
+        List<Role> instanceList = ecm.getInstanceList(Role.class);
+        assertEquals(List.of(roleImpl2, roleImpl3, roleImpl1), instanceList);
+
+        Map<String, Role> instances = ecm.getInstanceMap(Role.class);
+        assertEquals(3, instances.size());
+        assertSame(roleImpl2, instances.get("hint2"));
+        assertSame(roleImpl3, instances.get("hint3"));
+        assertSame(roleImpl1, instances.get("hint1"));
     }
 
     @Test

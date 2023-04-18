@@ -22,10 +22,11 @@ package org.xwiki.component.descriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.xwiki.stability.Unstable;
 import org.xwiki.text.XWikiToStringBuilder;
 
 /**
@@ -57,6 +58,10 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
      */
     private boolean mandatory;
 
+    private int roleTypePriority = DEFAULT_PRIORITY;
+
+    private int roleHintPriority = DEFAULT_PRIORITY;
+
     /**
      * Default constructor.
      */
@@ -80,6 +85,8 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
             addComponentDependency(new DefaultComponentDependency(dependency));
         }
         setMandatory(descriptor.isMandatory());
+        setRoleTypePriority(descriptor.getRoleTypePriority());
+        setRoleHintPriority(descriptor.getRoleHintPriority());
     }
 
     /**
@@ -156,13 +163,52 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     }
 
     @Override
+    public int getRoleTypePriority()
+    {
+        return roleTypePriority;
+    }
+
+    /**
+     * @see #getRoleTypePriority()
+     * @param roleTypePriority the priority of the component to order components sharing same type
+     * @since 15.4RC1
+     */
+    @Unstable
+    public void setRoleTypePriority(int roleTypePriority)
+    {
+        this.roleTypePriority = roleTypePriority;
+    }
+
+    @Override
+    public int getRoleHintPriority()
+    {
+        return roleHintPriority;
+    }
+
+    /**
+     * @see #getRoleHintPriority()
+     * @param roleHintPriority the priority of the component to order components sharing same type and hint
+     * @since 15.4RC1
+     */
+    @Unstable
+    public void setRoleHintPriority(int roleHintPriority)
+    {
+        this.roleHintPriority = roleHintPriority;
+    }
+
+    @Override
     public String toString()
     {
         ToStringBuilder builder = new XWikiToStringBuilder(this);
+
         builder.appendSuper(super.toString());
+
         builder.append("implementation", getImplementation() == null ? null : getImplementation().getName());
         builder.append("instantiation", getInstantiationStrategy());
         builder.append("mandatory", isMandatory());
+        builder.append("roleTypePriority", getRoleTypePriority());
+        builder.append("roleHintPriority", getRoleHintPriority());
+
         return builder.toString();
     }
 
@@ -186,10 +232,17 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
                 // object must be Syntax at this point
                 ComponentDescriptor cd = (ComponentDescriptor) object;
 
-                result = super.equals(cd) && Objects.equals(getImplementation(), cd.getImplementation())
-                    && Objects.equals(getInstantiationStrategy(), cd.getInstantiationStrategy())
-                    && Objects.equals(getComponentDependencies(), cd.getComponentDependencies())
-                    && (isMandatory() == cd.isMandatory());
+                EqualsBuilder builder = new EqualsBuilder();
+
+                builder.appendSuper(super.equals(object));
+                builder.append(getImplementation(), cd.getImplementation());
+                builder.append(getInstantiationStrategy(), cd.getInstantiationStrategy());
+                builder.append(getComponentDependencies(), cd.getComponentDependencies());
+                builder.append(isMandatory(), cd.isMandatory());
+                builder.append(getRoleTypePriority(), cd.getRoleTypePriority());
+                builder.append(getRoleHintPriority(), cd.getRoleHintPriority());
+
+                return builder.build();
             }
         }
 
@@ -212,6 +265,8 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
         builder.append(getInstantiationStrategy());
         builder.append(getComponentDependencies());
         builder.append(isMandatory());
+        builder.append(getRoleTypePriority());
+        builder.append(getRoleHintPriority());
 
         return builder.toHashCode();
     }
