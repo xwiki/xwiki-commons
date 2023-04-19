@@ -153,6 +153,11 @@ public class MockingComponentManager extends EmbeddableComponentManager
         DefaultComponentDescriptor<T> descriptor = new DefaultComponentDescriptor<>();
         descriptor.setRoleType(role);
 
+        // Default to very high priority for retro compatibility reason (calling this method used to always register
+        // the component without caring about any kind of priority and changing that behavior might affect a lot of unit
+        // tests
+        descriptor.setRoleHintPriority(0);
+
         return descriptor;
     }
 }
