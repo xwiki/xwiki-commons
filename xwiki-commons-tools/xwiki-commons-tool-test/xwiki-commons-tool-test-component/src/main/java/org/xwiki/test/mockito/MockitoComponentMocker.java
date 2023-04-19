@@ -156,8 +156,11 @@ public class MockitoComponentMocker<T>
     public RoleHint<T> mockComponent(final Object testInstance) throws Exception
     {
         // Handle component fields
+        // Default to very high priority for retro compatibility reason (calling this method used to always
+        // register the component without caring about any kind of priority and changing that behavior might
+        // affect a lot of unit tests
         for (ComponentDescriptor<T> descriptor : this.factory
-            .<T>createComponentDescriptors(this.componentImplementationClass, findComponentRoleType())) {
+            .<T>createComponentDescriptors(this.componentImplementationClass, findComponentRoleType(), 0)) {
             // Only use the descriptor for the specified hint
             if ((this.componentRoleHint != null && this.componentRoleHint.equals(descriptor.getRoleHint()))
                 || this.componentRoleHint == null) {
@@ -241,6 +244,11 @@ public class MockitoComponentMocker<T>
 
                 cd.setRoleType(dependencyDescriptor.getRoleType());
                 cd.setRoleHint(dependencyDescriptor.getRoleHint());
+
+                // Default to very high priority for retro compatibility reason (calling this method used to always
+                // register the component without caring about any kind of priority and changing that behavior might
+                // affect a lot of unit tests
+                cd.setRoleTypePriority(0);
 
                 Object dependencyMock = mock(roleTypeClass, dependencyDescriptor.getName());
 

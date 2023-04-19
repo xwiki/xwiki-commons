@@ -105,15 +105,14 @@ class MockitoComponentManagerExtensionTest
     }
 
     @Test
-    public void testMockitoCMAsParameter(MockitoComponentManager componentManager)
+    void testMockitoCMAsParameter(MockitoComponentManager componentManager)
     {
         // Verify that we can get a Mockito CM injected
         assertNotNull(componentManager);
-        assertTrue(componentManager instanceof MockitoComponentManager);
     }
 
     @Test
-    public void testComponentMangerAsParameter(ComponentManager componentManager)
+    void testComponentMangerAsParameter(ComponentManager componentManager)
     {
         // Verify that we can get a Mockito CM injected when the type is ComponentManager
         assertNotNull(componentManager);
@@ -169,7 +168,7 @@ class MockitoComponentManagerExtensionTest
     }
 
     @Test
-    public void testCMDoesntLeak1(MockitoComponentManager componentManager) throws Exception
+    void testCMDoesntLeak1(MockitoComponentManager componentManager) throws Exception
     {
         // Note: the name of the test is set so that testCMDoesntLeak1() executes before testCMDoesntLeak2(), thus
         // ensuring that the CM defined in testCMDoesntLeak1() doesn't leak on testCMDoesntLeak2().
@@ -177,7 +176,7 @@ class MockitoComponentManagerExtensionTest
     }
 
     @Test
-    public void testCMDoesntLeak2(MockitoComponentManager componentManager) throws Exception
+    void testCMDoesntLeak2(MockitoComponentManager componentManager) throws Exception
     {
         // See comment in testCMDoesntLeak1()
         assertNull(componentManager.getInstanceMap(Component1Role.class).get("testCMDoesntLeak"));
