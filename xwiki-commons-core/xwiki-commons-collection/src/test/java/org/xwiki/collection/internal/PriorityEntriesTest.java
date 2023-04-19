@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -40,7 +41,7 @@ class PriorityEntriesTest
     @Test
     void misc()
     {
-        PriorityEntries entries = new PriorityEntries<>();
+        PriorityEntries<String> entries = new PriorityEntries<>();
 
         assertTrue(entries.isEmpty());
         assertNull(entries.get("name"));
@@ -77,5 +78,13 @@ class PriorityEntriesTest
         assertNull(entries.get("name"));
         assertEquals(List.of(), entries.getSorted());
         assertEquals(0, entries.size());
+    }
+
+    @Test
+    void putNullValue()
+    {
+        PriorityEntries<?> entries = new PriorityEntries<>();
+        
+        assertThrows(NullPointerException.class, () -> entries.put("key", null));
     }
 }
