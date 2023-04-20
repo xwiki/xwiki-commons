@@ -26,6 +26,9 @@ import java.util.List;
 import javax.inject.Singleton;
 
 import org.htmlcleaner.BelongsTo;
+import org.htmlcleaner.CloseTag;
+import org.htmlcleaner.ContentType;
+import org.htmlcleaner.Display;
 import org.htmlcleaner.Html5TagProvider;
 import org.htmlcleaner.TagInfo;
 import org.xwiki.component.annotation.Component;
@@ -33,9 +36,10 @@ import org.xwiki.xml.html.HTMLConstants;
 
 /**
  * List the tags allowed in HTML5 with custom bug fixes for &lt;style&gt; and &lt;svg&gt;-tags.
- *
- * See https://sourceforge.net/p/htmlcleaner/bugs/228/ and https://sourceforge.net/p/htmlcleaner/bugs/229/
- *
+ * <p>
+ * See <a href="https://sourceforge.net/p/htmlcleaner/bugs/228/">bug 228</a>
+ * and <a href="https://sourceforge.net/p/htmlcleaner/bugs/229/">bug 229</a>
+ * <p>
  * This class should be removed once these bugs have been fixed.
  *
  * @version $Id$
@@ -47,8 +51,8 @@ public class XWikiHTML5TagProvider extends Html5TagProvider
 {
     private static final List<String> TAGS_WITH_EXPLICIT_PHRASING_CHILDREN =
         Arrays.asList(HTMLConstants.TAG_EM, HTMLConstants.TAG_STRONG, "small", HTMLConstants.TAG_S, "wbr", "mark",
-            "bdi", "time", "data", HTMLConstants.TAG_CITE, HTMLConstants.TAG_Q, HTMLConstants.TAG_CODE, "bdo", "dfn",
-            HTMLConstants.TAG_KBD, HTMLConstants.TAG_ABBR, HTMLConstants.TAG_VAR, "samp", "sub", "sup",
+            "bdi", "time", HTMLConstants.TAG_DATA, HTMLConstants.TAG_CITE, HTMLConstants.TAG_Q, HTMLConstants.TAG_CODE,
+            "bdo", "dfn", HTMLConstants.TAG_KBD, HTMLConstants.TAG_ABBR, HTMLConstants.TAG_VAR, "samp", "sub", "sup",
             HTMLConstants.TAG_B, HTMLConstants.TAG_I, HTMLConstants.TAG_U, "rtc", "rt", "rp", "meter", "legend",
             "progress");
 
@@ -63,28 +67,46 @@ public class XWikiHTML5TagProvider extends Html5TagProvider
         this.getTagInfo(HTMLConstants.TAG_STYLE).setBelongsTo(BelongsTo.HEAD);
 
         // Fix https://sourceforge.net/p/htmlcleaner/bugs/228/, SVG is not marked as phrasing content and not allowed
-        // where phrasing content is allowed.
-        TagInfo svgTag = this.getTagInfo(HTMLConstants.TAG_SVG);
-        // Do not close other tags before SVG apart from svg.
-        svgTag.setMustCloseTags(Collections.singleton(HTMLConstants.TAG_SVG));
-        // Do not copy other tags inside SVG.
-        svgTag.setCopyTags(Collections.emptySet());
+        // where phrasing content is allowed. Also fix the same for the math tag.
+        for (String tag : List.of(HTMLConstants.TAG_SVG, HTMLConstants.TAG_MATH)) {
+            TagInfo tagInfo = this.getTagInfo(tag);
+            // Do not close other tags before except for the same tag.
+            tagInfo.setMustCloseTags(Collections.singleton(tag));
+            // Do not copy other tags.
+            tagInfo.setCopyTags(Collections.emptySet());
+        }
 
-        // Allow the SVG tag as child everywhere, where HTML5TagProvider explicitly allows phrasing content.
-        // Note: unfortunately, we cannot iterate over the tags, otherwise we could have avoided copying this list.
-        TAGS_WITH_EXPLICIT_PHRASING_CHILDREN.forEach(this::allowSVGChild);
+        // Fix the embed tag which is set to close all kinds of tags before it.
+        TagInfo embedTag = this.getTagInfo(HTMLConstants.TAG_EMBED);
+        embedTag.setDisplay(Display.any);
+        embedTag.setMustCloseTags(Collections.emptySet());
+        embedTag.setCopyTags(Collections.emptySet());
+
+        // Allow missing phrasing content tags where HTML5TagProvider explicitly allows phrasing content.
+        // Note: unfortunately, we cannot iterate over the tags, otherwise we could have avoided copying this list of
+        // tags that have phrasing children set.
+        for (String child : List.of(HTMLConstants.TAG_SVG, HTMLConstants.TAG_IMG, HTMLConstants.TAG_DATA, "object",
+            "picture", "video", "iframe", HTMLConstants.TAG_EMBED, HTMLConstants.TAG_MATH, HTMLConstants.TAG_Q)) {
+            TAGS_WITH_EXPLICIT_PHRASING_CHILDREN.forEach(tag -> allowChild(tag, child));
+        }
 
         // Fix https://jira.xwiki.org/browse/XCOMMONS-2375 / https://sourceforge.net/p/htmlcleaner/bugs/230/, the dl
         // tag doesn't permit div as child even though it is valid HTML.
-        TagInfo dlTag = this.getTagInfo(HTMLConstants.TAG_DL);
-        dlTag.getChildTags().add(HTMLConstants.TAG_DIV);
+        allowChild(HTMLConstants.TAG_DL, HTMLConstants.TAG_DIV);
+
+        // While HTMLCleaner declares the template tag as phrasing and flow content, it doesn't contain a tag info
+        // for it, so add one.
+        TagInfo templateTag = new TagInfo(HTMLConstants.TAG_TEMPLATE, ContentType.all, BelongsTo.HEAD_AND_BODY, false,
+            false, false, CloseTag.required, Display.any);
+        put(HTMLConstants.TAG_TEMPLATE, templateTag);
     }
 
     /**
-     * @param tagName Tag for which the &lt;svg&gt;-tag shall be added to the allowed children.
+     * @param tagName the tag for which to allow a child
+     * @param childName the name of the child tag to add
      */
-    private void allowSVGChild(String tagName)
+    private void allowChild(String tagName, String childName)
     {
-        this.getTagInfo(tagName).getChildTags().add(HTMLConstants.TAG_SVG);
+        this.getTagInfo(tagName).getChildTags().add(childName);
     }
 }

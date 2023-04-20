@@ -20,9 +20,12 @@
 package org.xwiki.xml.internal.html;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.xwiki.xml.html.HTMLCleanerConfiguration;
 
 /**
@@ -140,5 +143,43 @@ class HTML5HTMLCleanerTest extends DefaultHTMLCleanerTest
     {
         assertHTML("<div><dl><dt>HTML</dt><dd>Hypertext Markup Language</dd></dl></div>",
             "<div><dt>HTML<dd>Hypertext Markup Language</div>");
+    }
+
+    /**
+     * Tests for all phrasing content tags that they can be nested in other phrasing content tags.
+     * <p>
+     * The list has been taken from
+     * <a href="https://html.spec.whatwg.org/#phrasing-content-2">the HTML specification</a>. The slot-tag is omitted
+     * as it is quite special and currently not supported by HTMLCleaner.
+     *
+     * @param tag the phrasing tag to be tested.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = { "a", "abbr", "area", "audio", "b", "bdi", "bdo", "br", "button", "canvas", "cite", "code",
+        "data", "datalist", "del", "dfn", "em", "embed", "i", "iframe", "img", "input", "ins", "kbd", "label", "link",
+        "map", "mark", "math", "meta", "meter", "noscript", "object", "output", "picture", "progress", "q", "ruby", "s",
+        "samp", "script", "select", /*"slot",*/ "small", "span", "strong", "sub", "sup", "svg", "template", "textarea",
+        "time", "u", "var", "video", "wbr" })
+    void nestedPhrasingContent(String tag)
+    {
+        // Test that HTMLCleaner allows phrasing content in other phrasing content.
+        String htmlInput;
+        String prefix = "<p><strong><em><q><";
+        String suffix = "></q></em></strong></p>";
+        if (List.of("input", "br", "link", "img", "embed", "wbr", "meta").contains(tag)) {
+            // These tags are self-closing.
+            htmlInput = prefix + tag + " /" + suffix;
+        } else if (tag.equals("area")) {
+            // The area tag needs to be wrapped in a map tag.
+            htmlInput = prefix + "map name=\"boxes\"><area alt=\"box\" /></map" + suffix;
+        } else {
+            htmlInput = prefix + tag + ">content</" + tag + suffix;
+        }
+        String expected = htmlInput;
+        // Expect CDATA wrapping for the script tag.
+        if (tag.equals("script")) {
+            expected = expected.replace("content", "/*<![CDATA[*/\ncontent\n/*]]>*/");
+        }
+        assertHTML(expected, htmlInput);
     }
 }
