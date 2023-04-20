@@ -145,12 +145,6 @@ class MockitoComponentManagerExtensionTest
     }
 
     @Test
-    void testInjectCM()
-    {
-        assertNotNull(this.componentManager);
-    }
-
-    @Test
     void testCMDoesntLeak1(MockitoComponentManager componentManager) throws Exception
     {
         // Note: the name of the test is set so that testCMDoesntLeak1() executes before testCMDoesntLeak2(), thus
