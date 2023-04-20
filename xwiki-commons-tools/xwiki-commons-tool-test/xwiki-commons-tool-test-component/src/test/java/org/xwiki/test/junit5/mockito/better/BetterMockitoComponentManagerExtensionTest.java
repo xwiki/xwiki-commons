@@ -32,6 +32,7 @@ import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.test.junit5.mockito.MockitoComponentManagerExtension;
@@ -39,6 +40,7 @@ import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
 /**
@@ -99,13 +101,25 @@ public class BetterMockitoComponentManagerExtensionTest
     }
 
     @ExtendWith(MockitoComponentManagerExtension.class)
-    static class InjectMocktoComponentManagerAsMethodParameterTestCase
+    static class InjectMockitoComponentManagerAsMethodParameterTestCase
     {
         @Test
         void test(MockitoComponentManager componentManager)
         {
             // Verify that we can get a Mockito CM injected
             assertNotNull(componentManager);
+        }
+    }
+
+    @ExtendWith(MockitoComponentManagerExtension.class)
+    static class InjectComponentManagerAsMethodParameterTestCase
+    {
+        @Test
+        void test(ComponentManager componentManager)
+        {
+            // Verify that we can get a Mockito CM injected when the type is ComponentManager
+            assertNotNull(componentManager);
+            assertTrue(componentManager instanceof MockitoComponentManager);
         }
     }
 
@@ -130,7 +144,13 @@ public class BetterMockitoComponentManagerExtensionTest
     @Test
     void injectMockitoComponentManagerAsMethodParameter()
     {
-        execute(InjectMocktoComponentManagerAsMethodParameterTestCase.class);
+        execute(InjectMockitoComponentManagerAsMethodParameterTestCase.class);
+    }
+
+    @Test
+    void injectComponentManagerAsMethodParameter()
+    {
+        execute(InjectComponentManagerAsMethodParameterTestCase.class);
     }
 
     private void execute(Class testClass)

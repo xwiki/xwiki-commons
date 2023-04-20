@@ -27,7 +27,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockingDetails;
 import org.mockito.Mockito;
-import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
@@ -38,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -102,14 +100,6 @@ class MockitoComponentManagerExtensionTest
     {
         // Verify that we can get a Mockito CM injected
         assertNotNull(componentManager);
-    }
-
-    @Test
-    void testComponentMangerAsParameter(ComponentManager componentManager)
-    {
-        // Verify that we can get a Mockito CM injected when the type is ComponentManager
-        assertNotNull(componentManager);
-        assertTrue(componentManager instanceof MockitoComponentManager);
     }
 
     @Test
