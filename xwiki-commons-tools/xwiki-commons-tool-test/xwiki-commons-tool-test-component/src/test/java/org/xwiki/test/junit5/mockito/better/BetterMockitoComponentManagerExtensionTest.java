@@ -49,7 +49,7 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 public class BetterMockitoComponentManagerExtensionTest
 {
     @ExtendWith(MockitoComponentManagerExtension.class)
-    public static class NestedComponentsTestCase
+    static class NestedComponentsTestCase
     {
         @MockComponent
         private ComponentRole componentRole1;
@@ -81,7 +81,7 @@ public class BetterMockitoComponentManagerExtensionTest
         DefaultComponentRole.class,
         TestComponentRole.class
     })
-    public static class InjectComponentsTestCase
+    static class InjectComponentsTestCase
     {
         @Inject
         private ComponentRole componentRole1;
@@ -99,7 +99,7 @@ public class BetterMockitoComponentManagerExtensionTest
     }
 
     @ExtendWith(MockitoComponentManagerExtension.class)
-    public static class InjectMocktoComponentManagerAsMethodParameterTestCase
+    static class InjectMocktoComponentManagerAsMethodParameterTestCase
     {
         @Test
         void test(MockitoComponentManager componentManager)
