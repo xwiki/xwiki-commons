@@ -49,10 +49,14 @@ public final class HTMLUtils
     /**
      * In HTML5, some elements must be expanded (for example {@code <span></span>} instead of {@code <span />}), and
      * some others must not (for example {@code <br />} instead of {@code <br></br>}. Thus for the list of elements
-     * below we need special handling (not expanding).
+     * below we need special handling (not expanding). See
+     * <a href="https://html.spec.whatwg.org/#void-elements">the HTML specification</a>
+     * and <a href="https://developer.mozilla.org/en-US/docs/Glossary/Void_element">MDN</a>
+     * for the list of elements that are affected by this.
      */
     private static final List<String> OMIT_ELEMENT_EXPANDING_SET = Arrays.asList(
-        "area", "base", "br", "col", "hr", "img", "input", "link", "meta", "param");
+        "area", "base", "br", "col", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source",
+        "track", "wbr");
 
     /**
      * JDOM's XMLOutputter class converts reserved XML character ({@code &}) into its entity
