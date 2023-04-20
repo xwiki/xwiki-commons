@@ -105,13 +105,6 @@ class MockitoComponentManagerExtensionTest
     }
 
     @Test
-    void testMockitoCMAsParameter(MockitoComponentManager componentManager)
-    {
-        // Verify that we can get a Mockito CM injected
-        assertNotNull(componentManager);
-    }
-
-    @Test
     void testComponentMangerAsParameter(ComponentManager componentManager)
     {
         // Verify that we can get a Mockito CM injected when the type is ComponentManager

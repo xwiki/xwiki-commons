@@ -35,6 +35,7 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.test.junit5.mockito.MockitoComponentManagerExtension;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -97,6 +98,17 @@ public class BetterMockitoComponentManagerExtensionTest
         }
     }
 
+    @ExtendWith(MockitoComponentManagerExtension.class)
+    public static class InjectMocktoComponentManagerAsMethodParameterTestCase
+    {
+        @Test
+        void test(MockitoComponentManager componentManager)
+        {
+            // Verify that we can get a Mockito CM injected
+            assertNotNull(componentManager);
+        }
+    }
+
     /**
      * Verify that we can have nested components and that they're all injected.
      */
@@ -113,6 +125,12 @@ public class BetterMockitoComponentManagerExtensionTest
     void injectComponents()
     {
         execute(InjectComponentsTestCase.class);
+    }
+
+    @Test
+    void injectMockitoComponentManagerAsMethodParameter()
+    {
+        execute(InjectMocktoComponentManagerAsMethodParameterTestCase.class);
     }
 
     private void execute(Class testClass)
