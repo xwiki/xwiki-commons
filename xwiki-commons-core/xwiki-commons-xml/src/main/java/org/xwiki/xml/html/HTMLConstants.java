@@ -391,6 +391,27 @@ public interface HTMLConstants
     String TAG_SVG = "svg";
 
     /**
+     * HTML &lt;data&gt; tag.
+     * @since 14.10.9
+     * @since 15.3
+     */
+    String TAG_DATA = "data";
+
+    /**
+     * HTML &lt;embed&gt; tag.
+     * @since 14.10.9
+     * @since 15.3
+     */
+    String TAG_EMBED = "embed";
+
+    /**
+     * HTML &lt;math&gt; tag.
+     * @since 14.10.9
+     * @since 15.3
+     */
+    String TAG_MATH = "math";
+
+    /**
      * HTML id attribute name.
      */
     String ATTRIBUTE_ID = "id";
