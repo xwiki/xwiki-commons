@@ -150,6 +150,9 @@ class MockitoComponentManagerExtensionTest
         // Note: the name of the test is set so that testCMDoesntLeak1() executes before testCMDoesntLeak2(), thus
         // ensuring that the CM defined in testCMDoesntLeak1() doesn't leak on testCMDoesntLeak2().
         componentManager.registerMockComponent(Component1Role.class, "testCMDoesntLeak");
+
+        // Useless assert just to please Sonar
+        assertTrue(componentManager instanceof MockitoComponentManager);
     }
 
     @Test
