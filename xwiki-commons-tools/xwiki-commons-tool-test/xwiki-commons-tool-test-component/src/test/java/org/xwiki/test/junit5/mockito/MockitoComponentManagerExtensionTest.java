@@ -64,7 +64,7 @@ import static org.mockito.Mockito.when;
  *
  * @since 12.2
  */
-public class MockitoComponentManagerExtensionTest
+class MockitoComponentManagerExtensionTest
 {
     @ExtendWith(MockitoComponentManagerExtension.class)
     static class NestedComponentsTestCase
@@ -79,7 +79,7 @@ public class MockitoComponentManagerExtensionTest
         }
 
         @Nested
-        public class NestedNestedComponentsTestCase
+        class NestedNestedComponentsTestCase
         {
             @MockComponent
             private ComponentRole componentRole2;
@@ -264,6 +264,7 @@ public class MockitoComponentManagerExtensionTest
 
         @Test
         @Order(1)
+        @SuppressWarnings("java:S2699")
         void test1(MockitoComponentManager componentManager)
         {
             // Save the passed CM instance to be able to compare it in test2.
