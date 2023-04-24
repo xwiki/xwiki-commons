@@ -265,7 +265,7 @@ class MockitoComponentManagerExtensionTest
         @Test
         @Order(1)
         // Remove the "Add at least one assertion to this test case" warning since this is a special test to prove
-        // the non leaking of the CM and we don't need an assertion.
+        // the non-leaking of the CM, and we don't need an assertion.
         @SuppressWarnings("java:S2699")
         void test1(MockitoComponentManager componentManager)
         {
