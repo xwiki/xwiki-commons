@@ -283,11 +283,21 @@ public class ComponentAnnotationLoader
         }
     }
 
+    /**
+     * @param componentClass the {@link Class} from which to extract descriptors
+     * @return the descriptor extracted from the provided {@link Class}
+     */
     public List<ComponentDescriptor<?>> getComponentsDescriptors(Class<?> componentClass)
     {
         return getComponentsDescriptors(componentClass, ComponentDescriptor.DEFAULT_PRIORITY);
     }
 
+    /**
+     * @param componentClass the {@link Class} from which to extract descriptors
+     * @param priority the default priority to use for the generated descriptors
+     * @return the descriptor extracted from the provided {@link Class}
+     * @since 15.4RC1
+     */
     public List<ComponentDescriptor<?>> getComponentsDescriptors(Class<?> componentClass, int priority)
     {
         List<ComponentDescriptor<?>> descriptors = new ArrayList<>();
