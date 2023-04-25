@@ -101,7 +101,7 @@ public class ComponentRegistrator
      */
     public void registerComponent(Class<?> componentImplementation, ComponentManager componentManager) throws Exception
     {
-        List<ComponentDescriptor<?>> descriptors = this.loader.getComponentsDescriptors(componentImplementation);
+        List<ComponentDescriptor<?>> descriptors = this.loader.getComponentsDescriptors(componentImplementation, 0);
 
         for (ComponentDescriptor descriptor : descriptors) {
             componentManager.registerComponent(descriptor);
@@ -119,7 +119,7 @@ public class ComponentRegistrator
     public void registerComponentIfDontExist(Class<?> componentImplementation, ComponentManager componentManager)
         throws Exception
     {
-        List<ComponentDescriptor<?>> descriptors = this.loader.getComponentsDescriptors(componentImplementation);
+        List<ComponentDescriptor<?>> descriptors = this.loader.getComponentsDescriptors(componentImplementation, 0);
 
         for (ComponentDescriptor descriptor : descriptors) {
             if (!componentManager.hasComponent(descriptor.getRoleType(), descriptor.getRoleHint())) {

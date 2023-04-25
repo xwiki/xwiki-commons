@@ -285,11 +285,16 @@ public class ComponentAnnotationLoader
 
     public List<ComponentDescriptor<?>> getComponentsDescriptors(Class<?> componentClass)
     {
+        return getComponentsDescriptors(componentClass, ComponentDescriptor.DEFAULT_PRIORITY);
+    }
+
+    public List<ComponentDescriptor<?>> getComponentsDescriptors(Class<?> componentClass, int priority)
+    {
         List<ComponentDescriptor<?>> descriptors = new ArrayList<>();
 
         // Look for ComponentRole annotations and register one component per ComponentRole found
         for (Type componentRoleType : findComponentRoleTypes(componentClass)) {
-            descriptors.addAll(this.factory.createComponentDescriptors(componentClass, componentRoleType));
+            descriptors.addAll(this.factory.createComponentDescriptors(componentClass, componentRoleType, priority));
         }
 
         return descriptors;
