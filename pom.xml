@@ -103,7 +103,7 @@
     <jacoco.version>0.8.10</jacoco.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>10.9.3</checkstyle.version>
+    <checkstyle.version>10.10.0</checkstyle.version>
 
     <!-- Spoon -->
     <spoon.version>10.3.0</spoon.version>
