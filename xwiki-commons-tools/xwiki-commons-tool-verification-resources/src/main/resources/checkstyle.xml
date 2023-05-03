@@ -115,7 +115,7 @@
 
         IOException, Collections, Collection, Arrays, ConcurrentHashMap, ConcurrentLinkedDeque, ConcurrentLinkedQueue, DelayQueue, FutureTask, LinkedBlockinDeque, LinkedBlockinQueue, Phaser,
         PriorityBlockingQueue, RejectedExecutionException, SynchronousQueue, Logger, LoggerFactory, StringUtils, FieldUtils, IOUtils, StringWriter, StringReader, ExceptionUtils,
-        Inject, Provider, Named, Singleton, NavigableSet, Type,
+        Inject, Provider, Named, Singleton, NavigableSet, Type, Priority,
 
         ComponentInstantiationStrategy, Unstable"/>
       <property name="excludedPackages"
