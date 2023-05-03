@@ -138,6 +138,7 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
         // - We inject @InjectMockComponents fields
         // - We inject @Inject fields (this is just a shortcut to using @InjectComponentManager and then calling
         //   getInstance() on it)
+        // - We inject Mockito annotations (@Mock, @InjectMocks, etc)
         //
         // Note: We handle @MockComponent before @InjectMockComponents to allow the test to have methods annotated with
         // @BeforeComponent which can configure mocks defined with @MockComponent annotations, so that when
