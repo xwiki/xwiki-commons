@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.observation.event.Event;
+import org.xwiki.stability.Unstable;
 
 /**
  * Components wanting to receive Observation {@link Event events} must implement this interface.
@@ -32,6 +33,14 @@ import org.xwiki.observation.event.Event;
 @Role
 public interface EventListener
 {
+    /**
+     * The default priority recommended for listeners in charge of invalidating a cache.
+     * 
+     * @since 15.4RC1
+     */
+    @Unstable
+    int CACHE_INVALIDATION_DEFAULT_PRIORITY = 100;
+
     /**
      * @return the listener's name. It's a free form text identifying this listener instance in a unique manner. This
      *         name is used for some operations in {@link ObservationManager}.
