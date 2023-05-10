@@ -106,16 +106,18 @@
           2) Non XWiki excludes
           3) XWiki excludes
       -->
-      <property name="excludedClasses" value="boolean, byte, char, double, float, int, long, short, void,
-        Boolean, Byte, Character, Double, Float, Integer, Long, Short, Void,
-        Object, Class, String, StringBuffer, StringBuilder,
-        ArrayIndexOutOfBoundsException, Exception, RuntimeException, IllegalArgumentException, IllegalStateException, IndexOutOfBoundsException, NullPointerException, Throwable, SecurityException, UnsupportedOperationException,
+      <property name="excludedClasses" value="boolean, byte, char, double, float, int, long, short, void, Boolean, Byte,
+        Character, Double, Float, Integer, Long, Short, Void, Object, Class, String, StringBuffer, StringBuilder,
+        ArrayIndexOutOfBoundsException, Exception, RuntimeException, IllegalArgumentException, IllegalStateException,
+        IndexOutOfBoundsException, NullPointerException, Throwable, SecurityException, UnsupportedOperationException,
         List, ArrayList, Deque, Queue, LinkedList, Set, HashSet, SortedSet, TreeSet, Map, HashMap, SortedMap, TreeMap,
-        Override, Deprecated, SafeVarargs, SuppressWarnings, FunctionalInterface,
+        Override, Deprecated, SafeVarargs, SuppressWarnings, FunctionalInterface, Collection, EnumSet, LinkedHashMap,
+        LinkedHashSet, Optional, OptionalDouble, OptionalInt, OptionalLong, DoubleStream, IntStream, LongStream, Stream,
 
-        IOException, Collections, Collection, Arrays, ConcurrentHashMap, ConcurrentLinkedDeque, ConcurrentLinkedQueue, DelayQueue, FutureTask, LinkedBlockinDeque, LinkedBlockinQueue, Phaser,
-        PriorityBlockingQueue, RejectedExecutionException, SynchronousQueue, Logger, LoggerFactory, StringUtils, FieldUtils, IOUtils, StringWriter, StringReader, ExceptionUtils,
-        Inject, Provider, Named, Singleton, NavigableSet, Type, Priority,
+        IOException, Collections, Arrays, ConcurrentHashMap, ConcurrentLinkedDeque, ConcurrentLinkedQueue, DelayQueue,
+        FutureTask, LinkedBlockinDeque, LinkedBlockinQueue, Phaser, PriorityBlockingQueue, RejectedExecutionException,
+        SynchronousQueue, Logger, LoggerFactory, StringUtils, FieldUtils, IOUtils, StringWriter, StringReader,
+        ExceptionUtils, Inject, Provider, Named, Singleton, NavigableSet, Type, Priority,
 
         ComponentInstantiationStrategy, Unstable"/>
       <property name="excludedPackages"
