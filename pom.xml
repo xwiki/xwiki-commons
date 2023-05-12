@@ -2189,13 +2189,16 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>${surefire.version}</version>
           <configuration>
-            <!-- By default we want to make sure we only run AllITs since that runs all the tests, and
+            <!-- By default, we want to make sure we only run AllIT since that runs all the tests, and
                  starting/stopping XWiki only once for the whole suite -->
             <includes>
-              <include>**/AllITs.java</include>
+              <include>**/AllIT.java</include>
             </includes>
             <!-- We want to show nested stack traces to see what is the real problem when a test fails! -->
             <trimStackTrace>false</trimStackTrace>
+            <!-- Make sure there are always tests to execute. If not, it probably means there's a problem somewhere and
+                 we need to know it in order to fix it! -->
+            <failIfNoTests>true</failIfNoTests>
             <systemPropertyVariables>
               <!-- See description of the "xwiki.test.verifyRunningXWikiAtStart" property above. -->
 		          <xwiki.test.verifyRunningXWikiAtStart>${xwiki.test.verifyRunningXWikiAtStart}</xwiki.test.verifyRunningXWikiAtStart>
