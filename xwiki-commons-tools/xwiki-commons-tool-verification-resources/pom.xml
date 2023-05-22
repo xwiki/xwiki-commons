@@ -96,7 +96,7 @@
       <artifactId>antlr4-runtime</artifactId>
       <!-- Checkstyle needs a more recent and incompatible version of antlr -->
       <!-- TODO: remove when https://jira.xwiki.org/browse/XCOMMONS-2407 is fixed -->
-      <version>4.11.1</version>
+      <version>4.13.0</version>
       <scope>provided</scope>
     </dependency>
 
