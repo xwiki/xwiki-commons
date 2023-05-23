@@ -86,10 +86,6 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-xml</artifactId>
-    </dependency>
     <!-- Maven -->
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
