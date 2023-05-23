@@ -19,8 +19,8 @@
  */
 package org.xwiki.extension.repository.xwiki.internal;
 
-import java.io.IOException;
 import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -104,7 +104,7 @@ public class XWikiExtension extends AbstractRatingExtension
                     if (restLicense.getContent() != null) {
                         try {
                             content = IOUtils.readLines(new StringReader(restLicense.getContent()));
-                        } catch (IOException e) {
+                        } catch (UncheckedIOException e) {
                             // That should never happen
                         }
                     }
