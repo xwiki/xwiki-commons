@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -356,7 +357,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                         try {
                             license = new ExtensionLicense(licenseName, licenceContentNode != null
                                 ? IOUtils.readLines(new StringReader(licenceContentNode.getTextContent())) : null);
-                        } catch (IOException e) {
+                        } catch (UncheckedIOException e) {
                             // That should never happen
                             throw new InvalidExtensionException("Failed to write license content", e);
                         }
