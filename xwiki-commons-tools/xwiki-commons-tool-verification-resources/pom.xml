@@ -34,7 +34,6 @@
   <properties>
     <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
     <xwiki.jacoco.instructionRatio>0.33</xwiki.jacoco.instructionRatio>
-
     <!-- Avoid breaking Checkstyle build when they upgrade some dependency -->
     <xwiki.enforcer.enforce-upper-bounds.skip>true</xwiki.enforcer.enforce-upper-bounds.skip>
   </properties>
@@ -52,7 +51,6 @@
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
-
         <!-- Exclude some frequently upgraded dependencies to make easier to test with Checkstyle SNAPSHOT (Checkstyle project use XWiki to execute non-regression tests) -->
         <exclusion>
           <groupId>com.google.guava</groupId>
@@ -65,7 +63,6 @@
       </exclusions>
       <scope>provided</scope>
     </dependency>
-
     <!-- Testing -->
     <dependency>
       <groupId>com.puppycrawl.tools</groupId>
@@ -99,7 +96,6 @@
       <version>4.11.1</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -108,15 +104,17 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.platform</groupId>
       <artifactId>junit-platform-launcher</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.vintage</groupId>
       <artifactId>junit-vintage-engine</artifactId>
-      <scope>runtime</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
@@ -133,7 +131,6 @@
       <artifactId>jcl-over-slf4j</artifactId>
       <scope>test</scope>
     </dependency>
-
     <!-- Required to run AbstractModuleTestSupport tests -->
     <dependency>
       <groupId>com.google.truth</groupId>
