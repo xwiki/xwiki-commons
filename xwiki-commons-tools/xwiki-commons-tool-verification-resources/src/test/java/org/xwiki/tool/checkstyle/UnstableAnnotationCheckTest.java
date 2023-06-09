@@ -40,7 +40,7 @@ public class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     public void setUp()
     {
         this.checkConfig = createModuleConfig(UnstableAnnotationCheck.class);
-        this.checkConfig.addAttribute("currentVersion", "8.1-SNAPSHOT");
+        this.checkConfig.addProperty("currentVersion", "8.1-SNAPSHOT");
     }
 
     @Test
