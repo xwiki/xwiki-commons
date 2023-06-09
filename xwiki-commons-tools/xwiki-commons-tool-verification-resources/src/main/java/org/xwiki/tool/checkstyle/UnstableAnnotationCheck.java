@@ -26,7 +26,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
-import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.FileContents;
 import com.puppycrawl.tools.checkstyle.api.FullIdent;
@@ -47,8 +46,6 @@ public class UnstableAnnotationCheck extends AbstractCheck
     private String classOrInterfaceName;
 
     private String currentVersion;
-
-    private int currentVersionMajor;
 
     @Override
     public int[] getDefaultTokens()
@@ -74,15 +71,10 @@ public class UnstableAnnotationCheck extends AbstractCheck
         return getDefaultTokens();
     }
 
-    public void setCurrentVersion(String currentVersion) throws CheckstyleException
+    public void setCurrentVersion(String currentVersion)
     {
         if (currentVersion != null && !currentVersion.isEmpty()) {
             this.currentVersion = currentVersion;
-            this.currentVersionMajor = extractMajor(currentVersion);
-            if (this.currentVersionMajor == -1) {
-                throw new CheckstyleException("The passed version [" + this.currentVersionMajor
-                    + "] must be of the type Major.* (e.g. 7.0-SNAPSHOT)");
-            }
         }
     }
 
@@ -146,14 +138,21 @@ public class UnstableAnnotationCheck extends AbstractCheck
         for (String sinceVersion : sinceVersions) {
             int sinceMajor = extractMajor(sinceVersion);
             if (sinceMajor == -1) {
-                log(annotation.getLineNo(), annotation.getColumnNo(), String.format("The @since version [%s] "
-                    + "must be of the type Major.* (e.g. 7.0-SNAPSHOT)", sinceVersion));
+                log(annotation.getLineNo(), annotation.getColumnNo(), String
+                    .format("The @since version [%s] must be of the type Major.* (e.g. 7.0-SNAPSHOT)", sinceVersion));
                 return;
             } else {
+                int currentMajor = extractMajor(this.currentVersion);
+                if (currentMajor == -1) {
+                    log(annotation.getLineNo(), annotation.getColumnNo(), String.format(
+                        "The current version [%s] must be of the type Major.* (e.g. 7.0-SNAPSHOT)", sinceVersion));
+                    return;
+                }
+
                 versions.add(sinceVersion);
                 // We fail only if all since are failing since when we introduce a new API and backport it in an
                 // older version, we don't want to start the grace period to be that of the backport version.
-                if (this.currentVersionMajor - 2 >= sinceMajor) {
+                if (currentMajor - 2 >= sinceMajor) {
                     failing = true;
                 } else {
                     failing = false;
