@@ -90,7 +90,7 @@ public class MockitoRepositoryUtils extends RepositoryUtils
         // add default test core extension
         registerComponent(ConfigurableDefaultCoreExtensionRepository.class);
         ((ConfigurableDefaultCoreExtensionRepository) this.componentManager.getInstance(CoreExtensionRepository.class))
-            .addExtensions("coreextension", new DefaultVersion("version"));
+            .addExtension("coreextension", new DefaultVersion("version"));
 
         // register repositories
         ExtensionRepositoryManager repositoryManager =

@@ -19,7 +19,6 @@
  */
 package org.xwiki.extension.repository.internal.core;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -60,10 +59,9 @@ import org.xwiki.extension.version.Version;
 public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
     implements CoreExtensionRepository, Initializable
 {
-    /**
-     * The core extensions.
-     */
     protected transient Map<String, DefaultCoreExtension> extensions = new ConcurrentHashMap<>();
+
+    protected transient Map<String, DefaultCoreExtension> extensionFeatures = new ConcurrentHashMap<>();
 
     /**
      * The extension associated to the environment.
@@ -106,18 +104,14 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
     public void initialize() throws InitializationException
     {
         try {
-            this.extensions.putAll(this.scanner.loadExtensions(this));
+            // Add extension found in the classloaders
+            this.scanner.loadExtensions(this).values().forEach(this::addExtension);
 
+            // Add the environment core extension (the WAR in the case of an XWiki instance for example)
             this.environmentExtension = this.scanner.loadEnvironmentExtension(this);
             if (this.environmentExtension != null) {
-                this.extensions.put(this.environmentExtension.getId().getId(), this.environmentExtension);
+                addExtension(this.environmentExtension);
             }
-
-            // Put extensions features in the map
-            for (DefaultCoreExtension coreExtension : this.extensions.values()) {
-                addExtensionFeatures(coreExtension);
-            }
-
         } catch (Exception e) {
             this.logger.warn("Failed to load core extensions", e);
         }
@@ -134,8 +128,13 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
             @Override
             public void run()
             {
+                // Gather more metadata about found incomplete core extensions from registered repositories
                 DefaultCoreExtensionRepository.this.scanner
                     .updateExtensions(DefaultCoreExtensionRepository.this.extensions.values());
+
+                // Update the features index in case new features came in with the update
+                DefaultCoreExtensionRepository.this.extensions.values()
+                    .forEach(DefaultCoreExtensionRepository.this::addExtensionFeatures);
             }
         });
 
@@ -157,8 +156,11 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
 
     private void addExtensionFeatures(DefaultCoreExtension coreExtension)
     {
+        this.extensionFeatures.put(coreExtension.getId().getId(), coreExtension);
+
         for (ExtensionId feature : coreExtension.getExtensionFeatures()) {
-            this.extensions.put(feature.getId(), coreExtension);
+            // Add a feature only if the seat is not already taken by an extension id
+            this.extensionFeatures.putIfAbsent(feature.getId(), coreExtension);
         }
     }
 
@@ -206,7 +208,7 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
     @Override
     public boolean exists(String feature)
     {
-        return this.extensions.containsKey(feature);
+        return this.extensionFeatures.containsKey(feature);
     }
 
     @Override
@@ -245,7 +247,7 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
     @Override
     public Collection<CoreExtension> getCoreExtensions()
     {
-        return new ArrayList<>(this.extensions.values());
+        return Collections.unmodifiableCollection(this.extensions.values());
     }
 
     @Override
@@ -255,7 +257,7 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
             return null;
         }
 
-        return this.extensions.get(feature);
+        return this.extensionFeatures.get(feature);
     }
 
     // Searchable

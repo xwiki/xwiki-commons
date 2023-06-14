@@ -74,6 +74,8 @@ class DefaultCoreExtensionRepositoryTest
     @InjectMockComponents
     private ConfigurableDefaultCoreExtensionRepository coreExtensionRepository;
 
+    int coreExtensionCount = 0;
+
     @AfterComponent
     void afterComponent()
     {
@@ -84,8 +86,11 @@ class DefaultCoreExtensionRepositoryTest
             {
                 Map<String, DefaultCoreExtension> extensions = invocation.getArgument(0);
 
+                ++coreExtensionCount;
                 extensions.put("id1", new DefaultCoreExtension(coreExtensionRepository, new URL("http://url1"),
                     new ExtensionId("id1", "version1"), "type1"));
+
+                ++coreExtensionCount;
                 extensions.put("id2", new DefaultCoreExtension(coreExtensionRepository, new URL("http://url2"),
                     new ExtensionId("id2", "version2"), "type2"));
 
@@ -99,6 +104,7 @@ class DefaultCoreExtensionRepositoryTest
             @Override
             public DefaultCoreExtension answer(InvocationOnMock invocation) throws Throwable
             {
+                ++coreExtensionCount;
                 return new DefaultCoreExtension(coreExtensionRepository, new URL("http://urlE"),
                     new ExtensionId("idE", "versionE"), "typeE");
             }
@@ -111,7 +117,7 @@ class DefaultCoreExtensionRepositoryTest
     @Test
     void init() throws MalformedURLException
     {
-        assertEquals(3, this.coreExtensionRepository.countExtensions());
+        assertEquals(this.coreExtensionCount, this.coreExtensionRepository.countExtensions());
 
         assertEquals("id1", this.coreExtensionRepository.getCoreExtension("id1").getId().getId());
         assertEquals("version1", this.coreExtensionRepository.getCoreExtension("id1").getId().getVersion().getValue());
@@ -139,13 +145,32 @@ class DefaultCoreExtensionRepositoryTest
     {
         assertNull(this.coreExtensionRepository.getCoreExtension("unexistingextension"));
 
-        this.coreExtensionRepository.addExtensions("existingextension", new DefaultVersion("version"));
+        this.coreExtensionRepository.addExtension("existingextension", new DefaultVersion("version"));
 
-        Extension extension = this.coreExtensionRepository.getCoreExtension("existingextension");
+        CoreExtension extension = this.coreExtensionRepository.getCoreExtension("existingextension");
 
         assertNotNull(extension);
         assertEquals("existingextension", extension.getId().getId());
         assertEquals("version", extension.getId().getVersion().getValue());
+    }
+
+    @Test
+    void getCoreExtensions()
+    {
+        assertNull(this.coreExtensionRepository.getCoreExtension("unexistingextension"));
+
+        this.coreExtensionRepository.addExtension("existingextension", new DefaultVersion("version"));
+
+        Collection<CoreExtension> extensions = this.coreExtensionRepository.getCoreExtensions();
+
+        assertEquals(this.coreExtensionCount + 1, extensions.size());
+
+        this.coreExtensionRepository.addExtension("extensionwithfeatures", new DefaultVersion("version"),
+            new ExtensionId("feature1", "version"), new ExtensionId("feature2", "version"));
+
+        extensions = this.coreExtensionRepository.getCoreExtensions();
+
+        assertEquals(this.coreExtensionCount + 2, extensions.size());
     }
 
     /**
@@ -162,7 +187,7 @@ class DefaultCoreExtensionRepositoryTest
             // expected
         }
 
-        this.coreExtensionRepository.addExtensions("existingextension", new DefaultVersion("version"));
+        this.coreExtensionRepository.addExtension("existingextension", new DefaultVersion("version"));
 
         try {
             this.coreExtensionRepository.resolve(new ExtensionId("existingextension", "wrongversion"));
@@ -187,7 +212,7 @@ class DefaultCoreExtensionRepositoryTest
     @Test
     void searchWithSeveralFeatures() throws SearchException
     {
-        this.coreExtensionRepository.addExtensions("extension", new DefaultVersion("version"),
+        this.coreExtensionRepository.addExtension("extension", new DefaultVersion("version"),
             new ExtensionId("testfeature1"), new ExtensionId("testfeature2"));
 
         IterableResult<Extension> result = this.coreExtensionRepository.search("testfeature", 0, -1);

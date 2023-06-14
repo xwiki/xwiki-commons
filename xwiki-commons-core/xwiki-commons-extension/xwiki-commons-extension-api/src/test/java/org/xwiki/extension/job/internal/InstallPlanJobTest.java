@@ -493,7 +493,7 @@ class InstallPlanJobTest extends AbstractExtensionHandlerTest
     void testInstallPlanWithCoreExtension()
     {
         assertThrows(InstallException.class, () -> {
-            this.coreRepository.addExtensions(TestResources.REMOTE_SIMPLE_ID.getId(), new DefaultVersion("version"));
+            this.coreRepository.addExtension(TestResources.REMOTE_SIMPLE_ID.getId(), new DefaultVersion("version"));
 
             installPlan(TestResources.REMOTE_SIMPLE_ID);
         });
@@ -503,7 +503,7 @@ class InstallPlanJobTest extends AbstractExtensionHandlerTest
     void testInstallPlanWithFeatureAsCoreExtension()
     {
         assertThrows(InstallException.class, () -> {
-            this.coreRepository.addExtensions("rsimple-feature", new DefaultVersion("version"));
+            this.coreRepository.addExtension("rsimple-feature", new DefaultVersion("version"));
 
             installPlan(TestResources.REMOTE_SIMPLE_ID);
         });
@@ -513,7 +513,7 @@ class InstallPlanJobTest extends AbstractExtensionHandlerTest
     void testInstallPlanWithFeatureAsCoreExtensionFeature()
     {
         assertThrows(InstallException.class, () -> {
-            this.coreRepository.addExtensions("coreextension", new DefaultVersion("version"),
+            this.coreRepository.addExtension("coreextension", new DefaultVersion("version"),
                 new ExtensionId("rsimple-feature"));
 
             installPlan(TestResources.REMOTE_SIMPLE_ID);
@@ -524,7 +524,7 @@ class InstallPlanJobTest extends AbstractExtensionHandlerTest
     void testInstallPlanWithCoreExtensionFeature()
     {
         assertThrows(InstallException.class, () -> {
-            this.coreRepository.addExtensions("coreextension", new DefaultVersion("version"),
+            this.coreRepository.addExtension("coreextension", new DefaultVersion("version"),
                 new ExtensionId(TestResources.REMOTE_SIMPLE_ID.getId()));
 
             installPlan(TestResources.REMOTE_SIMPLE_ID);
@@ -535,7 +535,7 @@ class InstallPlanJobTest extends AbstractExtensionHandlerTest
     void testInstallPlanWithLowerCoreDependencyFeature()
     {
         assertThrows(InstallException.class, () -> {
-            this.coreRepository.addExtensions("coreextension", new DefaultVersion("3.0"),
+            this.coreRepository.addExtension("coreextension", new DefaultVersion("3.0"),
                 TestResources.REMOTE_UPGRADE10_ID);
 
             installPlan(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID);
@@ -545,7 +545,7 @@ class InstallPlanJobTest extends AbstractExtensionHandlerTest
     @Test
     void testInstallPlanWithHigherCoreDependencyFeature() throws Throwable
     {
-        this.coreRepository.addExtensions("coreextension", new DefaultVersion("0.5"),
+        this.coreRepository.addExtension("coreextension", new DefaultVersion("0.5"),
             TestResources.REMOTE_UPGRADE20_ID);
 
         ExtensionPlan plan = installPlan(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID);
