@@ -68,7 +68,7 @@ public class ConfigurableDefaultCoreExtensionRepository extends DefaultCoreExten
         super.addExtension(extension);
     }
 
-    public void addExtensions(String id, Version version, ExtensionId... features)
+    public void addExtension(String id, Version version, ExtensionId... features)
     {
         DefaultCoreExtension coreExtension =
             new DefaultCoreExtension(null, null, new ExtensionId(id, version), "unknown");
@@ -77,10 +77,6 @@ public class ConfigurableDefaultCoreExtensionRepository extends DefaultCoreExten
             coreExtension.setExtensionFeatures(Arrays.asList(features));
         }
 
-        this.extensions.put(id, coreExtension);
-
-        for (ExtensionId feature : coreExtension.getExtensionFeatures()) {
-            this.extensions.put(feature.getId(), coreExtension);
-        }
+        addExtension(coreExtension);
     }
 }
