@@ -21,16 +21,15 @@
 package org.xwiki.crypto.password.internal.kdf.factory;
 
 import org.bouncycastle.util.encoders.Hex;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.params.cipher.symmetric.KeyParameter;
 import org.xwiki.crypto.params.cipher.symmetric.KeyWithIVParameters;
 import org.xwiki.crypto.password.KeyDerivationFunction;
-import org.xwiki.crypto.password.KeyDerivationFunctionFactory;
 import org.xwiki.crypto.password.PasswordToByteConverter;
 import org.xwiki.crypto.password.params.PBKDF2Parameters;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
@@ -43,96 +42,90 @@ import static org.xwiki.crypto.password.PasswordToByteConverter.ToBytesMode.PKCS
  *
  * @version $Id$
  */
-public class BcPKCS5S2KeyDerivationFunctionFactoryTest
+@ComponentTest
+@AllComponents
+class BcPKCS5S2KeyDerivationFunctionFactoryTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<KeyDerivationFunctionFactory> mocker =
-        new MockitoComponentMockingRule<>(BcPKCS5S2KeyDerivationFunctionFactory.class);
+    @InjectMockComponents
+    private BcPKCS5S2KeyDerivationFunctionFactory factory;
 
-    KeyDerivationFunctionFactory factory;
-
-    @Before
-    public void configure() throws Exception
+    private KeyDerivationFunction getKDFInstance(PBKDF2Parameters parameters)
     {
-        factory = mocker.getComponentUnderTest();
-    }
-
-    KeyDerivationFunction getKDFInstance(PBKDF2Parameters parameters)
-    {
-        return factory.getInstance(parameters);
+        return this.factory.getInstance(parameters);
     }
 
     @Test
-    public void pbkdf2PropertiesTest() throws Exception
+    void pbkdf2PropertiesTest()
     {
-        assertThat(factory.getKDFAlgorithmName(), equalTo("PKCS5S2"));
+        assertThat(this.factory.getKDFAlgorithmName(), equalTo("PKCS5S2"));
     }
 
-    /** from: http://www.ietf.org/rfc/rfc3211.txt */
+    /**
+     * from: http://www.ietf.org/rfc/rfc3211.txt
+     */
     @Test
-    public void pbkdf2ConformanceTest1() throws Exception
+    void pbkdf2ConformanceTest1()
     {
         byte[] salt = Hex.decode("12 34 56 78 78 56 34 12");
         byte[] password = PasswordToByteConverter.convert("password", PKCS5);
         byte[] key = Hex.decode("D1 DA A7 86 15 F2 87 E6");
 
-        assertThat(getKDFInstance(
-            new PBKDF2Parameters(8, 5, salt)).derive(password).getKey(), equalTo(key));
+        assertThat(getKDFInstance(new PBKDF2Parameters(8, 5, salt)).derive(password).getKey(), equalTo(key));
     }
 
-    /** from: http://www.ietf.org/rfc/rfc3211.txt */
+    /**
+     * from: http://www.ietf.org/rfc/rfc3211.txt
+     */
     @Test
-    public void pbkdf2ConformanceTest2() throws Exception
+    void pbkdf2ConformanceTest2()
     {
         byte[] salt = Hex.decode("12 34 56 78 78 56 34 12");
         byte[] password = PasswordToByteConverter.convert(
             "All n-entities must communicate with other n-entities via n-1 entiteeheehees", PKCS5);
         byte[] key = Hex.decode("6A 89 70 BF 68 C9 2C AE A8 4A 8D F2 85 10 85 86");
 
-        assertThat(getKDFInstance(
-            new PBKDF2Parameters(16, 500, salt)).derive(password).getKey(), equalTo(key));
+        assertThat(getKDFInstance(new PBKDF2Parameters(16, 500, salt)).derive(password).getKey(), equalTo(key));
     }
 
-    /** from: http://pythonhosted.org/passlib/lib/passlib.hash.atlassian_pbkdf2_sha1.html */
+    /**
+     * from: http://pythonhosted.org/passlib/lib/passlib.hash.atlassian_pbkdf2_sha1.html
+     */
     @Test
-    public void pbkdf2ConfluenceTest() throws Exception
+    void pbkdf2ConfluenceTest()
     {
         byte[] salt = Hex.decode("0d0217254d37f2ee0fec576cb854d8ff");
         byte[] password = PasswordToByteConverter.convert("password");
         byte[] key = Hex.decode("edf96e6e3591f8d96b9ed4addc47a7632edea176bb2fa8a03fa3179b75b5bf09");
 
-        assertThat(getKDFInstance(
-            new PBKDF2Parameters(32, 10000, salt)).derive(password).getKey(), equalTo(key));
+        assertThat(getKDFInstance(new PBKDF2Parameters(32, 10000, salt)).derive(password).getKey(), equalTo(key));
     }
 
     @Test
-    public void pbkdf2PKCS12Test() throws Exception
+    void pbkdf2PKCS12Test()
     {
         byte[] salt = Hex.decode("12 34 56 78 78 56 34 12");
         byte[] password = PasswordToByteConverter.convert("password", PKCS12);
         byte[] key = new byte[] { 5, 54, -36, -24, 96, -76, 7, -128 };
 
-        assertThat(getKDFInstance(
-            new PBKDF2Parameters(8, 5, salt)).derive(password).getKey(), equalTo(key));
+        assertThat(getKDFInstance(new PBKDF2Parameters(8, 5, salt)).derive(password).getKey(), equalTo(key));
     }
 
     @Test
-    public void pbkdf2WithIVTest() throws Exception
+    void pbkdf2WithIVTest()
     {
         byte[] salt = Hex.decode("12 34 56 78 78 56 34 12");
         byte[] password = PasswordToByteConverter.convert("password");
         byte[] key = Hex.decode("d1daa78615f287e6a1c8b120d7062a493f98d203e6be49a6adf4fa574b6e64ee");
         byte[] iv = Hex.decode("df377ef2e8ad463fb711f1b4ff27139a");
 
-        KeyWithIVParameters params =
-            getKDFInstance(new PBKDF2Parameters(32, 5, salt)).derive(password, 16);
+        KeyWithIVParameters params = getKDFInstance(new PBKDF2Parameters(32, 5, salt)).derive(password, 16);
 
         assertThat(params.getKey(), equalTo(key));
         assertThat(params.getIV(), equalTo(iv));
     }
 
     @Test
-    public void pbkdf2KeyWithRandomSalt() throws Exception
+    void pbkdf2KeyWithRandomSalt()
     {
         byte[] password = PasswordToByteConverter.convert("password");
 
@@ -149,15 +142,24 @@ public class BcPKCS5S2KeyDerivationFunctionFactoryTest
     }
 
     @Test
-    public void pbkdf2KeyWithRandomIterationCount() throws Exception
+    void pbkdf2KeyWithRandomIterationCount()
     {
         byte[] salt = Hex.decode("12 34 56 78 78 56 34 12");
         byte[] password = PasswordToByteConverter.convert("password");
 
+        // Make sure the two PBKDF2Parameters instance have different 'iterationCount' values as otherwise the two 
+        // produced keys would be identical 
         PBKDF2Parameters kdfParam1 = new PBKDF2Parameters(24, salt);
         KeyParameter params1 = getKDFInstance(kdfParam1).derive(password);
 
-        PBKDF2Parameters kdfParam2 = new PBKDF2Parameters(24, salt);
+        // Re-instantiate kdfParam2 using PBKDF2Parameters.getRandomIterationCount to compute the iterationCount. We
+        // repeat the process until the iterationCount of kdfParam2 and kdfParam1 are different, as otherwise the 
+        // resulting keys would be equals.
+        PBKDF2Parameters kdfParam2;
+        do {
+            kdfParam2 = new PBKDF2Parameters(24, salt);
+        } while (kdfParam2.getIterationCount() == kdfParam1.getIterationCount());
+
         KeyParameter params2 = getKDFInstance(kdfParam2).derive(password);
 
         assertThat(params1.getKey(), not(equalTo(params2.getKey())));
@@ -167,7 +169,7 @@ public class BcPKCS5S2KeyDerivationFunctionFactoryTest
     }
 
     @Test
-    public void pbkdf2KeyWithRandomSaltAndIterationCount() throws Exception
+    void pbkdf2KeyWithRandomSaltAndIterationCount()
     {
         byte[] password = PasswordToByteConverter.convert("password");
 
@@ -184,7 +186,7 @@ public class BcPKCS5S2KeyDerivationFunctionFactoryTest
     }
 
     @Test
-    public void pbkdf2KeyWithIVWithRandomSalt() throws Exception
+    void pbkdf2KeyWithIVWithRandomSalt()
     {
         byte[] password = PasswordToByteConverter.convert("password");
 
@@ -202,7 +204,7 @@ public class BcPKCS5S2KeyDerivationFunctionFactoryTest
     }
 
     @Test
-    public void pbkdf2KeyWithIVWithRandomIterationCount() throws Exception
+    void pbkdf2KeyWithIVWithRandomIterationCount()
     {
         byte[] salt = Hex.decode("12 34 56 78 78 56 34 12");
         byte[] password = PasswordToByteConverter.convert("password");
@@ -221,7 +223,7 @@ public class BcPKCS5S2KeyDerivationFunctionFactoryTest
     }
 
     @Test
-    public void pbkdf2KeyWithIVWithRandomSaltAndIterationCount() throws Exception
+    void pbkdf2KeyWithIVWithRandomSaltAndIterationCount()
     {
         byte[] password = PasswordToByteConverter.convert("password");
 
@@ -239,13 +241,13 @@ public class BcPKCS5S2KeyDerivationFunctionFactoryTest
     }
 
     @Test
-    public void pbkdf2SerializationDeserializationTest() throws Exception
+    void pbkdf2SerializationDeserializationTest() throws Exception
     {
         byte[] password = PasswordToByteConverter.convert("password");
         KeyDerivationFunction kdf = getKDFInstance(new PBKDF2Parameters(32, 1000));
         KeyWithIVParameters params = kdf.derive(password, 8);
 
-        KeyDerivationFunction kdf2 = factory.getInstance(kdf.getEncoded());
+        KeyDerivationFunction kdf2 = this.factory.getInstance(kdf.getEncoded());
         KeyWithIVParameters params2 = kdf2.derive(password, 8);
 
         assertThat(params.getKey(), equalTo(params2.getKey()));
