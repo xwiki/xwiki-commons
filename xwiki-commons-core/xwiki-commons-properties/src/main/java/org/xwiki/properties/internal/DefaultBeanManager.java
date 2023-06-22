@@ -197,7 +197,7 @@ public class DefaultBeanManager implements BeanManager
             // We do this in a try/catch to avoid false positives caused by existing SecurityManagers.
             classMember.setAccessible(true);
         } catch (SecurityException se) {
-            logger.debug("Failed to call setAccessible for [{}]", classMember.toString(), se);
+            logger.debug("Failed to call setAccessible for [{}]", classMember, se);
         }
     }
 
