@@ -19,7 +19,6 @@
  */
 package org.xwiki.xml.internal.html;
 
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 
@@ -122,7 +121,7 @@ class DefaultHTMLElementSanitizerTest
     @Test
     void throwingWhenFailure(MockitoComponentManager componentManager)
     {
-        componentManager.unregisterComponent((Type) HTMLElementSanitizer.class, SecureHTMLElementSanitizer.HINT);
+        componentManager.unregisterComponent(HTMLElementSanitizer.class, SecureHTMLElementSanitizer.HINT);
 
         when(this.configurationSource.getProperty(any(), eq(SecureHTMLElementSanitizer.HINT))).thenReturn(FOO);
 

@@ -347,7 +347,7 @@ public abstract class AbstractXMLDiffMarker implements XMLDiffMarker
                 List<Object> unmodified = objects.subList(lastIndex, chunk.getIndex());
                 wrapper.appendChild(document.createTextNode(splitter.join(unmodified)));
                 // Wrap the modified text with an in-line element that can be styled.
-                Element marker = (Element) document.createElement(getInlineMarkerElementName());
+                Element marker = document.createElement(getInlineMarkerElementName());
                 marker.appendChild(document.createTextNode(splitter.join(chunk.getElements())));
                 wrapper.appendChild(marker);
                 markElementModified(marker, left);

@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.xwiki.extension.test.TestVersion;
 import org.xwiki.extension.version.IncompatibleVersionConstraintException;
 import org.xwiki.extension.version.InvalidVersionRangeException;
-import org.xwiki.extension.version.Version;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -79,8 +78,8 @@ public class DefaultVersionConstraintTest
     @Test
     void containsVersion()
     {
-        assertTrue(new DefaultVersionConstraint("1.0").containsVersion((Version) new DefaultVersion("1.0")));
-        assertFalse(new DefaultVersionConstraint("1.0").containsVersion((Version) new DefaultVersion("2.0")));
+        assertTrue(new DefaultVersionConstraint("1.0").containsVersion(new DefaultVersion("1.0")));
+        assertFalse(new DefaultVersionConstraint("1.0").containsVersion(new DefaultVersion("2.0")));
 
         assertTrue(new DefaultVersionConstraint("1.0").containsVersion(new TestVersion("1.0")));
         assertFalse(new DefaultVersionConstraint("1.0").containsVersion(new TestVersion("2.0")));
@@ -89,8 +88,8 @@ public class DefaultVersionConstraintTest
     @Test
     void isCompatible()
     {
-        assertTrue(new DefaultVersionConstraint("1.0").isCompatible((Version) new DefaultVersion("1.0")));
-        assertTrue(new DefaultVersionConstraint("1.0").isCompatible((Version) new DefaultVersion("2.0")));
+        assertTrue(new DefaultVersionConstraint("1.0").isCompatible(new DefaultVersion("1.0")));
+        assertTrue(new DefaultVersionConstraint("1.0").isCompatible(new DefaultVersion("2.0")));
 
         assertTrue(new DefaultVersionConstraint("1.0").isCompatible(new TestVersion("1.0")));
         assertTrue(new DefaultVersionConstraint("1.0").isCompatible(new TestVersion("2.0")));
