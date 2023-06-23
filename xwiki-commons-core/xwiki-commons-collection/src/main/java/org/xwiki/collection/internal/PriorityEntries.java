@@ -22,6 +22,7 @@ package org.xwiki.collection.internal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -37,7 +38,7 @@ public class PriorityEntries<E extends Comparable<E>>
 {
     protected final Map<String, E> map;
 
-    protected List<E> sorted;
+    protected AtomicReference<List<E>> sorted = new AtomicReference<>();
 
     protected ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -123,17 +124,20 @@ public class PriorityEntries<E extends Comparable<E>>
      */
     public List<E> getSorted()
     {
-        if (this.sorted == null) {
+        // Copy to a local variable to avoid other threads overriding the value
+        List<E> result = this.sorted.get();
+        if (result == null) {
             this.lock.readLock().lock();
 
             try {
-                this.sorted = this.map.values().stream().sorted().collect(Collectors.toList());
+                result = this.map.values().stream().sorted().collect(Collectors.toList());
+                // Only set the value if it's still null. If it's not null it means another thread already set it.
+                this.sorted.compareAndSet(null, result);
             } finally {
                 this.lock.readLock().unlock();
             }
         }
-
-        return this.sorted;
+        return result;
     }
 
     /**
@@ -172,7 +176,7 @@ public class PriorityEntries<E extends Comparable<E>>
 
         try {
             this.map.put(key, value);
-            this.sorted = null;
+            this.sorted.set(null);
         } finally {
             this.lock.writeLock().unlock();
         }
@@ -189,7 +193,7 @@ public class PriorityEntries<E extends Comparable<E>>
         try {
             E value = this.map.remove(key);
             if (value != null) {
-                this.sorted = null;
+                this.sorted.set(null);
             }
 
             return value;
