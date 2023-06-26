@@ -62,7 +62,7 @@ public interface Job extends Runnable
     void initialize(Request request);
 
     /**
-     * Causes the current thread to wait until this job has FINSHED state.
+     * Causes the current thread to wait until this job has FINISHED state.
      *
      * @throws InterruptedException if any thread has interrupted the current thread. The <i>interrupted status</i> of
      *             the current thread is cleared when this exception is thrown.
@@ -70,7 +70,7 @@ public interface Job extends Runnable
     void join() throws InterruptedException;
 
     /**
-     * Causes the current thread to wait until this job has FINSHED state.
+     * Causes the current thread to wait until this job has FINISHED state.
      *
      * @param time the maximum time to wait
      * @param unit the time unit of the {@code time} argument
