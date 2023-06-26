@@ -1499,6 +1499,7 @@
                     <exclude>commons-logging:commons-logging</exclude>
                     <exclude>commons-logging:commons-logging-api</exclude>
                     <exclude>log4j:log4j</exclude>
+                    <exclude>ch.qos.reload4j:reload4j</exclude>
                     <exclude>org.apache.logging.log4j:log4j-core</exclude>
                     <!-- Also forbid this artifact since it conflicts with the Log4j 2.x to SLF4J one, see
                          https://logging.apache.org/log4j/2.x/log4j-to-slf4j/index.html -->
