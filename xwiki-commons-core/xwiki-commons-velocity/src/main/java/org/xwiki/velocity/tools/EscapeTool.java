@@ -32,6 +32,7 @@ import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xwiki.stability.Unstable;
 import org.xwiki.xml.XMLUtils;
 
 /**
@@ -65,6 +66,8 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
 
     /** And sign. */
     private static final String AND = "&";
+
+    private XWiki21EscapeTool xWiki21EscapeTool = new XWiki21EscapeTool(this);
 
     /**
      * Change the default key defined in {@link org.apache.velocity.tools.generic.EscapeTool}.
@@ -272,5 +275,15 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
             encodedURL = encodedURL.replaceAll("\\+", "%20");
         }
         return encodedURL;
+    }
+
+    /**
+     * @return an instance of escapetool specific for {@code xwiki/21}
+     * @since 14.9RC1
+     */
+    @Unstable
+    public XWiki21EscapeTool getXwiki21()
+    {
+        return this.xWiki21EscapeTool;
     }
 }
