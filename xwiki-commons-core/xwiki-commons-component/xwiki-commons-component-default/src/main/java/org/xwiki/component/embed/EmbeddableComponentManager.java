@@ -417,7 +417,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
     {
         try {
             return getComponentInstance(roleEntry);
-        } catch (Exception e) {
+        } catch (Exception|Error e) {
             if (roleEntry.descriptor.isMandatory()) {
                 throw new ComponentLookupException("Failed to lookup component with type ["
                     + roleEntry.descriptor.getRoleType() + "] and hint [" + roleEntry.descriptor.getRoleHint() + "]",
