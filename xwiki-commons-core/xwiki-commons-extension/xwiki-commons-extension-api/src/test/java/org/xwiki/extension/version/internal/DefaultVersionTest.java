@@ -89,12 +89,23 @@ class DefaultVersionTest
 
         assertTrue(new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1-milestone-1")) > 0);
         assertTrue(new DefaultVersion("1.1.1").compareTo(new DefaultVersion("1.1-milestone-1")) > 0);
+
+        assertTrue(new DefaultVersion("1.1-SNAPSHOT").compareTo(new DefaultVersion("1.1-20230702.094921-16")) > 0);
+        assertTrue(
+            new DefaultVersion("1.1-20230702.094921-16").compareTo(new DefaultVersion("1.1-20230702.094922-16")) < 0);
+        assertTrue(
+            new DefaultVersion("1.1-20230702.094922-16").compareTo(new DefaultVersion("1.1-20230702.094921-16")) > 0);
     }
 
     @Test
     void getType()
     {
         assertEquals(Version.Type.SNAPSHOT, new DefaultVersion("1.1-SNAPSHOT").getType());
+        assertEquals(Version.Type.SNAPSHOT, new DefaultVersion("1.1-SNAPSHOT-1").getType());
+        assertEquals(Version.Type.SNAPSHOT, new DefaultVersion("1.1-SNAPSHOT-20230702.094921-16").getType());
+        assertEquals(Version.Type.SNAPSHOT, new DefaultVersion("1.1-20230702.094921-16").getType());
+        assertEquals(Version.Type.SNAPSHOT, new DefaultVersion("1.1-20230705.143513-0").getType());
+        assertEquals(Version.Type.STABLE, new DefaultVersion("1.1-20230702.094921").getType());
         assertEquals(Version.Type.BETA, new DefaultVersion("1.1-milestone-1").getType());
         assertEquals(Version.Type.STABLE, new DefaultVersion("1.1").getType());
         assertEquals(Version.Type.BETA, new DefaultVersion("1.1A2").getType());

@@ -46,6 +46,8 @@ import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepositoryException;
 import org.xwiki.extension.repository.internal.AbstractCachedExtensionRepository;
+import org.xwiki.extension.version.Version.Type;
+import org.xwiki.extension.version.internal.DefaultVersion;
 
 /**
  * Default implementation of {@link LocalExtensionRepository}.
@@ -152,7 +154,18 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
      */
     private DefaultLocalExtension createExtension(Extension extension)
     {
-        DefaultLocalExtension localExtension = new DefaultLocalExtension(this, extension);
+        ExtensionId localExtensionId = extension.getId();
+
+        // If the artifact version is "*-SNAPSHOT" we need to convert it to a timestamped version to make the difference
+        // with future SNAPSHOTS of the same version
+        if (extension.getId().getVersion().getType() == Type.SNAPSHOT) {
+            String extensionVersion = DefaultVersion.resolveSNAPSHOT(extension.getId().getVersion().getValue());
+            if (!StringUtils.equals(extensionVersion, extension.getId().getVersion().getValue())) {
+                localExtensionId = new ExtensionId(localExtensionId.getId(), extensionVersion);
+            }
+        }
+
+        DefaultLocalExtension localExtension = new DefaultLocalExtension(this, localExtensionId, extension);
 
         if (StringUtils.isNotEmpty(localExtension.getType())) {
             localExtension.setFile(this.storage.getNewExtensionFile(localExtension.getId(), localExtension.getType()));

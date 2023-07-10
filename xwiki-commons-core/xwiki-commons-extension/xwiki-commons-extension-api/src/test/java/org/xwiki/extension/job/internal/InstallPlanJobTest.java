@@ -1154,9 +1154,7 @@ class InstallPlanJobTest extends AbstractExtensionHandlerTest
 
         assertThrows(InstallException.class, () -> {
             // Try to replace rsimple with an incompatible extension on root
-            ExtensionPlan plan = installPlan(createInstallRequest(TestResources.REMOTE_SIMPLE_FEATURE_ID));
-
-            assertEquals(null, plan);
+            installPlan(createInstallRequest(TestResources.REMOTE_SIMPLE_FEATURE_ID));
         });
     }
 
@@ -1168,9 +1166,7 @@ class InstallPlanJobTest extends AbstractExtensionHandlerTest
 
         assertThrows(InstallException.class, () -> {
             // Try to replace rsimple with an incompatible extension on root
-            ExtensionPlan plan = installPlan(createInstallRequest(TestResources.REMOTE_SIMPLE_FEATURE_ID));
-
-            assertEquals(null, plan);
+            installPlan(createInstallRequest(TestResources.REMOTE_SIMPLE_FEATURE_ID));
         });
     }
 }

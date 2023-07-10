@@ -61,6 +61,22 @@ public class DefaultLocalExtension extends AbstractExtension implements LocalExt
     }
 
     /**
+     * Create new extension descriptor by copying provided one.
+     *
+     * @param repository the repository where this extension comes from
+     * @param extensionId the identifier of the local extension
+     * @param extension the extension to copy
+     * @since 15.6RC1
+     */
+    public DefaultLocalExtension(DefaultLocalExtensionRepository repository, ExtensionId extensionId,
+        Extension extension)
+    {
+        super(repository, extensionId, extension.getType());
+
+        set(extension);
+    }
+
+    /**
      * @return the file containing the extension description
      */
     public File getDescriptorFile()

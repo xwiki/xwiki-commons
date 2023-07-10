@@ -22,33 +22,51 @@ package org.xwiki.extension.version.internal;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.extension.version.Version;
+import org.xwiki.extension.version.internal.DefaultVersion.Element.ElementType;
 
 /**
  * Default implementation of {@link Version}. Note each repositories generally provide their own implementation based on
  * their own version standard.
  * <p>
- * Based on AETHER rules which is itself based on Maven specifications.
- * <p>
- * org.sonatype.aether.util.version.GenericVersion has been rewritten because it's impossible to extends it or even
- * access its details to properly implements {@link #getType()} for example.
+ * Based on Maven Resolver logic but also adds Maven SNAPSHOT timestamp handling.
  *
  * @version $Id$
  * @since 4.0M1
  */
 public class DefaultVersion implements Version
 {
+    /**
+     * The format of a timestamped SNAPSHOT version.
+     * 
+     * @since 15.6RC1
+     */
+    public static final Pattern SNAPSHOT_TIMESTAMP = Pattern.compile("-\\d{8}\\.\\d{6}-\\d+$");
+
+    /**
+     * The format of a timestamped SNAPSHOT version.
+     * 
+     * @since 15.6RC1
+     */
+    public static final String SNAPSHOT_TIMESTAMP_FORMAT = "yyyyMMdd.HHmmss";
+
+    private static final Pattern LOCAL_SNAPSHOT_VERSION = Pattern.compile("-SNAPSHOT$");
+
     /**
      * Serialization identifier.
      */
@@ -232,14 +250,16 @@ public class DefaultVersion implements Version
 
         static {
             QUALIFIERS = new HashMap<>();
-            QUALIFIERS.put("alpha", Integer.valueOf(-5));
-            QUALIFIERS.put("a", Integer.valueOf(-5));
-            QUALIFIERS.put("beta", Integer.valueOf(-4));
-            QUALIFIERS.put("b", Integer.valueOf(-4));
-            QUALIFIERS.put("milestone", Integer.valueOf(-3));
-            QUALIFIERS.put("m", Integer.valueOf(-3));
-            QUALIFIERS.put("cr", Integer.valueOf(-2));
-            QUALIFIERS.put("rc", Integer.valueOf(-2));
+            QUALIFIERS.put("alpha", Integer.valueOf(-6));
+            QUALIFIERS.put("a", Integer.valueOf(-6));
+            QUALIFIERS.put("beta", Integer.valueOf(-5));
+            QUALIFIERS.put("b", Integer.valueOf(-5));
+            QUALIFIERS.put("milestone", Integer.valueOf(-4));
+            QUALIFIERS.put("m", Integer.valueOf(-4));
+            QUALIFIERS.put("cr", Integer.valueOf(-3));
+            QUALIFIERS.put("rc", Integer.valueOf(-3));
+            // -2 is the SNAPSHOT timestamp (we want the undefined SNAPSHOT to represent the current SNAPSHOT so great
+            // than a specific SNAPSHOT)
             QUALIFIERS.put("snapshot", Integer.valueOf(-1));
             QUALIFIERS.put("ga", Integer.valueOf(0));
             QUALIFIERS.put("final", Integer.valueOf(0));
@@ -258,6 +278,11 @@ public class DefaultVersion implements Version
         private final Object value;
 
         /**
+         * A secondary value to use when the value is equals.
+         */
+        private Object secondaryValue;
+
+        /**
          * @see #getVersionType()
          */
         private Type versionType = Type.STABLE;
@@ -270,8 +295,14 @@ public class DefaultVersion implements Version
 
         public Element(String token)
         {
-            this.elementType = ElementType.STRING;
-            this.value = token;
+            this(ElementType.STRING, token, null);
+        }
+
+        public Element(ElementType elementType, Object value, Object secondaryValue)
+        {
+            this.elementType = elementType;
+            this.value = value;
+            this.secondaryValue = secondaryValue;
         }
 
         /**
@@ -358,6 +389,10 @@ public class DefaultVersion implements Version
                         default:
                             throw new IllegalStateException(ERROR_UNKNOWNKIND + this.elementType);
                     }
+
+                    if (rel == 0 && this.secondaryValue != null && that.secondaryValue != null) {
+                        rel = this.secondaryValue.toString().compareToIgnoreCase(that.secondaryValue.toString());
+                    }
                 }
             }
 
@@ -387,6 +422,19 @@ public class DefaultVersion implements Version
             return this.value.toString();
         }
 
+    }
+
+    public static String resolveSNAPSHOT(String version)
+    {
+        String resolvedVersion = version;
+        Matcher snapshotMatcher = LOCAL_SNAPSHOT_VERSION.matcher(resolvedVersion);
+        if (snapshotMatcher.find()) {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd.HHmmss");
+            resolvedVersion =
+                resolvedVersion.substring(0, snapshotMatcher.start()) + '-' + formatter.format(new Date()) + "-0";
+        }
+
+        return resolvedVersion;
     }
 
     /**
@@ -433,12 +481,16 @@ public class DefaultVersion implements Version
         this.elements = new ArrayList<>();
 
         try {
-            for (Tokenizer tokenizer = new Tokenizer(this.rawVersion); tokenizer.next();) {
-                Element element = new Element(tokenizer);
-                this.elements.add(element);
-                if (element.getVersionType() != Type.STABLE) {
-                    this.type = element.getVersionType();
-                }
+            Matcher matcher = SNAPSHOT_TIMESTAMP.matcher(this.rawVersion);
+            if (matcher.find()) {
+                // We need to match special snapshot style timestamp version as a SNAPSHOT and as a single element
+                String baseVersion = this.rawVersion.substring(0, matcher.start());
+                parseElements(baseVersion);
+                this.elements.add(new Element(ElementType.QUALIFIER, -2, this.rawVersion.substring(matcher.start())));
+
+                this.type = Type.SNAPSHOT;
+            } else {
+                this.type = parseElements(this.rawVersion);
             }
 
             trimPadding(this.elements);
@@ -447,6 +499,21 @@ public class DefaultVersion implements Version
             LOGGER.error("Failed to parse version [" + this.rawVersion + "]", e);
             this.elements.add(new Element(this.rawVersion));
         }
+    }
+
+    private Type parseElements(String versionToParse)
+    {
+        Type type = Type.STABLE;
+
+        for (Tokenizer tokenizer = new Tokenizer(versionToParse); tokenizer.next();) {
+            Element element = new Element(tokenizer);
+            this.elements.add(element);
+            if (element.getVersionType() != Type.STABLE) {
+                type = element.getVersionType();
+            }
+        }
+
+        return type;
     }
 
     /**
