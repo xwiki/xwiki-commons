@@ -83,6 +83,10 @@ public class DefaultVersion implements Version
      */
     private String rawVersion;
 
+    private String baseVersion;
+
+    private boolean timestampSNAPSHOT;
+
     /**
      * The version cut in peaces for easier comparison.
      */
@@ -438,6 +442,49 @@ public class DefaultVersion implements Version
     }
 
     /**
+     * @param version the version to check
+     * @return true if the passed version is a wildcard snapshot version
+     * @since 15.6RC1
+     */
+    public static boolean isWildcardSNAPSHOT(Version version)
+    {
+        return version.getType() == Type.SNAPSHOT && version instanceof DefaultVersion
+            && !((DefaultVersion) version).isTimestampSNAPSHOT();
+    }
+
+    /**
+     * @param version1 the first version
+     * @param version2 the second version
+     * @return true if both versions have the same base version
+     * @since 15.6RC1
+     */
+    public static boolean equalBase(Version version1, Version version2)
+    {
+        if (version1.getType() == Type.SNAPSHOT && version2.getType() == Type.SNAPSHOT
+            && version1 instanceof DefaultVersion && version2 instanceof DefaultVersion) {
+            return ((DefaultVersion) version1).getBaseVersion().equals(((DefaultVersion) version2).getBaseVersion());
+        }
+
+        return version1.equals(version2);
+    }
+
+    /**
+     * @param version1 the first version
+     * @param version2 the second version
+     * @return true if both versions have the same base version
+     * @since 15.6RC1
+     */
+    public static int compareToBase(Version version1, Version version2)
+    {
+        if (version1.getType() == Type.SNAPSHOT && version2.getType() == Type.SNAPSHOT
+            && version1 instanceof DefaultVersion && version2 instanceof DefaultVersion) {
+            return ((DefaultVersion) version1).getBaseVersion().compareTo(((DefaultVersion) version2).getBaseVersion());
+        }
+
+        return version1.compareTo(version2);
+    }
+
+    /**
      * @param rawVersion the original string representation of the version
      */
     public DefaultVersion(String rawVersion)
@@ -474,6 +521,34 @@ public class DefaultVersion implements Version
     }
 
     /**
+     * @return true if the version if a timestamp SNAPSHOT version
+     * @since 15.6RC1
+     */
+    public boolean isTimestampSNAPSHOT()
+    {
+        return this.timestampSNAPSHOT;
+    }
+
+    /**
+     * @return the base version
+     * @since 15.6RC1
+     */
+    public String getBaseVersion()
+    {
+        if (this.baseVersion == null) {
+            this.baseVersion = this.rawVersion;
+            if (getType() == Type.SNAPSHOT) {
+                int index = this.baseVersion.lastIndexOf("-SNAPSHOT");
+                if (index > -1) {
+                    this.baseVersion = this.baseVersion.substring(0, index);
+                }
+            }
+        }
+
+        return this.baseVersion;
+    }
+
+    /**
      * Parse the string representation of the version into separated elements.
      */
     private void parse()
@@ -484,8 +559,9 @@ public class DefaultVersion implements Version
             Matcher matcher = SNAPSHOT_TIMESTAMP.matcher(this.rawVersion);
             if (matcher.find()) {
                 // We need to match special snapshot style timestamp version as a SNAPSHOT and as a single element
-                String baseVersion = this.rawVersion.substring(0, matcher.start());
-                parseElements(baseVersion);
+                this.timestampSNAPSHOT = true;
+                this.baseVersion = this.rawVersion.substring(0, matcher.start());
+                parseElements(this.baseVersion);
                 this.elements.add(new Element(ElementType.QUALIFIER, -2, this.rawVersion.substring(matcher.start())));
 
                 this.type = Type.SNAPSHOT;

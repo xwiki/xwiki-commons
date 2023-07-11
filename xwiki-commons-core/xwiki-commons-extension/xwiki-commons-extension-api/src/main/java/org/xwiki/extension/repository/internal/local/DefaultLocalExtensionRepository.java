@@ -190,11 +190,14 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
                 localExtension = createExtension(extension);
 
                 // Store the extension file if any
-                DefaultLocalExtensionFile extensionFile = localExtension.getFile();
-                if (extensionFile != null) {
-                    File targetFile = localExtension.getFile().getFile();
-                    InputStream is = extension.getFile().openStream();
-                    FileUtils.copyInputStreamToFile(is, targetFile);
+                if (extension.getFile() != null) {
+                    DefaultLocalExtensionFile extensionFile = localExtension.getFile();
+                    if (extensionFile != null) {
+                        File targetFile = localExtension.getFile().getFile();
+                        try (InputStream is = extension.getFile().openStream()) {
+                            FileUtils.copyInputStreamToFile(is, targetFile);
+                        }
+                    }
                 }
 
                 // Store the extension descriptor
