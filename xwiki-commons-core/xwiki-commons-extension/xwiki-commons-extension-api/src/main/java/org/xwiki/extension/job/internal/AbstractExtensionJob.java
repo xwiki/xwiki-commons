@@ -174,8 +174,9 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
     /**
      * @param action the action containing the extension to download
      * @throws LocalExtensionRepositoryException failed to store extension
+     * @since 15.6RC1
      */
-    protected LocalExtension store(ExtensionPlanAction action) throws LocalExtensionRepositoryException
+    protected LocalExtension storeAction(ExtensionPlanAction action) throws LocalExtensionRepositoryException
     {
         if (action.getAction() == Action.INSTALL || action.getAction() == Action.UPGRADE
             || action.getAction() == Action.DOWNGRADE) {
@@ -188,6 +189,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
     /**
      * @param extension the extension to store
      * @throws LocalExtensionRepositoryException failed to store extension
+     * @since 15.6RC1
      */
     protected LocalExtension storeExtension(Extension extension) throws LocalExtensionRepositoryException
     {

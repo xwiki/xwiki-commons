@@ -117,7 +117,7 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
                 for (ExtensionPlanAction action : actions) {
                     this.progressManager.startStep(actions);
 
-                    store(action);
+                    storeAction(action);
 
                     this.progressManager.endStep(actions);
                 }
