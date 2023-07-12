@@ -151,7 +151,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
 
     private boolean serialized = true;
 
-    private long quesionEnd = -1;
+    private long questionEnd = -1;
 
     /**
      * @param request the request provided when started the job
@@ -352,12 +352,12 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
                 } else {
                     if (unit != null) {
                         // Remember timeout
-                        this.quesionEnd = System.nanoTime() + unit.toNanos(time);
+                        this.questionEnd = System.nanoTime() + unit.toNanos(time);
 
                         notTimeout = this.answered.await(time, unit);
 
                         // Reset time left
-                        this.quesionEnd = -1;
+                        this.questionEnd = -1;
                     } else {
                         this.answered.await();
                     }
@@ -374,7 +374,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
     @Override
     public long getQuestionTimeLeft(TimeUnit unit)
     {
-        return quesionEnd > -1 ? this.quesionEnd - System.nanoTime() : -1;
+        return questionEnd > -1 ? this.questionEnd - System.nanoTime() : -1;
     }
 
     @Override
