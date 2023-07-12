@@ -28,6 +28,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionRewriter;
 import org.xwiki.extension.InstalledExtension;
+import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 
 /**
@@ -42,6 +43,11 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
      * @see #getExtension()
      */
     private Extension extension;
+
+    /**
+     * @see #getLocalExtension()
+     */
+    private LocalExtension localExtension;
 
     /**
      * @see #getRewrittenExtension()
@@ -94,6 +100,21 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
     public Extension getExtension()
     {
         return this.extension;
+    }
+
+    @Override
+    public LocalExtension getLocalExtension()
+    {
+        return this.localExtension;
+    }
+
+    /**
+     * @param localExtension the stored version of the extension on which to perform the action
+     * @since 15.6RC1
+     */
+    public void setLocalExtension(LocalExtension localExtension)
+    {
+        this.localExtension = localExtension;
     }
 
     @Override

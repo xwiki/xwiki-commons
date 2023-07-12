@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +50,7 @@ import org.xwiki.extension.job.ExtensionRequest;
 import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
+import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanAction;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepositoryException;
@@ -108,8 +108,6 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
     protected ExtensionContext extensionContext;
 
     protected JobGroupPath groupPath;
-
-    private final Map<ExtensionId, LocalExtension> localExtensions = new HashMap<>();
 
     @Override
     public void initialize(Request request)
@@ -180,7 +178,12 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
     {
         if (action.getAction() == Action.INSTALL || action.getAction() == Action.UPGRADE
             || action.getAction() == Action.DOWNGRADE) {
-            return storeExtension(action.getExtension());
+            LocalExtension localExtension = storeExtension(action.getExtension());
+
+            if (action instanceof DefaultExtensionPlanAction) {
+                // Update the plan with the stored version of the extension (often needed by extension handlers)
+                ((DefaultExtensionPlanAction) action).setLocalExtension(localExtension);
+            }
         }
 
         return null;
@@ -202,8 +205,6 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
 
             localExtension = this.localExtensionRepository.storeExtension(extension);
         }
-
-        this.localExtensions.put(extension.getId(), localExtension);
 
         return localExtension;
     }
@@ -270,7 +271,11 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
                 uninstallExtension(installedExtension, namespace);
             } else {
                 // Get the extension previous stored in the local repository
-                LocalExtension localExtension = this.localExtensions.get(extension.getId());
+                LocalExtension localExtension = action.getLocalExtension();
+
+                if (localExtension == null) {
+                    localExtension = this.localExtensionRepository.getLocalExtension(extension.getId());
+                }
 
                 if (localExtension == null) {
                     throw new InstallException(String.format("Extension [%s] was not stored", extension.getId()));
