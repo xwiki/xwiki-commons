@@ -85,6 +85,8 @@ public class DefaultVersion implements Version
 
     private String baseVersion;
 
+    private Version sourceVersion;
+
     private boolean timestampSNAPSHOT;
 
     /**
@@ -428,6 +430,11 @@ public class DefaultVersion implements Version
 
     }
 
+    /**
+     * @param version the version for which to resolve the deploy version
+     * @return the deploy version of the passed version
+     * @since 15.6RC1
+     */
     public static String resolveSNAPSHOT(String version)
     {
         String resolvedVersion = version;
@@ -450,38 +457,6 @@ public class DefaultVersion implements Version
     {
         return version.getType() == Type.SNAPSHOT && version instanceof DefaultVersion
             && !((DefaultVersion) version).isTimestampSNAPSHOT();
-    }
-
-    /**
-     * @param version1 the first version
-     * @param version2 the second version
-     * @return true if both versions have the same base version
-     * @since 15.6RC1
-     */
-    public static boolean equalBase(Version version1, Version version2)
-    {
-        if (version1.getType() == Type.SNAPSHOT && version2.getType() == Type.SNAPSHOT
-            && version1 instanceof DefaultVersion && version2 instanceof DefaultVersion) {
-            return ((DefaultVersion) version1).getBaseVersion().equals(((DefaultVersion) version2).getBaseVersion());
-        }
-
-        return version1.equals(version2);
-    }
-
-    /**
-     * @param version1 the first version
-     * @param version2 the second version
-     * @return true if both versions have the same base version
-     * @since 15.6RC1
-     */
-    public static int compareToBase(Version version1, Version version2)
-    {
-        if (version1.getType() == Type.SNAPSHOT && version2.getType() == Type.SNAPSHOT
-            && version1 instanceof DefaultVersion && version2 instanceof DefaultVersion) {
-            return ((DefaultVersion) version1).getBaseVersion().compareTo(((DefaultVersion) version2).getBaseVersion());
-        }
-
-        return version1.compareTo(version2);
     }
 
     /**
@@ -561,6 +536,7 @@ public class DefaultVersion implements Version
                 // We need to match special snapshot style timestamp version as a SNAPSHOT and as a single element
                 this.timestampSNAPSHOT = true;
                 this.baseVersion = this.rawVersion.substring(0, matcher.start());
+                this.sourceVersion = new DefaultVersion(this.baseVersion + "-SNAPSHOT");
                 parseElements(this.baseVersion);
                 this.elements.add(new Element(ElementType.QUALIFIER, -2, this.rawVersion.substring(matcher.start())));
 
@@ -610,6 +586,8 @@ public class DefaultVersion implements Version
         }
     }
 
+    // Version
+
     @Override
     public Type getType()
     {
@@ -618,12 +596,18 @@ public class DefaultVersion implements Version
         return this.type;
     }
 
-    // Version
-
     @Override
     public String getValue()
     {
         return this.rawVersion;
+    }
+
+    @Override
+    public Version getSourceVersion()
+    {
+        initElements();
+
+        return this.sourceVersion != null ? this.sourceVersion : this;
     }
 
     // Object

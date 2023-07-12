@@ -127,6 +127,15 @@ class DefaultVersionTest
     }
 
     @Test
+    void getSourceVersion()
+    {
+        assertEquals(new DefaultVersion("1.0"), new DefaultVersion("1.0").getSourceVersion());
+        assertEquals(new DefaultVersion("1.0-SNAPSHOT"), new DefaultVersion("1.0-SNAPSHOT").getSourceVersion());
+        assertEquals(new DefaultVersion("1.0-SNAPSHOT"),
+            new DefaultVersion("1.0-20230705.143513-0").getSourceVersion());
+    }
+
+    @Test
     void testHashCode()
     {
         assertEquals(new DefaultVersion("1.1").hashCode(), new DefaultVersion("1.1").hashCode());

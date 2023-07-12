@@ -250,8 +250,8 @@ public class DefaultVersionConstraint implements VersionConstraint
     {
         if (getRangesInternal().isEmpty()) {
             if (getVersion() != null) {
-                if (DefaultVersion.isWildcardSNAPSHOT(getVersion())) {
-                    return DefaultVersion.equalBase(getVersion(), version);
+                if (DefaultVersion.isWildcardSNAPSHOT(getVersion()) && version != null) {
+                    return getVersion().getSourceVersion().equals(version.getSourceVersion());
                 } else {
                     return getVersion().equals(version);
                 }
@@ -273,7 +273,7 @@ public class DefaultVersionConstraint implements VersionConstraint
         boolean compatible;
         if (getVersion() != null) {
             if (DefaultVersion.isWildcardSNAPSHOT(getVersion())) {
-                compatible = DefaultVersion.compareToBase(getVersion(), version) >= 0;
+                compatible = version.getSourceVersion().compareTo(getVersion()) >= 0;
             } else {
                 compatible = version.compareTo(getVersion()) >= 0;
             }
