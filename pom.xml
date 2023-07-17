@@ -2190,8 +2190,10 @@
                    Java will give about 1/4th of the physical memory which can be not enough or too much (e.g. on a CI
                    agent too much means we cannot run as many jobs in parallel as we could).
                  - Take a heap dump on low memory to diagnose issues
+                 - Add add-opens directives to support tests using reflection and xwiki runtime code (or its deps)
+                   requiring some features forbidden by default with Java 17+
             -->
-            <argLine>@{argLine} -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory}</argLine>
+            <argLine>@{argLine} -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory} --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED</argLine>
           </configuration>
         </plugin>
         <plugin>
