@@ -22,6 +22,8 @@ package org.xwiki.extension.version.internal;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -77,6 +79,17 @@ public class DefaultVersion implements Version
     private static final int MAX_INTEGER_LENGTH = MAX_INTEGER_STRING.length();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultVersion.class);
+
+    private static final VarHandle ELEMENTS_HANDLE;
+
+    static {
+        try {
+            ELEMENTS_HANDLE = MethodHandles.lookup()
+                .findVarHandle(DefaultVersion.class, "elements", List.class);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
     /**
      * The original version string representation.
@@ -440,7 +453,7 @@ public class DefaultVersion implements Version
         String resolvedVersion = version;
         Matcher snapshotMatcher = LOCAL_SNAPSHOT_VERSION.matcher(resolvedVersion);
         if (snapshotMatcher.find()) {
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd.HHmmss");
+            SimpleDateFormat formatter = new SimpleDateFormat(SNAPSHOT_TIMESTAMP_FORMAT);
             resolvedVersion =
                 resolvedVersion.substring(0, snapshotMatcher.start()) + '-' + formatter.format(new Date()) + "-0";
         }
@@ -482,7 +495,9 @@ public class DefaultVersion implements Version
      */
     private void initElements()
     {
-        if (this.elements == null) {
+        // Make sure that no loads of, e.g., type, are re-ordered before checking if elements is null as otherwise it
+        // could happen that the type is loaded before it has been set by another thread.
+        if (ELEMENTS_HANDLE.getAcquire(this) == null) {
             parse();
         }
     }
@@ -501,6 +516,8 @@ public class DefaultVersion implements Version
      */
     public boolean isTimestampSNAPSHOT()
     {
+        this.initElements();
+
         return this.timestampSNAPSHOT;
     }
 
@@ -510,25 +527,21 @@ public class DefaultVersion implements Version
      */
     public String getBaseVersion()
     {
-        if (this.baseVersion == null) {
-            this.baseVersion = this.rawVersion;
-            if (getType() == Type.SNAPSHOT) {
-                int index = this.baseVersion.lastIndexOf("-SNAPSHOT");
-                if (index > -1) {
-                    this.baseVersion = this.baseVersion.substring(0, index);
-                }
-            }
-        }
+        this.initElements();
 
         return this.baseVersion;
     }
 
     /**
-     * Parse the string representation of the version into separated elements.
+     * Parse the string representation of the version into separated elements. Also initializes the type,
+     * sourceVersion (if different from this version), and baseVersion fields and sets the timestampSNAPSHOT flag.
+     * <p>
+     * All set values are set once to their final value. When the {@code elements} field has been set, all other
+     * values are guaranteed to be set as well.
      */
     private void parse()
     {
-        this.elements = new ArrayList<>();
+        List<Element> newElements = new ArrayList<>();
 
         try {
             Matcher matcher = SNAPSHOT_TIMESTAMP.matcher(this.rawVersion);
@@ -537,35 +550,49 @@ public class DefaultVersion implements Version
                 this.timestampSNAPSHOT = true;
                 this.baseVersion = this.rawVersion.substring(0, matcher.start());
                 this.sourceVersion = new DefaultVersion(this.baseVersion + "-SNAPSHOT");
-                parseElements(this.baseVersion);
-                this.elements.add(new Element(ElementType.QUALIFIER, -2, this.rawVersion.substring(matcher.start())));
+                parseElements(newElements, this.baseVersion);
+                newElements.add(new Element(ElementType.QUALIFIER, -2, this.rawVersion.substring(matcher.start())));
 
                 this.type = Type.SNAPSHOT;
             } else {
-                this.type = parseElements(this.rawVersion);
+                Type calculatedType = parseElements(newElements, this.rawVersion);
+                this.type = calculatedType;
+                if (calculatedType == Type.SNAPSHOT) {
+                    int index = this.rawVersion.lastIndexOf("-SNAPSHOT");
+                    if (index > -1) {
+                        this.baseVersion = this.rawVersion.substring(0, index);
+                    } else {
+                        this.baseVersion = this.rawVersion;
+                    }
+                } else {
+                    this.baseVersion = this.rawVersion;
+                }
             }
 
-            trimPadding(this.elements);
+            trimPadding(newElements);
         } catch (Exception e) {
             // Make sure to never fail no matter what
             LOGGER.error("Failed to parse version [" + this.rawVersion + "]", e);
-            this.elements.add(new Element(this.rawVersion));
+            newElements.add(new Element(this.rawVersion));
+        } finally {
+            // Ensure that all previous writes are visible to other threads after elements has been written.
+            ELEMENTS_HANDLE.setRelease(this, newElements);
         }
     }
 
-    private Type parseElements(String versionToParse)
+    private Type parseElements(List<Element> elements, String versionToParse)
     {
-        Type type = Type.STABLE;
+        Type resultType = Type.STABLE;
 
         for (Tokenizer tokenizer = new Tokenizer(versionToParse); tokenizer.next();) {
             Element element = new Element(tokenizer);
-            this.elements.add(element);
+            elements.add(element);
             if (element.getVersionType() != Type.STABLE) {
-                type = element.getVersionType();
+                resultType = element.getVersionType();
             }
         }
 
-        return type;
+        return resultType;
     }
 
     /**
