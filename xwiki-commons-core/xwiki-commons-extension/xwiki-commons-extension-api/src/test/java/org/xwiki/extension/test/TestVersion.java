@@ -54,10 +54,4 @@ public class TestVersion implements Version
     {
         return Type.STABLE;
     }
-
-    @Override
-    public Version getSourceVersion()
-    {
-        return this;
-    }
 }

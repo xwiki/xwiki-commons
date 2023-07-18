@@ -613,10 +613,10 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             && !Objects.equals(artifactFileExtension, extensionFileExtension)
             && !Objects.equals(MavenUtils.packagingToType(targetMavenExtension), mavenExtension.getType())
             && !Objects.equals(MavenUtils.packagingToType(artifactFileExtension), mavenExtension.getType())) {
-            extensionId = AetherUtils.createExtensionId(fileArtifact, pomArtifact.getVersion(), true, factory);
+            extensionId = AetherUtils.createExtensionId(artifact, true, factory);
             extensionType = MavenUtils.packagingToType(artifactFileExtension);
         } else {
-            extensionId = AetherUtils.createExtensionId(fileArtifact, pomArtifact.getVersion(), false, factory);
+            extensionId = AetherUtils.createExtensionId(artifact, false, factory);
         }
 
         AetherExtension extension = new AetherExtension(extensionId, extensionType, mavenExtension, fileArtifact, this);

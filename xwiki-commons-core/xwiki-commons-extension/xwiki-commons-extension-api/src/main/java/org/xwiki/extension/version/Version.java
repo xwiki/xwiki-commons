@@ -21,8 +21,6 @@ package org.xwiki.extension.version;
 
 import java.io.Serializable;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * An extension version.
  *
@@ -63,18 +61,4 @@ public interface Version extends Comparable<Version>, Serializable
      * @return the type of version
      */
     Type getType();
-
-    /**
-     * Access the version as it was expressed in the source. For example the final version (when deployed or stored in
-     * the XWiki local repository) of a Maven 1.0-SNAPSHOT extension will be of the form "1.0-20230712.163603-0" but in
-     * some cases you might still need to access the source version.
-     * 
-     * @return the version as it was expressed in the source
-     * @since 15.6RC1
-     */
-    @Unstable
-    default Version getSourceVersion()
-    {
-        return this;
-    }
 }

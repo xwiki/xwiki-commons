@@ -23,7 +23,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.extension.AbstractExtensionTest;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
@@ -31,7 +30,6 @@ import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.TestResources;
 import org.xwiki.extension.repository.LocalExtensionRepository;
-import org.xwiki.extension.repository.LocalExtensionRepositoryException;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.ExtensionQuery;
@@ -48,7 +46,6 @@ import org.xwiki.test.mockito.MockitoComponentManager;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -133,30 +130,10 @@ class DefaultLocalExtensionRepositoryTest
     void testResolveUnexistingButSmalerVersionDependency()
     {
         assertThrows(ResolveException.class, () -> {
-            this.localExtensionRepository.resolve(new DefaultExtensionDependency(TestResources.INSTALLED_ID.getId(),
-                new DefaultVersionConstraint("0.9")));
+            this.localExtensionRepository.resolve(
+                new DefaultExtensionDependency(TestResources.INSTALLED_ID.getId(),
+                    new DefaultVersionConstraint("0.9")));
         });
-    }
-
-    @Test
-    void testResolveSNAPSHOTDependency() throws ResolveException, LocalExtensionRepositoryException
-    {
-        LocalExtension snapextension1 =
-            this.localExtensionRepository.storeExtension(new AbstractExtensionTest.TestExtension(
-                new ExtensionId("snapextension", "1.0-20230702.094921-0"), "type"));
-
-        assertThrows(ResolveException.class, () -> {
-            this.localExtensionRepository
-                .resolve(new DefaultExtensionDependency("snapextension", new DefaultVersionConstraint("1.0")));
-        });
-
-        assertThrows(ResolveException.class, () -> {
-            this.localExtensionRepository.resolve(new DefaultExtensionDependency("snapextension",
-                new DefaultVersionConstraint("1.0-20230702.094921-2")));
-        });
-
-        assertSame(snapextension1, this.localExtensionRepository
-            .resolve(new DefaultExtensionDependency("snapextension", new DefaultVersionConstraint("1.0-SNAPSHOT"))));
     }
 
     @Test
