@@ -41,6 +41,7 @@ import org.xwiki.logging.tail.LogTail;
 import org.xwiki.logging.tail.LoggerTail;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.WrappedThreadEventListener;
+import org.xwiki.stability.Unstable;
 
 /**
  * Base implementation of {@link JobStatus}.
@@ -77,7 +78,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
      * <p>
      * We don't want to serialize it.
      */
-    private final transient JobStatus parentJobStatus;
+    private transient JobStatus parentJobStatus;
 
     /**
      * Take care of progress related events to produce a progression information usually used in a progress bar.
@@ -462,6 +463,20 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
     public JobStatus getParentJobStatus()
     {
         return this.parentJobStatus;
+    }
+
+    /**
+     * Allow to set the parent of this job.
+     * This setter is provided for specific usecases when one cannot set it from the context (e.g. from a replay job).
+     * @param parentJobStatus the actual parent job status
+     * @since 15.7
+     * @since 15.5.2
+     * @since 14.10.16
+     */
+    @Unstable
+    public void setParentJobStatus(JobStatus parentJobStatus)
+    {
+        this.parentJobStatus = parentJobStatus;
     }
 
     @Override
