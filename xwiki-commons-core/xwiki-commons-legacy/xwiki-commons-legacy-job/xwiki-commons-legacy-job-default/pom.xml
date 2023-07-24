@@ -24,71 +24,35 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-job</artifactId>
+    <artifactId>xwiki-commons-legacy-job</artifactId>
     <version>15.7-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-job-default</artifactId>
-  <name>XWiki Commons - Job - Default</name>
+  <artifactId>xwiki-commons-legacy-job-default</artifactId>
+  <name>XWiki Commons - Legacy - Job - API</name>
   <packaging>jar</packaging>
-  <description>XWiki Commons - Job - Default</description>
+  <description>Legacy module for xwiki-commons-job-default</description>
   <properties>
-    <xwiki.extension.features>
-      <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
-      org.xwiki.commons:xwiki-commons-job
-    </xwiki.extension.features>
-    <xwiki.jacoco.instructionRatio>0.62</xwiki.jacoco.instructionRatio>
-    <!-- Revapi skipped because it's check in the legacy module -->
-    <xwiki.revapi.skip>true</xwiki.revapi.skip>
+    <xwiki.jacoco.instructionRatio>0.19</xwiki.jacoco.instructionRatio>
+    <!-- The features provided by this module so that it's found when resolving extension -->
+    <xwiki.extension.features>org.xwiki.commons:xwiki-commons-job-default</xwiki.extension.features>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-job-api</artifactId>
+      <artifactId>xwiki-commons-job-default</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-classloader-api</artifactId>
+      <artifactId>xwiki-commons-legacy-job-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-compress</artifactId>
-    </dependency>
-
-    <!-- Test dependencies -->
+    <!-- Testing dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-tool-test-component</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-observation-local</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <executions>
-          <execution>
-            <!-- Specify the "default" execution id so that the "blocker" one is always executed -->
-            <id>default</id>
-            <configuration>
-              <excludes>
-                org/xwiki/job/internal/DefaultJobStatusStore.java,
-                org/xwiki/job/internal/xstream/SafeReflectionConverter.java,
-                org/xwiki/job/internal/xstream/XStreamUtils.java
-              </excludes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>

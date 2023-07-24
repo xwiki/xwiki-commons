@@ -24,25 +24,28 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
+    <artifactId>xwiki-commons-legacy-extension</artifactId>
     <version>15.7-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-legacy</artifactId>
-  <name>XWiki Commons - Legacy</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Legacy</description>
+  <artifactId>xwiki-commons-legacy-extension-api</artifactId>
+  <name>XWiki Commons - Legacy - Extension - API</name>
+  <packaging>jar</packaging>
+  <description>Legacy module for xwiki-commons-extension-api</description>
   <properties>
-    <!-- Skip Enforcer check on legacy dependencies since we allow legacy modules to depend on other legacy modules -->
-    <xwiki.enforcer.no-legacy-dependencies.skip>true</xwiki.enforcer.no-legacy-dependencies.skip>
+    <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
+    <!-- The features provided by this module so that it's found when resolving extension -->
+    <xwiki.extension.features>org.xwiki.commons:xwiki-commons-extension-api</xwiki.extension.features>
   </properties>
-  <modules>
-    <module>xwiki-commons-legacy-classloader</module>
-    <module>xwiki-commons-legacy-component</module>
-    <module>xwiki-commons-legacy-configuration</module>
-    <module>xwiki-commons-legacy-extension</module>
-    <module>xwiki-commons-legacy-job</module>
-    <module>xwiki-commons-legacy-properties</module>
-    <module>xwiki-commons-legacy-velocity</module>
-    <module>xwiki-commons-legacy-velocity-tools</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-extension-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-legacy-job-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>
