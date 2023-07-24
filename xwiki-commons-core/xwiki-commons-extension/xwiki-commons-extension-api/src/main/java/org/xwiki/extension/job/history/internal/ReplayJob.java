@@ -31,6 +31,7 @@ import org.xwiki.extension.job.history.ReplayJobStatus;
 import org.xwiki.extension.job.history.ReplayRequest;
 import org.xwiki.extension.job.internal.AbstractExtensionJob;
 import org.xwiki.job.AbstractJob;
+import org.xwiki.job.AbstractJobStatus;
 import org.xwiki.job.AbstractRequest;
 import org.xwiki.job.GroupedJob;
 import org.xwiki.job.Job;
@@ -134,6 +135,7 @@ public class ReplayJob extends AbstractJob<ReplayRequest, ReplayJobStatus> imple
 
         Job job = this.componentManager.getInstance(Job.class, record.getJobType());
         job.initialize(record.getRequest());
+        ((AbstractJobStatus<?>) job.getStatus()).setParentJobStatus(this.getStatus());
         job.run();
     }
 
