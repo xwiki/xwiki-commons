@@ -33,6 +33,7 @@ import org.xwiki.extension.job.UninstallRequest;
 import org.xwiki.extension.job.history.ExtensionJobHistoryRecord;
 import org.xwiki.extension.job.history.ReplayRequest;
 import org.xwiki.extension.job.internal.AbstractExtensionJob;
+import org.xwiki.job.AbstractJobStatus;
 import org.xwiki.job.GroupedJob;
 import org.xwiki.job.Job;
 import org.xwiki.job.JobGroupPath;
@@ -43,8 +44,10 @@ import org.xwiki.test.junit5.mockito.MockComponent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link ReplayJob}.
@@ -86,13 +89,21 @@ public class ReplayJobTest
         assertNull(installRequest.isStatusLogIsolated());
         assertNull(uninstallRequest.isStatusLogIsolated());
 
+        AbstractJobStatus installJobStatus = mock(AbstractJobStatus.class, "install");
+        AbstractJobStatus uninstallJobStatus = mock(AbstractJobStatus.class, "uninstall");
+
+        when(this.installJob.getStatus()).thenReturn(installJobStatus);
+        when(this.uninstallJob.getStatus()).thenReturn(uninstallJobStatus);
+
         this.replayJob.initialize(request);
         this.replayJob.run();
 
         verify(this.installJob).initialize(installRequest);
+        verify(installJobStatus).setParentJobStatus(this.replayJob.getStatus());
         verify(this.installJob).run();
 
         verify(this.uninstallJob).initialize(uninstallRequest);
+        verify(uninstallJobStatus).setParentJobStatus(this.replayJob.getStatus());
         verify(this.uninstallJob).run();
 
         assertEquals(1, this.replayJob.getStatus().getCurrentRecordNumber());
