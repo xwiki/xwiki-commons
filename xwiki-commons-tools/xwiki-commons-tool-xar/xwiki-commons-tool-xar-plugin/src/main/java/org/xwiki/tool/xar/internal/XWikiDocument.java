@@ -24,8 +24,10 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang3.LocaleUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -57,12 +59,12 @@ public class XWikiDocument
      * @see #getLocale()
      * @since 7.2M1
      */
-    private String locale;
+    private Locale locale;
 
     /**
      * @see #getDefaultLanguage()
      */
-    private String defaultLanguage;
+    private Locale defaultLocale;
 
     /**
      * @see #getCreator()
@@ -208,13 +210,13 @@ public class XWikiDocument
 
         this.reference = readDocumentReference(domdoc);
 
-        this.locale = rootElement.attributeValue("locale");
+        this.locale = LocaleUtils.toLocale(rootElement.attributeValue("locale"));
         if (this.locale == null) {
             // Fallback on old <language> element
-            this.locale = readElement(rootElement, "language");
+            this.locale = readLocaleElement(rootElement, "language");
         }
 
-        this.defaultLanguage = readElement(rootElement, "defaultLanguage");
+        this.defaultLocale = readLocaleElement(rootElement, "defaultLanguage");
         this.creator = readElement(rootElement, "creator");
         this.effectiveMetadataAuthor = readElement(rootElement, AUTHOR_TAG);
         this.contentAuthor = readElement(rootElement, "contentAuthor");
@@ -311,6 +313,22 @@ public class XWikiDocument
     }
 
     /**
+     * Read an element from the XML and convert it to {@link Locale}.
+     *
+     * @param rootElement the root XML element under which to find the element
+     * @param elementName the name of the element to read
+     * @return null or the element value as a String
+     * @throws DocumentException if it is not a valid XML wiki page
+     * @since 15.7RC1
+     * @since 15.5.2
+     * @since 14.10.15
+     */
+    public static Locale readLocaleElement(Element rootElement, String elementName) throws DocumentException
+    {
+        return LocaleUtils.toLocale(readElement(rootElement, elementName));
+    }
+
+    /**
      * @param rootElement the root element of the XML document
      * @return the list of data for each attachment
      * @throws DocumentException if it is not a valid XML wiki page
@@ -358,36 +376,46 @@ public class XWikiDocument
 
     /**
      * @return the language of the document.
-     * @since 7.2M1
+     * @since 15.7RC1
+     * @since 15.5.2
+     * @since 14.10.15
      */
-    public String getLocale()
+    public Locale getLocale()
     {
         return this.locale;
     }
 
     /**
      * @param locale the locale of the document.
-     * @since 7.2M1
+     * @since 15.7RC1
+     * @since 15.5.2
+     * @since 14.10.15
      */
-    public void setLocale(String locale)
+    public void setLocale(Locale locale)
     {
         this.locale = locale;
     }
 
     /**
      * @return the default language of the document.
+     * @since 15.7RC1
+     * @since 15.5.2
+     * @since 14.10.15
      */
-    public String getDefaultLanguage()
+    public Locale getDefaultLocale()
     {
-        return this.defaultLanguage;
+        return this.defaultLocale;
     }
 
     /**
-     * @param defaultLanguage the default language of the document.
+     * @param defaultLocale the default language of the document.
+     * @since 15.7RC1
+     * @since 15.5.2
+     * @since 14.10.15
      */
-    public void setDefaultLanguage(String defaultLanguage)
+    public void setDefaultLocale(Locale defaultLocale)
     {
-        this.defaultLanguage = defaultLanguage;
+        this.defaultLocale = defaultLocale;
     }
 
     /**
