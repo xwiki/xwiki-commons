@@ -36,7 +36,6 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.logging.LoggerConfiguration;
-import org.xwiki.text.StringUtils;
 import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.internal.util.RestrictParseLocationEventHandler;
 import org.xwiki.velocity.introspection.MethodArgumentsUberspector;
@@ -48,6 +47,7 @@ import org.xwiki.velocity.tools.EscapeTool;
 import org.xwiki.velocity.tools.JSONTool;
 import org.xwiki.velocity.tools.ObjectTool;
 import org.xwiki.velocity.tools.RegexTool;
+import org.xwiki.velocity.tools.StringTool;
 import org.xwiki.velocity.tools.URLTool;
 import org.xwiki.velocity.tools.nio.NIOTool;
 
@@ -101,7 +101,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty(EscapeTool.DEFAULT_KEY, EscapeTool.class.getName());
         this.defaultTools.setProperty("regextool", RegexTool.class.getName());
         this.defaultTools.setProperty("collectiontool", CollectionTool.class.getName());
-        this.defaultTools.setProperty("stringtool", StringUtils.class.getName());
+        this.defaultTools.setProperty("stringtool", StringTool.class.getName());
         this.defaultTools.setProperty("jsontool", JSONTool.class.getName());
         this.defaultTools.setProperty("urltool", URLTool.class.getName());
         this.defaultTools.setProperty("exceptiontool", ExceptionUtils.class.getName());
