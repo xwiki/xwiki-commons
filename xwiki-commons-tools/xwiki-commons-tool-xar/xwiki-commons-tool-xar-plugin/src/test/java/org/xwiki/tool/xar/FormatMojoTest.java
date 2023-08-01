@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
@@ -41,7 +42,7 @@ import static org.xwiki.tool.xar.internal.XMLUtils.getSAXReader;
  * @version $Id$
  * @since 5.4.1
  */
-public class FormatMojoTest
+class FormatMojoTest
 {
     @Test
     void defaultLanguageForDefaultDocumentWhenTranslation()
@@ -54,7 +55,7 @@ public class FormatMojoTest
             new File("Some/Space/Document.xml"),
             new File("Some/Space/Document.fr.xml"));
 
-        assertEquals("en", mojo.guessDefaultLanguage(file, files));
+        assertEquals(Locale.ENGLISH, mojo.guessDefaultLocale(file, files));
     }
 
     @Test
@@ -67,7 +68,7 @@ public class FormatMojoTest
 
         File file = new File("Some/Space/Document.xml");
 
-        assertEquals("", mojo.guessDefaultLanguage(file, Collections.EMPTY_LIST));
+        assertEquals(Locale.ROOT, mojo.guessDefaultLocale(file, Collections.emptyList()));
     }
 
     @Test
@@ -80,7 +81,7 @@ public class FormatMojoTest
 
         File file = new File("Some/Space/Document.xml");
 
-        assertEquals("en", mojo.guessDefaultLanguage(file, Collections.EMPTY_LIST));
+        assertEquals(Locale.ENGLISH, mojo.guessDefaultLocale(file, Collections.emptyList()));
     }
 
     @Test
@@ -90,9 +91,8 @@ public class FormatMojoTest
         mojo.defaultLanguage = "en";
 
         File file = new File("Some/Space/Document.fr.xml");
-        List<File> files = Collections.EMPTY_LIST;
 
-        assertEquals("en", mojo.guessDefaultLanguage(file, files));
+        assertEquals(Locale.ENGLISH, mojo.guessDefaultLocale(file, Collections.emptyList()));
     }
 
     @Test
@@ -104,7 +104,7 @@ public class FormatMojoTest
         File file = new File("Some/Space/Document.xml");
         List<File> files = Arrays.asList(new File("Some/OtherSpace/Other.xml"));
 
-        assertEquals("", mojo.guessDefaultLanguage(file, files));
+        assertEquals(Locale.ROOT, mojo.guessDefaultLocale(file, files));
     }
 
     /**
@@ -122,7 +122,7 @@ public class FormatMojoTest
             new File("Space2/Document.xml"),
             new File("Space2/Document.fr.xml"));
 
-        assertEquals("", mojo.guessDefaultLanguage(file, files));
+        assertEquals(Locale.ROOT, mojo.guessDefaultLocale(file, files));
     }
 
     /**

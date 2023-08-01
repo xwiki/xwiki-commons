@@ -25,10 +25,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
@@ -253,21 +255,23 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      * @param file the XML file for which to guess the default language that it should have
      * @param xwikiXmlFiles the list of all XML files that is used to check for translations of the passed XML file
      * @return the default language as a string (e.g. "en" for English or "" for an empty default language)
-     * @since 5.4.1
+     * @since 15.7RC1
+     * @since 15.5.2
+     * @since 14.10.15
      */
-    protected String guessDefaultLanguage(File file, Collection<File> xwikiXmlFiles)
+    protected Locale guessDefaultLocale(File file, Collection<File> xwikiXmlFiles)
     {
         if (isTranslatablePage(file.getPath()) || isContentPage(file.getPath())) {
-            return this.defaultLanguage;
+            return LocaleUtils.toLocale(this.defaultLanguage);
         }
 
-        String language = "";
+        Locale locale = Locale.ROOT;
 
         // Check if the doc is a translation
         Matcher matcher = TRANSLATION_PATTERN.matcher(file.getName());
         if (matcher.matches()) {
             // We're in a translation, use the default language
-            language = this.defaultLanguage;
+            locale = LocaleUtils.toLocale(this.defaultLanguage);
         } else {
             // We're not in a translation, check if there are translations. First get the doc name before the extension
             String prefix = StringUtils.substringBeforeLast(file.getPath(), EXTENSION);
@@ -277,12 +281,12 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
                 Matcher translationMatcher = translationPattern.matcher(xwikiXmlFile.getPath());
                 if (translationMatcher.matches()) {
                     // Found a translation, use the default language
-                    language = this.defaultLanguage;
+                    locale = LocaleUtils.toLocale(this.defaultLanguage);
                     break;
                 }
             }
         }
-        return language;
+        return locale;
     }
 
     protected boolean isContentPage(String filePath)

@@ -24,8 +24,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -71,7 +71,7 @@ public class FormatMojo extends AbstractVerifyMojo
             Collection<File> xmlFiles = getXARXMLFiles();
             for (File file : xmlFiles) {
                 try {
-                    format(file, guessDefaultLanguage(file, xmlFiles));
+                    format(file, guessDefaultLocale(file, xmlFiles));
                 } catch (Exception e) {
                     throw new MojoExecutionException(String.format("Failed to format file [%s]", file), e);
                 }
@@ -81,11 +81,11 @@ public class FormatMojo extends AbstractVerifyMojo
         }
     }
 
-    private void format(File file, String defaultLanguage) throws IOException, DocumentException
+    private void format(File file, Locale defaultLocale) throws IOException, DocumentException
     {
         SAXReader reader = getSAXReader();
         Document domdoc = reader.read(file);
-        format(file.getPath(), domdoc, defaultLanguage);
+        format(file.getPath(), domdoc, defaultLocale);
 
         XWikiXMLWriter writer;
         if (this.pretty) {
@@ -106,7 +106,7 @@ public class FormatMojo extends AbstractVerifyMojo
         getLog().info(String.format("  Formatting [%s/%s]... ok", parentName, file.getName()));
     }
 
-    private void format(String filePath, Document domdoc, String defaultLanguage)
+    private void format(String filePath, Document domdoc, Locale defaultLocale)
     {
         Node node = domdoc.selectSingleNode("xwikidoc/author");
         if (node != null) {
@@ -141,10 +141,10 @@ public class FormatMojo extends AbstractVerifyMojo
         // Set the default language
         Element element = (Element) domdoc.selectSingleNode("xwikidoc/defaultLanguage");
         if (element != null) {
-            if (StringUtils.isEmpty(defaultLanguage)) {
+            if (Locale.ROOT.equals(defaultLocale)) {
                 removeContent(element);
             } else {
-                element.setText(defaultLanguage);
+                element.setText(defaultLocale.toString());
             }
         }
 

@@ -403,7 +403,7 @@ public class XARMojo extends AbstractXARMojo
                 String reference = xdoc.getReference();
                 Element element = new DOMElement(FILE_TAG);
                 element.setText(reference);
-                element.addAttribute("language", xdoc.getLocale());
+                element.addAttribute("language", xdoc.getLocale().toString());
                 element.addAttribute("defaultAction", "0");
 
                 // Add configured properties
