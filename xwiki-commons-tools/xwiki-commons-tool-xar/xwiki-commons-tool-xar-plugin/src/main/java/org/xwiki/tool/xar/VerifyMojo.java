@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
@@ -167,10 +168,10 @@ public class VerifyMojo extends AbstractVerifyMojo
             }
 
             // Verification 7: Check the default language value
-            String expectedDefaultLanguage = guessDefaultLanguage(file, xmlFiles);
-            if (!xdoc.getDefaultLanguage().equals(expectedDefaultLanguage)) {
-                errors.add(String.format("Default Language should have been [%s] but was [%s]", expectedDefaultLanguage,
-                    xdoc.getDefaultLanguage()));
+            Locale expectedDefaultLocale = guessDefaultLocale(file, xmlFiles);
+            if (!xdoc.getDefaultLocale().equals(expectedDefaultLocale)) {
+                errors.add(String.format("Default Language should have been [%s] but was [%s]", expectedDefaultLocale,
+                    xdoc.getDefaultLocale()));
             }
 
             // Verification 8: Verify that all technical pages are hidden (except for visible technical pages).
@@ -202,13 +203,13 @@ public class VerifyMojo extends AbstractVerifyMojo
             }
 
             // Verification 12: Translated pages don't contain any attachment
-            if (StringUtils.isNotEmpty(xdoc.getLocale()) && xdoc.isAttachmentPresent()) {
+            if (!Locale.ROOT.equals(xdoc.getLocale()) && xdoc.isAttachmentPresent()) {
                 errors.add(String.format("[%s] ([%s]) translated page contains attachment(s)", file.getName(),
                     xdoc.getReference()));
             }
 
             // Verification 13: Translated pages don't contain any object
-            if (StringUtils.isNotEmpty(xdoc.getLocale()) && xdoc.isObjectPresent()) {
+            if (!Locale.ROOT.equals(xdoc.getLocale()) && xdoc.isObjectPresent()) {
                 errors.add(String.format("[%s] ([%s]) translated page contains object(s)", file.getName(),
                     xdoc.getReference()));
             }
