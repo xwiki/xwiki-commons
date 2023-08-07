@@ -19,16 +19,19 @@
  */
 package org.xwiki.cache.infinispan.internal;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.io.IOUtils;
 import org.infinispan.configuration.cache.Configuration;
+import org.infinispan.configuration.global.GlobalConfigurationBuilder;
+import org.infinispan.configuration.parsing.ConfigurationBuilderHolder;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.slf4j.Logger;
@@ -85,6 +88,23 @@ public class InfinispanCacheFactory implements CacheFactory, Initializable, Disp
      */
     private EmbeddedCacheManager cacheManager;
 
+    /**
+     * @param environment the environment component
+     * @return the directory where to store Infinispan files
+     * @throws IOException when failing to create the directory
+     */
+    public static File getPersistentDirectory(Environment environment) throws IOException
+    {
+        File persistentDirectory;
+        if (environment != null) {
+            persistentDirectory = new File(environment.getTemporaryDirectory(), "cache/Infinispan");
+        } else {
+            persistentDirectory = Files.createTempDirectory("Infinispan").toFile();
+        }
+
+        return persistentDirectory;
+    }
+
     @Override
     public void initialize() throws InitializationException
     {
@@ -98,20 +118,41 @@ public class InfinispanCacheFactory implements CacheFactory, Initializable, Disp
             this.logger.debug("Can't find any Environment", e);
         }
 
-        InputStream configurationStream = getConfigurationFileAsStream();
+        try (InputStream configurationStream = getConfigurationFileAsStream()) {
+            if (configurationStream != null) {
+                // Load the configuration from file
+                ConfigurationBuilderHolder configurationHolder = InfinispanUtils.parse(configurationStream);
 
-        if (configurationStream != null) {
-            // CacheManager initialization
-            try {
-                this.cacheManager = new DefaultCacheManager(configurationStream);
-            } catch (IOException e) {
-                throw new InitializationException("Failed to create Infinispan cache manager", e);
-            } finally {
-                IOUtils.closeQuietly(configurationStream);
+                // Customize the configuration
+                configure(configurationHolder.getGlobalConfigurationBuilder());
+
+                // Create the cache manager
+                this.cacheManager = new DefaultCacheManager(configurationHolder, true);
+            } else {
+                // Request the default global configuration
+                GlobalConfigurationBuilder configurationBuilder = GlobalConfigurationBuilder.defaultClusteredBuilder();
+
+                // Customize the configuration
+                configure(configurationBuilder);
+
+                // Create the cache manager
+                this.cacheManager = new DefaultCacheManager(configurationBuilder.build());
             }
-        } else {
-            this.cacheManager = new DefaultCacheManager();
+        } catch (IOException e) {
+            throw new InitializationException("Failed to create Infinispan cache manager", e);
         }
+    }
+
+    private void configure(GlobalConfigurationBuilder configurationBuilder) throws IOException
+    {
+        // Configuration global persistent location to avoid a warning
+        configurationBuilder.globalState().enable();
+        configurationBuilder.globalState().persistentLocation(getPersistentLocation());
+    }
+
+    private String getPersistentLocation() throws IOException
+    {
+        return getPersistentDirectory(this.environment).getAbsolutePath();
     }
 
     @Override

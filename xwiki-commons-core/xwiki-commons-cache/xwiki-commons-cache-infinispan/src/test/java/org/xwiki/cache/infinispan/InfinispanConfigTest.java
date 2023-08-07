@@ -20,7 +20,6 @@
 package org.xwiki.cache.infinispan;
 
 import java.io.File;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -38,6 +37,7 @@ import org.xwiki.cache.internal.DefaultCacheManagerConfiguration;
 import org.xwiki.cache.test.AbstractTestCache;
 import org.xwiki.environment.Environment;
 import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.junit5.XWikiTempDir;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -60,6 +60,9 @@ import static org.mockito.Mockito.when;
 // @formatter:on
 class InfinispanConfigTest extends AbstractTestCache
 {
+    @XWikiTempDir
+    private File tmpDir;
+
     private Environment environment;
 
     public InfinispanConfigTest()
@@ -73,10 +76,8 @@ class InfinispanConfigTest extends AbstractTestCache
     {
         this.environment = this.componentManager.registerMockComponent(Environment.class);
 
-        File testDirectory = new File("target/test-" + new Date().getTime()).getAbsoluteFile();
-
-        File temporaryDirectory = new File(testDirectory, "temporary");
-        File permanentDirectory = new File(testDirectory, "permanent");
+        File temporaryDirectory = new File(this.tmpDir, "temporary");
+        File permanentDirectory = new File(this.tmpDir, "permanent");
 
         when(this.environment.getTemporaryDirectory()).thenReturn(temporaryDirectory);
         when(this.environment.getPermanentDirectory()).thenReturn(permanentDirectory);
@@ -115,20 +116,7 @@ class InfinispanConfigTest extends AbstractTestCache
         assertEquals(1, stores.size());
 
         String location = ((SoftIndexFileStoreConfiguration) stores.get(0)).dataLocation();
-        assertEquals(this.environment.getTemporaryDirectory().toString() + "/cache", location);
-    }
-
-    @Test
-    void createCacheWhenFileCachePath() throws Exception
-    {
-        CacheConfiguration configuration = new LRUCacheConfiguration("file-cache-path", 42);
-
-        Cache<String, String> cache = createCache(configuration);
-
-        List<StoreConfiguration> stores = cache.getCacheConfiguration().persistence().stores();
-        assertEquals(1, stores.size());
-
-        String location = ((SoftIndexFileStoreConfiguration) stores.get(0)).dataLocation();
-        assertEquals(System.getProperty("java.io.tmpdir"), location);
+        assertEquals(this.environment.getTemporaryDirectory().toString() + "/cache/Infinispan/file-cache-nopath",
+            location);
     }
 }

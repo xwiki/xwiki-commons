@@ -39,12 +39,12 @@ public abstract class AbstractCacheConfigurationLoader
     /**
      * The XWiki cache API configuration.
      */
-    private CacheConfiguration configuration;
+    protected CacheConfiguration configuration;
 
     /**
      * The environment. Used for example to access temporary folder.
      */
-    private Environment environment;
+    protected Environment environment;
 
     /**
      * The default configuration identifier used to load cache configuration file.
@@ -82,9 +82,9 @@ public abstract class AbstractCacheConfigurationLoader
     }
 
     /**
-     * @return the path of the temporary local folder based on configuration identifier
+     * @return the base directory where to store file based caches
      */
-    protected String createTempDir()
+    protected String getBaseDir()
     {
         String path = (String) this.configuration.get(CONFX_CACHE_PATH);
 
@@ -96,7 +96,23 @@ public abstract class AbstractCacheConfigurationLoader
                 file = new File(System.getProperty("java.io.tmpdir"), "xwiki");
             }
 
-            if (this.configuration.getConfigurationId() == null) {
+            path = file.getAbsolutePath();
+        }
+
+        return path;
+    }
+
+    /**
+     * @return the path of the temporary local folder based on configuration identifier
+     */
+    protected String createTempDir()
+    {
+        String path = (String) this.configuration.get(CONFX_CACHE_PATH);
+
+        if (path == null) {
+            File file = new File(getBaseDir());
+
+            if (this.configuration.getConfigurationId() != null) {
                 file = new File(file, this.configuration.getConfigurationId());
             }
 
