@@ -62,7 +62,7 @@ public class XWikiDocument
     private Locale locale;
 
     /**
-     * @see #getDefaultLanguage()
+     * @see #getDefaultLocale()
      */
     private Locale defaultLocale;
 
