@@ -64,5 +64,11 @@
         </persistence>
      </local-cache-configuration>
 
+     <local-cache-configuration name="file-cache-path" configuration="default">
+        <persistence>
+           <file-store path="${java.io.tmpdir}"/>
+        </persistence>
+     </local-cache-configuration>
+
    </cache-container>
 </infinispan>

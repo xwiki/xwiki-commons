@@ -19,8 +19,6 @@
  */
 package org.xwiki.cache.infinispan.internal;
 
-import java.io.IOException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
@@ -34,8 +32,6 @@ import org.infinispan.configuration.cache.StoreConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
 import org.infinispan.persistence.sifs.configuration.SoftIndexFileStoreConfiguration;
 import org.infinispan.persistence.sifs.configuration.SoftIndexFileStoreConfigurationBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.cache.eviction.EntryEvictionConfiguration;
 import org.xwiki.cache.eviction.LRUEvictionConfiguration;
@@ -54,8 +50,6 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
      * {@link ExpirationConfigurationBuilder}.
      */
     public static final String CONFX_EXPIRATION_WAKEUPINTERVAL = "infinispan.expiration.wakeupinterval";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(InfinispanConfigurationLoader.class);
 
     /**
      * @param configuration the XWiki cache configuration
@@ -186,19 +180,6 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
                 }
             }
         }
-    }
-
-    @Override
-    protected String getBaseDir()
-    {
-        try {
-            return InfinispanCacheFactory.getPersistentDirectory(this.environment).getAbsolutePath();
-        } catch (IOException e) {
-            LOGGER.error("Failed to get the main persistent directory for Infinispan ", e);
-        }
-
-        // Fallback on default behavior
-        return super.getBaseDir();
     }
 
     /**
