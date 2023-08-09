@@ -2119,7 +2119,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.5.3</version>
+          <version>3.0.1</version>
           <configuration>
             <!-- By default the release plugin will execute the "clean" and "verify" goals but won't perform an
                  "install". This is causing problems since several modules will fail to build during release:prepare.
@@ -2130,6 +2130,8 @@
             <goals>deploy</goals>
             <!-- We always use the same version for submodules -->
             <autoVersionSubmodules>true</autoVersionSubmodules>
+            <!-- Indicate the profiles to enable during release perform -->
+            <releaseProfiles>release</releaseProfiles>
           </configuration>
         </plugin>
         <plugin>
@@ -2752,11 +2754,10 @@
     <profile>
       <!-- Profile used when the release plugin executes. We want javadocs and source jars to be released
            + ensure we sign files using GPG. -->
+      <!-- This profile is automatically enabled by release perform -->
       <id>release</id>
       <activation>
         <property>
-          <!-- This property is automatically defined by the Maven release plugin when executing
-               a release. Thus this profile will be automatically enabled when releasing -->
           <name>performRelease</name>
           <value>true</value>
         </property>
@@ -2825,7 +2826,7 @@
               </execution>
             </executions>
           </plugin>
-          <!-- Because of https://jira.codehaus.org/browse/MJAVADOC-329 we need to find a workaround to create a Javadoc
+          <!-- Because of https://issues.apache.org/jira/browse/MJAVADOC-329 we need to find a workaround to create a Javadoc
                JAR to satisfy the Maven Central Repository requirements. We do this by creating an apidocs/ dir in the
                target directory.
                Note that even though this "hack" is only needed for java projects having all their sources in the
