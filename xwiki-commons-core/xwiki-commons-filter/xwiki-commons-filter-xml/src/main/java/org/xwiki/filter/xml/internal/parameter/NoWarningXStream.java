@@ -19,16 +19,12 @@
  */
 package org.xwiki.filter.xml.internal.parameter;
 
-import com.thoughtworks.xstream.MarshallingStrategy;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.ConversionException;
-import com.thoughtworks.xstream.converters.DataHolder;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 
 /**
- * FIXME: Workaround for XStream security rules warning.
+ * Workaround for XStream security rules warning.
  *
  * @version $Id$
  * @since 9.5.2
@@ -36,8 +32,6 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
  */
 public class NoWarningXStream extends XStream
 {
-    private MarshallingStrategy marshallingStrategy;
-
     /**
      * Constructs an XStream with a special {@link HierarchicalStreamDriver}.
      * <p>
@@ -49,27 +43,9 @@ public class NoWarningXStream extends XStream
     public NoWarningXStream(HierarchicalStreamDriver hierarchicalStreamDriver)
     {
         super(hierarchicalStreamDriver);
-    }
 
-    @Override
-    public void setMarshallingStrategy(MarshallingStrategy marshallingStrategy)
-    {
-        super.setMarshallingStrategy(marshallingStrategy);
-
-        this.marshallingStrategy = marshallingStrategy;
-    }
-
-    @Override
-    public Object unmarshal(HierarchicalStreamReader reader, Object root, DataHolder dataHolder)
-    {
-        try {
-            return this.marshallingStrategy.unmarshal(root, reader, dataHolder, getConverterLookup(), getMapper());
-
-        } catch (ConversionException e) {
-            Package pkg = getClass().getPackage();
-            String version = pkg != null ? pkg.getImplementationVersion() : null;
-            e.add("version", version != null ? version : "not available");
-            throw e;
-        }
+        // Allow everything since using a white list is totally unusable for job serialization use case where we don't
+        // know the types in advance (we don't even know the ClassLoader in advance...).
+        addPermission(c -> true);
     }
 }

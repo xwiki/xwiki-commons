@@ -25,12 +25,8 @@ import javax.inject.Singleton;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 
-import com.thoughtworks.xstream.MarshallingStrategy;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.ConversionException;
-import com.thoughtworks.xstream.converters.DataHolder;
 import com.thoughtworks.xstream.core.JVM;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 
 /**
  * A {@link XStream} that never fail whatever value is provided.
@@ -43,7 +39,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 public class SafeXStream extends XStream implements Initializable
 {
     // FIXME: Workaround for XStream security rules warning
-    private MarshallingStrategy marshallingStrategy;
+    //private MarshallingStrategy marshallingStrategy;
 
     @Inject
     private XStreamUtils utils;
@@ -80,10 +76,9 @@ public class SafeXStream extends XStream implements Initializable
         // Protect reflection based marshalling/unmarshalling
         setMarshallingStrategy(new SafeTreeMarshallingStrategy(this.utils));
 
-        // TODO: see what to do about new XStream security rules, the default setup is to use a white list which is
-        // totally unusable for job serialization use case where we don't know the types in advance (we don't even know
-        // the ClassLoader in advance...).
-        // setupDefaultSecurity(this);
+        // Allow everything since using a white list is totally unusable for job serialization use case where we don't
+        // know the types in advance (we don't even know the ClassLoader in advance...).
+        addPermission(c -> true);
     }
 
     /**
@@ -97,14 +92,15 @@ public class SafeXStream extends XStream implements Initializable
     ////////////////////////////////////////////////////////////////////
     // FIXME: Workaround for XStream security rules warning
 
-    @Override
+    /*@Override
     public void setMarshallingStrategy(MarshallingStrategy marshallingStrategy)
     {
         super.setMarshallingStrategy(marshallingStrategy);
 
         this.marshallingStrategy = marshallingStrategy;
-    }
+    }*/
 
+    /*
     @Override
     public Object unmarshal(HierarchicalStreamReader reader, Object root, DataHolder dataHolder)
     {
@@ -117,5 +113,5 @@ public class SafeXStream extends XStream implements Initializable
             e.add("version", version != null ? version : "not available");
             throw e;
         }
-    }
+    }*/
 }
