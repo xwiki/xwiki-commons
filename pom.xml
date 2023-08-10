@@ -239,6 +239,7 @@
     <servlet.version>3.1.0</servlet.version>
 
     <!-- EL implementation -->
+    <!-- Use the same version as the one that comes with the custom XWiki Jetty application server -->
     <apachache-el.version>9.0.52</apachache-el.version>
 
     <!-- The recommended version of known extensions to use -->
@@ -1255,7 +1256,6 @@
       <dependency>
         <groupId>org.mortbay.jasper</groupId>
         <artifactId>apache-el</artifactId>
-        <!-- Use the same version as the one that comes with the custom XWiki Jetty application server -->
         <version>${apachache-el.version}</version>
         <!-- The EL implementation is supposed to come with the application server but we need one for tests -->
         <scope>test</scope>
