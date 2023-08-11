@@ -19,7 +19,7 @@
  */
 package org.xwiki.properties.test;
 
-import javax.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.AssertTrue;
 
 public class TestBeanValidation
 {

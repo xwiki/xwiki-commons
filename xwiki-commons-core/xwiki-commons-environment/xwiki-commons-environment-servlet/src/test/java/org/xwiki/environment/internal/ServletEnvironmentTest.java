@@ -23,7 +23,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.*;
  * @version $Id$
  * @since 3.5M1
  */
-public class ServletEnvironmentTest
+class ServletEnvironmentTest
 {
     private File servletTmpDir;
 
@@ -160,7 +160,7 @@ public class ServletEnvironmentTest
     void getPermanentDirectoryWhenNotSet() throws Exception
     {
         ServletContext servletContext = mock(ServletContext.class);
-        when(servletContext.getAttribute("javax.servlet.context.tempdir")).thenReturn(this.servletTmpDir);
+        when(servletContext.getAttribute("jakarta.servlet.context.tempdir")).thenReturn(this.servletTmpDir);
         this.environment.setServletContext(servletContext);
 
         Logger logger = mock(Logger.class);
@@ -187,7 +187,7 @@ public class ServletEnvironmentTest
     void getTemporaryDirectoryWhenNotSet() throws Exception
     {
         ServletContext servletContext = mock(ServletContext.class);
-        when(servletContext.getAttribute("javax.servlet.context.tempdir")).thenReturn(this.servletTmpDir);
+        when(servletContext.getAttribute("jakarta.servlet.context.tempdir")).thenReturn(this.servletTmpDir);
         this.environment.setServletContext(servletContext);
 
         File tmpDir = this.environment.getTemporaryDirectory();
@@ -210,6 +210,6 @@ public class ServletEnvironmentTest
 
         // Verify that servletContext.getAttribute was called (and that we returned null - this happens because we
         // didn't set any stubbing on servletContext and null is the default returned by Mockito).
-        verify(servletContext).getAttribute("javax.servlet.context.tempdir");
+        verify(servletContext).getAttribute("jakarta.servlet.context.tempdir");
     }
 }
