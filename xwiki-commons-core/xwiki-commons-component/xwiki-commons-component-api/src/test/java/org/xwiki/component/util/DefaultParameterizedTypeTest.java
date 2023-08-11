@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @version $Id$
  */
-public class DefaultParameterizedTypeTest
+class DefaultParameterizedTypeTest
 {
     @Test
     void toStringTest()
