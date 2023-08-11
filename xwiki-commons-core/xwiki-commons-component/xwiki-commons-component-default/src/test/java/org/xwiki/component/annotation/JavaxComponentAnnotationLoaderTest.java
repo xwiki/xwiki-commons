@@ -19,6 +19,12 @@
  */
 package org.xwiki.component.annotation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import java.lang.reflect.Type;
 import java.util.Set;
 
@@ -29,7 +35,7 @@ import javax.inject.Singleton;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
-import org.xwiki.component.ProviderIntegrationTest;
+import org.xwiki.component.JavaxProviderIntegrationTest;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.ContextComponentManagerProvider;
@@ -40,19 +46,13 @@ import org.xwiki.component.internal.namespace.DefaultNamespaceValidator;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 /**
  * Unit tests for {@link ComponentAnnotationLoader}.
  *
  * @version $Id$
  * @since 1.8.1
  */
-public class ComponentAnnotationLoaderTest
+class JavaxComponentAnnotationLoaderTest
 {
     @SuppressWarnings("deprecation")
     @ComponentRole
@@ -99,12 +99,6 @@ public class ComponentAnnotationLoaderTest
     @Component(value = "deprecated")
     @Singleton
     public class DeprecatedSimpleRole implements NotGenericRole<String>
-    {
-    }
-
-    @Component(value = "deprecated")
-    @Singleton
-    public class DeprecatedOverrideRole implements NotGenericRole<String>
     {
     }
 
@@ -181,63 +175,6 @@ public class ComponentAnnotationLoaderTest
         this.loader = new TestableComponentAnnotationLoader(mock(Logger.class));
     }
 
-    /**
-     * Verify that when there are several component implementations for the same role/hint then the one with the highest
-     * priority wins (ie the smallest integer value).
-     */
-    @Test
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    void priorities() throws Exception
-    {
-        ComponentManager componentManager = mock(ComponentManager.class);
-
-        DefaultComponentDescriptor descriptor1 =
-            (DefaultComponentDescriptor) this.loader.getComponentsDescriptors(DeprecatedOverrideRole.class).get(0);
-        descriptor1.setRoleHintPriority(0);
-        ComponentDescriptor descriptor2 = this.loader.getComponentsDescriptors(RootComponentManager.class).get(0);
-        DefaultComponentDescriptor descriptor3 =
-            (DefaultComponentDescriptor) this.loader.getComponentsDescriptors(OverrideRole.class).get(0);
-        descriptor3.setRoleHintPriority(500);
-        ComponentDescriptor descriptor4 =
-            this.loader.getComponentsDescriptors(EmbeddableComponentManagerFactory.class).get(0);
-        ComponentDescriptor descriptor5 =
-            this.loader.getComponentsDescriptors(DefaultComponentManagerManager.class).get(0);
-        ComponentDescriptor descriptor6 =
-            this.loader.getComponentsDescriptors(ContextComponentManagerProvider.class).get(0);
-        ComponentDescriptor descriptor7 = this.loader.getComponentsDescriptors(DefaultNamespaceValidator.class).get(0);
-
-        ComponentDescriptor descriptor8 =
-            this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestProvider1.class).get(0);
-        ComponentDescriptor descriptor9 =
-            this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestProvider12.class).get(0);
-        ComponentDescriptor descriptor10 =
-            this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestProvider2.class).get(0);
-        ComponentDescriptor descriptor11 =
-            this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestComponentWithProviders.class).get(0);
-        ComponentDescriptor descriptor12 = this.loader
-            .getComponentsDescriptors(ProviderIntegrationTest.TestProviderWithExceptionInInitialize.class).get(0);
-        ComponentDescriptor descriptor13 = this.loader
-            .getComponentsDescriptors(ProviderIntegrationTest.TestComponentWithProviderInException.class).get(0);
-
-        this.loader.initialize(componentManager, this.getClass().getClassLoader());
-
-        // This is the test, we verify that registerComponent() is called for each of the descriptor we're expecting
-        // to be discovered through annotations by the call to initialize() below.
-        verify(componentManager, times(1)).registerComponent(descriptor1);
-        verify(componentManager, times(1)).registerComponent(descriptor2);
-        verify(componentManager, times(1)).registerComponent(descriptor3);
-        verify(componentManager, times(1)).registerComponent(descriptor4);
-        verify(componentManager, times(1)).registerComponent(descriptor5);
-        verify(componentManager, times(1)).registerComponent(descriptor6);
-        verify(componentManager, times(1)).registerComponent(descriptor7);
-        verify(componentManager, times(1)).registerComponent(descriptor8);
-        verify(componentManager, times(1)).registerComponent(descriptor9);
-        verify(componentManager, times(1)).registerComponent(descriptor10);
-        verify(componentManager, times(1)).registerComponent(descriptor11);
-        verify(componentManager, times(1)).registerComponent(descriptor12);
-        verify(componentManager, times(1)).registerComponent(descriptor13);
-    }
-
     @Test
     void findComponentRoleTypes()
     {
@@ -267,8 +204,10 @@ public class ComponentAnnotationLoaderTest
         Set<Type> types = this.loader.findComponentRoleTypes(ProviderImpl.class);
 
         assertEquals(1, types.size());
-        assertEquals(new DefaultParameterizedType(null, Provider.class, new DefaultParameterizedType(
-            ComponentAnnotationLoaderTest.class, NotGenericRole.class, String.class)), types.iterator().next());
+        assertEquals(
+            new DefaultParameterizedType(null, Provider.class, new DefaultParameterizedType(
+                JavaxComponentAnnotationLoaderTest.class, NotGenericRole.class, String.class)),
+            types.iterator().next());
     }
 
     @Test
@@ -277,8 +216,9 @@ public class ComponentAnnotationLoaderTest
         Set<Type> types = this.loader.findComponentRoleTypes(GenericComponent.class);
 
         assertEquals(1, types.size());
-        assertEquals(new DefaultParameterizedType(ComponentAnnotationLoaderTest.class, GenericRole.class,
-            String.class), types.iterator().next());
+        assertEquals(
+            new DefaultParameterizedType(JavaxComponentAnnotationLoaderTest.class, GenericRole.class, String.class),
+            types.iterator().next());
     }
 
     @Test
@@ -296,8 +236,9 @@ public class ComponentAnnotationLoaderTest
         Set<Type> types = this.loader.findComponentRoleTypes(ExtendingGenericComponent.class);
 
         assertEquals(1, types.size());
-        assertEquals(new DefaultParameterizedType(ComponentAnnotationLoaderTest.class, GenericRole.class,
-            String.class), types.iterator().next());
+        assertEquals(
+            new DefaultParameterizedType(JavaxComponentAnnotationLoaderTest.class, GenericRole.class, String.class),
+            types.iterator().next());
     }
 
     @Test

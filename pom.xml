@@ -952,6 +952,13 @@
         <version>3.30.2-GA</version>
       </dependency>
 
+      <!-- Injection -->
+      <dependency>
+        <groupId>jakarta.inject</groupId>
+        <artifactId>jakarta.inject-api</artifactId>
+        <version>2.0.1</version>
+      </dependency>
+
       <!-- Triggered by several Maven related projects (Doxia, Maven, Aether) as transitive dependency. We need
            these explicit versions to help Maven decide which version to use. -->
       <dependency>
