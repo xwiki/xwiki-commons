@@ -22,13 +22,13 @@ package org.xwiki.component.internal.multi;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.namespace.NamespaceUtils;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 /**
  * Default implementation of {@link ComponentManagerManager}.
