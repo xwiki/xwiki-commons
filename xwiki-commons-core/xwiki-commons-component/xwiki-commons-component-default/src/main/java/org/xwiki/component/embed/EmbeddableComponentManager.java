@@ -31,8 +31,6 @@ import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.inject.Provider;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.collection.internal.PriorityEntries;
@@ -52,6 +50,8 @@ import org.xwiki.component.manager.ComponentRepositoryException;
 import org.xwiki.component.manager.NamespacedComponentManager;
 import org.xwiki.component.phase.Disposable;
 import org.xwiki.component.util.ReflectionUtils;
+
+import jakarta.inject.Provider;
 
 /**
  * Simple implementation of {@link ComponentManager} to be used when using some XWiki modules standalone.
@@ -583,6 +583,13 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
             if (hasComponent(dependency.getRoleType(), dependency.getRoleHint())) {
                 fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
             } else {
+                fieldValue = createJakartaGenericProvider(descriptor, dependency);
+            }
+        } else if (dependencyRoleClass.isAssignableFrom(javax.inject.Provider.class)) {
+            // Check if there's a Provider registered for the type
+            if (hasComponent(dependency.getRoleType(), dependency.getRoleHint())) {
+                fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
+            } else {
                 fieldValue = createGenericProvider(descriptor, dependency);
             }
         } else if (dependencyRoleClass.isAssignableFrom(ComponentDescriptor.class)) {
@@ -594,9 +601,15 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         return fieldValue;
     }
 
-    protected Provider<?> createGenericProvider(ComponentDescriptor<?> descriptor, ComponentDependency<?> dependency)
+    protected javax.inject.Provider<?> createGenericProvider(ComponentDescriptor<?> descriptor, ComponentDependency<?> dependency)
     {
         return new GenericProvider<>(this, new RoleHint<>(
+            ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()), dependency.getRoleHint()));
+    }
+
+    protected Provider<?> createJakartaGenericProvider(ComponentDescriptor<?> descriptor, ComponentDependency<?> dependency)
+    {
+        return new JakartaGenericProvider<>(this, new RoleHint<>(
             ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()), dependency.getRoleHint()));
     }
 

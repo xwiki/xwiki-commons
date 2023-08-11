@@ -19,10 +19,10 @@
  */
 package org.xwiki.component.embed;
 
-import javax.inject.Provider;
-
 import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentManager;
+
+import jakarta.inject.Provider;
 
 /**
  * Default provider used when the Component Manager needs to inject a {@link Provider} field but no custom Provider has
@@ -31,16 +31,16 @@ import org.xwiki.component.manager.ComponentManager;
  *
  * @param <T> the role type
  * @version $Id$
- * @since 3.3M2
+ * @since ***feature-deploy-jakarta***
  */
-public class GenericProvider<T> extends AbstractGenericProvider<T> implements Provider<T>
+public class JakartaGenericProvider<T> extends AbstractGenericProvider<T> implements Provider<T>
 {
     /**
      * @param componentManager the Component Manager instance that we'll use to look up the Component Role during
      *            {@link javax.inject.Provider#get()}
      * @param roleHint the Component Role and Hint that uniquely identify the Component we wish to provide for
      */
-    public GenericProvider(ComponentManager componentManager, RoleHint<T> roleHint)
+    public JakartaGenericProvider(ComponentManager componentManager, RoleHint<T> roleHint)
     {
         super(componentManager, roleHint);
     }
@@ -48,6 +48,6 @@ public class GenericProvider<T> extends AbstractGenericProvider<T> implements Pr
     @Override
     protected AbstractGenericProvider<T> newProvider(ComponentManager componentManager, RoleHint roleHint)
     {
-        return new GenericProvider<>(componentManager, roleHint);
+        return new JakartaGenericProvider<>(componentManager, roleHint);
     }
 }
