@@ -26,8 +26,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
-import javax.inject.Provider;
+import jakarta.inject.Provider;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.component.util.DefaultParameterizedType;
@@ -42,6 +43,9 @@ import org.xwiki.component.util.ReflectionUtils;
  */
 public class DefaultComponentDependency<T> extends DefaultComponentRole<T> implements ComponentDependency<T>
 {
+    private static final Set<Class<?>> SPECIAL_ROLES =
+        Set.of(List.class, Collection.class, Map.class, javax.inject.Provider.class, Provider.class);
+
     /**
      * @see #getName()
      */
@@ -115,7 +119,8 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
     {
         boolean result;
 
-        // See http://www.technofundo.com/tech/java/equalhash.html for the detail of this algorithm.
+        // See http://www.technofundo.com/tech/java/equalhash.html for the detail of
+        // this algorithm.
         if (this == object) {
             result = true;
         } else {
@@ -192,7 +197,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
     {
         Class mapping = getMappingType();
 
-        if (mapping == List.class || mapping == Collection.class || mapping == Map.class || mapping == Provider.class) {
+        if (SPECIAL_ROLES.contains(mapping)) {
             return ReflectionUtils.getTypeClass(ReflectionUtils.getLastTypeGenericArgument(getRoleType()));
         } else {
             return mapping;
@@ -204,7 +209,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
     {
         Class mapping = getMappingType();
 
-        if (mapping == List.class || mapping == Collection.class || mapping == Map.class || mapping == Provider.class) {
+        if (SPECIAL_ROLES.contains(mapping)) {
             Type ownerType;
             Class<?> rawType;
             if (getRoleType() instanceof ParameterizedType) {

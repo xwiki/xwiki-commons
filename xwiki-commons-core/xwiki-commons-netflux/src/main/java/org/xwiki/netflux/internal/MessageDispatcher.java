@@ -24,8 +24,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.websocket.DecodeException;
-import javax.websocket.EncodeException;
+
+import jakarta.websocket.DecodeException;
+import jakarta.websocket.EncodeException;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;

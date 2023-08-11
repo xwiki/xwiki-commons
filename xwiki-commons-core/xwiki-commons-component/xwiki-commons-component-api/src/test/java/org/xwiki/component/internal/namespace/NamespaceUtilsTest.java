@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  *
  * @version $Id$
  */
-public class NamespaceUtilsTest
+class NamespaceUtilsTest
 {
     @Test
     void getPrefix()

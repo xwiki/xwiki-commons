@@ -24,9 +24,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.descriptor.ComponentDependency;
@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * @version $Id$
  * @since 1.8.1
  */
-public class ComponentDescriptorFactoryTest
+class JakartaComponentDescriptorFactoryTest
 {
     @ComponentRole
     public interface NonGenericFieldRole<T>
@@ -232,7 +232,7 @@ public class ComponentDescriptorFactoryTest
         // private GenericFieldRole<String> genericFieldRole;
         dep = it.next();
         assertSame(GenericFieldRole.class, dep.getRole());
-        assertEquals(new DefaultParameterizedType(ComponentDescriptorFactoryTest.class, GenericFieldRole.class,
+        assertEquals(new DefaultParameterizedType(JakartaComponentDescriptorFactoryTest.class, GenericFieldRole.class,
             String.class), dep.getRoleType());
         assertEquals("default", dep.getRoleHint());
         assertSame(GenericFieldRole.class, dep.getMappingType());

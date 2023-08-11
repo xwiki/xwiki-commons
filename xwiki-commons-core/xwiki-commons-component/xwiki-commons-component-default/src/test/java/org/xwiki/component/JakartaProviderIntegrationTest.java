@@ -22,19 +22,19 @@ package org.xwiki.component;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.embed.EmbeddableComponentManager;
-import org.xwiki.component.embed.EmbeddableComponentManagerTest.Role;
 import org.xwiki.component.embed.EmbeddableComponentManagerTest.RoleImpl;
+import org.xwiki.component.embed.EmbeddableComponentManagerTest.TestRole;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentRepositoryException;
 import org.xwiki.component.phase.Initializable;
@@ -50,12 +50,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  *
  * @version $Id$
  */
-public class ProviderIntegrationTest
+//This class needs to remain public because some interfaces are reused in other tests
+public class JakartaProviderIntegrationTest
 {
     @RegisterExtension
     private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.ERROR);
 
-    @ComponentRole
+    @Role
     public interface TestComponentRole
     {
 
@@ -76,10 +77,10 @@ public class ProviderIntegrationTest
         public Provider<Integer> provider2;
 
         @Inject
-        public Provider<List<Role>> providerList;
+        public Provider<List<TestRole>> providerList;
 
         @Inject
-        public Provider<Map<String, Role>> providerMap;
+        public Provider<Map<String, TestRole>> providerMap;
     }
 
     public static class TestProvider1 implements Provider<String>
@@ -142,13 +143,13 @@ public class ProviderIntegrationTest
         EmbeddableComponentManager cm = new EmbeddableComponentManager();
 
         // Register components for the list and map
-        DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<>();
-        cd1.setRoleType(Role.class);
+        DefaultComponentDescriptor<TestRole> cd1 = new DefaultComponentDescriptor<>();
+        cd1.setRoleType(TestRole.class);
         cd1.setRoleHint("hint1");
         cd1.setImplementation(RoleImpl.class);
         cm.registerComponent(cd1);
-        DefaultComponentDescriptor<Role> cd2 = new DefaultComponentDescriptor<>();
-        cd2.setRoleType(Role.class);
+        DefaultComponentDescriptor<TestRole> cd2 = new DefaultComponentDescriptor<>();
+        cd2.setRoleType(TestRole.class);
         cd2.setRoleHint("hint2");
         cd2.setImplementation(RoleImpl.class);
         cm.registerComponent(cd2);
@@ -175,15 +176,15 @@ public class ProviderIntegrationTest
         EmbeddableComponentManager cm = new EmbeddableComponentManager();
         cm.initialize(getClass().getClassLoader());
 
-        Throwable exception = assertThrows(ComponentLookupException.class,
-            () -> cm.getInstance(TestComponentRole.class, "exception"));
+        Throwable exception =
+            assertThrows(ComponentLookupException.class, () -> cm.getInstance(TestComponentRole.class, "exception"));
         assertEquals("Failed to lookup component "
-            + "[org.xwiki.component.ProviderIntegrationTest$TestComponentWithProviderInException] identified by "
-            + "type [interface org.xwiki.component.ProviderIntegrationTest$TestComponentRole] and hint [exception]",
+            + "[org.xwiki.component.JakartaProviderIntegrationTest$TestComponentWithProviderInException] identified by "
+            + "type [interface org.xwiki.component.JakartaProviderIntegrationTest$TestComponentRole] and hint [exception]",
             exception.getMessage());
         assertEquals("Failed to lookup component "
-            + "[org.xwiki.component.ProviderIntegrationTest$TestProviderWithExceptionInInitialize] identified by "
-            + "type [javax.inject.Provider<java.lang.String>] and hint [exception]",
+            + "[org.xwiki.component.JakartaProviderIntegrationTest$TestProviderWithExceptionInInitialize] identified by "
+            + "type [jakarta.inject.Provider<java.lang.String>] and hint [exception]",
             exception.getCause().getMessage());
         assertEquals("Some error in init", exception.getCause().getCause().getMessage());
     }
@@ -194,19 +195,18 @@ public class ProviderIntegrationTest
         EmbeddableComponentManager cm = new EmbeddableComponentManager();
 
         // Register a bad descriptor (missing an implementation class) to force an error.
-        DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<>();
-        cd.setRoleType(Role.class);
+        DefaultComponentDescriptor<TestRole> cd = new DefaultComponentDescriptor<>();
+        cd.setRoleType(TestRole.class);
         cd.setRoleHint("hint1");
         cm.registerComponent(cd);
 
         cm.initialize(getClass().getClassLoader());
 
         TestComponentWithProviders component = cm.getInstance(TestComponentRole.class);
-        List<Role> components = component.providerList.get();
+        List<TestRole> components = component.providerList.get();
 
-        assertEquals(
-            "Failed to lookup component with"
-                + " type [interface org.xwiki.component.embed.EmbeddableComponentManagerTest$Role] and hint [hint1]",
+        assertEquals("Failed to lookup component with"
+            + " type [interface org.xwiki.component.embed.EmbeddableComponentManagerTest$TestRole] and hint [hint1]",
             this.logCapture.getMessage(0));
     }
 }

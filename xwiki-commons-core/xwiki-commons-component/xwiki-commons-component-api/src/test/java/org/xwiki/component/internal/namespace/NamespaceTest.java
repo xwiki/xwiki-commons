@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * 
  * @version $Id$
  */
-public class NamespaceTest
+class NamespaceTest
 {
     @Test
     void equalsAndHashCode()

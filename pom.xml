@@ -255,11 +255,12 @@
     <antlr4.version>4.13.2</antlr4.version>
 
     <!-- Servlet specifications -->
-    <servlet.version>3.1.0</servlet.version>
+    <javax.servlet.version>3.1.0</javax.servlet.version>
+    <jakarta.servlet.version>5.0.0</jakarta.servlet.version>
 
-    <!-- EL implementation -->
-    <!-- Use the same version as the one that comes with the custom XWiki Jetty application server -->
-    <apache-el.version>9.0.90</apache-el.version>
+    <!-- WebSocket specifications -->
+    <javax.websocket.version>1.1</javax.websocket.version>
+    <jakarta.websocket.version>2.1.1</jakarta.websocket.version>
 
     <webdrivermanager.version>5.9.2</webdrivermanager.version>
 
@@ -757,13 +758,6 @@
         <groupId>com.fasterxml.jackson.module</groupId>
         <artifactId>jackson-module-jsonSchema</artifactId>
         <version>${jackson.version}</version>
-        <exclusions>
-          <!-- We use jakarta.validation:jakarta.validation-api -->
-          <exclusion>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -956,6 +950,13 @@
         <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
         <version>3.30.2-GA</version>
+      </dependency>
+
+      <!-- Injection -->
+      <dependency>
+        <groupId>jakarta.inject</groupId>
+        <artifactId>jakarta.inject-api</artifactId>
+        <version>2.0.1</version>
       </dependency>
 
       <!-- Triggered by several Maven related projects (Doxia, Maven, Aether) as transitive dependency. We need
@@ -1259,7 +1260,12 @@
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
-        <version>${servlet.version}</version>
+        <version>${javax.servlet.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>${jakarta.servlet.version}</version>
         <!-- It should always be provided as the API jar is provided by the Servlet Container in which XWiki is
              deployed -->
         <scope>provided</scope>
@@ -1267,7 +1273,18 @@
       <dependency>
         <groupId>javax.websocket</groupId>
         <artifactId>javax.websocket-api</artifactId>
-        <version>1.1</version>
+        <version>${javax.websocket.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.websocket</groupId>
+        <artifactId>jakarta.websocket-api</artifactId>
+        <version>${jakarta.websocket.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.websocket</groupId>
+        <artifactId>jakarta.websocket-client-api</artifactId>
+        <version>${jakarta.websocket.version}</version>
         <scope>provided</scope>
       </dependency>
       <!-- Needed for Legacy modules. The version needs to be in sync with the one used by the AspectJ plugin -->
@@ -1282,24 +1299,30 @@
         <artifactId>cssparser</artifactId>
         <version>0.9.30</version>
       </dependency>
+
       <!-- Bean validation -->
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>2.0.1.Final</version>
+      </dependency>
       <dependency>
         <groupId>jakarta.validation</groupId>
         <artifactId>jakarta.validation-api</artifactId>
-        <version>2.0.2</version>
+        <version>3.0.2</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate.validator</groupId>
         <artifactId>hibernate-validator</artifactId>
-        <version>6.2.5.Final</version>
+        <version>8.0.1.Final</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>org.mortbay.jasper</groupId>
-        <artifactId>apache-el</artifactId>
-        <version>${apache-el.version}</version>
-        <!-- The EL implementation is supposed to come with the application server, but we need one for tests -->
-        <scope>test</scope>
+        <groupId>org.glassfish.expressly</groupId>
+        <artifactId>expressly</artifactId>
+        <version>5.0.0</version>
+        <!-- The implementation of Expression Language is supposed to come with the application server -->
+        <scope>provided</scope>
       </dependency>
 
       <!-- Mail -->
@@ -2044,25 +2067,6 @@
                     <exclude>javax.transaction:jta</exclude>
                     <exclude>org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec</exclude>
                     <exclude>javax.transaction:javax.transaction-api</exclude>
-                  </excludes>
-                </bannedDependencies>
-              </rules>
-            </configuration>
-          </execution>
-          <!-- Check that we use the right version of the Validation API -->
-          <execution>
-            <id>enforce-jakarta.validation-api</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <skip>${xwiki.enforcer.enforce-jakarta.validation-api.skip}</skip>
-              <rules>
-                <bannedDependencies>
-                  <searchTransitive>true</searchTransitive>
-                  <message>Use jakarta.validation:jakarta.validation-api instead</message>
-                  <excludes>
-                    <exclude>javax.validation:validation-api</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>

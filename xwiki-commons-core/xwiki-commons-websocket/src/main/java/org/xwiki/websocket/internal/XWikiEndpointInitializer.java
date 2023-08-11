@@ -27,11 +27,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import javax.websocket.DeploymentException;
-import javax.websocket.Endpoint;
-import javax.websocket.server.ServerContainer;
-import javax.websocket.server.ServerEndpoint;
-import javax.websocket.server.ServerEndpointConfig;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.server.ServerContainer;
+import jakarta.websocket.server.ServerEndpoint;
+import jakarta.websocket.server.ServerEndpointConfig;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -81,7 +81,7 @@ public class XWikiEndpointInitializer implements Initializable
     private ServerContainer getServerContainer()
     {
         if (this.environment instanceof ServletEnvironment) {
-            return (ServerContainer) ((ServletEnvironment) this.environment).getServletContext()
+            return (ServerContainer) ((ServletEnvironment) this.environment).getJakartaServletContext()
                 .getAttribute(ServerContainer.class.getName());
         } else {
             this.logger.warn("We can't initialize the WebSocket end-points in a non-servlet environment.");

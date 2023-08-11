@@ -39,7 +39,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.inject.Provider;
+import jakarta.inject.Provider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -363,7 +363,11 @@ public class ComponentAnnotationLoader
                     types.add(interfaceType);
                 }
 
-                // Handle javax.inject.Provider
+                // Handle javax.inject.Provider (retro-compatibility since **42.0.0**)
+                if (javax.inject.Provider.class.isAssignableFrom(interfaceClass)) {
+                    types.add(interfaceType);
+                }
+                // Handle jakarta.inject.Provider
                 if (Provider.class.isAssignableFrom(interfaceClass)) {
                     types.add(interfaceType);
                 }
@@ -444,7 +448,11 @@ public class ComponentAnnotationLoader
                     }
                 }
 
-                // Handle javax.inject.Provider
+                // Handle javax.inject.Provider (retro-compatibility since **feature-deploy-jakarta**)
+                if (javax.inject.Provider.class.isAssignableFrom(interfaceClass)) {
+                    classes.add(interfaceClass);
+                }
+                // Handle jakarta.inject.Provider
                 if (Provider.class.isAssignableFrom(interfaceClass)) {
                     classes.add(interfaceClass);
                 }

@@ -22,7 +22,7 @@ package ${package}.internal;
 import ${package}.HelloWorld;
 import org.xwiki.component.annotation.Component;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 /**
  * Implementation of a {@code HelloWorld} component.

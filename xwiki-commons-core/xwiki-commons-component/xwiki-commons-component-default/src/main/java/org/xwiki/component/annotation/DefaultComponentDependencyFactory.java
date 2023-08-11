@@ -21,8 +21,8 @@ package org.xwiki.component.annotation;
 
 import java.lang.reflect.Field;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.DefaultComponentDependency;
@@ -39,30 +39,41 @@ public class DefaultComponentDependencyFactory extends AbstractComponentDependen
     @Override
     public ComponentDependency createComponentDependency(Field field)
     {
-        DefaultComponentDependency dependency;
+        DefaultComponentDependency dependency = null;
 
-        Inject inject = field.getAnnotation(Inject.class);
-        if (inject != null) {
-            dependency = new DefaultComponentDependency();
+        if (field.getAnnotation(Inject.class) != null || field.getAnnotation(javax.inject.Inject.class) != null) {
+            dependency = createDependency(field);
+        }
 
-            Class<?> fieldClass = field.getType();
-            if (ReflectionUtils.getDirectAnnotation(ComponentRole.class, fieldClass) != null
-                && ReflectionUtils.getDirectAnnotation(Role.class, fieldClass) == null) {
-                // since 4.0M1, retro-compatibility (generic type used to not be taken into account)
-                dependency.setRoleType(fieldClass);
-            } else {
-                dependency.setRoleType(field.getGenericType());
-            }
+        return dependency;
+    }
 
-            dependency.setName(field.getName());
+    private DefaultComponentDependency createDependency(Field field)
+    {
+        DefaultComponentDependency dependency = new DefaultComponentDependency();
 
-            // Look for a Named annotation
-            Named named = field.getAnnotation(Named.class);
-            if (named != null) {
-                dependency.setRoleHint(named.value());
-            }
+        Class<?> fieldClass = field.getType();
+        if (ReflectionUtils.getDirectAnnotation(ComponentRole.class, fieldClass) != null
+            && ReflectionUtils.getDirectAnnotation(Role.class, fieldClass) == null) {
+            // since 4.0M1, retro-compatibility (generic type used to not be taken into
+            // account)
+            dependency.setRoleType(fieldClass);
         } else {
-            dependency = null;
+            dependency.setRoleType(field.getGenericType());
+        }
+
+        dependency.setName(field.getName());
+
+        // Look for a Named annotation
+        Named named = field.getAnnotation(Named.class);
+        if (named != null) {
+            dependency.setRoleHint(named.value());
+        } else {
+            // Look for legacy Named annotation
+            javax.inject.Named legacyNamed = field.getAnnotation(javax.inject.Named.class);
+            if (legacyNamed != null) {
+                dependency.setRoleHint(legacyNamed.value());
+            }
         }
 
         return dependency;

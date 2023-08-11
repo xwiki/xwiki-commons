@@ -31,9 +31,9 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.websocket.CloseReason;
-import javax.websocket.RemoteEndpoint.Basic;
-import javax.websocket.Session;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.RemoteEndpoint.Basic;
+import jakarta.websocket.Session;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

@@ -27,10 +27,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.inject.Singleton;
-import javax.servlet.ServletContext;
+
+import jakarta.servlet.ServletContext;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.jakartabridge.servlet.JakartaServletBridge;
 
 /**
  * Defines what an Environment means in a Servlet environment.
@@ -43,34 +45,64 @@ import org.xwiki.component.annotation.Component;
 public class ServletEnvironment extends AbstractEnvironment
 {
     /**
+     * @see #getJakartaServletContext()
+     */
+    private ServletContext jakartaServletContext;
+
+    /**
      * @see #getServletContext()
      */
-    private ServletContext servletContext;
+    private javax.servlet.ServletContext javaxServletContext;
+
+    /**
+     * @param servletContext see {@link #getServletContext()}
+     */
+    public void setServletContext(javax.servlet.ServletContext servletContext)
+    {
+        this.javaxServletContext = servletContext;
+        this.jakartaServletContext = JakartaServletBridge.toJakarta(servletContext);
+    }
 
     /**
      * @param servletContext see {@link #getServletContext()}
      */
     public void setServletContext(ServletContext servletContext)
     {
-        this.servletContext = servletContext;
+        this.jakartaServletContext = servletContext;
+    }
+
+    /**
+     * @return the legacy Javax Servlet Context
+     * @deprecated use {@link #getJakartaServletContext()} instead
+     */
+    @Deprecated(since = "42.0.0")
+    public javax.servlet.ServletContext getServletContext()
+    {
+        if (this.javaxServletContext == null) {
+            this.javaxServletContext = JakartaServletBridge.toJavax(getJakartaServletContext());
+        }
+
+        return this.javaxServletContext;
     }
 
     /**
      * @return the Servlet Context
+     * @since 42.0.0
      */
-    public ServletContext getServletContext()
+    public ServletContext getJakartaServletContext()
     {
-        if (this.servletContext == null) {
-            throw new RuntimeException("The Servlet Environment has not been properly initialized "
-                + "(The Servlet Context is not set)");
+        if (this.jakartaServletContext == null) {
+            throw new RuntimeException(
+                "The Servlet Environment has not been properly initialized (The Servlet Context is not set)");
         }
-        return this.servletContext;
+
+        return this.jakartaServletContext;
     }
 
     @Override
     public InputStream getResourceAsStream(String resourceName)
     {
-        return getServletContext().getResourceAsStream(resourceName);
+        return getJakartaServletContext().getResourceAsStream(resourceName);
     }
 
     @Override
@@ -78,18 +110,19 @@ public class ServletEnvironment extends AbstractEnvironment
     {
         URL url;
         try {
-            url = getServletContext().getResource(resourceName);
+            url = getJakartaServletContext().getResource(resourceName);
 
             // ensure to normalize the URI, we don't want relative path.
             if (url != null) {
                 url = url.toURI().normalize().toURL();
             }
-        // We're catching IllegalArgumentException which might be thrown by Tomcat when trying to resolve path such as
-        // `templates/../..`
+            // We're catching IllegalArgumentException which might be thrown by Tomcat when trying to resolve path such
+            // as
+            // `templates/../..`
         } catch (MalformedURLException | URISyntaxException | IllegalArgumentException e) {
             url = null;
-            this.logger.warn("Error getting resource [{}] because of invalid path format. Reason: [{}]",
-                resourceName, e.getMessage());
+            this.logger.warn("Error getting resource [{}] because of invalid path format. Reason: [{}]", resourceName,
+                e.getMessage());
         }
         return url;
     }
@@ -100,7 +133,7 @@ public class ServletEnvironment extends AbstractEnvironment
         final String tmpDirectory = super.getTemporaryDirectoryName();
         try {
             if (tmpDirectory == null) {
-                File tempDir = (File) this.getServletContext().getAttribute(ServletContext.TEMPDIR);
+                File tempDir = (File) getJakartaServletContext().getAttribute(ServletContext.TEMPDIR);
                 return tempDir == null ? null : tempDir.getCanonicalPath();
             }
         } catch (IOException e) {
