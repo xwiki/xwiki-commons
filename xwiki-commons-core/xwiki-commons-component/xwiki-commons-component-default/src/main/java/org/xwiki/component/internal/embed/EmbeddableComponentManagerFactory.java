@@ -19,13 +19,13 @@
  */
 package org.xwiki.component.internal.embed;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.internal.multi.ComponentManagerFactory;
 import org.xwiki.component.manager.ComponentManager;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 /**
  * Create Component Manager implementation based on the Embeddable Component Manager (i.e. a simple implementation of

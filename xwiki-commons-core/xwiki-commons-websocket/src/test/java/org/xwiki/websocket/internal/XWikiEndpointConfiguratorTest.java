@@ -20,9 +20,9 @@
 package org.xwiki.websocket.internal;
 
 import javax.inject.Named;
-import javax.websocket.HandshakeResponse;
-import javax.websocket.server.HandshakeRequest;
-import javax.websocket.server.ServerEndpointConfig;
+import jakarta.websocket.HandshakeResponse;
+import jakarta.websocket.server.HandshakeRequest;
+import jakarta.websocket.server.ServerEndpointConfig;
 
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentLookupException;

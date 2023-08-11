@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * @version $Id$
  * @since 1.8.1
  */
-public class ComponentDescriptorFactoryTest
+public class JavaxComponentDescriptorFactoryTest
 {
     @ComponentRole
     public interface NonGenericFieldRole<T>
@@ -232,7 +232,7 @@ public class ComponentDescriptorFactoryTest
         // private GenericFieldRole<String> genericFieldRole;
         dep = it.next();
         assertSame(GenericFieldRole.class, dep.getRole());
-        assertEquals(new DefaultParameterizedType(ComponentDescriptorFactoryTest.class, GenericFieldRole.class,
+        assertEquals(new DefaultParameterizedType(JavaxComponentDescriptorFactoryTest.class, GenericFieldRole.class,
             String.class), dep.getRoleType());
         assertEquals("default", dep.getRoleHint());
         assertSame(GenericFieldRole.class, dep.getMappingType());

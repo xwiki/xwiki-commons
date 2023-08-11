@@ -26,7 +26,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -68,7 +70,8 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
 {
     private static final String COMPONENT_ANNOTATION = "org.xwiki.component.annotation.Component";
 
-    private static final String SINGLETON_ANNOTATION = "javax.inject.Singleton";
+    private static final Set<String> SINGLETON_ANNOTATIONS =
+        new LinkedHashSet<>(List.of("javax.inject.Singleton", "jakarta.inject.Singleton"));
 
     private static final String INSTANTIATION_STRATEGY_ANNOTATION =
         "org.xwiki.component.annotation.InstantiationStrategy";
@@ -104,7 +107,7 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
                 }
             } else if (INSTANTIATION_STRATEGY_ANNOTATION.equals(annotation.getAnnotationType().getQualifiedName())) {
                 hasInstantiationStrategyAnnotation = true;
-            } else if (SINGLETON_ANNOTATION.equals(annotation.getAnnotationType().getQualifiedName())) {
+            } else if (SINGLETON_ANNOTATIONS.contains(annotation.getAnnotationType().getQualifiedName())) {
                 hasSingletonAnnotation = true;
             }
         }
@@ -161,8 +164,8 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
     {
         if (!hasInstantiationStrategyAnnotation && !hasSingletonAnnotation) {
             registerError(String.format(
-                "Component class [%s] must have either the [%s] or the [%s] annotation defined on it.",
-                qualifiedName, SINGLETON_ANNOTATION, INSTANTIATION_STRATEGY_ANNOTATION));
+                "Component class [%s] must have either one of %s or the [%s] annotation defined on it.",
+                qualifiedName, SINGLETON_ANNOTATIONS, INSTANTIATION_STRATEGY_ANNOTATION));
         }
     }
 
