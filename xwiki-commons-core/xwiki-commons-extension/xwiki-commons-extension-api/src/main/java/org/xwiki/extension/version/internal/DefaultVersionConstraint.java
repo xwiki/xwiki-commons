@@ -249,7 +249,13 @@ public class DefaultVersionConstraint implements VersionConstraint
     public boolean containsVersion(Version version)
     {
         if (getRangesInternal().isEmpty()) {
-            return getVersion() != null && getVersion().equals(version);
+            if (getVersion() != null) {
+                if (DefaultVersion.isWildcardSNAPSHOT(getVersion()) && version != null) {
+                    return getVersion().getSourceVersion().equals(version.getSourceVersion());
+                } else {
+                    return getVersion().equals(version);
+                }
+            }
         } else {
             for (VersionRange range : getRangesInternal()) {
                 if (!range.containsVersion(version)) {
@@ -265,10 +271,14 @@ public class DefaultVersionConstraint implements VersionConstraint
     public boolean isCompatible(Version version)
     {
         boolean compatible;
-        if (getVersion() == null) {
-            compatible = containsVersion(version);
+        if (getVersion() != null) {
+            if (DefaultVersion.isWildcardSNAPSHOT(getVersion())) {
+                compatible = version.getSourceVersion().compareTo(getVersion()) >= 0;
+            } else {
+                compatible = version.compareTo(getVersion()) >= 0;
+            }
         } else {
-            compatible = version.compareTo(getVersion()) >= 0;
+            compatible = containsVersion(version);
         }
 
         return compatible;

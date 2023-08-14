@@ -50,8 +50,10 @@ import org.xwiki.extension.job.ExtensionRequest;
 import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
+import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanAction;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
+import org.xwiki.extension.repository.LocalExtensionRepositoryException;
 import org.xwiki.job.AbstractJob;
 import org.xwiki.job.GroupedJob;
 import org.xwiki.job.JobGroupPath;
@@ -81,6 +83,8 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
      * The root group of all extension related jobs.
      */
     public static final JobGroupPath ROOT_GROUP = new JobGroupPath(Arrays.asList("extension"));
+
+    private static final TranslationMarker LOG_DOWNLOADING = new TranslationMarker("extension.log.job.downloading");
 
     /**
      * Used to manipulate local extension repository.
@@ -166,6 +170,46 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
     }
 
     /**
+     * @param action the action containing the extension to download
+     * @throws LocalExtensionRepositoryException failed to store extension
+     * @since 15.6RC1
+     */
+    protected LocalExtension storeAction(ExtensionPlanAction action) throws LocalExtensionRepositoryException
+    {
+        if (action.getAction() == Action.INSTALL || action.getAction() == Action.UPGRADE
+            || action.getAction() == Action.DOWNGRADE) {
+            LocalExtension localExtension = storeExtension(action.getExtension());
+
+            if (action instanceof DefaultExtensionPlanAction) {
+                // Update the plan with the stored version of the extension (often needed by extension handlers)
+                ((DefaultExtensionPlanAction) action).setLocalExtension(localExtension);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param extension the extension to store
+     * @throws LocalExtensionRepositoryException failed to store extension
+     * @since 15.6RC1
+     */
+    protected LocalExtension storeExtension(Extension extension) throws LocalExtensionRepositoryException
+    {
+        LocalExtension localExtension = this.localExtensionRepository.getLocalExtension(extension.getId());
+
+        if (localExtension == null) {
+            if (getRequest().isVerbose()) {
+                this.logger.info(LOG_DOWNLOADING, "Downloading extension [{}]", extension.getId());
+            }
+
+            localExtension = this.localExtensionRepository.storeExtension(extension);
+        }
+
+        return localExtension;
+    }
+
+    /**
      * @param actions the actions to apply
      * @throws ExtensionException failed to apply action
      */
@@ -226,8 +270,16 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
                 // Uninstall
                 uninstallExtension(installedExtension, namespace);
             } else {
-                // Store extension in local repository
-                LocalExtension localExtension = this.localExtensionRepository.resolve(extension.getId());
+                // Get the extension previous stored in the local repository
+                LocalExtension localExtension = action.getLocalExtension();
+
+                if (localExtension == null) {
+                    localExtension = this.localExtensionRepository.getLocalExtension(extension.getId());
+                }
+
+                if (localExtension == null) {
+                    throw new InstallException(String.format("Extension [%s] was not stored", extension.getId()));
+                }
 
                 // Install
                 installExtension(localExtension, previousExtensions, namespace, action.isDependency());

@@ -1,4 +1,6 @@
-/*
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -16,48 +18,13 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-package org.xwiki.extension.test;
+-->
 
-import org.xwiki.extension.version.Version;
-import org.xwiki.extension.version.internal.DefaultVersion;
-
-/**
- * Just here to have an implementation of {@link Version} which is not {@link DefaultVersion}.
- * 
- * @version $Id$
- * @since 10.7RC1
- */
-public class TestVersion implements Version
-{
-    private final String version;
-
-    public TestVersion(String version)
-    {
-        this.version = version;
-    }
-
-    @Override
-    public int compareTo(Version o)
-    {
-        return 0;
-    }
-
-    @Override
-    public String getValue()
-    {
-        return this.version;
-    }
-
-    @Override
-    public Type getType()
-    {
-        return Type.STABLE;
-    }
-
-    @Override
-    public Version getSourceVersion()
-    {
-        return this;
-    }
-}
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>groupid</groupId>
+  <artifactId>artifactid</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>type</packaging>
+</project>

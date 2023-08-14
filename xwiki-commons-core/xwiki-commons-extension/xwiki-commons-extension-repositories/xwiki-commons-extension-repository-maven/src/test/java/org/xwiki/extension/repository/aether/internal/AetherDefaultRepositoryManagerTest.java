@@ -54,6 +54,7 @@ import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.test.MockitoRepositoryUtilsRule;
 import org.xwiki.extension.version.Version;
+import org.xwiki.extension.version.internal.DefaultVersion;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.annotation.AllComponents;
 
@@ -68,7 +69,11 @@ public class AetherDefaultRepositoryManagerTest
 {
     private static final String GROUPID = "groupid";
 
+    private static final String LGROUPID = "lgroupid";
+
     private static final String ARTIFACTID = "artifactid";
+
+    private static final String LARTIFACTID = "lartifactid";
 
     @Rule
     public MockitoRepositoryUtilsRule repositoryUtil = new MockitoRepositoryUtilsRule();
@@ -78,6 +83,10 @@ public class AetherDefaultRepositoryManagerTest
     private ExtensionId extensionId;
 
     private ExtensionId snapshotExtensionId;
+
+    private ExtensionId localsnapshotExtensionId;
+
+    private Version snapshotExtensionTimestamp;
 
     private ExtensionId extensionDependencyId;
 
@@ -106,6 +115,8 @@ public class AetherDefaultRepositoryManagerTest
     {
         this.extensionId = new ExtensionId(GROUPID + ':' + ARTIFACTID, "version");
         this.snapshotExtensionId = new ExtensionId(GROUPID + ':' + ARTIFACTID, "1.0-SNAPSHOT");
+        this.localsnapshotExtensionId = new ExtensionId(LGROUPID + ':' + LARTIFACTID, "1.0-SNAPSHOT");
+        this.snapshotExtensionTimestamp = new DefaultVersion("1.0-20121204.131238-77");
         this.extensionDependencyId = new ExtensionId("dgroupid:dartifactid", "dversion");
 
         this.extensionIdClassifier = new ExtensionId(GROUPID + ':' + ARTIFACTID + ":classifier", "version");
@@ -129,8 +140,7 @@ public class AetherDefaultRepositoryManagerTest
             this.repositoryUtil.getComponentManager().getInstance(ExtensionRepositoryManager.class);
         this.extensionLicenseManager =
             this.repositoryUtil.getComponentManager().getInstance(ExtensionLicenseManager.class);
-        this.environment =
-            this.repositoryUtil.getComponentManager().getInstance(Environment.class);
+        this.environment = this.repositoryUtil.getComponentManager().getInstance(Environment.class);
     }
 
     @Test
@@ -142,8 +152,7 @@ public class AetherDefaultRepositoryManagerTest
         assertEquals(this.extensionId.getId(), extension.getId().getId());
         assertEquals(this.extensionId.getVersion(), extension.getId().getVersion());
         assertEquals("type", extension.getType());
-        assertEquals(this.repositoryUtil.getMavenRepositoryId(),
-            extension.getRepository().getDescriptor().getId());
+        assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor().getId());
         assertEquals("name", extension.getName());
         assertEquals("summary", extension.getSummary());
         assertEquals("http://website", extension.getWebSite());
@@ -152,10 +161,8 @@ public class AetherDefaultRepositoryManagerTest
             new ArrayList<>(extension.getAuthors()));
         assertEquals(new HashSet<>(Arrays.asList("groupid1:feature1", "groupid2:feature2")),
             new HashSet<>(extension.getFeatures()));
-        assertEquals(
-            new HashSet<>(Arrays.asList(new ExtensionId("groupid1:feature1", this.extensionId.getVersion()),
-                new ExtensionId("groupid2:feature2", "42"))),
-            new HashSet<>(extension.getExtensionFeatures()));
+        assertEquals(new HashSet<>(Arrays.asList(new ExtensionId("groupid1:feature1", this.extensionId.getVersion()),
+            new ExtensionId("groupid2:feature2", "42"))), new HashSet<>(extension.getExtensionFeatures()));
         assertEquals(new HashSet<>(Arrays.asList("namespace1", "{root}")),
             new HashSet<>(extension.getAllowedNamespaces()));
         assertSame(this.extensionLicenseManager.getLicense("GNU Lesser General Public License 2.1"),
@@ -189,8 +196,7 @@ public class AetherDefaultRepositoryManagerTest
 
         // check that a new resolve of an already resolved extension provide the proper repository
         extension = this.repositoryManager.resolve(this.extensionId);
-        assertEquals(this.repositoryUtil.getMavenRepositoryId(),
-            extension.getRepository().getDescriptor().getId());
+        assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor().getId());
 
         // Modify the file on the descriptor on the repository
         File pomFile = new File(this.repositoryUtil.getMavenRepository(),
@@ -237,10 +243,20 @@ public class AetherDefaultRepositoryManagerTest
 
         assertNotNull(extension);
         assertEquals(this.snapshotExtensionId.getId(), extension.getId().getId());
-        assertEquals(this.snapshotExtensionId.getVersion(), extension.getId().getVersion());
+        assertEquals(this.snapshotExtensionTimestamp, extension.getId().getVersion());
         assertEquals("type", extension.getType());
-        assertEquals(this.repositoryUtil.getMavenRepositoryId(),
-            extension.getRepository().getDescriptor().getId());
+        assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor().getId());
+    }
+
+    @Test
+    public void testResolvelocalSNAPSHOT() throws ResolveException
+    {
+        Extension extension = this.repositoryManager.resolve(this.localsnapshotExtensionId);
+
+        assertNotNull(extension);
+        assertEquals(this.localsnapshotExtensionId, extension.getId());
+        assertEquals("type", extension.getType());
+        assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor().getId());
     }
 
     @Test
@@ -269,10 +285,9 @@ public class AetherDefaultRepositoryManagerTest
 
         assertNotNull(extension);
         assertEquals(this.snapshotExtensionId.getId(), extension.getId().getId());
-        assertEquals(this.snapshotExtensionId.getVersion(), extension.getId().getVersion());
+        assertEquals(this.snapshotExtensionTimestamp, extension.getId().getVersion());
         assertEquals("type", extension.getType());
-        assertEquals(this.repositoryUtil.getMavenRepositoryId(),
-            extension.getRepository().getDescriptor().getId());
+        assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor().getId());
     }
 
     @Test
@@ -367,6 +382,16 @@ public class AetherDefaultRepositoryManagerTest
     public void testDownloadSNAPSHOT() throws ExtensionException, IOException
     {
         Extension extension = this.repositoryManager.resolve(this.snapshotExtensionId);
+
+        try (InputStream is = extension.getFile().openStream()) {
+            assertEquals("snapshot content", IOUtils.toString(is));
+        }
+    }
+
+    @Test
+    public void testDownloadlocalSNAPSHOT() throws ExtensionException, IOException
+    {
+        Extension extension = this.repositoryManager.resolve(this.localsnapshotExtensionId);
 
         try (InputStream is = extension.getFile().openStream()) {
             assertEquals("snapshot content", IOUtils.toString(is));
@@ -554,8 +579,7 @@ public class AetherDefaultRepositoryManagerTest
         assertEquals(extensionId.getId(), extension.getId().getId());
         assertEquals(extensionId.getVersion(), extension.getId().getVersion());
         assertEquals("type", extension.getType());
-        assertEquals(this.repositoryUtil.getMavenRepositoryId(),
-            extension.getRepository().getDescriptor().getId());
+        assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor().getId());
 
         assertEquals("parent description", extension.getSummary());
     }
@@ -571,8 +595,7 @@ public class AetherDefaultRepositoryManagerTest
         assertEquals(extensionId.getId(), extension.getId().getId());
         assertEquals(extensionId.getVersion(), extension.getId().getVersion());
         assertEquals("type", extension.getType());
-        assertEquals(this.repositoryUtil.getMavenRepositoryId(),
-            extension.getRepository().getDescriptor().getId());
+        assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor().getId());
 
         assertNull(extension.getIssueManagement());
         assertNull(extension.getScm());

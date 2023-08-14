@@ -24,6 +24,8 @@ import java.util.Collection;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionRewriter;
 import org.xwiki.extension.InstalledExtension;
+import org.xwiki.extension.LocalExtension;
+import org.xwiki.stability.Unstable;
 
 /**
  * An action to perform as part of an extension plan.
@@ -79,6 +81,16 @@ public interface ExtensionPlanAction
      * @return the extension on which to perform the action
      */
     Extension getExtension();
+
+    /**
+     * @return the stored version of the extension on which to perform the action
+     * @since 15.6RC1
+     */
+    @Unstable
+    default LocalExtension getLocalExtension()
+    {
+        return null;
+    }
 
     /**
      * @return the result of {@link ExtensionRewriter#rewrite(Extension)} on the extension on which to perform the

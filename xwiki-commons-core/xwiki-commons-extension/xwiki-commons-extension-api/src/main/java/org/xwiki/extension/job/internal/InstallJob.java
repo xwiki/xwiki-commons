@@ -28,16 +28,12 @@ import javax.inject.Named;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
-import org.xwiki.extension.Extension;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
-import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
-import org.xwiki.extension.repository.LocalExtensionRepositoryException;
 import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.Job;
-import org.xwiki.logging.marker.TranslationMarker;
 
 /**
  * Extension installation related task.
@@ -55,8 +51,6 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
      * The id of the job.
      */
     public static final String JOBTYPE = "install";
-
-    private static final TranslationMarker LOG_DOWNLOADING = new TranslationMarker("extension.log.job.downloading");
 
     /**
      * Used to generate the install plan.
@@ -123,7 +117,7 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
                 for (ExtensionPlanAction action : actions) {
                     this.progressManager.startStep(actions);
 
-                    store(action);
+                    storeAction(action);
 
                     this.progressManager.endStep(actions);
                 }
@@ -143,33 +137,6 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
 
             // Clean context
             context.removeProperty(CONTEXTKEY_PLAN);
-        }
-    }
-
-    /**
-     * @param action the action containing the extension to download
-     * @throws LocalExtensionRepositoryException failed to store extension
-     */
-    private void store(ExtensionPlanAction action) throws LocalExtensionRepositoryException
-    {
-        if (action.getAction() == Action.INSTALL || action.getAction() == Action.UPGRADE
-            || action.getAction() == Action.DOWNGRADE) {
-            storeExtension(action.getExtension());
-        }
-    }
-
-    /**
-     * @param extension the extension to store
-     * @throws LocalExtensionRepositoryException failed to store extension
-     */
-    private void storeExtension(Extension extension) throws LocalExtensionRepositoryException
-    {
-        if (!this.localExtensionRepository.exists(extension.getId())) {
-            if (getRequest().isVerbose()) {
-                this.logger.info(LOG_DOWNLOADING, "Downloading extension [{}]", extension.getId());
-            }
-
-            this.localExtensionRepository.storeExtension(extension);
         }
     }
 }
