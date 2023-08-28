@@ -2449,6 +2449,8 @@
             <doclint>all</doclint>
             <!-- Specify the version of the code so that it doesn't depend on the Java version used to build XWiki -->
             <release>${java.version}</release>
+            <!-- Only display warnings and errors -->
+            <quiet>true</quiet>
           </configuration>
         </plugin>
         <!-- We don't use site plugin but we org.apache.maven.plugins.enforcer.RequirePluginVersions enforcer rule
