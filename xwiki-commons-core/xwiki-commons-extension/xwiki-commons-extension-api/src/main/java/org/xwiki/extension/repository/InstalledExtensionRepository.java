@@ -130,7 +130,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
     void uninstallExtension(InstalledExtension extension, String namespace) throws UninstallException;
 
     /**
-     * Get provided installed extension backward dependencies in the provided namespace.
+     * Get provided installed extension direct backward dependencies in the provided namespace.
      * <p>
      * Only look at the backward dependencies in the provided namespace. To get all the dependencies of a root extension
      * (namespace=null) across namespaces use {@link #getBackwardDependencies(ExtensionId)} instead.
@@ -145,7 +145,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
     Collection<InstalledExtension> getBackwardDependencies(String feature, String namespace) throws ResolveException;
 
     /**
-     * Get provided installed extension backward dependencies in the provided namespace.
+     * Get provided installed extension direct backward dependencies in the provided namespace.
      * <p>
      * Only look at the backward dependencies in the provided namespace. To get all the dependencies of a root extension
      * (namespace=null) across namespaces use {@link #getBackwardDependencies(ExtensionId)} instead.
@@ -164,7 +164,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
     }
 
     /**
-     * Get all backward dependencies by namespace for the provided installed extension.
+     * Get all direct backward dependencies by namespace for the provided installed extension.
      * <p>
      * This does not follow optional dependencies.
      *
@@ -176,7 +176,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
         throws ResolveException;
 
     /**
-     * Get all backward dependencies by namespace for the provided installed extension.
+     * Get all direct backward dependencies by namespace for the provided installed extension.
      *
      * @param extensionId the extension identifier
      * @param withOptionals include optional dependencies in the search
