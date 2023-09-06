@@ -2514,6 +2514,13 @@
               <artifactId>slf4j-nop</artifactId>
               <version>${slf4j.version}</version>
             </dependency>
+            <!-- Use a more recent version of the WebDriverManager that supports the Chrome Driver URL change starting
+              with version 115.x -->
+            <dependency>
+              <groupId>io.github.bonigarcia</groupId>
+              <artifactId>webdrivermanager</artifactId>
+              <version>5.5.3</version>
+            </dependency>
           </dependencies>
         </plugin>
         <plugin>
@@ -3073,10 +3080,10 @@
                 <configuration>
                   <properties>
                     <property>
-                      <!-- Force a slightly older version of the Chrome Driver in case we don't have the latest Chrome
-                        installed locally. -->
-                      <name>wdm.chromeDriverVersion</name>
-                      <value>110.0.5481.77</value>
+                      <!-- Uncomment if you want to force a slightly older version of the Chrome Driver because you don't
+                        have the latest Chrome installed locally. -->
+                      <!--<name>wdm.chromeDriverVersion</name>
+                      <value>116.0.5845.96</value>-->
                     </property>
                     <property>
                       <!-- Try to work around error: "[SEVERE]: bind() failed: Cannot assign requested address (99)" -->
