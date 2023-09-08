@@ -26,6 +26,7 @@ import java.util.Properties;
 import org.apache.velocity.Template;
 import org.apache.velocity.context.Context;
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
  * Initialize a Velocity Engine and make Velocity services available.
@@ -54,6 +55,7 @@ public interface VelocityEngine
      * @throws XWikiVelocityException in case of error
      * @since 15.8RC1
      */
+    @Unstable
     Template compile(String name, Reader source) throws XWikiVelocityException;
 
     /**
@@ -92,7 +94,9 @@ public interface VelocityEngine
      *            namespace for the macros. Empty string means global namespace.
      * @param template the compiled template to execute
      * @throws XWikiVelocityException in case of error
+     * @since 15.8RC1
      */
+    @Unstable
     void evaluate(Context context, Writer out, String namespace, Template template) throws XWikiVelocityException;
 
     /**
