@@ -145,10 +145,10 @@ class DefaultVelocityEngineTest
         assertEvaluate(expected, content, DEFAULT_TEMPLATE_NAME, context);
     }
 
-    private void assertEvaluate(String expected, String content, String template, Context context)
+    private void assertEvaluate(String expected, String content, String namespace, Context context)
         throws XWikiVelocityException
     {
-        String result = evaluate(content, template, context);
+        String result = evaluate(content, namespace, context);
 
         assertEquals(expected, result);
     }
@@ -158,15 +158,15 @@ class DefaultVelocityEngineTest
         return evaluate(content, DEFAULT_TEMPLATE_NAME);
     }
 
-    private String evaluate(String content, String template) throws XWikiVelocityException
+    private String evaluate(String content, String namespace) throws XWikiVelocityException
     {
-        return evaluate(content, template, this.contextFactory.createContext());
+        return evaluate(content, namespace, this.contextFactory.createContext());
     }
 
-    private String evaluate(String content, String template, Context context) throws XWikiVelocityException
+    private String evaluate(String content, String namespace, Context context) throws XWikiVelocityException
     {
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(context, writer, template, content);
+        this.engine.evaluate(context, writer, namespace, content);
 
         return writer.toString();
     }
@@ -349,22 +349,36 @@ class DefaultVelocityEngineTest
     }
 
     @Test
-    void evaluateWithOverwrittenIncludeMacro() throws XWikiVelocityException
+    void evaluateWithPreOverwrittenIncludeMacro() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
         Context context = new XWikiVelocityContext();
         context.put("test", new TestClass(context));
 
-        // Can the script overwrite an included macro
-        // No because macros are registered before executing the script (TODO: fix that)
-        assertEvaluate("included",
+        // Make sure the script can overwrite an included macro
+        assertEvaluate("ovewritten",
             "$test.evaluate('#macro(includedmacro)included#end')#macro(includedmacro)ovewritten#end#includedmacro()",
             context);
     }
 
     @Test
-    void evauateTemplateScope() throws XWikiVelocityException
+    void evaluateWithPostOverwrittenIncludeMacro() throws XWikiVelocityException
+    {
+        this.engine.initialize(new Properties());
+
+        Context context = new XWikiVelocityContext();
+        context.put("test", new TestClass(context));
+
+        // Make sure macros defined in the script have priority over any included macro even of the include is done
+        // after the declared macro
+        assertEvaluate("included",
+            "#macro(includedmacro)ovewritten#end$test.evaluate('#macro(includedmacro)included#end')#includedmacro()",
+            context);
+    }
+
+    @Test
+    void evaluateTemplateScope() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 

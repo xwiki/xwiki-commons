@@ -23,6 +23,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Properties;
 
+import org.apache.velocity.Template;
 import org.apache.velocity.context.Context;
 import org.xwiki.component.annotation.Role;
 
@@ -45,7 +46,18 @@ public interface VelocityEngine
     void initialize(Properties properties) throws XWikiVelocityException;
 
     /**
-     * Renders the input string using the context into the output writer.
+     * Compile the passed script into a Velocity {@link Template}.
+     * 
+     * @param name the name of the template
+     * @param source the input string containing the VTL to be rendered
+     * @return the compiler {@link Template}
+     * @throws XWikiVelocityException in case of error
+     * @since 15.8RC1
+     */
+    Template compile(String name, Reader source) throws XWikiVelocityException;
+
+    /**
+     * Evaluate the input string using the context into the output writer.
      *
      * @param context the Velocity context to use in rendering the input string, it's recommended to pass a
      *            {@link XWikiVelocityContext} to have retro compatibility support (like old $velocitycount binding)
@@ -59,7 +71,7 @@ public interface VelocityEngine
     boolean evaluate(Context context, Writer out, String namespace, String source) throws XWikiVelocityException;
 
     /**
-     * Renders the input string using the context into the output writer.
+     * Evaluate the input string using the context into the output writer.
      *
      * @param context the Velocity context to use in rendering the input string
      * @param out the writer in which to render the output
@@ -70,6 +82,18 @@ public interface VelocityEngine
      * @throws XWikiVelocityException in case of error
      */
     boolean evaluate(Context context, Writer out, String namespace, Reader source) throws XWikiVelocityException;
+
+    /**
+     * Evaluate the template using the context into the output writer.
+     *
+     * @param context the Velocity context to use in rendering the input string
+     * @param out the writer in which to render the output
+     * @param namespace the string to be used as the template name for log messages in case of error. Also used as
+     *            namespace for the macros. Empty string means global namespace.
+     * @param template the compiled template to execute
+     * @throws XWikiVelocityException in case of error
+     */
+    void evaluate(Context context, Writer out, String namespace, Template template) throws XWikiVelocityException;
 
     /**
      * Clear the internal Velocity Macro cache for the passed namespace.

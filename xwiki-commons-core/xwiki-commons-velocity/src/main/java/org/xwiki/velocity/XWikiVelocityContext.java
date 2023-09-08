@@ -19,6 +19,9 @@
  */
 package org.xwiki.velocity;
 
+import java.util.List;
+
+import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.runtime.directive.ForeachScope;
@@ -107,6 +110,17 @@ public class XWikiVelocityContext extends VelocityContext
     {
         if (this.logDeprecated) {
             LOGGER.warn("Deprecated binding [${}] used in [{}]", binding, foreachScope.getInfo().getTemplate());
+        }
+    }
+
+    @Override
+    public void setMacroLibraries(List<Template> macroLibraries)
+    {
+        // Not super clean but that's the only way to not end up with current macro libraries being broken by
+        // Templace#parse
+        // TODO: remove when https://issues.apache.org/jira/browse/VELOCITY-967 is fixed
+        if (macroLibraries == null || !macroLibraries.isEmpty()) {
+            super.setMacroLibraries(macroLibraries);
         }
     }
 

@@ -36,6 +36,20 @@ public class ExtendedURLClassLoader extends URLClassLoader
     /**
      * See {@link URLClassLoader#URLClassLoader(URL[], ClassLoader, URLStreamHandlerFactory)}.
      *
+     * @param  name class loader name; or {@code null} if not named
+     * @param urls the URLs from which to load classes and resources
+     * @param parent the parent class loader for delegation
+     * @param factory the URLStreamHandlerFactory to use when creating URLs
+     * @since 15.8RC1
+     */
+    public ExtendedURLClassLoader(String name, URL[] urls, ClassLoader parent, URLStreamHandlerFactory factory)
+    {
+        super(name, urls, parent, factory);
+    }
+
+    /**
+     * See {@link URLClassLoader#URLClassLoader(URL[], ClassLoader, URLStreamHandlerFactory)}.
+     *
      * @param urls the URLs from which to load classes and resources
      * @param parent the parent class loader for delegation
      * @param factory the URLStreamHandlerFactory to use when creating URLs
