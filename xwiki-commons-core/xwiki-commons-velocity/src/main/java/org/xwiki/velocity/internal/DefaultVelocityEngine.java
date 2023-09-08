@@ -240,6 +240,12 @@ public class DefaultVelocityEngine implements VelocityEngine
     }
 
     @Override
+    public void addGlobalMacros(Map<String, Object> macros)
+    {
+        this.globalEntry.getTemplate().getMacros().putAll(macros);
+    }
+
+    @Override
     public boolean evaluate(Context context, Writer out, String namespace, String source) throws XWikiVelocityException
     {
         return evaluate(context, out, namespace, new StringReader(source));

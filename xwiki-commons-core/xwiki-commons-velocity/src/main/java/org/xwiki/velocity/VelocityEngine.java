@@ -21,6 +21,7 @@ package org.xwiki.velocity;
 
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.velocity.Template;
@@ -125,4 +126,13 @@ public interface VelocityEngine
      * @since 2.4RC1
      */
     void stoppedUsingMacroNamespace(String namespace);
+
+    /**
+     * @param macros macros to reuse with scripts executed by this engine
+     * @since 15.8RC1
+     */
+    default void addGlobalMacros(Map<String, Object> macros)
+    {
+
+    }
 }
