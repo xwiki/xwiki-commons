@@ -33,14 +33,14 @@ import org.xwiki.component.manager.ComponentManager;
  * @version $Id$
  * @since 3.3M2
  */
-public class GenericProvider<T> extends AbstractGenericProvider<T> implements Provider<T>
+public class JavaXGenericProvider<T> extends AbstractGenericProvider<T> implements Provider<T>
 {
     /**
      * @param componentManager the Component Manager instance that we'll use to look up the Component Role during
      *            {@link javax.inject.Provider#get()}
      * @param roleHint the Component Role and Hint that uniquely identify the Component we wish to provide for
      */
-    public GenericProvider(ComponentManager componentManager, RoleHint<T> roleHint)
+    public JavaXGenericProvider(ComponentManager componentManager, RoleHint<T> roleHint)
     {
         super(componentManager, roleHint);
     }
@@ -48,6 +48,6 @@ public class GenericProvider<T> extends AbstractGenericProvider<T> implements Pr
     @Override
     protected AbstractGenericProvider<T> newProvider(ComponentManager componentManager, RoleHint roleHint)
     {
-        return new GenericProvider<>(componentManager, roleHint);
+        return new JavaXGenericProvider<>(componentManager, roleHint);
     }
 }
