@@ -349,7 +349,7 @@ class DefaultVelocityEngineTest
     }
 
     @Test
-    void evaluateWithPreOverwrittenIncludeMacro() throws XWikiVelocityException
+    void evaluateWithOverwrittenIncludeMacro() throws XWikiVelocityException
     {
         this.engine.initialize(new Properties());
 
@@ -360,19 +360,10 @@ class DefaultVelocityEngineTest
         assertEvaluate("ovewritten",
             "$test.evaluate('#macro(includedmacro)included#end')#macro(includedmacro)ovewritten#end#includedmacro()",
             context);
-    }
-
-    @Test
-    void evaluateWithPostOverwrittenIncludeMacro() throws XWikiVelocityException
-    {
-        this.engine.initialize(new Properties());
-
-        Context context = new XWikiVelocityContext();
-        context.put("test", new TestClass(context));
 
         // Make sure macros defined in the script have priority over any included macro even of the include is done
         // after the declared macro
-        assertEvaluate("included",
+        assertEvaluate("ovewritten",
             "#macro(includedmacro)ovewritten#end$test.evaluate('#macro(includedmacro)included#end')#includedmacro()",
             context);
     }
