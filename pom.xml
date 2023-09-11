@@ -233,7 +233,7 @@
 
     <!-- The versions of Antlr to bundle -->
     <antlr3.version>3.5.3</antlr3.version>
-    <antlr4.version>4.9.3</antlr4.version>
+    <antlr4.version>4.13.1</antlr4.version>
 
     <!-- Servlet specifications -->
     <servlet.version>3.1.0</servlet.version>
