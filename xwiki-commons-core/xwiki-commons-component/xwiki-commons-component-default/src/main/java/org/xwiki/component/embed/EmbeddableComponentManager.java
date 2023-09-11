@@ -504,7 +504,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
     {
         ComponentDescriptor<T> result = null;
 
-        ComponentEntry<?> componentEntry = getComponentEntry(role, hint, true);
+        ComponentEntry<?> componentEntry = getComponentEntry(role, hint);
         if (componentEntry == null) {
             // Check in parent!
             if (getParent() != null) {
