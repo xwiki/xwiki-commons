@@ -279,7 +279,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
     @Override
     public boolean hasComponent(Type roleType, String roleHint)
     {
-        if (getComponentEntry(roleType, roleHint) != null) {
+        if (getComponentEntry(roleType, roleHint, true) != null) {
             return true;
         }
 
@@ -292,57 +292,20 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         return getInstance(roleType, null);
     }
 
-    private <T> T tryOtherProvider(Type roleType, String roleHint)
-    {
-        T instance = null;
-
-        if (roleType instanceof ParameterizedType) {
-            ParameterizedType parameterizedRoleType = (ParameterizedType) roleType;
-
-            if (parameterizedRoleType.getRawType() == Provider.class) {
-                // Try to get the javax version of the provider
-                ParameterizedType javaxProviderType = new DefaultParameterizedType(null, javax.inject.Provider.class,
-                    parameterizedRoleType.getActualTypeArguments()[0]);
-                ComponentEntry<?> entry = getComponentEntry(javaxProviderType, roleHint);
-
-                if (entry != null) {
-                    // Wrap it as a jakarta provider
-                    instance = (T) new JavaXJakartaProvider(this, javaxProviderType, roleHint);
-                }
-            } else if (parameterizedRoleType.getRawType() == javax.inject.Provider.class) {
-                // Try to get the jakarta version of the provider
-                ParameterizedType jakartaProviderType = new DefaultParameterizedType(null, Provider.class,
-                    parameterizedRoleType.getActualTypeArguments()[0]);
-                ComponentEntry<?> entry = getComponentEntry(jakartaProviderType, roleHint);
-
-                if (entry != null) {
-                    // Wrap it as a javax provider
-                    instance = (T) new JakartaJavaXProvider(this, jakartaProviderType, roleHint);
-                }
-            }
-        }
-
-        return instance;
-    }
-
     @Override
     public <T> T getInstance(Type roleType, String roleHint) throws ComponentLookupException
     {
         T instance;
 
-        ComponentEntry<T> componentEntry = (ComponentEntry<T>) getComponentEntry(roleType, roleHint);
+        ComponentEntry<T> componentEntry = (ComponentEntry<T>) getComponentEntry(roleType, roleHint, true);
 
         if (componentEntry == null) {
-            // Retro compatibility: proxy javax or jakarta Provider to the other side
-            instance = tryOtherProvider(roleType, roleHint);
-            if (instance == null) {
-                if (getParent() != null) {
-                    // Try the parent
-                    instance = getParent().getInstance(roleType, roleHint);
-                } else {
-                    throw new ComponentLookupException("Can't find descriptor for the component with type [" + roleType
-                        + "] and hint [" + roleHint + "]");
-                }
+            if (getParent() != null) {
+                // Try the parent
+                instance = getParent().getInstance(roleType, roleHint);
+            } else {
+                throw new ComponentLookupException(
+                    "Can't find descriptor for the component with type [" + roleType + "] and hint [" + roleHint + "]");
             }
         } else if (getParent() != null) {
             // Get parent descriptor
@@ -471,6 +434,60 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         return null;
     }
 
+    private ComponentEntry<?> tryOtherProvider(Type roleType, String roleHint)
+    {
+        ComponentEntry<?> entry = null;
+
+        if (roleType instanceof ParameterizedType) {
+            ParameterizedType parameterizedRoleType = (ParameterizedType) roleType;
+
+            if (parameterizedRoleType.getRawType() == Provider.class) {
+                // Try to get the javax version of the provider
+                ParameterizedType javaxProviderType = new DefaultParameterizedType(null, javax.inject.Provider.class,
+                    parameterizedRoleType.getActualTypeArguments()[0]);
+                ComponentEntry<?> javaxEntry = getComponentEntry(javaxProviderType, roleHint);
+
+                if (javaxEntry != null) {
+                    // Wrap it as a jakarta provider
+                    DefaultComponentDescriptor descriptor = new DefaultComponentDescriptor<>(javaxEntry.descriptor);
+                    descriptor.setRoleType(Provider.class);
+                    descriptor.setImplementation(JavaXJakartaProvider.class);
+
+                    entry = new ComponentEntry(descriptor, new JavaXJakartaProvider(this, javaxProviderType, roleHint));
+                }
+            } else if (parameterizedRoleType.getRawType() == javax.inject.Provider.class) {
+                // Try to get the jakarta version of the provider
+                ParameterizedType jakartaProviderType = new DefaultParameterizedType(null, Provider.class,
+                    parameterizedRoleType.getActualTypeArguments()[0]);
+                ComponentEntry<?> jakartaEntry = getComponentEntry(jakartaProviderType, roleHint);
+
+                if (jakartaEntry != null) {
+                    // Wrap it as a javax provider
+                    DefaultComponentDescriptor descriptor = new DefaultComponentDescriptor<>(jakartaEntry.descriptor);
+                    descriptor.setRoleType(javax.inject.Provider.class);
+                    descriptor.setImplementation(JakartaJavaXProvider.class);
+
+                    entry =
+                        new ComponentEntry(descriptor, new JakartaJavaXProvider(this, jakartaProviderType, roleHint));
+                }
+            }
+        }
+
+        return entry;
+    }
+
+    private ComponentEntry<?> getComponentEntry(Type role, String hint, boolean javaxBridge)
+    {
+        ComponentEntry<?> entry = getComponentEntry(role, hint);
+
+        if (entry == null && javaxBridge) {
+            // Retro compatibility: proxy javax or jakarta Provider to the other side
+            entry = tryOtherProvider(role, hint);
+        }
+
+        return entry;
+    }
+
     private ComponentEntry<?> getComponentEntry(Type role, String hint)
     {
         ComponentEntries<?> entries = this.componentEntries.get(role);
@@ -487,7 +504,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
     {
         ComponentDescriptor<T> result = null;
 
-        ComponentEntry<?> componentEntry = getComponentEntry(role, hint);
+        ComponentEntry<?> componentEntry = getComponentEntry(role, hint, true);
         if (componentEntry == null) {
             // Check in parent!
             if (getParent() != null) {
@@ -600,41 +617,41 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         // Handle different field types
         Object fieldValue;
 
-        // Step 1: Verify if there's a Provider registered for the field type
-        // - A Provider is a component like any other (except it cannot have a field produced by itself!)
-        // - A Provider must implement the JSR330 Producer interface
-        //
-        // Step 2: Handle Logger injection.
-        //
-        // Step 3: No producer found, handle scalar and collection types by looking up standard component
-        // implementations.
+        ComponentEntry<?> dependencyEntry = getComponentEntry(dependency.getRoleType(), dependency.getRoleHint(), true);
 
-        Class<?> dependencyRoleClass = ReflectionUtils.getTypeClass(dependency.getRoleType());
-
-        if (dependencyRoleClass.isAssignableFrom(Logger.class)) {
-            fieldValue = createLogger(parentInstance.getClass());
-        } else if (dependencyRoleClass.isAssignableFrom(List.class)) {
-            fieldValue = getInstanceList(ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()));
-        } else if (dependencyRoleClass.isAssignableFrom(Map.class)) {
-            fieldValue = getInstanceMap(ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()));
-        } else if (dependencyRoleClass.isAssignableFrom(Provider.class)) {
-            // Check if there's a Provider registered for the type
-            if (hasComponent(dependency.getRoleType(), dependency.getRoleHint())) {
-                fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
-            } else {
-                fieldValue = createJakartaGenericProvider(descriptor, dependency);
-            }
-        } else if (dependencyRoleClass.isAssignableFrom(javax.inject.Provider.class)) {
-            // Check if there's a Provider registered for the type
-            if (hasComponent(dependency.getRoleType(), dependency.getRoleHint())) {
-                fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
-            } else {
-                fieldValue = createGenericProvider(descriptor, dependency);
-            }
-        } else if (dependencyRoleClass.isAssignableFrom(ComponentDescriptor.class)) {
-            fieldValue = new DefaultComponentDescriptor<>(descriptor);
-        } else {
+        if (dependencyEntry != null) {
+            // There is a component explicitly registered for this role type
             fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
+        } else {
+            // There is no component explicitly registered for this role type, check for various types with a special
+            // meaning
+            Class<?> dependencyRoleClass = ReflectionUtils.getTypeClass(dependency.getRoleType());
+
+            if (dependencyRoleClass.isAssignableFrom(Logger.class)) {
+                fieldValue = createLogger(parentInstance.getClass());
+            } else if (dependencyRoleClass.isAssignableFrom(List.class)) {
+                fieldValue = getInstanceList(ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()));
+            } else if (dependencyRoleClass.isAssignableFrom(Map.class)) {
+                fieldValue = getInstanceMap(ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()));
+            } else if (dependencyRoleClass.isAssignableFrom(Provider.class)) {
+                // Check if there's a Provider registered for the type
+                if (hasComponent(dependency.getRoleType(), dependency.getRoleHint())) {
+                    fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
+                } else {
+                    fieldValue = createJakartaGenericProvider(descriptor, dependency);
+                }
+            } else if (dependencyRoleClass.isAssignableFrom(javax.inject.Provider.class)) {
+                // Check if there's a Provider registered for the type
+                if (hasComponent(dependency.getRoleType(), dependency.getRoleHint())) {
+                    fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
+                } else {
+                    fieldValue = createGenericProvider(descriptor, dependency);
+                }
+            } else if (dependencyRoleClass.isAssignableFrom(ComponentDescriptor.class)) {
+                fieldValue = new DefaultComponentDescriptor<>(descriptor);
+            } else {
+                fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
+            }
         }
 
         return fieldValue;
@@ -711,7 +728,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
     public <T> void registerComponent(ComponentDescriptor<T> componentDescriptor, T componentInstance)
     {
         ComponentEntry<?> componentEntry =
-            getComponentEntry(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint());
+            getComponentEntry(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint(), true);
 
         if (componentEntry == null
             || componentEntry.descriptor.getRoleHintPriority() >= componentDescriptor.getRoleHintPriority()) {

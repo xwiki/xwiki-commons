@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.DisposePriority;
+import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.descriptor.DefaultComponentDependency;
@@ -46,6 +47,7 @@ import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.manager.ComponentEventManager;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.manager.ComponentRepositoryException;
 import org.xwiki.component.phase.Disposable;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -877,28 +879,98 @@ public class EmbeddableComponentManagerTest
         }
     }
 
+    public static class ComponentWithJakartaProvider
+    {
+        Provider<String> provider;
+
+        public String get()
+        {
+            return this.provider.get();
+        }
+    }
+
+    public static class ComponentWithJavaXProvider
+    {
+        javax.inject.Provider<String> provider;
+
+        public String get()
+        {
+            return this.provider.get();
+        }
+    }
+
+    private static <T> DefaultComponentDependency<T> dependency(Type roleType, String roleHint, String field)
+    {
+        DefaultComponentDependency<T> dependency = new DefaultComponentDependency<>();
+        dependency.setRoleType(roleType);
+        dependency.setRoleHint(roleHint);
+        dependency.setName(field);
+
+        return dependency;
+    }
+
+    private <T> void registerComponent(EmbeddableComponentManager ecm, Type roleType, String roleHint,
+        Class<? extends T> implementation, ComponentDependency<?>... dependencies) throws ComponentRepositoryException
+    {
+        DefaultComponentDescriptor<T> djakarta = new DefaultComponentDescriptor<>();
+        djakarta.setRoleType(roleType);
+        djakarta.setRoleHint(roleHint);
+        djakarta.setImplementation(implementation);
+
+        for (ComponentDependency<?> dependency : dependencies) {
+            djakarta.addComponentDependency(dependency);
+        }
+
+        ecm.registerComponent(djakarta);
+    }
+
     @Test
     void getInstanceJakartaJavaxProvider() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
-        ParameterizedType jakartaRoleType = new DefaultParameterizedType(null, Provider.class, String.class);
-        ParameterizedType javaxRoleType = new DefaultParameterizedType(null, javax.inject.Provider.class, String.class);
 
-        DefaultComponentDescriptor<Provider<String>> djakarta = new DefaultComponentDescriptor<>();
-        djakarta.setRoleType(jakartaRoleType);
-        djakarta.setRoleHint("jakarta");
-        djakarta.setImplementation(JakartaProvider.class);
-        ecm.registerComponent(djakarta);
-        DefaultComponentDescriptor<javax.inject.Provider<String>> djavax = new DefaultComponentDescriptor<>();
-        djavax.setRoleType(javaxRoleType);
-        djavax.setRoleHint("javax");
-        djavax.setImplementation(JavaXProvider.class);
-        ecm.registerComponent(djavax);
+        ParameterizedType jakartaRoleType = new DefaultParameterizedType(null, Provider.class, String.class);
+        registerComponent(ecm, jakartaRoleType, "jakarta", JakartaProvider.class);
+
+        ParameterizedType javaxRoleType = new DefaultParameterizedType(null, javax.inject.Provider.class, String.class);
+        registerComponent(ecm, javaxRoleType, "javax", JavaXProvider.class);
 
         assertEquals("jakarta", ecm.<Provider<String>>getInstance(jakartaRoleType, "jakarta").get());
-        assertEquals("javax", ecm.<javax.inject.Provider<String>>getInstance(javaxRoleType, "javax").get());
-
-        assertEquals("jakarta", ecm.<javax.inject.Provider<String>>getInstance(javaxRoleType, "jakarta").get());
         assertEquals("javax", ecm.<Provider<String>>getInstance(jakartaRoleType, "javax").get());
+
+        assertEquals("javax", ecm.<javax.inject.Provider<String>>getInstance(javaxRoleType, "javax").get());
+        assertEquals("jakarta", ecm.<javax.inject.Provider<String>>getInstance(javaxRoleType, "jakarta").get());
+    }
+
+    @Test
+    void injectJakartaJavaxProvider() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        ParameterizedType jakartaRoleType = new DefaultParameterizedType(null, Provider.class, String.class);
+        registerComponent(ecm, jakartaRoleType, "jakarta", JakartaProvider.class);
+
+        ParameterizedType javaxRoleType = new DefaultParameterizedType(null, javax.inject.Provider.class, String.class);
+        registerComponent(ecm, javaxRoleType, "javax", JavaXProvider.class);
+
+        registerComponent(ecm, ComponentWithJakartaProvider.class, "jakarta", ComponentWithJakartaProvider.class,
+            dependency(jakartaRoleType, "jakarta", "provider"));
+        registerComponent(ecm, ComponentWithJakartaProvider.class, "javax", ComponentWithJakartaProvider.class,
+            dependency(jakartaRoleType, "javax", "provider"));
+
+        registerComponent(ecm, ComponentWithJavaXProvider.class, "jakarta", ComponentWithJavaXProvider.class,
+            dependency(javaxRoleType, "jakarta", "provider"));
+        registerComponent(ecm, ComponentWithJavaXProvider.class, "javax", ComponentWithJavaXProvider.class,
+            dependency(javaxRoleType, "javax", "provider"));
+
+        assertEquals("jakarta",
+            ecm.<ComponentWithJakartaProvider>getInstance(ComponentWithJakartaProvider.class, "jakarta").get());
+        assertEquals("javax",
+            ecm.<ComponentWithJakartaProvider>getInstance(ComponentWithJakartaProvider.class, "javax").get());
+
+        assertEquals("jakarta",
+            ecm.<ComponentWithJavaXProvider>getInstance(ComponentWithJavaXProvider.class, "jakarta").get());
+        assertEquals("javax",
+            ecm.<ComponentWithJavaXProvider>getInstance(ComponentWithJavaXProvider.class, "javax").get());
     }
 }
