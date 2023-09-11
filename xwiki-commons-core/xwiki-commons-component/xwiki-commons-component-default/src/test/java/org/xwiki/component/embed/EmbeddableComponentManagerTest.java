@@ -19,6 +19,18 @@
  */
 package org.xwiki.component.embed;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -41,16 +53,7 @@ import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.junit5.LogCaptureExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import jakarta.inject.Provider;
 
 /**
  * Unit tests for {@link EmbeddableComponentManager}.
@@ -854,5 +857,48 @@ public class EmbeddableComponentManagerTest
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager("namespace");
         assertEquals("namespace", ecm.getNamespace());
+    }
+
+    public static class JakartaProvider implements Provider<String>
+    {
+        @Override
+        public String get()
+        {
+            return "jakarta";
+        }
+    }
+
+    public static class JavaXProvider implements javax.inject.Provider<String>
+    {
+        @Override
+        public String get()
+        {
+            return "javax";
+        }
+    }
+
+    @Test
+    void getInstanceJakartaJavaxProvider() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+        ParameterizedType jakartaRoleType = new DefaultParameterizedType(null, Provider.class, String.class);
+        ParameterizedType javaxRoleType = new DefaultParameterizedType(null, javax.inject.Provider.class, String.class);
+
+        DefaultComponentDescriptor<Provider<String>> djakarta = new DefaultComponentDescriptor<>();
+        djakarta.setRoleType(jakartaRoleType);
+        djakarta.setRoleHint("jakarta");
+        djakarta.setImplementation(JakartaProvider.class);
+        ecm.registerComponent(djakarta);
+        DefaultComponentDescriptor<javax.inject.Provider<String>> djavax = new DefaultComponentDescriptor<>();
+        djavax.setRoleType(javaxRoleType);
+        djavax.setRoleHint("javax");
+        djavax.setImplementation(JavaXProvider.class);
+        ecm.registerComponent(djavax);
+
+        assertEquals("jakarta", ecm.<Provider<String>>getInstance(jakartaRoleType, "jakarta").get());
+        assertEquals("javax", ecm.<javax.inject.Provider<String>>getInstance(javaxRoleType, "javax").get());
+
+        assertEquals("jakarta", ecm.<javax.inject.Provider<String>>getInstance(javaxRoleType, "jakarta").get());
+        assertEquals("javax", ecm.<Provider<String>>getInstance(jakartaRoleType, "javax").get());
     }
 }
