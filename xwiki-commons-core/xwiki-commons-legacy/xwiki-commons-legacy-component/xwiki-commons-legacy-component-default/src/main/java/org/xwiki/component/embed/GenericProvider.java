@@ -34,7 +34,7 @@ import org.xwiki.component.manager.ComponentManager;
  * @param <T> the role type
  * @version $Id$
  * @since 3.3M2
- * @since use {@link JavaXGenericProvider} instead
+ * @deprecated
  */
 @Deprecated(since = "jakarta")
 public class GenericProvider<T> extends JavaXGenericProvider<T>
