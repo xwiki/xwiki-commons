@@ -256,6 +256,27 @@
                 </item>
               </differences>
             </revapi.differences>
+
+            <revapi.differences>
+              <justification>False positives</justification>
+              <criticality>highlight</criticality>
+              <differences>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.class.nonFinalClassInheritsFromNewClass</code>
+                  <old>class org.xwiki.component.embed.GenericProvider&lt;T&gt;</old>
+                  <new>class org.xwiki.component.embed.GenericProvider&lt;T&gt;</new>
+                  <superClass>org.xwiki.component.internal.AbstractGenericProvider&lt;T&gt;</superClass>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.class.nonFinalClassInheritsFromNewClass</code>
+                  <old>class org.xwiki.component.embed.GenericProvider&lt;T&gt;</old>
+                  <new>class org.xwiki.component.embed.GenericProvider&lt;T&gt;</new>
+                  <superClass>org.xwiki.component.internal.JavaXGenericProvider&lt;T&gt;</superClass>
+                </item>
+              </differences>
+            </revapi.differences>
           </analysisConfiguration>
         </configuration>
       </plugin>
