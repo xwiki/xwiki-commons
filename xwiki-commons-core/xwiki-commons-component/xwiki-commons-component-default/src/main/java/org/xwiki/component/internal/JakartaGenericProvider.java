@@ -17,9 +17,8 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.component.embed;
+package org.xwiki.component.internal;
 
-import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentManager;
 
 import jakarta.inject.Provider;
@@ -31,7 +30,7 @@ import jakarta.inject.Provider;
  *
  * @param <T> the role type
  * @version $Id$
- * @since ***feature-deploy-jakarta***
+ * @since jakarta
  */
 public class JakartaGenericProvider<T> extends AbstractGenericProvider<T> implements Provider<T>
 {
