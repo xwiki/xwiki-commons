@@ -21,6 +21,8 @@ package org.xwiki.component.embed;
 
 import javax.inject.Provider;
 
+import org.xwiki.component.internal.AbstractGenericProvider;
+import org.xwiki.component.internal.JavaXGenericProvider;
 import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentManager;
 
@@ -32,15 +34,17 @@ import org.xwiki.component.manager.ComponentManager;
  * @param <T> the role type
  * @version $Id$
  * @since 3.3M2
+ * @since use {@link JavaXGenericProvider} instead
  */
-public class JavaXGenericProvider<T> extends AbstractGenericProvider<T> implements Provider<T>
+@Deprecated(since = "jakarta")
+public class GenericProvider<T> extends JavaXGenericProvider<T>
 {
     /**
      * @param componentManager the Component Manager instance that we'll use to look up the Component Role during
      *            {@link javax.inject.Provider#get()}
      * @param roleHint the Component Role and Hint that uniquely identify the Component we wish to provide for
      */
-    public JavaXGenericProvider(ComponentManager componentManager, RoleHint<T> roleHint)
+    public GenericProvider(ComponentManager componentManager, RoleHint<T> roleHint)
     {
         super(componentManager, roleHint);
     }
@@ -48,6 +52,6 @@ public class JavaXGenericProvider<T> extends AbstractGenericProvider<T> implemen
     @Override
     protected AbstractGenericProvider<T> newProvider(ComponentManager componentManager, RoleHint roleHint)
     {
-        return new JavaXGenericProvider<>(componentManager, roleHint);
+        return new GenericProvider<>(componentManager, roleHint);
     }
 }

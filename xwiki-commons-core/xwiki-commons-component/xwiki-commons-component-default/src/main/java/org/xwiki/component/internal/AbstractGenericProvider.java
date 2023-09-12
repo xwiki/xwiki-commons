@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.component.embed;
+package org.xwiki.component.internal;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.component.annotation.Role;
-import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
