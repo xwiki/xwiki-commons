@@ -38,11 +38,6 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
 {
     private static final URL[] EMPTY_URIS = new URL[] {};
 
-    /**
-     * @see #getNamespace()
-     */
-    private String namespace;
-
     private boolean closed;
 
     /**
@@ -86,8 +81,7 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
      */
     public NamespaceURLClassLoader(URL[] urls, ClassLoader parent, URLStreamHandlerFactory factory, String namespace)
     {
-        super(urls, parent, factory);
-        this.namespace = namespace;
+        super(namespace, urls, parent, factory);
     }
 
     /**
@@ -118,7 +112,7 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
      */
     public String getNamespace()
     {
-        return this.namespace;
+        return getName();
     }
 
     /**
