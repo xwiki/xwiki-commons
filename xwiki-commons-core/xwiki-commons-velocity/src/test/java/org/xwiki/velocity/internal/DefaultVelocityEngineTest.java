@@ -356,14 +356,11 @@ class DefaultVelocityEngineTest
         Context context = new XWikiVelocityContext();
         context.put("test", new TestClass(context));
 
-        // Make sure the script can overwrite an included macro
-        assertEvaluate("ovewritten",
+        // Included macros overwrite the script macros because they are loaded after
+        assertEvaluate("included",
             "$test.evaluate('#macro(includedmacro)included#end')#macro(includedmacro)ovewritten#end#includedmacro()",
             context);
-
-        // Make sure macros defined in the script have priority over any included macro even of the include is done
-        // after the declared macro
-        assertEvaluate("ovewritten",
+        assertEvaluate("included",
             "#macro(includedmacro)ovewritten#end$test.evaluate('#macro(includedmacro)included#end')#includedmacro()",
             context);
     }
@@ -474,6 +471,31 @@ class DefaultVelocityEngineTest
 
         // Override in the same script
         assertEvaluate("test4", "#macro(mymacro)test3#end#macro(mymacro)test4#end#mymacro", "namespace");
+
+        // Mark namespace "namespace" as not used anymore
+        this.engine.stoppedUsingMacroNamespace("namespace");
+    }
+
+    @Test
+    void evaluateOverrideSubMacros() throws Exception
+    {
+        this.engine.initialize(new Properties());
+
+        assertEvaluate("#mymacro", "#mymacro", "namespace");
+
+        this.engine.startedUsingMacroNamespace("namespace");
+
+        this.engine.evaluate(new XWikiVelocityContext(), new StringWriter(), "namespace",
+            "#macro(mysubmacro)initial#end#macro(mymacro)#mysubmacro()#end");
+
+        assertEvaluate("initial", "#mymacro", "namespace");
+
+        assertEvaluate("overwrite2", "#macro(mysubmacro)overwrite2#end#mymacro", "namespace");
+
+        this.engine.evaluate(new XWikiVelocityContext(), new StringWriter(), "namespace",
+            "#macro(mysubmacro)overwrite1#end");
+
+        assertEvaluate("overwrite1", "#mymacro", "namespace");
 
         // Mark namespace "namespace" as not used anymore
         this.engine.stoppedUsingMacroNamespace("namespace");
