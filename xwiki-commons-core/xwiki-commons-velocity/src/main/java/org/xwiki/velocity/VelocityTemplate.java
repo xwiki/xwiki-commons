@@ -17,25 +17,25 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.velocity.internal;
+package org.xwiki.velocity;
 
 import java.io.Reader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.velocity.Template;
-import org.apache.velocity.exception.ParseErrorException;
-import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
+import org.xwiki.stability.Unstable;
 
 /**
- * Extends {@link Template} to change how macros are resolved.
+ * Expose a Velocity {@link Template} and its macros (which have been extracted and removed from the {@link Template}).
  * 
  * @version $Id$
  * @since 15.8RC1
  */
-public class VelocityTemplate extends Template
+@Unstable
+public class VelocityTemplate
 {
     private static class SingletonResourceReader extends StringResourceLoader
     {
@@ -53,6 +53,8 @@ public class VelocityTemplate extends Template
         }
     }
 
+    private Template template = new Template();
+
     private Map<String, Object> templateMacros = new ConcurrentHashMap<>();
 
     /**
@@ -61,8 +63,8 @@ public class VelocityTemplate extends Template
      */
     public VelocityTemplate(String name, RuntimeServices rs)
     {
-        setName(name);
-        setRuntimeServices(rs);
+        this.template.setName(name);
+        this.template.setRuntimeServices(rs);
     }
 
     /**
@@ -71,19 +73,13 @@ public class VelocityTemplate extends Template
     public void compile(Reader source)
     {
         // Inject a custom resource loaded in charge of providing the template content
-        setResourceLoader(new SingletonResourceReader(source));
+        this.template.setResourceLoader(new SingletonResourceReader(source));
 
         // Compile the template
-        process();
-    }
-
-    @Override
-    public boolean process() throws ResourceNotFoundException, ParseErrorException
-    {
-        boolean successful = super.process();
+        this.template.process();
 
         // Get the macro found in the template
-        Map<String, Object> macros = getMacros();
+        Map<String, Object> macros = this.template.getMacros();
 
         // Store the macro found in the template to reuse them later
         this.templateMacros.putAll(macros);
@@ -92,14 +88,20 @@ public class VelocityTemplate extends Template
         // able to override sub macros. The trick used is to make the source of all the directives think there is not
         // macro. They will be provided as libraries.
         macros.clear();
-
-        return successful;
     }
 
     /**
-     * @return the macros
+     * @return the actual Velocity template, without the macros
      */
-    public Map<String, Object> getTemplateMacros()
+    public Template getTemplate()
+    {
+        return this.template;
+    }
+
+    /**
+     * @return the macros found in the template
+     */
+    public Map<String, Object> getMacros()
     {
         return this.templateMacros;
     }

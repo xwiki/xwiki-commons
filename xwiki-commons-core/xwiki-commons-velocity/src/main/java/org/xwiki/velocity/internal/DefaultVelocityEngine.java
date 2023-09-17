@@ -51,6 +51,7 @@ import org.xwiki.context.ExecutionContext;
 import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.VelocityEngine;
+import org.xwiki.velocity.VelocityTemplate;
 import org.xwiki.velocity.XWikiVelocityException;
 import org.xwiki.velocity.internal.directive.TryCatchDirective;
 
@@ -235,7 +236,7 @@ public class DefaultVelocityEngine implements VelocityEngine
     }
 
     @Override
-    public Template compile(String name, Reader source) throws XWikiVelocityException
+    public VelocityTemplate compile(String name, Reader source) throws XWikiVelocityException
     {
         // Ensure that initialization has been called
         if (this.runtimeInstance == null) {
@@ -256,7 +257,7 @@ public class DefaultVelocityEngine implements VelocityEngine
     public boolean evaluate(Context context, Writer out, String namespace, Reader source) throws XWikiVelocityException
     {
         // Create the template
-        Template template = compile(namespace, source);
+        VelocityTemplate template = compile(namespace, source);
 
         evaluate(context, out, namespace, template);
 
@@ -283,7 +284,8 @@ public class DefaultVelocityEngine implements VelocityEngine
     }
 
     @Override
-    public void evaluate(Context context, Writer out, String namespace, Template template) throws XWikiVelocityException
+    public void evaluate(Context context, Writer out, String namespace, VelocityTemplate template)
+        throws XWikiVelocityException
     {
         // Save some contextual metadata that needs to be restored
         Resource currentResource = null;
@@ -297,12 +299,8 @@ public class DefaultVelocityEngine implements VelocityEngine
             // Find current library template
             TemplateEntry templateEntry = pushNamespace(namespace);
 
-            // Inject current template macros in the current library
-            if (template instanceof VelocityTemplate) {
-                templateEntry.getTemplate().getMacros().putAll(((VelocityTemplate) template).getTemplateMacros());
-            } else {
-                templateEntry.getTemplate().getMacros().putAll(template.getMacros());
-            }
+            // Inject the current template macro in the library
+            templateEntry.getTemplate().getMacros().putAll(template.getMacros());
 
             // Make sure to have a context
             Context mergeContext = context != null ? context : this.velocityContextFactory.createContext();
@@ -313,7 +311,7 @@ public class DefaultVelocityEngine implements VelocityEngine
             }
 
             // Execute the velocity script
-            template.merge(mergeContext, out);
+            template.getTemplate().merge(mergeContext, out);
         } catch (StopCommand s) {
             // Someone explicitly stopped the script with something like #stop. No reason to make a scene.
         } catch (Exception e) {

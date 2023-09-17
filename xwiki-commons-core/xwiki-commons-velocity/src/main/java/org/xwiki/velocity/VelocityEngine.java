@@ -24,7 +24,6 @@ import java.io.Writer;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.velocity.Template;
 import org.apache.velocity.context.Context;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
@@ -48,16 +47,16 @@ public interface VelocityEngine
     void initialize(Properties properties) throws XWikiVelocityException;
 
     /**
-     * Compile the passed script into a Velocity {@link Template}.
+     * Compile the passed script into a {@link VelocityTemplate}.
      * 
      * @param name the name of the template
      * @param source the input string containing the VTL to be rendered
-     * @return the compiler {@link Template}
+     * @return the compiled {@link VelocityTemplate}
      * @throws XWikiVelocityException in case of error
      * @since 15.8RC1
      */
     @Unstable
-    Template compile(String name, Reader source) throws XWikiVelocityException;
+    VelocityTemplate compile(String name, Reader source) throws XWikiVelocityException;
 
     /**
      * Evaluate the input string using the context into the output writer.
@@ -98,7 +97,8 @@ public interface VelocityEngine
      * @since 15.8RC1
      */
     @Unstable
-    void evaluate(Context context, Writer out, String namespace, Template template) throws XWikiVelocityException;
+    void evaluate(Context context, Writer out, String namespace, VelocityTemplate template)
+        throws XWikiVelocityException;
 
     /**
      * Clear the internal Velocity Macro cache for the passed namespace.
@@ -128,7 +128,7 @@ public interface VelocityEngine
     void stoppedUsingMacroNamespace(String namespace);
 
     /**
-     * @param macros macros to reuse with scripts executed by this engine
+     * @param macros the macros to reuse with scripts executed by this engine
      * @since 15.8RC1
      */
     default void addGlobalMacros(Map<String, Object> macros)
