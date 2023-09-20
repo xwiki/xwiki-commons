@@ -237,6 +237,7 @@ public class MockitoComponentMocker<T>
             // TODO: Handle multiple roles/hints.
             if (!this.excludedComponentRoleDependencies.contains(roleTypeClass) && Logger.class != roleTypeClass
                 && !roleTypeClass.isAssignableFrom(List.class) && !roleTypeClass.isAssignableFrom(Map.class)
+                && ComponentDescriptor.class != roleTypeClass
                 && !this.componentManager.hasComponent(dependencyDescriptor.getRoleType(),
                     dependencyDescriptor.getRoleHint()))
             {
