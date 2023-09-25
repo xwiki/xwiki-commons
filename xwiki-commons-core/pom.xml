@@ -223,22 +223,7 @@
               </differences>
             </revapi.differences>
             -->
-            <revapi.differences>
-              <justification>New API added to a component very unlikelly to have a custom implementation</justification>
-              <criticality>highlight</criticality>
-              <differences>
-                <item>
-                  <ignore>true</ignore>
-                  <code>java.method.addedToInterface</code>
-                  <new>method org.xwiki.velocity.VelocityTemplate org.xwiki.velocity.VelocityEngine::compile(java.lang.String, java.io.Reader) throws org.xwiki.velocity.XWikiVelocityException</new>
-                </item>
-                <item>
-                  <ignore>true</ignore>
-                  <code>java.method.addedToInterface</code>
-                  <new>method void org.xwiki.velocity.VelocityEngine::evaluate(org.apache.velocity.context.Context, java.io.Writer, java.lang.String, org.xwiki.velocity.VelocityTemplate) throws org.xwiki.velocity.XWikiVelocityException</new>
-                </item>
-              </differences>
-            </revapi.differences>
+            
           </analysisConfiguration>
         </configuration>
       </plugin>
