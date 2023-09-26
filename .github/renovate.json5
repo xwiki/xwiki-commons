@@ -3,7 +3,7 @@
   "ignoreDeps": ["org.eclipse.m2e:lifecycle-mapping"],
 
   // There is no point trying to find update for commons dependencies
-  [
+  "packageRules": [
     {
       "matchPackagePrefixes": ["org.xwiki.commons:"],
       "enabled": false
