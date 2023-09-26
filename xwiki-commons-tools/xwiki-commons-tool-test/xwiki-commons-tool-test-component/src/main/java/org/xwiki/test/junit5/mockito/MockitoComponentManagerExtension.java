@@ -243,8 +243,8 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
                 Inject.class.getSimpleName(), field.getName()));
         }
 
-        Object component = (namedAnnotation == null) ? mcm.getInstance(field.getType())
-            : mcm.getInstance(field.getType(), namedAnnotation.value());
+        Object component = (namedAnnotation == null) ? mcm.getInstance(field.getGenericType())
+            : mcm.getInstance(field.getGenericType(), namedAnnotation.value());
         ReflectionUtils.setFieldValue(testInstance, field.getName(), component);
     }
 
