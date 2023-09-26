@@ -201,7 +201,7 @@
 
     <!-- Version of Maven used during the build (the one used as dependency when building and during Maven plugins
          executions)  -->
-    <maven.build.version>3.6.3</maven.build.version>
+    <maven.build.version>3.9.4</maven.build.version>
     <maven.resolver.build.version>1.4.1</maven.resolver.build.version>
     <!-- Version of Maven emebdded in XWiki runtime (more recent than the one used during the build to benefit from bugfixes and improvements) -->
     <maven.runtime.version>3.9.4</maven.runtime.version>
