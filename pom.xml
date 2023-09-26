@@ -223,7 +223,7 @@
     <maven.plugin.tools.version>3.9.0</maven.plugin.tools.version>
 
     <!-- The version of the Maven Remote Resource plugin -->
-    <maven-remote-resources-plugin.version>1.7.0</maven-remote-resources-plugin.version>
+    <maven-remote-resources-plugin.version>3.1.0</maven-remote-resources-plugin.version>
 
     <!-- The version of the Maven Compiler Plugin -->
     <maven.compiler.version>3.11.0</maven.compiler.version>
