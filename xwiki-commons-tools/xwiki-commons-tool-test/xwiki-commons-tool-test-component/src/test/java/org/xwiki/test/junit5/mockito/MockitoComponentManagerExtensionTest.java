@@ -117,6 +117,28 @@ class MockitoComponentManagerExtensionTest
     }
 
     @ExtendWith(MockitoComponentManagerExtension.class)
+    @ComponentList({
+        Component1RoleNamedStringImpl.class,
+        Component1RoleStringImpl.class
+    })
+    static class InjectGenericComponentsTestCase
+    {
+        @Inject
+        private Component1Role<String> componentRole1;
+
+        @Inject
+        @Named("test")
+        private Component1Role<String> componentRole2;
+
+        @Test
+        void test()
+        {
+            assertNotNull(this.componentRole1);
+            assertNotNull(this.componentRole2);
+        }
+    }
+
+    @ExtendWith(MockitoComponentManagerExtension.class)
     static class InjectMockitoComponentManagerAsMethodParameterTestCase
     {
         @Test
@@ -298,6 +320,15 @@ class MockitoComponentManagerExtensionTest
     void injectComponents()
     {
         execute(InjectComponentsTestCase.class);
+    }
+
+    /**
+     * Verify that {@code @Inject} annotations are supported for generic components.
+     */
+    @Test
+    void injectGenericComponents()
+    {
+        execute(InjectGenericComponentsTestCase.class);
     }
 
     @Test

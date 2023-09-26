@@ -1,2 +1,4 @@
 org.xwiki.test.junit5.mockito.DefaultComponentRole
 org.xwiki.test.junit5.mockito.TestComponentRole
+org.xwiki.test.junit5.mockito.Component1RoleNamedStringImpl
+org.xwiki.test.junit5.mockito.Component1RoleStringImpl
