@@ -28,7 +28,7 @@
     },
     {
       "matchPackagePrefixes": ["jakarta.transaction"],
-      "allowedVersions": "/^2\..*$/"
+      "allowedVersions": "/^1\..*$/"
     },
     {
       "matchPackagePrefixes": ["jakarta.validation"],
