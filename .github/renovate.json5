@@ -1,0 +1,7 @@
+{
+  "packageRules": [
+    {
+      "excludePackageNames": ["org.eclipse.m2e:lifecycle-mapping"]
+    }
+  ]
+}
