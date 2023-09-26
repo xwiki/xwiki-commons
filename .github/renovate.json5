@@ -4,7 +4,8 @@
 
   // Skip Eclipse M2E special setup "dependency"
   // Skip jdom 1 since jdom 2 actually use a different id now
-  "ignoreDeps": ["org.eclipse.m2e:lifecycle-mapping", "org.jdom:jdom"],
+  // antlr 2 is not maintained anymore
+  "ignoreDeps": ["org.eclipse.m2e:lifecycle-mapping", "org.jdom:jdom", "antlr:antlr"],
 
   // There is no point trying to find update for commons dependencies
   "packageRules": [
@@ -17,11 +18,6 @@
     {
       "matchPackageNames": ["commons-collections:commons-collections"],
       "allowedVersions": "/^3\..*$/"
-    },
-    // Maven Central contains an old (but very high in term of version) bad version of antlr:antlr so making sure we match the right ones
-    {
-      "matchPackageNames": ["antlr:antlr"],
-      "allowedVersions": "/^2\..*$/"
     },
 
     // Various dependencies we cannot update yet because of the move to jakarta package
@@ -52,6 +48,10 @@
     {
       "matchPackagePrefixes": ["javax.servlet"],
       "allowedVersions": "/^3\..*$/"
+    },
+    {
+      "matchPackagePrefixes": ["jakarta.enterprise"],
+      "allowedVersions": "/^2\..*$/"
     },
     {
       "matchPackagePrefixes": ["jakarta.mail", "com.sun.mail"],
