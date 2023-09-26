@@ -31,6 +31,10 @@
       "allowedVersions": "/^1\..*$/"
     },
     {
+      "matchPackagePrefixes": ["jakarta.annotation"],
+      "allowedVersions": "/^1\..*$/"
+    },
+    {
       "matchPackagePrefixes": ["jakarta.validation"],
       "allowedVersions": "/^2\..*$/"
     },
@@ -45,6 +49,14 @@
     {
       "matchPackagePrefixes": ["javax.servlet"],
       "allowedVersions": "/^3\..*$/"
+    },
+    {
+      "matchPackagePrefixes": ["jakarta.mail", "com.sun.mail"],
+      "allowedVersions": "/^1\..*$/"
+    },
+    {
+      "matchPackagePrefixes": ["jakarta.activation", "com.sun.activation"],
+      "allowedVersions": "/^1\..*$/"
     },
     {
       "matchPackagePrefixes": ["org.mortbay.jasper:apache-el"],
