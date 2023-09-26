@@ -1370,7 +1370,7 @@
       <dependency>
         <groupId>antlr</groupId>
         <artifactId>antlr</artifactId>
-        <version>2.7.7</version>
+        <version>20030911</version>
       </dependency>
       <!-- ANTLR4 -->
       <dependency>
