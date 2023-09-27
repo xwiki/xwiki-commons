@@ -35,8 +35,12 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
-import static com.github.tomakehurst.wiremock.client.RequestPatternBuilder.allRequests;
 import static com.github.tomakehurst.wiremock.client.WireMock.findAll;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.allRequests;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -66,6 +70,9 @@ public class SystemHTTPProxyTest
 
         System.setProperty("http.proxyHost", "localhost");
         System.setProperty("http.proxyPort", "8888");
+
+        stubFor(get(urlEqualTo("/repository/extensions/id/versions?requireTotalHits=true&start=0&number=-1"))
+            .willReturn(notFound()));
 
         try {
             repository.resolveVersions("id", 0, -1);

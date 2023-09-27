@@ -46,8 +46,6 @@ import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersions;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersion;
 
-import com.google.common.collect.Iterators;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -115,7 +113,7 @@ class XWikiExtensionRepositoryTest
         assertEquals(5, result.getOffset());
         assertEquals(7, result.getTotalHits());
         List<Version> versions = new ArrayList<>();
-        Iterators.addAll(versions, result.iterator());
+        result.forEach(versions::add);
         assertEquals(Arrays.asList(new DefaultVersion("1.3"), new DefaultVersion("2.4.1")), versions);
     }
 }
