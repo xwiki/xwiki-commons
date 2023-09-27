@@ -88,6 +88,10 @@ public class VelocityTemplate
         // able to override sub macros. The trick used is to make the source of all the directives think there is not
         // macro. They will be provided as libraries.
         macros.clear();
+
+        // Reset the temporary resource loader since we don't need it anymore (and especially the content it retains in
+        // memory)
+        this.template.setResourceLoader(null);
     }
 
     /**
