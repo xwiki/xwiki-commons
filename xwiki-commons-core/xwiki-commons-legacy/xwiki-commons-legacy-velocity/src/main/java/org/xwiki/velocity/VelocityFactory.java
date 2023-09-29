@@ -30,8 +30,10 @@ import org.xwiki.component.annotation.Role;
  * we need this in XWiki since we want to allow each Skin to provide its own global macros.
  *
  * @version $Id$
+ * @deprecated use {@link VelocityManager} instead
  */
 @Role
+@Deprecated(since = "15.9-rc-1")
 public interface VelocityFactory
 {
     /**

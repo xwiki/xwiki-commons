@@ -23,11 +23,9 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.util.Deque;
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.inject.Inject;
 
@@ -37,23 +35,18 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.Context;
-import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.RuntimeInstance;
-import org.apache.velocity.runtime.directive.StopCommand;
 import org.apache.velocity.runtime.resource.Resource;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
-import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
-import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.VelocityTemplate;
 import org.xwiki.velocity.XWikiVelocityException;
-import org.xwiki.velocity.internal.directive.TryCatchDirective;
 
 /**
  * Default implementation of the Velocity service which initializes the Velocity system using configuration values
@@ -61,10 +54,11 @@ import org.xwiki.velocity.internal.directive.TryCatchDirective;
  * other method can be called.
  *
  * @version $Id$
+ * @since 15.9-rc-1
  */
-@Component
+@Component(roles = InternalVelocityEngine.class)
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
-public class DefaultVelocityEngine implements VelocityEngine
+public class InternalVelocityEngine implements VelocityEngine
 {
     private static final String ECONTEXT_TEMPLATES = "velocity.templates";
 
@@ -125,19 +119,6 @@ public class DefaultVelocityEngine implements VelocityEngine
     }
 
     /**
-     * Used to set it as a Velocity Application Attribute so that Velocity extensions done by XWiki can use it to lookup
-     * other components.
-     */
-    @Inject
-    private ComponentManager componentManager;
-
-    /**
-     * Velocity configuration to get the list of configured Velocity properties.
-     */
-    @Inject
-    private VelocityConfiguration velocityConfiguration;
-
-    /**
      * Used to create a new context whenever one isn't already provided to the
      * {@link #evaluate(Context, Writer, String, Reader)} method.
      */
@@ -160,67 +141,14 @@ public class DefaultVelocityEngine implements VelocityEngine
 
     private TemplateEntry globalEntry;
 
-    @Override
-    public void initialize(Properties overridingProperties) throws XWikiVelocityException
+    /**
+     * @param runtimeInstance the actual Velocity runtime
+     */
+    public void initialize(RuntimeInstance runtimeInstance)
     {
-        RuntimeInstance runtime = new RuntimeInstance();
-
-        // Add the Component Manager to allow Velocity extensions to lookup components.
-        runtime.setApplicationAttribute(ComponentManager.class.getName(), this.componentManager);
-
-        // Set up properties
-        initializeProperties(runtime, this.velocityConfiguration.getProperties(), overridingProperties);
-
-        // Set up directives
-        runtime.loadDirective(TryCatchDirective.class.getName());
-
-        try {
-            runtime.init();
-        } catch (Exception e) {
-            throw new XWikiVelocityException("Cannot start the Velocity engine", e);
-        }
-
-        this.runtimeInstance = runtime;
+        this.runtimeInstance = runtimeInstance;
 
         this.globalEntry = new TemplateEntry("");
-    }
-
-    /**
-     * @param runtime the Velocity engine against which to initialize Velocity properties
-     * @param configurationProperties the Velocity properties coming from XWiki's configuration
-     * @param overridingProperties the Velocity properties that override the properties coming from XWiki's
-     *            configuration
-     */
-    private void initializeProperties(RuntimeInstance runtime, Properties configurationProperties,
-        Properties overridingProperties)
-    {
-        // Avoid "unable to find resource 'VM_global_library.vm' in any resource loader." if no
-        // Velocimacro library is defined. This value is overriden below.
-        runtime.setProperty(RuntimeConstants.VM_LIBRARY, "");
-
-        // Configure Velocity by passing the properties defined in this component's configuration
-        if (configurationProperties != null) {
-            for (Enumeration<?> e = configurationProperties.propertyNames(); e.hasMoreElements();) {
-                String key = e.nextElement().toString();
-                // Only set a property if it's not overridden by one of the passed properties
-                if (overridingProperties == null || !overridingProperties.containsKey(key)) {
-                    String value = configurationProperties.getProperty(key);
-                    runtime.setProperty(key, value);
-                    this.logger.debug("Setting property [{}] = [{}]", key, value);
-                }
-            }
-        }
-
-        // Override the component's static properties with the ones passed in parameter
-        if (overridingProperties != null) {
-            for (Enumeration<?> e = overridingProperties.propertyNames(); e.hasMoreElements();) {
-                String key = e.nextElement().toString();
-                String value = overridingProperties.getProperty(key);
-                runtime.setProperty(key, value);
-
-                this.logger.debug("Overriding property [{}] = [{}]", key, value);
-            }
-        }
     }
 
     @Override
@@ -236,28 +164,10 @@ public class DefaultVelocityEngine implements VelocityEngine
     }
 
     @Override
-    public VelocityTemplate compile(String name, Reader source) throws XWikiVelocityException
-    {
-        // Ensure that initialization has been called
-        if (this.runtimeInstance == null) {
-            throw new XWikiVelocityException("This Velocity Engine has not yet been initialized. "
-                + "You must call its initialize() method before you can use it.");
-        }
-
-        // Create the template
-        VelocityTemplate template = new VelocityTemplate(name, this.runtimeInstance);
-
-        // Compile the template
-        template.compile(source);
-
-        return template;
-    }
-
-    @Override
     public boolean evaluate(Context context, Writer out, String namespace, Reader source) throws XWikiVelocityException
     {
         // Create the template
-        VelocityTemplate template = compile(namespace, source);
+        VelocityTemplate template = DefaultVelocityManager.compile(namespace, source, this.runtimeInstance);
 
         evaluate(context, out, namespace, template);
 
@@ -312,8 +222,6 @@ public class DefaultVelocityEngine implements VelocityEngine
 
             // Execute the velocity script
             template.getTemplate().merge(mergeContext, out);
-        } catch (StopCommand s) {
-            // Someone explicitly stopped the script with something like #stop. No reason to make a scene.
         } catch (Exception e) {
             throw new XWikiVelocityException(String.format("Failed to evaluate content with namespace [%s]", namespace),
                 e);
@@ -343,13 +251,6 @@ public class DefaultVelocityEngine implements VelocityEngine
                     ExceptionUtils.getRootCauseMessage(e));
             }
         }
-    }
-
-    @Override
-    @Deprecated
-    public void clearMacroNamespace(String namespace)
-    {
-        // Does not really make much sense anymore since macros are now stored in the execution context
     }
 
     @Override

@@ -43,20 +43,13 @@ public interface VelocityEngine
      * @param properties the properties that will override the static properties defined in the component's
      *            configuration
      * @throws XWikiVelocityException in case of error
+     * @deprecated
      */
-    void initialize(Properties properties) throws XWikiVelocityException;
-
-    /**
-     * Compile the passed script into a {@link VelocityTemplate}.
-     * 
-     * @param name the name of the template
-     * @param source the input string containing the VTL to be rendered
-     * @return the compiled {@link VelocityTemplate}
-     * @throws XWikiVelocityException in case of error
-     * @since 15.8RC1
-     */
-    @Unstable
-    VelocityTemplate compile(String name, Reader source) throws XWikiVelocityException;
+    @Deprecated(since = "15.9-rc-1")
+    default void initialize(Properties properties) throws XWikiVelocityException
+    {
+        
+    }
 
     /**
      * Evaluate the input string using the context into the output writer.
@@ -109,7 +102,10 @@ public interface VelocityEngine
      *             sense anymore
      */
     @Deprecated
-    void clearMacroNamespace(String namespace);
+    default void clearMacroNamespace(String namespace)
+    {
+        
+    }
 
     /**
      * Notify that a rendering action is starting in the given namespace.

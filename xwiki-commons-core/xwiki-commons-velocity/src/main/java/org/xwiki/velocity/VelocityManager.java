@@ -26,6 +26,7 @@ import javax.script.ScriptContext;
 
 import org.apache.velocity.VelocityContext;
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
  * Provides access to the main XWiki Velocity objects.
@@ -51,13 +52,11 @@ public interface VelocityManager
     }
 
     /**
-     * Get the current Velocity Engine or create one if none has been created.
+     * Get the current Velocity Engine or create and cache one if none has been created.
      *
      * @return the current Velocity Engine retrieved from the Execution Context
      * @throws XWikiVelocityException if the Velocity Engine cannot be created
      */
-    // TODO: Move the engine creation to some initialization method instead and remove the need for throwing an
-    // exception
     VelocityEngine getVelocityEngine() throws XWikiVelocityException;
 
     /**
@@ -79,4 +78,16 @@ public interface VelocityManager
     {
         return getVelocityEngine().evaluate(getVelocityContext(), out, templateName, source);
     }
+
+    /**
+     * Compile the passed script into a {@link VelocityTemplate}.
+     * 
+     * @param name the name of the template
+     * @param source the input string containing the VTL to be rendered
+     * @return the compiled {@link VelocityTemplate}
+     * @throws XWikiVelocityException in case of error
+     * @since 15.9RC1
+     */
+    @Unstable
+    VelocityTemplate compile(String name, Reader source) throws XWikiVelocityException;
 }

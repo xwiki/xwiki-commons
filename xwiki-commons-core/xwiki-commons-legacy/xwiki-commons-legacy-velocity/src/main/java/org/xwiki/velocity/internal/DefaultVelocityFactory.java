@@ -31,6 +31,7 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.VelocityFactory;
+import org.xwiki.velocity.VelocityManager;
 import org.xwiki.velocity.XWikiVelocityException;
 
 /**
@@ -38,9 +39,11 @@ import org.xwiki.velocity.XWikiVelocityException;
  *
  * @see VelocityFactory
  * @version $Id$
+ * @since use {@link VelocityManager} instead
  */
 @Component
 @Singleton
+@Deprecated(since = "15.9-rc-1")
 public class DefaultVelocityFactory implements VelocityFactory
 {
     /**

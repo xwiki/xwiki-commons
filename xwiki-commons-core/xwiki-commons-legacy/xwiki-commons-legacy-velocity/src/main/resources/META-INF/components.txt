@@ -1,1 +1,3 @@
+org.xwiki.velocity.internal.DefaultVelocityEngine
+org.xwiki.velocity.internal.DefaultVelocityFactory
 org.xwiki.velocity.internal.LegacyDefaultToolsInitializer
