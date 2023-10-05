@@ -39,7 +39,7 @@ import org.xwiki.velocity.XWikiVelocityException;
  *
  * @see VelocityFactory
  * @version $Id$
- * @since use {@link VelocityManager} instead
+ * @deprecated use {@link VelocityManager} instead
  */
 @Component
 @Singleton

@@ -38,7 +38,6 @@ import org.xwiki.velocity.tools.CollectionsTool;
 @Component
 @Named("legacy")
 @Singleton
-@Deprecated(since = "15.9-rc-1")
 public class LegacyDefaultToolsInitializer implements DefaultToolsInitializer
 {
     @Override

@@ -47,7 +47,7 @@ import org.xwiki.velocity.internal.directive.TryCatchDirective;
  * other method can be called.
  *
  * @version $Id$
- * @since use {@link InternalVelocityEngine} instead
+ * @deprecated use {@link InternalVelocityEngine} instead
  */
 @Component
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
