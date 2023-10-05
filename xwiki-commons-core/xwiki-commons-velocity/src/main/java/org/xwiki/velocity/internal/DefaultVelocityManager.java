@@ -38,6 +38,7 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
 import org.xwiki.logging.LoggerConfiguration;
 import org.xwiki.script.ScriptContextManager;
 import org.xwiki.velocity.ScriptVelocityContext;
@@ -210,8 +211,10 @@ public class DefaultVelocityManager implements VelocityManager, Initializable
         } else {
             velocityContext = new ScriptVelocityContext(currentVelocityContext,
                 this.loggerConfiguration.isDeprecatedLogEnabled(), this.reservedBindings);
-            this.execution.getContext().setProperty(VelocityExecutionContextInitializer.VELOCITY_CONTEXT_ID,
-                velocityContext);
+            ExecutionContext eContext = this.execution.getContext();
+            if (eContext != null) {
+                eContext.setProperty(VelocityExecutionContextInitializer.VELOCITY_CONTEXT_ID, velocityContext);
+            }
         }
 
         // Synchronize with ScriptContext
@@ -224,10 +227,10 @@ public class DefaultVelocityManager implements VelocityManager, Initializable
     @Override
     public VelocityContext getCurrentVelocityContext()
     {
-        // The Velocity Context is set in VelocityExecutionContextInitializer, when the XWiki Request is initialized
-        // so we are guaranteed it is defined when this method is called.
-        return (VelocityContext) this.execution.getContext()
-            .getProperty(VelocityExecutionContextInitializer.VELOCITY_CONTEXT_ID);
+        ExecutionContext eContext = this.execution.getContext();
+
+        return eContext != null
+            ? (VelocityContext) eContext.getProperty(VelocityExecutionContextInitializer.VELOCITY_CONTEXT_ID) : null;
     }
 
     @Override
