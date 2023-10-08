@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -70,7 +71,7 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
     private static final String COMPONENT_ANNOTATION = "org.xwiki.component.annotation.Component";
 
     private static final Set<String> SINGLETON_ANNOTATIONS =
-        Set.of("javax.inject.Singleton", "jakarta.inject.Singleton");
+        new LinkedHashSet<>(List.of("javax.inject.Singleton", "jakarta.inject.Singleton"));
 
     private static final String INSTANTIATION_STRATEGY_ANNOTATION =
         "org.xwiki.component.annotation.InstantiationStrategy";
