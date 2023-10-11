@@ -243,7 +243,7 @@
                   <ignore>true</ignore>
                   <code>java.method.addedToInterface</code>
                   <new>method org.xwiki.velocity.VelocityTemplate org.xwiki.velocity.VelocityManager::compile(java.lang.String, java.io.Reader) throws org.xwiki.velocity.XWikiVelocityException</new>
-                  <justification>New API added to a component very unlikelly to have a custom implementation</justification>
+                  <justification>New API added to a component very unlikely to have a custom implementation</justification>
                   <criticality>highlight</criticality>
                 </item>
               </differences>
