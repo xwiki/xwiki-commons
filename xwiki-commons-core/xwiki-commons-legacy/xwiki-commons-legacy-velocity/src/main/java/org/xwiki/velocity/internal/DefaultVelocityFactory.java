@@ -43,7 +43,7 @@ import org.xwiki.velocity.XWikiVelocityException;
  */
 @Component
 @Singleton
-@Deprecated(since = "15.9-rc-1")
+@Deprecated(since = "15.9RC1")
 public class DefaultVelocityFactory implements VelocityFactory
 {
     /**

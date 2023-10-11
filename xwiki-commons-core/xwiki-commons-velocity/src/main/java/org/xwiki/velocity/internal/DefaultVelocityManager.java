@@ -55,7 +55,7 @@ import org.xwiki.velocity.internal.directive.TryCatchDirective;
  * and since the Core needs to call the Velocity module this would cause a circular dependency.
  *
  * @version $Id$
- * @since 15.9-rc-1
+ * @since 15.9RC1
  */
 @Component
 @Singleton

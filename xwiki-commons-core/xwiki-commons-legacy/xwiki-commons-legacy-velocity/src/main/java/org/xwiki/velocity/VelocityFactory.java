@@ -33,7 +33,7 @@ import org.xwiki.component.annotation.Role;
  * @deprecated use {@link VelocityManager} instead
  */
 @Role
-@Deprecated(since = "15.9-rc-1")
+@Deprecated(since = "15.9RC1")
 public interface VelocityFactory
 {
     /**

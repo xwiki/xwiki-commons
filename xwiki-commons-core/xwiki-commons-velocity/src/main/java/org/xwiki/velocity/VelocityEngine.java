@@ -30,6 +30,9 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Initialize a Velocity Engine and make Velocity services available.
+ * <p>
+ * It's highly recommended to use {@link VelocityManager} to get a {@link VelocityEngine} instance. Directly injecting
+ * {@link VelocityEngine} never provided a fully initialized instance.
  *
  * @version $Id$
  */
@@ -43,12 +46,12 @@ public interface VelocityEngine
      * @param properties the properties that will override the static properties defined in the component's
      *            configuration
      * @throws XWikiVelocityException in case of error
-     * @deprecated
+     * @deprecated get {@link VelocityEngine} through {@link VelocityManager} instead
      */
-    @Deprecated(since = "15.9-rc-1")
+    @Deprecated(since = "15.9RC1")
     default void initialize(Properties properties) throws XWikiVelocityException
     {
-        
+
     }
 
     /**

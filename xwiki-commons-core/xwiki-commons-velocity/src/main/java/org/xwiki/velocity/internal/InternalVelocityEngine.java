@@ -54,7 +54,7 @@ import org.xwiki.velocity.XWikiVelocityException;
  * other method can be called.
  *
  * @version $Id$
- * @since 15.9-rc-1
+ * @since 15.9RC1
  */
 @Component(roles = InternalVelocityEngine.class)
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
