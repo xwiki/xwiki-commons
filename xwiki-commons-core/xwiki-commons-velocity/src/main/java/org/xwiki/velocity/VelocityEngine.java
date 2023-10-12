@@ -30,6 +30,9 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Initialize a Velocity Engine and make Velocity services available.
+ * <p>
+ * It's highly recommended to use {@link VelocityManager} to get a {@link VelocityEngine} instance. Directly injecting
+ * {@link VelocityEngine} never provided a fully initialized instance.
  *
  * @version $Id$
  */
@@ -43,20 +46,13 @@ public interface VelocityEngine
      * @param properties the properties that will override the static properties defined in the component's
      *            configuration
      * @throws XWikiVelocityException in case of error
+     * @deprecated get {@link VelocityEngine} through {@link VelocityManager} instead
      */
-    void initialize(Properties properties) throws XWikiVelocityException;
+    @Deprecated(since = "15.9RC1")
+    default void initialize(Properties properties) throws XWikiVelocityException
+    {
 
-    /**
-     * Compile the passed script into a {@link VelocityTemplate}.
-     * 
-     * @param name the name of the template
-     * @param source the input string containing the VTL to be rendered
-     * @return the compiled {@link VelocityTemplate}
-     * @throws XWikiVelocityException in case of error
-     * @since 15.8RC1
-     */
-    @Unstable
-    VelocityTemplate compile(String name, Reader source) throws XWikiVelocityException;
+    }
 
     /**
      * Evaluate the input string using the context into the output writer.
@@ -109,7 +105,10 @@ public interface VelocityEngine
      *             sense anymore
      */
     @Deprecated
-    void clearMacroNamespace(String namespace);
+    default void clearMacroNamespace(String namespace)
+    {
+        
+    }
 
     /**
      * Notify that a rendering action is starting in the given namespace.

@@ -44,6 +44,7 @@ import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.internal.DefaultVelocityConfiguration;
 import org.xwiki.velocity.internal.DefaultVelocityContextFactory;
 import org.xwiki.velocity.internal.DefaultVelocityEngine;
+import org.xwiki.velocity.internal.InternalVelocityEngine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -55,6 +56,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 // @formatter:off
 @ComponentList({
     DefaultVelocityEngine.class,
+    InternalVelocityEngine.class,
     DefaultVelocityConfiguration.class,
     DefaultVelocityContextFactory.class,
     DefaultConfigurationSourceProvider.class

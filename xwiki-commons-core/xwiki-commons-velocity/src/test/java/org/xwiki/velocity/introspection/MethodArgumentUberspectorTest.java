@@ -25,7 +25,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Properties;
+
+import javax.inject.Inject;
 
 import org.apache.velocity.VelocityContext;
 import org.junit.jupiter.api.AfterEach;
@@ -36,6 +37,7 @@ import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.logging.LoggerConfiguration;
 import org.xwiki.properties.ConverterManager;
+import org.xwiki.script.ScriptContextManager;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -43,9 +45,11 @@ import org.xwiki.test.junit5.mockito.InjectComponentManager;
 import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.test.mockito.MockitoComponentManager;
 import org.xwiki.velocity.VelocityEngine;
+import org.xwiki.velocity.VelocityManager;
 import org.xwiki.velocity.internal.DefaultVelocityConfiguration;
 import org.xwiki.velocity.internal.DefaultVelocityContextFactory;
-import org.xwiki.velocity.internal.DefaultVelocityEngine;
+import org.xwiki.velocity.internal.DefaultVelocityManager;
+import org.xwiki.velocity.internal.InternalVelocityEngine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -59,9 +63,10 @@ import static org.mockito.Mockito.when;
 @ComponentTest
 // @formatter:off
 @ComponentList({
-    DefaultVelocityEngine.class,
+    InternalVelocityEngine.class,
     DefaultVelocityConfiguration.class,
-    DefaultVelocityContextFactory.class
+    DefaultVelocityContextFactory.class,
+    DefaultVelocityManager.class
 })
 // @formatter:on
 class MethodArgumentUberspectorTest
@@ -74,6 +79,12 @@ class MethodArgumentUberspectorTest
 
     @MockComponent
     private LoggerConfiguration loggerConfiguration;
+
+    @MockComponent
+    private ScriptContextManager scriptContextManager;
+
+    @Inject
+    private VelocityManager velocityManager;
 
     private StringWriter writer;
 
@@ -163,8 +174,7 @@ class MethodArgumentUberspectorTest
     @BeforeEach
     void setUp() throws Exception
     {
-        this.engine = this.componentManager.getInstance(VelocityEngine.class);
-        this.engine.initialize(new Properties());
+        this.engine = this.velocityManager.getVelocityEngine();
         this.writer = new StringWriter();
         this.context = new VelocityContext();
         this.context.put("var", new ExtendingClass());

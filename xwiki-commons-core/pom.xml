@@ -223,7 +223,31 @@
               </differences>
             </revapi.differences>
             -->
-            
+            <revapi.differences>
+              <differences>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.removed</code>
+                  <old>method org.xwiki.velocity.VelocityTemplate org.xwiki.velocity.VelocityEngine::compile(java.lang.String, java.io.Reader) throws org.xwiki.velocity.XWikiVelocityException</old>
+                  <justification>Unstable API</justification>
+                  <criticality>documented</criticality>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.class.removed</code>
+                  <old>interface org.xwiki.velocity.VelocityFactory</old>
+                  <justification>Moved to legacy</justification>
+                  <criticality>allowed</criticality>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.addedToInterface</code>
+                  <new>method org.xwiki.velocity.VelocityTemplate org.xwiki.velocity.VelocityManager::compile(java.lang.String, java.io.Reader) throws org.xwiki.velocity.XWikiVelocityException</new>
+                  <justification>New API added to a component very unlikely to have a custom implementation</justification>
+                  <criticality>highlight</criticality>
+                </item>
+              </differences>
+            </revapi.differences>
           </analysisConfiguration>
         </configuration>
       </plugin>
