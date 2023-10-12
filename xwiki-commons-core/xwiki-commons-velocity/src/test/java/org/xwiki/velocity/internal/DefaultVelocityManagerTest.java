@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.inject.Inject;
+import javax.script.ScriptContext;
+import javax.script.SimpleScriptContext;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.Context;
@@ -38,6 +40,7 @@ import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.logging.LoggerConfiguration;
+import org.xwiki.script.ScriptContextManager;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.LogCaptureExtension;
@@ -51,6 +54,7 @@ import org.xwiki.velocity.XWikiVelocityException;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
@@ -105,6 +109,9 @@ class DefaultVelocityManagerTest
 
     @MockComponent
     private ConfigurationSource configurationSource;
+
+    @MockComponent
+    private ScriptContextManager scriptContextManager;
 
     @InjectMockComponents
     private DefaultVelocityManager velocityManager;
@@ -555,5 +562,29 @@ class DefaultVelocityManagerTest
         assertEvaluate("value1", "$array.get(1)", context);
 
         assertEvaluate("str", "$stringtool.trim('str')", context);
+    }
+
+    @Test
+    void velocityContextToScriptContext() throws XWikiVelocityException
+    {
+        ScriptContext scriptContext = new SimpleScriptContext();
+
+        when(this.scriptContextManager.getCurrentScriptContext()).thenReturn(scriptContext);
+        when(this.scriptContextManager.getScriptContext()).thenReturn(scriptContext);
+
+        assertTrue(scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).isEmpty());
+
+        evaluate("content without any variable");
+
+        assertTrue(scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).isEmpty());
+
+        evaluate("#set($myvar = 'velocityvalue')");
+
+        assertEquals(1, scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).size());
+        assertEquals("velocityvalue", scriptContext.getAttribute("myvar", ScriptContext.ENGINE_SCOPE));
+
+        scriptContext.setAttribute("scriptvar", "scriptvalue", ScriptContext.ENGINE_SCOPE);
+
+        assertEvaluate("scriptvalue", "$scriptvar");
     }
 }
