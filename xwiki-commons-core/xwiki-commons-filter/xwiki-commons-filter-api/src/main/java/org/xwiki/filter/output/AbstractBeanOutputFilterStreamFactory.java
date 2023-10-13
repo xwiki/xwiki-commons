@@ -82,18 +82,18 @@ public abstract class AbstractBeanOutputFilterStreamFactory<P, F> extends Abstra
     @Override
     public BeanOutputFilterStream<P> createOutputFilterStream(P properties) throws FilterException
     {
-        BeanOutputFilterStream<P> inputFilter;
+        BeanOutputFilterStream<P> outputFilter;
         try {
-            inputFilter =
+            outputFilter =
                 this.componentManager.getInstance(new DefaultParameterizedType(null, BeanOutputFilterStream.class,
                     getPropertiesBeanClass()), getType().serialize());
         } catch (ComponentLookupException e) {
             throw new FilterException(String.format("Failed to get instance of [%s] for type [%s]",
-                BeanInputFilterStream.class, getType()), e);
+                BeanOutputFilterStream.class, getType()), e);
         }
 
-        inputFilter.setProperties(properties);
+        outputFilter.setProperties(properties);
 
-        return inputFilter;
+        return outputFilter;
     }
 }
