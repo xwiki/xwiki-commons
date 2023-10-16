@@ -99,7 +99,7 @@
     <aspectj.version>1.9.20.1</aspectj.version>
 
     <!-- Clover & Jacoco -->
-    <clover.version>4.4.1</clover.version>
+    <clover.version>4.5.0</clover.version>
     <jacoco.version>0.8.11</jacoco.version>
 
     <!-- Checkstyle -->
