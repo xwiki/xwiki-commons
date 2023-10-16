@@ -100,7 +100,7 @@
 
     <!-- Clover & Jacoco -->
     <clover.version>4.4.1</clover.version>
-    <jacoco.version>0.8.10</jacoco.version>
+    <jacoco.version>0.8.11</jacoco.version>
 
     <!-- Checkstyle -->
     <checkstyle.version>10.12.4</checkstyle.version>
