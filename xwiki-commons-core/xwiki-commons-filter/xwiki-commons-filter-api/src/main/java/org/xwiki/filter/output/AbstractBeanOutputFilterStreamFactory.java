@@ -34,7 +34,6 @@ import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.filter.AbstractBeanFilterStreamFactory;
 import org.xwiki.filter.FilterException;
-import org.xwiki.filter.input.BeanInputFilterStream;
 import org.xwiki.filter.type.FilterStreamType;
 
 /**
