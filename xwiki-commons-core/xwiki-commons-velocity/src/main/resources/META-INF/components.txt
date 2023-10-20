@@ -4,3 +4,4 @@ org.xwiki.velocity.internal.DefaultVelocityContextFactory
 org.xwiki.velocity.internal.DefaultVelocityManager
 org.xwiki.velocity.internal.InternalVelocityEngine
 org.xwiki.velocity.internal.ServicesVelocityContextInitializer
+org.xwiki.velocity.internal.util.DefaultVelocityDetector
