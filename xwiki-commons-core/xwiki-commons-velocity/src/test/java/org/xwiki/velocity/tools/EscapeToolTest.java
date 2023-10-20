@@ -259,4 +259,12 @@ class EscapeToolTest
     {
         assertEquals("one${escapetool.h}${escapetool.h}two", this.tool.velocity("one##two"));        
     }
+
+    @Test
+    void html()
+    {
+        assertEquals("&lt;script&gt;alert(&quot;Hello, &amp;lt;World&amp;gt;!&quot;);&lt;/script&gt;&lcub;&lcub;"
+                + "/html&rcub;&rcub;",
+            this.tool.html("<script>alert(\"Hello, &lt;World&gt;!\");</script>{{/html}}"));
+    }
 }
