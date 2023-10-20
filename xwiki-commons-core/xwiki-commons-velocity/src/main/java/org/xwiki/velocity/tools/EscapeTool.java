@@ -30,6 +30,8 @@ import org.apache.commons.codec.net.BCodec;
 import org.apache.commons.codec.net.QCodec;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.text.translate.CharSequenceTranslator;
+import org.apache.commons.text.translate.LookupTranslator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.xml.XMLUtils;
@@ -66,12 +68,37 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
     /** And sign. */
     private static final String AND = "&";
 
+    private static final CharSequenceTranslator XWIKI_ESCAPE_HTML4 = StringEscapeUtils.ESCAPE_HTML4.with(
+        new LookupTranslator(Map.ofEntries(
+            Map.entry("{", "&lcub;"),
+            Map.entry("}", "&rcub;")
+        ))
+    );
+
     /**
      * Change the default key defined in {@link org.apache.velocity.tools.generic.EscapeTool}.
      */
     public EscapeTool()
     {
         setKey(DEFAULT_KEY);
+    }
+
+    /**
+     * Escapes the HTML special characters in a <code>String</code> using HTML entities. This overrides the base
+     * implementation from Velocity in order to also escape characters potentially harmful in the context of XWiki,
+     * such as curly brackets.
+     *
+     * @param content the string to escape, may be {@code null}
+     * @return a new escaped {@code String}, {@code null} if {@code null} input
+     */
+    @Override
+    public String html(Object content)
+    {
+        if (content == null)
+        {
+            return null;
+        }
+        return XWIKI_ESCAPE_HTML4.translate(String.valueOf(content));
     }
 
     /**
