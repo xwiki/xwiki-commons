@@ -19,23 +19,34 @@
  */
 package org.xwiki.velocity.internal.util;
 
-import javax.inject.Singleton;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
-import org.xwiki.component.annotation.Component;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Default implementation of {@link VelocityDetector}.
+ * Tests for {@link VelocityDetector}.
  *
  * @version $Id$
- * @since 15.9RC1
  */
-@Component
-@Singleton
-public class DefaultVelocityDetector implements VelocityDetector
+@ComponentTest
+class VelocityDetectorTest
 {
-    @Override
-    public boolean containsVelocityScript(String input)
+    @InjectMockComponents
+    private VelocityDetector detector;
+
+    @ParameterizedTest
+    @CsvSource({
+        "true, #set($foo = 'bar')",
+        "true, Hello$foo",
+        "true, Hello #XWiki",
+        "false, Hello World",
+        "false, 42'foo'"
+    })
+    void containsVelocityScript(boolean isVelocity, String input)
     {
-        return input.contains("#") || input.contains("$");
+        assertEquals(isVelocity, this.detector.containsVelocityScript(input), input);
     }
 }

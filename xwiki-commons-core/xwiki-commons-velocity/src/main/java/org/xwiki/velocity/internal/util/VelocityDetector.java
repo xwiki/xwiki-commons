@@ -19,16 +19,19 @@
  */
 package org.xwiki.velocity.internal.util;
 
-import org.xwiki.component.annotation.Role;
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
 
 /**
- * Utility role to detect velocity scripts.
+ * Utility component to check if a string contains a velocity script.
  *
  * @version $Id$
  * @since 15.9RC1
  */
-@Role
-public interface VelocityDetector
+@Component(roles = VelocityDetector.class)
+@Singleton
+public class VelocityDetector
 {
     /**
      * Checks if a string contains a velocity script.
@@ -36,5 +39,8 @@ public interface VelocityDetector
      * @param input the string to check
      * @return true if the string contains a velocity script, false otherwise
      */
-    boolean containsVelocityScript(String input);
+    public boolean containsVelocityScript(String input)
+    {
+        return input.contains("#") || input.contains("$");
+    }
 }
