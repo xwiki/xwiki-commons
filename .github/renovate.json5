@@ -23,8 +23,8 @@
   "prConcurrentLimit" : 0,
 
   // Create different pull request for each major upgrade
-  "separateMajorReleases" : true,
-  "separateMultipleMajor" : true,
+  "separateMajorMinor": true,
+  "separateMultipleMajor": true,
 
   // Skip Eclipse M2E special setup "dependency"
   // Skip jdom 1 since jdom 2 actually use a different id now
