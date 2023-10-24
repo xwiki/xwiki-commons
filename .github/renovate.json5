@@ -38,52 +38,6 @@
     {
       "matchPackageNames": ["commons-collections:commons-collections"],
       "allowedVersions": "/^3\..*$/"
-    },
-
-    // Various dependencies we cannot update yet because of the move to jakarta package
-    {
-      "matchPackagePrefixes": ["org.glassfish.jaxb", "jakarta.xml.bind", "org.jvnet.jaxb:jaxb-maven-plugin"],
-      "allowedVersions": "/^2\..*$/"
-    },
-    {
-      "matchPackagePrefixes": ["jakarta.transaction"],
-      "allowedVersions": "/^1\..*$/"
-    },
-    {
-      "matchPackagePrefixes": ["jakarta.annotation"],
-      "allowedVersions": "/^1\..*$/"
-    },
-    {
-      "matchPackagePrefixes": ["jakarta.validation"],
-      "allowedVersions": "/^2\..*$/"
-    },
-    {
-      "matchPackagePrefixes": ["org.hibernate.validator"],
-      "allowedVersions": "/^6\..*$/"
-    },
-    {
-      "matchPackagePrefixes": ["ch.qos.logback"],
-      "allowedVersions": "/^1\.3\..*$/"
-    },
-    {
-      "matchPackagePrefixes": ["javax.servlet"],
-      "allowedVersions": "/^3\..*$/"
-    },
-    {
-      "matchPackagePrefixes": ["jakarta.enterprise"],
-      "allowedVersions": "/^2\..*$/"
-    },
-    {
-      "matchPackagePrefixes": ["jakarta.mail", "com.sun.mail"],
-      "allowedVersions": "/^1\..*$/"
-    },
-    {
-      "matchPackagePrefixes": ["jakarta.activation", "com.sun.activation"],
-      "allowedVersions": "/^1\..*$/"
-    },
-    {
-      "matchPackagePrefixes": ["org.mortbay.jasper:apache-el"],
-      "allowedVersions": "/^9\..*$/"
     }
   ]
 }
