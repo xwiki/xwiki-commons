@@ -38,6 +38,12 @@
     {
       "matchPackageNames": ["commons-collections:commons-collections"],
       "allowedVersions": "/^3\..*$/"
+    },
+
+    // Various dependencies we cannot update yet because of the move to jakarta package
+    {
+      "matchPackagePrefixes": ["ch.qos.logback"],
+      "allowedVersions": "/^1\.3\..*$/"
     }
   ]
 }
