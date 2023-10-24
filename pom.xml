@@ -245,7 +245,7 @@
 
     <!-- EL implementation -->
     <!-- Use the same version as the one that comes with the custom XWiki Jetty application server -->
-    <apachache-el.version>9.0.52</apachache-el.version>
+    <apachache-el.version>10.1.7</apachache-el.version>
 
     <!-- The recommended version of known extensions to use -->
     <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]
