@@ -42,7 +42,7 @@
 
     // Various dependencies we cannot update yet because of the move to jakarta package
     {
-      "matchPackagePrefixes": ["org.glassfish.jaxb", "jakarta.xml.bind"],
+      "matchPackagePrefixes": ["org.glassfish.jaxb", "jakarta.xml.bind", "org.jvnet.jaxb:jaxb-maven-plugin"],
       "allowedVersions": "/^2\..*$/"
     },
     {
