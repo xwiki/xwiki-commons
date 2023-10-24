@@ -123,6 +123,9 @@
     <!-- Maven Archetype -->
     <maven.archetype.version>3.2.1</maven.archetype.version>
 
+    <!-- JAXB -->
+    <jaxb.tools.version>2.0.9</jaxb.tools.version>
+
     <!-- By default Checkstyle, Backward compatibility check, Enforcer, License plugins, etc are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.revapi.skip>false</xwiki.revapi.skip>
@@ -2532,10 +2535,10 @@
           </dependencies>
         </plugin>
         <plugin>
-          <groupId>org.jvnet.jaxb2.maven2</groupId>
-          <artifactId>maven-jaxb2-plugin</artifactId>
+          <groupId>org.jvnet.jaxb</groupId>
+          <artifactId>jaxb-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.15.3</version>
+          <version>${jaxb.tools.version}</version>
           <configuration>
             <extension>true</extension>
             <args>
@@ -2545,14 +2548,9 @@
             <removeOldOutput>false</removeOldOutput>
             <plugins>
               <plugin>
-                <groupId>org.jvnet.jaxb2_commons</groupId>
-                <artifactId>jaxb2-fluent-api</artifactId>
-                <version>3.0</version>
-              </plugin>
-              <plugin>
-                <groupId>org.jvnet.jaxb2_commons</groupId>
-                <artifactId>jaxb2-default-value</artifactId>
-                <version>1.1</version>
+                <groupId>org.jvnet.jaxb</groupId>
+                <artifactId>jaxb2-basics</artifactId>
+                <version>${jaxb.tools.version}</version>
               </plugin>
             </plugins>
           </configuration>
