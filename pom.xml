@@ -241,7 +241,7 @@
     <antlr4.version>4.9.3</antlr4.version>
 
     <!-- Servlet specifications -->
-    <servlet.version>3.1.0</servlet.version>
+    <servlet.version>4.0.1</servlet.version>
 
     <!-- EL implementation -->
     <!-- Use the same version as the one that comes with the custom XWiki Jetty application server -->
