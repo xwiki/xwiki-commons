@@ -96,12 +96,27 @@ public interface ConfigurationSource
     boolean isEmpty();
 
     /**
+     * Set a property, this will replace any previously set values.
+     *
+     * @param key The key of the property to change
+     * @param value The new value
+     * @throws ConfigurationSaveException when an error occurs during persistence
+     * @since 15.9
+     * @since 15.5.4
+     * @since 14.10.19
+     */
+    default void setProperty(String key, Object value) throws ConfigurationSaveException
+    {
+        throw new UnsupportedOperationException("Modifying a property of this configuration source is not allowed");
+    }
+
+    /**
      * @param properties the set of properties to persist
      * @throws ConfigurationSaveException when an error occurs during persistence
      * @since 12.4RC1
      */
     default void setProperties(Map<String, Object> properties) throws ConfigurationSaveException
     {
-        throw new UnsupportedOperationException("Set operation not supported");
+        throw new UnsupportedOperationException("Modifying properties of this configuration source is not allowed");
     }
 }
