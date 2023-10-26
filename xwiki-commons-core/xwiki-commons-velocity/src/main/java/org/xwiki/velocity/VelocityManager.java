@@ -82,7 +82,7 @@ public interface VelocityManager
     /**
      * Compile the passed script into a {@link VelocityTemplate}.
      * 
-     * @param name the name of the template
+     * @param name the name of the template, must not be null
      * @param source the input string containing the VTL to be rendered
      * @return the compiled {@link VelocityTemplate}
      * @throws XWikiVelocityException in case of error

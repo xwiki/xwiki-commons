@@ -63,6 +63,10 @@ public class VelocityTemplate
      */
     public VelocityTemplate(String name, RuntimeServices rs)
     {
+        if (name == null) {
+            throw new NullPointerException("The name of the Velocity template must not be null");
+        }
+
         this.template.setName(name);
         this.template.setRuntimeServices(rs);
     }
