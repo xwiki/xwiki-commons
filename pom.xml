@@ -2213,7 +2213,7 @@
                  - Add add-opens directives to support tests using reflection and xwiki runtime code (or its deps)
                    requiring some features forbidden by default with Java 17+
             -->
-            <argLine>@{argLine} -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory} --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED</argLine>
+            <argLine>@{argLine} -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory} --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED</argLine>
           </configuration>
         </plugin>
         <plugin>
