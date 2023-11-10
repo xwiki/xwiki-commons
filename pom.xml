@@ -1583,6 +1583,26 @@
                   <message>XWiki only support JAX-RS 1 (javax.ws.rs:jsr311-api) for now</message>
                   <excludes>
                     <exclude>javax.ws.rs:javax.ws.rs-api</exclude>
+                    <exclude>jakarta.ws.rs:jakarta.ws.rs-api</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- TODO: invert when https://jira.xwiki.org/browse/XWIKI-12955 is fixed -->
+          <execution>
+            <id>enforce-inject1</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-inject1.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>XWiki uses javax.inject:javax.inject instead</message>
+                  <excludes>
+                    <exclude>org.glassfish.hk2.external:jakarta.inject</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
