@@ -139,7 +139,7 @@
     <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}
     </xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
     <xwiki.enforcer.enforce-glasshfish-jaxb.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glasshfish-jaxb.skip>
-    <xwiki.enforcer.enforce-jaxrs1.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jaxrs1.skip>
+    <xwiki.enforcer.enforce-jaxrs2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jaxrs2.skip>
     <xwiki.enforcer.enforce-open-json.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-open-json.skip>
     <xwiki.enforcer.enforce-glassfish-el.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glassfish-el.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
@@ -245,7 +245,7 @@
 
     <!-- The versions of Antlr to bundle -->
     <antlr3.version>3.5.3</antlr3.version>
-    <antlr4.version>4.9.3</antlr4.version>
+    <antlr4.version>4.13.1</antlr4.version>
 
     <!-- Servlet specifications -->
     <servlet.version>3.1.0</servlet.version>
@@ -775,9 +775,9 @@
 
       <!-- JAX-RS -->
       <dependency>
-        <groupId>javax.ws.rs</groupId>
-        <artifactId>jsr311-api</artifactId>
-        <version>1.1.1</version>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>2.1.6</version>
       </dependency>
 
       <!-- JTA -->
@@ -1581,21 +1581,20 @@
               </rules>
             </configuration>
           </execution>
-          <!-- TODO: invert when https://jira.xwiki.org/browse/XWIKI-12955 is fixed -->
           <execution>
-            <id>enforce-jaxrs1</id>
+            <id>enforce-jaxrs2</id>
             <goals>
               <goal>enforce</goal>
             </goals>
             <configuration>
-              <skip>${xwiki.enforcer.enforce-jaxrs1.skip}</skip>
+              <skip>${xwiki.enforcer.enforce-jaxrs2.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
-                  <message>XWiki only support JAX-RS 1 (javax.ws.rs:jsr311-api) for now</message>
+                  <message>XWiki is using JAX-RS 2 (jakarta.ws.rs:jakarta.ws.rs-api) for now</message>
                   <excludes>
-                    <exclude>javax.ws.rs:javax.ws.rs-api</exclude>
-                    <exclude>jakarta.ws.rs:jakarta.ws.rs-api</exclude>
+                    <exclude>javax.ws.rs:jsr311-api</exclude>
+                    <exclude>org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_2.1_spec</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
@@ -1614,6 +1613,24 @@
                   <message>XWiki uses javax.inject:javax.inject instead</message>
                   <excludes>
                     <exclude>org.glassfish.hk2.external:jakarta.inject</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enforce-aopalliance</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-aopalliance.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>XWiki uses aopalliance:aopalliance instead</message>
+                  <excludes>
+                    <exclude>org.glassfish.hk2.external:aopalliance-repackaged</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
