@@ -48,13 +48,16 @@ public class MemoryConfigurationSource extends AbstractConfigurationSource
      */
     private Map<String, Object> properties = new ConcurrentHashMap<>();
 
-    /**
-     * @param key the key for the value to add to the configuration
-     * @param value the value to add in the configuration
-     */
+    @Override
     public void setProperty(String key, Object value)
     {
         this.properties.put(key, value);
+    }
+
+    @Override
+    public void setProperties(Map<String, Object> properties)
+    {
+        this.properties = new ConcurrentHashMap<>(properties);
     }
 
     /**
