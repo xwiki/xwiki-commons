@@ -146,6 +146,7 @@
     <xwiki.enforcer.enforce-jakarta.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.mail.skip>
     <xwiki.enforcer.enforce-jakarta.annotation-api.skip>${xwiki.enforcer.skip}
     </xwiki.enforcer.enforce-jakarta.annotation-api.skip>
+    <xwiki.enforcer.enforce-inject.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-inject.skip>
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
     <xwiki.enforcer.enforce-jsr305.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jsr305.skip>
     <xwiki.enforcer.enforce-jta.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jta.skip>
@@ -1589,14 +1590,13 @@
               </rules>
             </configuration>
           </execution>
-          <!-- TODO: invert when https://jira.xwiki.org/browse/XWIKI-12955 is fixed -->
           <execution>
-            <id>enforce-inject1</id>
+            <id>enforce-inject</id>
             <goals>
               <goal>enforce</goal>
             </goals>
             <configuration>
-              <skip>${xwiki.enforcer.enforce-inject1.skip}</skip>
+              <skip>${xwiki.enforcer.enforce-inject.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
