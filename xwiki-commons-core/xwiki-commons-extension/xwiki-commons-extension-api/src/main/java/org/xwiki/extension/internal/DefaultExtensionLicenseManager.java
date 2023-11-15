@@ -122,7 +122,8 @@ public class DefaultExtensionLicenseManager implements ExtensionLicenseManager, 
                     is.close();
                 }
             } catch (Exception e) {
-                this.logger.error("Failed to load license file at [" + licenseUrl + "]", e);
+                this.logger.error(
+                    "Failed to load license file at [" + licenseUrl + "] with resource name [" + licenseFile + "]", e);
             }
         }
     }
