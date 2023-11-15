@@ -65,6 +65,9 @@
     <jackson.version>2.15.3</jackson.version>
     <jackson.databind.version>${jackson.version}</jackson.databind.version>
 
+    <!-- Boundy Castle -->
+    <bouncycastle.version>1.77</bouncycastle.version>
+
     <!-- ASM -->
     <asm.version>9.6</asm.version>
 
@@ -790,17 +793,17 @@
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-jdk18on</artifactId>
-        <version>1.76</version>
+        <version>${bouncycastle.version}</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcpkix-jdk18on</artifactId>
-        <version>1.76</version>
+        <version>${bouncycastle.version}</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcmail-jdk18on</artifactId>
-        <version>1.76</version>
+        <version>${bouncycastle.version}</version>
       </dependency>
 
       <!-- Various project are using it to scan the classpath -->
