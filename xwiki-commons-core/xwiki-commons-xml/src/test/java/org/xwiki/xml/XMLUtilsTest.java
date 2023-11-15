@@ -498,10 +498,11 @@ class XMLUtilsTest
 
         assertEquals(1, logCapture.size());
         assertEquals(Level.WARN, logCapture.getLogEvent(0).getLevel());
-        assertEquals("Failed to apply XSLT transformation: [javax.xml.transform.TransformerException: "
-            + "com.sun.org.apache.xml.internal.utils.WrappedRuntimeException: The parser has encountered more than "
-            + "\"100,000\" entity expansions in this document; this is the limit imposed by the application.]",
-            logCapture.getMessage(0));
+        String txt = "Failed to apply XSLT transformation: \\[javax.xml.transform.TransformerException: "
+                + "com.sun.org.apache.xml.internal.utils.WrappedRuntimeException: The parser has encountered more than "
+                + "\"100.000\" entity expansions in this document; this is the limit imposed by the application.]";
+        assertTrue(logCapture.getMessage(0).matches(txt), () -> "expected : <" +txt.replaceAll("\\\\","")
+                + "> but got: <"+ logCapture.getMessage(0)+ ">");
     }
 
     @Test
