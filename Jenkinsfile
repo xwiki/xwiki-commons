@@ -70,8 +70,8 @@ stage ('Commons Builds') {
       node {
         // Run the quality checks.
         // Sonar notes:
-        // - we need sonar:sonar to perform the analysis
-        // - we need sonar = true to push the analysis to Sonarcloud
+        qqq
+        // - we need sonar:sonar to perform the analysis and push the results to Sonarcloud
         // - we need jacoco:report to execute jacoco and compute test coverage
         // - we need -Pcoverage and -Dxwiki.jacoco.itDestFile to tell Jacoco to compute a single global Jacoco
         //   coverage for the full reactor (so that the coverage percentage computed takes into account module tests
@@ -81,7 +81,6 @@ stage ('Commons Builds') {
           goals: 'clean install jacoco:report sonar:sonar',
           profiles: 'quality,legacy,coverage',
           properties: '-Dxwiki.jacoco.itDestFile=`pwd`/target/jacoco-it.exec',
-          sonar: true,
           // Build with Java 17 since SonarCloud now requires it ("Starting from the 15th of November 2023,
           // SonarCloud will no longer accept scans executed using Java 11"). To be remoed once we build commons on
           // Java 17.
