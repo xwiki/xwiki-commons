@@ -36,4 +36,40 @@
     <module>xwiki-commons-tool-spoon-checks</module>
     <module>xwiki-commons-tool-spoon-tests</module>
   </modules>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>fr.inria.gforge.spoon</groupId>
+        <artifactId>spoon-core</artifactId>
+        <version>${spoon.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- Spoon requires a most recent version of the following dependencies than the ones used by XWiki -->
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.14.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.13.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.15.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>2.15.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>2.15.2</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>

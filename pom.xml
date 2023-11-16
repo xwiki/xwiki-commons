@@ -106,7 +106,7 @@
     <checkstyle.version>10.4</checkstyle.version>
 
     <!-- Spoon -->
-    <spoon.version>10.2.0</spoon.version>
+    <spoon.version>10.4.2</spoon.version>
 
     <!-- Groovy -->
     <groovy.version>3.0.19</groovy.version>
@@ -2186,8 +2186,10 @@
                    Java will give about 1/4th of the physical memory which can be not enough or too much (e.g. on a CI
                    agent too much means we cannot run as many jobs in parallel as we could).
                  - Take a heap dump on low memory to diagnose issues
+                 - Add add-opens directives to support tests using reflection and xwiki runtime code (or its deps)
+                   requiring some features forbidden by default with Java 17+
             -->
-            <argLine>@{argLine} -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory}</argLine>
+            <argLine>@{argLine} -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory} --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED</argLine>
           </configuration>
         </plugin>
         <plugin>
@@ -2736,13 +2738,24 @@
         <plugin>
           <groupId>fr.inria.gforge.spoon</groupId>
           <artifactId>spoon-maven-plugin</artifactId>
-          <version>3.5</version>
+          <version>3.8.0</version>
           <dependencies>
             <dependency>
               <groupId>fr.inria.gforge.spoon</groupId>
               <artifactId>spoon-core</artifactId>
               <version>${spoon.version}</version>
+              <!--exclusions>
+                <exclusion>
+                  <groupId>commons-io</groupId>
+                  <artifactId>commons-io</artifactId>
+                </exclusion>
+              </exclusions-->
             </dependency>
+            <!--dependency>
+              <groupId>commons-io</groupId>
+              <artifactId>commons-io</artifactId>
+              <version>2.14.0</version>
+            </dependency-->
           </dependencies>
         </plugin>
       </plugins>
