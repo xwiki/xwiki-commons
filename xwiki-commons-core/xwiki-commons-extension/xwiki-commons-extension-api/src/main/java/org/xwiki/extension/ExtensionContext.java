@@ -52,6 +52,6 @@ public interface ExtensionContext
      */
     default Optional<ExtensionSession> getExtensionSession()
     {
-        return null;
+        return Optional.empty();
     }
 }
