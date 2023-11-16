@@ -21,6 +21,7 @@ package org.xwiki.velocity.internal.util;
 
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 
 /**
@@ -41,6 +42,6 @@ public class VelocityDetector
      */
     public boolean containsVelocityScript(String input)
     {
-        return input.contains("#") || input.contains("$");
+        return StringUtils.containsAny(input, '#', '$');
     }
 }

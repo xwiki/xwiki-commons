@@ -43,7 +43,8 @@ class VelocityDetectorTest
         "true, Hello$foo",
         "true, Hello #XWiki",
         "false, Hello World",
-        "false, 42'foo'"
+        "false, 42'foo'",
+        "false, "
     })
     void containsVelocityScript(boolean isVelocity, String input)
     {
