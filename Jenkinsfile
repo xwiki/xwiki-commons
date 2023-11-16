@@ -70,7 +70,6 @@ stage ('Commons Builds') {
       node {
         // Run the quality checks.
         // Sonar notes:
-        qqq
         // - we need sonar:sonar to perform the analysis and push the results to Sonarcloud
         // - we need jacoco:report to execute jacoco and compute test coverage
         // - we need -Pcoverage and -Dxwiki.jacoco.itDestFile to tell Jacoco to compute a single global Jacoco
