@@ -29,6 +29,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -64,7 +65,7 @@ public class SanitizerFilter extends AbstractHTMLFilter
     private static final String HTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
 
     @Inject
-    private HTMLElementSanitizer htmlElementSanitizer;
+    protected HTMLElementSanitizer htmlElementSanitizer;
 
     @Inject
     private SVGDefinitions svgDefinitions;
@@ -81,7 +82,7 @@ public class SanitizerFilter extends AbstractHTMLFilter
         }
     }
 
-    private static class TagInformation
+    protected static class TagInformation
     {
         public static final TagInformation INVALID = new TagInformation(null, null);
 
@@ -125,17 +126,21 @@ public class SanitizerFilter extends AbstractHTMLFilter
         elementsToRemove.forEach(element -> element.getParentNode().removeChild(element));
     }
 
-    private void traverseWithNamespace(Element rootElement, BiPredicate<Element, TagInformation> traversal)
+    protected void traverseWithNamespace(Element rootElement, BiPredicate<Element, TagInformation> traversal)
+    {
+        traverseWithNamespace(rootElement, traversal, node -> false);
+    }
+
+    protected void traverseWithNamespace(Element rootElement, BiPredicate<Element, TagInformation> traversal,
+        Predicate<Node> commentHandler)
     {
         Node node = rootElement;
-
-        boolean reachedRoot = false;
 
         Deque<TagInformation> parentNamespace = new ArrayDeque<>();
         TagInformation currentNamespace = new TagInformation("html", HTML_NAMESPACE);
         parentNamespace.push(currentNamespace);
 
-        while (!reachedRoot) {
+        while (node != null) {
             boolean skipChildren = false;
 
             if (node.getNodeType() == Node.ELEMENT_NODE && node instanceof Element) {
@@ -143,18 +148,15 @@ public class SanitizerFilter extends AbstractHTMLFilter
 
                 currentNamespace = checkNamespace(element, parentNamespace.peek());
                 skipChildren = traversal.test(element, currentNamespace);
+            } else if (node.getNodeType() == Node.COMMENT_NODE) {
+                skipChildren = commentHandler.test(node);
             }
 
             if (node.getFirstChild() != null && !skipChildren) {
                 node = node.getFirstChild();
                 parentNamespace.push(currentNamespace);
             } else {
-                while (node.getNextSibling() == null) {
-                    if (node == rootElement) {
-                        reachedRoot = true;
-                        break;
-                    }
-
+                while (node.getNextSibling() == null && node != rootElement) {
                     node = node.getParentNode();
                     currentNamespace = parentNamespace.pop();
                 }
@@ -232,7 +234,7 @@ public class SanitizerFilter extends AbstractHTMLFilter
             && (!this.svgDefinitions.isSVGTag(tagName) || this.svgDefinitions.isCommonHTMLElement(tagName));
     }
 
-    private List<Attr> getAttributes(Element element)
+    protected List<Attr> getAttributes(Element element)
     {
         NamedNodeMap attributeNodes = element.getAttributes();
         List<Attr> result = new ArrayList<>();
