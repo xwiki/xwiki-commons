@@ -169,6 +169,18 @@ class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
         verify(this.checkConfig, getPath("TestClassWithUnstableAtStaticFieldLevel.java"), expected);
     }
 
+    @Test
+    void checkWithUnstableAtEnumLevel() throws Exception
+    {
+        final String[] expected = {
+            "27:1: The @Unstable annotation for [org.xwiki.tool.checkstyle.test.TestEnumWithUnstable] must be removed "
+            + "since it's been there for more than a full development cycle (was introduced in [6.0] and current "
+            + "version is [8.1-SNAPSHOT])"
+        };
+
+        verify(this.checkConfig, getPath("TestEnumWithUnstable.java"), expected);
+    }
+
     @Override
     protected String getPackageLocation()
     {

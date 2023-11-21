@@ -43,7 +43,7 @@ public class UnstableAnnotationCheck extends AbstractCheck
 {
     private String packageName;
 
-    private String classOrInterfaceName;
+    private String classOrInterfaceorEnumName;
 
     private String currentVersion;
 
@@ -56,7 +56,8 @@ public class UnstableAnnotationCheck extends AbstractCheck
             TokenTypes.CLASS_DEF,
             TokenTypes.METHOD_DEF,
             TokenTypes.CTOR_DEF,
-            TokenTypes.VARIABLE_DEF
+            TokenTypes.VARIABLE_DEF,
+            TokenTypes.ENUM_DEF
         };
     }
 
@@ -96,7 +97,8 @@ public class UnstableAnnotationCheck extends AbstractCheck
                 return;
             case TokenTypes.CLASS_DEF:
             case TokenTypes.INTERFACE_DEF:
-                this.classOrInterfaceName = ast.findFirstToken(TokenTypes.IDENT).getText();
+            case TokenTypes.ENUM_DEF:
+                this.classOrInterfaceorEnumName = ast.findFirstToken(TokenTypes.IDENT).getText();
                 break;
         }
 
@@ -173,8 +175,8 @@ public class UnstableAnnotationCheck extends AbstractCheck
 
     private String computeElementName(String annotatedElementName)
     {
-        return String.format("%s.%s%s", this.packageName, this.classOrInterfaceName,
-            annotatedElementName.equals(this.classOrInterfaceName) ? "" : "." + annotatedElementName + "()");
+        return String.format("%s.%s%s", this.packageName, this.classOrInterfaceorEnumName,
+            annotatedElementName.equals(this.classOrInterfaceorEnumName) ? "" : "." + annotatedElementName + "()");
     }
 
     /**
