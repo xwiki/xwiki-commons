@@ -25,8 +25,6 @@ import java.util.List;
 
 import javax.websocket.MessageHandler;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Base class for partial message handlers that want to handle messages when all their parts have been received.
  * 
@@ -35,7 +33,6 @@ import org.xwiki.stability.Unstable;
  * @since 13.10.5
  * @since 14.3RC1
  */
-@Unstable
 public abstract class AbstractPartialMessageHandler<T> implements MessageHandler.Partial<T>
 {
     /**

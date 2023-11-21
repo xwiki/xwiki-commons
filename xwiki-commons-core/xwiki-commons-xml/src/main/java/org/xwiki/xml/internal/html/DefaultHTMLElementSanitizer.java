@@ -34,7 +34,6 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
-import org.xwiki.stability.Unstable;
 import org.xwiki.xml.html.HTMLElementSanitizer;
 
 /**
@@ -45,7 +44,6 @@ import org.xwiki.xml.html.HTMLElementSanitizer;
  */
 @Component
 @Singleton
-@Unstable
 public class DefaultHTMLElementSanitizer implements HTMLElementSanitizer, Initializable
 {
     private static final String CONFIGURATION_KEY = "xml.htmlElementSanitizer";

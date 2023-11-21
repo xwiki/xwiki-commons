@@ -36,7 +36,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
-import org.xwiki.stability.Unstable;
 import org.xwiki.xml.html.HTMLElementSanitizer;
 
 /**
@@ -52,7 +51,6 @@ import org.xwiki.xml.html.HTMLElementSanitizer;
 @Component
 @Named(SecureHTMLElementSanitizer.HINT)
 @Singleton
-@Unstable
 public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initializable
 {
     /**

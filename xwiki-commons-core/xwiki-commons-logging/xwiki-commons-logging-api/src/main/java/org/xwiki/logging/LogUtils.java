@@ -94,7 +94,6 @@ public final class LogUtils
      * @return the {@link LogEvent}
      * @since 14.0RC1
      */
-    @Unstable
     public static LogEvent newLogEvent(Marker marker, LogLevel level, String message, Object[] arguments)
     {
         Object[] actualArray;

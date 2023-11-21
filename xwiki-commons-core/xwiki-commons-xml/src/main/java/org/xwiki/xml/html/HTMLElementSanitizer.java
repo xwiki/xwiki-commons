@@ -20,7 +20,6 @@
 package org.xwiki.xml.html;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Provides methods to check if HTML elements and attributes/attribute values are considered safe.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @since 14.6RC1
  */
 @Role
-@Unstable
 public interface HTMLElementSanitizer
 {
     /**

@@ -23,7 +23,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.stability.Unstable;
 import org.xwiki.xml.html.HTMLElementSanitizer;
 
 /**
@@ -35,7 +34,6 @@ import org.xwiki.xml.html.HTMLElementSanitizer;
 @Component
 @Singleton
 @Named("insecure")
-@Unstable
 public class InsecureHTMLElementSanitizer implements HTMLElementSanitizer
 {
     @Override

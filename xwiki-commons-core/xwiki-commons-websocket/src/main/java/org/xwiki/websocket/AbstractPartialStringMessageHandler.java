@@ -22,7 +22,6 @@ package org.xwiki.websocket;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.xwiki.stability.Unstable;
 
 /**
  * Base class for partial string message handlers.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @since 13.10.5
  * @since 14.3RC1
  */
-@Unstable
 public abstract class AbstractPartialStringMessageHandler extends AbstractPartialMessageHandler<String>
 {
     @Override
