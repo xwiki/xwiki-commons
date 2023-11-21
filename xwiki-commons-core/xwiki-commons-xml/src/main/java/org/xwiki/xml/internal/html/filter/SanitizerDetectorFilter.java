@@ -37,7 +37,7 @@ import org.xwiki.xml.html.HTMLConstants;
  * </p>
  *
  * @version $Id$
- * @since 15.10RC1
+ * @since 15.10
  */
 @Component
 @Singleton
