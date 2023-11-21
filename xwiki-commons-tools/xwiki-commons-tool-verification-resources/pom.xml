@@ -33,7 +33,7 @@
   <description>XWiki Commons - Tools - Verification Resources (Checkstyle files, etc)</description>
   <properties>
     <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
-    <xwiki.jacoco.instructionRatio>0.33</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.80</xwiki.jacoco.instructionRatio>
     <!-- Avoid breaking Checkstyle build when they upgrade some dependency -->
     <xwiki.enforcer.enforce-upper-bounds.skip>true</xwiki.enforcer.enforce-upper-bounds.skip>
   </properties>

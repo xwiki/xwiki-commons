@@ -55,7 +55,8 @@ public class UnstableAnnotationCheck extends AbstractCheck
             TokenTypes.INTERFACE_DEF,
             TokenTypes.CLASS_DEF,
             TokenTypes.METHOD_DEF,
-            TokenTypes.CTOR_DEF
+            TokenTypes.CTOR_DEF,
+            TokenTypes.VARIABLE_DEF
         };
     }
 

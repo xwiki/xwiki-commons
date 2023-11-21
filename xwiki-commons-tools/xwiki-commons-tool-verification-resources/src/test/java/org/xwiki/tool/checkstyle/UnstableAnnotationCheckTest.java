@@ -157,6 +157,18 @@ class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
         verify(this.checkConfig, getPath("TestPackageWithOtherAnnotation.java"), expected);
     }
 
+    @Test
+    void checkWithUnstableAtStaticFieldLevel() throws Exception
+    {
+        final String[] expected = {
+            "29:5: The @Unstable annotation for [org.xwiki.tool.checkstyle.test."
+                + "TestClassWithUnstableAtStaticFieldLevel.SOMETHING()] must be removed since it's been there for more "
+                + "than a full development cycle (was introduced in [6.0] and current version is [8.1-SNAPSHOT])"
+        };
+
+        verify(this.checkConfig, getPath("TestClassWithUnstableAtStaticFieldLevel.java"), expected);
+    }
+
     @Override
     protected String getPackageLocation()
     {
