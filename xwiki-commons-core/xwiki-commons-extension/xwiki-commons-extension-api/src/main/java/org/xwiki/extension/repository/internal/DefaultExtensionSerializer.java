@@ -467,7 +467,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         // Properties
         Map<String, Object> properties = parseProperties(extensionElement);
         if (properties != null) {
-            extension.setProperties(properties);
+            properties.forEach(extension::putProperty);
         }
 
         // @Deprecated Install fields
