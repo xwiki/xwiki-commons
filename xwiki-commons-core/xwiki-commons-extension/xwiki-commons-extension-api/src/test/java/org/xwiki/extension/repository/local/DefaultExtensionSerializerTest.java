@@ -21,6 +21,8 @@ package org.xwiki.extension.repository.local;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,7 +33,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.junit.jupiter.api.Test;
-import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.AbstractExtensionTest;
 import org.xwiki.extension.DefaultExtensionComponent;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
@@ -42,6 +44,7 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InvalidExtensionException;
 import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.repository.internal.DefaultExtensionSerializer;
+import org.xwiki.extension.repository.internal.core.DefaultCoreExtension;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -49,6 +52,7 @@ import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @ComponentTest
 @ComponentList(ExtensionFactory.class)
@@ -57,7 +61,7 @@ class DefaultExtensionSerializerTest
     @InjectMockComponents
     private DefaultExtensionSerializer serializer;
 
-    private DefaultLocalExtension performSerializeAndUnserialize(DefaultLocalExtension extension)
+    private DefaultLocalExtension performSerializeAndUnserialize(AbstractExtension extension)
         throws ParserConfigurationException, TransformerException, InvalidExtensionException
     {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -109,8 +113,8 @@ class DefaultExtensionSerializerTest
     }
 
     @Test
-    void serializeAndUnserialize()
-        throws ParserConfigurationException, TransformerException, InvalidExtensionException, ComponentLookupException
+    void serializeAndUnserializeLocal()
+        throws ParserConfigurationException, TransformerException, InvalidExtensionException
     {
         DefaultLocalExtension extension =
             new DefaultLocalExtension(null, new ExtensionId("extensionid", "extensionversion"), "type");
@@ -127,8 +131,7 @@ class DefaultExtensionSerializerTest
 
         extension.addDependency(AbstractExtensionTest.DEPENDENCY2);
 
-        AbstractExtensionTest.DEPENDENCY1
-            .setProperties(Collections.singletonMap("dependencykey", "dependencyvalue"));
+        AbstractExtensionTest.DEPENDENCY1.setProperties(Collections.singletonMap("dependencykey", "dependencyvalue"));
 
         extension.addManagedDependency(AbstractExtensionTest.DEPENDENCY1);
         extension.addManagedDependency(AbstractExtensionTest.DEPENDENCY2);
@@ -167,5 +170,26 @@ class DefaultExtensionSerializerTest
 
         // Complete extension
         performSerializeAndUnserialize(extension);
+    }
+
+    @Test
+    void serializeAndUnserializeCore()
+        throws ParserConfigurationException, TransformerException, InvalidExtensionException, MalformedURLException
+    {
+        DefaultLocalExtension extension =
+            new DefaultLocalExtension(null, new ExtensionId("extensionid", "extensionversion"), "type");
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+        this.serializer.saveExtensionDescriptor(extension, os);
+
+        ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
+
+        URL url = new URL("file://path");
+
+        DefaultCoreExtension unserializedExtension =
+            this.serializer.loadCoreExtensionDescriptor(null, url, is);
+
+        assertSame(url, unserializedExtension.getURL());
     }
 }
