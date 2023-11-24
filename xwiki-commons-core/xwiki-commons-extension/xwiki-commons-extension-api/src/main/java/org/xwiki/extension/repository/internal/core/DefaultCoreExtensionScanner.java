@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -161,7 +162,8 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
         URL xedURL = this.environment.getResource("/META-INF/extension.xed");
         if (xedURL != null) {
             try (InputStream xedStream = this.environment.getResourceAsStream("/META-INF/extension.xed")) {
-                return this.parser.loadCoreExtensionDescriptor(repository, null, xedStream);
+                return this.parser.loadCoreExtensionDescriptor(repository, getEnvironmentExtensionURL(xedURL),
+                    xedStream);
             } catch (Exception e) {
                 this.logger.error("Failed to load [{}] descriptor file", xedURL, e);
             }
@@ -361,5 +363,14 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                 it.remove();
             }
         }
+    }
+
+    private static URL getEnvironmentExtensionURL(URL xedURL) throws MalformedURLException
+    {
+        String separator = "/";
+        List<String> segments = Arrays.asList(xedURL.toString().split(separator));
+        // Remove the segments corresponding to "/META-INF/extension.xed" at the end of the URL.
+        List<String> startSegments = segments.subList(0, segments.size() - 2);
+        return new URL(String.join(separator, startSegments));
     }
 }
