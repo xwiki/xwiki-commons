@@ -421,6 +421,12 @@ class DefaultVelocityManagerTest
     }
 
     @Test
+    void evaluateWithNullNamespace() throws Exception
+    {
+        assertEvaluate("toto", "toto", (String) null);
+    }
+
+    @Test
     void evaluateOverrideMacros() throws Exception
     {
         assertEvaluate("#mymacro", "#mymacro", "namespace");

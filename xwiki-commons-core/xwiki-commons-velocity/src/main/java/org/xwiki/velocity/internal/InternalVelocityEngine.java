@@ -167,7 +167,8 @@ public class InternalVelocityEngine implements VelocityEngine
     public boolean evaluate(Context context, Writer out, String namespace, Reader source) throws XWikiVelocityException
     {
         // Create the template
-        VelocityTemplate template = DefaultVelocityManager.compile(namespace, source, this.runtimeInstance);
+        VelocityTemplate template = DefaultVelocityManager.compile(namespace != null ? namespace : "unknown template",
+            source, this.runtimeInstance);
 
         evaluate(context, out, namespace, template);
 
