@@ -19,6 +19,8 @@
  */
 package org.xwiki.tool.checkstyle;
 
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
@@ -37,6 +39,8 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  */
 public class SinceFormatCheck extends AbstractCheck
 {
+    private static final Pattern VALID_VERSION_FORMAT = Pattern.compile("\\d+\\.\\d+\\.\\d+(RC\\d)?");
+
     private String packageName;
 
     private String classOrInterfaceName;
@@ -85,15 +89,37 @@ public class SinceFormatCheck extends AbstractCheck
                 int pos = javadocLine.indexOf("@since");
                 if (pos > -1) {
                     String text = javadocLine.substring(pos + "@since".length() + 1);
-                    if (StringUtils.containsAny(text, ',', '/', '\\', ';', ':', '+')) {
-                        log(ast.getLineNo(), ast.getColumnNo(),
-                            String.format("There must be only a single version per @since tag for [%s]. Got [%s]",
-                                computeElementName(elementName), text));
-                        return;
+
+                    if (checkOnlyOneVersion(text, ast, elementName)) {
+                        checkVersionFormat(text, ast, elementName);
                     }
                 }
             }
         }
+    }
+
+    private void checkVersionFormat(String version, DetailAST ast, String elementName)
+    {
+        // Only check the format for 16+ versions
+        String majorVersionString = StringUtils.substringBefore(version, '.');
+        int majorVersion = Integer.parseInt(majorVersionString);
+        if (majorVersion >= 16 && !VALID_VERSION_FORMAT.matcher(version).matches()) {
+            log(ast.getLineNo(), ast.getColumnNo(),
+                String.format("The format of the version is <major>.<minor>.<bugfix>[RC<rc index>] for [%s]. Got [%s].",
+                    computeElementName(elementName), version));
+        }
+    }
+
+    private boolean checkOnlyOneVersion(String text, DetailAST ast, String elementName)
+    {
+        if (StringUtils.containsAny(text, ',', '/', '\\', ';', ':', '+')) {
+            log(ast.getLineNo(), ast.getColumnNo(),
+                String.format("There must be only a single version per @since tag for [%s]. Got [%s].",
+                    computeElementName(elementName), text));
+            return false;
+        }
+
+        return true;
     }
 
     private String computeElementName(String annotatedElementName)

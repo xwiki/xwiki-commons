@@ -1,0 +1,79 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+package org.xwiki.tool.checkstyle.test;
+
+import org.xwiki.stability.Unstable;
+
+public class TestClassWithVariousSinceVersions
+{
+    // Not checked
+
+    /**
+     * @since 8.0
+     */
+    public void notChecked()
+    {
+
+    }
+
+    // Valid
+
+    /**
+     * @since 16.0.0
+     */
+    public void valid1()
+    {
+
+    }
+
+    /**
+     * @since 17.0.0RC1
+     */
+    public void valid2()
+    {
+
+    }
+
+    // Not valid
+
+    /**
+     * @since 16.0
+     */
+    public void invalid1()
+    {
+
+    }
+
+    /**
+     * @since 17.0
+     */
+    public void invalid2()
+    {
+
+    }
+
+    /**
+     * @since 17.0.0-rc-1
+     */
+    public void invalid3()
+    {
+
+    }
+}
