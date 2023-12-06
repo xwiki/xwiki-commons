@@ -22,8 +22,8 @@ package org.xwiki.extension;
 import java.util.Collection;
 
 /**
- * Allow injecting features in extensions whiles they are loaded from a repository. This is useful for extension you
- * don't control comming from various repositories. A good example is various group ids (npm, bower, classic) used for
+ * Allow injecting features in extensions whiles they are loaded from a repository. This is useful for extensions you
+ * don't control, coming from various repositories. A good example is various group ids (npm, bower, classic) used for
  * webjar extensions which are the same thing from XWiki point of view.
  * 
  * @version $Id$
