@@ -37,7 +37,7 @@ buildScan.executeOnce('tag-profiles') { BuildScanApi buildScanApi ->
     // Add all system properties starting with "xwiki" as custom values
     project.properties.find { it.key.startsWith('xwiki') }.each { buildScanApi.value(it.key, it.value) }
 
-    // Add specific tags to make it easy to recognize with wich environment a docker functional tests has been executed
+    // Add specific tags to make it easy to recognize with which environment a docker functional tests has been executed
     def servletContainer = project.properties.'xwiki.test.ui.servletEngine'
     def servletContainerTag = project.properties.'xwiki.test.ui.servletEngineTag'
     if (servletContainer && servletContainerTag) {
