@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
  * @version $Id$
  * @since 7.1RC1
  */
-public class AnswerReplayerTest
+class AnswerReplayerTest
 {
     @Test
     void replayAnswerOK()

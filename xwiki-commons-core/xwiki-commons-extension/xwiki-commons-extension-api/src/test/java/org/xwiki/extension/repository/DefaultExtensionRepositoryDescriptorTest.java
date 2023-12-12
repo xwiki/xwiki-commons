@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * @version $Id$
  * @since 10.7RC1
  */
-public class DefaultExtensionRepositoryDescriptorTest
+class DefaultExtensionRepositoryDescriptorTest
 {
     @Test
     void equals() throws URISyntaxException

@@ -54,7 +54,7 @@ import static org.mockito.Mockito.withSettings;
  * @version $Id$
  */
 @ComponentTest
-public class DefaultExtensionRepositoryManagerTest
+class DefaultExtensionRepositoryManagerTest
 {
     @InjectMockComponents
     private DefaultExtensionRepositoryManager manager;
@@ -76,7 +76,7 @@ public class DefaultExtensionRepositoryManagerTest
     private Extension extension4;
 
     @BeforeEach
-    public void configure() throws Exception
+    void configure() throws Exception
     {
         this.mockRepository1 =
             mock(ExtensionRepository.class, withSettings().extraInterfaces(Searchable.class).name("repository1"));

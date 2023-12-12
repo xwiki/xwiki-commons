@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class DefaultInstalledExtensionTest
+class DefaultInstalledExtensionTest
 {
     private DefaultInstalledExtension installedExtension;
 

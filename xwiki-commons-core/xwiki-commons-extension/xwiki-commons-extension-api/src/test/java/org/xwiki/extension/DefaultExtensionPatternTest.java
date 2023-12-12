@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class DefaultExtensionPatternTest
+class DefaultExtensionPatternTest
 {
     @Test
     void matchesString()

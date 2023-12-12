@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  */
 @ComponentTest
-public class DefaultExtensionRepositoryManagerTest
+class DefaultExtensionRepositoryManagerTest
 {
     @InjectMockComponents
     private DefaultExtensionRepositoryManager manager;
@@ -74,7 +74,7 @@ public class DefaultExtensionRepositoryManagerTest
     private ExtensionRepositoryFactory factory;
 
     @BeforeEach
-    public void before() throws Exception
+    void before() throws Exception
     {
         this.factory = this.componentManager.registerMockComponent(ExtensionRepositoryFactory.class, "test");
         this.testRepository = mock(ExtensionRepository.class);

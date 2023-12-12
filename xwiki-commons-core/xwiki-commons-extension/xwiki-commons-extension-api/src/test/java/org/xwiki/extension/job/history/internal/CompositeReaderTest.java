@@ -34,7 +34,7 @@ import static org.mockito.Mockito.*;
  * @version $Id$
  * @since 7.1RC1
  */
-public class CompositeReaderTest
+class CompositeReaderTest
 {
     @Test
     void readOK() throws Exception

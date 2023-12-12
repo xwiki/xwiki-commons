@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  *
  * @version $Id$
  */
-public class ExtensionLicenseTest
+class ExtensionLicenseTest
 {
     @Test
     void equals()

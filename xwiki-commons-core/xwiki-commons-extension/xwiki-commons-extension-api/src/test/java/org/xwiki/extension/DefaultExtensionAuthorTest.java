@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  * @version $Id$
  * @since 10.7RC1
  */
-public class DefaultExtensionAuthorTest
+class DefaultExtensionAuthorTest
 {
     @Test
     void equals()
