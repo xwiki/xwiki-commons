@@ -2282,10 +2282,17 @@
             <argLine>@{argLine} -Xmx1536m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory}</argLine>
           </configuration>
           <executions>
+            <!-- Note: we're defining 2 named executions so that other maven plugins can plug their configurations
+                 to one or the other. This is the case for the Gradle Enterprise cache plugin for example -->
             <execution>
               <id>functional-tests</id>
               <goals>
                 <goal>integration-test</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>functional-tests-verify</id>
+              <goals>
                 <goal>verify</goal>
               </goals>
             </execution>
@@ -2744,14 +2751,19 @@
                        was used as a command line argument, but not declared as an input or output. -->
                 <plugin>
                   <artifactId>maven-surefire-plugin</artifactId>
-                  <outputs>
-                    <directories>
-                      <directory>
-                        <name>screenshots</name>
-                        <path>${project.build.directory}/screenshots</path>
-                      </directory>
-                    </directories>
-                  </outputs>
+                  <executions>
+                    <execution>
+                      <id>functional-tests</id>
+                      <outputs>
+                        <directories>
+                          <directory>
+                            <name>screenshots</name>
+                            <path>${project.build.directory}/screenshots</path>
+                          </directory>
+                        </directories>
+                      </outputs>
+                    </execution>
+                  </executions>
                 </plugin>
                 <!-- Make the Failsafe plugin cacheable when used in functional tests to work around the issue:
                        Goal execution marked as not cacheable: Build caching was not enabled for this goal execution
@@ -2759,14 +2771,19 @@
                        was used as a command line argument, but not declared as an input or output. -->
                 <plugin>
                   <artifactId>maven-failsafe-plugin</artifactId>
-                  <outputs>
-                    <directories>
-                      <directory>
-                        <name>screenshots</name>
-                        <path>${project.build.directory}/screenshots</path>
-                      </directory>
-                    </directories>
-                  </outputs>
+                  <executions>
+                    <execution>
+                      <id>functional-tests</id>
+                      <outputs>
+                        <directories>
+                          <directory>
+                            <name>screenshots</name>
+                            <path>${project.build.directory}/screenshots</path>
+                          </directory>
+                        </directories>
+                      </outputs>
+                    </execution>
+                  </executions>
                 </plugin>
               </plugins>
             </gradleEnterprise>
