@@ -53,7 +53,7 @@
     <xwiki.compatibility.previous.version>15.10.1</xwiki.compatibility.previous.version>
 
     <!-- Java -->
-    <xwiki.java.version>11</xwiki.java.version>
+    <xwiki.java.version>17</xwiki.java.version>
     <java.version>${xwiki.java.version}</java.version>
 
     <!-- Jakarta modules -->
