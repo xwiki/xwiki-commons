@@ -129,7 +129,7 @@
     <!-- JAXB -->
     <jaxb.tools.version>2.0.9</jaxb.tools.version>
 
-    <!-- By default Checkstyle, Backward compatibility check, Enforcer, License plugins, etc are on -->
+    <!-- By default, Checkstyle, Backward compatibility check, Enforcer, License plugins, etc., are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.revapi.skip>false</xwiki.revapi.skip>
     <xwiki.jacoco.skip>false</xwiki.jacoco.skip>
@@ -181,15 +181,15 @@
          started by the tests.
 
          When this property is set to false, then verify if some XWiki instance is already running by verifying if the
-         port is free and fail if so. Otherwise start XWiki.
+         port is free and fail if so. Otherwise, start XWiki.
 
-         By default it's set to false since functional UI tests should not check if an XWiki instance is already
+         By default, it's set to false since functional UI tests should not check if an XWiki instance is already
          running before starting XWiki since performing this check would delay the build and there should be no running
          instance when the build executes. -->
     <xwiki.test.verifyRunningXWikiAtStart>false</xwiki.test.verifyRunningXWikiAtStart>
 
     <!-- Sonar/Jacoco integration. Note that these properties need to be defined outside the "coverage" profile
-         because we want to be to able to execute mvn sonar:sonar without passing a profile -->
+         because we want to be able to execute mvn sonar:sonar without passing a profile -->
     <!-- Config to push to Sonarcloud.io -->
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.organization>xwiki</sonar.organization>
@@ -212,12 +212,13 @@
          executions)  -->
     <maven.build.version>3.6.3</maven.build.version>
     <maven.resolver.build.version>1.4.1</maven.resolver.build.version>
-    <!-- Version of Maven emebdded in XWiki runtime (more recent than the one used during the build to benefit from bugfixes and improvements) -->
+    <!-- Version of Maven emebedded in XWiki runtime (more recent than the one used during the build to benefit from
+         bugfixes and improvements) -->
     <maven.runtime.version>3.9.6</maven.runtime.version>
     <maven.resolver.runtime.version>1.9.18</maven.resolver.runtime.version>
     <!-- Minimum version of the actual Maven binary required to build -->
     <maven.minimum.version>${maven.build.version}</maven.minimum.version>
-    <!-- The current Maven version declared in the dependency management (so that it can be change for the distribution
+    <!-- The current Maven version declared in the dependency management (so that it can be changed for the distribution
          for example) -->
     <maven.version>${maven.build.version}</maven.version>
     <maven.resolver.version>${maven.resolver.build.version}</maven.resolver.version>
@@ -272,7 +273,7 @@
 
     <!-- The Surefire and Failsafe configurations override the <argLine> element using the @{argLine} notation which
          allows to include any argLine defined by plugins executing before them (such as Jacoco). However, if no such
-         plugin executes before, the property is undefined and makes the tests fail. Thus we define an empty property
+         plugin executes before, the property is undefined and makes the tests fail. Thus, we define an empty property
          here to make sure it doesn't fail. See also https://issues.apache.org/jira/browse/SUREFIRE-1431
     -->
     <argLine/>
@@ -293,7 +294,7 @@
     <!-- Note that this information is read by XWiki's Extension Manager and passed to the XWiki Repository Application
          to mention who developed the various published XWiki extensions. We use a fake Developer who represents the
          whole team because it's simpler to manage only one developer at this level and instead use the wiki at
-         https://dev.xwiki.org/xwiki/bin/view/Community/HallOfFame to provide an up to date view of all XWiki devs. -->
+         https://dev.xwiki.org/xwiki/bin/view/Community/HallOfFame to provide an up-to-date view of all XWiki devs. -->
     <developer>
       <id>devs</id>
       <name>XWiki Development Team</name>
@@ -557,7 +558,7 @@
         <artifactId>xstream</artifactId>
         <version>1.4.20</version>
       </dependency>
-      <!-- Note: The DOM4J project has been dead for several years and we've decided to not use it in any new code and
+      <!-- Note: The DOM4J project has been dead for several years, and we've decided to not use it in any new code and
            over time to refactor existing code to use JDOM or other XML techniques (such as STaX). When all code has
            been converted, remove this dependency and add it as a build failure so that we don't reintroduce it again
            by error -->
@@ -588,7 +589,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- What is included in the JRE is too old and Oracle does not seems to plan to upgrade it anytime soon -->
+      <!-- What is included in the JRE is too old and Oracle does not seem to plan to upgrade it anytime soon -->
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
@@ -808,7 +809,7 @@
         <version>0.10.2</version>
       </dependency>
 
-      <!-- Used by verious dependencies -->
+      <!-- Used by various dependencies -->
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
@@ -1282,7 +1283,7 @@
         <groupId>org.mortbay.jasper</groupId>
         <artifactId>apache-el</artifactId>
         <version>${apachache-el.version}</version>
-        <!-- The EL implementation is supposed to come with the application server but we need one for tests -->
+        <!-- The EL implementation is supposed to come with the application server, but we need one for tests -->
         <scope>test</scope>
       </dependency>
 
@@ -2127,12 +2128,11 @@
           <configuration>
             <consoleOutput>true</consoleOutput>
             <!-- We use this to disable checkstyle when the clover profile is executed since there's a
-                 conflict between checkstyle and clover. Namely the clovered code doesn't pass our
-                 checkstyle rules -->
+                 conflict between checkstyle and clover. Namely, the clovered code doesn't pass our checkstyle rules -->
             <skip>${xwiki.checkstyle.skip}</skip>
           </configuration>
           <!-- We redeclare the version of checkstyle to control which version we use. We do that since we also write
-               custom checkstyle checks and we need to keep in sync the checkstyle version used to compile those
+               custom checkstyle checks, and we need to keep in sync the checkstyle version used to compile those
                checks with the checkstyle version used by the checkstyle plugin -->
           <dependencies>
             <dependency>
@@ -2160,7 +2160,7 @@
                information is not fetched from the local working copy but from the SCM pom configuration. This forces
                us to specify SCM configuration in every module which has its own lifecycle. Inheritance can't be used
                for SCM configuration since a released parent pom contains SCM information about its tag and not about
-               the trunk. We could have globally set remoteTagging to false but we haven't since we prefer to follow
+               the trunk. We could have globally set remoteTagging to false, but we haven't since we prefer to follow
                maven conventions as much as possible. -->
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
@@ -2169,7 +2169,7 @@
           <configuration>
             <!-- By default the release plugin will execute the "clean" and "verify" goals but won't perform an
                  "install". This is causing problems since several modules will fail to build during release:prepare.
-                 See https://tinyurl.com/354vwe for more details. Thus we're forcing the execution of the "install"
+                 See https://tinyurl.com/354vwe for more details. Thus, we're forcing the execution of the "install"
                  goal. -->
             <preparationGoals>clean install</preparationGoals>
             <!-- Avoid site generation during the release:perform to speed up release process -->
@@ -2211,8 +2211,7 @@
           <version>${maven.compiler.version}</version>
           <configuration>
             <release>${java.version}</release>
-
-            <!-- Avoid surprises. If a module needs annotation processing it can enabled it easily -->
+            <!-- Avoid surprises. If a module needs annotation processing, it can enable it easily -->
             <proc>none</proc>
           </configuration>
         </plugin>
@@ -2262,13 +2261,12 @@
             </includes>
             <!-- We want to show nested stack traces to see what is the real problem when a test fails! -->
             <trimStackTrace>false</trimStackTrace>
-            <!-- Make sure there are always tests to execute. If not, it probably means there's a problem somewhere and
+            <!-- Make sure there are always tests to execute. If not, it probably means there's a problem somewhere, and
                  we need to know it in order to fix it! -->
             <failIfNoTests>true</failIfNoTests>
             <systemPropertyVariables>
               <!-- See description of the "xwiki.test.verifyRunningXWikiAtStart" property above. -->
 		          <xwiki.test.verifyRunningXWikiAtStart>${xwiki.test.verifyRunningXWikiAtStart}</xwiki.test.verifyRunningXWikiAtStart>
-
               <!-- Used to automatically register our custom JUnit5 Extensions using the service loader mechanism.
                    We also need to have the JAR containing our extensions visible to JUnit5's ClassLoader. This is
                    done in xwiki-commons-core/pom.xml and xwiki-platform/pom.xml as otherwise it would cause a cyclic
@@ -2367,8 +2365,7 @@
           <version>1.15.0</version>
           <configuration>
             <complianceLevel>${java.version}</complianceLevel>
-
-            <!-- Avoid surprises. If a module needs annotation processing it can enabled it easily -->
+            <!-- Avoid surprises. If a module needs annotation processing, it can enable it easily -->
             <proc>none</proc>
           </configuration>
           <!-- Override so that we can use the AspectJ version we wish -->
@@ -2440,7 +2437,7 @@
           <configuration>
             <oldVersion>${xwiki.compatibility.previous.version}</oldVersion>
             <skip>${xwiki.revapi.skip}</skip>
-            <!-- Only output minimal differences required when revapi fails, so that we don't copy unnecessary
+            <!-- Only output minimal differences required when Revapi fails, so that we don't copy unnecessary
                  differences which could lead to issues when releasing XWiki, see
                  https://github.com/revapi/revapi/issues/137 for more info. -->
             <outputNonIdentifyingDifferenceInfo>false</outputNonIdentifyingDifferenceInfo>
@@ -2531,7 +2528,6 @@
                    https://stackoverflow.com/questions/14559117/how-do-i-disable-jacoco-agent-after-jacocoreport
                    TODO: remove when https://sourceforge.net/p/cssparser/bugs/53/ is fixed -->
               <exclude>**com.steadystate.css.parser.SACParserCSS21TokenManager</exclude>
-
               <!-- Jacoco instrumentation makes relaxng go nuts. See https://github.com/jacoco/jacoco/issues/528
                    and https://github.com/validator/validator/issues/505 -->
               <exclude>**com.thaiopensource.relaxng.impl.**</exclude>
@@ -2608,14 +2604,15 @@
           <version>1.5.1</version>
           <configuration>
             <skip>${xwiki.minification.skip}</skip>
-            <!-- We use it only to minify the CSS. For JavaScript we use the Closure Compiler. -->
+            <!-- We use it only to minify the CSS. For JavaScript, we use the Closure Compiler. -->
             <includes>
               <include>**/*.css</include>
             </includes>
             <excludes>
               <exclude>**/*.min.*</exclude>
             </excludes>
-            <!-- We prefer to use the JSHint Maven Plugin because it gives us more control over the validation rules. -->
+            <!-- We prefer to use the JSHint Maven Plugin because it gives us more control over the validation
+                 rules. -->
             <jswarn>false</jswarn>
             <!-- The default suffix uses the dash as separator (-min) but we prefer the dot (.min) because it is
               currently more widely used on the web. -->
@@ -2654,7 +2651,7 @@
               See https://dev.xwiki.org/xwiki/bin/view/Community/SupportStrategy/BrowserSupportStrategy -->
             <closureLanguageOut>NO_TRANSPILE</closureLanguageOut>
             <!-- Generate the source maps in order to have better error reporting on minified JavaScript files and in
-              order to ease the debuggging of these files. Note that the path to the source file from the generated
+              order to ease the debugging of these files. Note that the path to the source file from the generated
               source map won't work on the server (and thus you won't be able to debug the source code) unless the
               source (input) folder is the same as the target (output) folder (which is not the case by default).
               Unfortunately we cannot fix the source path with the closureSourceMapLocationMappings configuration ATM
@@ -2671,7 +2668,8 @@
             </dependency>
           </dependencies>
         </plugin>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven
+             build itself.-->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
           <artifactId>lifecycle-mapping</artifactId>
@@ -2734,22 +2732,21 @@
                     </ignoredAttributes>
                   </metaInf>
                   <ignoredFiles>
-                    <!-- The maven aspectJ plugin produces a builddef.lst file which contains paths and we need to
+                    <!-- The maven aspectJ plugin produces a builddef.lst file which contains paths, and we need to
                          ignore it to compare output files between executions -->
                     <ignoredFile>**/builddef.lst</ignoredFile>
                     <!-- The maven archetype plugin produces a build.log file containing the maven build console logs
                          and which contains paths, timestamp and other volatile information (such as the time to build,
-                         etc). We need to ignore it to compare output files between executions -->
+                         etc.). We need to ignore it to compare output files between executions -->
                     <ignoredFile>**/build.log</ignoredFile>
                   </ignoredFiles>
                 </runtimeClassPath>
               </normalization>
               <plugins>
-                <!-- Note: In the past we made the Revapi plugin cacheable but it was making us loose more time than
+                <!-- Note: In the past we made the Revapi plugin cacheable, but it was making us loose more time than
                      saving it. The main time taken was in computing the fingerprinting, exceeding the saved time.
                      Probably because of all the numerous input properties. This is why we have decided to not cache
                      it. -->
-
                 <!-- Make the Surefire plugin cacheable when used in functional tests to work around the issue:
                        Goal execution marked as not cacheable: Build caching was not enabled for this goal execution
                        because '/root/workspace/XWiki_xwiki-platform_master/xwiki-platform-core/.../target/screenshots'
@@ -2886,9 +2883,9 @@
               </execution>
             </executions>
           </plugin>
-          <!-- Because of https://issues.apache.org/jira/browse/MJAVADOC-329 we need to find a workaround to create a Javadoc
-               JAR to satisfy the Maven Central Repository requirements. We do this by creating an apidocs/ dir in the
-               target directory.
+          <!-- Because of https://issues.apache.org/jira/browse/MJAVADOC-329 we need to find a workaround to create a
+               Javadoc JAR to satisfy the Maven Central Repository requirements. We do this by creating an apidocs/ dir
+               in the target directory.
                Note that even though this "hack" is only needed for java projects having all their sources in the
                internal packages we put it here in the top level POM to not have to duplicate it at lots of places. -->
           <plugin>
@@ -2896,7 +2893,7 @@
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
               <execution>
-                <!-- The Javadoc JAR plugin runs in the package phase so we need a phase before that -->
+                <!-- The Javadoc JAR plugin runs in the package phase, so we need a phase before that -->
                 <phase>generate-resources</phase>
                 <configuration>
                   <target>
@@ -2955,10 +2952,10 @@
       <properties>
         <!-- We need to skip checkstyle execution since otherwise it conflicts with Clover -->
         <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
-        <!-- Skip backward-compatiblity checks since we don't need it when computing test coverage and it speeds up
+        <!-- Skip backward-compatiblity checks since we don't need it when computing test coverage, and it speeds up
              the build not to run it -->
         <xwiki.revapi.skip>true</xwiki.revapi.skip>
-        <!-- Skip Enforcer since we don't need it for coverage and it speeds up the build not to run it -->
+        <!-- Skip Enforcer since we don't need it for coverage, and it speeds up the build not to run it -->
         <xwiki.enforcer.skip>true</xwiki.enforcer.skip>
       </properties>
       <dependencyManagement>
@@ -3131,8 +3128,8 @@
                 <configuration>
                   <properties>
                     <property>
-                      <!-- Uncomment if you want to force a slightly older version of the Chrome Driver because you don't
-                        have the latest Chrome installed locally. -->
+                      <!-- Uncomment if you want to force a slightly older version of the Chrome Driver because you
+                           don't have the latest Chrome installed locally. -->
                       <!--<name>wdm.chromeDriverVersion</name>
                       <value>116.0.5845.96</value>-->
                     </property>
