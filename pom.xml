@@ -65,7 +65,7 @@
     <jackson.version>2.16.0</jackson.version>
     <jackson.databind.version>${jackson.version}</jackson.databind.version>
 
-    <!-- Boundy Castle -->
+    <!-- Bouncy Castle -->
     <bouncycastle.version>1.77</bouncycastle.version>
 
     <!-- ASM -->
