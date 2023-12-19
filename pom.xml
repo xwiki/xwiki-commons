@@ -808,7 +808,7 @@
         <version>0.10.2</version>
       </dependency>
 
-      <!-- Used by reflections and other projects in commons, platform and rendering -->
+      <!-- Used by verious dependencies -->
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
@@ -818,6 +818,11 @@
         <groupId>com.google.guava</groupId>
         <artifactId>guava-testlib</artifactId>
         <version>${guava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>failureaccess</artifactId>
+        <version>1.0.2</version>
       </dependency>
 
       <!-- Groovy engine. Used in both commons and platform -->
