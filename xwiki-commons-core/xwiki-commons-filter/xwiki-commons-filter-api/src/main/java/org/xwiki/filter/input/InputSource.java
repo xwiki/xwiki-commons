@@ -27,7 +27,7 @@ import java.io.Closeable;
  * <p>
  * {@link #close()} is only closing {@link Closeable} created by the {@link InputSource} itself. For example
  * {@link DefaultInputStreamInputSource} is not going to close the {@link java.io.InputStream} passed to its constructor
- * because it did not created it.
+ * because it did not create it.
  *
  * @version $Id$
  * @since 6.2M1
