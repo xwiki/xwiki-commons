@@ -63,7 +63,7 @@
 
     <!-- Jackson -->
     <jackson.version>2.16.0</jackson.version>
-    <jackson.databind.version>${jackson.version}</jackson.databind.version>
+    <jackson.databind.version>2.16.1</jackson.databind.version>
 
     <!-- Bouncy Castle -->
     <bouncycastle.version>1.77</bouncycastle.version>
