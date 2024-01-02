@@ -224,7 +224,7 @@
     <maven.resolver.version>${maven.resolver.build.version}</maven.resolver.version>
 
     <!-- Plexus -->
-    <plexus-containers.version>2.1.1</plexus-containers.version>
+    <plexus-containers.version>2.2.0</plexus-containers.version>
 
     <!-- The version of Maven Enforcer plugin -->
     <maven-enforcer.version>3.4.1</maven-enforcer.version>
@@ -949,11 +949,6 @@
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-xml</artifactId>
         <version>4.0.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-container-default</artifactId>
-        <version>${plexus-containers.version}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
