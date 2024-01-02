@@ -252,7 +252,7 @@
     <!-- Use the same version as the one that comes with the custom XWiki Jetty application server -->
     <apachache-el.version>9.0.83.1</apachache-el.version>
 
-    <webdrivermanager.version>5.6.2</webdrivermanager.version>
+    <webdrivermanager.version>5.6.3</webdrivermanager.version>
 
     <!-- The recommended version of known extensions to use -->
     <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]
