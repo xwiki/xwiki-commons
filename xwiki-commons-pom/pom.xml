@@ -241,6 +241,7 @@
           <skip>${xwiki.spoon.skip}</skip>
           <!-- Don't fail in case of missing sources -->
           <skipSpoonErrors>true</skipSpoonErrors>
+          <compliance>${java.version}</compliance>
         </configuration>
         <dependencies>
           <!-- Contains custom Spoon processors -->
