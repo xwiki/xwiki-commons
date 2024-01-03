@@ -53,8 +53,9 @@
     <xwiki.compatibility.previous.version>15.10.4</xwiki.compatibility.previous.version>
 
     <!-- Java -->
+    <!-- Note that we prefix the property name by "XWiki", since some code already use the java.version property (such
+         as Spring Boot, see https://www.baeldung.com/maven-java-version), and we want to avoid any clash. -->
     <xwiki.java.version>17</xwiki.java.version>
-    <java.version>${xwiki.java.version}</java.version>
 
     <!-- Jakarta modules -->
     <jakarta.mail.version>1.6.7</jakarta.mail.version>
@@ -1941,7 +1942,7 @@
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
                   <message>
-                    Found a dependency already included in the minimum Java SE ${java.version}
+                    Found a dependency already included in the minimum Java SE ${xwiki.java.version}
                   </message>
                   <!-- Make sure to keep this list in sync with default ignored extension dependencies -->
                   <excludes>
@@ -2205,7 +2206,7 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>${maven.compiler.version}</version>
           <configuration>
-            <release>${java.version}</release>
+            <release>${xwiki.java.version}</release>
             <!-- Avoid surprises. If a module needs annotation processing, it can enable it easily -->
             <proc>none</proc>
           </configuration>
@@ -2359,7 +2360,7 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>1.15.0</version>
           <configuration>
-            <complianceLevel>${java.version}</complianceLevel>
+            <complianceLevel>${xwiki.java.version}</complianceLevel>
             <!-- Avoid surprises. If a module needs annotation processing, it can enable it easily -->
             <proc>none</proc>
           </configuration>
@@ -2497,7 +2498,7 @@
             <!-- Enable all doclint checks by default -->
             <doclint>all</doclint>
             <!-- Specify the version of the code so that it doesn't depend on the Java version used to build XWiki -->
-            <release>${java.version}</release>
+            <release>${xwiki.java.version}</release>
             <!-- Only display warnings and errors -->
             <quiet>true</quiet>
           </configuration>
@@ -2856,8 +2857,8 @@
                   <skip>${xwiki.enforcer.enforce-java.skip}</skip>
                   <rules>
                     <requireJavaVersion>
-                      <message>You must release with Java ${java.version}!</message>
-                      <version>${java.version}</version>
+                      <message>You must release with Java ${xwiki.java.version}!</message>
+                      <version>${xwiki.java.version}</version>
                     </requireJavaVersion>
                   </rules>
                 </configuration>
