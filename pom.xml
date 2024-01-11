@@ -115,7 +115,7 @@
     <spoon.version>10.4.2</spoon.version>
 
     <!-- Groovy -->
-    <groovy.version>3.0.20</groovy.version>
+    <groovy.version>4.0.17</groovy.version>
 
     <!-- Ivy -->
     <ivy.version>2.5.2</ivy.version>
@@ -164,6 +164,7 @@
     <xwiki.enforcer.enforce-asm.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-asm.skip>
     <xwiki.enforcer.enforce-cglib.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-cglib.skip>
     <xwiki.enforcer.enforce-jdom.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jdom.skip>
+    <xwiki.enforcer.apache-groovy.skip>${xwiki.enforcer.skip}</xwiki.enforcer.apache-groovy.skip>
     <xwiki.enforcer.enforce-no-old-xwiki-commons.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-no-old-xwiki-commons.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
     <xwiki.enforcer.enforce-java.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-java.skip>
@@ -829,62 +830,62 @@
 
       <!-- Groovy engine. Used in both commons and platform -->
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
+        <groupId>org.apache.groovy</groupId>
         <artifactId>groovy</artifactId>
         <version>${groovy.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
+        <groupId>org.apache.groovy</groupId>
         <artifactId>groovy-datetime</artifactId>
         <version>${groovy.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
+        <groupId>org.apache.groovy</groupId>
         <artifactId>groovy-jmx</artifactId>
         <version>${groovy.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
+        <groupId>org.apache.groovy</groupId>
         <artifactId>groovy-json</artifactId>
         <version>${groovy.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
+        <groupId>org.apache.groovy</groupId>
         <artifactId>groovy-jsr223</artifactId>
         <version>${groovy.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
+        <groupId>org.apache.groovy</groupId>
         <artifactId>groovy-macro</artifactId>
         <version>${groovy.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
+        <groupId>org.apache.groovy</groupId>
         <artifactId>groovy-nio</artifactId>
         <version>${groovy.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
+        <groupId>org.apache.groovy</groupId>
         <artifactId>groovy-servlet</artifactId>
         <version>${groovy.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
+        <groupId>org.apache.groovy</groupId>
         <artifactId>groovy-sql</artifactId>
         <version>${groovy.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
+        <groupId>org.apache.groovy</groupId>
         <artifactId>groovy-templates</artifactId>
         <version>${groovy.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
+        <groupId>org.apache.groovy</groupId>
         <artifactId>groovy-xml</artifactId>
         <version>${groovy.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.groovy</groupId>
+        <groupId>org.apache.groovy</groupId>
         <artifactId>groovy-dateutil</artifactId>
         <version>${groovy.version}</version>
       </dependency>
@@ -2071,6 +2072,25 @@
                   <message>Use org.jdom:jdom instead</message>
                   <excludes>
                     <exclude>org.jdom:jdom-legacy</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we use the right groupid for groovy -->
+          <execution>
+            <id>enforce-apache-groovy</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.apache-groovy.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>Use groupid org.apache.groovy instead</message>
+                  <excludes>
+                    <exclude>org.codehaus.groovy</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
