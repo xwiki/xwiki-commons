@@ -2539,11 +2539,11 @@
           <configuration>
             <skip>${xwiki.jacoco.skip}</skip>
             <excludes>
-              <!-- Don't run Jacoco on com/steadystate/css/parser/SACParserCSS21TokenManager since it generates an
+              <!-- Don't run Jacoco on com/steadystate/css/parser/SACParserCSS3TokenManager since it generates an
                    error, see
                    https://stackoverflow.com/questions/14559117/how-do-i-disable-jacoco-agent-after-jacocoreport
                    TODO: remove when https://sourceforge.net/p/cssparser/bugs/53/ is fixed -->
-              <exclude>**com.steadystate.css.parser.SACParserCSS21TokenManager</exclude>
+              <exclude>**com.steadystate.css.parser.SACParserCSS3TokenManager</exclude>
               <!-- Jacoco instrumentation makes relaxng go nuts. See https://github.com/jacoco/jacoco/issues/528
                    and https://github.com/validator/validator/issues/505 -->
               <exclude>**com.thaiopensource.relaxng.impl.**</exclude>
