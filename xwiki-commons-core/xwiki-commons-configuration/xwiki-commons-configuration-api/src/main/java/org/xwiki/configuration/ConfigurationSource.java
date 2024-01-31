@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
  * @version $Id$
@@ -96,10 +97,12 @@ public interface ConfigurationSource
     boolean isEmpty();
 
     /**
-     * Set a property, this will replace any previously set values.
+     * Sets the value of a property, replacing any previously set values. Note that setting a property to {@code null}
+     * doesn't necessarily remove it from the configuration source. If you want to remove a property, use
+     * {@link #removeProperty(String)} instead.
      *
-     * @param key The key of the property to change
-     * @param value The new value
+     * @param key the key of the property to change
+     * @param value the new value
      * @throws ConfigurationSaveException when an error occurs during persistence
      * @since 15.9
      * @since 15.5.4
@@ -118,5 +121,22 @@ public interface ConfigurationSource
     default void setProperties(Map<String, Object> properties) throws ConfigurationSaveException
     {
         throw new UnsupportedOperationException("Modifying properties of this configuration source is not allowed");
+    }
+
+    /**
+     * Removes a property from the configuration source. Calling {@link #containsKey()} on the same key after this
+     * method is executed successfully should return {@code false}.
+     * 
+     * @param key the key of the property to remove
+     * @param <T> the property value type
+     * @return the value of the removed property or {@code null} if the property wasn't set
+     * @throws ConfigurationSaveException when an error occurs during persistence
+     * @since 16.1.0RC1
+     * @since 15.10.6
+     */
+    @Unstable
+    default <T> T removeProperty(String key) throws ConfigurationSaveException
+    {
+        throw new UnsupportedOperationException("Removing a property of this configuration source is not allowed");
     }
 }
