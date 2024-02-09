@@ -29,7 +29,7 @@
     <relativePath>../xwiki-commons-tool-pom</relativePath>
   </parent>
   <artifactId>xwiki-commons-tool-webjar-handlers</artifactId>
-  <name>XWiki Commons - Tools - WEBJAR XAR Handlers</name>
+  <name>XWiki Commons - Tools - WEBJAR Handlers</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Tools - WEBJAR Handlers (Lifecycle and ArtifactHandler)</description>
   <properties>
