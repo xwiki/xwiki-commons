@@ -19,6 +19,10 @@
  */
 package org.xwiki.cache.infinispan;
 
+import java.util.List;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xwiki.cache.eviction.EntryEvictionConfiguration;
 import org.xwiki.cache.infinispan.internal.InfinispanCacheFactory;
 import org.xwiki.cache.infinispan.internal.InfinispanConfigurationLoader;
@@ -26,7 +30,9 @@ import org.xwiki.cache.internal.DefaultCacheFactory;
 import org.xwiki.cache.internal.DefaultCacheManager;
 import org.xwiki.cache.internal.DefaultCacheManagerConfiguration;
 import org.xwiki.cache.test.AbstractEvictionGenericTestCache;
+import org.xwiki.test.LogLevel;
 import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 
 /**
@@ -45,9 +51,20 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 // @formatter:off
 class InfinispanCacheTest extends AbstractEvictionGenericTestCache
 {
+    @RegisterExtension
+    public LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
+
     public InfinispanCacheTest()
     {
         super("infinispan", true);
+    }
+
+    @AfterEach
+    public void afterEach()
+    {
+        // Remove when https://jira.xwiki.org/browse/XCOMMONS-2151 is fixed
+        this.logCapture.ignoreAllMessages(List.of(
+            e -> e.getMessage().equals("ISPN000026: Caught exception purging data container!")));
     }
 
     @Override

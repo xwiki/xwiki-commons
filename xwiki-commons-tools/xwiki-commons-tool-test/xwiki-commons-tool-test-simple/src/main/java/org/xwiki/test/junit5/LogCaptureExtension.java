@@ -22,6 +22,7 @@ package org.xwiki.test.junit5;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -176,6 +177,33 @@ public class LogCaptureExtension implements BeforeAllCallback, AfterAllCallback,
     {
         for (int i = 0; i < size(); i++) {
             getLogEvent(i);
+        }
+    }
+
+    /**
+     * Voluntarily ignore all messages matching passed predicates to signify they should not need to be asserted.
+     * 
+     * @param predicates the predicate to test on the catched log events
+     * @since 16.1.0RC1
+     * @since 15.10.7
+     * @since 15.5.6
+     * @since 14.10.2
+     */
+    public void ignoreAllMessages(List<Predicate<ILoggingEvent>> predicates)
+    {
+        List<ILoggingEvent> list = this.listAppender.list;
+
+        for (int i = 0; i < size(); i++) {
+            ILoggingEvent event = list.get(i);
+
+            for (Predicate<ILoggingEvent> predicate : predicates) {
+                if (predicate.test(event)) {
+                    // Indicate the lov event is allowed
+                    this.assertedMessages.add(i);
+
+                    break;
+                }
+            }
         }
     }
 
