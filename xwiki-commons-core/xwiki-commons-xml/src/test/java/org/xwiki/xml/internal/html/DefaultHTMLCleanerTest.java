@@ -640,9 +640,10 @@ public class DefaultHTMLCleanerTest
         // but HTMLCleaner scraps these characters if it finds them in attributes
         textContent =
             document.getElementsByTagName("p").item(0).getAttributes().getNamedItem("foo").getTextContent();
-        // wanted behavior:
-        // assertEquals("&#8;", textContent);
-        // actual behavior
+        // Control characters (except for horizontal tab, new line and carriage return) are forbidden in XML 1.0,
+        // even if you express them using a character entity such as &#x3;.
+        // Control characters (except for NULL) are allowed in XML 1.1 but only if expressed using a character entity.
+        //Both XML 1.0 and XML 1.1 discourage the use of control (non-printable, low-order) ASCII characters.
         assertEquals("", textContent);
         // same when serializing
         assertHTML("<p foo=\"\">content</p>", "<p foo=\"&#8;\">content</p>");
