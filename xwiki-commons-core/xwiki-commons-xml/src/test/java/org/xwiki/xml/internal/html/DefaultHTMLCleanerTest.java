@@ -338,10 +338,8 @@ public class DefaultHTMLCleanerTest
     @CsvSource({
         "<p><strong>Hello  World</strong></p>,<strong>Hello <!-- a comment --> World</strong>",
         "'', <!--My favorite operators are > and <!-->",
-        // FIXME: Actually, just the comment should be removed but due to erroneous parsing in HTMLCleaner, the whole
-        // string is treated as a comment.
-        "'', <!--> <a href=\"#\">no comment</a>",
-        "'', <!---> <a href=\"#\">no comment</a>"
+        "<p> <a href=\"#\">no comment</a></p>, <!--> <a href=\"#\">no comment</a>",
+        "<p> <a href=\"#\">no comment</a></p>, <!---> <a href=\"#\">no comment</a>"
     })
     void restrictedComments(String expected, String actual)
     {
@@ -356,9 +354,8 @@ public class DefaultHTMLCleanerTest
     @CsvSource({
         "<!--My favorite operators are > and <!-->, <!--My favorite operators are > and <!-->",
         "<!-- a comment ==!> not a comment-->, <!-- a comment --!> not a comment",
-        // FIXME: this is wrongly parsed as a full comment.
-        "<!-- <a foo=`bar`>not a comment</a>-->, <!--> <a foo=`bar`>not a comment</a>",
-        "<!--=>-->, <!--->",
+        "<p><a foo=\"`bar`\">not a comment</a></p>, <a foo=`bar`>not a comment</a>",
+        "'', <!--->",
         // FIXME: according to the HTML specification, this should be a comment.
         "'', <! fake comment >",
         "<!-- <!== comment -->, <!-- <!-- comment -->",
@@ -459,6 +456,7 @@ public class DefaultHTMLCleanerTest
      * check, see <a href="https://github.com/cure53/DOMPurify/commit/e32ca248c0e9450fb182e52e978631cbd78f1123">commit
      * e32ca248c0 in DOMPurify</a>.
      */
+    // FIXME: Test not passing anymore, apparently the template is surviving now.
     @Test
     void cleanTemplateInsideSelect()
     {
