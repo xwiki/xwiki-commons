@@ -29,7 +29,6 @@ import org.xwiki.xml.internal.html.DefaultHTMLCleaner;
 import org.xwiki.xml.internal.html.XWikiHTML5TagProvider;
 import org.xwiki.xml.internal.html.filter.AttributeFilter;
 import org.xwiki.xml.internal.html.filter.BodyFilter;
-import org.xwiki.xml.internal.html.filter.ControlCharactersFilter;
 import org.xwiki.xml.internal.html.filter.FontFilter;
 import org.xwiki.xml.internal.html.filter.LinkFilter;
 import org.xwiki.xml.internal.html.filter.ListFilter;
@@ -61,7 +60,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
     AttributeFilter.class,
     UniqueIdFilter.class,
     LinkFilter.class,
-    ControlCharactersFilter.class,
     SanitizerFilter.class,
     // HTML5 tag provider.
     XWikiHTML5TagProvider.class

@@ -40,7 +40,6 @@ import org.xwiki.xml.internal.html.SecureHTMLElementSanitizer;
 import org.xwiki.xml.internal.html.XWikiHTML5TagProvider;
 import org.xwiki.xml.internal.html.filter.AttributeFilter;
 import org.xwiki.xml.internal.html.filter.BodyFilter;
-import org.xwiki.xml.internal.html.filter.ControlCharactersFilter;
 import org.xwiki.xml.internal.html.filter.FontFilter;
 import org.xwiki.xml.internal.html.filter.LinkFilter;
 import org.xwiki.xml.internal.html.filter.ListFilter;
@@ -65,7 +64,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     FontFilter.class,
     BodyFilter.class,
     AttributeFilter.class,
-    ControlCharactersFilter.class,
     SanitizerFilter.class,
     DefaultHTMLElementSanitizer.class,
     SecureHTMLElementSanitizer.class,

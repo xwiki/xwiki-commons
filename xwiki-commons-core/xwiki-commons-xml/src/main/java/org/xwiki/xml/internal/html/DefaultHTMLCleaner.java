@@ -99,14 +99,6 @@ public class DefaultHTMLCleaner implements HTMLCleaner
     @Named("link")
     private HTMLFilter linkFilter;
 
-    /**
-     * Remove control characters.
-     */
-    @Inject
-    @Named("controlcharacters")
-    // TODO: remove when upgrading to HTMLClener 2.23
-    private HTMLFilter controlFilter;
-
     @Inject
     @Named("sanitizer")
     private HTMLFilter sanitizerFilter;
@@ -203,7 +195,6 @@ public class DefaultHTMLCleaner implements HTMLCleaner
     {
         HTMLCleanerConfiguration configuration = new DefaultHTMLCleanerConfiguration();
         configuration.setFilters(Arrays.asList(
-            this.controlFilter,
             this.bodyFilter,
             this.listItemFilter,
             this.listFilter,

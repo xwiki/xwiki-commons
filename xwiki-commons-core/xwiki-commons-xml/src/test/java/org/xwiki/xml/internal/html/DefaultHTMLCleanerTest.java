@@ -613,7 +613,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    void controlCharactersAreReplacedBySpaces() throws Exception
+    void controlCharactersAreCleanUp() throws Exception
     {
         String htmlInput = "<p>\u0008</p>";
         Document document = clean(htmlInput);
@@ -623,22 +623,9 @@ public class DefaultHTMLCleanerTest
         assertEquals(" ", textContent);
         assertHTML(" ", "\u0008");
 
-        htmlInput = "<p>&#8;</p>";
-        document = clean(htmlInput);
-
-        // HtmlCleaner now handles unicode character entities. These are decoded
-        // if possible, and if they are control characters, replaced by whitespace
-        // See https://sourceforge.net/p/htmlcleaner/bugs/221/
-        textContent =
-            document.getElementsByTagName("p").item(0).getTextContent();
-        assertEquals(" ", textContent);
-        assertHTML(" ", "&#8;");
-
         htmlInput = "<p foo=\"&#8;\">content</p>";
         document = clean(htmlInput);
 
-        // in attributes we actually want to keep (encoded) control characters
-        // but HTMLCleaner scraps these characters if it finds them in attributes
         textContent =
             document.getElementsByTagName("p").item(0).getAttributes().getNamedItem("foo").getTextContent();
         // Control characters (except for horizontal tab, new line and carriage return) are forbidden in XML 1.0,
