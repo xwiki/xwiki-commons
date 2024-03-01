@@ -164,8 +164,8 @@ class HTML5HTMLCleanerTest extends DefaultHTMLCleanerTest
     {
         // Test that HTMLCleaner allows phrasing content in other phrasing content.
         String htmlInput;
-        String prefix = "<p><strong><em><";
-        String suffix = "></em></strong></p>";
+        String prefix = "<p><strong><em><q><";
+        String suffix = "></q></em></strong></p>";
         if (List.of("input", "br", "link", "img", "embed", "wbr", "meta").contains(tag)) {
             // These tags are self-closing.
             htmlInput = prefix + tag + " /" + suffix;
