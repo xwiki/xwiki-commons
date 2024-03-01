@@ -19,9 +19,8 @@
  */
 package org.xwiki.xml.internal.html;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Singleton;
 
@@ -35,10 +34,9 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.xml.html.HTMLConstants;
 
 /**
- * List the tags allowed in HTML5 with custom bug fixes for &lt;style&gt; and &lt;svg&gt;-tags.
+ * List the tags allowed in HTML5 with custom bug fixes for phrasing tags.
  * <p>
- * See <a href="https://sourceforge.net/p/htmlcleaner/bugs/228/">bug 228</a>
- * and <a href="https://sourceforge.net/p/htmlcleaner/bugs/229/">bug 229</a>
+ * See <a href="https://sourceforge.net/p/htmlcleaner/bugs/238/">bug 238</a>
  * <p>
  * This class should be removed once these bugs have been fixed.
  *
@@ -50,7 +48,7 @@ import org.xwiki.xml.html.HTMLConstants;
 public class XWikiHTML5TagProvider extends Html5TagProvider
 {
     private static final List<String> TAGS_WITH_EXPLICIT_PHRASING_CHILDREN =
-        Arrays.asList(HTMLConstants.TAG_EM, HTMLConstants.TAG_STRONG, "small", HTMLConstants.TAG_S, "wbr", "mark",
+        List.of(HTMLConstants.TAG_EM, HTMLConstants.TAG_STRONG, "small", HTMLConstants.TAG_S, "wbr", "mark",
             "bdi", "time", HTMLConstants.TAG_DATA, HTMLConstants.TAG_CITE, HTMLConstants.TAG_Q, HTMLConstants.TAG_CODE,
             "bdo", "dfn", HTMLConstants.TAG_KBD, HTMLConstants.TAG_ABBR, HTMLConstants.TAG_VAR, "samp", "sub", "sup",
             HTMLConstants.TAG_B, HTMLConstants.TAG_I, HTMLConstants.TAG_U, "rtc", "rt", "rp", "meter", "legend",
@@ -63,22 +61,6 @@ public class XWikiHTML5TagProvider extends Html5TagProvider
     {
         super();
 
-        // Fix https://sourceforge.net/p/htmlcleaner/bugs/228/, SVG is not marked as phrasing content and not allowed
-        // where phrasing content is allowed. Also fix the same for the math tag.
-        for (String tag : List.of(HTMLConstants.TAG_MATH)) {
-            TagInfo tagInfo = this.getTagInfo(tag);
-            // Do not close other tags before except for the same tag.
-            tagInfo.setMustCloseTags(Collections.singleton(tag));
-            // Do not copy other tags.
-            tagInfo.setCopyTags(Collections.emptySet());
-        }
-
-        // Fix the embed tag which is set to close all kinds of tags before it.
-        TagInfo embedTag = this.getTagInfo(HTMLConstants.TAG_EMBED);
-        embedTag.setDisplay(Display.any);
-        embedTag.setMustCloseTags(Collections.emptySet());
-        embedTag.setCopyTags(Collections.emptySet());
-
         // Allow missing phrasing content tags where HTML5TagProvider explicitly allows phrasing content.
         // Note: unfortunately, we cannot iterate over the tags, otherwise we could have avoided copying this list of
         // tags that have phrasing children set.
@@ -86,6 +68,20 @@ public class XWikiHTML5TagProvider extends Html5TagProvider
             "picture", "video", "iframe", HTMLConstants.TAG_EMBED, HTMLConstants.TAG_MATH, HTMLConstants.TAG_Q)) {
             TAGS_WITH_EXPLICIT_PHRASING_CHILDREN.forEach(tag -> allowChild(tag, child));
         }
+
+        // Math is not marked as phrasing content and not allowed
+        // where phrasing content is allowed.
+        TagInfo tagInfo = this.getTagInfo(HTMLConstants.TAG_MATH);
+        // Do not close other tags before except for the same tag.
+        tagInfo.setMustCloseTags(Set.of(HTMLConstants.TAG_MATH));
+        // Do not copy other tags.
+        tagInfo.setCopyTags(Set.of());
+
+        // Fix the embed tag which is set to close all kinds of tags before it.
+        TagInfo embedTag = this.getTagInfo(HTMLConstants.TAG_EMBED);
+        embedTag.setDisplay(Display.any);
+        embedTag.setMustCloseTags(Set.of());
+        embedTag.setCopyTags(Set.of());
 
         // While HTMLCleaner declares the template tag as phrasing and flow content, it doesn't contain a tag info
         // for it, so add one.
