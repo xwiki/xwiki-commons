@@ -63,12 +63,9 @@ public class XWikiHTML5TagProvider extends Html5TagProvider
     {
         super();
 
-        // Fix https://sourceforge.net/p/htmlcleaner/bugs/229/, style tags are (wrongly) allowed in the HTML body.
-        this.getTagInfo(HTMLConstants.TAG_STYLE).setBelongsTo(BelongsTo.HEAD);
-
         // Fix https://sourceforge.net/p/htmlcleaner/bugs/228/, SVG is not marked as phrasing content and not allowed
         // where phrasing content is allowed. Also fix the same for the math tag.
-        for (String tag : List.of(HTMLConstants.TAG_SVG, HTMLConstants.TAG_MATH)) {
+        for (String tag : List.of(HTMLConstants.TAG_MATH)) {
             TagInfo tagInfo = this.getTagInfo(tag);
             // Do not close other tags before except for the same tag.
             tagInfo.setMustCloseTags(Collections.singleton(tag));
@@ -85,14 +82,10 @@ public class XWikiHTML5TagProvider extends Html5TagProvider
         // Allow missing phrasing content tags where HTML5TagProvider explicitly allows phrasing content.
         // Note: unfortunately, we cannot iterate over the tags, otherwise we could have avoided copying this list of
         // tags that have phrasing children set.
-        for (String child : List.of(HTMLConstants.TAG_SVG, HTMLConstants.TAG_IMG, HTMLConstants.TAG_DATA, "object",
+        for (String child : List.of(HTMLConstants.TAG_IMG, HTMLConstants.TAG_DATA, "object",
             "picture", "video", "iframe", HTMLConstants.TAG_EMBED, HTMLConstants.TAG_MATH, HTMLConstants.TAG_Q)) {
             TAGS_WITH_EXPLICIT_PHRASING_CHILDREN.forEach(tag -> allowChild(tag, child));
         }
-
-        // Fix https://jira.xwiki.org/browse/XCOMMONS-2375 / https://sourceforge.net/p/htmlcleaner/bugs/230/, the dl
-        // tag doesn't permit div as child even though it is valid HTML.
-        allowChild(HTMLConstants.TAG_DL, HTMLConstants.TAG_DIV);
 
         // While HTMLCleaner declares the template tag as phrasing and flow content, it doesn't contain a tag info
         // for it, so add one.

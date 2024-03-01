@@ -164,8 +164,8 @@ class HTML5HTMLCleanerTest extends DefaultHTMLCleanerTest
     {
         // Test that HTMLCleaner allows phrasing content in other phrasing content.
         String htmlInput;
-        String prefix = "<p><strong><em><q><";
-        String suffix = "></q></em></strong></p>";
+        String prefix = "<p><strong><em><";
+        String suffix = "></em></strong></p>";
         if (List.of("input", "br", "link", "img", "embed", "wbr", "meta").contains(tag)) {
             // These tags are self-closing.
             htmlInput = prefix + tag + " /" + suffix;
@@ -181,5 +181,17 @@ class HTML5HTMLCleanerTest extends DefaultHTMLCleanerTest
             expected = expected.replace("content", "/*<![CDATA[*/\ncontent\n/*]]>*/");
         }
         assertHTML(expected, htmlInput);
+    }
+
+    /**
+     * Check that template tags inside select don't survive, might be security-relevant, DOMPurify contains a similar
+     * check, see <a href="https://github.com/cure53/DOMPurify/commit/e32ca248c0e9450fb182e52e978631cbd78f1123">commit
+     * e32ca248c0 in DOMPurify</a>.
+     */
+    @Override
+    @Test
+    void cleanTemplateInsideSelect()
+    {
+        assertHTML("<template></template><p><select></select></p>", "<select><template></template></select>");
     }
 }

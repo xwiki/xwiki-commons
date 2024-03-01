@@ -456,9 +456,7 @@ public class DefaultHTMLCleanerTest
      * check, see <a href="https://github.com/cure53/DOMPurify/commit/e32ca248c0e9450fb182e52e978631cbd78f1123">commit
      * e32ca248c0 in DOMPurify</a>.
      */
-    // FIXME: Test not passing anymore, apparently the template is surviving now.
     @Test
-    @Disabled
     void cleanTemplateInsideSelect()
     {
         assertHTML("<p><select></select></p>", "<select><template></template></select>");
