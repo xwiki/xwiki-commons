@@ -409,12 +409,15 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
         channel.getUsers().values().stream().filter(Objects::nonNull)
             .filter(user -> !(COMMAND_MSG.equals(cmd) && user.equals(me))).forEach(user -> addMessage(user, message));
 
-        if (this.historyKeeper.getKey() != null && (COMMAND_MSG.equals(cmd) || COMMAND_LEAVE.equals(cmd))) {
+        // We keep only command messages in the channel history. Note that the channel history is replayed when a user
+        // joins a channel, so we don't want to replay messages like JOIN or LEAVE (an user can join and leave a channel
+        // multiple times).
+        if (this.historyKeeper.getKey() != null && COMMAND_MSG.equals(cmd)) {
             this.logger.debug("Added in history: [{}]", message);
-            if (COMMAND_MSG.equals(cmd) && isCheckpoint(message)) {
+            if (isCheckpoint(message)) {
                 // Prune old messages from memory.
                 this.logger.debug("Pruning old messages.");
-                LinkedList<String> msgsNext = new LinkedList<String>();
+                LinkedList<String> msgsNext = new LinkedList<>();
                 for (Iterator<String> it = channel.getMessages().descendingIterator(); it.hasNext();) {
                     String msg = it.next();
                     msgsNext.addFirst(msg);
