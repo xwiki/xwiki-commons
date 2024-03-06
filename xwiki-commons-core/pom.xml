@@ -223,18 +223,7 @@
               </differences>
             </revapi.differences>
             -->
-            <revapi.differences>
-              <differences>
-                <item>
-                  <ignore>true</ignore>
-                  <code>java.generics.elementNowParameterized</code>
-                  <old>method java.lang.String org.apache.commons.lang3.ObjectUtils::toString(java.lang.Object, java.util.function.Supplier&lt;java.lang.String&gt;) @ org.xwiki.velocity.tools.ObjectTool</old>
-                  <new>method &lt;T&gt; java.lang.String org.apache.commons.lang3.ObjectUtils::toString(T, java.util.function.Supplier&lt;java.lang.String&gt;) @ org.xwiki.velocity.tools.ObjectTool</new>
-                  <justification>Not a breakage</justification>
-                  <criticality>allowed</criticality>
-                </item>
-              </differences>
-            </revapi.differences>
+            
           </analysisConfiguration>
         </configuration>
       </plugin>
