@@ -24,7 +24,7 @@ import org.xwiki.component.annotation.Role;
 /**
  * Provide a wrapped (or not) version of the passed object so that it's safe to use in a public script.
  *
- * @param <T>
+ * @param <T> the type to make safe for public usage
  * @version $Id$
  * @since 16.2.0RC1
  */
