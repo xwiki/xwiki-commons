@@ -23,8 +23,7 @@ import java.util.Iterator;
 
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.repository.result.IterableResult;
-import org.xwiki.script.safe.AbstractSafeObject;
-import org.xwiki.script.safe.ScriptSafeProvider;
+import org.xwiki.script.wrap.AbstractWrappingObject;
 
 /**
  * Provide a public script access to a iterable result.
@@ -33,16 +32,15 @@ import org.xwiki.script.safe.ScriptSafeProvider;
  * @version $Id$
  * @since 4.0M2
  */
-public class WrappingIterableResult<E extends Extension> extends AbstractSafeObject<IterableResult<E>> implements
-    IterableResult<E>
+public class WrappingIterableResult<E extends Extension> extends AbstractWrappingObject<IterableResult<E>>
+    implements IterableResult<E>
 {
     /**
      * @param result the wrapped result
-     * @param safeProvider the provider of instances safe for public scripts
      */
-    public WrappingIterableResult(IterableResult<E> result, ScriptSafeProvider<?> safeProvider)
+    public WrappingIterableResult(IterableResult<E> result)
     {
-        super(result, safeProvider);
+        super(result);
     }
 
     @Override

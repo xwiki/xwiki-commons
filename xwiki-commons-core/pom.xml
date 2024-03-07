@@ -223,7 +223,39 @@
               </differences>
             </revapi.differences>
             -->
-            
+            <revapi.differences>
+              <justification>WrappingIterableResult was not really usable because it forced to also use internal APIs by mistake.</justification>
+              <criticality>highlight</criticality>
+              <differences>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.field.removedWithConstant</code>
+                  <old>field org.xwiki.script.internal.safe.AbstractSafeObject&lt;T&gt;.FORBIDDEN @ org.xwiki.extension.wrap.WrappingIterableResult&lt;E extends org.xwiki.extension.Extension&gt;</old>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.field.removed</code>
+                  <old>field org.xwiki.script.internal.safe.AbstractSafeObject&lt;T&gt;.safeProvider @ org.xwiki.extension.wrap.WrappingIterableResult&lt;E extends org.xwiki.extension.Extension&gt;</old>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.numberOfParametersChanged</code>
+                  <old>method void org.xwiki.extension.wrap.WrappingIterableResult&lt;E extends org.xwiki.extension.Extension&gt;::&lt;init&gt;(org.xwiki.extension.repository.result.IterableResult&lt;E&gt;, org.xwiki.script.internal.safe.ScriptSafeProvider&lt;?&gt;)</old>
+                  <new>method void org.xwiki.extension.wrap.WrappingIterableResult&lt;E extends org.xwiki.extension.Extension&gt;::&lt;init&gt;(org.xwiki.extension.repository.result.IterableResult&lt;E&gt;)</new>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.removed</code>
+                  <old>method &lt;S&gt; S org.xwiki.script.internal.safe.AbstractSafeObject&lt;T&gt;::safe(java.lang.Object) @ org.xwiki.extension.wrap.WrappingIterableResult&lt;E extends org.xwiki.extension.Extension&gt;</old>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.class.noLongerInheritsFromClass</code>
+                  <old>class org.xwiki.extension.wrap.WrappingIterableResult&lt;E extends org.xwiki.extension.Extension&gt;</old>
+                  <new>class org.xwiki.extension.wrap.WrappingIterableResult&lt;E extends org.xwiki.extension.Extension&gt;</new>
+                </item>
+              </differences>
+            </revapi.differences>
           </analysisConfiguration>
         </configuration>
       </plugin>
