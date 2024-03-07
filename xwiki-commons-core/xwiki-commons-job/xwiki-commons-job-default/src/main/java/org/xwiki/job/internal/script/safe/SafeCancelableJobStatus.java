@@ -20,7 +20,7 @@
 package org.xwiki.job.internal.script.safe;
 
 import org.xwiki.job.event.status.CancelableJobStatus;
-import org.xwiki.script.internal.safe.ScriptSafeProvider;
+import org.xwiki.script.safe.ScriptSafeProvider;
 
 /**
  * Provide a public script access to a cancelable job status.

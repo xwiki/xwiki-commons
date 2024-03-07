@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.script.internal.safe;
+package org.xwiki.script.safe;
 
 import org.xwiki.component.annotation.Role;
 
@@ -26,7 +26,7 @@ import org.xwiki.component.annotation.Role;
  *
  * @param <T>
  * @version $Id$
- * @since 4.0M2
+ * @since 16.2.0RC1
  */
 @Role
 public interface ScriptSafeProvider<T>

@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.script.safe.ScriptSafeProvider;
 
 /**
  * Provide safe Collection.

@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.script.internal.safe;
+package org.xwiki.script.safe;
 
 import org.xwiki.script.wrap.AbstractWrappingObject;
 
@@ -26,7 +26,7 @@ import org.xwiki.script.wrap.AbstractWrappingObject;
  *
  * @param <T> the type of the wrapped object
  * @version $Id$
- * @since 4.0M2
+ * @since 16.2.0RC1
  */
 public abstract class AbstractSafeObject<T> extends AbstractWrappingObject<T>
 {
@@ -44,7 +44,7 @@ public abstract class AbstractSafeObject<T> extends AbstractWrappingObject<T>
      * @param wrapped the wrapped object
      * @param safeProvider the provider of instances safe for public scripts
      */
-    public AbstractSafeObject(T wrapped, ScriptSafeProvider<?> safeProvider)
+    protected AbstractSafeObject(T wrapped, ScriptSafeProvider<?> safeProvider)
     {
         super(wrapped);
 

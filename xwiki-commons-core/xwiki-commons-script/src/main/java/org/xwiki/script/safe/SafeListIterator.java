@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.script.internal.safe;
+package org.xwiki.script.safe;
 
 import java.lang.reflect.Constructor;
 import java.util.ListIterator;
@@ -27,7 +27,7 @@ import java.util.ListIterator;
  * 
  * @param <E> the type of the iterated value
  * @version $Id$
- * @since 4.1M1
+ * @since 16.2.0RC1
  */
 public class SafeListIterator<E> extends SafeIterator<E, ListIterator<E>> implements ListIterator<E>
 {

@@ -33,6 +33,7 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.script.safe.ScriptSafeProvider;
 
 /**
  * Find the right safe provider for the passed object.

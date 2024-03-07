@@ -29,8 +29,8 @@ import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.event.LogEvent;
 import org.xwiki.logging.tail.LogTail;
-import org.xwiki.script.internal.safe.AbstractSafeObject;
-import org.xwiki.script.internal.safe.ScriptSafeProvider;
+import org.xwiki.script.safe.AbstractSafeObject;
+import org.xwiki.script.safe.ScriptSafeProvider;
 
 /**
  * Provide a public script access to a job status.

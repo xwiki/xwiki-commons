@@ -25,7 +25,7 @@ import javax.inject.Singleton;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.job.event.status.CancelableJobStatus;
 import org.xwiki.job.event.status.JobStatus;
-import org.xwiki.script.internal.safe.ScriptSafeProvider;
+import org.xwiki.script.safe.ScriptSafeProvider;
 
 /**
  * Provide safe Extension.

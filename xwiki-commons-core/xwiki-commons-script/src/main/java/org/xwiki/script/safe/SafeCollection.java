@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.script.internal.safe;
+package org.xwiki.script.safe;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
@@ -29,7 +29,7 @@ import java.util.Iterator;
  * @param <E> the type of the elements in the list
  * @param <C> the type of the Collection
  * @version $Id$
- * @since 4.1M1
+ * @since 16.2.0RC1
  */
 public class SafeCollection<E, C extends Collection<E>> extends AbstractSafeObject<C> implements Collection<E>
 {

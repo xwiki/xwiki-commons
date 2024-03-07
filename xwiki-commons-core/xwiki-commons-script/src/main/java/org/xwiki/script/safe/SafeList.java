@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.script.internal.safe;
+package org.xwiki.script.safe;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ import java.util.ListIterator;
  * @param <E> the type of the elements in the list
  * @param <L> the type of the List
  * @version $Id$
- * @since 4.1M1
+ * @since 16.2.0RC1
  */
 public class SafeList<E, L extends List<E>> extends SafeCollection<E, L> implements List<E>
 {
