@@ -79,7 +79,7 @@
 
     <!-- SLF4J API and implementation -->
     <slf4j.version>2.0.12</slf4j.version>
-    <logback.version>1.3.14</logback.version>
+    <logback.version>1.5.3</logback.version>
     <!-- Log4J API -->
     <log4j.version>2.23.0</log4j.version>
 
