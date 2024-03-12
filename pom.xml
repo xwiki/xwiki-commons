@@ -97,7 +97,7 @@
     <surefire.version>3.2.5</surefire.version>
 
     <!-- Mock libraries -->
-    <jmock.version>2.12.0</jmock.version>
+    <jmock.version>2.13.0</jmock.version>
     <mockito.version>5.11.0</mockito.version>
 
     <!-- Byte Buddy -->
