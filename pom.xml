@@ -1491,7 +1491,22 @@
           <skip>${xwiki.enforcer.skip}</skip>
         </configuration>
         <executions>
-		  <!-- Make sure the right version of Maven is used -->
+          <!-- Make sure we don't try to run Maven with a version of Maven with which is cannot work -->
+          <execution>
+            <id>enforce-java-run</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <message>You must release with Java ${xwiki.java.version} minimum!</message>
+                  <version>[${xwiki.java.version},)</version>
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Make sure the right version of Maven is used -->
           <execution>
             <id>enforce-maven</id>
             <goals>
