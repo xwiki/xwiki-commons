@@ -148,21 +148,13 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
         synchronized (this.bigLock) {
             User user = getOrRegisterUser(session);
 
-            this.logger.debug("Disconnect " + user.getName());
+            this.logger.debug("Disconnect [{}]", user.getName());
             this.users.remove(user.getName());
             user.setConnected(false);
 
-            for (Channel channel : user.getChannels()) {
-                channel.getUsers().remove(user.getName());
-                List<Object> leaveMessage =
-                    buildDefault(user.getName(), COMMAND_LEAVE, channel.getKey(), "Quit: [ wsDisconnect() ]");
-                String msgStr = display(leaveMessage);
-                sendChannelMessage(COMMAND_LEAVE, user, channel, msgStr);
-                // Remove the channel when there is no user anymore (the history keeper doesn't count).
-                if (channel.getConnectedUsers().isEmpty()) {
-                    this.channels.remove(channel);
-                }
-            }
+            // We copy the set of channels because we're modifying it while iterating over it.
+            new LinkedList<Channel>(user.getChannels())
+                .forEach(channel -> leaveChannel(user, channel, "Quit: [ wsDisconnect() ]"));
         }
     }
 
@@ -175,7 +167,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
             user = new User(session, userName);
             this.users.put(userName, user);
             session.getUserProperties().put(NETFLUX_USER, user);
-            this.logger.debug("Registered " + userName);
+            this.logger.debug("Registered [{}]", userName);
         }
         return user;
     }
@@ -264,7 +256,6 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
         this.channels.prune();
         ArrayList<Object> joinMsg = buildDefault(user.getName(), COMMAND_JOIN, channel.getKey(), null);
         sendChannelMessage(COMMAND_JOIN, user, channel, display(joinMsg));
-        return;
     }
 
     private void onCommandLeave(User user, Integer seq, String channelKey)
@@ -286,10 +277,21 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
         ArrayList<Object> ackMsg = buildAck(seq);
         addMessage(user, display(ackMsg));
         Channel channel = this.channels.get(channelKey);
+        leaveChannel(user, channel, "");
+    }
+
+    private void leaveChannel(User user, Channel channel, String reason)
+    {
         channel.getUsers().remove(user.getName());
         user.getChannels().remove(channel);
-        ArrayList<Object> leaveMsg = buildDefault(user.getName(), COMMAND_LEAVE, channelKey, "");
-        sendChannelMessage(COMMAND_LEAVE, user, channel, display(leaveMsg));
+
+        List<Object> leaveMessage = buildDefault(user.getName(), COMMAND_LEAVE, channel.getKey(), reason);
+        sendChannelMessage(COMMAND_LEAVE, user, channel, display(leaveMessage));
+
+        // Remove the channel when there is no user anymore (the history keeper doesn't count).
+        if (channel.getConnectedUsers().isEmpty()) {
+            this.channels.remove(channel);
+        }
     }
 
     private void onCommandPing(User user, Integer seq)
@@ -469,7 +471,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
     private ArrayList<Object> buildMessage(Integer seq, String userId, String obj, Object msgStr)
     {
         ArrayList<Object> msg = new ArrayList<>();
-        msg.add(0);
+        msg.add(seq);
         msg.add(userId);
         msg.add(COMMAND_MSG);
         msg.add(obj);

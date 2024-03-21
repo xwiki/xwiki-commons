@@ -19,15 +19,18 @@
  */
 package org.xwiki.netflux.internal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.websocket.Session;
 
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link Channel}.
@@ -66,5 +69,22 @@ class ChannelTest
         assertEquals(4, channel.getUsers().size());
         assertEquals(1, channel.getConnectedUsers().size());
         assertEquals("bob", channel.getConnectedUsers().iterator().next().getName());
+    }
+
+    @Test
+    void hashCodeEquals()
+    {
+        Channel alice = new Channel();
+        Channel bob = new Channel();
+
+        assertEquals(alice, alice);
+        assertNotEquals(alice, bob);
+
+        Set<Channel> channels = new HashSet<>();
+        channels.add(alice);
+        channels.add(bob);
+        channels.add(alice);
+        channels.add(bob);
+        assertEquals(2, channels.size());
     }
 }

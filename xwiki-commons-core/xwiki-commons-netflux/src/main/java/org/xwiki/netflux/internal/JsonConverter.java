@@ -43,11 +43,13 @@ public class JsonConverter implements Decoder.Text<List<Object>>, Encoder.Text<L
     @Override
     public void init(EndpointConfig config)
     {
+        // Nothing to do.
     }
 
     @Override
     public void destroy()
     {
+        // Nothing to do.
     }
 
     @Override

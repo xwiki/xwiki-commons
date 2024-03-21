@@ -19,11 +19,15 @@
  */
 package org.xwiki.netflux.internal;
 
+import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Represents a Netflux channel.
@@ -37,9 +41,9 @@ public class Channel
 
     private final long creationDate = System.currentTimeMillis();
 
-    private final Map<String, User> users = new LinkedHashMap<String, User>();
+    private final Map<String, User> users = new LinkedHashMap<>();
 
-    private final LinkedList<String> messages = new LinkedList<String>();
+    private final Deque<String> messages = new LinkedList<>();
 
     /**
      * @return the channel key
@@ -78,8 +82,31 @@ public class Channel
     /**
      * @return the channel messages
      */
-    public LinkedList<String> getMessages()
+    public Deque<String> getMessages()
     {
         return messages;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder().append(this.key).append(this.creationDate).toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object object)
+    {
+        if (object == null) {
+            return false;
+        }
+        if (object == this) {
+            return true;
+        }
+        if (object.getClass() != getClass()) {
+            return false;
+        }
+        Channel otherChannel = (Channel) object;
+        return new EqualsBuilder().append(this.key, otherChannel.key)
+            .append(this.creationDate, otherChannel.creationDate).isEquals();
     }
 }
