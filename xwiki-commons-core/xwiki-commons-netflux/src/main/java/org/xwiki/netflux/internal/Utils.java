@@ -19,7 +19,7 @@
  */
 package org.xwiki.netflux.internal;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Utility methods.
@@ -39,10 +39,9 @@ public final class Utils
      */
     public static String getRandomHexString(int length)
     {
-        Random random = new Random();
-        StringBuffer hexString = new StringBuffer();
+        StringBuilder hexString = new StringBuilder();
         while (hexString.length() < length) {
-            hexString.append(Integer.toHexString(random.nextInt()));
+            hexString.append(Integer.toHexString(ThreadLocalRandom.current().nextInt()));
         }
         return hexString.toString().substring(0, length);
     }

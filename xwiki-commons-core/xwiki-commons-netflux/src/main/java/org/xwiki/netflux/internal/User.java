@@ -40,7 +40,7 @@ public class User
 
     private final Queue<String> messagesToBeSent = new LinkedList<>();
 
-    private final Set<Channel> channels = new LinkedHashSet<Channel>();
+    private final Set<Channel> channels = new LinkedHashSet<>();
 
     private boolean connected = true;
 
