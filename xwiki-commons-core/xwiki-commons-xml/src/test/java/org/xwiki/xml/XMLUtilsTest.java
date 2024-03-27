@@ -54,6 +54,7 @@ import org.xwiki.test.junit5.LogCaptureExtension;
 
 import ch.qos.logback.classic.Level;
 
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -61,6 +62,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Unit tests for {@link XMLUtils}.
@@ -498,10 +501,12 @@ class XMLUtilsTest
 
         assertEquals(1, logCapture.size());
         assertEquals(Level.WARN, logCapture.getLogEvent(0).getLevel());
-        assertEquals("Failed to apply XSLT transformation: [javax.xml.transform.TransformerException: "
-            + "com.sun.org.apache.xml.internal.utils.WrappedRuntimeException: The parser has encountered more than "
-            + "\"100,000\" entity expansions in this document; this is the limit imposed by the application.]",
-            logCapture.getMessage(0));
+
+        // regex match, because the thousands delimiter depends on locale and can be "." or ","
+        assertThat(logCapture.getMessage(0),
+                matchesPattern("\\QFailed to apply XSLT transformation: [javax.xml.transform.TransformerException: "
+                        + "com.sun.org.apache.xml.internal.utils.WrappedRuntimeException: The parser has encountered more than "
+                        + "\"100\\E.\\Q000\" entity expansions in this document; this is the limit imposed by the application.]\\E"));
     }
 
     @Test
