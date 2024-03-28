@@ -99,14 +99,6 @@ public class DefaultHTMLCleaner implements HTMLCleaner
     @Named("link")
     private HTMLFilter linkFilter;
 
-    /**
-     * Remove control characters.
-     */
-    @Inject
-    @Named("controlcharacters")
-    // TODO: remove when upgrading to HTMLClener 2.23
-    private HTMLFilter controlFilter;
-
     @Inject
     @Named("sanitizer")
     private HTMLFilter sanitizerFilter;
@@ -203,7 +195,6 @@ public class DefaultHTMLCleaner implements HTMLCleaner
     {
         HTMLCleanerConfiguration configuration = new DefaultHTMLCleanerConfiguration();
         configuration.setFilters(Arrays.asList(
-            this.controlFilter,
             this.bodyFilter,
             this.listItemFilter,
             this.listFilter,
@@ -262,8 +253,8 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         // See TrimAttributeCleanerTransformation for more information.
         defaultProperties.setTrimAttributeValues(false);
 
-        // This flag should be set to true once https://sourceforge.net/p/htmlcleaner/bugs/221/ is fixed.
-        defaultProperties.setRecognizeUnicodeChars(false);
+        // Replace all unicode character entities by their actual unicode character, if possible.
+        defaultProperties.setRecognizeUnicodeChars(true);
 
         param = configuration.getParameters().get(HTMLCleanerConfiguration.TRANSLATE_SPECIAL_ENTITIES);
         boolean translateSpecialEntities = (param != null) && Boolean.parseBoolean(param);

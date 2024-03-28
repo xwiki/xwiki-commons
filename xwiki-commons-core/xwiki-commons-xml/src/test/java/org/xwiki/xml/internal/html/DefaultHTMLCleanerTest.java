@@ -125,7 +125,9 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p>\"&amp;</p>", "<p>\"&</p>");
         assertHTML("<p><img src=\"http://host.com/a.gif?a=foo&amp;b=bar\" /></p>",
             "<img src=\"http://host.com/a.gif?a=foo&amp;b=bar\" />");
-        assertHTML("<p>&#xA;</p>", "<p>&#xA;</p>");
+        assertHTML("<p>\n</p>", "<p>&#xA;</p>");
+        // the following is not a "special" character, but any ole unicode character
+        assertHTML("<p>ÿ</p>", "<p>&#xFF;</p>");
 
         // Verify that double quotes are escaped in attribute values
         assertHTML("<p value=\"script:&quot;&quot;\"></p>", "<p value='script:\"\"'");
@@ -336,10 +338,8 @@ public class DefaultHTMLCleanerTest
     @CsvSource({
         "<p><strong>Hello  World</strong></p>,<strong>Hello <!-- a comment --> World</strong>",
         "'', <!--My favorite operators are > and <!-->",
-        // FIXME: Actually, just the comment should be removed but due to erroneous parsing in HTMLCleaner, the whole
-        // string is treated as a comment.
-        "'', <!--> <a href=\"#\">no comment</a>",
-        "'', <!---> <a href=\"#\">no comment</a>"
+        "<p> <a href=\"#\">no comment</a></p>, <!--> <a href=\"#\">no comment</a>",
+        "<p> <a href=\"#\">no comment</a></p>, <!---> <a href=\"#\">no comment</a>"
     })
     void restrictedComments(String expected, String actual)
     {
@@ -354,9 +354,8 @@ public class DefaultHTMLCleanerTest
     @CsvSource({
         "<!--My favorite operators are > and <!-->, <!--My favorite operators are > and <!-->",
         "<!-- a comment ==!> not a comment-->, <!-- a comment --!> not a comment",
-        // FIXME: this is wrongly parsed as a full comment.
-        "<!-- <a foo=`bar`>not a comment</a>-->, <!--> <a foo=`bar`>not a comment</a>",
-        "<!--=>-->, <!--->",
+        "<p><a foo=\"`bar`\">not a comment</a></p>, <a foo=`bar`>not a comment</a>",
+        "'', <!--->",
         // FIXME: according to the HTML specification, this should be a comment.
         "'', <! fake comment >",
         "<!-- <!== comment -->, <!-- <!-- comment -->",
@@ -612,7 +611,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    void controlCharacters() throws Exception
+    void controlCharactersAreCleanUp() throws Exception
     {
         String htmlInput = "<p>\u0008</p>";
         Document document = clean(htmlInput);
@@ -622,28 +621,18 @@ public class DefaultHTMLCleanerTest
         assertEquals(" ", textContent);
         assertHTML(" ", "\u0008");
 
-        htmlInput = "<p>&#8;</p>";
-        document = clean(htmlInput);
-
-        // HtmlCleaner currently doesn't handle properly unicode characters: asking it to recognize them
-        // involves that all entities will be escaped during the parsing and that's not what we want. So we
-        // keep them encoded.
-        // See https://sourceforge.net/p/htmlcleaner/bugs/221/
-        textContent =
-            document.getElementsByTagName("p").item(0).getTextContent();
-        assertEquals("&#8;", textContent);
-        assertHTML("<p>&#8;</p>", "&#8;");
-
         htmlInput = "<p foo=\"&#8;\">content</p>";
         document = clean(htmlInput);
 
-        // HtmlCleaner currently doesn't handle properly unicode characters: asking it to recognize them
-        // involves that all entities will be escaped during the parsing and that's not what we want. So we
-        // keep them encoded.
         textContent =
             document.getElementsByTagName("p").item(0).getAttributes().getNamedItem("foo").getTextContent();
-        assertEquals("&#8;", textContent);
-        assertHTML("<p foo=\"&#8;\">content</p>", "<p foo=\"&#8;\">content</p>");
+        // Control characters (except for horizontal tab, new line and carriage return) are forbidden in XML 1.0,
+        // even if you express them using a character entity such as &#x3;.
+        // Control characters (except for NULL) are allowed in XML 1.1 but only if expressed using a character entity.
+        //Both XML 1.0 and XML 1.1 discourage the use of control (non-printable, low-order) ASCII characters.
+        assertEquals("", textContent);
+        // same when serializing
+        assertHTML("<p foo=\"\">content</p>", "<p foo=\"&#8;\">content</p>");
     }
 
     @Test
@@ -730,7 +719,7 @@ public class DefaultHTMLCleanerTest
         List<? extends TagNode> divList = tagNode.getElementListByName("div", true);
         assertEquals(1, divList.size());
         assertEquals("&quot;", divList.get(0).getText().toString());
-        // This assert is failing: the attribute is deserialized to contain ".
+        // This assert was failing: the attribute was deserialized to contain ".
         assertEquals("&quot;", divList.get(0).getAttributeByName("foo"));
 
         DomSerializer domSerializer = new DomSerializer(cleanerProperties, false);
@@ -745,7 +734,8 @@ public class DefaultHTMLCleanerTest
         nodeList = document.getElementsByTagName("div");
         assertEquals(1, nodeList.getLength());
         assertEquals("&quot;", nodeList.item(0).getTextContent());
-        // We can never retrieve the expected value here since the encoded &amp; has been lost earlier.
+        // We retrieve a &quot; here since the encoded &amp; is decoded to '&' when extracting
+        // the "text content" of the attribute
         assertEquals("&quot;", nodeList.item(0).getAttributes().getNamedItem("foo").getTextContent());
 
         assertHTML("<div foo=\"&amp;quot;\">content</div>",
@@ -753,30 +743,28 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    @Disabled("See https://sourceforge.net/p/htmlcleaner/bugs/221/")
     public void parseWithUnicodeChars() throws Exception
     {
         CleanerProperties cleanerProperties = new CleanerProperties();
 
         cleanerProperties.setDeserializeEntities(true);
-        cleanerProperties.setRecognizeUnicodeChars(true);
         cleanerProperties.setTranslateSpecialEntities(false);
 
         HtmlCleaner cleaner = new HtmlCleaner(cleanerProperties);
         TagNode tagNode = cleaner.clean("<?xml version = \"1.0\"?>"
             + "<div foo=\"&#169;\">&#169;</div>"
-            + "<div foo=\"baz&gt;buz\">baz&gt;buz</div>"
-            + "<div foo=\"baz&buz\">baz&buz</div>");
+            + "<div foo=\"baz&gt;buz\">boz&gt;buz</div>"
+            + "<div foo=\"baz&buz\">boz&buz</div>");
         List<? extends TagNode> divList = tagNode.getElementListByName("div", true);
         assertEquals(3, divList.size());
 
         assertEquals("©", divList.get(0).getText().toString());
         assertEquals("©", divList.get(0).getAttributeByName("foo"));
 
-        assertEquals("baz>buz", divList.get(1).getText().toString());
+        assertEquals("boz>buz", divList.get(1).getText().toString());
         assertEquals("baz>buz", divList.get(1).getAttributeByName("foo"));
 
-        assertEquals("baz&buz", divList.get(2).getText().toString());
+        assertEquals("boz&buz", divList.get(2).getText().toString());
         assertEquals("baz&buz", divList.get(2).getAttributeByName("foo"));
 
         DomSerializer domSerializer = new DomSerializer(cleanerProperties, false);
@@ -791,20 +779,88 @@ public class DefaultHTMLCleanerTest
 
         assertEquals("baz&buz", nodeList.item(2).getAttributes().getNamedItem("foo").getTextContent());
 
-        // BUG: This is failing with baz&gt;buz
-        assertEquals("baz>buz", nodeList.item(1).getTextContent());
-        // BUG: This is failing with baz&amp;buz
-        assertEquals("baz&buz", nodeList.item(2).getTextContent());
+        assertEquals("boz>buz", nodeList.item(1).getTextContent());
+
+        assertEquals("boz&buz", nodeList.item(2).getTextContent());
+    }
+
+    /**
+     * Test that line feed and carriage return are inserted in their unencoded form.
+     */
+    @Test
+    void doNotRemoveLFandCRInTextNodes()
+    {
+        assertHTML("<p>\r</p>", "<p>&#xD;</p>");
+        assertHTML("<p>Test \r\n</p>", "<p>Test \r\n</p>");
+    }
+
+    /**
+     * Ensure that &amp; in text nodes is not decoded twice even if it looks like it is following a character entity.
+     * Even if it looks like a double encoding in the text we trust it is meant literally an ampersand
+     * followed by e.g. "#10;". This allows to display text in the browser like "&#10; is the entity for a line break"
+     * (saved as HTML: "<p>&amp;#10; is the entity for a line break</p>").
+     */
+    @Test
+    void doNotDecodeAmpersandInTextNodes()
+    {
+        assertHTML("<p>&amp;#xA;</p>", "<p>&amp;#xA;</p>");
+        assertHTML("<p>&amp;#10;</p>", "<p>&amp;#10;</p>");
+    }
+
+    /**
+     * Ensures that &lt; in text nodes is not decoded even if it is encoded as character entity.
+     * With the setRecognizeUnicodeChars(true) for the HTML cleaner the cleaner usually replaces
+     * all entity notations by their actual unicode characters, except those who need escaping.
+     * This test checks that the HTML cleaner is not fooled by using the corresponding character entity
+     * to insert a literal lower-than sign in HTML text nodes.
+     */
+    @Test
+    void replaceOpeningBraceCharacterEntityByNamedEntity()
+    {
+        assertHTML("<p>&lt;</p>", "<p>&#60;</p>");
+        // actually it is not even decoded in attributes
+        assertHTML("<p foo=\"&lt;\">text</p>", "<p foo=\"&#60;\">text</p>");
+        // same if hexadecimal
+        assertHTML("<div>&lt;</div>", "<div>&#x003C;</div>");
+    }
+
+    /**
+     * Ensure that &gt; in text nodes is not decoded even if it is encoded as character entity.
+     * @see DefaultHTMLCleanerTest#replaceOpeningBraceCharacterEntityByNamedEntity()
+     */
+    @Test
+    void replaceClosingBracesCharacterEntityByNamedEntity()
+    {
+        assertHTML("<p>&gt;</p>", "<p>&#62;</p>");
+        // it is also not decoded in attributes (where it must not be decoded)
+        assertHTML("<p foo=\"&gt;\">text</p>", "<p foo=\"&#62;\">text</p>");
+        // same if hexadecimal
+        assertHTML("<div>&gt;</div>", "<div>&#x003E;</div>");
+    }
+
+    /**
+     * Ensures that &gt; in text nodes is encoded even if it is not encoded in the original text
+     */
+    @Test
+    void replaceBrokenExplicitClosingBraceByNamedEntity()
+    {
+        assertHTML("<p>&gt;</p>", "<p>></p>");
+        // however if a closing brace is inside an attribute, that is illegal html, and the html cleaner
+        // decides to move it to the next text node, where it is encoded (which is a legitimate decision)
+        // if this changes to something different, but also acceptable, feel free to update the test
+        assertHTML("<p foo=\"abc\">def\"&gt;text</p>", "<p foo=\"abc>def\">text</p>");
     }
 
     @Test
-    public void followingEncodedEntitiesAreProperlyKept()
+    public void encodedEntitiesAreReplaced()
     {
         String content = "<p><textarea>&#123;&#123;velocity}}machin&#123;&#123;/velocity}}</textarea></p>";
         Document document = clean(content);
         String textareaContent = document.getElementsByTagName("textarea").item(0).getTextContent();
-        assertEquals("&#123;&#123;velocity}}machin&#123;&#123;/velocity}}", textareaContent);
+        // this now produces "{{velocity}}machin{{/velocity}} instead,
+        // as html entities in text are decoded unless necessary (like &gt; aka &#60;)
+        assertEquals("{{velocity}}machin{{/velocity}}", textareaContent);
 
-        assertHTML("<p><textarea>&#123;&#123;velocity}}machin&#123;&#123;/velocity}}</textarea></p>", content);
+        assertHTML("<p><textarea>{{velocity}}machin{{/velocity}}</textarea></p>", content);
     }
 }

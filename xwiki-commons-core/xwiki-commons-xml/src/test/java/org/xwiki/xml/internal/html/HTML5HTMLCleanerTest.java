@@ -182,4 +182,16 @@ class HTML5HTMLCleanerTest extends DefaultHTMLCleanerTest
         }
         assertHTML(expected, htmlInput);
     }
+
+    /**
+     * Check that template tags inside select don't survive, might be security-relevant, DOMPurify contains a similar
+     * check, see <a href="https://github.com/cure53/DOMPurify/commit/e32ca248c0e9450fb182e52e978631cbd78f1123">commit
+     * e32ca248c0 in DOMPurify</a>.
+     */
+    @Override
+    @Test
+    void cleanTemplateInsideSelect()
+    {
+        assertHTML("<template></template><p><select></select></p>", "<select><template></template></select>");
+    }
 }

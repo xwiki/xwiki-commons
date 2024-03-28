@@ -113,7 +113,7 @@ public final class HTMLUtils
             String result = super.escapeElementEntities(text);
 
             // "\r" characters are automatically transformed in &#xD; but we want to keep the original \r there.
-            return cleanAmpersandEscape(result).replaceAll("&#xD;", "\r");
+            return result.replaceAll("&#xD;", "\r");
         }
 
         @Override
