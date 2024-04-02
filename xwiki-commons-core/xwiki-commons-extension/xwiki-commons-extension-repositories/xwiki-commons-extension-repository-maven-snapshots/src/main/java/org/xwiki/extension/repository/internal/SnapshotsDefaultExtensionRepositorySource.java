@@ -68,7 +68,7 @@ public class SnapshotsDefaultExtensionRepositorySource extends AbstractExtension
 
         if (configuredRepositories == null && !"true".equals(System.getProperty("skipSnapshotModules"))) {
             newRepositories.add(new DefaultExtensionRepositoryDescriptor("maven-xwiki-snapshot", "maven",
-                URI.create("https://nexus.xwiki.org/nexus/content/groups/public-snapshots")));
+                URI.create("https://nexus-snapshots.xwiki.org/repository/snapshots")));
         }
 
         return newRepositories;
