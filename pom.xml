@@ -3037,7 +3037,7 @@
         <pluginRepository>
           <id>xwiki-snapshots</id>
           <name>XWiki Nexus Plugin Snapshot Repository Proxy</name>
-          <url>https://nexus.xwiki.org/nexus/content/groups/public-snapshots</url>
+          <url>https://nexus-snapshots.xwiki.org/repository/snapshots</url>
           <releases>
             <enabled>false</enabled>
           </releases>
@@ -3061,7 +3061,7 @@
         <repository>
           <id>xwiki-snapshots</id>
           <name>XWiki Nexus Snapshot Repository Proxy</name>
-          <url>https://nexus.xwiki.org/nexus/content/groups/public-snapshots</url>
+          <url>https://nexus-snapshots.xwiki.org/repository/snapshots</url>
           <releases>
             <enabled>false</enabled>
           </releases>
@@ -3125,9 +3125,9 @@
       <url>dav:https://nexus.xwiki.org/nexus/content/sites/site/</url>
     </site>
     <snapshotRepository>
-      <id>nexus.xwiki.org</id>
+      <id>nexus-snapshots.xwiki.org</id>
       <name>XWiki Maven Development Repository for Snapshots</name>
-      <url>https://nexus.xwiki.org/nexus/content/repositories/snapshots/</url>
+      <url>https://nexus-snapshots.xwiki.org/repository/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
   <modules>
