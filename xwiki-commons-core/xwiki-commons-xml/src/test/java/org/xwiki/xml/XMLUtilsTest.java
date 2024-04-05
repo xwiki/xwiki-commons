@@ -41,6 +41,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
@@ -93,17 +95,22 @@ class XMLUtilsTest
         System.setErr(this.originalStdErr);
     }
 
-    @Test
-    void escapeXMLComment()
+    @ParameterizedTest
+    @CsvSource({
+        "' -\\- ',' -- '",
+        "'\\\\','\\'",
+        "'\\-\\','-'",
+        "' -\\-\\-\\',' ---'",
+        "' - ',' - '",
+        "'\\>','>'",
+        "' \\{ ',' { '",
+        "' >',' >'",
+        "'<\\?','<?'",
+        "'<\\param><\\/param>','<param></param>'"
+    })
+    void escapeXMLComment(String expected, String input)
     {
-        assertEquals(" -\\- ", XMLUtils.escapeXMLComment(" -- "));
-        assertEquals("\\\\", XMLUtils.escapeXMLComment("\\"));
-        assertEquals("\\-\\", XMLUtils.escapeXMLComment("-"));
-        assertEquals(" -\\-\\-\\", XMLUtils.escapeXMLComment(" ---"));
-        assertEquals(" - ", XMLUtils.escapeXMLComment(" - "));
-        assertEquals("\\>", XMLUtils.escapeXMLComment(">"));
-        assertEquals(" \\{ ", XMLUtils.escapeXMLComment(" { "));
-        assertEquals(" >", XMLUtils.escapeXMLComment(" >"));
+        assertEquals(expected, XMLUtils.escapeXMLComment(input));
     }
 
     @Test
