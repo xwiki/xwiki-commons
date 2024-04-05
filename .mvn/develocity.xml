@@ -27,15 +27,16 @@
     <url>https://ge.xwiki.org</url>
   </server>
   <buildScan>
-    <publishIfAuthenticated>true</publishIfAuthenticated>
     <!-- Always publish build scans on CI but on demand for devs so that we don't get false positives on ge.xwiki.org
      due to local changes from users and so that it doesn't pollute the ge.xwiki.org data.
      To force publishing a build scan: -Dscan -->
-    <publish><![CDATA[env['CI'] == null ? 'ON_DEMAND' : 'ALWAYS']]</publish>
+     <publishing>
+      <onlyIf><![CDATA[env['CI'] != null]]></onlyIf>
+    </publishing>
     <captureGoalInputFiles>true</captureGoalInputFiles>
     <!-- Use background scans only locally to avoid potential issues on CI (the ephemeral docker agent could terminate
          as soon as the build is finished and thus the upload may be terminated before it completes) -->
-    <backgroundBuildScanUpload><![CDATA[env['CI'] == null]]</backgroundBuildScanUpload>
+    <backgroundBuildScanUpload><![CDATA[env['CI'] == null]]></backgroundBuildScanUpload>
   </buildScan>
   <buildCache>
     <!-- Notes:
@@ -44,7 +45,7 @@
        more to save the goal outputs since they're not going to be re-used.
     -->
     <local>
-      <enabled><![CDATA[env['CI'] == null]]</enabled>
+      <enabled><![CDATA[env['CI'] == null]]></enabled>
     </local>
     <remote>
       <!-- Notes:
@@ -52,7 +53,7 @@
       -->
       <enabled>true</enabled>
       <!-- Only CI jobs are allowed to store build outputs in the remote cache -->
-      <storeEnabled><![CDATA[isTrue(env['CI']) and isTrue(env['GRADLE_ENTERPRISE_ACCESS_KEY'])]]</storeEnabled>
+      <storeEnabled><![CDATA[isTrue(env['CI']) and isTrue(env['GRADLE_ENTERPRISE_ACCESS_KEY'])]]></storeEnabled>
       <server>
         <!-- Note: Remote cache authentication is handled in the Maven settings.xml file. The id below is the one
        found in settings.xml -->

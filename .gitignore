@@ -53,8 +53,9 @@ nbproject
 # Visual Studio Code
 .vscode
 
-# Gradle Enterprise
+# Gradle Enterprise/Develocity
 .mvn/.gradle-enterprise
+.mvn/.develocity
 
 # Misc
 *.log.*
