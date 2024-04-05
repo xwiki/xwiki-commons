@@ -41,6 +41,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
@@ -54,6 +56,7 @@ import org.xwiki.test.junit5.LogCaptureExtension;
 
 import ch.qos.logback.classic.Level;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -62,8 +65,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Unit tests for {@link XMLUtils}.
@@ -96,17 +97,22 @@ class XMLUtilsTest
         System.setErr(this.originalStdErr);
     }
 
-    @Test
-    void escapeXMLComment()
+    @ParameterizedTest
+    @CsvSource({
+        "' -\\- ',' -- '",
+        "'\\\\','\\'",
+        "'\\-\\','-'",
+        "' -\\-\\-\\',' ---'",
+        "' - ',' - '",
+        "'\\>','>'",
+        "' \\{ ',' { '",
+        "' >',' >'",
+        "'<\\?','<?'",
+        "'<\\param><\\/param>','<param></param>'"
+    })
+    void escapeXMLComment(String expected, String input)
     {
-        assertEquals(" -\\- ", XMLUtils.escapeXMLComment(" -- "));
-        assertEquals("\\\\", XMLUtils.escapeXMLComment("\\"));
-        assertEquals("\\-\\", XMLUtils.escapeXMLComment("-"));
-        assertEquals(" -\\-\\-\\", XMLUtils.escapeXMLComment(" ---"));
-        assertEquals(" - ", XMLUtils.escapeXMLComment(" - "));
-        assertEquals("\\>", XMLUtils.escapeXMLComment(">"));
-        assertEquals(" \\{ ", XMLUtils.escapeXMLComment(" { "));
-        assertEquals(" >", XMLUtils.escapeXMLComment(" >"));
+        assertEquals(expected, XMLUtils.escapeXMLComment(input));
     }
 
     @Test
