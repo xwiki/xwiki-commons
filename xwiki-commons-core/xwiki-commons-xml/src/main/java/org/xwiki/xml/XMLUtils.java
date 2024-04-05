@@ -248,6 +248,8 @@ public final class XMLUtils
      *   <li>3) Escape &gt; or - at the start of the comment</li>
      *   <li>4) Escape { to prevent XWiki macro syntax</li>
      *   <li>5) Add {@code \} (unescaped as {@code ""}) at the end if the last char is {@code -}</li>
+     *   <li>6) Ensure that {@code <} is always followed by {@code \} to avoid matching as HTML tag, e.g., in
+     *   CKEditor</li>
      * </ul>
      *
      * @param content the XML comment content to escape
@@ -269,19 +271,30 @@ public final class XMLUtils
         // an escape when the comment starts with '-'.
         char lastChar = '-';
         for (char c : buff) {
-            if (c == '\\' || c == '{' || (c == '-' && lastChar == '-')) {
-                str.append('\\');
-            }
-
-            str.append(c);
+            appendCommentEscapedCharacter(c, lastChar, str);
             lastChar = c;
         }
 
-        if (lastChar == '-') {
+        if (lastChar == '-' || lastChar == '<') {
+            // If the comment data ends with '-' or '<', add an escaping character to be on the safe side.
             str.append('\\');
         }
 
         return str.toString();
+    }
+
+    private static void appendCommentEscapedCharacter(char character, char lastCharacter, StringBuilder result)
+    {
+        // The characters '\' and '{' always need to be escaped. The former as it is the escape character, the
+        // latter because of its special meaning in XWiki syntax that would allow to, e.g., close HTML macros.
+        boolean needsEscaping = character == '\\' || character == '{';
+        // Also add an escaping between any two '-' to avoid syntax that is illegal in comments and escape after
+        // '<' to avoid any matching of comment contents as HTML tags, e.g., by CKEditor.
+        if (needsEscaping || (character == '-' && lastCharacter == '-') || lastCharacter == '<') {
+            result.append('\\');
+        }
+
+        result.append(character);
     }
 
     /**
