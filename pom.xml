@@ -2771,13 +2771,13 @@
             </lifecycleMappingMetadata>
           </configuration>
         </plugin>
-        <!-- Configure the Gradle Enterprise cache to make some Maven plugin cacheable (since they're not recognized
-             as cacheable by Gradle Enterprise by default) -->
+        <!-- Configure the Develocity cache to make some Maven plugin cacheable (since they're not recognized
+             as cacheable by Develocity by default) -->
         <plugin>
           <groupId>com.gradle</groupId>
-          <artifactId>gradle-enterprise-maven-extension</artifactId>
+          <artifactId>develocity-maven-extension</artifactId>
           <configuration>
-            <gradleEnterprise>
+            <develocity>
               <normalization>
                 <runtimeClassPath>
                   <metaInf>
@@ -2848,7 +2848,7 @@
                   </executions>
                 </plugin>
               </plugins>
-            </gradleEnterprise>
+            </develocity>
           </configuration>
         </plugin>
         <!-- The version of Spoon and Spoon Maven plugin to use -->
