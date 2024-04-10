@@ -39,7 +39,7 @@ import jakarta.servlet.ServletResponse;
 /**
  * @param <R> the type of servlet request
  * @version $Id$
- * @since jakarta
+ * @since 17-jakarta
  */
 public class JakartaToJavaxServletRequest<R extends javax.servlet.ServletRequest> implements ServletRequest
 {

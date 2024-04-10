@@ -105,7 +105,7 @@ import jakarta.servlet.http.Part;
 
 /**
  * @version $Id$
- * @since jakarta
+ * @since 17-jakarta
  */
 public final class ServletBridge
 {
@@ -119,8 +119,17 @@ public final class ServletBridge
      */
     public static javax.servlet.ServletRequest toJavax(ServletRequest jakarta)
     {
-        return jakarta instanceof HttpServletRequest httpjakarta ? new JavaxToJakartaHttpServletRequest(httpjakarta)
+        return jakarta instanceof HttpServletRequest httpjakarta ? toJavax(httpjakarta)
             : new JavaxToJakartaServletRequest<ServletRequest>(jakarta);
+    }
+
+    /**
+     * @param jakarta the jakarta version
+     * @return the javax version
+     */
+    public static javax.servlet.http.HttpServletRequest toJavax(HttpServletRequest jakarta)
+    {
+        return new JavaxToJakartaHttpServletRequest(jakarta);
     }
 
     /**
@@ -129,9 +138,17 @@ public final class ServletBridge
      */
     public static ServletRequest toJakarta(javax.servlet.ServletRequest javax)
     {
-        return javax instanceof javax.servlet.http.HttpServletRequest httpjakarta
-            ? new JakartaToJavaxHttpServletRequest(httpjakarta)
+        return javax instanceof javax.servlet.http.HttpServletRequest httpjakarta ? toJakarta(httpjakarta)
             : new JakartaToJavaxServletRequest<javax.servlet.ServletRequest>(javax);
+    }
+
+    /**
+     * @param javax the javax version
+     * @return the jakarta version
+     */
+    public static HttpServletRequest toJakarta(javax.servlet.http.HttpServletRequest javax)
+    {
+        return new JakartaToJavaxHttpServletRequest(javax);
     }
 
     /**

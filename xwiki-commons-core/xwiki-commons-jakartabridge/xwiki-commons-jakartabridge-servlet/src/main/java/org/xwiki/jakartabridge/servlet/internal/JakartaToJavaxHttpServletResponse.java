@@ -28,16 +28,17 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
+ * @param <R> the type of http servlet response
  * @version $Id$
- * @since jakarta
+ * @since 17-jakarta
  */
-public class JakartaToJavaxHttpServletResponse
-    extends JakartaToJavaxServletResponse<javax.servlet.http.HttpServletResponse> implements HttpServletResponse
+public class JakartaToJavaxHttpServletResponse<R extends javax.servlet.http.HttpServletResponse>
+    extends JakartaToJavaxServletResponse<R> implements HttpServletResponse
 {
     /**
      * @param wrapped the wrapped version
      */
-    public JakartaToJavaxHttpServletResponse(javax.servlet.http.HttpServletResponse wrapped)
+    public JakartaToJavaxHttpServletResponse(R wrapped)
     {
         super(wrapped);
     }

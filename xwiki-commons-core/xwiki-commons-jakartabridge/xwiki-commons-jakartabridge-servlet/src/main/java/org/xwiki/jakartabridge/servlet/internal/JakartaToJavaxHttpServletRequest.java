@@ -35,18 +35,17 @@ import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.Part;
 
 /**
- * Bridge a {@link jakarta.servlet.http.HttpServletRequest} through a {@link HttpServletRequest}.
- * 
+ * @param <R> the type of http servlet request
  * @version $Id$
- * @since jakarta
+ * @since 17-jakarta
  */
-public class JakartaToJavaxHttpServletRequest
-    extends JakartaToJavaxServletRequest<javax.servlet.http.HttpServletRequest> implements HttpServletRequest
+public class JakartaToJavaxHttpServletRequest<R extends javax.servlet.http.HttpServletRequest>
+    extends JakartaToJavaxServletRequest<R> implements HttpServletRequest
 {
     /**
      * @param wrapped the wrapped version
      */
-    public JakartaToJavaxHttpServletRequest(javax.servlet.http.HttpServletRequest wrapped)
+    public JakartaToJavaxHttpServletRequest(R wrapped)
     {
         super(wrapped);
     }

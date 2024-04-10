@@ -28,16 +28,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.xwiki.jakartabridge.servlet.ServletBridge;
 
 /**
+ * @param <R> the type of http servlet response
  * @version $Id$
- * @since jakarta
+ * @since 17-jakarta
  */
-public class JavaxToJakartaHttpServletResponse
-    extends JavaxToJakartaServletResponse<jakarta.servlet.http.HttpServletResponse> implements HttpServletResponse
+public class JavaxToJakartaHttpServletResponse<R extends jakarta.servlet.http.HttpServletResponse>
+    extends JavaxToJakartaServletResponse<R> implements HttpServletResponse
 {
     /**
      * @param wrapped the wrapped version
      */
-    public JavaxToJakartaHttpServletResponse(jakarta.servlet.http.HttpServletResponse wrapped)
+    public JavaxToJakartaHttpServletResponse(R wrapped)
     {
         super(wrapped);
     }

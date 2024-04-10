@@ -31,7 +31,7 @@ import jakarta.servlet.ServletResponse;
 /**
  * @param <R> the type of servlet response
  * @version $Id$
- * @since jakarta
+ * @since 17-jakarta
  */
 public class JakartaToJavaxServletResponse<R extends javax.servlet.ServletResponse> implements ServletResponse
 {

@@ -32,16 +32,16 @@ import org.xwiki.jakartabridge.servlet.ServletBridge;
 
 /**
  * @version $Id$
- * @since jakarta
+ * @since 17-jakarta
  */
-public class JakartaToFilterJavax implements Filter
+public class JakartaJavaxToFilter implements Filter
 {
     private final jakarta.servlet.Filter wrapped;
 
     /**
      * @param wrapped the wrapped version
      */
-    public JakartaToFilterJavax(jakarta.servlet.Filter wrapped)
+    public JakartaJavaxToFilter(jakarta.servlet.Filter wrapped)
     {
         this.wrapped = wrapped;
     }

@@ -43,7 +43,7 @@ import org.xwiki.jakartabridge.servlet.ServletBridge;
 
 /**
  * @version $Id$
- * @since jakarta
+ * @since 17-jakarta
  */
 public class JavaxToJakartaServletContext implements ServletContext
 {

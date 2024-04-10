@@ -29,7 +29,7 @@ import jakarta.servlet.http.HttpSessionContext;
 
 /**
  * @version $Id$
- * @since jakarta
+ * @since 17-jakarta
  */
 public class JakartaToJavaxHttpSession implements HttpSession
 {
