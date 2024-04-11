@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<extension>
+  <id>exactexactdependencyversion</id>
+  <version>1.0</version>
+  <dependencies>
+    <dependency>
+      <id>exactdependencyversion</id>
+      <version>[1.0]</version>
+    </dependency>
+  </dependencies>
+</extension>
