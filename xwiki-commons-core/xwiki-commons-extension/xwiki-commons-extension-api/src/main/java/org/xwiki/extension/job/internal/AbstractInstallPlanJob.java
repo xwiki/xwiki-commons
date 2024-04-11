@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -145,12 +146,107 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
     @Inject
     protected ExtensionFactory factory;
 
+    protected static class ExtensionsCache
+    {
+        /**
+         * <id, <namespace, node>>
+         */
+        final Map<String, Map<String, ModifableExtensionPlanNode>> extensionsNode = new HashMap<>();
+
+        /**
+         * <namespace, id>
+         */
+        final Map<String, Set<String>> previousExtensions = new HashMap<>();
+
+        private ModifableExtensionPlanNode getExtensionNode(String id, String namespace)
+        {
+            Map<String, ModifableExtensionPlanNode> extensionsById = this.extensionsNode.get(id);
+
+            ModifableExtensionPlanNode node = null;
+            if (extensionsById != null) {
+                node = extensionsById.get(namespace);
+
+                if (node == null && namespace != null) {
+                    node = extensionsById.get(null);
+                }
+            }
+
+            return node;
+        }
+
+        private void addExtensionNode(ModifableExtensionPlanNode node)
+        {
+            String id = node.getAction().getExtension().getId().getId();
+
+            addExtensionNode(id, node);
+
+            node.getAction().getExtension().getExtensionFeatures()
+                .forEach(feature -> addExtensionNode(feature.getId(), node));
+        }
+
+        private void addExtensionNode(String id, ModifableExtensionPlanNode node)
+        {
+            Map<String, ModifableExtensionPlanNode> extensionsById = this.extensionsNode.get(id);
+
+            if (extensionsById == null) {
+                extensionsById = new HashMap<>();
+                this.extensionsNode.put(id, extensionsById);
+            }
+
+            ModifableExtensionPlanNode existingNode = extensionsById.get(node.getAction().getNamespace());
+
+            if (existingNode != null) {
+                existingNode.set(node);
+                for (ModifableExtensionPlanNode duplicate : existingNode.duplicates) {
+                    duplicate.set(node);
+                }
+                existingNode.duplicates.add(node);
+            } else {
+                extensionsById.put(node.getAction().getNamespace(), node);
+            }
+        }
+
+        private void removeNodeFromCache(ModifableExtensionPlanNode node)
+        {
+            ExtensionPlanAction action = node.getAction();
+            Extension extension = action.getExtension();
+            String namespace = action.getNamespace();
+
+            removeNodeFromCache(extension.getId().getId(), namespace);
+
+            extension.getExtensionFeatures().forEach(feature -> removeNodeFromCache(feature.getId(), namespace));
+        }
+
+        private void removeNodeFromCache(String feature, String namespace)
+        {
+            this.extensionsNode.get(feature).remove(namespace);
+        }
+
+        private void addPrevious(String extensionId, String namespace)
+        {
+            this.previousExtensions.computeIfAbsent(namespace, n -> new HashSet<>()).add(extensionId);
+        }
+
+        private boolean isPrevious(String extensionId, String namespace)
+        {
+            Set<String> extensions = this.previousExtensions.get(namespace);
+
+            return extensions != null && extensions.contains(extensionId);
+        }
+
+        public void clear()
+        {
+            this.extensionsNode.clear();
+            this.previousExtensions.clear();
+        }
+    }
+
     /**
      * Used to make sure dependencies are compatible between each other in the whole plan.
      * <p>
      * <id, <namespace, node>>.
      */
-    protected Map<String, Map<String, ModifableExtensionPlanNode>> extensionsNodeCache = new HashMap<>();
+    protected ExtensionsCache extensionsCache = new ExtensionsCache();
 
     protected void setExtensionTree(DefaultExtensionPlanTree extensionTree)
     {
@@ -223,54 +319,6 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
         }
     }
 
-    private ModifableExtensionPlanNode getExtensionNode(String id, String namespace)
-    {
-        Map<String, ModifableExtensionPlanNode> extensionsById = this.extensionsNodeCache.get(id);
-
-        ModifableExtensionPlanNode node = null;
-        if (extensionsById != null) {
-            node = extensionsById.get(namespace);
-
-            if (node == null && namespace != null) {
-                node = extensionsById.get(null);
-            }
-        }
-
-        return node;
-    }
-
-    private void addExtensionNode(ModifableExtensionPlanNode node)
-    {
-        String id = node.getAction().getExtension().getId().getId();
-
-        addExtensionNode(id, node);
-
-        node.getAction().getExtension().getExtensionFeatures()
-            .forEach(feature -> addExtensionNode(feature.getId(), node));
-    }
-
-    private void addExtensionNode(String id, ModifableExtensionPlanNode node)
-    {
-        Map<String, ModifableExtensionPlanNode> extensionsById = this.extensionsNodeCache.get(id);
-
-        if (extensionsById == null) {
-            extensionsById = new HashMap<>();
-            this.extensionsNodeCache.put(id, extensionsById);
-        }
-
-        ModifableExtensionPlanNode existingNode = extensionsById.get(node.getAction().getNamespace());
-
-        if (existingNode != null) {
-            existingNode.set(node);
-            for (ModifableExtensionPlanNode duplicate : existingNode.duplicates) {
-                duplicate.set(node);
-            }
-            existingNode.duplicates.add(node);
-        } else {
-            extensionsById.put(node.getAction().getNamespace(), node);
-        }
-    }
-
     /**
      * Install provided extension.
      *
@@ -317,7 +365,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
         ModifableExtensionPlanNode node = installExtension(extensionId, dependency, namespace);
 
         if (node != null) {
-            addExtensionNode(node);
+            this.extensionsCache.addExtensionNode(node);
             parentBranch.add(node);
         }
     }
@@ -369,7 +417,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
     private boolean checkExistingPlanNodeExtension(ExtensionId extensionId, boolean isId, String namespace)
         throws InstallException
     {
-        ModifableExtensionPlanNode existingNode = getExtensionNode(extensionId.getId(), namespace);
+        ModifableExtensionPlanNode existingNode = this.extensionsCache.getExtensionNode(extensionId.getId(), namespace);
         if (existingNode != null) {
             if (isId && existingNode.getAction().getExtension().getId().equals(extensionId)) {
                 // Same extension already planned for install
@@ -393,7 +441,8 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
     {
         VersionConstraint mergedVersionContraint = previousVersionConstraint;
 
-        Map<String, ModifableExtensionPlanNode> idNodes = this.extensionsNodeCache.get(extensionDependency.getId());
+        Map<String, ModifableExtensionPlanNode> idNodes =
+            this.extensionsCache.extensionsNode.get(extensionDependency.getId());
 
         if (idNodes != null) {
             ModifableExtensionPlanNode existingNode = idNodes.get(namespace);
@@ -443,7 +492,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
     private void setRootNamespace(ModifableExtensionPlanNode node, VersionConstraint mergedVersionContraint)
     {
         // Remove the node from the index
-        removeNodeFromCache(node);
+        this.extensionsCache.removeNodeFromCache(node);
 
         // Modify the namespace of the node
         ExtensionPlanAction action = node.getAction();
@@ -452,23 +501,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
             action.getPreviousExtensions(), action.getAction(), null, action.isDependency()));
 
         // Add back the node in the index
-        addExtensionNode(node);
-    }
-
-    private void removeNodeFromCache(ModifableExtensionPlanNode node)
-    {
-        ExtensionPlanAction action = node.getAction();
-        Extension extension = action.getExtension();
-        String namespace = action.getNamespace();
-
-        removeNodeFromCache(extension.getId().getId(), namespace);
-
-        extension.getExtensionFeatures().forEach(feature -> removeNodeFromCache(feature.getId(), namespace));
-    }
-
-    private void removeNodeFromCache(String feature, String namespace)
-    {
-        this.extensionsNodeCache.get(feature).remove(namespace);
+        this.extensionsCache.addExtensionNode(node);
     }
 
     private VersionConstraint checkPlannedDependency(ModifableExtensionPlanNode existingNode,
@@ -527,17 +560,17 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
                         this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId(), true);
 
                     mergedVersionContraint = mergeVersionConstraints(backwardDependencies.get(null),
-                        extensionDependency.getId(), versionConstraint);
+                        extensionDependency.getId(), versionConstraint, true, null);
                     if (namespace != null) {
                         mergedVersionContraint = mergeVersionConstraints(backwardDependencies.get(namespace),
-                            extensionDependency.getId(), mergedVersionContraint);
+                            extensionDependency.getId(), mergedVersionContraint, true, namespace);
                     }
                 } else {
                     Collection<InstalledExtension> backwardDependencies = this.installedExtensionRepository
                         .getBackwardDependencies(installedExtension.getId().getId(), namespace);
 
-                    mergedVersionContraint =
-                        mergeVersionConstraints(backwardDependencies, extensionDependency.getId(), versionConstraint);
+                    mergedVersionContraint = mergeVersionConstraints(backwardDependencies, extensionDependency.getId(),
+                        versionConstraint, true, namespace);
                 }
             } catch (IncompatibleVersionConstraintException e) {
                 throw new InstallException("Provided depency is incompatible with already installed extensions", e);
@@ -677,7 +710,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
             ModifableExtensionPlanNode node = new ModifableExtensionPlanNode(extensionDependency, existingNode);
             node.setChildren(children);
 
-            addExtensionNode(node);
+            this.extensionsCache.addExtensionNode(node);
             parentBranch.add(node);
 
             return;
@@ -701,7 +734,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
                 namespace, installedExtension.isDependency(namespace)));
             node.setChildren(children);
 
-            addExtensionNode(node);
+            this.extensionsCache.addExtensionNode(node);
             parentBranch.add(node);
 
             return;
@@ -722,7 +755,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
         if (node != null) {
             node.versionConstraint = versionConstraint;
 
-            addExtensionNode(node);
+            this.extensionsCache.addExtensionNode(node);
             parentBranch.add(node);
         }
     }
@@ -784,13 +817,19 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
      * @throws IncompatibleVersionConstraintException the provided version constraint is compatible with the provided
      *             version constraint
      */
-    private VersionConstraint mergeVersionConstraints(Collection<? extends Extension> extensions, String feature,
-        VersionConstraint previousMergedVersionContraint) throws IncompatibleVersionConstraintException
+    private VersionConstraint mergeVersionConstraints(Collection<? extends InstalledExtension> extensions,
+        String feature, VersionConstraint previousMergedVersionContraint, boolean noPrevious, String namespace)
+        throws IncompatibleVersionConstraintException
     {
         VersionConstraint mergedVersionContraint = previousMergedVersionContraint;
 
         if (extensions != null) {
             for (Extension extension : extensions) {
+                // Filter out extension which are not going to be installed anymore after the job is done
+                if (noPrevious && this.extensionsCache.isPrevious(extension.getId().getId(), namespace)) {
+                    continue;
+                }
+
                 ExtensionDependency dependency = getDependency(extension, feature);
 
                 if (dependency != null) {
@@ -1043,17 +1082,28 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
             this.progressManager.startStep(this);
 
             // Mark replaced extensions as uninstalled
-            for (InstalledExtension previousExtension : new ArrayList<>(previousExtensions)) {
+            for (Iterator<InstalledExtension> it = previousExtensions.iterator(); it.hasNext();) {
+                InstalledExtension previousExtension = it.next();
+
                 if (!previousExtension.isInstalled(namespace)
                     || !previousExtension.getId().getId().equals(rewrittenExtension.getId().getId())) {
                     if (namespace == null && previousExtension.getNamespaces() != null) {
                         for (String previousNamespace : previousExtension.getNamespaces()) {
                             uninstallExtension(previousExtension, previousNamespace, this.extensionTree, false);
-                            previousExtensions.remove(previousExtension);
+                            it.remove();
+
+                            // Remember replaced extension for through the whole job
+                            this.extensionsCache.addPrevious(previousExtension.getId().getId(), previousNamespace);
                         }
                     } else {
                         uninstallExtension(previousExtension, namespace, this.extensionTree, false);
+
+                        // Remember replaced extension for through the whole job
+                        this.extensionsCache.addPrevious(previousExtension.getId().getId(), namespace);
                     }
+                } else {
+                    // Remember replaced extension for through the whole job
+                    this.extensionsCache.addPrevious(previousExtension.getId().getId(), namespace);
                 }
             }
 
@@ -1360,7 +1410,8 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
 
         // Merge all backward dependencies constraints
         for (Map.Entry<String, Set<InstalledExtension>> entry : backwardDependencies.entrySet()) {
-            versionConstraint = mergeVersionConstraints(entry.getValue(), feature, versionConstraint);
+            versionConstraint =
+                mergeVersionConstraints(entry.getValue(), feature, versionConstraint, true, entry.getKey());
         }
 
         return versionConstraint;
@@ -1414,7 +1465,12 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
                     backwardDependencies.put(entry.getKey(), namespaceBackwardDependencies);
                 }
 
-                namespaceBackwardDependencies.addAll(entry.getValue());
+                for (InstalledExtension backwardDependency : entry.getValue()) {
+                    // Filter out extensions which are not going to be installed anymore after the job is done
+                    if (!this.extensionsCache.isPrevious(backwardDependency.getId().getId(), namespace)) {
+                        namespaceBackwardDependencies.add(backwardDependency);
+                    }
+                }
             }
         } else {
             for (InstalledExtension backwardDependency : this.installedExtensionRepository
@@ -1425,7 +1481,10 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
                     backwardDependencies.put(namespace, namespaceBackwardDependencies);
                 }
 
-                namespaceBackwardDependencies.add(backwardDependency);
+                // Filter out extensions which are not going to be installed anymore after the job is done
+                if (!this.extensionsCache.isPrevious(backwardDependency.getId().getId(), namespace)) {
+                    namespaceBackwardDependencies.add(backwardDependency);
+                }
             }
         }
 

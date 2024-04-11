@@ -131,8 +131,7 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
         List<Version> versions = getVersions(extensionDependency.getId());
 
         if (!versions.isEmpty()) {
-            for (ListIterator<Version> it = versions.listIterator(versions.size()); it.hasPrevious(); it
-                .previous()) {
+            for (ListIterator<Version> it = versions.listIterator(versions.size()); it.hasPrevious();) {
                 Version version = it.previous();
 
                 if (versionConstraint.isCompatible(version)) {
