@@ -942,17 +942,13 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
-        <version>4.0.0</version>
+        <version>4.0.1</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-xml</artifactId>
-        <version>4.0.2</version>
+        <version>3.0.0</version>
       </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-container-default</artifactId>
-        <version>${plexus-containers.version}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
