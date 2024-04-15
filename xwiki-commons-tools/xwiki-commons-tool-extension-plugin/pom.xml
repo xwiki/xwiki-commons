@@ -86,18 +86,6 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
     </dependency>
-    <!-- Force a provided scope for the following org.apache.maven:* dependency to avoid the Maven error:
-       Some dependencies of Maven Plugins are expected to be in provided scope.
-       Please make sure that dependencies listed below declared in POM
-       have set '<scope>provided</scope>' as well.
-       [...]
-     See https://issues.apache.org/jira/browse/MPLUGIN-370 and its links for explanations.
-    -->
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-xml-impl</artifactId>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-xml</artifactId>
