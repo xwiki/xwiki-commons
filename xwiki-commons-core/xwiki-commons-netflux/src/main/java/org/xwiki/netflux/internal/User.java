@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 
 /**
  * Represents an user connected to a Netflux channel.

@@ -253,6 +253,10 @@
     <javax.servlet.version>3.1.0</javax.servlet.version>
     <jakarta.servlet.version>5.0.0</jakarta.servlet.version>
 
+    <!-- WebSocket specifications -->
+    <javax.websocket.version>1.1</javax.websocket.version>
+    <jakarta.websocket.version>2.1.1</jakarta.websocket.version>
+
     <!-- EL implementation -->
     <!-- Use the same version as the one that comes with the custom XWiki Jetty application server -->
     <apachache-el.version>9.0.83.1</apachache-el.version>
@@ -1269,7 +1273,18 @@
       <dependency>
         <groupId>javax.websocket</groupId>
         <artifactId>javax.websocket-api</artifactId>
-        <version>1.1</version>
+        <version>${javax.websocket.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.websocket</groupId>
+        <artifactId>jakarta.websocket-api</artifactId>
+        <version>${jakarta.websocket.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.websocket</groupId>
+        <artifactId>jakarta.websocket-client-api</artifactId>
+        <version>${jakarta.websocket.version}</version>
         <scope>provided</scope>
       </dependency>
       <!-- Needed for Legacy modules. The version needs to be in sync with the one used by the AspectJ plugin -->
