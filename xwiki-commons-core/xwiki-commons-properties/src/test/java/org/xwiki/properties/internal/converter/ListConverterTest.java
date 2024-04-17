@@ -19,6 +19,7 @@
  */
 package org.xwiki.properties.internal.converter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -99,7 +100,7 @@ class ListConverterTest
     void convertFromArray()
     {
         assertEquals(Arrays.asList(1, 2, 3), this.converterManager
-            .convert(new DefaultParameterizedType(null, List.class, Integer.class), new String[]{ "1", "2", "3" }));
+            .convert(new DefaultParameterizedType(null, List.class, Integer.class), new String[] {"1", "2", "3"}));
     }
 
     @Test
@@ -108,5 +109,15 @@ class ListConverterTest
         List<String> expect = Arrays.asList("1", "2", "3");
 
         assertSame(expect, this.converterManager.convert(List.class, expect));
+    }
+
+    @Test
+    void converttoString()
+    {
+        assertEquals("1, 2, 3",
+            this.converterManager.convert(String.class, new ArrayList<>(Arrays.asList("1", "2", "3"))));
+
+        assertEquals("\"with,comma\", \"with white space\", \"with, both\", nothing", this.converterManager.convert(
+            String.class, new ArrayList<>(Arrays.asList("with,comma", "with white space", "with, both", "nothing"))));
     }
 }

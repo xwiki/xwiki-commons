@@ -287,7 +287,7 @@ public abstract class AbstractCollectionConverter<T extends Collection> extends 
             String elementString = getConverterManager().convert(String.class, element);
 
             if (elementString != null) {
-                boolean containsDelimiter = StringUtils.contains(elementString, getDelimiters());
+                boolean containsDelimiter = StringUtils.containsAny(elementString, getDelimiters());
 
                 if (containsDelimiter) {
                     sb.append(QUOTESTRING);
