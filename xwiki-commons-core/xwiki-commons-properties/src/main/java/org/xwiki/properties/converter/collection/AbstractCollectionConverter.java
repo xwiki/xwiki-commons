@@ -275,28 +275,55 @@ public abstract class AbstractCollectionConverter<T extends Collection> extends 
     }
 
     @Override
+    public <G> G convert(Type targetType, Object sourceValue)
+    {
+        if (targetType == String.class && sourceValue.getClass().isArray()) {
+            return (G) convertArrayToString(sourceValue);
+        }
+
+        return super.convert(targetType, sourceValue);
+    }
+
+    protected void convertToString(Object element, StringBuilder sb)
+    {
+        if (sb.length() > 0) {
+            sb.append(getDelimiters());
+        }
+
+        String elementString = getConverterManager().convert(String.class, element);
+
+        if (elementString != null) {
+            boolean containsDelimiter = StringUtils.containsAny(elementString, getDelimiters());
+
+            if (containsDelimiter) {
+                sb.append(QUOTESTRING);
+            }
+            sb.append(elementString.replace("\\", "\\\\").replace(QUOTESTRING, "\\\"").replace("'", "\\'"));
+            if (containsDelimiter) {
+                sb.append(QUOTESTRING);
+            }
+        }
+    }
+
+    private String convertArrayToString(Object value)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        int lenght = Array.getLength(value);
+        for (int i = 0; i < lenght; ++i) {
+            convertToString(Array.get(value, i), sb);
+        }
+
+        return sb.toString();
+    }
+
+    @Override
     protected String convertToString(T value)
     {
         StringBuilder sb = new StringBuilder();
 
         for (Object element : value) {
-            if (sb.length() > 0) {
-                sb.append(getDelimiters());
-            }
-
-            String elementString = getConverterManager().convert(String.class, element);
-
-            if (elementString != null) {
-                boolean containsDelimiter = StringUtils.containsAny(elementString, getDelimiters());
-
-                if (containsDelimiter) {
-                    sb.append(QUOTESTRING);
-                }
-                sb.append(elementString.replace("\\", "\\\\").replace(QUOTESTRING, "\\\"").replace("'", "\\'"));
-                if (containsDelimiter) {
-                    sb.append(QUOTESTRING);
-                }
-            }
+            convertToString(element, sb);
         }
 
         return sb.toString();

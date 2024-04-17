@@ -19,7 +19,9 @@
  */
 package org.xwiki.properties.internal.converter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  */
 @ComponentTest
 @AllComponents
-class ListConverterTest
+class CollectionConverterTest
 {
     @InjectComponentManager
     MockitoComponentManager componentManager;
@@ -70,10 +72,10 @@ class ListConverterTest
             this.converterManager.convert(List.class, "1,\n 2,\n 3"));
 
         assertEquals(Arrays.asList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3)), this.converterManager
-            .convert(ListConverterTest.class.getField("listField1").getGenericType(), "1, 2, 3"));
+            .convert(CollectionConverterTest.class.getField("listField1").getGenericType(), "1, 2, 3"));
 
         assertEquals(Arrays.asList(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6)), this.converterManager.convert(
-            ListConverterTest.class.getField("listField2").getGenericType(), "'\\'1\\', 2, 3', \"4, 5, 6\""));
+            CollectionConverterTest.class.getField("listField2").getGenericType(), "'\\'1\\', 2, 3', \"4, 5, 6\""));
 
         assertEquals(Arrays.asList("1:2"), this.converterManager.convert(List.class, "1:2"));
 
@@ -97,10 +99,35 @@ class ListConverterTest
     }
 
     @Test
+    void convertFromArray()
+    {
+        assertEquals(Arrays.asList(1, 2, 3), this.converterManager
+            .convert(new DefaultParameterizedType(null, List.class, Integer.class), new String[] {"1", "2", "3"}));
+    }
+
+    @Test
     void convertFromList()
     {
         List<String> expect = Arrays.asList("1", "2", "3");
 
         assertSame(expect, this.converterManager.convert(List.class, expect));
+    }
+
+    @Test
+    void testConvertFromBoolean()
+    {
+        assertEquals(Collections.singletonList("false"), this.converterManager.convert(ArrayList.class, false));
+    }
+
+    @Test
+    void converttoString()
+    {
+        assertEquals("1, 2, 3", this.converterManager.convert(String.class, Arrays.asList("1", "2", "3")));
+
+        assertEquals("\"with,comma\", \"with white space\", \"with, both\", nothing", this.converterManager
+            .convert(String.class, Arrays.asList("with,comma", "with white space", "with, both", "nothing")));
+
+        assertEquals("\"with,comma\", \"with white space\", \"with, both\", nothing", this.converterManager
+            .convert(String.class, new String[] {"with,comma", "with white space", "with, both", "nothing"}));
     }
 }

@@ -22,6 +22,7 @@ package org.xwiki.properties.internal;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
+import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -101,14 +102,8 @@ public class DefaultConverterManager implements ConverterManager
             }
         }
 
-        // Converter type
-        Type converterType = targetType;
-        if (converterType == String.class && value != null) {
-            converterType = value.getClass();
-        }
-
         // Convert
-        Converter<T> converter = lookupConverter(converterType);
+        Converter<T> converter = lookupConverter(targetType, value);
 
         if (converter != null) {
             return converter.convert(targetType, value);
@@ -140,13 +135,44 @@ public class DefaultConverterManager implements ConverterManager
             if (targetType instanceof Class && Enum.class.isAssignableFrom((Class<?>) targetType)) {
                 // It's an Enum
                 converter = (Converter<T>) this.enumConverter;
-            } else {
-                // Fallback on default converter
-
-                this.logger.debug("Using the default Converter for type [{}]", targetType);
-
-                converter = this.defaultConverter;
             }
+        }
+
+        return converter;
+    }
+
+    /**
+     * Find the right {@link Converter} for the provided {@link Class}.
+     *
+     * @param <T> the type in which the provided value has to be converted
+     * @param targetType the type to convert to
+     * @return the {@link Converter} corresponding to the class
+     */
+    private <T> Converter<T> lookupConverter(Type targetType, Object value)
+    {
+        Converter<T> converter = null;
+
+        // Try to find a suitable String serializer if the target type is String
+        if (targetType == String.class && value != null) {
+            Class<?> valueType = value.getClass();
+
+            converter = lookupConverter(value.getClass());
+
+            if (converter == null && (valueType.isArray() || Collection.class.isAssignableFrom(valueType))) {
+                converter = lookupConverter(Collection.class);
+            }
+        }
+
+        // Try to find a converted associated with the target type
+        if (converter == null) {
+            converter = lookupConverter(targetType);
+        }
+
+        // If no converter could be found, fallback on beanutils
+        if (converter == null) {
+            this.logger.debug("Using the default Converter for type [{}]", targetType);
+
+            converter = this.defaultConverter;
         }
 
         return converter;

@@ -21,7 +21,6 @@ package org.xwiki.properties.internal.converter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 import org.xwiki.properties.internal.DefaultConverterManager;
@@ -45,10 +44,9 @@ class ArrayListConverterTest
     private DefaultConverterManager converterManager;
 
     @Test
-    void testConvertToString()
+    void convertFromString() throws Exception
     {
-        assertEquals("1, 2, 3",
-            this.converterManager.convert(String.class, new ArrayList<>(Arrays.asList("1", "2", "3"))));
+        assertEquals(Arrays.asList("1", "2", "3"), this.converterManager.convert(ArrayList.class, "1, 2, 3"));
     }
 
     @Test
@@ -57,12 +55,5 @@ class ArrayListConverterTest
         ArrayList<String> expect = new ArrayList<>(Arrays.asList("1", "2", "3"));
 
         assertSame(expect, this.converterManager.convert(ArrayList.class, expect));
-    }
-
-    @Test
-    void testConvertFromBoolean()
-    {
-        assertEquals(Collections.singletonList("false"),
-            this.converterManager.convert(ArrayList.class, false));
     }
 }
