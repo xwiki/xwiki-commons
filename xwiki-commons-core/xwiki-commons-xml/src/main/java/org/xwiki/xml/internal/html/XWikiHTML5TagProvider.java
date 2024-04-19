@@ -34,9 +34,10 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.xml.html.HTMLConstants;
 
 /**
- * List the tags allowed in HTML5 with custom bug fixes for phrasing tags.
+ * List the tags allowed in HTML5 with custom bug fixes for phrasing tags and dl.
  * <p>
- * See <a href="https://sourceforge.net/p/htmlcleaner/bugs/238/">bug 238</a>
+ * See <a href="https://sourceforge.net/p/htmlcleaner/bugs/238/">bug 238</a> and <a
+ * href="https://sourceforge.net/p/htmlcleaner/bugs/241/">bug 241</a> for more information.
  * <p>
  * This class should be removed once these bugs have been fixed.
  *
@@ -76,6 +77,10 @@ public class XWikiHTML5TagProvider extends Html5TagProvider
         tagInfo.setMustCloseTags(Set.of(HTMLConstants.TAG_MATH));
         // Do not copy other tags.
         tagInfo.setCopyTags(Set.of());
+
+        // Remove the preferred child tag for the dl tag as it is wrong, content can't simply be wrapped in a div
+        // inside a dl. See https://sourceforge.net/p/htmlcleaner/bugs/241/.
+        this.getTagInfo(HTMLConstants.TAG_DL).setPreferredChildTag(null);
 
         // Fix the embed tag which is set to close all kinds of tags before it.
         TagInfo embedTag = this.getTagInfo(HTMLConstants.TAG_EMBED);

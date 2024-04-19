@@ -194,4 +194,20 @@ class HTML5HTMLCleanerTest extends DefaultHTMLCleanerTest
     {
         assertHTML("<template></template><p><select></select></p>", "<select><template></template></select>");
     }
+
+    /**
+     * Check how HTMLCleaner cleans a dl tag with paragraph and line break. They shouldn't be wrapped inside a div as
+     * this is wrong. But the verified behavior of keeping the plain text content is wrong, too - dl doesn't allow plain
+     * text content.
+     * <p>
+     * See <a href="https://sourceforge.net/p/htmlcleaner/bugs/241/">issue 241</a>
+     * for the upstream bug report. This test should be adapted when the upstream issue is fixed.
+     */
+    @Override
+    @Test
+    void dlChildren()
+    {
+        String htmlInput = "<dl><p>Paragraph1</p><dt>Term</dt><br /><dd>Definition</dd><p>Paragraph2</p></dl>";
+        assertHTML("<p><br /></p><p></p><dl>Paragraph1<dt>Term</dt><dd>Definition</dd>Paragraph2</dl>", htmlInput);
+    }
 }

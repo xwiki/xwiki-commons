@@ -678,6 +678,16 @@ public class DefaultHTMLCleanerTest
         assertHTML(htmlInput, htmlInput);
     }
 
+    /**
+     * Check if tags like paragraph and br are allowed inside dl. They shouldn't, but HTMLCleaner doesn't remove them.
+     */
+    @Test
+    void dlChildren()
+    {
+        String htmlInput = "<dl><p>Paragraph</p><dt>Term</dt><br /><dd>Definition</dd><p>Paragraph</p></dl>";
+        assertHTML(htmlInput, htmlInput);
+    }
+
     protected void assertHTML(String expected, String actual)
     {
         Document documentValue = clean(actual);
