@@ -19,10 +19,7 @@
  */
 package org.xwiki.extension.maven.internal;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +40,11 @@ import org.xwiki.extension.version.internal.DefaultVersion;
 public class MavenUtils
 {
     public static final String PKEY_MAVEN_MODEL = "maven.Model";
+
+    /**
+     * @since 16.4.0RC1
+     */
+    public static final String POM_EXTENSION = "pom";
 
     public static final String JAR_EXTENSION = "jar";
 
@@ -79,14 +81,6 @@ public class MavenUtils
      * @since 12.2
      */
     public static final String WILDCARD = "*";
-
-    /**
-     * Maven types known to be JARs.
-     * 
-     * @since 12.4RC1
-     */
-    public static final Set<String> JAR_TYPES = new HashSet<>(Arrays.asList("bundle", "maven-plugin", null));
-
     /**
      * The name of the Model property containing the target file type.
      * 
@@ -186,27 +180,6 @@ public class MavenUtils
         String extensionId = toExtensionId(groupId, artifactId, classifier);
 
         return new ExtensionId(extensionId, version);
-    }
-
-    /**
-     * Get the extension type from maven packaging.
-     *
-     * @param packaging the maven packaging
-     * @return the XWiki extension type
-     */
-    public static String packagingToType(String packaging)
-    {
-        // support bundle packaging
-        if (JAR_TYPES.contains(packaging)) {
-            return "jar";
-        }
-
-        // pom packaging does not have any associated extension file
-        if (packaging.equals("pom")) {
-            return null;
-        }
-
-        return packaging;
     }
 
     /**

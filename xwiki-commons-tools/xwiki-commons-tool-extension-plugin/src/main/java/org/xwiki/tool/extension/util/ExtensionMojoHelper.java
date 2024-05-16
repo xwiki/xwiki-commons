@@ -238,7 +238,7 @@ public class ExtensionMojoHelper implements AutoCloseable
         this.repositorySystem = this.plexusContainer.lookup(RepositorySystem.class);
 
         this.extensionRepository =
-            new MavenBuildExtensionRepository(session, localRepository, plexusContainer, this.componentManager);
+            new MavenBuildExtensionRepository(this.session, this.plexusContainer, this.componentManager);
         this.repositories.addRepository(this.extensionRepository);
     }
 

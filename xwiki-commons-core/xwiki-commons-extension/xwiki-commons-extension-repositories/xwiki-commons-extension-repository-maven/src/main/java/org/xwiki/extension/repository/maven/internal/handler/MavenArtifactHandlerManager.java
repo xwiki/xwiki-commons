@@ -17,61 +17,44 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.aether.internal.components;
+package org.xwiki.extension.repository.maven.internal.handler;
+
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.codehaus.plexus.ContainerConfiguration;
-import org.codehaus.plexus.DefaultContainerConfiguration;
-import org.codehaus.plexus.DefaultPlexusContainer;
-import org.codehaus.plexus.PlexusConstants;
+import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.PlexusContainerException;
-import org.slf4j.Logger;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 
 /**
- * Provide easy access to singleton {@link PlexusContainer}.
- *
+ * Helper to manipulate {@link ArtifactHandler}s.
+ * 
  * @version $Id$
- * @since 5.2M1
+ * @since 16.4.0RC1
  */
-@Component
+@Component(roles = MavenArtifactHandlerManager.class)
 @Singleton
-public class PlexusContainerProvider implements Provider<PlexusContainer>, Initializable
+public class MavenArtifactHandlerManager extends MavenArtifactHandlers implements Initializable
 {
-    /**
-     * The logger to log.
-     */
     @Inject
-    private Logger logger;
-
-    /**
-     * In-process maven runtime.
-     */
-    private DefaultPlexusContainer plexusContainer;
+    private Provider<PlexusContainer> plexusProvider;
 
     @Override
     public void initialize() throws InitializationException
     {
+        Map<String, ArtifactHandler> handlers;
         try {
-            ContainerConfiguration config = new DefaultContainerConfiguration();
-            config.setAutoWiring(true);
-            config.setClassPathScanning(PlexusConstants.SCANNING_INDEX);
-            this.plexusContainer = new DefaultPlexusContainer(config);
-            this.plexusContainer.setLoggerManager(new XWikiLoggerManager(this.logger));
-        } catch (PlexusContainerException e) {
-            throw new InitializationException("Failed to initialize Plexus", e);
+            handlers = this.plexusProvider.get().lookupMap(ArtifactHandler.class);
+        } catch (ComponentLookupException e) {
+            throw new InitializationException("Failed to load standard Maven artifact handlers", e);
         }
-    }
 
-    @Override
-    public PlexusContainer get()
-    {
-        return this.plexusContainer;
+        add(handlers);
     }
 }

@@ -33,10 +33,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Relocation;
@@ -98,11 +98,15 @@ import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.maven.internal.DefaultMavenExtensionDependency;
 import org.xwiki.extension.maven.internal.MavenExtensionDependency;
 import org.xwiki.extension.maven.internal.MavenUtils;
-import org.xwiki.extension.maven.internal.converter.ModelConverter;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
+import org.xwiki.extension.repository.maven.internal.converter.ExtensionTypeConverter;
+import org.xwiki.extension.repository.maven.internal.converter.ModelConverter;
+import org.xwiki.extension.repository.maven.internal.handler.MavenArtifactHandler;
+import org.xwiki.extension.repository.maven.internal.handler.MavenArtifactHandlerManager;
+import org.xwiki.extension.repository.maven.internal.handler.MavenArtifactHandlers;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.version.Version;
@@ -152,6 +156,9 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private static final String ECONTEXT_SESSION = "maven.systeSession";
 
+    private static final ArtifactType JAR_ARTIFACT_TYPE =
+        new DefaultArtifactType(MavenUtils.JAR_EXTENSION, MavenUtils.JAR_EXTENSION, "", "java");
+
     protected final PlexusContainer plexusContainer;
 
     protected final ComponentManager componentManager;
@@ -182,6 +189,10 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     protected ExtensionContext extensionContext;
 
+    protected MavenArtifactHandlerManager artifactHandlerManager;
+
+    protected ExtensionTypeConverter extensionTypeConverter;
+
     public AetherExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
         AetherExtensionRepositoryFactory repositoryFactory, RemoteRepository aetherRepository,
         PlexusContainer plexusContainer, ComponentManager componentManager) throws Exception
@@ -197,6 +208,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         this.extensionConverter = componentManager.getInstance(ModelConverter.ROLE);
         this.factory = componentManager.getInstance(ExtensionFactory.class);
         this.extensionContext = componentManager.getInstance(ExtensionContext.class);
+        this.artifactHandlerManager = componentManager.getInstance(MavenArtifactHandlerManager.class);
+        this.extensionTypeConverter = componentManager.getInstance(ExtensionTypeConverter.class);
 
         this.versionRangeResolver = this.plexusContainer.lookup(VersionRangeResolver.class);
         this.versionResolver = this.plexusContainer.lookup(VersionResolver.class);
@@ -247,7 +260,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         XWikiRepositorySystemSession session;
         try {
             session = this.repositoryFactory.createRepositorySystemSession();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ResolveException("Failed to create the repository system session", e);
         }
 
@@ -540,18 +553,18 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return resolveMaven(artifact, null);
     }
 
-    private AetherExtension resolveMaven(Artifact artifact, String targetMavenExtension) throws ResolveException
+    private AetherExtension resolveMaven(Artifact artifact, String targetMavenType) throws ResolveException
     {
         XWikiRepositorySystemSession session = pushSession();
         try {
-            return resolveMaven(artifact, targetMavenExtension, session);
+            return resolveMaven(artifact, targetMavenType, session);
         } finally {
             popSession();
         }
     }
 
-    private AetherExtension resolveMaven(Artifact artifact, String targetMavenExtension,
-        RepositorySystemSession session) throws ResolveException
+    private AetherExtension resolveMaven(Artifact artifact, String targetMavenType, RepositorySystemSession session)
+        throws ResolveException
     {
         // Get Maven descriptor
 
@@ -591,34 +604,63 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
                         relocation.getArtifactId() != null ? relocation.getArtifactId() : artifact.getArtifactId(),
                         artifact.getClassifier(), artifact.getExtension(),
                         relocation.getVersion() != null ? relocation.getVersion() : artifact.getVersion()),
-                    targetMavenExtension, session);
+                    targetMavenType, session);
             }
         }
 
-        // Set type
+        // Get the Maven artifact handler
+        MavenArtifactHandler artifactHandler = getMavenArtifactHandler(model, session);
 
-        // Find the file extension
-        String artifactFileExtension =
-            getExtension(targetMavenExtension != null ? targetMavenExtension : model.getPackaging(), session);
+        // Get the Maven artifact type
+        ArtifactType artifactType = getArtifactType(targetMavenType, artifactHandler, session);
 
-        Extension mavenExtension = this.extensionConverter.convert(Extension.class, model);
-
-        Artifact fileArtifact = new DefaultArtifact(pomArtifact.getGroupId(), pomArtifact.getArtifactId(),
-            artifact.getClassifier(), artifactFileExtension, pomArtifact.getVersion());
-
-        ExtensionId extensionId;
-        String extensionType = mavenExtension.getType();
-        String extensionFileExtension = getExtension(extensionType, session);
-        if (targetMavenExtension != null && !Objects.equals(targetMavenExtension, extensionFileExtension)
-            && !Objects.equals(artifactFileExtension, extensionFileExtension)
-            && !Objects.equals(MavenUtils.packagingToType(targetMavenExtension), mavenExtension.getType())
-            && !Objects.equals(MavenUtils.packagingToType(artifactFileExtension), mavenExtension.getType())) {
-            extensionId = AetherUtils.createExtensionId(artifact, true, factory);
-            extensionType = MavenUtils.packagingToType(artifactFileExtension);
-        } else {
-            extensionId = AetherUtils.createExtensionId(artifact, false, factory);
+        // Resolve the classifier
+        String artifactClassifier = artifact.getClassifier();
+        if (StringUtils.isEmpty(artifactClassifier)) {
+            artifactClassifier = artifactType.getClassifier();
         }
 
+        // Resolve the Maven file extension
+        String artifactExtension = artifactType.getExtension();
+        Artifact fileArtifact = new DefaultArtifact(pomArtifact.getGroupId(), pomArtifact.getArtifactId(),
+            artifact.getClassifier(), artifactExtension, pomArtifact.getVersion());
+
+        // When the file extension is different from the default one in needs to be included in the extension id
+        boolean includeExtension = false;
+
+        // Resolve the extension type
+        String extensionType;
+        try {
+            // Is the requested type equals to the artifact type or extension
+            if (isTargetType(targetMavenType, artifactHandler)) {
+                // When the requested type is the default one, try to find a ArtifactTypeHandler associated with the
+                // packaging
+                extensionType = this.extensionTypeConverter.toExtensionType(artifactHandler);
+            } else {
+                // Otherwise relies on the target type extension
+                extensionType = this.extensionTypeConverter.mavenExtensionToExtensionType(artifactExtension);
+
+                // Since it's not the default, we also need to include the type in the extension
+                includeExtension = true;
+            }
+        } catch (Exception e) {
+            throw new ResolveException("Failed to resolve the extension type", e);
+        }
+
+        // Convert the pom Model into an Extension
+        Extension mavenExtension = this.extensionConverter.convert(Extension.class, model);
+
+        // Resolve the extension id
+        // TODO: put back special extension id generation when finishing to implement
+        // https://jira.xwiki.org/browse/XCOMMONS-3028, currently it's causing more harm than good
+        // String extensionIdString = MavenUtils.toXWikiExtensionIdentifier(artifact.getGroupId(),
+        // artifact.getArtifactId(), artifactClassifier, includeExtension ? artifact.getExtension() : null);
+        String extensionIdString =
+            MavenUtils.toXWikiExtensionIdentifier(artifact.getGroupId(), artifact.getArtifactId(), "", null);
+        ExtensionId extensionId =
+            new ExtensionId(extensionIdString, this.factory.getVersion(artifact.getBaseVersion()));
+
+        // Create the final extension
         AetherExtension extension = new AetherExtension(extensionId, extensionType, mavenExtension, fileArtifact, this);
 
         // Convert Maven dependencies to Aether dependencies
@@ -630,18 +672,45 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return extension;
     }
 
-    private String getExtension(String type, RepositorySystemSession session)
+    private boolean isTargetType(String targetMavenType, MavenArtifactHandler artifactHandler)
     {
-        if (type != null) {
-            ArtifactType artifactType = session.getArtifactTypeRegistry().get(type);
-            if (artifactType != null) {
-                return artifactType.getExtension();
-            }
+        return targetMavenType == null || artifactHandler.getType().equals(targetMavenType)
+            || artifactHandler.getExtension().equals(targetMavenType);
+    }
 
-            return type;
+    private MavenArtifactHandler getMavenArtifactHandler(Model model, RepositorySystemSession session)
+    {
+        MavenArtifactHandlers handlers = XWikiRepositorySystemSession.getArtifactHandlers(session);
+
+        MavenArtifactHandler handler = handlers.getByPackaging(model.getPackaging());
+
+        if (handler != null) {
+            return handler;
         }
 
-        return "pom";
+        // TODO: No mapping found for the provided packaging, search extensions
+        // See https://jira.xwiki.org/browse/XCOMMONS-3027
+
+        // Still no mapping found, use a default handler where every is equals to the packaging
+        return new MavenArtifactHandler(model.getPackaging(), new DefaultArtifactHandler(model.getPackaging()));
+    }
+    
+    private ArtifactType getArtifactType(String targetMavenType, MavenArtifactHandler artifactHandler,
+        RepositorySystemSession session)
+    {
+        if (targetMavenType != null) {
+            // Search the type registry
+            ArtifactType artifactType = session.getArtifactTypeRegistry().get(targetMavenType);
+            if (artifactType != null) {
+                return artifactType;
+            }
+
+            // Return a base type
+            return new DefaultArtifactType(targetMavenType);
+        }
+
+        // Fallback on the artifact handler
+        return artifactHandler.getArtifactType();
     }
 
     private List<ExtensionDependency> toAetherDependencies(Collection<ExtensionDependency> mavenDependencies,

@@ -26,18 +26,16 @@ import java.util.List;
 
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.codehaus.plexus.PlexusContainer;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.artifact.ArtifactType;
-import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.maven.internal.MavenUtils;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
@@ -53,8 +51,8 @@ public class MavenBuildExtensionRepository extends AetherExtensionRepository
 {
     private MavenSession mavenSession;
 
-    public MavenBuildExtensionRepository(MavenSession session, ArtifactRepository localRepository,
-        PlexusContainer plexusContainer, ComponentManager componentManager) throws Exception
+    public MavenBuildExtensionRepository(MavenSession session, PlexusContainer plexusContainer,
+        ComponentManager componentManager) throws Exception
     {
         super(new DefaultExtensionRepositoryDescriptor("maven-build", "maven", null), null, null, plexusContainer,
             componentManager);
@@ -77,12 +75,17 @@ public class MavenBuildExtensionRepository extends AetherExtensionRepository
     }
 
     @Override
-    protected XWikiRepositorySystemSession createRepositorySystemSession()
+    protected XWikiRepositorySystemSession createRepositorySystemSession() throws ResolveException
     {
-        XWikiRepositorySystemSession session =
-            new XWikiRepositorySystemSession(this.mavenSession.getRepositorySession());
+        try {
+            XWikiRepositorySystemSession session =
+                this.componentManager.getInstance(XWikiRepositorySystemSession.class);
+            session.initialize(this.mavenSession.getRepositorySession());
 
-        return session;
+            return session;
+        } catch (Exception e) {
+            throw new ResolveException("Failed to create the repository system session", e);
+        }
     }
 
     /**
@@ -96,7 +99,12 @@ public class MavenBuildExtensionRepository extends AetherExtensionRepository
     @Override
     public InputStream openStream(org.eclipse.aether.artifact.Artifact artifact) throws IOException
     {
-        XWikiRepositorySystemSession session = createRepositorySystemSession();
+        XWikiRepositorySystemSession session;
+        try {
+            session = createRepositorySystemSession();
+        } catch (ResolveException e) {
+            throw new IOException(e.getMessage(), e);
+        }
 
         List<RemoteRepository> repositories = newResolutionRepositories(session);
 
@@ -104,14 +112,7 @@ public class MavenBuildExtensionRepository extends AetherExtensionRepository
 
         ArtifactRequest artifactRequest = new ArtifactRequest();
         artifactRequest.setRepositories(repositories);
-
-        ArtifactType artifactType = XWikiRepositorySystemSession.TYPE_MAPPING.get(artifact.getExtension());
-        if (artifactType == null) {
-            artifactRequest.setArtifact(artifact);
-        } else {
-            artifactRequest.setArtifact(new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(),
-                artifact.getClassifier(), artifactType.getExtension(), artifact.getVersion()));
-        }
+        artifactRequest.setArtifact(artifact);
 
         ArtifactResult artifactResult;
         try {

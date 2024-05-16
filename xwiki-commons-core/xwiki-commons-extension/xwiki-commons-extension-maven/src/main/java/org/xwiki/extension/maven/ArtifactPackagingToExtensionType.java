@@ -17,39 +17,21 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.core;
+package org.xwiki.extension.maven;
 
-import org.junit.jupiter.api.Test;
-import org.xwiki.environment.Environment;
-import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
-import org.xwiki.test.annotation.AllComponents;
-import org.xwiki.test.junit5.mockito.ComponentTest;
-import org.xwiki.test.junit5.mockito.InjectMockComponents;
-import org.xwiki.test.junit5.mockito.MockComponent;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.xwiki.component.annotation.Role;
 
 /**
- * Unit tests for {@link DefaultCoreExtensionRepository}.
- *
+ * Allow an extension to indicate a mapping between a Maven packaging and the corresponding extension type.
+ * 
  * @version $Id$
+ * @since 16.4.0RC1
  */
-@ComponentTest
-@AllComponents
-class DefaultCoreExtensionRepositoryTest
+@Role
+public interface ArtifactPackagingToExtensionType
 {
-    @InjectMockComponents
-    private DefaultCoreExtensionRepository coreExtensionRepository;
-
-    @MockComponent
-    private Environment environment;
-
     /**
-     * Validate core extension loading and others initializations.
+     * @return the extension type
      */
-    @Test
-    void init()
-    {
-        assertTrue(this.coreExtensionRepository.countExtensions() > 0);
-    }
+    String getExtensionType();
 }

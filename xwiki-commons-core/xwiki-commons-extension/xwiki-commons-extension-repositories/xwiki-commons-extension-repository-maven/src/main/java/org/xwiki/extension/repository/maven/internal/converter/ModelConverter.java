@@ -17,19 +17,22 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.maven.internal.converter;
+package org.xwiki.extension.repository.maven.internal.converter;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.maven.model.Model;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.maven.internal.MavenExtension;
 import org.xwiki.extension.maven.internal.MavenUtils;
+import org.xwiki.extension.maven.internal.converter.AbstractModelConverter;
 import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.properties.converter.Converter;
 
@@ -48,21 +51,28 @@ public class ModelConverter extends AbstractModelConverter<Model>
      */
     public static final ParameterizedType ROLE = new DefaultParameterizedType(null, Converter.class, Model.class);
 
+    @Inject
+    private ExtensionTypeConverter converter;
+
     @Override
     public <G> G convert(Type targetType, Object sourceValue)
     {
         if (targetType == Extension.class) {
-            return (G) convertToExtension((Model) sourceValue);
+            try {
+                return (G) convertToExtension((Model) sourceValue);
+            } catch (ComponentLookupException e) {
+                throw new ConversionException("Failed to convert the Model", e);
+            }
         } else {
             throw new ConversionException(String.format("Unsupported target type [%s]", targetType));
         }
     }
 
-    private MavenExtension convertToExtension(Model model)
+    private MavenExtension convertToExtension(Model model) throws ComponentLookupException
     {
         String groupId = MavenUtils.resolveGroupId(model);
         String artifactId = model.getArtifactId();
-        String type = MavenUtils.packagingToType(model.getPackaging());
+        String type = this.converter.mavenPackagingToExtensionType(model.getPackaging());
         String version = MavenUtils.resolveVersion(model);
 
         return convertToExtension(model, groupId, artifactId, null, type, version);

@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.maven.internal.converter;
+package org.xwiki.extension.repository.maven.internal.converter;
 
 import org.apache.maven.model.Model;
 import org.junit.jupiter.api.BeforeEach;

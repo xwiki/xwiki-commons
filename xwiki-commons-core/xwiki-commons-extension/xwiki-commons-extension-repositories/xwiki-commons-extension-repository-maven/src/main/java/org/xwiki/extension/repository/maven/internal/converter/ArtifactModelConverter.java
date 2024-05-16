@@ -17,20 +17,23 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.maven.internal.converter;
+package org.xwiki.extension.repository.maven.internal.converter;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.maven.model.Model;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.maven.ArtifactModel;
 import org.xwiki.extension.maven.internal.MavenExtension;
 import org.xwiki.extension.maven.internal.MavenUtils;
+import org.xwiki.extension.maven.internal.converter.AbstractModelConverter;
 import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.properties.converter.Converter;
 
@@ -50,23 +53,30 @@ public class ArtifactModelConverter extends AbstractModelConverter<ArtifactModel
     public static final ParameterizedType ROLE =
         new DefaultParameterizedType(null, Converter.class, ArtifactModel.class);
 
+    @Inject
+    private ExtensionTypeConverter converter;
+
     @Override
     public <G> G convert(Type targetType, Object sourceValue)
     {
         if (targetType == Extension.class) {
-            return (G) convertToExtension((ArtifactModel) sourceValue);
+            try {
+                return (G) convertToExtension((ArtifactModel) sourceValue);
+            } catch (ComponentLookupException e) {
+                throw new ConversionException("Failed to convert the ArtifactModel", e);
+            }
         } else {
             throw new ConversionException(String.format("Unsupported target type [%s]", targetType));
         }
     }
 
-    private MavenExtension convertToExtension(ArtifactModel artifactModel)
+    private MavenExtension convertToExtension(ArtifactModel artifactModel) throws ComponentLookupException
     {
         String groupId = MavenUtils.resolveGroupId(artifactModel.getModel());
         String artifactId = artifactModel.getModel().getArtifactId();
         String classifier = artifactModel.getClassifier();
-        String type = MavenUtils.packagingToType(
-            artifactModel.getType() != null ? artifactModel.getType() : artifactModel.getModel().getPackaging());
+        String type = artifactModel.getType() != null ? this.converter.mavenTypeToExtensionType(artifactModel.getType())
+            : this.converter.mavenPackagingToExtensionType(artifactModel.getModel().getPackaging());
         String version = MavenUtils.resolveVersion(artifactModel.getModel());
 
         return convertToExtension(artifactModel.getModel(), groupId, artifactId, classifier, type, version);

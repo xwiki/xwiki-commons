@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,21 +16,33 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.xwiki.extension.jar.internal.handler;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>groupid</groupId>
-  <artifactId>nondefaulttypedependency</artifactId>
-  <version>version</version>
-  <packaging>test</packaging>
-  <dependencies>
-    <dependency>
-      <groupId>groupid</groupId>
-      <artifactId>othertype</artifactId>
-      <version>version</version>
-      <type>test</type>
-    </dependency>
-  </dependencies>
-</project>
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.extension.maven.ArtifactPackagingToExtensionType;
+import org.xwiki.extension.maven.ArtifactTypeToExtensionType;
+
+/**
+ * Conversion to webjar extension type.
+ * 
+ * @version $Id$
+ * @since 16.4.0RC1
+ */
+@Component
+@Named("webjar")
+@Singleton
+public class WebjarArtifactTypeConverter
+    implements ArtifactPackagingToExtensionType, ArtifactTypeToExtensionType
+{
+    @Override
+    public String getExtensionType()
+    {
+        // The Maven file extension for packaging "webjar" is "jar" but in the context of XWiki extension we want webjar
+        // to be recognized as being of a specific "webjar" type
+        return "webjar";
+    }
+}

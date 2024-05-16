@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.maven.internal;
+package org.xwiki.extension.repository.maven.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,11 +52,17 @@ import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.maven.internal.DefaultMavenExtensionDependency;
+import org.xwiki.extension.maven.internal.MavenCoreExtension;
+import org.xwiki.extension.maven.internal.MavenExtension;
+import org.xwiki.extension.maven.internal.MavenExtensionDependency;
+import org.xwiki.extension.maven.internal.MavenUtils;
 import org.xwiki.extension.repository.internal.core.AbstractExtensionScanner;
 import org.xwiki.extension.repository.internal.core.CoreExtensionCache;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtension;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
 import org.xwiki.extension.repository.internal.core.ExtensionScanner;
+import org.xwiki.extension.repository.maven.internal.converter.ExtensionTypeConverter;
 import org.xwiki.properties.ConverterManager;
 
 /**
@@ -78,6 +84,9 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
 
     @Inject
     private Environment environment;
+
+    @Inject
+    private ExtensionTypeConverter typeConverter;
 
     @Override
     public DefaultCoreExtension scanEnvironment(DefaultCoreExtensionRepository repository)
@@ -328,12 +337,12 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
                     if (filenameArtifact != null) {
                         coreExtension = new DefaultCoreExtension(repository, (URL) filenameArtifact[0],
                             new ExtensionId(dependencyId, dependency.getVersion()),
-                            MavenUtils.packagingToType(dependency.getType()));
+                            this.typeConverter.mavenTypeToExtensionType(dependency.getType()));
                         coreExtension.setGuessed(true);
                     } else if (guessedArtefact != null) {
                         coreExtension = new DefaultCoreExtension(repository, (URL) guessedArtefact[1],
                             new ExtensionId(dependencyId, (String) guessedArtefact[0]),
-                            MavenUtils.packagingToType(dependency.getType()));
+                            this.typeConverter.mavenTypeToExtensionType(dependency.getType()));
                         coreExtension.setGuessed(true);
                     }
 

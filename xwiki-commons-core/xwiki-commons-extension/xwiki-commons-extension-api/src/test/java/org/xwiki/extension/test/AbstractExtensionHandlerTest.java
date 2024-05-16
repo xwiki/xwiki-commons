@@ -114,9 +114,9 @@ public abstract class AbstractExtensionHandlerTest
         Optional<LogEvent> errorResult =
             installJob.getStatus().getLogTail().getLogEvents(failFrom).stream().findFirst();
         if (errorResult.isPresent()) {
-            LogEvent error = errorResult.get();
+            LogEvent logEvent = errorResult.get();
 
-            throw new Exception(error.getFormattedMessage(), error.getThrowable());
+            throw new Exception(logEvent.getLevel() + ": " + logEvent.getFormattedMessage(), logEvent.getThrowable());
         }
 
         return installJob;
@@ -170,6 +170,11 @@ public abstract class AbstractExtensionHandlerTest
         throws Throwable
     {
         return install(extensionId, namespaces, true, failFrom);
+    }
+
+    protected InstalledExtension install(ExtensionId extensionId, LogLevel failFrom) throws Throwable
+    {
+        return install(extensionId, (String[]) null, failFrom);
     }
 
     protected InstalledExtension install(ExtensionId extensionId, String[] namespaces, boolean rootModifications,

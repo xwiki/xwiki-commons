@@ -70,7 +70,7 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
     private Environment environment;
 
     private RepositorySystem repositorySystem;
-    
+
     @Override
     public void initialize() throws InitializationException
     {
@@ -81,10 +81,11 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
         }
     }
 
-    public XWikiRepositorySystemSession createRepositorySystemSession() throws IOException
+    public XWikiRepositorySystemSession createRepositorySystemSession()
+        throws IOException, org.xwiki.component.manager.ComponentLookupException
     {
-        XWikiRepositorySystemSession session =
-            new XWikiRepositorySystemSession(this.repositorySystem, this.environment);
+        XWikiRepositorySystemSession session = this.componentManager.getInstance(XWikiRepositorySystemSession.class);
+        session.initialize(this.repositorySystem, this.environment);
 
         session.setUserAgent(this.configuration.getUserAgent());
 

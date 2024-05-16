@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,21 +16,35 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.xwiki.extension.repository.core;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>groupid</groupId>
-  <artifactId>nondefaulttypedependency</artifactId>
-  <version>version</version>
-  <packaging>test</packaging>
-  <dependencies>
-    <dependency>
-      <groupId>groupid</groupId>
-      <artifactId>othertype</artifactId>
-      <version>version</version>
-      <type>test</type>
-    </dependency>
-  </dependencies>
-</project>
+import org.junit.jupiter.api.Test;
+import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * Unit tests for {@link DefaultCoreExtensionRepository}.
+ *
+ * @version $Id$
+ */
+@ComponentTest
+@AllComponents
+class DefaultCoreExtensionRepositoryTest
+{
+    @InjectMockComponents
+    private DefaultCoreExtensionRepository coreExtensionRepository;
+
+    /**
+     * Validate core extension loading and others initializations.
+     */
+    @Test
+    void init()
+    {
+        assertTrue(this.coreExtensionRepository.countExtensions() > 0);
+    }
+}

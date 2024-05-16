@@ -1,4 +1,10 @@
 org.xwiki.extension.repository.aether.internal.AetherExtensionRepositoryFactory
-org.xwiki.extension.repository.aether.internal.configuration.DefaultAetherConfiguration
-org.xwiki.extension.repository.aether.internal.components.PlexusContainerProvider
 org.xwiki.extension.repository.aether.internal.NexusXWikiOrgExtensionRepositorySource
+org.xwiki.extension.repository.aether.internal.XWikiRepositorySystemSession
+org.xwiki.extension.repository.aether.internal.components.PlexusContainerProvider
+org.xwiki.extension.repository.aether.internal.configuration.DefaultAetherConfiguration
+org.xwiki.extension.repository.maven.internal.MavenExtensionScanner
+org.xwiki.extension.repository.maven.internal.converter.ArtifactModelConverter
+org.xwiki.extension.repository.maven.internal.converter.ExtensionTypeConverter
+org.xwiki.extension.repository.maven.internal.converter.ModelConverter
+org.xwiki.extension.repository.maven.internal.handler.MavenArtifactHandlerManager

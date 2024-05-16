@@ -745,7 +745,9 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
         if (!getRequest().isInstalledIgnored() && namespace == null) {
             versionConstraint = mergeBackwardDependenciesVersionConstraints(targetDependency.getId(), namespace,
                 targetDependency.getVersionConstraint());
-            targetDependency = new DefaultExtensionDependency(targetDependency, versionConstraint);
+            if (versionConstraint != targetDependency.getVersionConstraint()) {
+                targetDependency = new DefaultExtensionDependency(targetDependency, versionConstraint);
+            }
         }
 
         // Not found locally, search it remotely

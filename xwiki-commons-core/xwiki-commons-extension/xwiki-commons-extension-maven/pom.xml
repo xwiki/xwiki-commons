@@ -32,7 +32,7 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Extension - Maven</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.70</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.07</xwiki.jacoco.instructionRatio>
     <!-- TODO: Remove once the tests have been fixed to not output anything to the console! -->
     <xwiki.surefire.captureconsole.skip>true</xwiki.surefire.captureconsole.skip>
   </properties>
@@ -95,8 +95,7 @@
             <configuration>
               <excludes>
                 **/AbstractModelConverter.java,
-                **/MavenUtils.java,
-                **/MavenExtensionScanner.java
+                **/MavenUtils.java
               </excludes>
             </configuration>
           </execution>

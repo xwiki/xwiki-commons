@@ -23,9 +23,10 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
@@ -34,16 +35,19 @@ import org.eclipse.aether.ConfigurationProperties;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.artifact.ArtifactType;
 import org.eclipse.aether.artifact.ArtifactTypeRegistry;
-import org.eclipse.aether.artifact.DefaultArtifactType;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.RepositoryPolicy;
 import org.eclipse.aether.util.artifact.DefaultArtifactTypeRegistry;
 import org.eclipse.aether.util.repository.JreProxySelector;
 import org.eclipse.aether.util.repository.SimpleArtifactDescriptorPolicy;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.component.annotation.InstantiationStrategy;
+import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.environment.Environment;
-import org.xwiki.extension.maven.internal.MavenUtils;
+import org.xwiki.extension.repository.maven.internal.handler.MavenArtifactHandler;
+import org.xwiki.extension.repository.maven.internal.handler.MavenArtifactHandlerManager;
+import org.xwiki.extension.repository.maven.internal.handler.MavenArtifactHandlers;
 
 /**
  * Encapsulate {@link DefaultRepositorySystemSession} to generate and clean a temporary local repository for each
@@ -52,40 +56,48 @@ import org.xwiki.extension.maven.internal.MavenUtils;
  * @version $Id$
  * @since 6.0
  */
+@Component(roles = XWikiRepositorySystemSession.class)
+@InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
 public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySystemSession implements Closeable
 {
-    /**
-     * The {@link ArtifactType} corresponding to a known type.
-     */
-    public static final Map<String, ArtifactType> TYPE_MAPPING = new HashMap();
+    static final String CONFIG_ARTIFACT_HANDLERS = "xwiki.artifacthandlers";
 
     static final JreProxySelector JREPROXYSELECTOR = new JreProxySelector();
 
-    private static final String TYPE_BUNDLE = "bundle";
-
-    private static final String TYPE_ECLIPSE_PLUGIN = "eclipse-plugin";
-
-    private static final String TYPE_WEBJAR = "webjar";
-
     private static final Set<String> SYSTEM_PROPERTIES = Set.of("java.version");
 
-    static {
-        TYPE_MAPPING.put(TYPE_BUNDLE,
-            new DefaultArtifactType(TYPE_BUNDLE, MavenUtils.JAR_EXTENSION, "", MavenUtils.JAVA_LANGUAGE));
-        TYPE_MAPPING.put(TYPE_ECLIPSE_PLUGIN,
-            new DefaultArtifactType(TYPE_ECLIPSE_PLUGIN, MavenUtils.JAR_EXTENSION, "", MavenUtils.JAVA_LANGUAGE));
-        TYPE_MAPPING.put(TYPE_WEBJAR,
-            new DefaultArtifactType(TYPE_WEBJAR, MavenUtils.JAR_EXTENSION, "", (String) null));
+    @Inject
+    private MavenArtifactHandlerManager standardHandlers;
+
+    private RepositorySystemSession session;
+
+    private boolean closeable;
+
+    /**
+     * @param session the session
+     * @return the artifact handlers attached to this session
+     */
+    public static MavenArtifactHandlers getArtifactHandlers(RepositorySystemSession session)
+    {
+        return (MavenArtifactHandlers) session.getConfigProperties().get(CONFIG_ARTIFACT_HANDLERS);
     }
 
-    private final RepositorySystemSession session;
+    static Path getDownloadDirectory(Environment enviroment)
+    {
+        return enviroment.getTemporaryDirectory().toPath().resolve("extension/download");
+    }
 
-    private final boolean closeable;
+    static Path createTemporaryDownloadDirectory(Environment enviroment) throws IOException
+    {
+        Path downloadDirectory = getDownloadDirectory(enviroment);
+        Files.createDirectories(downloadDirectory);
+        return Files.createTempDirectory(downloadDirectory, "repository");
+    }
 
     /**
      * @param session a pre-existing session
      */
-    public XWikiRepositorySystemSession(RepositorySystemSession session)
+    public void initialize(RepositorySystemSession session)
     {
         this.session = session;
         this.closeable = false;
@@ -99,9 +111,9 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
      * @param enviroment the environment component
      * @throws IOException when failing to create a temporary directory to download the required files
      */
-    public XWikiRepositorySystemSession(RepositorySystem repositorySystem, Environment enviroment) throws IOException
+    public void initialize(RepositorySystem repositorySystem, Environment enviroment) throws IOException
     {
-        this(repositorySystem, createTemporaryDownloadDirectory(enviroment), true);
+        initialize(repositorySystem, createTemporaryDownloadDirectory(enviroment), true);
     }
 
     /**
@@ -111,8 +123,7 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
      *            closed
      * @throws IOException when failing to create a temporary directory to download the required files
      */
-    public XWikiRepositorySystemSession(RepositorySystem repositorySystem, Path path, boolean closeable)
-        throws IOException
+    public void initialize(RepositorySystem repositorySystem, Path path, boolean closeable) throws IOException
     {
         DefaultRepositorySystemSession wsession = MavenRepositorySystemUtils.newSession();
         this.session = wsession;
@@ -144,31 +155,20 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
 
         // Set a default user agent
         setUserAgent("XWikiExtensionManager");
-    }
 
-    static Path getDownloadDirectory(Environment enviroment)
-    {
-        return enviroment.getTemporaryDirectory().toPath().resolve("extension/download");
-    }
-
-    static Path createTemporaryDownloadDirectory(Environment enviroment) throws IOException
-    {
-        Path downloadDirectory = getDownloadDirectory(enviroment);
-        Files.createDirectories(downloadDirectory);
-        return Files.createTempDirectory(downloadDirectory, "repository");
+        // Allow accessing artifact handlers
+        wsession.setConfigProperty(CONFIG_ARTIFACT_HANDLERS, new MavenArtifactHandlers(this.standardHandlers));
     }
 
     private void addTypes(RepositorySystemSession session)
     {
-        // TODO: Find them in extensions registered in pom files
         ArtifactTypeRegistry artifactTypeRegistry = session.getArtifactTypeRegistry();
-        if (artifactTypeRegistry instanceof DefaultArtifactTypeRegistry) {
-            DefaultArtifactTypeRegistry defaultArtifactTypeRegistry =
-                (DefaultArtifactTypeRegistry) artifactTypeRegistry;
-
-            TYPE_MAPPING.forEach((key, value) -> {
-                defaultArtifactTypeRegistry.add(value);
-            });
+        if (artifactTypeRegistry instanceof DefaultArtifactTypeRegistry defaultArtifactTypeRegistry) {
+            for (MavenArtifactHandler handler : this.standardHandlers.getHandlers()) {
+                if (defaultArtifactTypeRegistry.get(handler.getType()) == null) {
+                    defaultArtifactTypeRegistry.add(handler.getArtifactType());
+                }
+            }
         }
     }
 
