@@ -65,6 +65,8 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
 
     private static final String TYPE_ECLIPSE_PLUGIN = "eclipse-plugin";
 
+    private static final String TYPE_ATLASSIAN_PLUGIN = "atlassian-plugin";
+
     private static final String TYPE_WEBJAR = "webjar";
 
     private static final Set<String> SYSTEM_PROPERTIES = Set.of("java.version");
@@ -74,6 +76,8 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
             new DefaultArtifactType(TYPE_BUNDLE, MavenUtils.JAR_EXTENSION, "", MavenUtils.JAVA_LANGUAGE));
         TYPE_MAPPING.put(TYPE_ECLIPSE_PLUGIN,
             new DefaultArtifactType(TYPE_ECLIPSE_PLUGIN, MavenUtils.JAR_EXTENSION, "", MavenUtils.JAVA_LANGUAGE));
+        TYPE_MAPPING.put(TYPE_ATLASSIAN_PLUGIN,
+            new DefaultArtifactType(TYPE_ATLASSIAN_PLUGIN, MavenUtils.JAR_EXTENSION, "", MavenUtils.JAVA_LANGUAGE));
         TYPE_MAPPING.put(TYPE_WEBJAR,
             new DefaultArtifactType(TYPE_WEBJAR, MavenUtils.JAR_EXTENSION, "", (String) null));
     }
