@@ -155,9 +155,6 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
 
         // Set a default user agent
         setUserAgent("XWikiExtensionManager");
-
-        // Allow accessing artifact handlers
-        wsession.setConfigProperty(CONFIG_ARTIFACT_HANDLERS, new MavenArtifactHandlers(this.standardHandlers));
     }
 
     private void addTypes(RepositorySystemSession session)
@@ -169,6 +166,11 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
                     defaultArtifactTypeRegistry.add(handler.getArtifactType());
                 }
             }
+        }
+
+        if (session instanceof DefaultRepositorySystemSession wsession) {
+            // Allow accessing artifact handlers
+            wsession.setConfigProperty(CONFIG_ARTIFACT_HANDLERS, new MavenArtifactHandlers(this.standardHandlers));
         }
     }
 

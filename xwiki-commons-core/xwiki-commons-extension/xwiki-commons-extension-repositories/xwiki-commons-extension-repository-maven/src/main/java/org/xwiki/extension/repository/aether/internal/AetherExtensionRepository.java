@@ -156,9 +156,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private static final String ECONTEXT_SESSION = "maven.systeSession";
 
-    private static final ArtifactType JAR_ARTIFACT_TYPE =
-        new DefaultArtifactType(MavenUtils.JAR_EXTENSION, MavenUtils.JAR_EXTENSION, "", "java");
-
     protected final PlexusContainer plexusContainer;
 
     protected final ComponentManager componentManager;
@@ -193,6 +190,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     protected ExtensionTypeConverter extensionTypeConverter;
 
+    protected MavenArtifactHandlerManager mavenArtifactHandlerManager;
+
     public AetherExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
         AetherExtensionRepositoryFactory repositoryFactory, RemoteRepository aetherRepository,
         PlexusContainer plexusContainer, ComponentManager componentManager) throws Exception
@@ -210,6 +209,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         this.extensionContext = componentManager.getInstance(ExtensionContext.class);
         this.artifactHandlerManager = componentManager.getInstance(MavenArtifactHandlerManager.class);
         this.extensionTypeConverter = componentManager.getInstance(ExtensionTypeConverter.class);
+        this.mavenArtifactHandlerManager = componentManager.getInstance(MavenArtifactHandlerManager.class);
 
         this.versionRangeResolver = this.plexusContainer.lookup(VersionRangeResolver.class);
         this.versionResolver = this.plexusContainer.lookup(VersionResolver.class);
@@ -681,6 +681,9 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     private MavenArtifactHandler getMavenArtifactHandler(Model model, RepositorySystemSession session)
     {
         MavenArtifactHandlers handlers = XWikiRepositorySystemSession.getArtifactHandlers(session);
+        if (handlers == null) {
+            handlers = this.mavenArtifactHandlerManager;
+        }
 
         MavenArtifactHandler handler = handlers.getByPackaging(model.getPackaging());
 
@@ -694,7 +697,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         // Still no mapping found, use a default handler where every is equals to the packaging
         return new MavenArtifactHandler(model.getPackaging(), new DefaultArtifactHandler(model.getPackaging()));
     }
-    
+
     private ArtifactType getArtifactType(String targetMavenType, MavenArtifactHandler artifactHandler,
         RepositorySystemSession session)
     {
