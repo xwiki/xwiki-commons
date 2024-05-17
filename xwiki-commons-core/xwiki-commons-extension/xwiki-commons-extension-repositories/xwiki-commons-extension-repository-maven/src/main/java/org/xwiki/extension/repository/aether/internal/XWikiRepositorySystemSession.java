@@ -60,14 +60,14 @@ import org.xwiki.extension.repository.maven.internal.handler.MavenArtifactHandle
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
 public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySystemSession implements Closeable
 {
-    static final String CONFIG_ARTIFACT_HANDLERS = "xwiki.artifacthandlers";
-
     static final JreProxySelector JREPROXYSELECTOR = new JreProxySelector();
 
     private static final Set<String> SYSTEM_PROPERTIES = Set.of("java.version");
 
     @Inject
     private MavenArtifactHandlerManager standardHandlers;
+
+    private MavenArtifactHandlers sessionHandlers;
 
     private RepositorySystemSession session;
 
@@ -79,7 +79,11 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
      */
     public static MavenArtifactHandlers getArtifactHandlers(RepositorySystemSession session)
     {
-        return (MavenArtifactHandlers) session.getConfigProperties().get(CONFIG_ARTIFACT_HANDLERS);
+        if (session instanceof XWikiRepositorySystemSession xwikiSession) {
+            return xwikiSession.sessionHandlers;
+        }
+
+        return null;
     }
 
     static Path getDownloadDirectory(Environment enviroment)
@@ -149,7 +153,6 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
 
         // Fail when the pom is missing or invalid
         wsession.setArtifactDescriptorPolicy(new SimpleArtifactDescriptorPolicy(false, false));
-
         // Global checksum and update policy
         wsession.setChecksumPolicy(RepositoryPolicy.CHECKSUM_POLICY_WARN);
 
@@ -168,10 +171,7 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
             }
         }
 
-        if (session instanceof DefaultRepositorySystemSession wsession) {
-            // Allow accessing artifact handlers
-            wsession.setConfigProperty(CONFIG_ARTIFACT_HANDLERS, new MavenArtifactHandlers(this.standardHandlers));
-        }
+        this.sessionHandlers = new MavenArtifactHandlers(this.standardHandlers);
     }
 
     @Override
