@@ -28,7 +28,7 @@ import jakarta.servlet.http.HttpSessionContext;
 
 /**
  * @version $Id$
- * @since 17-jakarta
+ * @since -1.jakarta
  */
 public class JakartaToJavaxHttpSessionContext implements HttpSessionContext
 {

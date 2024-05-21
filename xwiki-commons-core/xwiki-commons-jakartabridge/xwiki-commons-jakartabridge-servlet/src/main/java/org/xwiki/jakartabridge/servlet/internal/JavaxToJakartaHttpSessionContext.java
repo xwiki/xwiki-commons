@@ -28,7 +28,7 @@ import org.xwiki.jakartabridge.servlet.ServletBridge;
 
 /**
  * @version $Id$
- * @since 17-jakarta
+ * @since -1.jakarta
  */
 public class JavaxToJakartaHttpSessionContext implements HttpSessionContext
 {

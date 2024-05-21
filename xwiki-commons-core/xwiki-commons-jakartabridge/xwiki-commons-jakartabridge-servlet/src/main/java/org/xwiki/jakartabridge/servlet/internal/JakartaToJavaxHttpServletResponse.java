@@ -30,7 +30,7 @@ import jakarta.servlet.http.HttpServletResponse;
 /**
  * @param <R> the type of http servlet response
  * @version $Id$
- * @since 17-jakarta
+ * @since -1.jakarta
  */
 public class JakartaToJavaxHttpServletResponse<R extends javax.servlet.http.HttpServletResponse>
     extends JakartaToJavaxServletResponse<R> implements HttpServletResponse

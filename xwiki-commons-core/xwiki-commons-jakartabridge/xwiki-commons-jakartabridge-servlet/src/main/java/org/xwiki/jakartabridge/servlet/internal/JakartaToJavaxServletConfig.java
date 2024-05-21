@@ -28,7 +28,7 @@ import jakarta.servlet.ServletContext;
 
 /**
  * @version $Id$
- * @since 17-jakarta
+ * @since -1.jakarta
  */
 public class JakartaToJavaxServletConfig implements ServletConfig
 {

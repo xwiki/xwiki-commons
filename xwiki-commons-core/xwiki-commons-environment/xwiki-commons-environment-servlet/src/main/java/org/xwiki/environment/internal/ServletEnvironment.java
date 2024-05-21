@@ -87,7 +87,7 @@ public class ServletEnvironment extends AbstractEnvironment
 
     /**
      * @return the Servlet Context
-     * @since 17-jakarta
+     * @since -1.jakarta
      */
     public ServletContext getJakartaServletContext()
     {

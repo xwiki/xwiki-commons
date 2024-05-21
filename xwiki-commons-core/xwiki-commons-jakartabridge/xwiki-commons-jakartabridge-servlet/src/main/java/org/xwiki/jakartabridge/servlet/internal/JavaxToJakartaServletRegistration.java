@@ -32,7 +32,7 @@ import org.xwiki.jakartabridge.servlet.ServletBridge;
 /**
  * @param <T> the exact type of jakarta.servlet.ServletRegistration
  * @version $Id$
- * @since 17-jakarta
+ * @since -1.jakarta
  */
 public class JavaxToJakartaServletRegistration<T extends jakarta.servlet.ServletRegistration>
     implements ServletRegistration
