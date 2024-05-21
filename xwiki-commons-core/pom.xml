@@ -278,6 +278,55 @@
                 </item>
               </differences>
             </revapi.differences>
+
+            <!-- Jakarta -->
+            <revapi.differences>
+              <justification>Move to Jakarta WebSocket 2.1.1</justification>
+              <criticality>highlight</criticality>
+              <differences>
+                <item>
+                  <ignore>true</ignore>
+                  <regex>true</regex>
+                  <code>java.class.noLongerImplementsInterface</code>
+                  <interface>javax.websocket..*</interface>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.parameterTypeChanged</code>
+                  <old>parameter &lt;T&gt; T org.xwiki.websocket.WebSocketContext::call(===javax.websocket.Session===, java.util.concurrent.Callable&lt;T&gt;) throws java.lang.Exception</old>
+                  <new>parameter &lt;T&gt; T org.xwiki.websocket.WebSocketContext::call(===jakarta.websocket.Session===, java.util.concurrent.Callable&lt;T&gt;) throws java.lang.Exception</new>
+                  <parameterIndex>0</parameterIndex>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.parameterTypeChanged</code>
+                  <old>parameter void org.xwiki.websocket.WebSocketContext::initialize(===javax.websocket.server.ServerEndpointConfig===, javax.websocket.server.HandshakeRequest, javax.websocket.HandshakeResponse)</old>
+                  <new>parameter void org.xwiki.websocket.WebSocketContext::initialize(===jakarta.websocket.server.ServerEndpointConfig===, jakarta.websocket.server.HandshakeRequest, jakarta.websocket.HandshakeResponse)</new>
+                  <parameterIndex>0</parameterIndex>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.parameterTypeChanged</code>
+                  <old>parameter void org.xwiki.websocket.WebSocketContext::initialize(javax.websocket.server.ServerEndpointConfig, ===javax.websocket.server.HandshakeRequest===, javax.websocket.HandshakeResponse)</old>
+                  <new>parameter void org.xwiki.websocket.WebSocketContext::initialize(jakarta.websocket.server.ServerEndpointConfig, ===jakarta.websocket.server.HandshakeRequest===, jakarta.websocket.HandshakeResponse)</new>
+                  <parameterIndex>1</parameterIndex>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.parameterTypeChanged</code>
+                  <old>parameter void org.xwiki.websocket.WebSocketContext::initialize(javax.websocket.server.ServerEndpointConfig, javax.websocket.server.HandshakeRequest, ===javax.websocket.HandshakeResponse===)</old>
+                  <new>parameter void org.xwiki.websocket.WebSocketContext::initialize(jakarta.websocket.server.ServerEndpointConfig, jakarta.websocket.server.HandshakeRequest, ===jakarta.websocket.HandshakeResponse===)</new>
+                  <parameterIndex>2</parameterIndex>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.parameterTypeChanged</code>
+                  <old>parameter void org.xwiki.websocket.WebSocketContext::run(===javax.websocket.Session===, java.lang.Runnable)</old>
+                  <new>parameter void org.xwiki.websocket.WebSocketContext::run(===jakarta.websocket.Session===, java.lang.Runnable)</new>
+                  <parameterIndex>0</parameterIndex>
+                </item>
+              </differences>
+            </revapi.differences>
           </analysisConfiguration>
         </configuration>
       </plugin>
