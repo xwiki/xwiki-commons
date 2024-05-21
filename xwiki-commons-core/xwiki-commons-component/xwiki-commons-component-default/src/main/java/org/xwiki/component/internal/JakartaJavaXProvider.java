@@ -31,7 +31,7 @@ import org.xwiki.component.manager.ComponentManager;
  *
  * @param <T> the role type to provide
  * @version $Id$
- * @since jakarta
+ * @since -1.jakarta
  */
 public class JakartaJavaXProvider<T> implements Provider<T>
 {

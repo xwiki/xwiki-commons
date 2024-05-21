@@ -30,7 +30,7 @@ import org.xwiki.component.manager.ComponentManager;
  *
  * @param <T> the role type
  * @version $Id$
- * @since jakarta
+ * @since -1.jakarta
  */
 public class JavaXGenericProvider<T> extends AbstractGenericProvider<T> implements Provider<T>
 {

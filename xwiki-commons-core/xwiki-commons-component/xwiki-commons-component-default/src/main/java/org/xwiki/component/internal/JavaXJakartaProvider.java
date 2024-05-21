@@ -31,7 +31,7 @@ import jakarta.inject.Provider;
  *
  * @param <T> the role type to provide
  * @version $Id$
- * @since jakarta
+ * @since -1.jakarta
  */
 public class JavaXJakartaProvider<T> implements Provider<T>
 {
