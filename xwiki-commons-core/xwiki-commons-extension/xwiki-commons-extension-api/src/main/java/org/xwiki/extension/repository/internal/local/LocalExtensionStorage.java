@@ -178,7 +178,7 @@ public class LocalExtensionStorage
 
                 if (!localExtension.getFile().getFile().exists()) {
                     throw new InvalidExtensionException("Failed to load local extension [" + descriptor + "]: ["
-                        + localExtension.getFile() + "] file does not exists");
+                        + localExtension.getFile() + "] file does not exist");
                 }
             }
 
@@ -296,7 +296,7 @@ public class LocalExtensionStorage
         File descriptorFile = extension.getDescriptorFile();
 
         if (descriptorFile == null) {
-            throw new IOException("Exception does not exists");
+            throw new IOException("Exception does not exist");
         }
 
         descriptorFile.delete();

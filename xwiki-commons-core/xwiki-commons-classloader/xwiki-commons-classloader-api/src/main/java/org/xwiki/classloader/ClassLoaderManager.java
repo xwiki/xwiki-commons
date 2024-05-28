@@ -36,7 +36,7 @@ public interface ClassLoaderManager
      * Create and get classloader associated to the provided namespace.
      *
      * @param namespace the namespace
-     * @param create true if the class loader should be created if it does not exists
+     * @param create true if the class loader should be created if it does not exist
      * @return the class loader, if none can be found and <code>create</code> is false return root classloader
      */
     NamespaceURLClassLoader getURLClassLoader(String namespace, boolean create);
