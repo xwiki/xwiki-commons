@@ -53,7 +53,7 @@ public class DefaultJobContext implements JobContext
     private Execution execution;
 
     /**
-     * @param create if true create the stack if it does not exists
+     * @param create if true create the stack if it does not exist
      * @return the stack containing the current jobs
      */
     private Deque<Job> getJobstack(boolean create)

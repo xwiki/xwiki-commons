@@ -383,7 +383,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
 
     /**
      * @param namespace the namespace
-     * @param create indicate if the {@link InstalledNamespace} should be create if it does not exists
+     * @param create indicate if the {@link InstalledNamespace} should be create if it does not exist
      * @return the corresponding {@link InstalledNamespace}
      */
     private Map<String, Object> getInstalledNamespace(String namespace, boolean create)
