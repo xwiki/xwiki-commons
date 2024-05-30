@@ -615,6 +615,15 @@ public class AetherDefaultRepositoryManagerTest
         assertEquals(dependency.getId(), dependencyExtension.getId().getId());
     }
 
+    @Test
+    public void testResolveWithProfileActivation() throws ResolveException
+    {
+        Extension extension = this.repositoryManager.resolve(new ExtensionId("groupid:profileactivation", "version"));
+
+        assertEquals("javapropertyvalue", extension.getProperty("xwiki.extension.javaproperty"));
+        assertEquals("ospropertyvalue", extension.getProperty("xwiki.extension.osproperty"));
+    }
+
     // Failures
 
     @Test(expected = ExtensionNotFoundException.class)
