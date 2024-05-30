@@ -69,7 +69,7 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
 
     private static final String TYPE_WEBJAR = "webjar";
 
-    private static final Set<String> SYSTEM_PROPERTIES = Set.of("java.version");
+    private static final Set<String> SYSTEM_PROPERTIES = Set.of("java.version", "os.name", "os.arch", "os.version");
 
     static {
         TYPE_MAPPING.put(TYPE_BUNDLE,
