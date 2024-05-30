@@ -62,7 +62,7 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
 {
     static final JreProxySelector JREPROXYSELECTOR = new JreProxySelector();
 
-    private static final Set<String> SYSTEM_PROPERTIES = Set.of("java.version");
+    private static final Set<String> SYSTEM_PROPERTIES = Set.of("java.version", "os.name", "os.arch", "os.version");
 
     @Inject
     private MavenArtifactHandlerManager standardHandlers;
