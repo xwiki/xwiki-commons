@@ -19,29 +19,34 @@
  */
 package org.xwiki.netflux.internal;
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.Test;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+
 /**
- * Unit tests for {@link Utils}.
+ * Unit tests for {@link IdGenerator}.
  * 
  * @version $Id$
- * @since 13.9RC1
  */
-class UtilsTest
+@ComponentTest
+class IdGeneratorTest
 {
+    @InjectMockComponents
+    private IdGenerator idGenerator;
+
     @Test
     void getRandomHexString()
     {
-        String first = Utils.getRandomHexString(48);
+        String first = this.idGenerator.generateChannelId();
         assertHexString(first, 48);
 
-        String second = Utils.getRandomHexString(48);
+        String second = this.idGenerator.generateChannelId();
         assertHexString(second, 48);
 
-        assertFalse(first.equals(second));
+        assertNotEquals(first, second);
     }
 
     void assertHexString(String input, int length)

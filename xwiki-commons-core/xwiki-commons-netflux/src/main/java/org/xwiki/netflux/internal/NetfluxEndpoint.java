@@ -22,19 +22,19 @@ package org.xwiki.netflux.internal;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.websocket.CloseReason;
-import javax.websocket.DecodeException;
-import javax.websocket.EncodeException;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
@@ -64,8 +64,6 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
 
     private static final String COMMAND_JOIN = "JOIN";
 
-    private static final String COMMAND_MSG = "MSG";
-
     private static final String ERROR_INVALID = "EINVAL";
 
     private static final String ERROR_NO_ENTITY = "ENOENT";
@@ -74,16 +72,17 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
 
     private final Map<String, User> users = new HashMap<>();
 
-    private final JsonConverter converter = new JsonConverter();
-
     @Inject
     private Logger logger;
+
+    @Inject
+    private IdGenerator idGenerator;
 
     @Inject
     private ChannelStore channels;
 
     @Inject
-    private HistoryKeeper historyKeeper;
+    private MessageDispatcher dispatcher;
 
     @Override
     public void onOpen(Session session, EndpointConfig config)
@@ -92,7 +91,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
             User user = getOrRegisterUser(session);
 
             // Send the IDENT message.
-            String identMessage = display(buildDefault("", "IDENT", user.getName(), null));
+            String identMessage = this.dispatcher.buildDefault("", "IDENT", user.getName(), null);
             if (!sendMessage(user, identMessage)) {
                 return;
             }
@@ -163,23 +162,18 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
         User user = (User) session.getUserProperties().get(NETFLUX_USER);
         if (user == null) {
             // Register the user.
-            String userName = Utils.getRandomHexString(32);
-            user = new User(session, userName);
-            this.users.put(userName, user);
+            String userId = this.idGenerator.generateUserId();
+            user = new User(session, userId);
+            this.users.put(userId, user);
             session.getUserProperties().put(NETFLUX_USER, user);
-            this.logger.debug("Registered [{}]", userName);
+            this.logger.debug("Registered [{}]", userId);
         }
         return user;
     }
 
     private void onMessage(Session session, String message)
     {
-        List<Object> msg;
-        try {
-            msg = this.converter.decode(message);
-        } catch (DecodeException e) {
-            throw new RuntimeException(e);
-        }
+        List<Object> msg = this.dispatcher.decode(message);
         if (msg == null) {
             return;
         }
@@ -218,7 +212,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
              * PING: - Send an ACK
              */
             onCommandPing(user, seq);
-        } else if (COMMAND_MSG.equals(cmd)) {
+        } else if (MessageDispatcher.COMMAND_MSG.equals(cmd)) {
             /*
              * MSG (patch): - Send an ACK - Check if the history of the channel is requested - Yes : send the history -
              * No : transfer the message to the recipient
@@ -232,8 +226,8 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
         // Key Length == 32 ==> Cryptpad key
         // Key Length == 48 ==> RTFrontend key
         if (!StringUtils.isEmpty(channelKey) && channelKey.length() != 32 && channelKey.length() != 48) {
-            ArrayList<Object> errorMsg = buildError(seq, ERROR_INVALID, "");
-            addMessage(user, display(errorMsg));
+            String errorMsg = this.dispatcher.buildError(seq, ERROR_INVALID, "");
+            this.dispatcher.addMessage(user, errorMsg);
             return;
         }
         Channel channel = (channelKey == null) ? null : this.channels.get(channelKey);
@@ -241,41 +235,45 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
         if (channel == null && StringUtils.isEmpty(channelKey)) {
             channel = this.channels.create();
         } else if (channel == null) {
-            ArrayList<Object> errorMsg = buildError(seq, ERROR_NO_ENTITY, "");
-            addMessage(user, display(errorMsg));
+            String errorMsg = this.dispatcher.buildError(seq, ERROR_NO_ENTITY, "");
+            this.dispatcher.addMessage(user, errorMsg);
             return;
         }
-        ArrayList<Object> jackMsg = buildJack(seq, channel.getKey());
-        addMessage(user, display(jackMsg));
+        String jackMsg = this.dispatcher.buildJoinAck(seq, channel.getKey());
+        this.dispatcher.addMessage(user, jackMsg);
         user.getChannels().add(channel);
-        for (String userId : channel.getUsers().keySet()) {
-            ArrayList<Object> inChannelMsg = buildDefault(userId, COMMAND_JOIN, channel.getKey(), null);
-            addMessage(user, display(inChannelMsg));
+        // The user that just joined the channel has to know what other users and bots are in the channel (for instance
+        // to find out the history keeper) so we send them a JOIN command for each member of the channel.
+        Set<String> botsAndUsers = new LinkedHashSet<>(channel.getBots().keySet());
+        botsAndUsers.addAll(channel.getUsers().keySet());
+        for (String userOrBotId : botsAndUsers) {
+            String inChannelMsg = this.dispatcher.buildDefault(userOrBotId, COMMAND_JOIN, channel.getKey(), null);
+            this.dispatcher.addMessage(user, inChannelMsg);
         }
         channel.getUsers().put(user.getName(), user);
         this.channels.prune();
-        ArrayList<Object> joinMsg = buildDefault(user.getName(), COMMAND_JOIN, channel.getKey(), null);
-        sendChannelMessage(COMMAND_JOIN, user, channel, display(joinMsg));
+        String joinMsg = this.dispatcher.buildDefault(user.getName(), COMMAND_JOIN, channel.getKey(), null);
+        sendChannelMessage(COMMAND_JOIN, user, channel, joinMsg);
     }
 
     private void onCommandLeave(User user, Integer seq, String channelKey)
     {
-        ArrayList<Object> errorMsg = null;
+        String errorMsg = null;
         if (StringUtils.isEmpty(channelKey)) {
-            errorMsg = buildError(seq, ERROR_INVALID, "undefined");
+            errorMsg = this.dispatcher.buildError(seq, ERROR_INVALID, "undefined");
         }
         if (errorMsg != null && this.channels.get(channelKey) == null) {
-            errorMsg = buildError(seq, ERROR_NO_ENTITY, channelKey);
+            errorMsg = this.dispatcher.buildError(seq, ERROR_NO_ENTITY, channelKey);
         }
         if (errorMsg != null && !this.channels.get(channelKey).getUsers().containsKey(user.getName())) {
-            errorMsg = buildError(seq, "NOT_IN_CHAN", channelKey);
+            errorMsg = this.dispatcher.buildError(seq, "NOT_IN_CHAN", channelKey);
         }
         if (errorMsg != null) {
-            addMessage(user, display(errorMsg));
+            this.dispatcher.addMessage(user, errorMsg);
             return;
         }
-        ArrayList<Object> ackMsg = buildAck(seq);
-        addMessage(user, display(ackMsg));
+        String ackMsg = this.dispatcher.buildAck(seq);
+        this.dispatcher.addMessage(user, ackMsg);
         Channel channel = this.channels.get(channelKey);
         leaveChannel(user, channel, "");
     }
@@ -285,8 +283,8 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
         channel.getUsers().remove(user.getName());
         user.getChannels().remove(channel);
 
-        List<Object> leaveMessage = buildDefault(user.getName(), COMMAND_LEAVE, channel.getKey(), reason);
-        sendChannelMessage(COMMAND_LEAVE, user, channel, display(leaveMessage));
+        String leaveMessage = this.dispatcher.buildDefault(user.getName(), COMMAND_LEAVE, channel.getKey(), reason);
+        sendChannelMessage(COMMAND_LEAVE, user, channel, leaveMessage);
 
         // Remove the channel when there is no user anymore (the history keeper doesn't count).
         if (channel.getConnectedUsers().isEmpty()) {
@@ -296,48 +294,38 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
 
     private void onCommandPing(User user, Integer seq)
     {
-        ArrayList<Object> ackMsg = buildAck(seq);
-        addMessage(user, display(ackMsg));
+        String ackMsg = this.dispatcher.buildAck(seq);
+        this.dispatcher.addMessage(user, ackMsg);
     }
 
     private void onCommandMessage(User user, Integer seq, String channelKeyOrUserName, List<Object> msg)
     {
-        ArrayList<Object> ackMsg = buildAck(seq);
-        addMessage(user, display(ackMsg));
-        String historyKeeperKey = this.historyKeeper.getKey();
-        if (historyKeeperKey != null && channelKeyOrUserName.equals(historyKeeperKey)) {
-            List<Object> msgHistory;
-            try {
-                msgHistory = this.converter.decode(msg.get(3).toString());
-            } catch (DecodeException e) {
-                msgHistory = null;
-                this.logger.debug("Failed to parse message history.", e);
-            }
-            String text = (msgHistory == null) ? "" : (String) msgHistory.get(0);
-            if ("GET_HISTORY".equals(text)) {
-                String channelKey = (String) msgHistory.get(1);
-                Channel channel = this.channels.get(channelKey);
-                if (channel != null) {
-                    channel.getMessages().forEach(msgStr -> addMessage(user, msgStr));
-                }
-                String endHistoryMsg = "{\"state\":1, \"channel\":\"" + channelKey + "\"}";
-                ArrayList<Object> msgEndHistory = buildMessage(0, historyKeeperKey, user.getName(), endHistoryMsg);
-                addMessage(user, display(msgEndHistory));
-            }
+        String ackMsg = this.dispatcher.buildAck(seq);
+        this.dispatcher.addMessage(user, ackMsg);
+        Optional<Bot> bot = getBot(user, channelKeyOrUserName);
+        if (bot.isPresent()) {
+            // Send message to the specified bot.
+            bot.get().onUserMessage(user, msg);
         } else if (this.channels.get(channelKeyOrUserName) != null) {
             // Send message to the specified channel.
-            ArrayList<Object> msgMsg = buildMessage(0, user.getName(), channelKeyOrUserName, msg.get(3));
+            String msgMsg = this.dispatcher.buildMessage(0, user.getName(), channelKeyOrUserName, msg.get(3));
             Channel chan = this.channels.get(channelKeyOrUserName);
-            sendChannelMessage(COMMAND_MSG, user, chan, display(msgMsg));
+            sendChannelMessage(MessageDispatcher.COMMAND_MSG, user, chan, msgMsg);
         } else if (this.users.containsKey(channelKeyOrUserName)) {
             // Send message to the specified user.
-            ArrayList<Object> msgMsg = buildMessage(0, user.getName(), channelKeyOrUserName, msg.get(3));
-            addMessage(this.users.get(channelKeyOrUserName), display(msgMsg));
+            String msgMsg = this.dispatcher.buildMessage(0, user.getName(), channelKeyOrUserName, msg.get(3));
+            this.dispatcher.addMessage(this.users.get(channelKeyOrUserName), msgMsg);
         } else if (!channelKeyOrUserName.isEmpty()) {
-            // Unknown channel / user.
-            ArrayList<Object> errorMsg = buildError(seq, ERROR_NO_ENTITY, channelKeyOrUserName);
-            addMessage(user, display(errorMsg));
+            // Unknown channel / user / bot.
+            String errorMsg = this.dispatcher.buildError(seq, ERROR_NO_ENTITY, channelKeyOrUserName);
+            this.dispatcher.addMessage(user, errorMsg);
         }
+    }
+
+    private Optional<Bot> getBot(User user, String id)
+    {
+        return user.getChannels().stream().map(channel -> channel.getBots().get(id)).filter(Objects::nonNull)
+            .findFirst();
     }
 
     private boolean sendMessage(User user, String message)
@@ -367,37 +355,6 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
         }
     }
 
-    private String display(List<Object> list)
-    {
-        try {
-            return this.converter.encode(list);
-        } catch (EncodeException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Add a message to the sending queue of a user.
-     * 
-     * @param toUser the target user
-     * @param message the message to add
-     */
-    private void addMessage(User toUser, String message)
-    {
-        this.logger.debug("Adding message to [{}]: [{}]", toUser.getName(), message);
-        toUser.getMessagesToBeSent().add(message);
-    }
-
-    private boolean isCheckpoint(String message)
-    {
-        try {
-            List<Object> msg = this.converter.decode(message);
-            return ((String) msg.get(msg.size() - 1)).indexOf("cp|[4,[") == 0;
-        } catch (DecodeException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     /**
      * Broadcast a message to a channel.
      * 
@@ -408,84 +365,12 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
      */
     private void sendChannelMessage(String cmd, User me, Channel channel, String message)
     {
-        channel.getUsers().values().stream().filter(Objects::nonNull)
-            .filter(user -> !(COMMAND_MSG.equals(cmd) && user.equals(me))).forEach(user -> addMessage(user, message));
+        // Broadcast the message to all the users connected to the channel.
+        channel.getUsers().values().stream()
+            .filter(user -> !(MessageDispatcher.COMMAND_MSG.equals(cmd) && user.equals(me)))
+            .forEach(user -> this.dispatcher.addMessage(user, message));
 
-        // We keep only command messages in the channel history. Note that the channel history is replayed when a user
-        // joins a channel, so we don't want to replay messages like JOIN or LEAVE (an user can join and leave a channel
-        // multiple times).
-        if (this.historyKeeper.getKey() != null && COMMAND_MSG.equals(cmd)) {
-            this.logger.debug("Added in history: [{}]", message);
-            if (isCheckpoint(message)) {
-                // Prune old messages from memory.
-                this.logger.debug("Pruning old messages.");
-                LinkedList<String> msgsNext = new LinkedList<>();
-                for (Iterator<String> it = channel.getMessages().descendingIterator(); it.hasNext();) {
-                    String msg = it.next();
-                    msgsNext.addFirst(msg);
-                    if (isCheckpoint(msg)) {
-                        break;
-                    }
-                }
-                channel.getMessages().clear();
-                channel.getMessages().addAll(msgsNext);
-            }
-            channel.getMessages().add(message);
-        }
-    }
-
-    /*
-     * The following function are used to build the different types of messages sent by the server : ACK, JACK
-     * (Join-ACK), JOIN, LEAVE, MSG, ERROR
-     */
-    private ArrayList<Object> buildAck(Integer seq)
-    {
-        ArrayList<Object> msg = new ArrayList<>();
-        msg.add(seq);
-        msg.add("ACK");
-        return msg;
-    }
-
-    private ArrayList<Object> buildJack(Integer seq, String obj)
-    {
-        ArrayList<Object> msg = new ArrayList<>();
-        msg.add(seq);
-        msg.add("JACK");
-        msg.add(obj);
-        return msg;
-    }
-
-    private ArrayList<Object> buildDefault(String userId, String cmd, String chanName, String reason)
-    {
-        ArrayList<Object> msg = new ArrayList<>();
-        msg.add(0);
-        msg.add(userId);
-        msg.add(cmd);
-        msg.add(chanName);
-        if (reason != null) {
-            msg.add(reason);
-        }
-        return msg;
-    }
-
-    private ArrayList<Object> buildMessage(Integer seq, String userId, String obj, Object msgStr)
-    {
-        ArrayList<Object> msg = new ArrayList<>();
-        msg.add(seq);
-        msg.add(userId);
-        msg.add(COMMAND_MSG);
-        msg.add(obj);
-        msg.add(msgStr);
-        return msg;
-    }
-
-    private ArrayList<Object> buildError(Integer seq, String errorType, String errorMessage)
-    {
-        ArrayList<Object> msg = new ArrayList<>();
-        msg.add(seq);
-        msg.add("ERROR");
-        msg.add(errorType);
-        msg.add(errorMessage);
-        return msg;
+        // Broadcast the message to all the bots connected to the channel.
+        channel.getBots().values().forEach(bot -> bot.onChannelMessage(channel, me, cmd, message));
     }
 }
