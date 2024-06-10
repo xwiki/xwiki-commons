@@ -19,10 +19,12 @@
  */
 package org.xwiki.netflux.internal;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
@@ -38,7 +40,10 @@ import org.xwiki.component.annotation.Component;
 public class ChannelStore
 {
     @Inject
-    private HistoryKeeper historyKeeper;
+    private Provider<List<Bot>> botsProvider;
+
+    @Inject
+    private IdGenerator idGenerator;
 
     private final Map<String, Channel> channelByKey = new ConcurrentHashMap<>();
 
@@ -49,14 +54,24 @@ public class ChannelStore
      */
     public Channel create()
     {
-        Channel channel = new Channel();
-        String historyKeeperKey = this.historyKeeper.getKey();
-        if (historyKeeperKey != null) {
-            // Add the history keeper fake user.
-            channel.getUsers().put(historyKeeperKey, null);
-        }
+        Channel channel = new Channel(this.idGenerator.generateChannelId());
+        askBotsToJoin(channel);
         this.channelByKey.put(channel.getKey(), channel);
         return channel;
+    }
+
+    /**
+     * Ask the available bots to join the given channel.
+     *
+     * @param channel the channel to join
+     * @since 15.10.11
+     * @since 16.4.1
+     * @since 16.5.0RC1
+     */
+    public void askBotsToJoin(Channel channel)
+    {
+        this.botsProvider.get().stream().filter(bot -> !channel.getBots().containsKey(bot.getId()))
+            .filter(bot -> bot.onJoinChannel(channel)).forEach(bot -> channel.getBots().put(bot.getId(), bot));
     }
 
     /**
@@ -78,11 +93,13 @@ public class ChannelStore
      */
     public boolean remove(Channel channel)
     {
+        channel.getBots().values().forEach(bot -> bot.onLeaveChannel(channel));
         return this.channelByKey.remove(channel.getKey()) != null;
     }
 
     /**
-     * Remove expired empty channels (that don't have any users left).
+     * Remove expired empty channels (that don't have any users left). Normally channels are removed when the last user
+     * leaves, but channels can be created and left empty if no user joins them.
      */
     public void prune()
     {

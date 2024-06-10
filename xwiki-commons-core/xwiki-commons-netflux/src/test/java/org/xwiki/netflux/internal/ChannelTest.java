@@ -44,13 +44,12 @@ class ChannelTest
     void getConnectedUsers()
     {
         long before = new Date().getTime();
-        Channel channel = new Channel();
+        Channel channel = new Channel("test");
         long after = new Date().getTime();
 
         assertTrue(before <= channel.getCreationDate());
         assertTrue(channel.getCreationDate() <= after);
 
-        assertEquals(48, channel.getKey().length());
         assertTrue(channel.getMessages().isEmpty());
 
         assertEquals(0, channel.getUsers().size());
@@ -58,7 +57,6 @@ class ChannelTest
 
         Session session = mock(Session.class);
 
-        channel.getUsers().put("null", null);
         channel.getUsers().put("alice", new User(null, "alice"));
         channel.getUsers().put("bob", new User(session, "bob"));
 
@@ -66,16 +64,18 @@ class ChannelTest
         carol.setConnected(false);
         channel.getUsers().put("carol", carol);
 
-        assertEquals(4, channel.getUsers().size());
+        assertEquals(3, channel.getUsers().size());
         assertEquals(1, channel.getConnectedUsers().size());
         assertEquals("bob", channel.getConnectedUsers().iterator().next().getName());
     }
 
     @Test
-    void hashCodeEquals()
+    void hashCodeEquals() throws Exception
     {
-        Channel alice = new Channel();
-        Channel bob = new Channel();
+        Channel alice = new Channel("test");
+        // Make sure the channel creation date is different.
+        Thread.sleep(1);
+        Channel bob = new Channel("test");
 
         assertEquals(alice, alice);
         assertNotEquals(alice, bob);

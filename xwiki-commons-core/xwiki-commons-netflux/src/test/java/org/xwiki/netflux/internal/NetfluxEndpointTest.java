@@ -19,6 +19,13 @@
  */
 package org.xwiki.netflux.internal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
@@ -33,15 +40,8 @@ import org.mockito.Captor;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
-import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.test.mockito.MockitoComponentManager;
 import org.xwiki.websocket.AbstractPartialStringMessageHandler;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link NetfluxEndpoint}.
@@ -50,14 +50,11 @@ import static org.mockito.Mockito.when;
  * @since 13.9RC1
  */
 @ComponentTest
-@ComponentList(ChannelStore.class)
+@ComponentList({ChannelStore.class, MessageDispatcher.class, IdGenerator.class})
 class NetfluxEndpointTest
 {
     @InjectMockComponents
     private NetfluxEndpoint endPoint;
-
-    @MockComponent
-    private HistoryKeeper historyKeeper;
 
     private final JsonConverter jsonConverter = new JsonConverter();
 
@@ -67,7 +64,9 @@ class NetfluxEndpointTest
     @Test
     void joinMessagePingLeave(MockitoComponentManager componentManager) throws Exception
     {
-        when(this.historyKeeper.getKey()).thenReturn("historyKeeper");
+        Bot historyKeeper = componentManager.registerMockComponent(Bot.class, "historyKeeper");
+        when(historyKeeper.onJoinChannel(any(Channel.class))).thenReturn(true);
+        when(historyKeeper.getId()).thenReturn("historyKeeper");
 
         // Alice opens a new session.
         Session aliceSession = mockSession("alice");
@@ -97,6 +96,7 @@ class NetfluxEndpointTest
         bobMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(1, "JOIN", firstChannel.getKey())));
 
         assertEquals(2, firstChannel.getConnectedUsers().size());
+        assertEquals(1, firstChannel.getBots().size());
         String bobId = firstChannel.getConnectedUsers().get(1).getName();
 
         // Alice sends a message to the channel.
@@ -116,6 +116,7 @@ class NetfluxEndpointTest
         bobMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(3, "JOIN", secondChannel.getKey())));
         aliceMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(4, "JOIN", secondChannel.getKey())));
         assertEquals(2, secondChannel.getConnectedUsers().size());
+        assertEquals(1, secondChannel.getBots().size());
 
         User alice = (User) aliceSession.getUserProperties().get("netflux.user");
         assertEquals(Set.of(firstChannel.getKey(), secondChannel.getKey()),
@@ -137,6 +138,10 @@ class NetfluxEndpointTest
         assertEquals(0, firstChannel.getConnectedUsers().size());
         assertEquals(0, secondChannel.getConnectedUsers().size());
 
+        // The history keeper is still connected.
+        assertEquals(1, firstChannel.getBots().size());
+        assertEquals(1, secondChannel.getBots().size());
+
         assertEquals(0, alice.getChannels().size());
         assertEquals(0, bob.getChannels().size());
 
@@ -152,7 +157,7 @@ class NetfluxEndpointTest
             // Join acknowledgement on the first channel.
             "[1,\"JACK\",\"" + firstChannel.getKey() + "\"]",
             // History keeper is in the first channel.
-            "[0,\"" + this.historyKeeper.getKey() + "\",\"JOIN\",\"" + firstChannel.getKey() + "\"]",
+            "[0,\"" + historyKeeper.getId() + "\",\"JOIN\",\"" + firstChannel.getKey() + "\"]",
             // Alice joined the first channel.
             "[0,\"" + aliceId + "\",\"JOIN\",\"" + firstChannel.getKey() + "\"]",
             // Bob joined the channel.
@@ -166,13 +171,14 @@ class NetfluxEndpointTest
             // Join acknowledgement on the second channel.
             "[4,\"JACK\",\"" + secondChannel.getKey() + "\"]",
             // History keeper is in the second channel.
-            "[0,\"" + this.historyKeeper.getKey() + "\",\"JOIN\",\"" + secondChannel.getKey() + "\"]",
+            "[0,\"" + historyKeeper.getId() + "\",\"JOIN\",\"" + secondChannel.getKey() + "\"]",
             // Bob joined the second channel.
             "[0,\"" + bobId + "\",\"JOIN\",\"" + secondChannel.getKey() + "\"]",
             // Alice joined the second channel.
             "[0,\"" + aliceId + "\",\"JOIN\",\"" + secondChannel.getKey() + "\"]",
             // Bob left the first channel.
-            "[0,\"" + bobId + "\",\"LEAVE\",\"" + firstChannel.getKey() + "\",\"\"]"), aliceMessageCaptor.getAllValues());
+            "[0,\"" + bobId + "\",\"LEAVE\",\"" + firstChannel.getKey() + "\",\"\"]"),
+            aliceMessageCaptor.getAllValues());
 
         ArgumentCaptor<String> bobMessageCaptor = ArgumentCaptor.forClass(String.class);
         verify(bobSession.getBasicRemote(), times(12)).sendText(bobMessageCaptor.capture());
@@ -182,7 +188,7 @@ class NetfluxEndpointTest
             // Join acknowledgement on the first channel.
             "[1,\"JACK\",\"" + firstChannel.getKey() + "\"]",
             // History keeper is in the first channel.
-            "[0,\"" + this.historyKeeper.getKey() + "\",\"JOIN\",\"" + firstChannel.getKey() + "\"]",
+            "[0,\"" + historyKeeper.getId() + "\",\"JOIN\",\"" + firstChannel.getKey() + "\"]",
             // Alice joined the first channel.
             "[0,\"" + aliceId + "\",\"JOIN\",\"" + firstChannel.getKey() + "\"]",
             // Bob joined the first channel.
@@ -194,7 +200,7 @@ class NetfluxEndpointTest
             // Join acknowledgement on the second channel.
             "[3,\"JACK\",\"" + secondChannel.getKey() + "\"]",
             // History keeper is in the second channel.
-            "[0,\"" + this.historyKeeper.getKey() + "\",\"JOIN\",\"" + secondChannel.getKey() + "\"]",
+            "[0,\"" + historyKeeper.getId() + "\",\"JOIN\",\"" + secondChannel.getKey() + "\"]",
             // Bob joined the second channel.
             "[0,\"" + bobId + "\",\"JOIN\",\"" + secondChannel.getKey() + "\"]",
             // Alice joined the second channel.

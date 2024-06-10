@@ -21,23 +21,51 @@ package org.xwiki.netflux.internal;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+
 /**
- * Utility methods.
- * 
+ * Generates identifiers for various Netflux entities.
+ *
  * @version $Id$
- * @since 13.9RC1
+ * @since 15.10.11
+ * @since 16.4.1
+ * @since 16.5.0RC1
  */
-public final class Utils
+@Component(roles = IdGenerator.class)
+@Singleton
+public class IdGenerator
 {
-    private Utils()
+    /**
+     * @return a randomly generated channel id
+     */
+    public String generateChannelId()
     {
+        return getRandomHexString(48);
+    }
+
+    /**
+     * @return a randomly generated user id
+     */
+    public String generateUserId()
+    {
+        return getRandomHexString(32);
+    }
+
+    /**
+     * @return a randomly generated bot id
+     */
+    public String generateBotId()
+    {
+        return getRandomHexString(24);
     }
 
     /**
      * @param length the length of the hex string to generate
      * @return the generated random hex string
      */
-    public static String getRandomHexString(int length)
+    private String getRandomHexString(int length)
     {
         StringBuilder hexString = new StringBuilder();
         while (hexString.length() < length) {

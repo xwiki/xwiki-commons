@@ -19,21 +19,23 @@
  */
 package org.xwiki.netflux.internal;
 
-import java.util.Collections;
-import java.util.Date;
-
-import org.junit.jupiter.api.Test;
-import org.xwiki.component.util.ReflectionUtils;
-import org.xwiki.test.junit5.mockito.ComponentTest;
-import org.xwiki.test.junit5.mockito.InjectMockComponents;
-import org.xwiki.test.junit5.mockito.MockComponent;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+import java.util.Date;
+
+import org.junit.jupiter.api.Test;
+import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
 /**
  * Unit tests for {@link ChannelStore}.
@@ -42,19 +44,19 @@ import static org.mockito.Mockito.when;
  * @since 13.9RC1
  */
 @ComponentTest
+@ComponentList(IdGenerator.class)
 class ChannelStoreTest
 {
     @InjectMockComponents
     private ChannelStore channelStore;
 
-    @MockComponent
-    private HistoryKeeper historyKeeper;
-
     @Test
     void createGetRemove()
     {
         Channel channel = this.channelStore.create();
+        assertEquals(48, channel.getKey().length());
         assertEquals(0, channel.getUsers().size());
+        assertEquals(0, channel.getBots().size());
         assertSame(channel, this.channelStore.get(channel.getKey()));
         assertTrue(this.channelStore.remove(channel));
         assertNull(this.channelStore.get(channel.getKey()));
@@ -62,11 +64,15 @@ class ChannelStoreTest
     }
 
     @Test
-    void createWithHistoryKeeper()
+    void createWithHistoryKeeper(MockitoComponentManager componentManager) throws Exception
     {
-        when(this.historyKeeper.getKey()).thenReturn("historyKeeper");
+        Bot historyKeeper = componentManager.registerMockComponent(Bot.class, "historyKeeper");
+        when(historyKeeper.onJoinChannel(any(Channel.class))).thenReturn(true);
+        when(historyKeeper.getId()).thenReturn("historyKeeper");
+
         Channel channel = this.channelStore.create();
-        assertEquals(Collections.singletonMap("historyKeeper", null), channel.getUsers());
+        assertEquals(Collections.emptyMap(), channel.getUsers());
+        assertEquals(Collections.singletonMap("historyKeeper", historyKeeper), channel.getBots());
     }
 
     @Test
