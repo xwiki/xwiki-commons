@@ -37,13 +37,25 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  */
 public class Channel
 {
-    private final String key = Utils.getRandomHexString(48);
+    private final String key;
 
     private final long creationDate = System.currentTimeMillis();
 
     private final Map<String, User> users = new LinkedHashMap<>();
 
+    private final Map<String, Bot> bots = new LinkedHashMap<>();
+
     private final Deque<String> messages = new LinkedList<>();
+
+    /**
+     * Creates a new channel with the given key.
+     *
+     * @param key the channel key
+     */
+    public Channel(String key)
+    {
+        this.key = key;
+    }
 
     /**
      * @return the channel key
@@ -70,12 +82,19 @@ public class Channel
     }
 
     /**
-     * @return the list of (real) users that are currently connected to this channel
+     * @return the bots that have connected to this channel
+     */
+    public Map<String, Bot> getBots()
+    {
+        return this.bots;
+    }
+
+    /**
+     * @return the list of users that are currently connected to this channel
      */
     public List<User> getConnectedUsers()
     {
-        return this.users.values().stream()
-            .filter(user -> user != null && user.getSession() != null && user.isConnected())
+        return this.users.values().stream().filter(user -> user.getSession() != null && user.isConnected())
             .collect(Collectors.toList());
     }
 
