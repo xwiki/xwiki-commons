@@ -21,21 +21,28 @@ package org.xwiki.extension.repository.xwiki.internal;
 
 import java.io.StringReader;
 import java.io.UncheckedIOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xwiki.extension.AbstractRatingExtension;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.DefaultExtensionScmConnection;
+import org.xwiki.extension.DefaultExtensionSupportPlans;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
+import org.xwiki.extension.ExtensionSupporter;
 import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.internal.ExtensionUtils;
 import org.xwiki.extension.internal.converter.ExtensionComponentConverter;
@@ -48,6 +55,7 @@ import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionRating;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionRepository;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScm;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScmConnection;
+import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionSupportPlan;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
 import org.xwiki.extension.repository.xwiki.model.jaxb.License;
 import org.xwiki.extension.repository.xwiki.model.jaxb.Namespaces;
@@ -61,6 +69,8 @@ import org.xwiki.extension.repository.xwiki.model.jaxb.Property;
  */
 public class XWikiExtension extends AbstractRatingExtension
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(XWikiExtension.class);
+
     public XWikiExtension(XWikiExtensionRepository repository, ExtensionVersion restExtension,
         ExtensionLicenseManager licenseManager, ExtensionFactory factory)
     {
@@ -90,6 +100,19 @@ public class XWikiExtension extends AbstractRatingExtension
         // Authors
         for (ExtensionAuthor restAuthor : restExtension.getAuthors()) {
             addAuthor(factory.getExtensionAuthor(restAuthor.getName(), restAuthor.getUrl()));
+        }
+
+        // Support
+        if (!restExtension.getSupportPlans().isEmpty()) {
+            List<org.xwiki.extension.ExtensionSupportPlan> extensionPlans =
+                new ArrayList<>(restExtension.getSupportPlans().size());
+            for (ExtensionSupportPlan restSupportPlan : restExtension.getSupportPlans()) {
+                ExtensionSupporter supporter = factory.getExtensionSupporter(restSupportPlan.getSupporter().getName(),
+                    toURLOptional(restSupportPlan.getSupporter().getUrl(), "supporter"));
+                extensionPlans.add(factory.getExtensionSupportPlan(supporter, restSupportPlan.getName(),
+                    toURLOptional(restSupportPlan.getUrl(), "support plan"), restSupportPlan.isPaying()));
+            }
+            setSupportPlans(new DefaultExtensionSupportPlans(extensionPlans));
         }
 
         // License
@@ -163,7 +186,7 @@ public class XWikiExtension extends AbstractRatingExtension
             try {
                 addRepository(toExtensionRepositoryDescriptor(restRepository, factory));
             } catch (URISyntaxException e) {
-                // TODO: Log something ?
+                LOGGER.warn("Failed to parse the repository: {}", ExceptionUtils.getRootCauseMessage(e));
             }
         }
 
@@ -190,6 +213,18 @@ public class XWikiExtension extends AbstractRatingExtension
             Collection<String> components =
                 ExtensionUtils.importPropertyStringList(componentsString, true, ExtensionUtils.CLASS_DELIMITERS);
             setComponents(ExtensionComponentConverter.toExtensionComponentList(components));
+        }
+    }
+
+    private URL toURLOptional(String urlString, String location)
+    {
+        try {
+            return new URL(urlString);
+        } catch (MalformedURLException e) {
+            LOGGER.warn("Failed to parse URL [{}] in {}: {}", urlString, location,
+                ExceptionUtils.getRootCauseMessage(e));
+
+            return null;
         }
     }
 

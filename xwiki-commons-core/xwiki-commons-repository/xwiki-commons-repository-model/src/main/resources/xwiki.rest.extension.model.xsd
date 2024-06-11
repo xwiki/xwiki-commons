@@ -160,6 +160,9 @@
           <element name="authors" type="extension:ExtensionAuthor"
             minOccurs="0" maxOccurs="unbounded">
           </element>
+          <element name="supportPlans" type="extension:ExtensionSupportPlan"
+            minOccurs="0" maxOccurs="unbounded">
+          </element>
           <element name="features" type="string" minOccurs="0"
             maxOccurs="unbounded">
             <annotation>
@@ -184,7 +187,13 @@
           <element name="allowedNamespaces" type="extension:Namespaces"
             minOccurs="0" maxOccurs="1">
           </element>
-          <element name="recommended" type="boolean" minOccurs="0" maxOccurs="1"></element>
+          <element name="recommended" type="boolean" minOccurs="0" maxOccurs="1">
+            <annotation>
+              <documentation>
+                @Deprecated since 16.6.0RC1, use supportPlans instead
+              </documentation>
+            </annotation>
+          </element>
           <element name="properties" type="extension:Property"
             minOccurs="0" maxOccurs="unbounded">
           </element>
@@ -332,6 +341,24 @@
     <complexType name="Namespaces">
       <sequence>
         <element name="namespace" type="string" minOccurs="0" maxOccurs="unbounded"></element>
+      </sequence>
+    </complexType>
+
+    <complexType name="ExtensionSupporter">
+      <sequence>
+        <element name="name" type="string" minOccurs="0"></element>
+        <element name="url" type="string" minOccurs="0"></element>
+      </sequence>
+    </complexType>
+
+    <complexType name="ExtensionSupportPlan">
+      <sequence>
+        <element name="supporter" type="extension:ExtensionSupporter"
+             maxOccurs="1" minOccurs="1">
+          </element>
+        <element name="name" type="string" minOccurs="0"></element>
+        <element name="url" type="string" minOccurs="0"></element>
+        <element name="paying" type="boolean"></element>
       </sequence>
     </complexType>
 </schema>

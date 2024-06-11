@@ -19,6 +19,7 @@
  */
 package org.xwiki.extension.wrap;
 
+import org.xwiki.extension.Extension;
 import org.xwiki.extension.rating.ExtensionRating;
 import org.xwiki.extension.rating.RatingExtension;
 
@@ -29,15 +30,25 @@ import org.xwiki.extension.rating.RatingExtension;
  * @version $Id$
  * @since 6.4M3
  */
-public class WrappingRatingExtension<T extends RatingExtension> extends WrappingRemoteExtension<T>
+public class WrappingRatingExtension<T extends Extension> extends WrappingRemoteExtension<T>
     implements RatingExtension
 {
     /**
-     * @param ratingExtension the wrapped rating extension
+     * @param extension the wrapped extension
      */
-    public WrappingRatingExtension(T ratingExtension)
+    public WrappingRatingExtension(T extension)
     {
-        super(ratingExtension);
+        super(extension);
+    }
+
+    /**
+     * A default constructor allowing to set the wrapped object later.
+     * 
+     * @since 16.7.0RC1
+     */
+    protected WrappingRatingExtension()
+    {
+
     }
 
     // RatingExtension
@@ -49,6 +60,10 @@ public class WrappingRatingExtension<T extends RatingExtension> extends Wrapping
             return (ExtensionRating) this.overwrites.get(RatingExtension.FIELD_AVERAGE_VOTE);
         }
 
-        return getWrapped().getRating();
+        if (getWrapped() instanceof RatingExtension ratingExtension) {
+            return ratingExtension.getRating();
+        }
+
+        return null;
     }
 }
