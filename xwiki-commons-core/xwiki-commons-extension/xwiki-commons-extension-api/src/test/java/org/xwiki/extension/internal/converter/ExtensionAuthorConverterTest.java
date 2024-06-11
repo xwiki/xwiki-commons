@@ -59,6 +59,8 @@ class ExtensionAuthorConverterTest
 
         assertEquals(new DefaultExtensionAuthor("name/url", (String) null),
             this.manager.convert(ExtensionAuthor.class, "name\\/url"));
+        assertEquals(new DefaultExtensionAuthor("name//url", (String) null),
+            this.manager.convert(ExtensionAuthor.class, "name\\/\\/url"));
         assertEquals(new DefaultExtensionAuthor("/url", (String) null),
             this.manager.convert(ExtensionAuthor.class, "\\/url"));
         assertEquals(new DefaultExtensionAuthor("name\\/url", (String) null),

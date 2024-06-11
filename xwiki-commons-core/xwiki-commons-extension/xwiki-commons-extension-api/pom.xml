@@ -154,7 +154,9 @@
                 **/UnmodifiableUtils.java,
                 **/AbstractExtension.java,
                 **/DefaultExtensionManagerConfiguration.java,
-                **/ExtensionUtils.java
+                **/ExtensionUtils.java,
+                **/ExtensionConverterParser.java,
+                **/ExtensionFactory.java
               </excludes>
             </configuration>
           </execution>

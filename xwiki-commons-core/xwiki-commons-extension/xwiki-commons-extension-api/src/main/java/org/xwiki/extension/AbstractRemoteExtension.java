@@ -21,6 +21,7 @@ package org.xwiki.extension;
 
 import org.xwiki.extension.rating.RatingExtension;
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.stability.Unstable;
 
 /**
  * Base class for {@link RatingExtension} implementations.
@@ -34,6 +35,12 @@ public abstract class AbstractRemoteExtension extends AbstractExtension implemen
      * @see #isRecommended()
      */
     protected boolean recommended;
+
+    /**
+     * @see #getSupportPlans()
+     */
+    @Unstable
+    protected ExtensionSupportPlans supportPlans = ExtensionSupportPlans.EMPTY;
 
     /**
      * @param repository the repository where this extension comes from
@@ -72,11 +79,29 @@ public abstract class AbstractRemoteExtension extends AbstractExtension implemen
     }
 
     @Override
+    public ExtensionSupportPlans getSupportPlans()
+    {
+        return this.supportPlans;
+    }
+
+    /**
+     * @param supportPlans the support plans
+     * @since 16.6.0RC1
+     */
+    @Unstable
+    public void setSupportPlans(ExtensionSupportPlans supportPlans)
+    {
+        this.supportPlans = supportPlans;
+    }
+
+    @Override
     public <T> T get(String fieldName)
     {
         switch (fieldName.toLowerCase()) {
             case FIELD_RECOMMENDED:
                 return (T) (Boolean) isRecommended();
+            case FIELD_SUPPORT_PLANS:
+                return (T) getSupportPlans();
             default:
                 return super.get(fieldName);
         }

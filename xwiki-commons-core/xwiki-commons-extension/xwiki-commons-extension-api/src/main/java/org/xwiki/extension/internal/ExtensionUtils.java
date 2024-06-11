@@ -41,11 +41,13 @@ import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.MutableExtension;
 import org.xwiki.extension.RemoteExtension;
+import org.xwiki.extension.index.IndexedExtension;
 import org.xwiki.extension.rating.RatingExtension;
 import org.xwiki.extension.version.IncompatibleVersionConstraintException;
 import org.xwiki.extension.version.VersionConstraint;
 import org.xwiki.extension.wrap.WrappingCoreExtension;
 import org.xwiki.extension.wrap.WrappingExtension;
+import org.xwiki.extension.wrap.WrappingIndexedExtension;
 import org.xwiki.extension.wrap.WrappingInstalledExtension;
 import org.xwiki.extension.wrap.WrappingLocalExtension;
 import org.xwiki.extension.wrap.WrappingRatingExtension;
@@ -301,6 +303,8 @@ public final class ExtensionUtils
             wrapper = new WrappingRatingExtension<>((RatingExtension) extension);
         } else if (extension instanceof RemoteExtension) {
             wrapper = new WrappingRemoteExtension<>((RemoteExtension) extension);
+        } else if (extension instanceof IndexedExtension) {
+            wrapper = new WrappingIndexedExtension<>((IndexedExtension) extension);
         } else {
             wrapper = new WrappingExtension<>(extension);
         }
