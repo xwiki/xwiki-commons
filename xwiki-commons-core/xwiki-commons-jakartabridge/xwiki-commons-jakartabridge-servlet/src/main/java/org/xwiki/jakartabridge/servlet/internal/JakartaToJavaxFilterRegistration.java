@@ -32,7 +32,7 @@ import jakarta.servlet.FilterRegistration;
 /**
  * @param <T> the exact type of jakarta.servlet.FilterRegistration
  * @version $Id$
- * @since -1.jakarta
+ * @since 42.0.0
  */
 public class JakartaToJavaxFilterRegistration<T extends javax.servlet.FilterRegistration> implements FilterRegistration
 {

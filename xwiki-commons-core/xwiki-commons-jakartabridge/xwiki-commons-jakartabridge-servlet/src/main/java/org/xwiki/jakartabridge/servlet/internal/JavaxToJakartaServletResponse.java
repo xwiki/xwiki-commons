@@ -31,7 +31,7 @@ import org.xwiki.jakartabridge.servlet.ServletBridge;
 /**
  * @param <R> the type of servlet response
  * @version $Id$
- * @since -1.jakarta
+ * @since 42.0.0
  */
 public class JavaxToJakartaServletResponse<R extends jakarta.servlet.ServletResponse> implements ServletResponse
 {

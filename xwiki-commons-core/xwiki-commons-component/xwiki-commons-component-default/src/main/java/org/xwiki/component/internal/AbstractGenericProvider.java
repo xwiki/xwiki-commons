@@ -38,7 +38,7 @@ import jakarta.inject.Provider;
  *
  * @param <T> the role type
  * @version $Id$
- * @since -1.jakarta
+ * @since 42.0.0
  */
 public abstract class AbstractGenericProvider<T>
 {

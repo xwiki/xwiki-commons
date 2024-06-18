@@ -37,7 +37,7 @@ import org.xwiki.jakartabridge.servlet.ServletBridge;
 /**
  * @param <R> the type of http servlet request
  * @version $Id$
- * @since -1.jakarta
+ * @since 42.0.0
  */
 public class JavaxToJakartaHttpServletRequest<R extends jakarta.servlet.http.HttpServletRequest>
     extends JavaxToJakartaServletRequest<R> implements HttpServletRequest

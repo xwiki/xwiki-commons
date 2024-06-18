@@ -75,7 +75,7 @@ public class ServletEnvironment extends AbstractEnvironment
      * @return the legacy Javax Servlet Context
      * @deprecated use {@link #getJakartaServletContext()} instead
      */
-    @Deprecated(since = "17-jakarta")
+    @Deprecated(since = "42.0.0")
     public javax.servlet.ServletContext getServletContext()
     {
         if (this.javaxServletContext == null) {
@@ -87,7 +87,7 @@ public class ServletEnvironment extends AbstractEnvironment
 
     /**
      * @return the Servlet Context
-     * @since -1.jakarta
+     * @since 42.0.0
      */
     public ServletContext getJakartaServletContext()
     {

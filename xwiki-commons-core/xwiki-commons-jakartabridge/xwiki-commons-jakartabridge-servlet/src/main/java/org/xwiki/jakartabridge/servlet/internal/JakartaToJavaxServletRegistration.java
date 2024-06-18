@@ -32,7 +32,7 @@ import jakarta.servlet.ServletSecurityElement;
 /**
  * @param <T> the exact type of jakarta.servlet.ServletRegistration
  * @version $Id$
- * @since -1.jakarta
+ * @since 42.0.0
  */
 public class JakartaToJavaxServletRegistration<T extends javax.servlet.ServletRegistration>
     implements ServletRegistration

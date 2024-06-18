@@ -23,7 +23,7 @@ import jakarta.servlet.SessionCookieConfig;
 
 /**
  * @version $Id$
- * @since -1.jakarta
+ * @since 42.0.0
  */
 public class JakartaToJavaxSessionCookieConfig implements SessionCookieConfig
 {

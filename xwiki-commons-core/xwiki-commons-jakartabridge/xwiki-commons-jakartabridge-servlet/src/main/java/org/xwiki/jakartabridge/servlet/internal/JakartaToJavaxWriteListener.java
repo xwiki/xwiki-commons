@@ -25,7 +25,7 @@ import jakarta.servlet.WriteListener;
 
 /**
  * @version $Id$
- * @since -1.jakarta
+ * @since 42.0.0
  */
 public class JakartaToJavaxWriteListener implements WriteListener
 {

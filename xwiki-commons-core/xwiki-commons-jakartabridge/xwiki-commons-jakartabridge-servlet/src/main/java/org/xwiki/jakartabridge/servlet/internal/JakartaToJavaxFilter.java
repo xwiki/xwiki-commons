@@ -32,7 +32,7 @@ import jakarta.servlet.ServletResponse;
 
 /**
  * @version $Id$
- * @since -1.jakarta
+ * @since 42.0.0
  */
 public class JakartaToJavaxFilter implements Filter
 {

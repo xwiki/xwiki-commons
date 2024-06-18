@@ -36,7 +36,7 @@ import org.xwiki.component.manager.ComponentManager;
  * @since 3.3M2
  * @deprecated
  */
-@Deprecated(since = "17-jakarta")
+@Deprecated(since = "42.0.0")
 public class GenericProvider<T> extends JavaXGenericProvider<T>
 {
     /**

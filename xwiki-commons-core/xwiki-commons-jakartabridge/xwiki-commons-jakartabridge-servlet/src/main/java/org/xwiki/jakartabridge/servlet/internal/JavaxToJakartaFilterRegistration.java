@@ -32,7 +32,7 @@ import org.xwiki.jakartabridge.servlet.ServletBridge;
 /**
  * @param <T> the exact type of jakarta.servlet.FilterRegistration
  * @version $Id$
- * @since -1.jakarta
+ * @since 42.0.0
  */
 public class JavaxToJakartaFilterRegistration<T extends jakarta.servlet.FilterRegistration>
     implements FilterRegistration
