@@ -78,6 +78,13 @@
           "justification": "Not a breakage. Indicates that a java type API is still unstable and subject to change at any time. It has no semantic consequences."
         },
         {
+          "regex": true,
+          "ignore": true,
+          "code": "java.annotation.(added|removed)",
+          "annotationType": "org\\.aspectj\\.internal\\..*",
+          "justification": "Not a breakage. Give more information about a specific property. It has no semantic consequences."
+        },
+        {
           // The "externalClassExposedInAPI" check is used to detect code smells. It's documented as:
           // "This is reported for classes from dependencies that are exposed in the API (for example as a
           // return value). This is generally discouraged practice because it makes updating the dependency
