@@ -30,6 +30,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -106,7 +107,7 @@ public class FormatMojo extends AbstractVerifyMojo
         getLog().info(String.format("  Formatting [%s/%s]... ok", parentName, file.getName()));
     }
 
-    private void format(String filePath, Document domdoc, Locale defaultLocale)
+    private void format(String filePath, Document domdoc, Locale defaultLocale) throws DocumentException
     {
         Node node = domdoc.selectSingleNode("xwikidoc/author");
         if (node != null) {
@@ -138,8 +139,24 @@ public class FormatMojo extends AbstractVerifyMojo
             attachmentAuthorNode.setText(AUTHOR);
         }
 
-        // Set the default language
-        Element element = (Element) domdoc.selectSingleNode("xwikidoc/defaultLanguage");
+        // Re-format the locale from the root element
+        Attribute localeAttribute = domdoc.getRootElement().attribute("locale");
+        if (localeAttribute != null) {
+            localeAttribute.setValue(XWikiDocument.toLocale(localeAttribute.getValue(), false).toString());
+        }
+        // Re-format the locale from <locale>
+        Element element = (Element) domdoc.selectSingleNode("xwikidoc/language");
+        if (element != null) {
+            Locale locale = XWikiDocument.toLocale(element.getText(), false);
+            if (Locale.ROOT.equals(locale)) {
+                removeContent(element);
+            } else {
+                element.setText(locale.toString());
+            }
+        }
+
+        // Set the default locale
+        element = (Element) domdoc.selectSingleNode("xwikidoc/defaultLanguage");
         if (element != null) {
             if (Locale.ROOT.equals(defaultLocale)) {
                 removeContent(element);

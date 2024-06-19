@@ -210,7 +210,7 @@ public class XWikiDocument
 
         this.reference = readDocumentReference(domdoc);
 
-        this.locale = LocaleUtils.toLocale(rootElement.attributeValue("locale"));
+        this.locale = toLocale(rootElement.attributeValue("locale"), true);
         if (this.locale == null) {
             // Fallback on old <language> element
             this.locale = readLocaleElement(rootElement, "language");
@@ -325,7 +325,41 @@ public class XWikiDocument
      */
     public static Locale readLocaleElement(Element rootElement, String elementName) throws DocumentException
     {
-        return LocaleUtils.toLocale(readElement(rootElement, elementName));
+        return toLocale(readElement(rootElement, elementName), true);
+    }
+
+    /**
+     * Parse the locale string into a {@link Locale} instead. It also make sure the format of the String is the expected
+     * one.
+     * 
+     * @param localeString the locale as a String
+     * @param validate true when the format of the String should be validated
+     * @return the valid {@link Locale} instance
+     * @throws DocumentException when the format of the locale String is wrong
+     */
+    public static Locale toLocale(String localeString, boolean validate) throws DocumentException
+    {
+        if (localeString == null) {
+            return null;
+        }
+
+        // Parse the locale String
+        Locale locale;
+        try {
+            locale = LocaleUtils.toLocale(localeString);
+        } catch (Exception e) {
+            throw new DocumentException("Failed to parse the locale String [" + localeString + "]", e);
+        }
+
+        if (validate) {
+            // Make sure the string uses the canonical format
+            if (!localeString.equals(locale.toString())) {
+                throw new DocumentException("Wrong locale format for [" + localeString + "], the expected value is ["
+                    + locale.toString() + "]");
+            }
+        }
+
+        return locale;
     }
 
     /**
