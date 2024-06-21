@@ -70,13 +70,15 @@ public class JavaxToJakartaHttpServletResponse<R extends jakarta.servlet.http.Ht
     @Override
     public String encodeUrl(String url)
     {
-        return this.wrapped.encodeUrl(url);
+        // Since deprecated APIs where removed in Servlet 6, it's safer to use alternatives
+        return this.wrapped.encodeURL(url);
     }
 
     @Override
     public String encodeRedirectUrl(String url)
     {
-        return this.wrapped.encodeRedirectUrl(url);
+        // Since deprecated APIs where removed in Servlet 6, it's safer to use alternatives
+        return this.wrapped.encodeRedirectURL(url);
     }
 
     @Override
@@ -142,7 +144,8 @@ public class JavaxToJakartaHttpServletResponse<R extends jakarta.servlet.http.Ht
     @Override
     public void setStatus(int sc, String sm)
     {
-        this.wrapped.setStatus(sc, sm);
+        // Since deprecated APIs where removed in Servlet 6, it's safer to use alternatives
+        this.wrapped.setStatus(sc);
     }
 
     @Override

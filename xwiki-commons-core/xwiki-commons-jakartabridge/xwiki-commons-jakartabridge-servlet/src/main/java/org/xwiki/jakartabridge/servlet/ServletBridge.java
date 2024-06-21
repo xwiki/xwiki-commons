@@ -119,6 +119,10 @@ public final class ServletBridge
      */
     public static javax.servlet.ServletRequest toJavax(ServletRequest jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return jakarta instanceof HttpServletRequest httpjakarta ? toJavax(httpjakarta)
             : new JavaxToJakartaServletRequest<ServletRequest>(jakarta);
     }
@@ -129,6 +133,10 @@ public final class ServletBridge
      */
     public static javax.servlet.http.HttpServletRequest toJavax(HttpServletRequest jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaHttpServletRequest(jakarta);
     }
 
@@ -138,6 +146,10 @@ public final class ServletBridge
      */
     public static ServletRequest toJakarta(javax.servlet.ServletRequest javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return javax instanceof javax.servlet.http.HttpServletRequest httpjakarta ? toJakarta(httpjakarta)
             : new JakartaToJavaxServletRequest<javax.servlet.ServletRequest>(javax);
     }
@@ -148,6 +160,10 @@ public final class ServletBridge
      */
     public static HttpServletRequest toJakarta(javax.servlet.http.HttpServletRequest javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxHttpServletRequest(javax);
     }
 
@@ -157,6 +173,10 @@ public final class ServletBridge
      */
     public static javax.servlet.ServletResponse toJavax(ServletResponse jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return jakarta instanceof HttpServletResponse httpjakarta ? toJavax(httpjakarta)
             : new JavaxToJakartaServletResponse<jakarta.servlet.ServletResponse>(jakarta);
     }
@@ -167,6 +187,10 @@ public final class ServletBridge
      */
     public static javax.servlet.http.HttpServletResponse toJavax(HttpServletResponse jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaHttpServletResponse(jakarta);
     }
 
@@ -176,6 +200,10 @@ public final class ServletBridge
      */
     public static ServletResponse toJakarta(javax.servlet.ServletResponse javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return javax instanceof javax.servlet.http.HttpServletResponse httpjakarta ? toJakarta(httpjakarta)
             : new JakartaToJavaxServletResponse<javax.servlet.ServletResponse>(javax);
     }
@@ -186,6 +214,10 @@ public final class ServletBridge
      */
     public static HttpServletResponse toJakarta(javax.servlet.http.HttpServletResponse javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxHttpServletResponse(javax);
     }
 
@@ -195,6 +227,10 @@ public final class ServletBridge
      */
     public static javax.servlet.RequestDispatcher toJavax(RequestDispatcher jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaRequestDispatcher(jakarta);
     }
 
@@ -204,6 +240,10 @@ public final class ServletBridge
      */
     public static RequestDispatcher toJakarta(javax.servlet.RequestDispatcher javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxRequestDispatcher(javax);
     }
 
@@ -213,6 +253,10 @@ public final class ServletBridge
      */
     public static javax.servlet.ServletContext toJavax(ServletContext jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaServletContext(jakarta);
     }
 
@@ -222,6 +266,10 @@ public final class ServletBridge
      */
     public static ServletContext toJakarta(javax.servlet.ServletContext javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxServletContext(javax);
     }
 
@@ -231,6 +279,10 @@ public final class ServletBridge
      */
     public static javax.servlet.Servlet toJavax(Servlet jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaServlet(jakarta);
     }
 
@@ -240,6 +292,10 @@ public final class ServletBridge
      */
     public static Servlet toJakarta(javax.servlet.Servlet javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxServlet(javax);
     }
 
@@ -249,6 +305,10 @@ public final class ServletBridge
      */
     public static javax.servlet.http.HttpSession toJavax(HttpSession jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaHttpSession(jakarta);
     }
 
@@ -258,6 +318,10 @@ public final class ServletBridge
      */
     public static HttpSession toJakarta(javax.servlet.http.HttpSession javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxHttpSession(javax);
     }
 
@@ -267,6 +331,10 @@ public final class ServletBridge
      */
     public static javax.servlet.http.Part toJavax(Part jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaPart(jakarta);
     }
 
@@ -276,6 +344,10 @@ public final class ServletBridge
      */
     public static Part toJakarta(javax.servlet.http.Part javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxPart(javax);
     }
 
@@ -285,6 +357,10 @@ public final class ServletBridge
      */
     public static javax.servlet.http.Cookie toJavax(Cookie jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new javax.servlet.http.Cookie(jakarta.getName(), jakarta.getValue());
     }
 
@@ -294,6 +370,10 @@ public final class ServletBridge
      */
     public static Cookie toJakarta(javax.servlet.http.Cookie javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new Cookie(javax.getName(), javax.getValue());
     }
 
@@ -303,6 +383,10 @@ public final class ServletBridge
      */
     public static javax.servlet.ReadListener toJavax(ReadListener jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaReaderListener(jakarta);
     }
 
@@ -312,6 +396,10 @@ public final class ServletBridge
      */
     public static ReadListener toJakarta(javax.servlet.ReadListener javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxReaderListener(javax);
     }
 
@@ -321,6 +409,10 @@ public final class ServletBridge
      */
     public static javax.servlet.WriteListener toJavax(WriteListener jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaWriteListener(jakarta);
     }
 
@@ -330,6 +422,10 @@ public final class ServletBridge
      */
     public static WriteListener toJakarta(javax.servlet.WriteListener javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxWriteListener(javax);
     }
 
@@ -339,7 +435,11 @@ public final class ServletBridge
      */
     public static javax.servlet.DispatcherType toJavax(DispatcherType jakarta)
     {
-        return jakarta != null ? javax.servlet.DispatcherType.valueOf(jakarta.name()) : null;
+        if (jakarta == null) {
+            return null;
+        }
+
+        return javax.servlet.DispatcherType.valueOf(jakarta.name());
     }
 
     /**
@@ -348,7 +448,11 @@ public final class ServletBridge
      */
     public static DispatcherType toJakarta(javax.servlet.DispatcherType javax)
     {
-        return javax != null ? DispatcherType.valueOf(javax.name()) : null;
+        if (javax == null) {
+            return null;
+        }
+
+        return DispatcherType.valueOf(javax.name());
     }
 
     /**
@@ -357,6 +461,10 @@ public final class ServletBridge
      */
     public static javax.servlet.ServletOutputStream toJavax(ServletOutputStream jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaServletOutputStream(jakarta);
     }
 
@@ -366,6 +474,10 @@ public final class ServletBridge
      */
     public static ServletOutputStream toJakarta(javax.servlet.ServletOutputStream javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxServletOutputStream(javax);
     }
 
@@ -375,6 +487,10 @@ public final class ServletBridge
      */
     public static javax.servlet.http.HttpSessionContext toJavax(HttpSessionContext jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaHttpSessionContext(jakarta);
     }
 
@@ -384,6 +500,10 @@ public final class ServletBridge
      */
     public static HttpSessionContext toJakarta(javax.servlet.http.HttpSessionContext javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxHttpSessionContext(javax);
     }
 
@@ -393,6 +513,10 @@ public final class ServletBridge
      */
     public static javax.servlet.ServletConfig toJavax(ServletConfig jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaServletConfig(jakarta);
     }
 
@@ -402,6 +526,10 @@ public final class ServletBridge
      */
     public static ServletConfig toJakarta(javax.servlet.ServletConfig javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxServletConfig(javax);
     }
 
@@ -411,6 +539,10 @@ public final class ServletBridge
      */
     public static javax.servlet.AsyncContext toJavax(AsyncContext jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaAsyncContext(jakarta);
     }
 
@@ -420,6 +552,10 @@ public final class ServletBridge
      */
     public static AsyncContext toJakarta(javax.servlet.AsyncContext javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxAsyncContext(javax);
     }
 
@@ -449,7 +585,11 @@ public final class ServletBridge
      */
     public static javax.servlet.SessionTrackingMode toJavax(SessionTrackingMode jakarta)
     {
-        return jakarta != null ? javax.servlet.SessionTrackingMode.valueOf(jakarta.name()) : null;
+        if (jakarta == null) {
+            return null;
+        }
+
+        return javax.servlet.SessionTrackingMode.valueOf(jakarta.name());
     }
 
     /**
@@ -458,7 +598,11 @@ public final class ServletBridge
      */
     public static SessionTrackingMode toJakarta(javax.servlet.SessionTrackingMode javax)
     {
-        return javax != null ? SessionTrackingMode.valueOf(javax.name()) : null;
+        if (javax == null) {
+            return null;
+        }
+
+        return SessionTrackingMode.valueOf(javax.name());
     }
 
     /**
@@ -467,6 +611,10 @@ public final class ServletBridge
      */
     public static Set<javax.servlet.SessionTrackingMode> toJavax(Set<SessionTrackingMode> jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return jakarta.stream().map(ServletBridge::toJavax).collect(Collectors.toSet());
     }
 
@@ -476,6 +624,10 @@ public final class ServletBridge
      */
     public static Set<SessionTrackingMode> toJakarta(Set<javax.servlet.SessionTrackingMode> javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return javax.stream().map(ServletBridge::toJakarta).collect(Collectors.toSet());
     }
 
@@ -485,6 +637,10 @@ public final class ServletBridge
      */
     public static javax.servlet.SessionCookieConfig toJavax(SessionCookieConfig jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaSessionCookieConfig(jakarta);
     }
 
@@ -494,6 +650,10 @@ public final class ServletBridge
      */
     public static SessionCookieConfig toJakarta(javax.servlet.SessionCookieConfig javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxSessionCookieConfig(javax);
     }
 
@@ -503,6 +663,10 @@ public final class ServletBridge
      */
     public static javax.servlet.FilterRegistration toJavax(FilterRegistration jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaFilterRegistration(jakarta);
     }
 
@@ -512,6 +676,10 @@ public final class ServletBridge
      */
     public static FilterRegistration toJakarta(javax.servlet.FilterRegistration javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxFilterRegistration(javax);
     }
 
@@ -521,6 +689,10 @@ public final class ServletBridge
      */
     public static javax.servlet.FilterRegistration.Dynamic toJavax(FilterRegistration.Dynamic jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaFilterRegistration.Dynamic(jakarta);
     }
 
@@ -530,6 +702,10 @@ public final class ServletBridge
      */
     public static jakarta.servlet.FilterRegistration.Dynamic toJakarta(javax.servlet.FilterRegistration.Dynamic javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxFilterRegistration.Dynamic(javax);
     }
 
@@ -539,6 +715,10 @@ public final class ServletBridge
      */
     public static javax.servlet.ServletRegistration toJavax(ServletRegistration jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaServletRegistration(jakarta);
     }
 
@@ -548,6 +728,10 @@ public final class ServletBridge
      */
     public static ServletRegistration toJakarta(javax.servlet.ServletRegistration javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxServletRegistration(javax);
     }
 
@@ -557,6 +741,10 @@ public final class ServletBridge
      */
     public static javax.servlet.ServletRegistration.Dynamic toJavax(ServletRegistration.Dynamic jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaServletRegistration.Dynamic(jakarta);
     }
 
@@ -566,6 +754,10 @@ public final class ServletBridge
      */
     public static ServletRegistration.Dynamic toJakarta(javax.servlet.ServletRegistration.Dynamic javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxServletRegistration.Dynamic(javax);
     }
 
@@ -575,6 +767,10 @@ public final class ServletBridge
      */
     public static javax.servlet.Filter toJavax(Filter jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaFilter(jakarta);
     }
 
@@ -584,6 +780,10 @@ public final class ServletBridge
      */
     public static Filter toJakarta(javax.servlet.Filter javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxFilter(javax);
     }
 
@@ -593,6 +793,10 @@ public final class ServletBridge
      */
     public static javax.servlet.AsyncListener toJavax(AsyncListener jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaAsyncListener(jakarta);
     }
 
@@ -602,6 +806,10 @@ public final class ServletBridge
      */
     public static AsyncListener toJakarta(javax.servlet.AsyncListener javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxAsyncListener(javax);
     }
 
@@ -611,6 +819,10 @@ public final class ServletBridge
      */
     public static javax.servlet.ServletInputStream toJavax(ServletInputStream jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaServletInputStream(jakarta);
     }
 
@@ -620,6 +832,10 @@ public final class ServletBridge
      */
     public static ServletInputStream toJakarta(javax.servlet.ServletInputStream javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxServletInputStream(javax);
     }
 
@@ -629,6 +845,10 @@ public final class ServletBridge
      */
     public static javax.servlet.AsyncEvent toJavax(AsyncEvent jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new javax.servlet.AsyncEvent(toJavax(jakarta.getAsyncContext()), toJavax(jakarta.getSuppliedRequest()),
             toJavax(jakarta.getSuppliedResponse()), jakarta.getThrowable());
     }
@@ -639,6 +859,10 @@ public final class ServletBridge
      */
     public static AsyncEvent toJakarta(javax.servlet.AsyncEvent javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new AsyncEvent(toJakarta(javax.getAsyncContext()), toJakarta(javax.getSuppliedRequest()),
             toJakarta(javax.getSuppliedResponse()), javax.getThrowable());
     }
@@ -649,6 +873,10 @@ public final class ServletBridge
      */
     public static javax.servlet.FilterChain toJavax(FilterChain jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaFilterChain(jakarta);
     }
 
@@ -658,6 +886,10 @@ public final class ServletBridge
      */
     public static FilterChain toJakarta(javax.servlet.FilterChain javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxFilterChain(javax);
     }
 
@@ -667,6 +899,10 @@ public final class ServletBridge
      */
     public static javax.servlet.FilterConfig toJavax(FilterConfig jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new JavaxToJakartaFilterConfig(jakarta);
     }
 
@@ -676,6 +912,10 @@ public final class ServletBridge
      */
     public static FilterConfig toJakarta(javax.servlet.FilterConfig javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new JakartaToJavaxFilterConfig(javax);
     }
 
@@ -685,6 +925,10 @@ public final class ServletBridge
      */
     public static javax.servlet.MultipartConfigElement toJavax(MultipartConfigElement jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return new javax.servlet.MultipartConfigElement(jakarta.getLocation(), jakarta.getMaxFileSize(),
             jakarta.getMaxRequestSize(), jakarta.getFileSizeThreshold());
     }
@@ -695,6 +939,10 @@ public final class ServletBridge
      */
     public static MultipartConfigElement toJakarta(javax.servlet.MultipartConfigElement javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return new MultipartConfigElement(javax.getLocation(), javax.getMaxFileSize(), javax.getMaxRequestSize(),
             javax.getFileSizeThreshold());
     }
@@ -725,6 +973,10 @@ public final class ServletBridge
      */
     public static Enumeration<javax.servlet.Servlet> toJavax(Enumeration<Servlet> jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return Collections.enumeration(Collections.list(jakarta).stream().map(ServletBridge::toJavax).toList());
     }
 
@@ -734,6 +986,10 @@ public final class ServletBridge
      */
     public static Enumeration<Servlet> toJakarta(Enumeration<javax.servlet.Servlet> javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return Collections.enumeration(Collections.list(javax).stream().map(ServletBridge::toJakarta).toList());
     }
 
@@ -743,6 +999,10 @@ public final class ServletBridge
      */
     public static javax.servlet.http.Cookie[] toJavax(Cookie[] jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         javax.servlet.http.Cookie[] javax = new javax.servlet.http.Cookie[jakarta.length];
 
         for (int i = 0; i < jakarta.length; ++i) {
@@ -758,6 +1018,10 @@ public final class ServletBridge
      */
     public static Cookie[] toJakarta(javax.servlet.http.Cookie[] javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         Cookie[] jakarta = new Cookie[javax.length];
 
         for (int i = 0; i < javax.length; ++i) {
@@ -773,6 +1037,10 @@ public final class ServletBridge
      */
     public static EnumSet<javax.servlet.DispatcherType> toJavax(EnumSet<DispatcherType> jakarta)
     {
+        if (jakarta == null) {
+            return null;
+        }
+
         return EnumSet.copyOf(jakarta.stream().map(ServletBridge::toJavax).collect(Collectors.toList()));
     }
 
@@ -782,6 +1050,10 @@ public final class ServletBridge
      */
     public static EnumSet<DispatcherType> toJakarta(EnumSet<javax.servlet.DispatcherType> javax)
     {
+        if (javax == null) {
+            return null;
+        }
+
         return EnumSet.copyOf(javax.stream().map(ServletBridge::toJakarta).collect(Collectors.toList()));
     }
 }

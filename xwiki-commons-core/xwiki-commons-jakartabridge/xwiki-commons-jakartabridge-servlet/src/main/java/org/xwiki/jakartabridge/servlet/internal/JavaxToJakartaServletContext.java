@@ -160,7 +160,8 @@ public class JavaxToJakartaServletContext implements ServletContext
     @Override
     public void log(Exception exception, String msg)
     {
-        this.wrapped.log(exception, msg);
+        // Since deprecated APIs where removed in Servlet 6, it's safer to use alternatives
+        this.wrapped.log(msg, exception);
     }
 
     @Override
@@ -190,8 +191,7 @@ public class JavaxToJakartaServletContext implements ServletContext
     @Override
     public Enumeration<String> getInitParameterNames()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return this.wrapped.getInitParameterNames();
     }
 
     @Override

@@ -203,7 +203,8 @@ public class JavaxToJakartaHttpServletRequest<R extends jakarta.servlet.http.Htt
     @Override
     public boolean isRequestedSessionIdFromUrl()
     {
-        return this.wrapped.isRequestedSessionIdFromUrl();
+        // Since deprecated APIs where removed in Servlet 6, it's safer to use alternatives
+        return this.wrapped.isRequestedSessionIdFromURL();
     }
 
     @Override

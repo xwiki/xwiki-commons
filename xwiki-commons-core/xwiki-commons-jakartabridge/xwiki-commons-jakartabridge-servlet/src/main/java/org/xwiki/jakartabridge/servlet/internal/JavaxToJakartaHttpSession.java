@@ -19,6 +19,7 @@
  */
 package org.xwiki.jakartabridge.servlet.internal;
 
+import java.util.Collections;
 import java.util.Enumeration;
 
 import javax.servlet.ServletContext;
@@ -33,6 +34,8 @@ import org.xwiki.jakartabridge.servlet.ServletBridge;
  */
 public class JavaxToJakartaHttpSession implements HttpSession
 {
+    private static final String[] EMPTY_ARRAY = new String[0];
+
     private final jakarta.servlet.http.HttpSession wrapped;
 
     /**
@@ -82,7 +85,8 @@ public class JavaxToJakartaHttpSession implements HttpSession
     @Override
     public HttpSessionContext getSessionContext()
     {
-        return ServletBridge.toJavax(this.wrapped.getSessionContext());
+        // Since deprecated APIs where removed in Servlet 6, it's safer to use alternatives
+        return EmptyJakartaHttpSessionContext.EMPTY;
     }
 
     @Override
@@ -94,7 +98,8 @@ public class JavaxToJakartaHttpSession implements HttpSession
     @Override
     public Object getValue(String name)
     {
-        return this.wrapped.getValue(name);
+        // Since deprecated APIs where removed in Servlet 6, it's safer to use alternatives
+        return this.wrapped.getAttribute(name);
     }
 
     @Override
@@ -106,7 +111,8 @@ public class JavaxToJakartaHttpSession implements HttpSession
     @Override
     public String[] getValueNames()
     {
-        return this.wrapped.getValueNames();
+        // Since deprecated APIs where removed in Servlet 6, it's safer to use alternatives
+        return Collections.<String>list(this.wrapped.getAttributeNames()).toArray(EMPTY_ARRAY);
     }
 
     @Override
@@ -118,7 +124,8 @@ public class JavaxToJakartaHttpSession implements HttpSession
     @Override
     public void putValue(String name, Object value)
     {
-        this.wrapped.putValue(name, value);
+        // Since deprecated APIs where removed in Servlet 6, it's safer to use alternatives
+        this.wrapped.setAttribute(name, value);
     }
 
     @Override
@@ -130,7 +137,8 @@ public class JavaxToJakartaHttpSession implements HttpSession
     @Override
     public void removeValue(String name)
     {
-        this.wrapped.removeValue(name);
+        // Since deprecated APIs where removed in Servlet 6, it's safer to use alternatives
+        this.wrapped.removeAttribute(name);
     }
 
     @Override

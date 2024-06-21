@@ -206,7 +206,8 @@ public class JavaxToJakartaServletRequest<R extends jakarta.servlet.ServletReque
     @Override
     public String getRealPath(String path)
     {
-        return this.wrapped.getRealPath(path);
+        // Since deprecated APIs where removed in Servlet 6, it's safer to use alternatives
+        return this.wrapped.getServletContext().getRealPath(path);
     }
 
     @Override
