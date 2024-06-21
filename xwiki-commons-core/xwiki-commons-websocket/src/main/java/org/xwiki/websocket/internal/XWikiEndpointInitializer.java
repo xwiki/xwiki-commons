@@ -81,7 +81,7 @@ public class XWikiEndpointInitializer implements Initializable
     private ServerContainer getServerContainer()
     {
         if (this.environment instanceof ServletEnvironment) {
-            return (ServerContainer) ((ServletEnvironment) this.environment).getServletContext()
+            return (ServerContainer) ((ServletEnvironment) this.environment).getJakartaServletContext()
                 .getAttribute(ServerContainer.class.getName());
         } else {
             this.logger.warn("We can't initialize the WebSocket end-points in a non-servlet environment.");

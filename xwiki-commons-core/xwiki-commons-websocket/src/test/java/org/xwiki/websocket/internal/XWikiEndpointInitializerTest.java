@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import javax.inject.Named;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import jakarta.websocket.DecodeException;
 import jakarta.websocket.Decoder;
 import jakarta.websocket.EncodeException;
@@ -152,7 +152,7 @@ class XWikiEndpointInitializerTest
         when(servletContext.getAttribute(ServerContainer.class.getName())).thenReturn(this.serverContainer);
 
         ServletEnvironment environment = mock(ServletEnvironment.class);
-        when(environment.getServletContext()).thenReturn(servletContext);
+        when(environment.getJakartaServletContext()).thenReturn(servletContext);
         this.componentManager.registerComponent(Environment.class, environment);
     }
 
