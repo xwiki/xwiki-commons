@@ -27,7 +27,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.internal.ExtensionFactory;
@@ -47,17 +46,6 @@ public class ExtensionIdConverter extends AbstractConverter<ExtensionId>
 {
     @Inject
     private ExtensionFactory factory;
-
-    private static int countBackslashes(String str, int index)
-    {
-        for (int i = index - 1; i >= 0; --i) {
-            if (str.charAt(i) != '\\') {
-                return index - i - 1;
-            }
-        }
-
-        return index;
-    }
 
     /**
      * @param values the values to convert
@@ -113,44 +101,23 @@ public class ExtensionIdConverter extends AbstractConverter<ExtensionId>
     {
         if (value != null) {
             String valueString = value.toString();
-            return toExtensionId(valueString, valueString.length() - 1, defaultVersion, factory);
+
+            ExtensionConverterParser parser = new ExtensionConverterParser(valueString);
+
+            String id = parser.next(true);
+            String versionString = parser.next(false);
+
+            Version version;
+            if (versionString != null) {
+                version = factory != null ? factory.getVersion(versionString) : new DefaultVersion(versionString);
+            } else {
+                version = defaultVersion;
+            }
+
+            return new ExtensionId(id, version);
         }
 
         return null;
-    }
-
-    private static ExtensionId toExtensionId(String value, int end, Version defaultVersion, ExtensionFactory factory)
-    {
-        String valueString = value;
-
-        int index = valueString.lastIndexOf('/');
-        String id;
-        Version version;
-        if (index > 0 && index < end) {
-            int backslashes = countBackslashes(valueString, index);
-            if (backslashes > 0) {
-                StringBuilder builder = new StringBuilder();
-                builder.append(valueString.substring(0, index - backslashes));
-                builder.append(StringUtils.repeat('\\', backslashes / 2));
-                builder.append(valueString.substring(index));
-
-                valueString = builder.toString();
-                index -= backslashes - (backslashes / 2);
-
-                if (backslashes % 2 == 1) {
-                    return toExtensionId(valueString, index - backslashes - 1, defaultVersion, factory);
-                }
-            }
-
-            id = valueString.substring(0, index);
-            String versionString = valueString.substring(index + 1);
-            version = factory != null ? factory.getVersion(versionString) : new DefaultVersion(versionString);
-        } else {
-            id = valueString;
-            version = defaultVersion;
-        }
-
-        return new ExtensionId(id, version);
     }
 
     /**
@@ -159,16 +126,7 @@ public class ExtensionIdConverter extends AbstractConverter<ExtensionId>
      */
     public static String toString(ExtensionId value)
     {
-        StringBuilder builder = new StringBuilder();
-
-        builder.append(value.getId().replace("\\", "\\\\").replace("/", "\\/"));
-
-        if (value.getVersion() != null) {
-            builder.append('/');
-            builder.append(value.getVersion());
-        }
-
-        return builder.toString();
+        return ExtensionConverterParser.toString(value.getId(), value.getVersion());
     }
 
     /**

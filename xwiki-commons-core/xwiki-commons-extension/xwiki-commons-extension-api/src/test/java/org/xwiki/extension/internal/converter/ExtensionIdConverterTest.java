@@ -53,6 +53,8 @@ class ExtensionIdConverterTest
         assertEquals(new ExtensionId("id/1.0"), this.manager.convert(ExtensionId.class, "id\\/1.0"));
         assertEquals(new ExtensionId("/1.0"), this.manager.convert(ExtensionId.class, "\\/1.0"));
         assertEquals(new ExtensionId("id\\/1.0"), this.manager.convert(ExtensionId.class, "id\\\\\\/1.0"));
+
+        assertEquals(new ExtensionId("id", "1.0"), ExtensionIdConverter.toExtensionId("id", new DefaultVersion("1.0")));
     }
 
     @Test

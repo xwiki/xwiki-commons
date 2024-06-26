@@ -27,7 +27,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.ExtensionAuthor;
 import org.xwiki.extension.internal.ExtensionFactory;
@@ -46,17 +45,6 @@ public class ExtensionAuthorConverter extends AbstractConverter<ExtensionAuthor>
 {
     @Inject
     private ExtensionFactory factory;
-
-    private static int countBackslashes(String str, int index)
-    {
-        for (int i = index - 1; i >= 0; --i) {
-            if (str.charAt(i) != '\\') {
-                return index - i - 1;
-            }
-        }
-
-        return index;
-    }
 
     /**
      * @param values the values to convert
@@ -102,43 +90,16 @@ public class ExtensionAuthorConverter extends AbstractConverter<ExtensionAuthor>
     {
         if (value != null) {
             String valueString = value.toString();
-            return toExtensionAuthor(valueString, valueString.length() - 1, factory);
+
+            ExtensionConverterParser parser = new ExtensionConverterParser(valueString);
+
+            String name = parser.next(true);
+            String url = parser.next(false);
+
+            return ExtensionFactory.getExtensionAuthor(factory, name, url);
         }
 
         return null;
-    }
-
-    private static ExtensionAuthor toExtensionAuthor(String value, int end, ExtensionFactory factory)
-    {
-        String valueString = value;
-
-        int index = valueString.indexOf('/');
-        String name;
-        String url;
-        if (index > 0 && index < end) {
-            int backslashes = countBackslashes(valueString, index);
-            if (backslashes > 0) {
-                StringBuilder builder = new StringBuilder();
-                builder.append(valueString.substring(0, index - backslashes));
-                builder.append(StringUtils.repeat('\\', backslashes / 2));
-                builder.append(valueString.substring(index));
-
-                valueString = builder.toString();
-                index -= backslashes - (backslashes / 2);
-
-                if (backslashes % 2 == 1) {
-                    return toExtensionAuthor(valueString, index - backslashes - 1, factory);
-                }
-            }
-
-            name = valueString.substring(0, index);
-            url = valueString.substring(index + 1);
-        } else {
-            name = valueString;
-            url = null;
-        }
-
-        return factory.getExtensionAuthor(name, url);
     }
 
     /**
@@ -147,18 +108,7 @@ public class ExtensionAuthorConverter extends AbstractConverter<ExtensionAuthor>
      */
     public static String toString(ExtensionAuthor value)
     {
-        StringBuilder builder = new StringBuilder();
-
-        if (value.getName() != null) {
-            builder.append(value.getName().replace("\\", "\\\\").replace("/", "\\/"));
-        }
-
-        if (value.getURLString() != null) {
-            builder.append('/');
-            builder.append(value.getURLString());
-        }
-
-        return builder.toString();
+        return ExtensionConverterParser.toString(value.getName(), value.getURLString());
     }
 
     /**
