@@ -40,6 +40,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.environment.Environment;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.xstream.internal.SafeXStream;
 
@@ -66,6 +67,9 @@ public class JobStatusSerializer
     @Inject
     private SafeXStream xstream;
 
+    @Inject
+    private Environment environment;
+
     /**
      * @param status the status to serialize
      * @param file the file to serialize the status to
@@ -73,7 +77,9 @@ public class JobStatusSerializer
      */
     public void write(JobStatus status, File file) throws IOException
     {
-        File tempFile = File.createTempFile(file.getName(), ".tmp");
+        File parent = new File(this.environment.getTemporaryDirectory(), "job/");
+        parent.mkdirs();
+        File tempFile = File.createTempFile(file.getName(), ".tmp", parent);
 
         try (OutputStream stream = getOutputStream(tempFile, isZip(file))) {
             if (stream instanceof ArchiveOutputStream) {
@@ -109,6 +115,8 @@ public class JobStatusSerializer
 
     private OutputStream getOutputStream(File tempFile, boolean zip) throws IOException
     {
+        tempFile.mkdirs();
+
         if (zip) {
             return new ZipArchiveOutputStream(tempFile);
         } else {
