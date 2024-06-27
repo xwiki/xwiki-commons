@@ -50,6 +50,7 @@ import org.xwiki.logging.LoggerManager;
 import org.xwiki.logging.internal.tail.XStreamFileLoggerTail;
 import org.xwiki.logging.marker.TranslationMarker;
 import org.xwiki.logging.tail.LoggerTail;
+import org.xwiki.test.TestEnvironment;
 import org.xwiki.test.XWikiTempDirUtil;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
@@ -85,7 +86,8 @@ import static org.mockito.Mockito.when;
     XStreamUtils.class,
     SerializableXStreamChecker.class,
     JobStatusSerializer.class,
-    XStreamFileLoggerTail.class
+    XStreamFileLoggerTail.class,
+    TestEnvironment.class
 })
 // @formatter:on
 class DefaultJobStatusStoreTest
