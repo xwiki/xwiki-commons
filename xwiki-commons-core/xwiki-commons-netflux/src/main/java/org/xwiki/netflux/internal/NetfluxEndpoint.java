@@ -365,12 +365,12 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
      */
     private void sendChannelMessage(String cmd, User me, Channel channel, String message)
     {
+        // Broadcast the message to all the bots connected to the channel.
+        channel.getBots().values().forEach(bot -> bot.onChannelMessage(channel, me, cmd, message));
+
         // Broadcast the message to all the users connected to the channel.
         channel.getUsers().values().stream()
             .filter(user -> !(MessageDispatcher.COMMAND_MSG.equals(cmd) && user.equals(me)))
             .forEach(user -> this.dispatcher.addMessage(user, message));
-
-        // Broadcast the message to all the bots connected to the channel.
-        channel.getBots().values().forEach(bot -> bot.onChannelMessage(channel, me, cmd, message));
     }
 }
