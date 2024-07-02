@@ -53,9 +53,14 @@ public class ForbiddenInvocationProcessor extends AbstractXWikiProcessor<CtInvoc
 
         CtClass<?> ctClass = getCtClass(invocation);
 
-        if (ctClass != null && !this.ignores.contains(ctClass.getQualifiedName())) {
+        if (ctClass != null && isIgnored(ctClass)) {
             processInvocation(invocation);
         }
+    }
+
+    private boolean isIgnored(CtClass<?> ctClass)
+    {
+        return this.ignores == null || !this.ignores.contains(ctClass.getQualifiedName());
     }
 
     private void processInvocation(CtInvocation<?> invocation)
@@ -68,7 +73,7 @@ public class ForbiddenInvocationProcessor extends AbstractXWikiProcessor<CtInvoc
             if (type != null) {
                 String shortSignature = type + '#' + invocation.getExecutable().getSimpleName();
                 String completeSignature = type + '#' + invocation.getExecutable().getSignature();
-                
+
                 if (this.methods.contains(shortSignature) || this.methods.contains(completeSignature)) {
                     String message =
                         String.format("Forbidden call to [%s] at %s", completeSignature, target.getPosition());
