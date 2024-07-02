@@ -19,10 +19,7 @@
  */
 package org.xwiki.tool.spoon;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -47,15 +44,15 @@ public class ForbiddenInvocationProcessorTest
     {
         Launcher launcher = new Launcher();
         launcher.getEnvironment().setNoClasspath(true);
-        launcher.setArgs(new String[] {"--output-type", "nooutput" });
+        launcher.setArgs(new String[] {"--output-type", "nooutput"});
         launcher.addInputResource("./src/test/java/org/xwiki/tool/spoon/forbidden/");
 
         ForbiddenInvocationProcessor processor = new ForbiddenInvocationProcessor();
-        Map<String, List<String>> methodMap = new HashMap<>();
-        methodMap.put("java.io.File", Arrays.asList("deleteOnExit"));
-        methodMap.put("java.net.URL", Arrays.asList("equals"));
+        Set<String> methods = Set.of("java.io.File#deleteOnExit", "java.net.URL#equals",
+            "java.io.File#createTempFile(java.lang.String,java.lang.String)");
         ProcessorProperties properties = new ProcessorPropertiesImpl();
-        properties.set("methods", methodMap);
+        properties.set("methods", methods);
+        properties.set("ignores", Set.of("org.xwiki.tool.spoon.forbidden.IgnoredBadTestClass"));
         processor.initProperties(properties);
 
         launcher.addProcessor(processor);
@@ -64,8 +61,8 @@ public class ForbiddenInvocationProcessorTest
             launcher.run();
         });
         assertThat(exception.getMessage(), matchesPattern("\\QThe following errors were found:\\E\n"
-            + "\\Q- Forbidden call to [java.io.File#deleteOnExit] at \\E(.*)\n"
-            + "\\Q- Forbidden call to [java.net.URL#equals] at \\E(.*)\n"
-        ));
+            + "\\Q- Forbidden call to [java.io.File#deleteOnExit()] at \\E(.*)\n"
+            + "\\Q- Forbidden call to [java.net.URL#equals(java.lang.Object)] at \\E(.*)\n"
+            + "\\Q- Forbidden call to [java.io.File#createTempFile(java.lang.String,java.lang.String)] at \\E(.*)\n"));
     }
 }

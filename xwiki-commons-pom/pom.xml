@@ -187,14 +187,20 @@
                       <!--
                         - File#deleteOnExit: Does not make any sense in the context of an application server and it can
                           cause memory leaks
+                        - File#createTempFile(String,String): an application should always use the temporary directory
+                          that was allocated for it and not the standard Java temporary directory
                         - URL#equals: The URL#equals implementation is insane (it actually tries to access the host
                           with HTTP URLs for example)
                       -->
                       <value><![CDATA[
-                        {
-                          "java.io.File": ["deleteOnExit"],
-                          "java.net.URL": ["equals"]
-                        }
+                        [
+                          "java.io.File#deleteOnExit",
+                          "java.io.File#createTempFile(java.lang.String,java.lang.String)",
+                          "java.nio.file.Files#createTempDirectory(java.lang.String,java.nio.file.attribute.FileAttribute[])",
+                          "java.nio.file.Files#createTempDirectory(java.lang.String,java.lang.String,java.nio.file.attribute.FileAttribute[])",
+                          "com.google.common.io.Files#createTempDir()",
+                          "java.net.URL#equals"
+                        ]
                       ]]></value>
                     </property>
                   </properties>

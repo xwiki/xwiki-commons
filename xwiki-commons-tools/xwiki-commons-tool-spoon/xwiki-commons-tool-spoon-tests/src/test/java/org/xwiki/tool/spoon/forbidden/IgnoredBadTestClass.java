@@ -21,7 +21,6 @@ package org.xwiki.tool.spoon.forbidden;
 
 import java.io.File;
 import java.net.URL;
-import java.nio.file.Files;
 
 import org.xwiki.tool.spoon.ForbiddenInvocationProcessorTest;
 
@@ -30,7 +29,7 @@ import org.xwiki.tool.spoon.ForbiddenInvocationProcessorTest;
  *
  * @version $Id$
  */
-public class BadTestClass
+public class IgnoredBadTestClass
 {
     public void method() throws Exception
     {
@@ -39,7 +38,5 @@ public class BadTestClass
         URL url = new URL("whatever");
         url.equals(url);
         File.createTempFile("prefix", "suffix");
-        File.createTempFile("prefix", "suffix", new File("target/"));
-        Files.createTempDirectory("prefix");
     }
 }
