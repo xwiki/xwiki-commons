@@ -117,12 +117,12 @@ public class ZIPFileAssertComparator implements FileAssertComparator
     @Override
     public void assertEquals(String message, byte[] expected, byte[] actual) throws IOException
     {
-        File actualFile = File.createTempFile("actual", ".actual");
+        File actualFile = File.createTempFile("actual", ".actual", FileAssert.TEMPORARY_DIRECTORY);
 
         try {
             FileUtils.writeByteArrayToFile(actualFile, actual);
 
-            File expectedFile = File.createTempFile("expected", ".expected");
+            File expectedFile = File.createTempFile("expected", ".expected", FileAssert.TEMPORARY_DIRECTORY);
 
             try {
                 FileUtils.writeByteArrayToFile(expectedFile, expected);

@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.xwiki.test.XWikiTempDirUtil;
 
 /**
  * Files related test tools.
@@ -35,6 +36,8 @@ import org.apache.commons.io.FilenameUtils;
  */
 public final class FileAssert
 {
+    public static final File TEMPORARY_DIRECTORY = XWikiTempDirUtil.createTemporaryDirectory();
+
     private final static Map<String, FileAssertComparator> COMPARATORS = new HashMap<>();
 
     private final static DefaultFileAssertComparator DEFAULT_COMPARATOR = new DefaultFileAssertComparator();
@@ -85,7 +88,7 @@ public final class FileAssert
      */
     public static void assertEquals(File expected, byte[] actual) throws IOException
     {
-        File actualFile = File.createTempFile(expected.getName(), ".actual");
+        File actualFile = File.createTempFile(expected.getName(), ".actual", TEMPORARY_DIRECTORY);
 
         try {
             FileUtils.writeByteArrayToFile(actualFile, actual);
