@@ -23,8 +23,6 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
-import org.mockito.Mockito;
-import org.mockito.internal.util.MockUtil;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.configuration.ConfigurationSource;
@@ -35,9 +33,8 @@ import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.version.internal.DefaultVersion;
+import org.xwiki.test.TestEnvironment;
 import org.xwiki.test.mockito.MockitoComponentManager;
-
-import static org.mockito.ArgumentMatchers.any;
 
 public class MockitoRepositoryUtils extends RepositoryUtils
 {
@@ -52,29 +49,18 @@ public class MockitoRepositoryUtils extends RepositoryUtils
         this.componentManager = componentManager;
     }
 
-    @Override
     public void setup() throws Exception
     {
+        // If an Environment is already configured, reuse it
         Environment environment = null;
         if (this.componentManager.hasComponent(Environment.class)) {
-            // Reconfigure repository directories based on existing mocked environment
             environment = this.componentManager.getInstance(Environment.class);
-            if (MockUtil.isMock(environment)) {
-                initializeDirectories(environment);
-            } else {
-                // Force mocking environment
-                environment = null;
-            }
+        } else {
+            environment = new TestEnvironment();
+            this.componentManager.registerComponent(Environment.class, environment);
         }
 
-        if (environment == null) {
-            environment = this.componentManager.registerMockComponent(Environment.class);
-            Mockito.when(environment.getPermanentDirectory()).thenReturn(getPermanentDirectory());
-            Mockito.when(environment.getTemporaryDirectory()).thenReturn(getTemporaryDirectory());
-            Mockito.when(environment.getResourceAsStream(any())).thenReturn(null);
-        }
-
-        super.setup();
+        setup(environment);
 
         ConfigurationSource configurationSource;
         if (!this.componentManager.hasComponent(ConfigurationSource.class)) {
