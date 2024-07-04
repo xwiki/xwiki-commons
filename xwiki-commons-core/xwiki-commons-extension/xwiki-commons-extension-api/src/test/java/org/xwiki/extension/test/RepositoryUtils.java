@@ -36,6 +36,7 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.xwiki.environment.Environment;
+import org.xwiki.test.TestEnvironment;
 
 /**
  * @version $Id$
@@ -47,10 +48,6 @@ public class RepositoryUtils
     protected static final String MAVEN2REPOSITORY_ID = "test-maven2";
 
     protected static final String MAVENUNKNWONREPOSITORY_ID = "test-mavenunknown";
-
-    protected File permanentDirectory;
-
-    protected File temporaryDirectory;
 
     protected File extensionDirectory;
 
@@ -66,29 +63,14 @@ public class RepositoryUtils
 
     protected ExtensionPackager extensionPackager;
 
-    public RepositoryUtils()
-    {
-        initializeDirectories();
-    }
-
+    /**
+     * @since 16.6.0RC1
+     */
     protected void initializeDirectories(Environment environment)
-    {
-        this.temporaryDirectory = environment.getTemporaryDirectory();
-        this.permanentDirectory = environment.getPermanentDirectory();
-
-        initializeDirectories();
-    }
-
-    protected void initializeDirectories()
     {
         File testDirectory = new File("target/test-" + new Date().getTime()).getAbsoluteFile();
 
-        if (this.temporaryDirectory == null) {
-            this.temporaryDirectory = new File(testDirectory, "temporary-dir");
-            this.permanentDirectory = new File(testDirectory, "permanent-dir");
-        }
-
-        this.extensionDirectory = new File(this.permanentDirectory, "extension/");
+        this.extensionDirectory = new File(environment.getPermanentDirectory(), "extension/");
         this.localRepositoryRoot = new File(this.extensionDirectory, "repository/");
 
         this.mavenRepositoryRoot = new File(testDirectory, "maven/");
@@ -103,23 +85,13 @@ public class RepositoryUtils
         repositories.put("maven", new MavenRepositorySerializer(getMavenRepository()));
         repositories.put("maven2", new MavenRepositorySerializer(getMaven2Repository()));
 
-        this.extensionPackager = new ExtensionPackager(this.permanentDirectory, repositories);
+        this.extensionPackager = new ExtensionPackager(environment.getPermanentDirectory(), repositories);
 
         System.setProperty("extension.repository.local", getLocalRepository().getAbsolutePath());
         System.setProperty("extension.repository.maven", getMavenRepository().getAbsolutePath());
         System.setProperty("extension.repository.maven2", getMaven2Repository().getAbsolutePath());
         System.setProperty("extension.repository.remote", getRemoteRepository().getAbsolutePath());
         System.setProperty("extension.repository.mavenunknown", getRemoteRepository().getAbsolutePath());
-    }
-
-    public File getPermanentDirectory()
-    {
-        return this.permanentDirectory;
-    }
-
-    public File getTemporaryDirectory()
-    {
-        return this.temporaryDirectory;
     }
 
     public File getExtensionDirectory()
@@ -174,6 +146,19 @@ public class RepositoryUtils
 
     public void setup() throws Exception
     {
+        setup(null);
+    }
+
+    public void setup(Environment environment) throws Exception
+    {
+        // Make sure to have an environment
+        if (environment == null) {
+            environment = new TestEnvironment();
+        }
+
+        // Initialize directories
+        initializeDirectories(environment);
+
         // copy
 
         copyResourceFolder(getLocalRepository(), "repository.local");
