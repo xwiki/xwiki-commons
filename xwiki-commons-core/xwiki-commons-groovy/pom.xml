@@ -120,11 +120,5 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    <!-- Since we're mocking a class, Groovy's CompilerCustomizer, we need this dependency -->
-    <dependency>
-      <groupId>org.jmock</groupId>
-      <artifactId>jmock-legacy</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 </project>

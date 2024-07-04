@@ -60,21 +60,6 @@
       <artifactId>hamcrest-library</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jmock</groupId>
-      <artifactId>jmock</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jmock</groupId>
-      <artifactId>jmock-junit4</artifactId>
-      <exclusions>
-        <!-- junit-dep is deprecated and junit should be used instead  -->
-        <exclusion>
-          <artifactId>junit-dep</artifactId>
-          <groupId>junit</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>

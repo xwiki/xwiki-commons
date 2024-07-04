@@ -27,43 +27,38 @@
     <artifactId>xwiki-commons-tool-test</artifactId>
     <version>16.6.0-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-tool-test-component</artifactId>
-  <name>XWiki Commons - Tools - Test Framework - Component</name>
+  <artifactId>xwiki-commons-tool-test-jmock</artifactId>
+  <name>XWiki Commons - Tools - Test Framework - JMock</name>
   <packaging>jar</packaging>
-  <description>For testing XWiki Components</description>
+  <description>For test which still require JMock</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.34</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>1.00</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-tool-test-simple</artifactId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-observation-api</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.jmock</groupId>
+      <artifactId>jmock</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-component-default</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.jmock</groupId>
+      <artifactId>jmock-junit4</artifactId>
+      <exclusions>
+        <!-- junit-dep is deprecated and junit should be used instead  -->
+        <exclusion>
+          <artifactId>junit-dep</artifactId>
+          <groupId>junit</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-context</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-configuration-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-environment-api</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.jmock</groupId>
+      <artifactId>jmock-legacy</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
@@ -77,9 +72,13 @@
             <!-- Specify the "default" execution id so that the "blocker" one is always executed -->
             <id>default</id>
             <configuration>
-              <suppressionsLocation>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
               <excludes>
-                org/xwiki/test/internal/MockConfigurationSource.java
+                org/xwiki/test/jmock/AbstractComponentTestCase.java,
+                org/xwiki/test/jmock/AbstractMockingComponentTestCase.java,
+                org/xwiki/test/jmock/AbstractMockingTestCase.java,
+                org/xwiki/test/jmock/XWikiComponentInitializer.java,
+                org/xwiki/test/jmock/annotation/MockingRequirement.java,
+                org/xwiki/test/jmock/annotation/MockingRequirements.java
               </excludes>
             </configuration>
           </execution>
@@ -87,19 +86,4 @@
       </plugin>
     </plugins>
   </build>
-  <profiles>
-    <profile>
-      <id>clover</id>
-      <dependencies>
-        <!-- Needed to execute the unit test in this module because MockitoComponentManagerExtension uses
-             ComponentAnnotationLoader which has been clovered and thus the clover jar needs to be in the test
-             classpath -->
-        <dependency>
-          <groupId>org.openclover</groupId>
-          <artifactId>clover</artifactId>
-          <version>${clover.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
 </project>
