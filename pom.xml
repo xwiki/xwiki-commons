@@ -1299,6 +1299,7 @@
         <artifactId>cssparser</artifactId>
         <version>0.9.30</version>
       </dependency>
+
       <!-- Bean validation -->
       <dependency>
         <groupId>jakarta.validation</groupId>
@@ -1315,8 +1316,6 @@
         <groupId>org.mortbay.jasper</groupId>
         <artifactId>apache-el</artifactId>
         <version>${apachache-el.version}</version>
-        <!-- The EL implementation is supposed to come with the application server, but we need one for tests -->
-        <scope>test</scope>
       </dependency>
 
       <!-- Mail -->
