@@ -383,9 +383,7 @@ public class AetherDefaultRepositoryManagerTest
 
         assertNotNull(extension);
 
-        // TODO: put back when https://jira.xwiki.org/browse/XCOMMONS-3028 is fixed
-        // assertEquals(this.extensionIdClassifier, extension.getId());
-        assertEquals(new ExtensionId(GROUPID + ':' + ARTIFACTID, "version"), extension.getId());
+        assertEquals(this.extensionIdClassifier, extension.getId());
 
         assertEquals("type", extension.getType());
         try (InputStream is = extension.getFile().openStream()) {
@@ -405,9 +403,7 @@ public class AetherDefaultRepositoryManagerTest
 
         assertNotNull(extension);
 
-        // TODO: put back when https://jira.xwiki.org/browse/XCOMMONS-3028 is fixed
-        // assertEquals(this.extensionIdClassifier, extension.getId());
-        assertEquals(new ExtensionId(GROUPID + ':' + ARTIFACTID, "version"), extension.getId());
+        assertEquals(this.extensionIdClassifier, extension.getId());
 
         assertEquals("type", extension.getType());
         try (InputStream is = extension.getFile().openStream()) {

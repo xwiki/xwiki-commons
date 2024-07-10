@@ -656,7 +656,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         // String extensionIdString = MavenUtils.toXWikiExtensionIdentifier(artifact.getGroupId(),
         // artifact.getArtifactId(), artifactClassifier, includeExtension ? artifact.getExtension() : null);
         String extensionIdString =
-            MavenUtils.toXWikiExtensionIdentifier(artifact.getGroupId(), artifact.getArtifactId(), "", null);
+            MavenUtils.toXWikiExtensionIdentifier(artifact.getGroupId(), artifact.getArtifactId(), artifactClassifier,
+                null);
         ExtensionId extensionId =
             new ExtensionId(extensionIdString, this.factory.getVersion(artifact.getBaseVersion()));
 
