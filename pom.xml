@@ -94,7 +94,7 @@
 
     <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
          are executed with surefire or failsafe) -->
-    <surefire.version>3.3.0</surefire.version>
+    <surefire.version>3.3.1</surefire.version>
 
     <!-- Mock libraries -->
     <jmock.version>2.13.1</jmock.version>
