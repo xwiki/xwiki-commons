@@ -679,11 +679,10 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- Replace org.json:json for license reasons -->
       <dependency>
-        <groupId>com.tdunning</groupId>
+        <groupId>org.json</groupId>
         <artifactId>json</artifactId>
-        <version>1.8</version>
+        <version>20240303</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.gson</groupId>
@@ -1658,7 +1657,7 @@
               </rules>
             </configuration>
           </execution>
-          <!-- Check that we're using Open JSON and not JSON-Java -->
+          <!-- Check that we're using JSON-Java and not the abandonned Open JSON -->
           <execution>
             <id>enforce-open-json</id>
             <goals>
@@ -1669,11 +1668,9 @@
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
-                  <message>
-                    Use Open JSON which has a less fuzzy license
-                  </message>
+                  <message>XWiki uses org.json:json instead</message>
                   <excludes>
-                    <exclude>org.json:json</exclude>
+                    <exclude>com.tdunning:json</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
