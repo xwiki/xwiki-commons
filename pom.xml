@@ -1417,7 +1417,7 @@
       <dependency>
         <groupId>org.jgroups</groupId>
         <artifactId>jgroups</artifactId>
-        <version>5.3.7.Final</version>
+        <version>5.3.9.Final</version>
       </dependency>
       <!-- Used by Solr and Infinispan -->
       <dependency>
