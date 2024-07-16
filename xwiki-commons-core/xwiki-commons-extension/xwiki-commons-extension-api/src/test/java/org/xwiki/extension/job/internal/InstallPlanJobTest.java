@@ -405,6 +405,47 @@ class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
+    void testInstallOnSeveralNamespacesThenOnRoot() throws Throwable
+    {
+        // Install 1.0 on namespace1 and namespace2
+        install(TestResources.REMOTE_UPGRADE10_ID, "namespace1");
+        install(TestResources.REMOTE_UPGRADE10_ID, "namespace2");
+
+        // Move 1.0 on root
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_UPGRADE10_ID);
+
+        assertEquals(3, plan.getTree().size());
+
+        Iterator<ExtensionPlanNode> it = plan.getTree().iterator();
+
+        ExtensionPlanNode node = it.next();
+        ExtensionPlanAction action = node.getAction();
+        assertEquals(TestResources.REMOTE_UPGRADE10_ID, action.getExtension().getId());
+        assertEquals(Action.UNINSTALL, action.getAction());
+        assertEquals(1, action.getPreviousExtensions().size());
+        assertEquals(TestResources.REMOTE_UPGRADE10_ID, action.getPreviousExtension().getId());
+        assertEquals("namespace1", action.getNamespace());
+        assertEquals(0, node.getChildren().size());
+
+        node = it.next();
+        action = node.getAction();
+        assertEquals(TestResources.REMOTE_UPGRADE10_ID, action.getExtension().getId());
+        assertEquals(Action.UNINSTALL, action.getAction());
+        assertEquals(1, action.getPreviousExtensions().size());
+        assertEquals(TestResources.REMOTE_UPGRADE10_ID, action.getPreviousExtension().getId());
+        assertEquals("namespace2", action.getNamespace());
+        assertEquals(0, node.getChildren().size());
+
+        node = it.next();
+        action = node.getAction();
+        assertEquals(TestResources.REMOTE_UPGRADE10_ID, action.getExtension().getId());
+        assertEquals(Action.INSTALL, action.getAction());
+        assertEquals(0, action.getPreviousExtensions().size());
+        assertNull(action.getNamespace());
+        assertEquals(0, node.getChildren().size());
+    }
+
+    @Test
     void testInstallOnNamespaceThenUnpgradeOnRoot() throws Throwable
     {
         // Install 1.0 on namespace
