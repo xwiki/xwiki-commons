@@ -28,6 +28,7 @@ import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheFactory;
 import org.xwiki.cache.CacheManager;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
+import org.xwiki.environment.Environment;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
@@ -44,6 +45,7 @@ import org.xwiki.job.JobExecutor;
 import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
+import org.xwiki.test.TestEnvironment;
 import org.xwiki.test.annotation.AfterComponent;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.junit5.mockito.InjectComponentManager;
@@ -67,11 +69,14 @@ public abstract class AbstractExtensionHandlerTest
 
     protected MemoryConfigurationSource memoryConfigurationSource;
 
-    // We inject infinispan after components have been loaded to be sure to mock it only if
-    // it's not available in all components.
     @AfterComponent
     public void afterComponent() throws Exception
     {
+        // Force a test environment
+        this.componentManager.registerComponent(Environment.class, new TestEnvironment());
+
+        // We inject infinispan after components have been loaded to be sure to mock it only if
+        // it's not available in all components.
         if (!this.componentManager.hasComponent(CacheFactory.class, "infinispan")) {
             CacheFactory infinispan = this.componentManager.registerMockComponent(CacheFactory.class, "infinispan");
             when(infinispan.newCache(any())).thenReturn(mock(Cache.class));

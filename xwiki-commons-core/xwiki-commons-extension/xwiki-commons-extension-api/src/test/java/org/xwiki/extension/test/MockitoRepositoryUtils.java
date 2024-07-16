@@ -49,6 +49,7 @@ public class MockitoRepositoryUtils extends RepositoryUtils
         this.componentManager = componentManager;
     }
 
+    @Override
     public void setup() throws Exception
     {
         // If an Environment is already configured, reuse it
