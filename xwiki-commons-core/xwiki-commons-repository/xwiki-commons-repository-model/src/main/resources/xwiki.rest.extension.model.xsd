@@ -164,7 +164,7 @@
             maxOccurs="unbounded">
             <annotation>
               <documentation>
-                @Deprecated since 8.0M1, use extensionFeatures instead
+                @deprecated since 8.0M1, use extensionFeatures instead
               </documentation>
             </annotation>
           </element>
