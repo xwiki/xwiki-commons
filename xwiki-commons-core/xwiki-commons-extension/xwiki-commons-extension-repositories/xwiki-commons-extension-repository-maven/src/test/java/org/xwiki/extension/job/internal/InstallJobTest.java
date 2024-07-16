@@ -52,6 +52,21 @@ class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
+    public void testInstallWithClassifierDependency() throws Throwable
+    {
+        ExtensionId extensionId = new ExtensionId("groupid:classifierdependency", "version");
+
+        install(extensionId, LogLevel.ERROR);
+
+        // Is extension installed
+        InstalledExtension installedExtension =
+            this.installedExtensionRepository.getInstalledExtension(extensionId.getId(), null);
+        assertNotNull(installedExtension);
+        assertTrue(installedExtension.isValid(null));
+        assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
+    }
+
+    @Test
     void testInstallOnRootWithNonDefaultTypeDependency() throws Throwable
     {
         ExtensionId extensionId = new ExtensionId("groupid:nondefaulttypedependency", "version");
