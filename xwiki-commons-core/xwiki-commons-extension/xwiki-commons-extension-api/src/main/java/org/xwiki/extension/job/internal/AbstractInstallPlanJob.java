@@ -1076,7 +1076,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
 
             this.progressManager.startStep(this);
 
-            // Find all existing versions of the extension
+            // Find extension colliding with the extension being installed
             Set<InstalledExtension> previousExtensions = getReplacedInstalledExtensions(rewrittenExtension, namespace);
 
             this.progressManager.endStep(this);
@@ -1092,19 +1092,22 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
                     if (namespace == null && previousExtension.getNamespaces() != null) {
                         for (String previousNamespace : previousExtension.getNamespaces()) {
                             uninstallExtension(previousExtension, previousNamespace, this.extensionTree, false);
-                            it.remove();
 
-                            // Remember replaced extension for through the whole job
+                            // Remember replaced extensions through the whole job
                             this.extensionsCache.addPrevious(previousExtension.getId().getId(), previousNamespace);
                         }
+
+                        // This is an uninstall/install situation (and not an upgrade or downgrade), so we remove this
+                        // extension from the previous ones
+                        it.remove();
                     } else {
                         uninstallExtension(previousExtension, namespace, this.extensionTree, false);
 
-                        // Remember replaced extension for through the whole job
+                        // Remember replaced extensions through the whole job
                         this.extensionsCache.addPrevious(previousExtension.getId().getId(), namespace);
                     }
                 } else {
-                    // Remember replaced extension for through the whole job
+                    // Remember replaced extensions through the whole job
                     this.extensionsCache.addPrevious(previousExtension.getId().getId(), namespace);
                 }
             }
