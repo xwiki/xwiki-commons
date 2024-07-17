@@ -26,6 +26,9 @@ import javax.inject.Inject;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.environment.Environment;
+import org.xwiki.test.TestEnvironment;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.xwiki.test.junit5.mockito.MockitoComponentManagerExtension.loadComponentManager;
 
@@ -41,7 +44,11 @@ public class MockitoRepositoryUtilsExtension implements BeforeEachCallback
     public void beforeEach(ExtensionContext context) throws Exception
     {
         Object testInstance = context.getTestInstance().get();
-        MockitoRepositoryUtils utils = new MockitoRepositoryUtils(loadComponentManager(context));
+        MockitoComponentManager componentManager = loadComponentManager(context);
+        MockitoRepositoryUtils utils = new MockitoRepositoryUtils(componentManager);
+
+        // Force a test environment
+        componentManager.registerComponent(Environment.class, new TestEnvironment());
 
         // Initialize the MockitoRepositoryUtils instance
         utils.setup();
