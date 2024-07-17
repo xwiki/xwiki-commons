@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -68,15 +67,14 @@ public class RepositoryUtils
      */
     protected void initializeDirectories(Environment environment)
     {
-        File testDirectory = new File("target/test-" + new Date().getTime()).getAbsoluteFile();
-
         this.extensionDirectory = new File(environment.getPermanentDirectory(), "extension/");
         this.localRepositoryRoot = new File(this.extensionDirectory, "repository/");
 
-        this.mavenRepositoryRoot = new File(testDirectory, "maven/");
-        this.maven2RepositoryRoot = new File(testDirectory, "maven2/");
-        this.mavenUnknownRepositoryRoot = new File(testDirectory, "mavenunknown/");
-        this.remoteRepositoryRoot = new File(testDirectory, "remote/");
+        File repositoriesRootFile = new File(environment.getPermanentDirectory(), "repositories/");
+        this.mavenRepositoryRoot = new File(repositoriesRootFile, "maven/");
+        this.maven2RepositoryRoot = new File(repositoriesRootFile, "maven2/");
+        this.mavenUnknownRepositoryRoot = new File(repositoriesRootFile, "mavenunknown/");
+        this.remoteRepositoryRoot = new File(repositoriesRootFile, "remote/");
 
         Map<String, RepositorySerializer> repositories = new HashMap<>();
         repositories.put(null, new DefaultRepositorySerializer(getRemoteRepository()));
