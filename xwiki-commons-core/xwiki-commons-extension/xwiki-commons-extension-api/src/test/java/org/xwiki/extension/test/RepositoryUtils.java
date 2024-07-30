@@ -64,6 +64,8 @@ public class RepositoryUtils
 
     /**
      * @since 16.6.0RC1
+     * @since 16.4.2
+     * @since 15.10.12
      */
     protected void initializeDirectories(Environment environment)
     {
