@@ -22,6 +22,8 @@ package org.xwiki.extension.test;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+import org.xwiki.environment.Environment;
+import org.xwiki.test.TestEnvironment;
 import org.xwiki.test.mockito.MockitoComponentManager;
 import org.xwiki.test.mockito.MockitoComponentManagerRule;
 
@@ -57,6 +59,9 @@ public class MockitoRepositoryUtilsRule extends MockitoRepositoryUtils implement
             @Override
             public void evaluate() throws Throwable
             {
+                // Force a test environment
+                componentManager.registerComponent(Environment.class, new TestEnvironment());
+
                 setup();
                 base.evaluate();
             }
