@@ -84,7 +84,7 @@
     <log4j.version>2.23.1</log4j.version>
 
     <!-- Hamcrest -->
-    <hamcrest.version>2.2</hamcrest.version>
+    <hamcrest.version>3.0</hamcrest.version>
 
     <!-- JUnit -->
     <junit.version>4.13.2</junit.version>
