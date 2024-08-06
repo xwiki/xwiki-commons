@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -40,6 +39,7 @@ import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.websocket.AbstractPartialStringMessageHandler;
@@ -56,7 +56,14 @@ import org.xwiki.websocket.EndpointComponent;
 @Named("netflux")
 public class NetfluxEndpoint extends Endpoint implements EndpointComponent
 {
-    private static final long TIMEOUT_MILLISECONDS = 30000;
+    // The client side keeps the connection alive by sending a PING message from time to time, using a timer
+    // (setTimeout). The browsers are slowing down timers used by inactive tabs / windows (that don't have
+    // the user focus). This is called timer throttling and can go up to 1 minute, which means inactive browser tabs
+    // won't be able to send PING messages more often than every minute. For this reason, we set the session idle
+    // timeout a little bit higher than the timer throttling value to make sure the WebSocket connection is not closed
+    // in background tabs.
+    // See https://developer.chrome.com/blog/timer-throttling-in-chrome-88/
+    private static final long TIMEOUT_MILLISECONDS = 65000;
 
     private static final String NETFLUX_USER = "netflux.user";
 
@@ -88,6 +95,9 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
     public void onOpen(Session session, EndpointConfig config)
     {
         synchronized (this.bigLock) {
+            // Close the session if we don't receive any message from the user in TIMEOUT_MILLISECONDS.
+            session.setMaxIdleTimeout(TIMEOUT_MILLISECONDS);
+
             User user = getOrRegisterUser(session);
 
             // Send the IDENT message.
@@ -111,7 +121,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
     public void onClose(Session session, CloseReason closeReason)
     {
         synchronized (this.bigLock) {
-            wsDisconnect(session);
+            wsDisconnect(session, closeReason);
         }
     }
 
@@ -119,7 +129,8 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
     public void onError(Session session, Throwable e)
     {
         this.logger.debug("Session closed with error.", e);
-        onClose(session, null);
+        onClose(session,
+            new CloseReason(CloseReason.CloseCodes.CLOSED_ABNORMALLY, ExceptionUtils.getRootCauseMessage(e)));
     }
 
     private void handleMessage(Session session, String message)
@@ -142,12 +153,15 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
         }
     }
 
-    private void wsDisconnect(Session session)
+    private void wsDisconnect(Session session, CloseReason closeReason)
     {
         synchronized (this.bigLock) {
             User user = getOrRegisterUser(session);
 
-            this.logger.debug("Disconnect [{}]", user.getName());
+            this.logger.debug("Last message from [{}] received [{}ms] ago. Session idle timeout is [{}].",
+                user.getName(), System.currentTimeMillis() - user.getTimeOfLastMessage(), session.getMaxIdleTimeout());
+            this.logger.debug("Disconnect [{}] because [{}] ([{}])", user.getName(), closeReason.getReasonPhrase(),
+                closeReason.getCloseCode());
             this.users.remove(user.getName());
             user.setConnected(false);
 
@@ -179,15 +193,11 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
         }
 
         User user = getOrRegisterUser(session);
-
-        long now = System.currentTimeMillis();
-        user.setTimeOfLastMessage(now);
-
-        // Disconnect anyone who hasn't written to the WebSocket in more than TIMEOUT_MILLISECONDS.
-        List<Session> sessions = this.users.values().stream().map(User::getSession).collect(Collectors.toList());
-        // Filter "expired" sessions and close them.
-        sessions.stream().filter(s -> now - getOrRegisterUser(s).getTimeOfLastMessage() > TIMEOUT_MILLISECONDS)
-            .forEach(this::wsDisconnect);
+        // The time of the last message received from a user was initially used to close expired sessions (i.e. sessions
+        // in which we haven't received any message in the past TIMEOUT_MILLISECONDS). This is now done by setting the
+        // max idle timeout of the session to TIMEOUT_MILLISECONDS. We still keep track of the time of the last message
+        // mostly for debugging purposes.
+        user.setTimeOfLastMessage(System.currentTimeMillis());
 
         Integer seq = (Integer) msg.get(0);
         String cmd = msg.get(1).toString();
@@ -336,7 +346,8 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
             return true;
         } catch (IOException e) {
             this.logger.debug("Sending failed.", e);
-            wsDisconnect(user.getSession());
+            wsDisconnect(user.getSession(),
+                new CloseReason(CloseReason.CloseCodes.CLOSED_ABNORMALLY, ExceptionUtils.getRootCauseMessage(e)));
             return false;
         }
     }
