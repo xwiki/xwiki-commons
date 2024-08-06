@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.websocket.CloseReason;
 import javax.websocket.RemoteEndpoint.Basic;
 import javax.websocket.Session;
 
@@ -132,7 +133,7 @@ class NetfluxEndpointTest
         assertEquals(2, secondChannel.getConnectedUsers().size());
 
         // Close both sessions.
-        this.endPoint.onClose(bobSession, null);
+        this.endPoint.onClose(bobSession, new CloseReason(CloseReason.CloseCodes.GOING_AWAY, "Bye!"));
         this.endPoint.onError(aliceSession, null);
 
         assertEquals(0, firstChannel.getConnectedUsers().size());
