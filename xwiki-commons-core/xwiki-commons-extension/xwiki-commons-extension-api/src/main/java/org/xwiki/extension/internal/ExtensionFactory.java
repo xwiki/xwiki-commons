@@ -20,6 +20,7 @@
 package org.xwiki.extension.internal;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -32,11 +33,15 @@ import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
 import org.xwiki.extension.DefaultExtensionPattern;
+import org.xwiki.extension.DefaultExtensionSupportPlan;
+import org.xwiki.extension.DefaultExtensionSupporter;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionAuthor;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionIssueManagement;
 import org.xwiki.extension.ExtensionPattern;
+import org.xwiki.extension.ExtensionSupportPlan;
+import org.xwiki.extension.ExtensionSupporter;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.version.Version;
@@ -56,19 +61,70 @@ public class ExtensionFactory
 {
     private static final ExtensionPattern NULL_PATTERN = new DefaultExtensionPattern((Pattern) null);
 
-    private SoftCache<ExtensionDependency, ExtensionDependency> dependencies = new SoftCache<>();
+    private final SoftCache<ExtensionDependency, ExtensionDependency> dependencies = new SoftCache<>();
 
-    private SoftCache<String, ExtensionPattern> patterns = new SoftCache<>();
+    private final SoftCache<String, ExtensionPattern> patterns = new SoftCache<>();
 
-    private SoftCache<ExtensionAuthor, ExtensionAuthor> authors = new SoftCache<>();
+    private final SoftCache<ExtensionAuthor, ExtensionAuthor> authors = new SoftCache<>();
 
-    private SoftCache<ExtensionRepositoryDescriptor, ExtensionRepositoryDescriptor> repositories = new SoftCache<>();
+    private final SoftCache<ExtensionSupportPlan, ExtensionSupportPlan> supportPlans = new SoftCache<>();
 
-    private SoftCache<ExtensionIssueManagement, ExtensionIssueManagement> issueManagements = new SoftCache<>();
+    private final SoftCache<ExtensionSupporter, ExtensionSupporter> supporters = new SoftCache<>();
 
-    private SoftCache<String, Version> versions = new SoftCache<>();
+    private final SoftCache<ExtensionRepositoryDescriptor, ExtensionRepositoryDescriptor> repositories =
+        new SoftCache<>();
 
-    private SoftCache<String, VersionConstraint> versionConstrains = new SoftCache<>();
+    private final SoftCache<ExtensionIssueManagement, ExtensionIssueManagement> issueManagements = new SoftCache<>();
+
+    private final SoftCache<String, Version> versions = new SoftCache<>();
+
+    private final SoftCache<String, VersionConstraint> versionConstrains = new SoftCache<>();
+
+    /**
+     * Store and return a weak reference equals to the passed {@link ExtensionAuthor}.
+     * 
+     * @param factory the factory to use or null
+     * @param name the name of the author
+     * @param url the url of the author public profile
+     * @return unique instance of {@link ExtensionAuthor} equals to the passed one
+     * @since 16.7.0RC1
+     */
+    public static ExtensionAuthor getExtensionAuthor(ExtensionFactory factory, String name, String url)
+    {
+        return factory != null ? factory.getExtensionAuthor(name, url) : new DefaultExtensionAuthor(name, url);
+    }
+
+    /**
+     * Store and return a weak reference equals to the passed {@link ExtensionSupporter}.
+     * 
+     * @param factory the factory to use or null
+     * @param name the name of the supporter
+     * @param url the url leading to more detail about the supporter
+     * @return unique instance of {@link ExtensionSupporter} equals to the passed one
+     * @since 16.7.0RC1
+     */
+    public static ExtensionSupporter getExtensionSupporter(ExtensionFactory factory, String name, URL url)
+    {
+        return factory != null ? factory.getExtensionSupporter(name, url) : new DefaultExtensionSupporter(name, url);
+    }
+
+    /**
+     * Store and return a weak reference equals to the passed {@link ExtensionSupportPlan}.
+     * 
+     * @param factory the factory to use or null
+     * @param supporter the supporter
+     * @param name the name of the author
+     * @param url the URL of the author public profile
+     * @param paying indicate if the plan is paying or free of charge
+     * @return unique instance of {@link ExtensionSupportPlan} equals to the passed one
+     * @since 16.7.0RC1
+     */
+    public static ExtensionSupportPlan getExtensionSupportPlan(ExtensionFactory factory, ExtensionSupporter supporter,
+        String name, URL url, boolean paying)
+    {
+        return factory != null ? factory.getExtensionSupportPlan(supporter, name, url, paying)
+            : new DefaultExtensionSupportPlan(supporter, name, url, paying);
+    }
 
     /**
      * Store and return a weak reference equals to the passed {@link ExtensionDependency}.
@@ -150,6 +206,59 @@ public class ExtensionFactory
     public ExtensionAuthor getExtensionAuthor(String name, String url)
     {
         return getExtensionAuthor(new DefaultExtensionAuthor(name, url));
+    }
+
+    /**
+     * Store and return a weak reference equals to the passed {@link ExtensionSupporter}.
+     * 
+     * @param supporter the {@link ExtensionSupporter} to find
+     * @return unique instance of {@link ExtensionSupporter} equals to the passed one
+     * @since 16.7.0RC1
+     */
+    public ExtensionSupporter getExtensionSupporter(ExtensionSupporter supporter)
+    {
+        return this.supporters.get(supporter, supporter);
+    }
+
+    /**
+     * Store and return a weak reference equals to the passed {@link ExtensionSupporter}.
+     * 
+     * @param name the name of the supporter
+     * @param url the url leading to more detail about the supporter
+     * @return unique instance of {@link ExtensionSupporter} equals to the passed one
+     * @since 16.7.0RC1
+     */
+    public ExtensionSupporter getExtensionSupporter(String name, URL url)
+    {
+        return getExtensionSupporter(new DefaultExtensionSupporter(name, url));
+    }
+
+    /**
+     * Store and return a weak reference equals to the passed {@link ExtensionSupportPlan}.
+     * 
+     * @param supportPlan the {@link ExtensionSupportPlan} to find
+     * @return unique instance of {@link ExtensionSupportPlan} equals to the passed one
+     * @since 16.7.0RC1
+     */
+    public ExtensionSupportPlan getExtensionSupportPlan(ExtensionSupportPlan supportPlan)
+    {
+        return this.supportPlans.get(supportPlan, supportPlan);
+    }
+
+    /**
+     * Store and return a weak reference equals to the passed {@link ExtensionSupportPlan}.
+     * 
+     * @param supporter the supporter
+     * @param name the name of the author
+     * @param url the URL of the author public profile
+     * @param paying indicate if the plan is paying or free of charge
+     * @return unique instance of {@link ExtensionSupportPlan} equals to the passed one
+     * @since 16.7.0RC1
+     */
+    public ExtensionSupportPlan getExtensionSupportPlan(ExtensionSupporter supporter, String name, URL url,
+        boolean paying)
+    {
+        return getExtensionSupportPlan(new DefaultExtensionSupportPlan(supporter, name, url, paying));
     }
 
     /**

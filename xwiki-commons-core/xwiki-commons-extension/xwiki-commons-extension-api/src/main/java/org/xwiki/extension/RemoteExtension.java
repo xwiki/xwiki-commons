@@ -19,14 +19,12 @@
  */
 package org.xwiki.extension;
 
-import org.xwiki.extension.repository.ExtensionRepositoryManager;
+import org.xwiki.stability.Unstable;
 
 /**
  * An extension that come from a remote extensions repository.
  * <p>
- * A remote extension repository is any repository which is not one of the repository listed in
- * {@link ExtensionRepositoryManager}. It means it could be a Maven repository targeting some
- * {@code file:///my/repository/path} for example.
+ * A remote extension repository is a repository which extension are not stored in XWiki itself.
  * 
  * @version $Id$
  * @since 8.3RC1
@@ -39,6 +37,13 @@ public interface RemoteExtension extends Extension
     String FIELD_RECOMMENDED = "recommended";
 
     /**
+     * @see #getSupportPlans()
+     * @since 16.7.0RC1
+     */
+    @Unstable
+    String FIELD_SUPPORT_PLANS = "supportplans";
+
+    /**
      * Indicate if the extension is recommended by the repository where it come from.
      * <p>
      * What "recommended" exactly means depend on the repository giving this information.
@@ -47,9 +52,21 @@ public interface RemoteExtension extends Extension
      * officially supported by its author.
      * 
      * @return true if the extension is recommended
+     * @deprecated use {@link #getSupportPlans()} instead
      */
+    @Deprecated(since = "16.7.0RC1")
     default boolean isRecommended()
     {
-        return false;
+        return !getSupportPlans().getSupportPlans().isEmpty();
+    }
+
+    /**
+     * @return the support plans
+     * @since 16.7.0RC1
+     */
+    @Unstable
+    default ExtensionSupportPlans getSupportPlans()
+    {
+        return ExtensionSupportPlans.EMPTY;
     }
 }

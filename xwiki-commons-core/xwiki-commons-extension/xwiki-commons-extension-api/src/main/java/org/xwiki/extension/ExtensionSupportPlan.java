@@ -17,48 +17,38 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.wrap;
+package org.xwiki.extension;
 
-import org.xwiki.extension.Extension;
-import org.xwiki.extension.index.IndexedExtension;
+import java.net.URL;
+
+import org.xwiki.stability.Unstable;
 
 /**
- * Wrap an indexed extension.
- *
- * @param <T> the extension type
+ * A support plan for an extension.
+ * 
  * @version $Id$
- * @since 12.10
+ * @since 16.7.0RC1
  */
-public class WrappingIndexedExtension<T extends Extension> extends WrappingRatingExtension<T>
-    implements IndexedExtension
+@Unstable
+public interface ExtensionSupportPlan
 {
     /**
-     * @param extension the wrapped extension
+     * @return the supporter of the plan
      */
-    public WrappingIndexedExtension(T extension)
-    {
-        super(extension);
-    }
+    ExtensionSupporter getSupporter();
 
     /**
-     * A default constructor allowing to set the wrapped object later.
-     * 
-     * @since 16.7.0RC1
+     * @return the display name of the plan
      */
-    protected WrappingIndexedExtension()
-    {
+    String getName();
 
-    }
+    /**
+     * @return an URL leading to more details about the plan
+     */
+    URL getURL();
 
-    // IndexedExtension
-
-    @Override
-    public Boolean isCompatible(String namespace)
-    {
-        if (getWrapped() instanceof IndexedExtension indexedExtension) {
-            return indexedExtension.isCompatible(namespace);
-        }
-
-        return null;
-    }
+    /**
+     * @return indicate if the plan is paying or free of charge
+     */
+    boolean isPaying();
 }

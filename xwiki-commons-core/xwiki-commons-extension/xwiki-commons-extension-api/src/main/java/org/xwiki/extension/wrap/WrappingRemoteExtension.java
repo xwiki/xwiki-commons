@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension.wrap;
 
+import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionSupportPlans;
 import org.xwiki.extension.RemoteExtension;
 
 /**
@@ -28,25 +30,55 @@ import org.xwiki.extension.RemoteExtension;
  * @version $Id$
  * @since 8.3RC1
  */
-public class WrappingRemoteExtension<T extends RemoteExtension> extends WrappingExtension<T> implements RemoteExtension
+public class WrappingRemoteExtension<T extends Extension> extends WrappingExtension<T> implements RemoteExtension
 {
     /**
-     * @param remoteExtension the wrapped local extension
+     * @param extension the wrapped extension
      */
-    public WrappingRemoteExtension(T remoteExtension)
+    public WrappingRemoteExtension(T extension)
     {
-        super(remoteExtension);
+        super(extension);
     }
 
-    // RremoteExtension
+    /**
+     * A default constructor allowing to set the wrapped object later.
+     * 
+     * @since 16.7.0RC1
+     */
+    protected WrappingRemoteExtension()
+    {
+
+    }
+
+    // RemoteExtension
 
     @Override
+    @Deprecated
     public boolean isRecommended()
     {
         if (this.overwrites.containsKey(RemoteExtension.FIELD_RECOMMENDED)) {
             return (boolean) this.overwrites.get(RemoteExtension.FIELD_RECOMMENDED);
         }
 
-        return getWrapped().isRecommended();
+        if (getWrapped() instanceof RemoteExtension remoteExtension) {
+            return remoteExtension.isRecommended();
+        }
+
+        // Fallback on the existence of at least one support plan
+        return !getSupportPlans().getSupporters().isEmpty();
+    }
+
+    @Override
+    public ExtensionSupportPlans getSupportPlans()
+    {
+        if (this.overwrites.containsKey(RemoteExtension.FIELD_SUPPORT_PLANS)) {
+            return (ExtensionSupportPlans) this.overwrites.get(RemoteExtension.FIELD_SUPPORT_PLANS);
+        }
+
+        if (getWrapped() instanceof RemoteExtension remoteExtension) {
+            return remoteExtension.getSupportPlans();
+        }
+
+        return ExtensionSupportPlans.EMPTY;
     }
 }
