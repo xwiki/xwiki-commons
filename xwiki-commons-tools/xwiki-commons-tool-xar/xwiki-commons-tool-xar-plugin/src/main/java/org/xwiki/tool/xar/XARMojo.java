@@ -26,6 +26,7 @@ import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.file.attribute.FileTime;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -36,6 +37,7 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -78,6 +80,9 @@ public class XARMojo extends AbstractXARMojo
      */
     @Parameter(property = "defaultEntryType", readonly = true, required = false)
     private String defaultEntryType;
+
+    @Parameter(defaultValue = "${project.build.outputTimestamp}")
+    private String outputTimestamp;
 
     /**
      * List of XML transformations to execute on the XML files.
@@ -502,6 +507,9 @@ public class XARMojo extends AbstractXARMojo
         if (generatedPackageFile.exists()) {
             generatedPackageFile.delete();
         }
+
+        MavenArchiver.parseBuildOutputTimestamp(this.outputTimestamp)
+            .ifPresent(timestamp -> archiver.configureReproducibleBuild(FileTime.from(timestamp)));
 
         archiver.addDirectory(sourceDir, getIncludes(), getExcludes());
         generatePackageXml(generatedPackageFile, archiver.getFiles().values());
