@@ -1,4 +1,6 @@
 org.xwiki.configuration.internal.DefaultConfigurationSourceProvider
-org.xwiki.configuration.internal.RestrictedConfigurationSourceProvider
+org.xwiki.configuration.internal.DefaultTemporaryConfigurationExecutor
+org.xwiki.configuration.internal.ExecutionContextConfigurationSource
 org.xwiki.configuration.internal.MemoryConfigurationSource
+org.xwiki.configuration.internal.RestrictedConfigurationSourceProvider
 org.xwiki.configuration.internal.VoidConfigurationSource
