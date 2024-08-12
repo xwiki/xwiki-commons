@@ -50,7 +50,7 @@
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
-    <xwiki.compatibility.previous.version>16.4.1</xwiki.compatibility.previous.version>
+    <xwiki.compatibility.previous.version>16.4.2</xwiki.compatibility.previous.version>
 
     <!-- Java -->
     <!-- Note that we prefix the property name by "XWiki", since some code already use the java.version property (such
