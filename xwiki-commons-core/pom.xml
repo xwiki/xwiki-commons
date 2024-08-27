@@ -223,7 +223,64 @@
               </differences>
             </revapi.differences>
             -->
-            
+            <revapi.differences>
+              <justification>Not breakage from binary compatibility point of view</justification>
+              <criticality>allowed</criticality>
+              <differences>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.numberOfParametersChanged</code>
+                  <old>method void org.xwiki.extension.wrap.WrappingIndexedExtension&lt;T extends org.xwiki.extension.index.IndexedExtension&gt;::&lt;init&gt;(T)</old>
+                  <new>method void org.xwiki.extension.wrap.WrappingIndexedExtension&lt;T extends org.xwiki.extension.Extension&gt;::&lt;init&gt;()</new>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.class.superTypeTypeParametersChanged</code>
+                  <old>class org.xwiki.extension.wrap.WrappingIndexedExtension&lt;T extends org.xwiki.extension.index.IndexedExtension&gt;</old>
+                  <new>class org.xwiki.extension.wrap.WrappingIndexedExtension&lt;T extends org.xwiki.extension.Extension&gt;</new>
+                  <oldSuperType>org.xwiki.extension.wrap.WrappingRatingExtension&lt;T extends org.xwiki.extension.index.IndexedExtension&gt;</oldSuperType>
+                  <newSuperType>org.xwiki.extension.wrap.WrappingRatingExtension&lt;T extends org.xwiki.extension.Extension&gt;</newSuperType>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.numberOfParametersChanged</code>
+                  <old>method void org.xwiki.extension.wrap.WrappingRatingExtension&lt;T extends org.xwiki.extension.rating.RatingExtension&gt;::&lt;init&gt;(T)</old>
+                  <new>method void org.xwiki.extension.wrap.WrappingRatingExtension&lt;T extends org.xwiki.extension.Extension&gt;::&lt;init&gt;()</new>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.class.superTypeTypeParametersChanged</code>
+                  <old>class org.xwiki.extension.wrap.WrappingRatingExtension&lt;T extends org.xwiki.extension.rating.RatingExtension&gt;</old>
+                  <new>class org.xwiki.extension.wrap.WrappingRatingExtension&lt;T extends org.xwiki.extension.Extension&gt;</new>
+                  <oldSuperType>org.xwiki.extension.wrap.WrappingRemoteExtension&lt;T extends org.xwiki.extension.rating.RatingExtension&gt;</oldSuperType>
+                  <newSuperType>org.xwiki.extension.wrap.WrappingRemoteExtension&lt;T extends org.xwiki.extension.Extension&gt;</newSuperType>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.numberOfParametersChanged</code>
+                  <old>method void org.xwiki.extension.wrap.WrappingRemoteExtension&lt;T extends org.xwiki.extension.RemoteExtension&gt;::&lt;init&gt;(T)</old>
+                  <new>method void org.xwiki.extension.wrap.WrappingRemoteExtension&lt;T extends org.xwiki.extension.Extension&gt;::&lt;init&gt;()</new>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.class.superTypeTypeParametersChanged</code>
+                  <old>class org.xwiki.extension.wrap.WrappingRemoteExtension&lt;T extends org.xwiki.extension.RemoteExtension&gt;</old>
+                  <new>class org.xwiki.extension.wrap.WrappingRemoteExtension&lt;T extends org.xwiki.extension.Extension&gt;</new>
+                  <oldSuperType>org.xwiki.extension.wrap.WrappingExtension&lt;T extends org.xwiki.extension.RemoteExtension&gt;</oldSuperType>
+                  <newSuperType>org.xwiki.extension.wrap.WrappingExtension&lt;T extends org.xwiki.extension.Extension&gt;</newSuperType>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.annotation.attributeValueChanged</code>
+                  <old>class org.xwiki.extension.repository.xwiki.model.jaxb.AbstractExtension</old>
+                  <new>class org.xwiki.extension.repository.xwiki.model.jaxb.AbstractExtension</new>
+                  <annotationType>javax.xml.bind.annotation.XmlType</annotationType>
+                  <attribute>propOrder</attribute>
+                  <oldValue>{"rating", "summary", "description", "licenses", "website", "authors", "features", "extensionFeatures", "scm", "issueManagement", "category", "allowedNamespaces", "recommended", "properties"}</oldValue>
+                  <newValue>{"rating", "summary", "description", "licenses", "website", "authors", "supportPlans", "features", "extensionFeatures", "scm", "issueManagement", "category", "allowedNamespaces", "recommended", "properties"}</newValue>
+                </item>
+              </differences>
+            </revapi.differences>
           </analysisConfiguration>
         </configuration>
       </plugin>

@@ -26,7 +26,6 @@ import java.util.List;
 
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.DefaultExtensionComponent;
 import org.xwiki.extension.ExtensionComponent;
@@ -42,17 +41,6 @@ import org.xwiki.properties.converter.AbstractConverter;
 @Singleton
 public class ExtensionComponentConverter extends AbstractConverter<ExtensionComponent>
 {
-    private static int countBackslashes(String str, int index)
-    {
-        for (int i = index - 1; i >= 0; --i) {
-            if (str.charAt(i) != '\\') {
-                return index - i - 1;
-            }
-        }
-
-        return index;
-    }
-
     /**
      * @param values the values to convert
      * @return the list of {@link ExtensionComponent}s created from the passed value
@@ -76,43 +64,13 @@ public class ExtensionComponentConverter extends AbstractConverter<ExtensionComp
     {
         if (value != null) {
             String valueString = value.toString();
-            return toExtensionComponent(valueString, valueString.length() - 1);
+
+            ExtensionConverterParser parser = new ExtensionConverterParser(valueString);
+
+            return new DefaultExtensionComponent(parser.next(true), parser.next(false));
         }
 
         return null;
-    }
-
-    private static ExtensionComponent toExtensionComponent(String value, int end)
-    {
-        String valueString = value;
-
-        int index = valueString.indexOf('/');
-        String roleType;
-        String roleHint;
-        if (index > 0 && index < end) {
-            int backslashes = countBackslashes(valueString, index);
-            if (backslashes > 0) {
-                StringBuilder builder = new StringBuilder();
-                builder.append(valueString.substring(0, index - backslashes));
-                builder.append(StringUtils.repeat('\\', backslashes / 2));
-                builder.append(valueString.substring(index));
-
-                valueString = builder.toString();
-                index -= backslashes - (backslashes / 2);
-
-                if (backslashes % 2 == 1) {
-                    return toExtensionComponent(valueString, index - backslashes - 1);
-                }
-            }
-
-            roleType = valueString.substring(0, index);
-            roleHint = valueString.substring(index + 1);
-        } else {
-            roleType = valueString;
-            roleHint = null;
-        }
-
-        return new DefaultExtensionComponent(roleType, roleHint);
     }
 
     /**
