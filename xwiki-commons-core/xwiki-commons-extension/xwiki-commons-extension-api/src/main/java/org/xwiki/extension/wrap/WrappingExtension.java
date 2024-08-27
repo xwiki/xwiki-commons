@@ -41,7 +41,7 @@ public class WrappingExtension<E extends Extension> extends AbstractWrappingExte
     /**
      * A default constructor allowing to set the wrapped object later.
      * 
-     * @since 16.7.0RC1
+     * @since 16.8.0RC1
      */
     protected WrappingExtension()
     {

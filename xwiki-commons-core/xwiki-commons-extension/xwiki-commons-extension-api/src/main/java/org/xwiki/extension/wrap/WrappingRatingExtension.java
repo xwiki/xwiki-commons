@@ -44,7 +44,7 @@ public class WrappingRatingExtension<T extends Extension> extends WrappingRemote
     /**
      * A default constructor allowing to set the wrapped object later.
      * 
-     * @since 16.7.0RC1
+     * @since 16.8.0RC1
      */
     protected WrappingRatingExtension()
     {

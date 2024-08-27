@@ -38,7 +38,7 @@ public interface RemoteExtension extends Extension
 
     /**
      * @see #getSupportPlans()
-     * @since 16.7.0RC1
+     * @since 16.8.0RC1
      */
     @Unstable
     String FIELD_SUPPORT_PLANS = "supportplans";
@@ -54,7 +54,7 @@ public interface RemoteExtension extends Extension
      * @return true if the extension is recommended
      * @deprecated use {@link #getSupportPlans()} instead
      */
-    @Deprecated(since = "16.7.0RC1")
+    @Deprecated(since = "16.8.0RC1")
     default boolean isRecommended()
     {
         return !getSupportPlans().getSupportPlans().isEmpty();
@@ -62,7 +62,7 @@ public interface RemoteExtension extends Extension
 
     /**
      * @return the support plans
-     * @since 16.7.0RC1
+     * @since 16.8.0RC1
      */
     @Unstable
     default ExtensionSupportPlans getSupportPlans()

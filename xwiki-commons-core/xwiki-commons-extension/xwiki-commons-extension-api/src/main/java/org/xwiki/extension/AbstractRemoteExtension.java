@@ -38,7 +38,7 @@ public abstract class AbstractRemoteExtension extends AbstractExtension implemen
 
     /**
      * @see #getSupportPlans()
-     * @since 16.7.0RC1
+     * @since 16.8.0RC1
      */
     @Unstable
     protected ExtensionSupportPlans supportPlans = ExtensionSupportPlans.EMPTY;
@@ -87,7 +87,7 @@ public abstract class AbstractRemoteExtension extends AbstractExtension implemen
 
     /**
      * @param supportPlans the support plans
-     * @since 16.7.0RC1
+     * @since 16.8.0RC1
      */
     @Unstable
     public void setSupportPlans(ExtensionSupportPlans supportPlans)

@@ -87,7 +87,7 @@ public class ExtensionFactory
      * @param name the name of the author
      * @param url the url of the author public profile
      * @return unique instance of {@link ExtensionAuthor} equals to the passed one
-     * @since 16.7.0RC1
+     * @since 16.8.0RC1
      */
     public static ExtensionAuthor getExtensionAuthor(ExtensionFactory factory, String name, String url)
     {
@@ -101,7 +101,7 @@ public class ExtensionFactory
      * @param name the name of the supporter
      * @param url the url leading to more detail about the supporter
      * @return unique instance of {@link ExtensionSupporter} equals to the passed one
-     * @since 16.7.0RC1
+     * @since 16.8.0RC1
      */
     public static ExtensionSupporter getExtensionSupporter(ExtensionFactory factory, String name, URL url)
     {
@@ -117,7 +117,7 @@ public class ExtensionFactory
      * @param url the URL of the author public profile
      * @param paying indicate if the plan is paying or free of charge
      * @return unique instance of {@link ExtensionSupportPlan} equals to the passed one
-     * @since 16.7.0RC1
+     * @since 16.8.0RC1
      */
     public static ExtensionSupportPlan getExtensionSupportPlan(ExtensionFactory factory, ExtensionSupporter supporter,
         String name, URL url, boolean paying)
@@ -213,7 +213,7 @@ public class ExtensionFactory
      * 
      * @param supporter the {@link ExtensionSupporter} to find
      * @return unique instance of {@link ExtensionSupporter} equals to the passed one
-     * @since 16.7.0RC1
+     * @since 16.8.0RC1
      */
     public ExtensionSupporter getExtensionSupporter(ExtensionSupporter supporter)
     {
@@ -226,7 +226,7 @@ public class ExtensionFactory
      * @param name the name of the supporter
      * @param url the url leading to more detail about the supporter
      * @return unique instance of {@link ExtensionSupporter} equals to the passed one
-     * @since 16.7.0RC1
+     * @since 16.8.0RC1
      */
     public ExtensionSupporter getExtensionSupporter(String name, URL url)
     {
@@ -238,7 +238,7 @@ public class ExtensionFactory
      * 
      * @param supportPlan the {@link ExtensionSupportPlan} to find
      * @return unique instance of {@link ExtensionSupportPlan} equals to the passed one
-     * @since 16.7.0RC1
+     * @since 16.8.0RC1
      */
     public ExtensionSupportPlan getExtensionSupportPlan(ExtensionSupportPlan supportPlan)
     {
@@ -253,7 +253,7 @@ public class ExtensionFactory
      * @param url the URL of the author public profile
      * @param paying indicate if the plan is paying or free of charge
      * @return unique instance of {@link ExtensionSupportPlan} equals to the passed one
-     * @since 16.7.0RC1
+     * @since 16.8.0RC1
      */
     public ExtensionSupportPlan getExtensionSupportPlan(ExtensionSupporter supporter, String name, URL url,
         boolean paying)
