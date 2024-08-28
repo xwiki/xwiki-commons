@@ -190,7 +190,7 @@
           <element name="recommended" type="boolean" minOccurs="0" maxOccurs="1">
             <annotation>
               <documentation>
-                @deprecated since 16.6.0RC1, use supportPlans instead
+                @deprecated since 16.8.0RC1, use supportPlans instead
               </documentation>
             </annotation>
           </element>
