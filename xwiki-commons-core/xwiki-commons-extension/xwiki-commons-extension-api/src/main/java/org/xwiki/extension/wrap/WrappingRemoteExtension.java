@@ -53,7 +53,6 @@ public class WrappingRemoteExtension<T extends Extension> extends WrappingExtens
     // RemoteExtension
 
     @Override
-    @Deprecated
     public boolean isRecommended()
     {
         if (this.overwrites.containsKey(RemoteExtension.FIELD_RECOMMENDED)) {

@@ -46,19 +46,15 @@ public interface RemoteExtension extends Extension
     /**
      * Indicate if the extension is recommended by the repository where it come from.
      * <p>
-     * What "recommended" exactly means depend on the repository giving this information.
+     * What "recommended" exactly means depend on the repository giving this information. It's eventually going to be
+     * deprecated in favor of {@link #getSupportPlans()} when the concept more widely adopted by extension repositories.
      * <p>
      * For example on http://extensions.xwiki.org the meaning is the extension is known to be of good quality and still
      * officially supported by its author.
      * 
      * @return true if the extension is recommended
-     * @deprecated use {@link #getSupportPlans()} instead
      */
-    @Deprecated(since = "16.8.0RC1")
-    default boolean isRecommended()
-    {
-        return !getSupportPlans().getSupportPlans().isEmpty();
-    }
+    boolean isRecommended();
 
     /**
      * @return the support plans
