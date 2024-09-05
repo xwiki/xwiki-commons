@@ -119,7 +119,7 @@
         SynchronousQueue, Logger, LoggerFactory, StringUtils, FieldUtils, IOUtils, StringWriter, StringReader,
         ExceptionUtils, Inject, Provider, Named, Singleton, NavigableSet, Type, Priority,
 
-        ComponentInstantiationStrategy, Unstable"/>
+        ComponentInstantiationStrategy, Unstable, Disposable, Initializable, InitializationException"/>
       <property name="excludedPackages"
         value="org.apache.maven.plugins.annotations, javax.annotation.concurrent, org.xwiki.component.annotation"/>
     </module>
