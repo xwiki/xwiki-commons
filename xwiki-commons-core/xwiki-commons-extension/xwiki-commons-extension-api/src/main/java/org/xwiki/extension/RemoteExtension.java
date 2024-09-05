@@ -54,7 +54,10 @@ public interface RemoteExtension extends Extension
      * 
      * @return true if the extension is recommended
      */
-    boolean isRecommended();
+    default boolean isRecommended()
+    {
+        return !getSupportPlans().getSupportPlans().isEmpty();
+    }
 
     /**
      * @return the support plans
