@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension.index;
 
+import javax.annotation.Nullable;
+
 import org.xwiki.extension.rating.RatingExtension;
 
 /**
@@ -33,6 +35,6 @@ public interface IndexedExtension extends RatingExtension
      * @param namespace the namespace for which to check if the extension is compatible
      * @return true if the extension is compatible, false if incompatible and null if unknown
      */
-    @javax.annotation.Nullable
+    @Nullable
     Boolean isCompatible(String namespace);
 }

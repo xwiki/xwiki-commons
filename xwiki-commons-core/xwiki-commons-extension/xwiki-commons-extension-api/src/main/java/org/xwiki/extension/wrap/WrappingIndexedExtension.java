@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension.wrap;
 
+import javax.annotation.Nullable;
+
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.index.IndexedExtension;
 
@@ -53,7 +55,7 @@ public class WrappingIndexedExtension<T extends Extension> extends WrappingRatin
     // IndexedExtension
 
     @Override
-    @javax.annotation.Nullable
+    @Nullable
     public Boolean isCompatible(String namespace)
     {
         if (getWrapped() instanceof IndexedExtension indexedExtension) {
