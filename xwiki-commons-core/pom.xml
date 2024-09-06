@@ -279,6 +279,22 @@
                   <oldValue>{"rating", "summary", "description", "licenses", "website", "authors", "features", "extensionFeatures", "scm", "issueManagement", "category", "allowedNamespaces", "recommended", "properties"}</oldValue>
                   <newValue>{"rating", "summary", "description", "licenses", "website", "authors", "supportPlans", "features", "extensionFeatures", "scm", "issueManagement", "category", "allowedNamespaces", "recommended", "properties"}</newValue>
                 </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.annotation.added</code>
+                  <old>method java.lang.Boolean org.xwiki.extension.index.IndexedExtension::isCompatible(java.lang.String)</old>
+                  <new>method java.lang.Boolean org.xwiki.extension.index.IndexedExtension::isCompatible(java.lang.String)</new>
+                  <annotation>@javax.annotation.Nullable</annotation>
+                  <justification>A null value was already documented as a valid value to be returned, not a breakage</justification>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.annotation.added</code>
+                  <old>method java.lang.Boolean org.xwiki.extension.wrap.WrappingIndexedExtension&lt;T extends org.xwiki.extension.index.IndexedExtension&gt;::isCompatible(java.lang.String)</old>
+                  <new>method java.lang.Boolean org.xwiki.extension.wrap.WrappingIndexedExtension&lt;T extends org.xwiki.extension.Extension&gt;::isCompatible(java.lang.String)</new>
+                  <annotation>@javax.annotation.Nullable</annotation>
+                  <justification>A null value was already documented as a valid value to be returned, not a breakage</justification>
+                </item>
               </differences>
             </revapi.differences>
           </analysisConfiguration>

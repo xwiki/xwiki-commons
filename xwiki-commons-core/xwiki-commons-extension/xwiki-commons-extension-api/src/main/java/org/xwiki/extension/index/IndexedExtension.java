@@ -33,5 +33,6 @@ public interface IndexedExtension extends RatingExtension
      * @param namespace the namespace for which to check if the extension is compatible
      * @return true if the extension is compatible, false if incompatible and null if unknown
      */
+    @javax.annotation.Nullable
     Boolean isCompatible(String namespace);
 }

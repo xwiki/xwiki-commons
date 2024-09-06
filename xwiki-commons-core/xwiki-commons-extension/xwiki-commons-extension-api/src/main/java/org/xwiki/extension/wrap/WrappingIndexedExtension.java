@@ -53,6 +53,7 @@ public class WrappingIndexedExtension<T extends Extension> extends WrappingRatin
     // IndexedExtension
 
     @Override
+    @javax.annotation.Nullable
     public Boolean isCompatible(String namespace)
     {
         if (getWrapped() instanceof IndexedExtension indexedExtension) {
