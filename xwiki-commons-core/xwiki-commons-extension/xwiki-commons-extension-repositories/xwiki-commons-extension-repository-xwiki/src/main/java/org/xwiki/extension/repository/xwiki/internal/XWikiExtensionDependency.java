@@ -46,7 +46,8 @@ public class XWikiExtensionDependency extends AbstractExtensionDependency
     public XWikiExtensionDependency(ExtensionDependency restDependency,
         ExtensionRepositoryDescriptor extensionRepository, ExtensionFactory factory)
     {
-        super(restDependency.getId(), new DefaultVersionConstraint(restDependency.getConstraint()));
+        super(restDependency.getId(), new DefaultVersionConstraint(restDependency.getConstraint()),
+            restDependency.isOptional());
 
         // Make sure the dependency will be resolved in the extension repository first
         if (extensionRepository != null) {
