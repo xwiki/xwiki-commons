@@ -91,6 +91,14 @@ class ExtensionSupportPlanConverterTest
     }
 
     @Test
+    void toExtensionSupportPlan() throws MalformedURLException
+    {
+        assertEquals(plan("supporter1", "http://supporter1", "name1", "http://host1", true),
+            ExtensionSupportPlanConverter
+                .toExtensionSupportPlan("supporter1/http:\\/\\/supporter1/name1/http:\\/\\/host1/true"));
+    }
+
+    @Test
     void toExtensionSupportPlanList() throws MalformedURLException
     {
         assertEquals(

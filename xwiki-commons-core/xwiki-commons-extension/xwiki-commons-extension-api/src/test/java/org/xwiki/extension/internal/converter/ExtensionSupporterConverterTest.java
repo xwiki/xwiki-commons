@@ -85,6 +85,13 @@ class ExtensionSupporterConverterTest
     }
 
     @Test
+    void toExtensionSupporter() throws MalformedURLException
+    {
+        assertEquals(supporter("name", "http://host"),
+            ExtensionSupporterConverter.toExtensionSupporter("name/http://host"));
+    }
+
+    @Test
     void toExtensionSupportPlanList() throws MalformedURLException
     {
         assertEquals(List.of(supporter("name1", "http://host1"), supporter("name2", "http://host2")),
