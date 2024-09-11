@@ -124,13 +124,7 @@ public class ExtensionSupporterConverter extends AbstractConverter<ExtensionSupp
      */
     public static List<String> toStringList(Collection<ExtensionSupporter> values)
     {
-        List<String> list = new ArrayList<>(values.size());
-
-        for (ExtensionSupporter value : values) {
-            list.add(toString(value));
-        }
-
-        return list;
+        return values.stream().map(ExtensionSupporterConverter::toString).toList();
     }
 
     @Override

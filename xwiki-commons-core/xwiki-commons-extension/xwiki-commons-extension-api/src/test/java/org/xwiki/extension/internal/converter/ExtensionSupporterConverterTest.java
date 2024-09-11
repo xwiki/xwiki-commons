@@ -19,6 +19,9 @@
  */
 package org.xwiki.extension.internal.converter;
 
+import java.net.MalformedURLException;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.xwiki.extension.ExtensionSupporter;
 import org.xwiki.properties.internal.DefaultConverterManager;
@@ -79,5 +82,12 @@ class ExtensionSupporterConverterTest
         assertToString("name", "name", null);
         assertToString("name/http://host", "name", "http://host");
         assertToString("name\\/http:\\/\\/host", "name/http://host", null);
+    }
+
+    @Test
+    void toExtensionSupportPlanList() throws MalformedURLException
+    {
+        assertEquals(List.of(supporter("name1", "http://host1"), supporter("name2", "http://host2")),
+            ExtensionSupporterConverter.toExtensionSupporterList(List.of("name1/http://host1", "name2/http://host2")));
     }
 }

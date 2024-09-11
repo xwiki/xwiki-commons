@@ -23,6 +23,8 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * Base class or implementations of {@link ExtensionScm}.
@@ -95,5 +97,17 @@ public abstract class AbstractExtensionScm implements ExtensionScm
         builder.append(this.url);
 
         return builder.toHashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        ToStringBuilder builder = new XWikiToStringBuilder(this);
+
+        builder.append(this.connection);
+        builder.append(this.developerConnection);
+        builder.append(this.url);
+
+        return builder.toString();
     }
 }

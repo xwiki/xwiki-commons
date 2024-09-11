@@ -137,13 +137,7 @@ public class ExtensionSupportPlanConverter extends AbstractConverter<ExtensionSu
      */
     public static List<String> toStringList(Collection<ExtensionSupportPlan> values)
     {
-        List<String> list = new ArrayList<>(values.size());
-
-        for (ExtensionSupportPlan value : values) {
-            list.add(toString(value));
-        }
-
-        return list;
+        return values.stream().map(ExtensionSupportPlanConverter::toString).toList();
     }
 
     @Override

@@ -21,6 +21,8 @@ package org.xwiki.extension;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * Base class for implementations of {@link ExtensionIssueManagement}.
@@ -87,5 +89,16 @@ public abstract class AbstractExtensionIssueManagement implements ExtensionIssue
         builder.append(this.url);
 
         return builder.toHashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        ToStringBuilder builder = new XWikiToStringBuilder(this);
+
+        builder.append(this.system);
+        builder.append(this.url);
+
+        return builder.toString();
     }
 }

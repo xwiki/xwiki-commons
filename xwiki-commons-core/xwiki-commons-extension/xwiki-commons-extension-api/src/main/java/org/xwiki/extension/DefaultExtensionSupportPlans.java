@@ -70,4 +70,26 @@ public class DefaultExtensionSupportPlans implements ExtensionSupportPlans
     {
         return this.supporters.getOrDefault(supporter, List.of());
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof ExtensionSupportPlans plans) {
+            return getSupportPlans().equals(plans.getSupportPlans());
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getSupportPlans().hashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.supportPlans.toString();
+    }
 }
