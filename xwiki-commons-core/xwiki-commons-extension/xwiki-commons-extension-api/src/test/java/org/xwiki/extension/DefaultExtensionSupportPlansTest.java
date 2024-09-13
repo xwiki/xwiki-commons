@@ -28,6 +28,9 @@ import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link DefaultExtensionSupportPlans}.
@@ -112,5 +115,33 @@ public class DefaultExtensionSupportPlansTest
         assertEquals(PLANS_0, plans.getSupportPlans(SUPPORTER_0));
         assertEquals(List.of(PLAN_1), plans.getSupportPlans(SUPPORTER_1));
         assertEquals(List.of(PLAN_2), plans.getSupportPlans(SUPPORTER_2));
+    }
+
+    @Test
+    void hashcode()
+    {
+        assertEquals(new DefaultExtensionSupportPlans(List.of()).hashCode(),
+            new DefaultExtensionSupportPlans(List.of()).hashCode());
+
+        assertNotEquals(new DefaultExtensionSupportPlans(List.of(PLAN_00)).hashCode(),
+            new DefaultExtensionSupportPlans(List.of(PLAN_01)).hashCode());
+    }
+
+    @Test
+    void equals()
+    {
+        // DefaultExtensionSupportPlans
+
+        DefaultExtensionSupportPlans plans = new DefaultExtensionSupportPlans(List.of());
+
+        assertTrue(plans.equals(plans));
+        assertTrue(plans.equals(new DefaultExtensionSupportPlans(List.of())));
+
+        assertFalse(plans.equals(null));
+
+        // DefaultExtensionSupportPlan
+
+        assertTrue(PLAN_00.equals(PLAN_00));
+        assertFalse(PLAN_00.equals(null));
     }
 }

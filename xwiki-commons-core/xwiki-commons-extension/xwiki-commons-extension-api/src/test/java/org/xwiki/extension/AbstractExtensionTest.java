@@ -67,6 +67,11 @@ public class AbstractExtensionTest
 
     public static class TestExtension extends AbstractExtension
     {
+        public TestExtension()
+        {
+            super(null, new ExtensionId("id", "version"), "type");
+        }
+
         public TestExtension(ExtensionId id, String type, ExtensionId... features)
         {
             super(null, id, type);
