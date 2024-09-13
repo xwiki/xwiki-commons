@@ -338,7 +338,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
         ////////////////////
         // Work some magic to guess the rest of the jar files
 
-        this.logger.debug("Try to guess the id of some remaning JARs which don't have any know descriptor...");
+        this.logger.debug("Try to guess the id of some remaining JARs which don't have any know descriptor...");
 
         for (ExtensionScanner scanner : this.scanners) {
             scanner.guess(extensions, jars, repository);
