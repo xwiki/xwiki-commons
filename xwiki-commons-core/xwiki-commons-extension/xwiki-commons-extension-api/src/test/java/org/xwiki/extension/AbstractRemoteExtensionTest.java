@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * 
  * @version $Id$
  */
-public class AbstractRemoteExtensionTest
+class AbstractRemoteExtensionTest
 {
     public static class TestRemoteExtension extends AbstractRemoteExtension
     {
