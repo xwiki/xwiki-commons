@@ -60,11 +60,9 @@ public class ExtensionConverterParser
         for (int i = 0; i < elements.length; ++i) {
             Object element = elements[i];
 
-            if (i > 0) {
-                // If the last element is not serialized we don't need the separator
-                if (i != last || element != null) {
-                    builder.append('/');
-                }
+            // If the last element is not serialized we don't need the separator
+            if (i > 0 && (i != last || element != null)) {
+                builder.append('/');
             }
 
             if (element != null) {

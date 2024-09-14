@@ -293,18 +293,18 @@ public final class ExtensionUtils
     {
         WrappingExtension<?> wrapper;
 
-        if (extension instanceof CoreExtension) {
-            wrapper = new WrappingCoreExtension<>((CoreExtension) extension);
-        } else if (extension instanceof InstalledExtension) {
-            wrapper = new WrappingInstalledExtension<>((InstalledExtension) extension);
-        } else if (extension instanceof LocalExtension) {
-            wrapper = new WrappingLocalExtension<>((LocalExtension) extension);
-        } else if (extension instanceof RatingExtension) {
-            wrapper = new WrappingRatingExtension<>((RatingExtension) extension);
-        } else if (extension instanceof RemoteExtension) {
-            wrapper = new WrappingRemoteExtension<>((RemoteExtension) extension);
-        } else if (extension instanceof IndexedExtension) {
-            wrapper = new WrappingIndexedExtension<>((IndexedExtension) extension);
+        if (extension instanceof CoreExtension coreExtension) {
+            wrapper = new WrappingCoreExtension<>(coreExtension);
+        } else if (extension instanceof InstalledExtension installedExtension) {
+            wrapper = new WrappingInstalledExtension<>(installedExtension);
+        } else if (extension instanceof LocalExtension localExtension) {
+            wrapper = new WrappingLocalExtension<>(localExtension);
+        } else if (extension instanceof RatingExtension ratingExtension) {
+            wrapper = new WrappingRatingExtension<>(ratingExtension);
+        } else if (extension instanceof RemoteExtension remoteExtension) {
+            wrapper = new WrappingRemoteExtension<>(remoteExtension);
+        } else if (extension instanceof IndexedExtension indexedextension) {
+            wrapper = new WrappingIndexedExtension<>(indexedextension);
         } else {
             wrapper = new WrappingExtension<>(extension);
         }

@@ -28,9 +28,8 @@ import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Validate {@link DefaultExtensionSupportPlans}.
@@ -134,14 +133,14 @@ public class DefaultExtensionSupportPlansTest
 
         DefaultExtensionSupportPlans plans = new DefaultExtensionSupportPlans(List.of());
 
-        assertTrue(plans.equals(plans));
-        assertTrue(plans.equals(new DefaultExtensionSupportPlans(List.of())));
+        assertEquals(plans, plans);
+        assertEquals(new DefaultExtensionSupportPlans(List.of()), plans);
 
-        assertFalse(plans.equals(null));
+        assertNotNull(plans);
 
         // DefaultExtensionSupportPlan
 
-        assertTrue(PLAN_00.equals(PLAN_00));
-        assertFalse(PLAN_00.equals(null));
+        assertEquals(PLAN_00, PLAN_00);
+        assertNotNull(PLAN_00);
     }
 }
