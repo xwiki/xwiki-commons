@@ -39,7 +39,6 @@ import org.xwiki.logging.LoggerConfiguration;
 import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.internal.util.RestrictParseLocationEventHandler;
 import org.xwiki.velocity.introspection.MethodArgumentsUberspector;
-import org.xwiki.velocity.introspection.MethodOverrideUberspector;
 import org.xwiki.velocity.introspection.SecureUberspector;
 import org.xwiki.velocity.tools.CollectionTool;
 import org.xwiki.velocity.tools.ComparisonDateTool;
@@ -160,10 +159,6 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         // Auto conversion of method parameters
         unberspectors.append(',');
         unberspectors.append(MethodArgumentsUberspector.class.getName());
-
-        // Workaround https://issues.apache.org/jira/browse/VELOCITY-952
-        unberspectors.append(',');
-        unberspectors.append(MethodOverrideUberspector.class.getName());
 
         this.defaultProperties.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, unberspectors.toString());
     }

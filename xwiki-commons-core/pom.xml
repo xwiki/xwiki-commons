@@ -223,7 +223,17 @@
               </differences>
             </revapi.differences>
             -->
-            
+            <revapi.differences>
+              <justification>Moved to legacy</justification>
+              <criticality>allowed</criticality>
+              <differences>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.class.removed</code>
+                  <old>class org.xwiki.velocity.introspection.MethodOverrideUberspector</old>
+                </item>
+              </differences>
+            </revapi.differences>
           </analysisConfiguration>
         </configuration>
       </plugin>

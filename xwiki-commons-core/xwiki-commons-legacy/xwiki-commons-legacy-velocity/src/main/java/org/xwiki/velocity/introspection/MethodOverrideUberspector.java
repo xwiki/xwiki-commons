@@ -33,7 +33,9 @@ import org.xwiki.collection.SoftCache;
  * 
  * @version $Id$
  * @since 15.4RC1
+ * @deprecated not needed anymore since the bug has been fixed in native Velocity
  */
+@Deprecated (since = "16.9.0RC1")
 public class MethodOverrideUberspector extends AbstractChainableUberspector
 {
     private final SoftCache<Method, VelMethod> cache = new SoftCache<>();
