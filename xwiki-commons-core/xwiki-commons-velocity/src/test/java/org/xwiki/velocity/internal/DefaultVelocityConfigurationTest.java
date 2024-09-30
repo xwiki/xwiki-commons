@@ -21,8 +21,10 @@ package org.xwiki.velocity.internal;
 
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.tools.generic.NumberTool;
+import org.apache.velocity.util.introspection.DeprecatedCheckUberspector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentManager;
@@ -32,6 +34,9 @@ import org.xwiki.test.annotation.AfterComponent;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
+import org.xwiki.velocity.introspection.MethodArgumentsUberspector;
+import org.xwiki.velocity.introspection.MethodOverrideUberspector;
+import org.xwiki.velocity.introspection.SecureUberspector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -75,6 +80,13 @@ public class DefaultVelocityConfigurationTest
     @Test
     void getPropertiesReturnsDefaultProperties() throws Exception
     {
+        // Verify that the secure uberspector is set by default
+        assertEquals(
+            StringUtils
+                .join(new String[] {SecureUberspector.class.getName(), DeprecatedCheckUberspector.class.getName(),
+                    MethodArgumentsUberspector.class.getName(), MethodOverrideUberspector.class.getName()}, ','),
+            this.configuration.getProperties().getProperty(RuntimeConstants.UBERSPECT_CLASSNAME));
+
         // Verify that Macros are isolated by default
         assertEquals(Boolean.TRUE.toString(),
             this.configuration.getProperties().getProperty(RuntimeConstants.VM_PERM_INLINE_LOCAL));

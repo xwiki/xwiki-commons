@@ -297,17 +297,6 @@
                 </item>
               </differences>
             </revapi.differences>
-            <revapi.differences>
-              <justification>Never meant to be used directly, only a workaround while waiting for a bugfix on Velocity side</justification>
-              <criticality>highlight</criticality>
-              <differences>
-                <item>
-                <ignore>true</ignore>
-                <code>java.class.removed</code>
-                <old>class org.xwiki.velocity.introspection.MethodOverrideUberspector</old>
-              </item>
-              </differences>
-            </revapi.differences>
           </analysisConfiguration>
         </configuration>
       </plugin>
