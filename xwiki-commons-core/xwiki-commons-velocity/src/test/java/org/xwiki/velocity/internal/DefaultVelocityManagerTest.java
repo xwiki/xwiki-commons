@@ -77,6 +77,17 @@ class DefaultVelocityManagerTest
             this.name = name;
         }
 
+        public static String overwrittenStaticMethod()
+        {
+            return "TestClass";
+        }
+
+        @Deprecated
+        public static String overwrittenDeprecatedStaticMethod()
+        {
+            return "TestClass";
+        }
+
         public String getName()
         {
             return this.name;
@@ -90,6 +101,19 @@ class DefaultVelocityManagerTest
         public String evaluate(String input, String namespace) throws XWikiVelocityException
         {
             return DefaultVelocityManagerTest.this.evaluate(input, namespace);
+        }
+    }
+
+    public class SubTestClass extends TestClass
+    {
+        public static String overwrittenStaticMethod()
+        {
+            return "SubTestClass";
+        }
+
+        public static String overwrittenDeprecatedStaticMethod()
+        {
+            return "SubTestClass";
         }
     }
 
@@ -592,5 +616,18 @@ class DefaultVelocityManagerTest
         scriptContext.setAttribute("scriptvar", "scriptvalue", ScriptContext.ENGINE_SCOPE);
 
         assertEvaluate("scriptvalue", "$scriptvar");
+    }
+
+    @Test
+    void evaluateStaticOverride() throws XWikiVelocityException
+    {
+        Context context = new XWikiVelocityContext();
+        context.put("var", new SubTestClass());
+
+        assertEvaluate("org.xwiki.velocity.internal.DefaultVelocityManagerTest$SubTestClass SubTestClass",
+            "$var.class.getName() $var.overwrittenStaticMethod()", context);
+
+        assertEvaluate("org.xwiki.velocity.internal.DefaultVelocityManagerTest$SubTestClass SubTestClass",
+            "$var.class.getName() $var.overwrittenDeprecatedStaticMethod()", context);
     }
 }
