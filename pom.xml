@@ -746,6 +746,13 @@
         <groupId>com.fasterxml.jackson.module</groupId>
         <artifactId>jackson-module-jaxb-annotations</artifactId>
         <version>${jackson.version}</version>
+        <exclusions>
+          <!-- We use jakarta.xml.bind:jakarta.xml.bind-api -->
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.module</groupId>
