@@ -53,9 +53,12 @@
     <xwiki.compatibility.previous.version>16.8.0</xwiki.compatibility.previous.version>
 
     <!-- Java -->
+    <!-- Should be kept in sync with https://dev.xwiki.org/xwiki/bin/view/Community/SupportStrategy/JavaSupportStrategy/ -->
     <!-- Note that we prefix the property name by "XWiki", since some code already use the java.version property (such
          as Spring Boot, see https://www.baeldung.com/maven-java-version), and we want to avoid any clash. -->
     <xwiki.java.version>17</xwiki.java.version>
+    <!-- The highest Java version officially supported by this version of XWiki -->
+    <xwiki.java.version.support>21</xwiki.java.version.support>
 
     <!-- Jakarta modules -->
     <jakarta.mail.version>1.6.7</jakarta.mail.version>
