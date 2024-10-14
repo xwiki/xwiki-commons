@@ -45,6 +45,200 @@ import org.xwiki.component.annotation.Component;
 @Singleton
 public class MathMLDefinitions
 {
+    private static final String MATH = "math";
+
+    private static final String MENCLOSE = "menclose";
+
+    private static final String MERROR = "merror";
+
+    private static final String MFENCED = "mfenced";
+
+    private static final String MFRAC = "mfrac";
+
+    private static final String MGLYPH = "mglyph";
+
+    private static final String MI = "mi";
+
+    private static final String MLABELEDTR = "mlabeledtr";
+
+    private static final String MMULTISCRIPTS = "mmultiscripts";
+
+    private static final String MN = "mn";
+
+    private static final String MO = "mo";
+
+    private static final String MOVER = "mover";
+
+    private static final String MPADDED = "mpadded";
+
+    private static final String MPHANTOM = "mphantom";
+
+    private static final String MROOT = "mroot";
+
+    private static final String MROW = "mrow";
+
+    private static final String MS = "ms";
+
+    private static final String MSPACE = "mspace";
+
+    private static final String MSQRT = "msqrt";
+
+    private static final String MSTYLE = "mstyle";
+
+    private static final String MSUB = "msub";
+
+    private static final String MSUP = "msup";
+
+    private static final String MSUBSUP = "msubsup";
+
+    private static final String MTABLE = "mtable";
+
+    private static final String MTD = "mtd";
+
+    private static final String MTEXT = "mtext";
+
+    private static final String MTR = "mtr";
+
+    private static final String MUNDER = "munder";
+
+    private static final String MUNDEROVER = "munderover";
+
+    private static final String MACTION = "maction";
+
+    private static final String MALIGNGROUP = "maligngroup";
+
+    private static final String MALIGNMARK = "malignmark";
+
+    private static final String MLONGDIV = "mlongdiv";
+
+    private static final String MSCARRIES = "mscarries";
+
+    private static final String MSCARRY = "mscarry";
+
+    private static final String MSGROUP = "msgroup";
+
+    private static final String MSTACK = "mstack";
+
+    private static final String MSLINE = "msline";
+
+    private static final String MSROW = "msrow";
+
+    private static final String SEMANTICS = "semantics";
+
+    private static final String ANNOTATION = "annotation";
+
+    private static final String ANNOTATION_XML = "annotation-xml";
+
+    private static final String MPRESCRIPTS = "mprescripts";
+
+    private static final String NONE = "none";
+
+    private static final String ACCENT = "accent";
+
+    private static final String ACCENTUNDER = "accentunder";
+
+    private static final String ALIGN = "align";
+
+    private static final String BEVELLED = "bevelled";
+
+    private static final String CLOSE = "close";
+
+    private static final String COLUMNSALIGN = "columnsalign";
+
+    private static final String COLUMNLINES = "columnlines";
+
+    private static final String COLUMNSPAN = "columnspan";
+
+    private static final String DENOMALIGN = "denomalign";
+
+    private static final String DEPTH = "depth";
+
+    private static final String DIR = "dir";
+
+    private static final String DISPLAY = "display";
+
+    private static final String DISPLAYSTYLE = "displaystyle";
+
+    private static final String ENCODING = "encoding";
+
+    private static final String FENCE = "fence";
+
+    private static final String FRAME = "frame";
+
+    private static final String HEIGHT = "height";
+
+    private static final String HREF = "href";
+
+    private static final String ID = "id";
+
+    private static final String LARGEOP = "largeop";
+
+    private static final String LENGTH = "length";
+
+    private static final String LINETHICKNESS = "linethickness";
+
+    private static final String LSPACE = "lspace";
+
+    private static final String LQUOTE = "lquote";
+
+    private static final String MATHBACKGROUND = "mathbackground";
+
+    private static final String MATHCOLOR = "mathcolor";
+
+    private static final String MATHSIZE = "mathsize";
+
+    private static final String MATHVARIANT = "mathvariant";
+
+    private static final String MAXSIZE = "maxsize";
+
+    private static final String MINSIZE = "minsize";
+
+    private static final String MOVABLELIMITS = "movablelimits";
+
+    private static final String NOTATION = "notation";
+
+    private static final String NUMALIGN = "numalign";
+
+    private static final String OPEN = "open";
+
+    private static final String ROWALIGN = "rowalign";
+
+    private static final String ROWLINES = "rowlines";
+
+    private static final String ROWSPACING = "rowspacing";
+
+    private static final String ROWSPAN = "rowspan";
+
+    private static final String RSPACE = "rspace";
+
+    private static final String RQUOTE = "rquote";
+
+    private static final String SCRIPTLEVEL = "scriptlevel";
+
+    private static final String SCRIPTMINSIZE = "scriptminsize";
+
+    private static final String SCRIPTSIZEMULTIPLIER = "scriptsizemultiplier";
+
+    private static final String SELECTION = "selection";
+
+    private static final String SEPARATOR = "separator";
+
+    private static final String SEPARATORS = "separators";
+
+    private static final String STRETCHY = "stretchy";
+
+    private static final String SUBSCRIPTSHIFT = "subscriptshift";
+
+    private static final String SUPSCRIPTSHIFT = "supscriptshift";
+
+    private static final String SYMMETRIC = "symmetric";
+
+    private static final String VOFFSET = "voffset";
+
+    private static final String WIDTH = "width";
+
+    private static final String XMLNS = "xmlns";
+
     private final Set<String> safeTags;
 
     private final Set<String> allTags;
@@ -58,27 +252,27 @@ public class MathMLDefinitions
      */
     public MathMLDefinitions()
     {
-        this.safeTags = new HashSet<>(
-            Arrays.asList("math", "menclose", "merror", "mfenced", "mfrac", "mglyph", "mi", "mlabeledtr",
-                "mmultiscripts", "mn", "mo", "mover", "mpadded", "mphantom", "mroot", "mrow", "ms", "mspace", "msqrt",
-                "mstyle", "msub", "msup", "msubsup", "mtable", "mtd", "mtext", "mtr", "munder", "munderover"));
+        this.safeTags = new HashSet<>(Arrays.asList(
+            MATH, MENCLOSE, MERROR, MFENCED, MFRAC, MGLYPH, MI, MLABELEDTR, MMULTISCRIPTS, MN, MO, MOVER, MPADDED,
+            MPHANTOM, MROOT, MROW, MS, MSPACE, MSQRT, MSTYLE, MSUB, MSUP, MSUBSUP, MTABLE, MTD, MTEXT, MTR, MUNDER,
+            MUNDEROVER));
 
-        this.allTags = new HashSet<>(
-            Arrays.asList("maction", "maligngroup", "malignmark", "mlongdiv", "mscarries", "mscarry", "msgroup",
-                "mstack", "msline", "msrow", "semantics", "annotation", "annotation-xml", "mprescripts", "none"));
+        this.allTags = new HashSet<>(Arrays.asList(
+            MACTION, MALIGNGROUP, MALIGNMARK, MLONGDIV, MSCARRIES, MSCARRY, MSGROUP, MSTACK, MSLINE, MSROW, SEMANTICS,
+            ANNOTATION, ANNOTATION_XML, MPRESCRIPTS, NONE));
 
         this.allTags.addAll(this.safeTags);
 
-        this.allowedAttributes = new HashSet<>(
-            Arrays.asList("accent", "accentunder", "align", "bevelled", "close", "columnsalign", "columnlines",
-                "columnspan", "denomalign", "depth", "dir", "display", "displaystyle", "encoding", "fence", "frame",
-                "height", "href", "id", "largeop", "length", "linethickness", "lspace", "lquote", "mathbackground",
-                "mathcolor", "mathsize", "mathvariant", "maxsize", "minsize", "movablelimits", "notation", "numalign",
-                "open", "rowalign", "rowlines", "rowspacing", "rowspan", "rspace", "rquote", "scriptlevel",
-                "scriptminsize", "scriptsizemultiplier", "selection", "separator", "separators", "stretchy",
-                "subscriptshift", "supscriptshift", "symmetric", "voffset", "width", "xmlns"));
+        this.allowedAttributes = new HashSet<>(Arrays.asList(
+            ACCENT, ACCENTUNDER, ALIGN, BEVELLED, CLOSE, COLUMNSALIGN, COLUMNLINES, COLUMNSPAN, DENOMALIGN, DEPTH, DIR,
+            DISPLAY, DISPLAYSTYLE, ENCODING, FENCE, FRAME, HEIGHT, HREF, ID, LARGEOP, LENGTH, LINETHICKNESS, LSPACE,
+            LQUOTE, MATHBACKGROUND, MATHCOLOR, MATHSIZE, MATHVARIANT, MAXSIZE, MINSIZE, MOVABLELIMITS, NOTATION,
+            NUMALIGN, OPEN, ROWALIGN, ROWLINES, ROWSPACING, ROWSPAN, RSPACE, RQUOTE, SCRIPTLEVEL, SCRIPTMINSIZE,
+            SCRIPTSIZEMULTIPLIER, SELECTION, SEPARATOR, SEPARATORS, STRETCHY, SUBSCRIPTSHIFT, SUPSCRIPTSHIFT, SYMMETRIC,
+            VOFFSET, WIDTH, XMLNS));
 
-        this.textIntegrationPoints = new HashSet<>(Arrays.asList("mi", "mo", "mn", "ms", "mtext", "annotation-xml"));
+        this.textIntegrationPoints = new HashSet<>(Arrays.asList(
+            MI, MO, MN, MS, MTEXT, ANNOTATION_XML));
     }
 
     /**

@@ -43,6 +43,7 @@ import org.xwiki.component.annotation.Component;
  */
 @Component(roles = SVGDefinitions.class)
 @Singleton
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
 public class SVGDefinitions
 {
     private final Set<String> safeTags;

@@ -55,6 +55,7 @@ import javanet.staxutils.helpers.XMLFilterImplEx;
  * @version $Id$
  * @since 5.2M1
  */
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class SAXEventWriter extends BaseXMLEventWriter
 {
     /**
@@ -93,6 +94,7 @@ public class SAXEventWriter extends BaseXMLEventWriter
      * @param event the XML event to convert
      * @throws XMLStreamException
      */
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     private void convertEvent(XMLEvent event) throws XMLStreamException
     {
         try {
@@ -146,6 +148,7 @@ public class SAXEventWriter extends BaseXMLEventWriter
     {
         final Location location = event.getLocation();
         if (location != null) {
+            // CHECKSTYLE:AnonInnerLength
             this.filter.setDocumentLocator(new Locator()
             {
                 @Override
@@ -253,6 +256,7 @@ public class SAXEventWriter extends BaseXMLEventWriter
      * @param event the StAX start element event
      * @return the StAX attributes converted to an org.xml.sax.Attributes
      */
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     private Attributes getAttributes(StartElement event)
     {
         AttributesImpl attrs = new AttributesImpl();

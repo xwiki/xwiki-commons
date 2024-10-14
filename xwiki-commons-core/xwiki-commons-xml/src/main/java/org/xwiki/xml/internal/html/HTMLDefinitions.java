@@ -43,6 +43,7 @@ import org.xwiki.component.annotation.Component;
  */
 @Component(roles = HTMLDefinitions.class)
 @Singleton
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
 public class HTMLDefinitions
 {
     /**

@@ -84,6 +84,8 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
     static final Pattern IS_NO_URI = Pattern.compile("^(?:[^a-z]|[a-z+.\\-]+(?:[^a-z+.\\-:]|$))",
         Pattern.CASE_INSENSITIVE);
 
+    private static final String XLINK_HREF = "xlink:href";
+
     @Inject
     private HTMLElementSanitizerConfiguration htmlElementSanitizerConfiguration;
 
@@ -141,7 +143,7 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
                 "title", "value", "style", "xmlns"));
 
         this.xmlAttributes =
-            new HashSet<>(Arrays.asList("xlink:href", "xml:id", "xlink:title", "xml:space", "xmlns:xlink"));
+            new HashSet<>(Arrays.asList(XLINK_HREF, "xml:id", "xlink:title", "xml:space", "xmlns:xlink"));
 
         this.extraAllowedTags = new HashSet<>();
 
@@ -234,7 +236,7 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
 
     private boolean isAllowedDataValue(String elementName, String attributeName, String attributeValue)
     {
-        boolean attributeAllowsData = "src".equals(attributeName) || "xlink:href".equals(attributeName)
+        boolean attributeAllowsData = "src".equals(attributeName) || XLINK_HREF.equals(attributeName)
             || "href".equals(attributeName);
         return attributeAllowsData && !"script".equals(elementName) && attributeValue.startsWith("data:")
             && this.dataUriTags.contains(elementName);

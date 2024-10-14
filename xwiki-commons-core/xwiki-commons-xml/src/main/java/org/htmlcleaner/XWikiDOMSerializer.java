@@ -70,6 +70,7 @@ public class XWikiDOMSerializer extends DomSerializer
      * @param rootNode the HTML Cleaner root node to serialize
      * @return the W3C Document object
      */
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity"})
     private Document createDocument(DocumentBuilder builder, TagNode rootNode)
     {
         DOMImplementation impl = builder.getDOMImplementation();

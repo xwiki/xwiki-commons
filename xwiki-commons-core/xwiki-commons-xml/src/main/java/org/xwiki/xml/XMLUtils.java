@@ -66,6 +66,7 @@ import org.xwiki.xml.internal.DefaultXMLReaderFactory;
  * @version $Id$
  * @since 1.6M1
  */
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public final class XMLUtils
 {
     /**
