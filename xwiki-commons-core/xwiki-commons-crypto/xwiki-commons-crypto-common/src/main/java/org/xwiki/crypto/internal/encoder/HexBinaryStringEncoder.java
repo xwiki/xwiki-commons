@@ -38,13 +38,13 @@ public class HexBinaryStringEncoder extends AbstractBinaryStringEncoder
 {
     /**
      * Number of bytes of binary data that should be encoded together.
-     * Hex encode 1 bytes into 2 chars.
+     * Hex-encode 1 byte into 2 chars.
      */
     private static final int BLOCK_SIZE = 1;
 
     /**
      * Number of bytes of string data that should be decoded together.
-     * Hex decode 2 chars into 1 bytes.
+     * Hex-decode 2 chars into 1 byte.
      */
     private static final int CHAR_SIZE = 2;
 

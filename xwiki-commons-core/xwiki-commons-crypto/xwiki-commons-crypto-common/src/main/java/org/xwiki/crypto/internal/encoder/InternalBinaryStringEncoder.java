@@ -58,7 +58,7 @@ public interface InternalBinaryStringEncoder
      * Check is the given byte is a valid byte of encoded data.
      *
      * @param b byte to check.
-     * @return true if the byte is a valid encoded data.
+     * @return true if the byte is a valid, encoded data.
      */
     boolean isValidEncoding(byte b);
 
