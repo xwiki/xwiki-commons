@@ -71,6 +71,20 @@
   -->
   <module name="TreeWalker">
 
+    <module name="SuppressWarningsHolder" />
+
+    <module name="SuppressWithNearbyCommentFilter">
+      <property name="commentFormat" value="CHECKSTYLE:(\w+)"/>
+      <property name="checkFormat" value="$1"/>
+      <property name="influenceFormat" value="1"/>
+    </module>
+
+    <module name="SuppressWithNearbyCommentFilter">
+      <property name="commentFormat" value="CHECKSTYLE:(\w+)\((\d+)\)"/>
+      <property name="checkFormat" value="$1"/>
+      <property name="influenceFormat" value="$2"/>
+    </module>
+
     <!-- Note: for some checks we have defined a warning severity instead of the default error
          severity. This is because we'd like to make the build fail on error for those checks
          but there are errors to fix first -->
@@ -389,4 +403,6 @@
     <module name="WhitespaceAround"/>
 
   </module>
+
+  <module name="SuppressWarningsFilter" />
 </module>
