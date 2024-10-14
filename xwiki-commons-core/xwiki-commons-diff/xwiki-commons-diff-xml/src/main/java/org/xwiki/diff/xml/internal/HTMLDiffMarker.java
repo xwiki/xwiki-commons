@@ -40,7 +40,7 @@ import org.xwiki.diff.xml.XMLDiffMarker;
 /**
  * Default implementation of {@link XMLDiffMarker} that displays (marks) the differences in-line (only the left side of
  * the comparison is marked).
- * 
+ *
  * @version $Id$
  * @since 11.6RC1
  */
@@ -51,30 +51,235 @@ public class HTMLDiffMarker extends AbstractXMLDiffMarker
 {
     static final String DIFF_BLOCK_ATTRIBUTE = "data-xwiki-html-diff-block";
 
-    private static final List<String> IGNORED_TAGS = Arrays.asList("");
+    private static final List<String> IGNORED_TAGS = List.of("");
 
-    private static final List<String> ACCEPTED_ATTRIBUTES = Arrays.asList("align", "background", "bgcolor", "border",
-        "cite", "class", "color", "cols", "colspan", "controls", "coords", "data", "dir", "disabled", "height",
-        "hidden", "high", "icon", "label", "low", "multiple", "placeholder", "rows", "rowspan", "shape", "size", "src",
-        "start", "style", "summary", "type", "value", "width", "wrap");
+    // Commonly used tag names
 
-    private static final List<String> BLOCK_ELEMENTS_WE_CAN_DUPLICATE =
-        Arrays.asList("audio", "video", "figure", "figcaption", "ol", "ul", "li", "dl", "dd", "dt", "table", "tr",
-            "address", "div", "p", "h1", "h2", "h3", "h4", "h5", "h6", "pre", "blockquote", "form", "fieldset", "hr",
-            "article", "aside", "details", "footer", "header", "main", "nav", "section", "center");
+    private static final String DIR = "dir";
 
-    private static final List<String> TAGS_THAT_DONT_ACCEPT_INLINE_MARKER =
-        Arrays.asList("html", "head", "base", "meta", "title", "link", "script", "style", "br", "hr", "img", "picture",
-            "embed", "iframe", "area", "param", "source", "track", "input", "textarea", "select", "optgroup", "option",
-            "dl", "ol", "ul", "table", "thead", "tfoot", "tbody", "colgroup", "col", "tr");
+    private static final String STYLE = "style";
 
-    private static final List<String> TAGS_WITH_INSIGNIFICANT_WHITESPACE = Arrays.asList("body", "colgroup", "dl",
-        "head", "html", "ol", "optgroup", "picture", "select", "table", "tbody", "tfoot", "thead", "tr", "ul");
+    private static final String AUDIO = "audio";
 
-    private static final List<String> BLOCK_ELEMENTS = Arrays.asList("address", "article", "aside", "audio",
-        "blockquote", "center", "dd", "details", "dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer",
-        "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li", "main", "menu", "nav", "noframes",
-        "ol", "p", "pre", "section", "table", "ul", "video");
+    private static final String VIDEO = "video";
+
+    private static final String FIGURE = "figure";
+
+    private static final String FIGCAPTION = "figcaption";
+
+    private static final String OL = "ol";
+
+    private static final String UL = "ul";
+
+    private static final String DL = "dl";
+
+    private static final String DD = "dd";
+
+    private static final String DT = "dt";
+
+    private static final String LI = "li";
+
+    private static final String TABLE = "table";
+
+    private static final String TR = "tr";
+
+    private static final String ADDRESS = "address";
+
+    private static final String DIV = "div";
+
+    private static final String P = "p";
+
+    private static final String H1 = "h1";
+
+    private static final String H2 = "h2";
+
+    private static final String H3 = "h3";
+
+    private static final String H4 = "h4";
+
+    private static final String H5 = "h5";
+
+    private static final String H6 = "h6";
+
+    private static final String PRE = "pre";
+
+    private static final String BLOCKQUOTE = "blockquote";
+
+    private static final String FORM = "form";
+
+    private static final String FIELDSET = "fieldset";
+
+    private static final String HR = "hr";
+
+    private static final String ARTICLE = "article";
+
+    private static final String ASIDE = "aside";
+
+    private static final String DETAILS = "details";
+
+    private static final String FOOTER = "footer";
+
+    private static final String HEADER = "header";
+
+    private static final String MAIN = "main";
+
+    private static final String NAV = "nav";
+
+    private static final String SECTION = "section";
+
+    private static final String CENTER = "center";
+
+    private static final String BODY = "body";
+
+    private static final String HEAD = "head";
+
+    private static final String HTML = "html";
+
+    private static final String OPTGROUP = "optgroup";
+
+    private static final String PICTURE = "picture";
+
+    private static final String TBODY = "tbody";
+
+    private static final String TFOOT = "tfoot";
+
+    private static final String THEAD = "thead";
+
+    private static final String COLGROUP = "colgroup";
+
+    private static final String COL = "col";
+
+    private static final String BR = "br";
+
+    private static final String IMG = "img";
+
+    private static final String EMBED = "embed";
+
+    private static final String IFRAME = "iframe";
+
+    private static final String AREA = "area";
+
+    private static final String PARAM = "param";
+
+    private static final String SOURCE = "source";
+
+    private static final String TRACK = "track";
+
+    private static final String INPUT = "input";
+
+    private static final String TEXTAREA = "textarea";
+
+    private static final String SELECT = "select";
+
+    private static final String OPTION = "option";
+
+    private static final String HGROUP = "hgroup";
+
+    private static final String MENU = "menu";
+
+    private static final String NOFRAMES = "noframes";
+
+    private static final String BASE = "base";
+
+    private static final String META = "meta";
+
+    private static final String TITLE = "title";
+
+    private static final String LINK = "link";
+
+    private static final String SCRIPT = "script";
+
+    // Commonly used attribute names
+
+    private static final String ALIGN = "align";
+
+    private static final String BACKGROUND = "background";
+
+    private static final String BGCOLOR = "bgcolor";
+
+    private static final String BORDER = "border";
+
+    private static final String CITE = "cite";
+
+    private static final String CLASS = "class";
+
+    private static final String COLOR = "color";
+
+    private static final String COLS = "cols";
+
+    private static final String COLSPAN = "colspan";
+
+    private static final String CONTROLS = "controls";
+
+    private static final String COORDS = "coords";
+
+    private static final String DATA = "data";
+
+    private static final String DISABLED = "disabled";
+
+    private static final String HEIGHT = "height";
+
+    private static final String HIDDEN = "hidden";
+
+    private static final String HIGH = "high";
+
+    private static final String ICON = "icon";
+
+    private static final String LABEL = "label";
+
+    private static final String LOW = "low";
+
+    private static final String MULTIPLE = "multiple";
+
+    private static final String PLACEHOLDER = "placeholder";
+
+    private static final String ROWS = "rows";
+
+    private static final String ROWSPAN = "rowspan";
+
+    private static final String SHAPE = "shape";
+
+    private static final String SIZE = "size";
+
+    private static final String SRC = "src";
+
+    private static final String START = "start";
+
+    private static final String SUMMARY = "summary";
+
+    private static final String TYPE = "type";
+
+    private static final String VALUE = "value";
+
+    private static final String WIDTH = "width";
+
+    private static final String WRAP = "wrap";
+
+    private static final List<String> ACCEPTED_ATTRIBUTES = Arrays.asList(
+        ALIGN, BACKGROUND, BGCOLOR, BORDER, CITE, CLASS, COLOR, COLS, COLSPAN, CONTROLS, COORDS, DATA, DIR, DISABLED,
+        HEIGHT, HIDDEN, HIGH, ICON, LABEL, LOW, MULTIPLE, PLACEHOLDER, ROWS, ROWSPAN, SHAPE, SIZE, SRC, START, STYLE,
+        SUMMARY, TYPE, VALUE, WIDTH, WRAP
+    );
+
+    private static final List<String> BLOCK_ELEMENTS_WE_CAN_DUPLICATE = Arrays.asList(
+        AUDIO, VIDEO, FIGURE, FIGCAPTION, OL, UL, LI, DL, DD, DT, TABLE, TR, ADDRESS, DIV, P, H1, H2, H3, H4, H5, H6,
+        PRE, BLOCKQUOTE, FORM, FIELDSET, HR, ARTICLE, ASIDE, DETAILS, FOOTER, HEADER, MAIN, NAV, SECTION, CENTER
+    );
+
+    private static final List<String> TAGS_THAT_DONT_ACCEPT_INLINE_MARKER = Arrays.asList(
+        HTML, HEAD, BASE, META, TITLE, LINK, SCRIPT, STYLE, BR, HR, IMG, PICTURE, EMBED, IFRAME, AREA, PARAM, SOURCE,
+        TRACK, INPUT, TEXTAREA, SELECT, OPTGROUP, OPTION, DL, OL, UL, TABLE, THEAD, TFOOT, TBODY, COLGROUP, COL, TR
+    );
+
+    private static final List<String> TAGS_WITH_INSIGNIFICANT_WHITESPACE = Arrays.asList(
+        BODY, COLGROUP, DL, HEAD, HTML, OL, OPTGROUP, PICTURE, SELECT, TABLE, TBODY, TFOOT, THEAD, TR, UL
+    );
+
+    private static final List<String> BLOCK_ELEMENTS = Arrays.asList(
+        ADDRESS, ARTICLE, ASIDE, AUDIO, BLOCKQUOTE, CENTER, DD, DETAILS, DIR, DIV, DL, DT, FIELDSET, FIGCAPTION, FIGURE,
+        FOOTER, FORM, H1, H2, H3, H4, H5, H6, HEADER, HGROUP, HR, LI, MAIN, MENU, NAV, NOFRAMES, OL, P, PRE, SECTION,
+        TABLE, UL, VIDEO
+    );
 
     private static final String DELETED = "deleted";
 
@@ -108,7 +313,7 @@ public class HTMLDiffMarker extends AbstractXMLDiffMarker
         return node.getNodeValue().trim().isEmpty()
             // ... and is not significant (either because of its parent or because of its siblings).
             && (TAGS_WITH_INSIGNIFICANT_WHITESPACE.contains(node.getParentNode().getNodeName().toLowerCase())
-                || isBetweenBlockElements(node));
+            || isBetweenBlockElements(node));
     }
 
     private boolean isBetweenBlockElements(Node node)
