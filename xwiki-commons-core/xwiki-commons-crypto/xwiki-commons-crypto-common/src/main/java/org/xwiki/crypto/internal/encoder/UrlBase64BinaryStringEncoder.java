@@ -44,6 +44,8 @@ public class UrlBase64BinaryStringEncoder extends Base64BinaryStringEncoder
             @Override
             public boolean isValidEncoding(byte b)
             {
+                // CHECKSTYLE:BooleanExpressionComplexity(2)
+                //   Cryptography requires complex expressions, allow a few such expressions
                 return (b == 0x2d || b == 0x2e || b == 0x5f || (b >= 0x30 && b <= 0x39)
                     || (b >= 0x41 && b <= 0x5a) || (b >= 0x61 && b <= 0x7a));
             }
