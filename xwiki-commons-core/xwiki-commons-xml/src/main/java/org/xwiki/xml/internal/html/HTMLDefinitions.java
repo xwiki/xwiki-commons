@@ -43,6 +43,8 @@ import org.xwiki.component.annotation.Component;
  */
 @Component(roles = HTMLDefinitions.class)
 @Singleton
+// This file has lists of strings copied from a source, making them constants would complicate updating from
+// upstream.
 @SuppressWarnings("checkstyle:MultipleStringLiterals")
 public class HTMLDefinitions
 {
