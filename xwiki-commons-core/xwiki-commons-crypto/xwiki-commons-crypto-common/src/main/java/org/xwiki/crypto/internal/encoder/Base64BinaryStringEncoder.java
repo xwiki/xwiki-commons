@@ -56,8 +56,8 @@ public class Base64BinaryStringEncoder extends AbstractBinaryStringEncoder
             @Override
             public boolean isValidEncoding(byte b)
             {
-                // CHECKSTYLE:BooleanExpressionComplexity(2)
-                //   Cryptography requires complex expressions, allow a few such expressions
+                // Cryptography requires complex expressions, allow a few such expressions
+                // CHECKSTYLE:BooleanExpressionComplexity
                 return (b == 0x2b || b == 0x3d || (b >= 0x2f && b <= 0x39)
                     || (b >= 0x41 && b <= 0x5a) || (b >= 0x61 && b <= 0x7a));
             }

@@ -56,8 +56,8 @@ public class HexBinaryStringEncoder extends AbstractBinaryStringEncoder
             @Override
             public boolean isValidEncoding(byte b)
             {
-                // CHECKSTYLE:BooleanExpressionComplexity(2)
-                //   Cryptography requires complex expressions, allow a few such expressions
+                // Cryptography requires complex expressions, allow a few such expressions
+                // CHECKSTYLE:BooleanExpressionComplexity
                 return ((b >= 0x2f && b <= 0x39) || (b >= 0x41 && b <= 0x46) || (b >= 0x61 && b <= 0x66));
             }
         };
