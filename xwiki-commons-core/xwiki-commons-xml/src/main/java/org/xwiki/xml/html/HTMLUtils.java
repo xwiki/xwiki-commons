@@ -26,12 +26,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jdom.Comment;
-import org.jdom.DocType;
-import org.jdom.Element;
-import org.jdom.input.DOMBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Attribute;
+import org.jdom2.Comment;
+import org.jdom2.DocType;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
+import org.jdom2.Text;
+import org.jdom2.input.DOMBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.support.AbstractXMLOutputProcessor;
+import org.jdom2.output.support.FormatStack;
+import org.jdom2.util.NamespaceStack;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -73,7 +79,7 @@ public final class HTMLUtils
      * is not. See {@code OMIT_ELEMENT_EXPANDING_SET} for the list of elements to not expand.
      */
     // TODO: Remove the complex escaping code when SF HTML Cleaner will do proper escaping
-    public static class XWikiXMLOutputter extends XMLOutputter
+    private static final class XWikiXMLOutputProcessor extends AbstractXMLOutputProcessor
     {
         /**
          * Regex for a character reference as defined in:
@@ -94,33 +100,46 @@ public final class HTMLUtils
         /**
          * Whether to omit the document type when printing the W3C Document or not.
          */
-        private boolean omitDocType;
+        private final boolean omitDocType;
 
         /**
-         * @param format the JDOM class used to control output formats, see {@link org.jdom.output.Format}
          * @param omitDocType if true then omit the document type when printing the W3C Document
          * @see XMLOutputter#XMLOutputter(Format)
          */
-        public XWikiXMLOutputter(Format format, boolean omitDocType)
+        XWikiXMLOutputProcessor(boolean omitDocType)
         {
-            super(format);
+            super();
             this.omitDocType = omitDocType;
         }
 
         @Override
-        public String escapeElementEntities(String text)
+        protected void printText(final Writer out, final FormatStack fstack, final Text text) throws IOException
         {
-            String result = super.escapeElementEntities(text);
+            // Code copied from parent class as we otherwise cannot modify its behavior.
+            if (fstack.getEscapeOutput()) {
+                String result = Format.escapeText(fstack.getEscapeStrategy(),
+                    fstack.getLineSeparator(), text.getText());
 
-            // "\r" characters are automatically transformed in &#xD; but we want to keep the original \r there.
-            return result.replaceAll("&#xD;", "\r");
+                // "\r" characters are automatically transformed in &#xD; but we want to keep the original \r there.
+                textRaw(out, result.replace("&#xD;", "\r"));
+
+                return;
+            }
+            textRaw(out, text.getText());
         }
 
         @Override
-        public String escapeAttributeEntities(String text)
+        protected void attributeEscapedEntitiesFilter(final Writer out,
+            final FormatStack fstack, final String value) throws IOException
         {
-            String result = super.escapeAttributeEntities(text);
-            return cleanAmpersandEscape(result);
+            if (!fstack.getEscapeOutput()) {
+                // no escaping...
+                write(out, value);
+                return;
+            }
+
+            String result = Format.escapeAttribute(fstack.getEscapeStrategy(), value);
+            write(out, cleanAmpersandEscape(result));
         }
 
         /**
@@ -153,40 +172,56 @@ public final class HTMLUtils
         }
 
         @Override
-        protected void printDocType(Writer out, DocType docType) throws IOException
+        protected void printDocType(final Writer out, final FormatStack fstack,
+            final DocType docType) throws IOException
         {
             if (!this.omitDocType) {
-                super.printDocType(out, docType);
+                super.printDocType(out, fstack, docType);
+                // Add a linebreak as JDOM 1 had it.
+                write(out, '\n');
             }
         }
 
         @Override
-        protected void printElement(Writer out, Element element, int level, NamespaceStack namespaces)
-            throws IOException
+        protected void printElement(final Writer out, final FormatStack fstack,
+            final NamespaceStack nstack, final Element element) throws IOException
         {
             // We override the code from the super class to not expand some empty elements.
-            boolean currentFormatPolicy = currentFormat.getExpandEmptyElements();
-            try {
-                String elementName = element.getName();
-                for (String name : OMIT_ELEMENT_EXPANDING_SET) {
-                    if (name.equals(elementName)) {
-                        // We do not expand this empty element
-                        currentFormat.setExpandEmptyElements(false);
-                        break;
+            if (OMIT_ELEMENT_EXPANDING_SET.contains(element.getName()) && element.getContent().isEmpty()) {
+                // Code copied from the super class as we cannot modify the format.
+                nstack.push(element);
+                try {
+                    // Print the beginning of the tag plus attributes and any
+                    // necessary namespace declarations
+                    write(out, "<");
+
+                    write(out, element.getQualifiedName());
+
+                    // Print the element's namespace, if appropriate
+                    for (final Namespace ns : nstack.addedForward()) {
+                        printNamespace(out, fstack, ns);
                     }
+
+                    // Print out attributes
+                    if (element.hasAttributes()) {
+                        for (final Attribute attribute : element.getAttributes()) {
+                            printAttribute(out, fstack, attribute);
+                        }
+                    }
+
+                    write(out, " />");
+                } finally {
+                    nstack.pop();
                 }
-
+            } else {
                 // Call the method from the super class
-                super.printElement(out, element, level, namespaces);
-
-            } finally {
-                // Reset the format
-                currentFormat.setExpandEmptyElements(currentFormatPolicy);
+                super.printElement(out, fstack, nstack, element);
             }
         }
 
         @Override
-        protected void printComment(Writer out, Comment comment) throws IOException
+        protected void printComment(final Writer out, final FormatStack fstack,
+            final Comment comment) throws IOException
         {
             String commentText = comment.getText();
 
@@ -198,7 +233,7 @@ public final class HTMLUtils
                 commentText = commentText.substring(1);
             }
 
-            super.printComment(out, new Comment(commentText));
+            super.printComment(out, fstack, new Comment(commentText));
         }
     }
 
@@ -230,7 +265,7 @@ public final class HTMLUtils
         // Note: We don't use javax.xml.transform.Transformer since it prints our valid XHTML as HTML which is not
         // XHTML compliant. For example it transforms our "<hr/>" into "<hr>.
         DOMBuilder builder = new DOMBuilder();
-        org.jdom.Document jdomDoc = builder.build(document);
+        org.jdom2.Document jdomDoc = builder.build(document);
 
         Format format = Format.getRawFormat();
         // Force newlines to use \n since otherwise the default is \n\r.
@@ -243,7 +278,7 @@ public final class HTMLUtils
 
         format.setOmitDeclaration(omitDeclaration);
 
-        XMLOutputter outputter = new XWikiXMLOutputter(format, omitDoctype);
+        XMLOutputter outputter = new XMLOutputter(format, new XWikiXMLOutputProcessor(omitDoctype));
 
         return outputter.outputString(jdomDoc);
     }
