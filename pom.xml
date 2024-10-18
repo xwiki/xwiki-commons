@@ -577,11 +577,6 @@
       </dependency>
       <dependency>
         <groupId>org.jdom</groupId>
-        <artifactId>jdom</artifactId>
-        <version>1.1.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jdom</groupId>
         <artifactId>jdom2</artifactId>
         <version>2.0.6.1</version>
       </dependency>
@@ -2110,20 +2105,21 @@
               </rules>
             </configuration>
           </execution>
-          <!-- Check that we use the right version of the old jdom artifact -->
+          <!-- Check that we use the right version of jdom -->
           <execution>
-            <id>enforce-jdom</id>
+            <id>enforce-jdom2</id>
             <goals>
               <goal>enforce</goal>
             </goals>
             <configuration>
-              <skip>${xwiki.enforcer.enforce-jdom.skip}</skip>
+              <skip>${xwiki.enforcer.enforce-jdom2.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
-                  <message>Use org.jdom:jdom instead</message>
+                  <message>Use org.jdom:jdom2 instead</message>
                   <excludes>
                     <exclude>org.jdom:jdom-legacy</exclude>
+                    <exclude>org.jdom:jdom</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
