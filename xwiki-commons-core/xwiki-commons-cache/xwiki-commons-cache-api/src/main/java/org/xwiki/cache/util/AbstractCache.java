@@ -31,7 +31,7 @@ import org.xwiki.cache.event.CacheEntryListener;
 
 /**
  * Base class for {@link Cache} implementations. It provides events {@link DisposableCacheValue} management.
- *
+ * 
  * @param <T> the class of the data stored in the cache.
  * @version $Id$
  */
@@ -51,6 +51,15 @@ public abstract class AbstractCache<T> implements Cache<T>
      * The list of listener to called when events appends on a cache entry.
      */
     protected final EventListenerList cacheEntryListeners = new EventListenerList();
+
+    /**
+     * @deprecated since 8.3RC1, use {@link #AbstractCache(CacheConfiguration)} instead
+     */
+    @Deprecated
+    public AbstractCache()
+    {
+        this(null);
+    }
 
     /**
      * @param configuration the configuration of the cache

@@ -36,7 +36,6 @@
     <xwiki.enforcer.no-legacy-dependencies.skip>true</xwiki.enforcer.no-legacy-dependencies.skip>
   </properties>
   <modules>
-    <module>xwiki-commons-legacy-cache</module>
     <module>xwiki-commons-legacy-classloader</module>
     <module>xwiki-commons-legacy-component</module>
     <module>xwiki-commons-legacy-configuration</module>

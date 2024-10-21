@@ -35,8 +35,6 @@
     <xwiki.jacoco.instructionRatio>0.10</xwiki.jacoco.instructionRatio>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-cache-api</xwiki.extension.features>
-    <!-- Skipping revapi since xwiki-commons-legacy-cache-api wraps this module and runs checks on it -->
-    <xwiki.revapi.skip>true</xwiki.revapi.skip>
   </properties>
   <dependencies>
     <dependency>
