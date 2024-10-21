@@ -33,6 +33,5 @@
   <description>Legacy modules for xwiki-commons-cache-*</description>
   <modules>
     <module>xwiki-commons-legacy-cache-api</module>
-    <module>xwiki-commons-legacy-cache-infinispan</module>
   </modules>
 </project>

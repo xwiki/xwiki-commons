@@ -1,1 +1,0 @@
-org.xwiki.cache.infinispan.internal.LocalInfinispanCacheFactory
