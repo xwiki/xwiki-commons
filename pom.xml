@@ -133,7 +133,7 @@
     <maven.archetype.version>3.3.1</maven.archetype.version>
 
     <!-- JAXB -->
-    <jaxb.tools.version>2.0.12</jaxb.tools.version>
+    <jaxb.tools.version>2.0.14</jaxb.tools.version>
 
     <!-- By default, Checkstyle, Backward compatibility check, Enforcer, License plugins, etc., are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
