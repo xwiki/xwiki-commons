@@ -120,7 +120,7 @@
     <spoon.version>11.1.0</spoon.version>
 
     <!-- Groovy -->
-    <groovy.version>4.0.23</groovy.version>
+    <groovy.version>4.0.24</groovy.version>
 
     <!-- Ivy -->
     <ivy.version>2.5.2</ivy.version>
