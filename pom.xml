@@ -258,7 +258,7 @@
 
     <!-- EL implementation -->
     <!-- Use the same version as the one that comes with the custom XWiki Jetty application server -->
-    <apachache-el.version>9.0.90</apachache-el.version>
+    <apache-el.version>9.0.90</apache-el.version>
 
     <webdrivermanager.version>5.9.2</webdrivermanager.version>
 
@@ -1301,7 +1301,7 @@
       <dependency>
         <groupId>org.mortbay.jasper</groupId>
         <artifactId>apache-el</artifactId>
-        <version>${apachache-el.version}</version>
+        <version>${apache-el.version}</version>
         <!-- The EL implementation is supposed to come with the application server, but we need one for tests -->
         <scope>test</scope>
       </dependency>
