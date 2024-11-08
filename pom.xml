@@ -258,7 +258,7 @@
 
     <!-- EL implementation -->
     <!-- Use the same version as the one that comes with the custom XWiki Jetty application server -->
-    <apache-el.version>9.0.90</apache-el.version>
+    <apache-el.version>11.0.0</apache-el.version>
 
     <webdrivermanager.version>5.9.2</webdrivermanager.version>
 
