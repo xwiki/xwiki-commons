@@ -308,10 +308,10 @@ public class LocalExtensionStorage
         }
 
         // Delete extension version folder if empty
-        File extensionVesionFolder = descriptorFile.getParentFile();
-        extensionVesionFolder.delete();
+        File extensionVersionFolder = descriptorFile.getParentFile();
+        extensionVersionFolder.delete();
 
         // Delete extension folder if empty
-        extensionVesionFolder.getParentFile().delete();
+        extensionVersionFolder.getParentFile().delete();
     }
 }
