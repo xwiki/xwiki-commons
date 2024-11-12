@@ -32,6 +32,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -300,14 +301,15 @@ public class LocalExtensionStorage
 
         if (descriptorFile == null) {
             throw new IOException(
-                "Extension " + extension.getId().getId() + " does not exist: descriptor file is null");
+                String.format("Extension [%s] does not exist: descriptor file is null", extension.getId().getId()));
         }
 
         try {
             Files.delete(descriptorFile.toPath());
         } catch (FileNotFoundException e) {
-            LOGGER.warn("Extension descriptor file [{}] was not found while removing [{}] extension",
-                descriptorFile.getAbsolutePath(), extension.getId().getId());
+            LOGGER.warn(
+                "Couldn't delete the extension descriptor file [{}] when removing extension [{}], because it doesn't exist. Root error: [{}]",
+                descriptorFile.getAbsolutePath(), extension.getId().getId(), ExceptionUtils.getRootCauseMessage(e));
         }
 
         DefaultLocalExtensionFile extensionFile = extension.getFile();
