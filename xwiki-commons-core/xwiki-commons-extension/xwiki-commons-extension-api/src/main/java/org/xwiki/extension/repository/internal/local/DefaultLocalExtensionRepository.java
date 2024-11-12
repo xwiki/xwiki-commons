@@ -107,7 +107,7 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
         try {
             this.storage.loadExtensions();
         } catch (IOException e) {
-            throw new InitializationException("Failed to load load etensions", e);
+            throw new InitializationException("Failed to load load extensions", e);
         }
     }
 
