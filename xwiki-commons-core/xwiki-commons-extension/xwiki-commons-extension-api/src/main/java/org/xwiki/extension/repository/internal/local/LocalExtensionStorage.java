@@ -306,5 +306,12 @@ public class LocalExtensionStorage
         if (extensionFile != null) {
             extensionFile.getFile().delete();
         }
+
+        // Delete extension version folder if empty
+        File extensionVersionFolder = descriptorFile.getParentFile();
+        extensionVersionFolder.delete();
+
+        // Delete extension folder if empty
+        extensionVersionFolder.getParentFile().delete();
     }
 }
