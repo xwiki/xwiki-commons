@@ -24,6 +24,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -101,7 +104,7 @@ public class LocalExtensionStorage
 
     /**
      * Load extension from repository storage.
-     * 
+     *
      * @throws IOException when failing to load extensions
      */
     protected void loadExtensions() throws IOException
@@ -296,15 +299,60 @@ public class LocalExtensionStorage
         File descriptorFile = extension.getDescriptorFile();
 
         if (descriptorFile == null) {
-            throw new IOException("Exception does not exist");
+            throw new IOException(
+                "Extension " + extension.getId().getId() + " does not exist: descriptor file is null");
         }
 
-        descriptorFile.delete();
+        try {
+            Files.delete(descriptorFile.toPath());
+        } catch (FileNotFoundException e) {
+            LOGGER.warn("Extension descriptor file [{}] was not found while removing [{}] extension",
+                descriptorFile.getAbsolutePath(), extension.getId().getId());
+        }
 
         DefaultLocalExtensionFile extensionFile = extension.getFile();
 
         if (extensionFile != null) {
-            extensionFile.getFile().delete();
+            try {
+                Files.delete(extensionFile.getFile().toPath());
+            } catch (FileNotFoundException e) {
+                LOGGER.warn("Extension file [{}] was not found while removing [{}] extension",
+                    extensionFile.getAbsolutePath(), extension.getId().getId());
+            }
+        }
+
+        // Get extension file descriptor path
+        Path extensionDescriptorFilePath = descriptorFile.toPath();
+
+        // Get the path to the folder that store the version of the extension being removed
+        Path extensionVersionFolderPath = extensionDescriptorFilePath.getParent();
+        try {
+            // Delete the extension version folder
+            Files.delete(extensionDescriptorFilePath);
+
+            // Try to delete the extension folder
+            deleteExtensionFolderIfEmpty(extensionVersionFolderPath.getParent());
+        } catch (DirectoryNotEmptyException e) {
+            LOGGER.warn("Extension version folder [{}] was not empty after removing the extension [{}]. Keeping it.",
+                extensionDescriptorFilePath, extension.getId().getId());
+        }
+    }
+
+    /**
+     * Try to delete the extension folder if empty (i.e. all versions have been removed)
+     *
+     * @param extensionFolderPath the path to the folder to delete
+     * @throws IOException error (other than empty) when deleting the extension folder
+     */
+    private static void deleteExtensionFolderIfEmpty(Path extensionFolderPath)
+        throws IOException
+    {
+        try {
+            Files.delete(extensionFolderPath);
+        } catch (DirectoryNotEmptyException e) {
+            // Folder not being empty is a valid scenario if some version of the extension are still installed
+            LOGGER.debug("Extension folder [{}] was not empty after removing the extension. Keeping it.",
+                extensionFolderPath);
         }
     }
 }
