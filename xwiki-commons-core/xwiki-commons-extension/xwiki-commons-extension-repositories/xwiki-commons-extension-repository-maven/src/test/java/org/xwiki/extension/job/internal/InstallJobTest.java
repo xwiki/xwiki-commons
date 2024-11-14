@@ -32,6 +32,7 @@ import org.xwiki.logging.LogLevel;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ComponentTest
@@ -89,5 +90,20 @@ class InstallJobTest extends AbstractExtensionHandlerTest
         assertNotNull(installedExtension);
         assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
         assertTrue(installedExtension.isDependency(null));
+    }
+
+    @Test
+    void testInstallPOM() throws Throwable
+    {
+        ExtensionId extensionId = new ExtensionId("groupid:pom", "version");
+
+        install(extensionId, LogLevel.ERROR);
+
+        // Is extension installed
+        InstalledExtension installedExtension =
+            this.installedExtensionRepository.getInstalledExtension(extensionId.getId(), null);
+        assertNotNull(installedExtension);
+        assertTrue(installedExtension.isValid(null));
+        assertNull(installedExtension.getType());
     }
 }
