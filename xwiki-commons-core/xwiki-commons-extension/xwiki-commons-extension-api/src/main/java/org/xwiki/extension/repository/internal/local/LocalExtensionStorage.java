@@ -304,17 +304,23 @@ public class LocalExtensionStorage
                 String.format("Extension [%s] does not exist: descriptor file is null", extension.getId().getId()));
         }
 
+        // Get extension file descriptor path
+        Path extensionDescriptorFilePath = descriptorFile.toPath();
+
+        // Delete the extension descriptor file
         try {
-            Files.delete(descriptorFile.toPath());
+            Files.delete(extensionDescriptorFilePath);
         } catch (FileNotFoundException e) {
             LOGGER.warn(
-                "Couldn't delete the extension descriptor file [{}] when removing extension [{}], because it doesn't exist. Root error: [{}]",
+                "Couldn't delete the extension descriptor file [{}] when removing extension [{}], "
+                    + "because it doesn't exist. Root error: [{}]",
                 descriptorFile.getAbsolutePath(), extension.getId().getId(), ExceptionUtils.getRootCauseMessage(e));
         }
 
         DefaultLocalExtensionFile extensionFile = extension.getFile();
 
         if (extensionFile != null) {
+            // Delete the extension file
             try {
                 Files.delete(extensionFile.getFile().toPath());
             } catch (FileNotFoundException e) {
@@ -322,9 +328,6 @@ public class LocalExtensionStorage
                     extensionFile.getAbsolutePath(), extension.getId().getId());
             }
         }
-
-        // Get extension file descriptor path
-        Path extensionDescriptorFilePath = descriptorFile.toPath();
 
         // Get the path to the folder that store the version of the extension being removed
         Path extensionVersionFolderPath = extensionDescriptorFilePath.getParent();
@@ -346,8 +349,7 @@ public class LocalExtensionStorage
      * @param extensionFolderPath the path to the folder to delete
      * @throws IOException error (other than empty) when deleting the extension folder
      */
-    private static void deleteExtensionFolderIfEmpty(Path extensionFolderPath)
-        throws IOException
+    private static void deleteExtensionFolderIfEmpty(Path extensionFolderPath) throws IOException
     {
         try {
             Files.delete(extensionFolderPath);
