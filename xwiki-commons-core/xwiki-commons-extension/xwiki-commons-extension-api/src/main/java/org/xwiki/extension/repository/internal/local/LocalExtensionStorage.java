@@ -339,7 +339,7 @@ public class LocalExtensionStorage
             deleteExtensionFolderIfEmpty(extensionVersionFolderPath.getParent());
         } catch (DirectoryNotEmptyException e) {
             LOGGER.warn("Extension version folder [{}] was not empty after removing the extension [{}]. Keeping it.",
-                extensionDescriptorFilePath, extension.getId().getId());
+                extensionDescriptorFilePath.toString(), extension.getId().getId());
         }
     }
 
@@ -356,14 +356,7 @@ public class LocalExtensionStorage
         } catch (DirectoryNotEmptyException e) {
             // Folder not being empty is a valid scenario if some version of the extension are still installed
             LOGGER.debug("Extension folder [{}] was not empty after removing the extension. Keeping it.",
-                extensionFolderPath);
+                extensionFolderPath.toString());
         }
-
-        // Delete extension version folder if empty
-        File extensionVersionFolder = descriptorFile.getParentFile();
-        extensionVersionFolder.delete();
-
-        // Delete extension folder if empty
-        extensionVersionFolder.getParentFile().delete();
     }
 }
