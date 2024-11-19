@@ -26,7 +26,9 @@ import java.util.Objects;
 
 import javax.inject.Provider;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -397,6 +399,17 @@ class DefaultJobStatusStoreTest
     }
 
     @Test
+    void storeJobStatusWithBigId()
+    {
+        DefaultRequest request = new DefaultRequest();
+        request.setId(StringUtils.repeat('a', 768));
+
+        JobStatus jobStatus = new DefaultJobStatus("type", request, null, null, null);
+
+        this.store.store(jobStatus);
+    }
+
+    @Test
     void storeUnserializableJobStatus()
     {
         List<String> id = Arrays.asList("test");
@@ -442,7 +455,8 @@ class DefaultJobStatusStoreTest
 
         // Verify that the status has been serialized, indirectly verifying that isSerializable() has been called and
         // returned true.
-        assertTrue(new File(this.storeDirectory, "newstatus/status.xml.zip").exists());
+        assertTrue(new File(this.storeDirectory, Base64.encodeBase64String(id.get(0).getBytes()) + "/status.xml.zip")
+            .exists());
     }
 
     @Test

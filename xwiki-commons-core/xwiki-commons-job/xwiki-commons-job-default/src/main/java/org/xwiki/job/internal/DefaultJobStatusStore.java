@@ -35,6 +35,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
@@ -343,8 +344,20 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         File folder = this.configuration.getStorage();
 
         if (id != null) {
-            for (String idElement : id) {
-                folder = new File(folder, encode(idElement));
+            // Create a different folder for each element
+            for (String fullIdElement : id) {
+                // But cut each element is it's bigger than 255 bytes (and not characters) since it's a very common
+                // limit for a single element of the path among file systems
+                // To be sure to deal with characters not taking more than 1 byte, we start by encoding it in base 64
+                String encodedIdElement = Base64.encodeBase64String(fullIdElement.getBytes());
+                if (encodedIdElement.length() > 255) {
+                    do {
+                        folder = new File(folder, encode(encodedIdElement.substring(0, 255)));
+                        encodedIdElement = encodedIdElement.substring(255);
+                    } while (encodedIdElement.length() > 255);
+                } else {
+                    folder = new File(folder, encode(encodedIdElement));
+                }
             }
         }
 

@@ -24,7 +24,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>16.9.0-SNAPSHOT</version>
+  <version>17.0.0-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -46,11 +46,11 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>16.9.0-SNAPSHOT</commons.version>
+    <commons.version>17.0.0-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
-    <xwiki.compatibility.previous.version>16.8.0</xwiki.compatibility.previous.version>
+    <xwiki.compatibility.previous.version>16.9.0</xwiki.compatibility.previous.version>
 
     <!-- Java -->
     <!-- Should be kept in sync with https://dev.xwiki.org/xwiki/bin/view/Community/SupportStrategy/JavaSupportStrategy/ -->
@@ -68,11 +68,11 @@
     <parsson.version>1.1.7</parsson.version>
 
     <!-- Jackson -->
-    <jackson.version>2.18.0</jackson.version>
+    <jackson.version>2.18.1</jackson.version>
     <jackson.databind.version>${jackson.version}</jackson.databind.version>
 
     <!-- Bouncy Castle -->
-    <bouncycastle.version>1.78.1</bouncycastle.version>
+    <bouncycastle.version>1.79</bouncycastle.version>
 
     <!-- ASM -->
     <asm.version>9.7.1</asm.version>
@@ -91,20 +91,20 @@
 
     <!-- JUnit -->
     <junit.version>4.13.2</junit.version>
-    <junit5.version>5.11.2</junit5.version>
-    <junit.platform.version>1.11.2</junit.platform.version>
+    <junit5.version>5.11.3</junit5.version>
+    <junit.platform.version>1.11.3</junit.platform.version>
     <junit.vintage.version>${junit5.version}</junit.vintage.version>
 
     <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
          are executed with surefire or failsafe) -->
-    <surefire.version>3.5.1</surefire.version>
+    <surefire.version>3.5.2</surefire.version>
 
     <!-- Mock libraries -->
     <jmock.version>2.13.1</jmock.version>
-    <mockito.version>5.14.1</mockito.version>
+    <mockito.version>5.14.2</mockito.version>
 
     <!-- Byte Buddy -->
-    <bytebuddy.version>1.15.4</bytebuddy.version>
+    <bytebuddy.version>1.15.10</bytebuddy.version>
 
     <!-- AspectJ -->
     <aspectj.version>1.9.22.1</aspectj.version>
@@ -114,13 +114,13 @@
     <jacoco.version>0.8.12</jacoco.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>10.18.2</checkstyle.version>
+    <checkstyle.version>10.20.1</checkstyle.version>
 
     <!-- Spoon -->
     <spoon.version>11.1.0</spoon.version>
 
     <!-- Groovy -->
-    <groovy.version>4.0.23</groovy.version>
+    <groovy.version>4.0.24</groovy.version>
 
     <!-- Ivy -->
     <ivy.version>2.5.2</ivy.version>
@@ -130,10 +130,10 @@
     <closure-compiler-maven-plugin.version>2.30.0</closure-compiler-maven-plugin.version>
 
     <!-- Maven Archetype -->
-    <maven.archetype.version>3.3.0</maven.archetype.version>
+    <maven.archetype.version>3.3.1</maven.archetype.version>
 
     <!-- JAXB -->
-    <jaxb.tools.version>2.0.12</jaxb.tools.version>
+    <jaxb.tools.version>2.0.14</jaxb.tools.version>
 
     <!-- By default, Checkstyle, Backward compatibility check, Enforcer, License plugins, etc., are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
@@ -258,7 +258,7 @@
 
     <!-- EL implementation -->
     <!-- Use the same version as the one that comes with the custom XWiki Jetty application server -->
-    <apachache-el.version>9.0.90</apachache-el.version>
+    <apache-el.version>9.0.90</apache-el.version>
 
     <webdrivermanager.version>5.9.2</webdrivermanager.version>
 
@@ -405,17 +405,17 @@
       <dependency>
         <groupId>org.apache.httpcomponents.client5</groupId>
         <artifactId>httpclient5</artifactId>
-        <version>5.4</version>
+        <version>5.3.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents.core5</groupId>
         <artifactId>httpcore5</artifactId>
-        <version>5.3</version>
+        <version>5.3.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents.core5</groupId>
         <artifactId>httpcore5-h2</artifactId>
-        <version>5.3</version>
+        <version>5.3.1</version>
       </dependency>
       <!-- Apache HttpComponents 4 -->
       <dependency>
@@ -564,7 +564,7 @@
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
-        <version>1.4.20</version>
+        <version>1.4.21</version>
       </dependency>
       <!-- Note: The DOM4J project has been dead for several years, and we've decided to not use it in any new code and
            over time to refactor existing code to use JDOM or other XML techniques (such as STaX). When all code has
@@ -612,7 +612,7 @@
       <dependency>
         <groupId>com.fasterxml.woodstox</groupId>
         <artifactId>woodstox-core</artifactId>
-        <version>7.0.0</version>
+        <version>7.1.0</version>
       </dependency>
       <dependency>
         <groupId>jaxen</groupId>
@@ -651,7 +651,7 @@
       <dependency>
         <groupId>com.ibm.icu</groupId>
         <artifactId>icu4j</artifactId>
-        <version>75.1</version>
+        <version>76.1</version>
       </dependency>
 
       <!-- Json -->
@@ -1092,7 +1092,7 @@
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-archiver</artifactId>
-        <version>3.6.2</version>
+        <version>3.6.3</version>
       </dependency>
       <!-- Maven Resolver -->
       <dependency>
@@ -1236,7 +1236,7 @@
       <dependency>
         <groupId>org.wiremock</groupId>
         <artifactId>wiremock-standalone</artifactId>
-        <version>3.9.1</version>
+        <version>3.9.2</version>
       </dependency>
       <dependency>
         <groupId>org.objenesis</groupId>
@@ -1296,7 +1296,7 @@
       <dependency>
         <groupId>org.mortbay.jasper</groupId>
         <artifactId>apache-el</artifactId>
-        <version>${apachache-el.version}</version>
+        <version>${apache-el.version}</version>
         <!-- The EL implementation is supposed to come with the application server, but we need one for tests -->
         <scope>test</scope>
       </dependency>
@@ -1334,7 +1334,7 @@
       <dependency>
         <groupId>org.apache.velocity</groupId>
         <artifactId>velocity-engine-core</artifactId>
-        <version>2.3</version>
+        <version>2.4.1</version>
       </dependency>
       <!-- Apache Velocity Tools -->
       <dependency>
@@ -1438,12 +1438,12 @@
       <dependency>
         <groupId>org.checkerframework</groupId>
         <artifactId>checker-qual</artifactId>
-        <version>3.48.0</version>
+        <version>3.48.2</version>
       </dependency>
       <dependency>
         <groupId>com.google.errorprone</groupId>
         <artifactId>error_prone_annotations</artifactId>
-        <version>2.33.0</version>
+        <version>2.35.1</version>
       </dependency>
       <!-- The maven remote resource plugin is also used as dependency -->
       <dependency>
@@ -2188,7 +2188,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.5.0</version>
+          <version>3.6.0</version>
           <configuration>
             <consoleOutput>true</consoleOutput>
             <!-- We use this to disable checkstyle when the clover profile is executed since there's a
@@ -2400,7 +2400,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.8.0</version>
+          <version>3.8.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -2451,7 +2451,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-invoker-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.8.0</version>
+          <version>3.8.1</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -2463,7 +2463,7 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.4.1</version>
+          <version>3.5.0</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -2475,7 +2475,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.7.0</version>
+          <version>3.8.0</version>
         </plugin>
         <!-- Used for checking backward compatibility (binary and source) -->
         <plugin>
@@ -2545,7 +2545,7 @@
           <groupId>org.sonarsource.scanner.maven</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>4.0.0.4121</version>
+          <version>5.0.0.4389</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -2557,7 +2557,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.10.1</version>
+          <version>3.10.0</version>
           <configuration>
             <!-- Always exclude the internal package since it's not user-public -->
             <excludePackageNames>*.internal, *.internal.*</excludePackageNames>
@@ -2577,7 +2577,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.20.0</version>
+          <version>3.21.0</version>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>

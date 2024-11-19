@@ -23,6 +23,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.xwiki.stability.Unstable;
 
 /**
  * Combination of supported system and their data types.
@@ -97,11 +98,19 @@ public class FilterStreamType implements Comparable<FilterStreamType>
     public static final FilterStreamType XWIKI_XAR_15 = new FilterStreamType(SystemType.XWIKI, DATA_XAR, "1.5");
 
     /**
+     * The XAR format in version 1.6.
+     *
+     * @since 16.10.0RC1
+     */
+    @Unstable
+    public static final FilterStreamType XWIKI_XAR_16 = new FilterStreamType(SystemType.XWIKI, DATA_XAR, "1.6");
+
+    /**
      * The XAR format in the current version.
      *
      * @since 7.2M1
      */
-    public static final FilterStreamType XWIKI_XAR_CURRENT = XWIKI_XAR_15;
+    public static final FilterStreamType XWIKI_XAR_CURRENT = XWIKI_XAR_16;
 
     /**
      * The database stream based on oldcore APIs.

@@ -31,6 +31,11 @@
   // antlr 2 is not maintained anymore
   "ignoreDeps": ["org.eclipse.m2e:lifecycle-mapping", "org.jdom:jdom", "antlr:antlr"],
 
+  // Assign all upgrade pull requests by default to the one in charge of dispatching them
+  assignees: [
+    "tmortagne"
+  ],
+
   // There is no point trying to find update for commons dependencies
   "packageRules": [
     {
