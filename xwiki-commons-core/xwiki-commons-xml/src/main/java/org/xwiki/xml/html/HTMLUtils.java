@@ -177,9 +177,10 @@ public final class HTMLUtils
         {
             if (!this.omitDocType) {
                 super.printDocType(out, fstack, docType);
-                // Add a linebreak as JDOM 1 had it.
-                write(out, '\n');
             }
+            // Add a linebreak as JDOM 1 had it, and we rely on it being present independent of the doc type being
+            // present or not.
+            write(out, '\n');
         }
 
         @Override
