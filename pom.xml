@@ -95,9 +95,10 @@
     <junit.platform.version>1.11.3</junit.platform.version>
     <junit.vintage.version>${junit5.version}</junit.vintage.version>
 
-    <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
-         are executed with surefire or failsafe) -->
-    <surefire.version>3.5.2</surefire.version>
+    <!-- We are stuck with Surefire 2.22.2 because of a regression related to @RunWith-based tests.
+         See https://jira.xwiki.org/browse/XCOMMONS-3201. -->
+    <surefire.version>2.22.2</surefire.version>
+    <failsafe.version>3.5.2</failsafe.version>
 
     <!-- Mock libraries -->
     <jmock.version>2.13.1</jmock.version>
@@ -2316,7 +2317,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>${surefire.version}</version>
+          <version>${failsafe.version}</version>
           <configuration>
             <!-- By default, we want to make sure we only run AllIT since that runs all the tests, and
                  starting/stopping XWiki only once for the whole suite -->
