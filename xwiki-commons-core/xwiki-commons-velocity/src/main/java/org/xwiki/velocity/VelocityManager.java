@@ -26,7 +26,6 @@ import javax.script.ScriptContext;
 
 import org.apache.velocity.VelocityContext;
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Provides access to the main XWiki Velocity objects.
@@ -88,6 +87,5 @@ public interface VelocityManager
      * @throws XWikiVelocityException in case of error
      * @since 15.9RC1
      */
-    @Unstable
     VelocityTemplate compile(String name, Reader source) throws XWikiVelocityException;
 }

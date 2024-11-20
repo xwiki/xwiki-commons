@@ -28,7 +28,6 @@ import org.xwiki.logging.event.LogEvent;
 import org.xwiki.logging.internal.helpers.MessageParser;
 import org.xwiki.logging.internal.helpers.MessageParser.MessageElement;
 import org.xwiki.logging.internal.helpers.MessageParser.MessageIndex;
-import org.xwiki.stability.Unstable;
 
 /**
  * @version $Id$
@@ -138,7 +137,6 @@ public final class LogUtils
      * @since 15.0RC1
      * @since 14.10.1
      */
-    @Unstable
     public static Message translate(Message message, String translatedPattern)
     {
         if (translatedPattern != null) {
@@ -184,7 +182,6 @@ public final class LogUtils
      * @since 15.0RC1
      * @since 14.10.1
      */
-    @Unstable
     public static Object[] getArgumentArray(Object... arguments)
     {
         if (arguments.length > 0 && arguments[arguments.length - 1] instanceof Throwable) {
@@ -202,7 +199,6 @@ public final class LogUtils
      * @since 15.0RC1
      * @since 14.10.1
      */
-    @Unstable
     public static Throwable getThrowable(Object... arguments)
     {
         if (arguments.length > 0 && arguments[arguments.length - 1] instanceof Throwable) {

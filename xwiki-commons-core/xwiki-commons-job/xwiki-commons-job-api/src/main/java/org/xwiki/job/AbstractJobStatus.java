@@ -41,7 +41,6 @@ import org.xwiki.logging.tail.LogTail;
 import org.xwiki.logging.tail.LoggerTail;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.WrappedThreadEventListener;
-import org.xwiki.stability.Unstable;
 
 /**
  * Base implementation of {@link JobStatus}.
@@ -473,7 +472,6 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
      * @since 15.5.2
      * @since 14.10.16
      */
-    @Unstable
     public void setParentJobStatus(JobStatus parentJobStatus)
     {
         this.parentJobStatus = parentJobStatus;

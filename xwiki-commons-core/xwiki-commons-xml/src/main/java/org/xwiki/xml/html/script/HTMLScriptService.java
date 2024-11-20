@@ -25,7 +25,6 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
-import org.xwiki.stability.Unstable;
 import org.xwiki.xml.html.HTMLElementSanitizer;
 import org.xwiki.xml.internal.html.SecureHTMLElementSanitizer;
 
@@ -36,7 +35,6 @@ import org.xwiki.xml.internal.html.SecureHTMLElementSanitizer;
  * @since 14.10.4
  * @since 15.0RC1
  */
-@Unstable
 @Component
 @Named("html")
 @Singleton

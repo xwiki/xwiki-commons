@@ -34,7 +34,6 @@ import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.util.ReflectionUtils;
-import org.xwiki.stability.Unstable;
 
 /**
  * Constructs a Component Descriptor out of a class definition that contains Annotations.
@@ -97,7 +96,6 @@ public class ComponentDescriptorFactory
      * @return the component descriptors with resolved component dependencies
      * @since 15.4RC1
      */
-    @Unstable
     public <T> List<ComponentDescriptor<T>> createComponentDescriptors(Class<? extends T> componentClass,
         Type componentRoleType, int roleHintPriority)
     {

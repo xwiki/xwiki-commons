@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.observation.event.Event;
-import org.xwiki.stability.Unstable;
 
 /**
  * Components wanting to receive Observation {@link Event events} must implement this interface.
@@ -38,7 +37,6 @@ public interface EventListener
      * 
      * @since 15.4RC1
      */
-    @Unstable
     int CACHE_INVALIDATION_DEFAULT_PRIORITY = 100;
 
     /**

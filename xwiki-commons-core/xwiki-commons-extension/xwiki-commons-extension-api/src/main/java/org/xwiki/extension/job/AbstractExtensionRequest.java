@@ -30,7 +30,6 @@ import org.xwiki.extension.ExtensionRewriter;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.job.AbstractRequest;
 import org.xwiki.job.Request;
-import org.xwiki.stability.Unstable;
 
 /**
  * Base class for extension manipulation related {@link Request} implementations.
@@ -69,7 +68,6 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
      * @see #isInstalledIgnored()
      * @since 15.0RC1
      */
-    @Unstable
     public static final String PROPERTY_INSTALLEDIGNORED = "installedIgnored";
 
     /**
@@ -81,7 +79,6 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
      * @see #getCoreExtensionRepository()
      * @since 15.0RC1
      */
-    @Unstable
     public static final String PROPERTY_COREEXTENSIONREPOSITORY = "coreExtensionRepository";
 
     /**
@@ -163,7 +160,6 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
      * @return the extension to identify as core extensions
      * @since 15.0RC1
      */
-    @Unstable
     public Collection<ExtensionId> getCoreExtensions()
     {
         return getProperty(PROPERTY_EXCLUDEDEXTENSIONS);
@@ -212,7 +208,6 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
      * @param extensionId the extension identifier
      * @since 15.0RC1
      */
-    @Unstable
     public void addCoreExtension(ExtensionId extensionId)
     {
         getCoreExtensions().add(extensionId);

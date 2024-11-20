@@ -26,7 +26,6 @@ import java.util.Properties;
 
 import org.apache.velocity.context.Context;
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Initialize a Velocity Engine and make Velocity services available.
@@ -92,7 +91,6 @@ public interface VelocityEngine
      * @throws XWikiVelocityException in case of error
      * @since 15.8RC1
      */
-    @Unstable
     void evaluate(Context context, Writer out, String namespace, VelocityTemplate template)
         throws XWikiVelocityException;
 

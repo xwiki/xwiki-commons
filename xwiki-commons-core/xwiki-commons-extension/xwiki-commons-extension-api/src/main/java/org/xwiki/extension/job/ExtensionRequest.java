@@ -29,7 +29,6 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionRewriter;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.job.Request;
-import org.xwiki.stability.Unstable;
 
 /**
  * Extension manipulation related {@link Request}.
@@ -143,7 +142,6 @@ public interface ExtensionRequest extends Request
      *         plan
      * @since 15.0RC1
      */
-    @Unstable
     default boolean isInstalledIgnored()
     {
         return false;

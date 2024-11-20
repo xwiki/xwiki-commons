@@ -26,7 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.velocity.Template;
 import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
-import org.xwiki.stability.Unstable;
 
 /**
  * Expose a Velocity {@link Template} and its macros (which have been extracted and removed from the {@link Template}).
@@ -34,7 +33,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 15.8RC1
  */
-@Unstable
 public class VelocityTemplate
 {
     private static class SingletonResourceReader extends StringResourceLoader

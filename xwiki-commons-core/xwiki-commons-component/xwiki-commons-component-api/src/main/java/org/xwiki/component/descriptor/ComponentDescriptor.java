@@ -21,8 +21,6 @@ package org.xwiki.component.descriptor;
 
 import java.util.Collection;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Represent a component.
  *
@@ -37,7 +35,6 @@ public interface ComponentDescriptor<T> extends ComponentRole<T>
      * 
      * @since 15.4RC1
      */
-    @Unstable
     int DEFAULT_PRIORITY = 1000;
 
     /**
@@ -74,7 +71,6 @@ public interface ComponentDescriptor<T> extends ComponentRole<T>
      * @return the role type priority of the component.
      * @since 15.4RC1
      */
-    @Unstable
     default int getRoleTypePriority()
     {
         return DEFAULT_PRIORITY;
@@ -88,7 +84,6 @@ public interface ComponentDescriptor<T> extends ComponentRole<T>
      * @return the role hint priority of the component.
      * @since 15.4RC1
      */
-    @Unstable
     default int getRoleHintPriority()
     {
         return DEFAULT_PRIORITY;

@@ -24,8 +24,6 @@ import java.net.URLClassLoader;
 import java.net.URLStreamHandlerFactory;
 import java.util.List;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Implementation that allows adding URLs on demand (the default {@link URLClassLoader} only allows adding URLs in the
  * constructor).
@@ -44,7 +42,6 @@ public class ExtendedURLClassLoader extends URLClassLoader
      * @param factory the URLStreamHandlerFactory to use when creating URLs
      * @since 15.8RC1
      */
-    @Unstable
     public ExtendedURLClassLoader(String name, URL[] urls, ClassLoader parent, URLStreamHandlerFactory factory)
     {
         super(name, urls, parent, factory);

@@ -26,7 +26,6 @@ import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.xwiki.stability.Unstable;
 import org.xwiki.text.XWikiToStringBuilder;
 
 /**
@@ -173,7 +172,6 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
      * @param roleTypePriority the priority of the component to order components sharing same type
      * @since 15.4RC1
      */
-    @Unstable
     public void setRoleTypePriority(int roleTypePriority)
     {
         this.roleTypePriority = roleTypePriority;
@@ -190,7 +188,6 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
      * @param roleHintPriority the priority of the component to order components sharing same type and hint
      * @since 15.4RC1
      */
-    @Unstable
     public void setRoleHintPriority(int roleHintPriority)
     {
         this.roleHintPriority = roleHintPriority;
