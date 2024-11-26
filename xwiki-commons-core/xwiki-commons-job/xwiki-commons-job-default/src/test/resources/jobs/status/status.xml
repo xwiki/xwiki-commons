@@ -19,7 +19,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<org.xwiki.job.internal.DefaultJobStatus>
+<org.xwiki.job.DefaultJobStatus>
   <state>FINISHED</state>
   <request class="org.xwiki.job.DefaultRequest">
     <properties>
@@ -57,4 +57,4 @@
       <null/>
     </java.util.concurrent.ConcurrentLinkedQueue>
   </logs>
-</org.xwiki.job.internal.DefaultJobStatus>
+</org.xwiki.job.DefaultJobStatus>
