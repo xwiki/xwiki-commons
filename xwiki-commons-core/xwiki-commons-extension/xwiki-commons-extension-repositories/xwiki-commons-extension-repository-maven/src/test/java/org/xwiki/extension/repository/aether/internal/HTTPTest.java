@@ -21,6 +21,7 @@ package org.xwiki.extension.repository.aether.internal;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +35,13 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.BasicCredentials;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.allRequests;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,25 +53,45 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @AllComponents
 @ComponentTest
-class SystemHTTPProxyTest
+class HTTPTest
 {
     @InjectMockComponents
     private AetherExtensionRepositoryFactory repositoryFactory;
 
     private WireMockServer wireMockServer;
 
+    private String proxyHost;
+
+    private String proxyPort;
+
     @BeforeEach
-    void proxyToWireMock()
+    void beforeEach()
     {
-        this.wireMockServer = new WireMockServer(8888);
+        this.wireMockServer = new WireMockServer(options().dynamicPort());
         this.wireMockServer.start();
+
+        // Remember the standard system properties
+        this.proxyHost = System.getProperty("http.proxyHost");
+        this.proxyPort = System.getProperty("http.proxyPort");
     }
 
     @AfterEach
-    void noMoreWireMock()
+    void afterEach()
     {
         this.wireMockServer.stop();
         this.wireMockServer = null;
+
+        // Cleanup any leftover in System properties
+        if (this.proxyHost != null) {
+            System.setProperty("http.proxyHost", this.proxyHost);
+        } else {
+            System.clearProperty("http.proxyHost");
+        }
+        if (this.proxyPort != null) {
+            System.setProperty("http.proxyPort", this.proxyPort);
+        } else {
+            System.clearProperty("http.proxyPort");
+        }
     }
 
     @Test
@@ -80,12 +107,12 @@ class SystemHTTPProxyTest
             // We don't really care if the target artifact exist
         }
 
-        assertTrue(this.wireMockServer.findAll(allRequests()).isEmpty(), "The repository did not request the "
-            + "proxy server");
+        assertTrue(this.wireMockServer.findAll(allRequests()).isEmpty(),
+            "The repository did not request the " + "proxy server");
 
         // Set the proxy to be wiremock so that it answers.
         System.setProperty("http.proxyHost", "localhost");
-        System.setProperty("http.proxyPort", "8888");
+        System.setProperty("http.proxyPort", String.valueOf(this.wireMockServer.port()));
 
         try {
             repository.resolveVersions("groupid:artifactid", 0, -1);
@@ -95,5 +122,29 @@ class SystemHTTPProxyTest
 
         assertFalse(this.wireMockServer.findAll(allRequests()).isEmpty(),
             "The repository did not request the proxy server");
+    }
+
+    @Test
+    void credentials() throws ExtensionRepositoryException, URISyntaxException
+    {
+        ExtensionRepository repository =
+            this.repositoryFactory.createRepository(new DefaultExtensionRepositoryDescriptor("id", "maven",
+                new URI("http://localhost:" + this.wireMockServer.port()),
+                Map.of("auth.user", "user", "auth.password", "password")));
+
+        this.wireMockServer.stubFor(get(urlEqualTo("/groupid/artifactid/maven-metadata.xml"))
+            .willReturn(aResponse().withStatus(401).withHeader("WWW-Authenticate", "Basic")));
+
+        try {
+            repository.resolveVersions("groupid:artifactid", 0, -1);
+        } catch (ResolveException e) {
+            // We don't really care if the target artifact exist
+        }
+
+        assertFalse(this.wireMockServer.findAll(allRequests()).isEmpty(),
+            "The repository did not request the proxy server");
+
+        this.wireMockServer.verify(getRequestedFor(urlEqualTo("/groupid/artifactid/maven-metadata.xml"))
+            .withBasicAuth(new BasicCredentials("user", "password")));
     }
 }
