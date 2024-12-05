@@ -87,12 +87,10 @@ public class FilterTest
         if (this.configuration.configuration != null) {
             ConfigurationSource configurationSource = getComponentManager().getInstance(ConfigurationSource.class);
 
-            if (configurationSource instanceof MockConfigurationSource) {
-                MockConfigurationSource mockConfigurationSource = (MockConfigurationSource) configurationSource;
-
+            if (configurationSource instanceof MockConfigurationSource mockConfigurationSource) {
                 for (Map.Entry<String, String> entry : this.configuration.configuration.entrySet()) {
                     originalConfiguration.put(entry.getKey(),
-                        mockConfigurationSource.<String>getProperty(entry.getKey()));
+                        mockConfigurationSource.getProperty(entry.getKey()));
                     mockConfigurationSource.setProperty(entry.getKey(), TestDataParser.interpret(entry.getValue()));
                 }
             }
@@ -108,9 +106,7 @@ public class FilterTest
             if (this.configuration.configuration != null) {
                 ConfigurationSource configurationSource = getComponentManager().getInstance(ConfigurationSource.class);
 
-                if (configurationSource instanceof MockConfigurationSource) {
-                    MockConfigurationSource mockConfigurationSource = (MockConfigurationSource) configurationSource;
-
+                if (configurationSource instanceof MockConfigurationSource mockConfigurationSource) {
                     for (Map.Entry<String, String> entry : originalConfiguration.entrySet()) {
                         if (entry.getValue() == null) {
                             mockConfigurationSource.removeProperty(entry.getKey());
@@ -227,7 +223,7 @@ public class FilterTest
     {
         String expectPath = expectConfiguration.get(FilterStreamConstants.PROPERTY_SOURCE);
         if (expectPath == null) {
-            return new StringInputSource(expectConfiguration.buffer.toString());
+            return new StringInputSource(expectConfiguration.buffer);
         } else {
             return getInputSource(testConfiguration, expectPath);
         }
@@ -243,22 +239,23 @@ public class FilterTest
 
         InputFilterStreamFactory inputFactory = getComponentManager().getInstance(InputFilterStreamFactory.class,
             this.configuration.inputConfiguration.typeId);
-        InputFilterStream inputFilter = inputFactory.createInputFilterStream(
-            toInputConfiguration(inputFactory, this.configuration, this.configuration.inputConfiguration));
+        Map<String, Object> outputConfiguration;
+        OutputFilterStream outputFilter;
+        try (InputFilterStream inputFilter = inputFactory.createInputFilterStream(
+            toInputConfiguration(inputFactory, this.configuration, this.configuration.inputConfiguration)))
+        {
+            // Output
 
-        // Output
+            outputConfiguration =
+                toOutputConfiguration(this.configuration, this.configuration.expectConfiguration, expect);
+            OutputFilterStreamFactory outputFactory = getComponentManager().getInstance(OutputFilterStreamFactory.class,
+                this.configuration.expectConfiguration.typeId);
+            outputFilter = outputFactory.createOutputFilterStream(outputConfiguration);
 
-        Map<String, Object> outputConfiguration =
-            toOutputConfiguration(this.configuration, this.configuration.expectConfiguration, expect);
-        OutputFilterStreamFactory outputFactory = getComponentManager().getInstance(OutputFilterStreamFactory.class,
-            this.configuration.expectConfiguration.typeId);
-        OutputFilterStream outputFilter = outputFactory.createOutputFilterStream(outputConfiguration);
+            // Convert
 
-        // Convert
-
-        inputFilter.read(outputFilter.getFilter());
-
-        inputFilter.close();
+            inputFilter.read(outputFilter.getFilter());
+        }
         outputFilter.close();
 
         // Verify the expected result against the result we got.
