@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.websocket.MessageHandler;
+import jakarta.websocket.MessageHandler;
 
 /**
  * Base class for partial message handlers that want to handle messages when all their parts have been received.
