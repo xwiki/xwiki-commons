@@ -89,8 +89,7 @@ public class FilterTest
 
             if (configurationSource instanceof MockConfigurationSource mockConfigurationSource) {
                 for (Map.Entry<String, String> entry : this.configuration.configuration.entrySet()) {
-                    originalConfiguration.put(entry.getKey(),
-                        mockConfigurationSource.getProperty(entry.getKey()));
+                    originalConfiguration.put(entry.getKey(), mockConfigurationSource.getProperty(entry.getKey()));
                     mockConfigurationSource.setProperty(entry.getKey(), TestDataParser.interpret(entry.getValue()));
                 }
             }
@@ -188,8 +187,8 @@ public class FilterTest
         return inputConfiguration;
     }
 
-    private Map<String, Object> toOutputConfiguration(TestConfiguration testConfiguration,
-        ExpectTestConfiguration expectTestConfiguration, InputSource expect)
+    private Map<String, Object> toOutputConfiguration(ExpectTestConfiguration expectTestConfiguration,
+        InputSource expect)
     {
         Map<String, Object> outputConfiguration = new HashMap<>();
         for (Map.Entry<String, String> entry : expectTestConfiguration.entrySet()) {
@@ -240,31 +239,28 @@ public class FilterTest
         InputFilterStreamFactory inputFactory = getComponentManager().getInstance(InputFilterStreamFactory.class,
             this.configuration.inputConfiguration.typeId);
         Map<String, Object> outputConfiguration;
-        OutputFilterStream outputFilter;
         try (InputFilterStream inputFilter = inputFactory.createInputFilterStream(
             toInputConfiguration(inputFactory, this.configuration, this.configuration.inputConfiguration)))
         {
             // Output
 
             outputConfiguration =
-                toOutputConfiguration(this.configuration, this.configuration.expectConfiguration, expect);
+                toOutputConfiguration(this.configuration.expectConfiguration, expect);
             OutputFilterStreamFactory outputFactory = getComponentManager().getInstance(OutputFilterStreamFactory.class,
                 this.configuration.expectConfiguration.typeId);
-            outputFilter = outputFactory.createOutputFilterStream(outputConfiguration);
+            try (OutputFilterStream outputFilter = outputFactory.createOutputFilterStream(outputConfiguration)) {
+                // Convert
 
-            // Convert
-
-            inputFilter.read(outputFilter.getFilter());
+                inputFilter.read(outputFilter.getFilter());
+            }
         }
-        outputFilter.close();
 
         // Verify the expected result against the result we got.
 
-        assertExpectedResult(this.configuration.expectConfiguration.typeId, expect,
-            (OutputTarget) outputConfiguration.get(FilterStreamConstants.PROPERTY_TARGET));
+        assertExpectedResult(expect, (OutputTarget) outputConfiguration.get(FilterStreamConstants.PROPERTY_TARGET));
     }
 
-    private void assertExpectedResult(String typeId, InputSource expected, OutputTarget actual) throws IOException
+    private void assertExpectedResult(InputSource expected, OutputTarget actual) throws IOException
     {
         if (actual instanceof StringWriterOutputTarget) {
             assertEquals(expected.toString(), actual.toString());
