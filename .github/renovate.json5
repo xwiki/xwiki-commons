@@ -31,6 +31,9 @@
   // antlr 2 is not maintained anymore
   "ignoreDeps": ["org.eclipse.m2e:lifecycle-mapping", "org.jdom:jdom", "antlr:antlr"],
 
+  // Set a "dependencies" label on all pull requests created by Renovate
+  "labels": ["dependencies"],
+
   // Assign all upgrade pull requests by default to the one in charge of dispatching them
   assignees: [
     "tmortagne"
