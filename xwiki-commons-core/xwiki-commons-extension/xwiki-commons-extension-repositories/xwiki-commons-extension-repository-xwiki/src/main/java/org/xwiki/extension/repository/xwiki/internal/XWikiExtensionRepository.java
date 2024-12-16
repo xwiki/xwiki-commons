@@ -36,6 +36,7 @@ import org.apache.http.client.AuthCache;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -232,21 +233,10 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             throw new IOException("Failed to build REST URL", e);
         }
 
-        CloseableHttpClient httpClient = this.httpClientFactory.createClient(getDescriptor().getProperty("auth.user"),
-            getDescriptor().getProperty("auth.password"));
-
         HttpGet getMethod = new HttpGet(url);
         getMethod.addHeader("Accept", "application/xml");
-        CloseableHttpResponse response;
-        try {
-            if (this.localContext != null) {
-                response = httpClient.execute(getMethod, this.localContext);
-            } else {
-                response = httpClient.execute(getMethod);
-            }
-        } catch (Exception e) {
-            throw new IOException(String.format("Failed to request [%s]", getMethod.getURI()), e);
-        }
+
+        CloseableHttpResponse response = getResponse(getMethod);
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
@@ -271,9 +261,6 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             throw new IOException("Failed to build REST URL", e);
         }
 
-        CloseableHttpClient httpClient = this.httpClientFactory.createClient(getDescriptor().getProperty("auth.user"),
-            getDescriptor().getProperty("auth.password"));
-
         HttpPost postMethod = new HttpPost(url);
         postMethod.addHeader("Accept", "application/xml");
 
@@ -281,22 +268,30 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             new StringEntity(content, ContentType.create(ContentType.APPLICATION_XML.getMimeType(), Consts.UTF_8));
         postMethod.setEntity(entity);
 
-        CloseableHttpResponse response;
-        try {
-            if (this.localContext != null) {
-                response = httpClient.execute(postMethod, this.localContext);
-            } else {
-                response = httpClient.execute(postMethod);
-            }
-        } catch (Exception e) {
-            throw new IOException(String.format("Failed to request [%s]", postMethod.getURI()), e);
-        }
+        CloseableHttpResponse response = getResponse(postMethod);
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             throw new IOException(String.format("Invalid answer [%s] from the server when requesting [%s]",
                 response.getStatusLine().getStatusCode(), postMethod.getURI()));
         }
 
+        return response;
+    }
+
+    private CloseableHttpResponse getResponse(HttpUriRequest method) throws IOException
+    {
+        CloseableHttpResponse response;
+        try (CloseableHttpClient httpClient = this.httpClientFactory.createClient(
+            getDescriptor().getProperty("auth.user"), getDescriptor().getProperty("auth.password")))
+        {
+            if (this.localContext != null) {
+                response = httpClient.execute(method, this.localContext);
+            } else {
+                response = httpClient.execute(method);
+            }
+        } catch (Exception e) {
+            throw new IOException(String.format("Failed to request [%s]", method.getURI()), e);
+        }
         return response;
     }
 
@@ -318,12 +313,10 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
     protected <T> T getRESTObject(CloseableHttpResponse response)
         throws IllegalStateException, IOException, JAXBException
     {
-        try {
+        try (response) {
             try (InputStream inputStream = response.getEntity().getContent()) {
                 return (T) this.repositoryFactory.createUnmarshaller().unmarshal(inputStream);
             }
-        } finally {
-            response.close();
         }
     }
 
