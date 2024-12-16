@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  *
  * @version $Id$
  */
-public class ReflectionUtilsTest
+class ReflectionUtilsTest
 {
     private static interface TestInterfaceSimple
     {

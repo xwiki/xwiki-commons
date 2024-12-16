@@ -28,7 +28,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 
 import org.junit.jupiter.api.Test;
 
