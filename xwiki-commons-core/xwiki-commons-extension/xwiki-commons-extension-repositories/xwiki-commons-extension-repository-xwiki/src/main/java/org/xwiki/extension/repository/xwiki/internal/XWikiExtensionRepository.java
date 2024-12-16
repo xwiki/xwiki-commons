@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.Consts;
@@ -227,13 +228,9 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
 
     private void closeBadResponse(CloseableHttpResponse response)
     {
-        // Close the response since it's not going to be returned
-        try {
-            response.close();
-        } catch (IOException e) {
-            // We only log the failed close to not swallow the failed request
-            LOGGER.warn("Failed to close the response: {}", ExceptionUtils.getRootCauseMessage(e));
-        }
+        // We only log the failed close to not swallow the failed request
+        IOUtils.closeQuietly(response,
+            e -> LOGGER.warn("Failed to close the response: {}", ExceptionUtils.getRootCauseMessage(e)));
     }
 
     protected CloseableHttpResponse getRESTResource(UriBuilder builder, Object... values) throws IOException
