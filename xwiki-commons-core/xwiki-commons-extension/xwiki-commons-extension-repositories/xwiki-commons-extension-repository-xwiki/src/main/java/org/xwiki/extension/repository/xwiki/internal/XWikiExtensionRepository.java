@@ -225,6 +225,17 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         return this.extensionVersionFileUriBuider;
     }
 
+    private void closeBadResponse(CloseableHttpResponse response)
+    {
+        // Close the response since it's not going to be returned
+        try {
+            response.close();
+        } catch (IOException e) {
+            // We only log the failed close to not swallow the failed request
+            LOGGER.warn("Failed to close the response: {}", ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+
     protected CloseableHttpResponse getRESTResource(UriBuilder builder, Object... values) throws IOException
     {
         String url;
@@ -242,23 +253,13 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
                 // Close the response since it's not going to be returned
-                try {
-                    response.close();
-                } catch (IOException e) {
-                    // We only log the failed close to not swallow the failed request
-                    LOGGER.warn("Failed to close the response: {}", ExceptionUtils.getRootCauseMessage(e));
-                }
+                closeBadResponse(response);
 
                 throw new ResourceNotFoundException(
                     String.format("Resource with URI [%s] does not exist", getMethod.getURI()));
             } else {
                 // Close the response since it's not going to be returned
-                try {
-                    response.close();
-                } catch (IOException e) {
-                    // We only log the failed close to not swallow the failed request
-                    LOGGER.warn("Failed to close the response: {}", ExceptionUtils.getRootCauseMessage(e));
-                }
+                closeBadResponse(response);
 
                 throw new IOException(String.format("Invalid answer [%s] from the server when requesting [%s]",
                     response.getStatusLine().getStatusCode(), getMethod.getURI()));
@@ -288,6 +289,9 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         CloseableHttpResponse response = getResponse(postMethod);
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+            // Close the response since it's not going to be returned
+            closeBadResponse(response);
+
             throw new IOException(String.format("Invalid answer [%s] from the server when requesting [%s]",
                 response.getStatusLine().getStatusCode(), postMethod.getURI()));
         }
