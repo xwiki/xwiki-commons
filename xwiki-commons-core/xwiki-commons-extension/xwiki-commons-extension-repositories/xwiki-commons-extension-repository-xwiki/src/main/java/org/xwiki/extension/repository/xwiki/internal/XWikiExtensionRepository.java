@@ -29,6 +29,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.Consts;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
@@ -240,9 +241,25 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+                // Close the response since it's not going to be returned
+                try {
+                    response.close();
+                } catch (IOException e) {
+                    // We only log the failed close to not swallow the failed request
+                    LOGGER.warn("Failed to close the response: {}", ExceptionUtils.getRootCauseMessage(e));
+                }
+
                 throw new ResourceNotFoundException(
                     String.format("Resource with URI [%s] does not exist", getMethod.getURI()));
             } else {
+                // Close the response since it's not going to be returned
+                try {
+                    response.close();
+                } catch (IOException e) {
+                    // We only log the failed close to not swallow the failed request
+                    LOGGER.warn("Failed to close the response: {}", ExceptionUtils.getRootCauseMessage(e));
+                }
+
                 throw new IOException(String.format("Invalid answer [%s] from the server when requesting [%s]",
                     response.getStatusLine().getStatusCode(), getMethod.getURI()));
             }
