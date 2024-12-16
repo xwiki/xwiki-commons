@@ -24,8 +24,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xwiki.extension.ExtensionFile;
 import org.xwiki.extension.ExtensionId;
 
@@ -35,6 +38,8 @@ import org.xwiki.extension.ExtensionId;
  */
 public class XWikiExtensionFile implements ExtensionFile
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(XWikiExtensionFile.class);
+
     private XWikiExtensionRepository repository;
 
     private ExtensionId id;
@@ -53,9 +58,11 @@ public class XWikiExtensionFile implements ExtensionFile
         @Override
         public void close() throws IOException
         {
-            super.close();
-
-            this.response.close();
+            try {
+                super.close();
+            } finally {
+                this.response.close();
+            }
         }
     }
 
@@ -68,21 +75,24 @@ public class XWikiExtensionFile implements ExtensionFile
     @Override
     public long getLength()
     {
-        CloseableHttpResponse response;
+        CloseableHttpResponse response = null;
         try {
-            response =
-                this.repository.getRESTResource(this.repository.getExtensionFileUriBuider(), this.id.getId(), this.id
-                    .getVersion().getValue());
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to acess extension [" + this + "]", e);
-        }
+            try {
+                response = this.repository.getRESTResource(this.repository.getExtensionFileUriBuider(), this.id.getId(),
+                    this.id.getVersion().getValue());
+            } catch (IOException e) {
+                throw new RuntimeException(String.format("Failed to access extension [%s]", this), e);
+            }
 
-        HttpEntity entity = response.getEntity();
+            HttpEntity entity = response.getEntity();
 
-        try {
             return entity.getContentLength();
         } finally {
-            IOUtils.closeQuietly(response);
+            // When there's an error in closing the response, consider it's ok since we got the length but log a
+            // warning as it could be the sign of something not right happening.
+            IOUtils.closeQuietly(response, e ->
+                LOGGER.warn("Failed to close response after accessing extension [{}]. Root error: [{}]", this,
+                    ExceptionUtils.getRootCauseMessage(e)));
         }
     }
 

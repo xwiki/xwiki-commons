@@ -281,9 +281,9 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
     private CloseableHttpResponse getResponse(HttpUriRequest method) throws IOException
     {
         CloseableHttpResponse response;
-        try (CloseableHttpClient httpClient = this.httpClientFactory.createClient(
-            getDescriptor().getProperty("auth.user"), getDescriptor().getProperty("auth.password")))
-        {
+        try {
+            CloseableHttpClient httpClient = this.httpClientFactory.createClient(
+                getDescriptor().getProperty("auth.user"), getDescriptor().getProperty("auth.password"));
             if (this.localContext != null) {
                 response = httpClient.execute(method, this.localContext);
             } else {
