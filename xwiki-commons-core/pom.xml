@@ -223,21 +223,7 @@
               </differences>
             </revapi.differences>
             -->
-            <revapi.differences>
-              <differences>
-                <item>
-                  <code>java.class.removed</code>
-                  <old>class org.xwiki.xml.html.HTMLUtils.XWikiXMLOutputter</old>
-                  <justification>
-                    For security reasons, we need to get rid of JDOM 1 and this class extended a class that can’t be
-                    extended in JDOM 2. As it makes little sense to expose this class, instead of breaking it, it has
-                    been made private. As far we're aware, it hasn't been used outside HTMLUtils and thus shouldn't
-                    break anything.
-                  </justification>
-                  <criticality>highlight</criticality>
-                </item>
-              </differences>
-            </revapi.differences>
+            
           </analysisConfiguration>
         </configuration>
       </plugin>
