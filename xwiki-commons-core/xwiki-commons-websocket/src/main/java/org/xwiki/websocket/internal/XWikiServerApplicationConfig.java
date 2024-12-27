@@ -22,9 +22,9 @@ package org.xwiki.websocket.internal;
 import java.util.Collections;
 import java.util.Set;
 
-import javax.websocket.Endpoint;
-import javax.websocket.server.ServerApplicationConfig;
-import javax.websocket.server.ServerEndpointConfig;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.server.ServerApplicationConfig;
+import jakarta.websocket.server.ServerEndpointConfig;
 
 /**
  * Disable the automatic WebSocket end-point registration because we want to register the end-points ourselves in
