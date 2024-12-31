@@ -124,7 +124,7 @@
     <groovy.version>4.0.24</groovy.version>
 
     <!-- Ivy -->
-    <ivy.version>2.5.2</ivy.version>
+    <ivy.version>2.5.3</ivy.version>
 
     <!-- Closure compiler -->
     <closure-compiler.version>v20231112</closure-compiler.version>
