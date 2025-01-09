@@ -1,9 +1,9 @@
-# Import this file in Window -> Preferences -> Java -> Code Style -> Organize Imports -> Import...
 #Organize Import Order
-#Fri Jul 18 18:35:13 EDT 2014
-5=\#
-4=
-3=com
-2=org
-1=javax
+#Wed Jan 08 14:14:00 CET 2025
 0=java
+1=javax
+2=jakarta
+3=org
+4=com
+5=
+6=\#

@@ -276,6 +276,12 @@
     <xwiki.nexus.skipLocalStaging>false</xwiki.nexus.skipLocalStaging>
     <xwiki.nexus.skipStaging>false</xwiki.nexus.skipStaging>
 
+    <!-- GitHub related metadata -->
+    <xwiki.github.owner>xwiki</xwiki.github.owner>
+    <xwiki.github.repository>xwiki-commons</xwiki.github.repository>
+
+    <xwiki.releasenote>https://www.xwiki.org/xwiki/bin/view/ReleaseNotes/Data/XWiki/${xwiki.version.simple}</xwiki.releasenote>
+
     <!-- Control Maven output directory -->
     <maven.build.dir>${project.basedir}/target</maven.build.dir>
 
@@ -313,10 +319,10 @@
     <url>https://xwiki.org/</url>
   </organization>
   <scm>
-    <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
-    <developerConnection>scm:git:git@github.com:xwiki/xwiki-commons.git</developerConnection>
-    <url>https://github.com/xwiki/xwiki-commons/tree/master/</url>
-    <tag>stable-16.4.x</tag>
+    <connection>scm:git:git://github.com/${xwiki.github.owner}/${xwiki.github.repository}.git</connection>
+    <developerConnection>scm:git:git@github.com:${xwiki.github.owner}/${xwiki.github.repository}.git</developerConnection>
+    <url>https://github.com/${xwiki.github.owner}/${xwiki.github.repository}/tree/master/</url>
+    <tag>HEAD</tag>
   </scm>
   <mailingLists>
     <mailingList>
@@ -1480,6 +1486,29 @@
     <defaultGoal>install</defaultGoal>
     <directory>${maven.build.dir}</directory>
     <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default</id>
+            <goals>
+              <goal>regex-properties</goal>
+            </goals>
+            <configuration>
+              <regexPropertySettings>
+                <regexPropertySetting>
+                  <name>xwiki.version.simple</name>
+                  <value>${project.version}</value>
+                  <regex>-rc-</regex>
+                  <replacement>RC</replacement>
+                  <failIfNoMatch>false</failIfNoMatch>
+                </regexPropertySetting>
+              </regexPropertySettings>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <!-- Ensure that we lock down all plugin versions -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -2862,6 +2891,19 @@
               <version>${spoon.version}</version>
             </dependency>
           </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>com.ragedunicorn.tools.maven</groupId>
+          <artifactId>github-release-maven-plugin</artifactId>
+          <version>1.0.7</version>
+          <configuration>
+            <owner>${xwiki.github.owner}</owner>
+            <repository>${xwiki.github.repository}</repository>
+            <server>github-release</server>
+            <tagName>${project.artifactId}-${project.version}</tagName>
+            <name>${project.version}</name>
+            <body>See ${xwiki.releasenote}</body>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
