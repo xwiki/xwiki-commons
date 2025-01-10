@@ -19,8 +19,8 @@
  */
 package org.xwiki.websocket;
 
-import javax.websocket.Endpoint;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.server.ServerEndpoint;
 
 import org.xwiki.component.annotation.Role;
 

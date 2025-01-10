@@ -21,7 +21,7 @@ package org.xwiki.component.internal.multi;
 
 import java.lang.reflect.Type;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.manager.ComponentManager;

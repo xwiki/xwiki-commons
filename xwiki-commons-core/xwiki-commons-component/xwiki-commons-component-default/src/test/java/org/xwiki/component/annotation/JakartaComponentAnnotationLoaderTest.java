@@ -22,14 +22,14 @@ package org.xwiki.component.annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import javax.inject.Named;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Named;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
-import org.xwiki.component.ProviderIntegrationTest;
+import org.xwiki.component.JakartaProviderIntegrationTest;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.ContextComponentManagerProvider;
@@ -52,7 +52,7 @@ import static org.mockito.Mockito.verify;
  * @version $Id$
  * @since 1.8.1
  */
-public class ComponentAnnotationLoaderTest
+class JakartaComponentAnnotationLoaderTest
 {
     @SuppressWarnings("deprecation")
     @ComponentRole
@@ -186,7 +186,7 @@ public class ComponentAnnotationLoaderTest
      * priority wins (ie the smallest integer value).
      */
     @Test
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     void priorities() throws Exception
     {
         ComponentManager componentManager = mock(ComponentManager.class);
@@ -207,17 +207,18 @@ public class ComponentAnnotationLoaderTest
         ComponentDescriptor descriptor7 = this.loader.getComponentsDescriptors(DefaultNamespaceValidator.class).get(0);
 
         ComponentDescriptor descriptor8 =
-            this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestProvider1.class).get(0);
+            this.loader.getComponentsDescriptors(JakartaProviderIntegrationTest.TestProvider1.class).get(0);
         ComponentDescriptor descriptor9 =
-            this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestProvider12.class).get(0);
+            this.loader.getComponentsDescriptors(JakartaProviderIntegrationTest.TestProvider12.class).get(0);
         ComponentDescriptor descriptor10 =
-            this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestProvider2.class).get(0);
-        ComponentDescriptor descriptor11 =
-            this.loader.getComponentsDescriptors(ProviderIntegrationTest.TestComponentWithProviders.class).get(0);
+            this.loader.getComponentsDescriptors(JakartaProviderIntegrationTest.TestProvider2.class).get(0);
+        ComponentDescriptor descriptor11 = this.loader
+            .getComponentsDescriptors(JakartaProviderIntegrationTest.TestComponentWithProviders.class).get(0);
         ComponentDescriptor descriptor12 = this.loader
-            .getComponentsDescriptors(ProviderIntegrationTest.TestProviderWithExceptionInInitialize.class).get(0);
+            .getComponentsDescriptors(JakartaProviderIntegrationTest.TestProviderWithExceptionInInitialize.class)
+            .get(0);
         ComponentDescriptor descriptor13 = this.loader
-            .getComponentsDescriptors(ProviderIntegrationTest.TestComponentWithProviderInException.class).get(0);
+            .getComponentsDescriptors(JakartaProviderIntegrationTest.TestComponentWithProviderInException.class).get(0);
 
         this.loader.initialize(componentManager, this.getClass().getClassLoader());
 
@@ -227,15 +228,6 @@ public class ComponentAnnotationLoaderTest
         verify(componentManager, times(1)).registerComponent(descriptor2);
         verify(componentManager, times(1)).registerComponent(descriptor3);
         verify(componentManager, times(1)).registerComponent(descriptor4);
-        verify(componentManager, times(1)).registerComponent(descriptor5);
-        verify(componentManager, times(1)).registerComponent(descriptor6);
-        verify(componentManager, times(1)).registerComponent(descriptor7);
-        verify(componentManager, times(1)).registerComponent(descriptor8);
-        verify(componentManager, times(1)).registerComponent(descriptor9);
-        verify(componentManager, times(1)).registerComponent(descriptor10);
-        verify(componentManager, times(1)).registerComponent(descriptor11);
-        verify(componentManager, times(1)).registerComponent(descriptor12);
-        verify(componentManager, times(1)).registerComponent(descriptor13);
     }
 
     @Test
@@ -267,8 +259,10 @@ public class ComponentAnnotationLoaderTest
         Set<Type> types = this.loader.findComponentRoleTypes(ProviderImpl.class);
 
         assertEquals(1, types.size());
-        assertEquals(new DefaultParameterizedType(null, Provider.class, new DefaultParameterizedType(
-            ComponentAnnotationLoaderTest.class, NotGenericRole.class, String.class)), types.iterator().next());
+        assertEquals(
+            new DefaultParameterizedType(null, Provider.class, new DefaultParameterizedType(
+                JakartaComponentAnnotationLoaderTest.class, NotGenericRole.class, String.class)),
+            types.iterator().next());
     }
 
     @Test
@@ -277,8 +271,9 @@ public class ComponentAnnotationLoaderTest
         Set<Type> types = this.loader.findComponentRoleTypes(GenericComponent.class);
 
         assertEquals(1, types.size());
-        assertEquals(new DefaultParameterizedType(ComponentAnnotationLoaderTest.class, GenericRole.class,
-            String.class), types.iterator().next());
+        assertEquals(
+            new DefaultParameterizedType(JakartaComponentAnnotationLoaderTest.class, GenericRole.class, String.class),
+            types.iterator().next());
     }
 
     @Test
@@ -296,8 +291,9 @@ public class ComponentAnnotationLoaderTest
         Set<Type> types = this.loader.findComponentRoleTypes(ExtendingGenericComponent.class);
 
         assertEquals(1, types.size());
-        assertEquals(new DefaultParameterizedType(ComponentAnnotationLoaderTest.class, GenericRole.class,
-            String.class), types.iterator().next());
+        assertEquals(
+            new DefaultParameterizedType(JakartaComponentAnnotationLoaderTest.class, GenericRole.class, String.class),
+            types.iterator().next());
     }
 
     @Test

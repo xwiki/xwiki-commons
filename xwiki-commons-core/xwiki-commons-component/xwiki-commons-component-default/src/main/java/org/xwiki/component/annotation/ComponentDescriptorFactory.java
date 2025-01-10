@@ -26,8 +26,9 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 import javax.annotation.Priority;
-import javax.inject.Named;
-import javax.inject.Singleton;
+
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
@@ -101,23 +102,32 @@ public class ComponentDescriptorFactory
     {
         List<ComponentDescriptor<T>> descriptors = new ArrayList<>();
 
-        // If there's a @Named annotation, use it and ignore hints specified in the @Component annotation.
+        // If there's a @Named annotation, use it and ignore hints specified in the
+        // @Component annotation.
         String[] hints;
         Named named = componentClass.getAnnotation(Named.class);
-        Component component = componentClass.getAnnotation(Component.class);
 
         if (named != null) {
             hints = new String[] {named.value()};
         } else {
-            // If the Component annotation has several hints specified ignore the default hint value and for each
-            // specified hint create a Component Descriptor
-            if (component != null && component.hints().length > 0) {
-                hints = component.hints();
+            javax.inject.Named legacyNamed = componentClass.getAnnotation(javax.inject.Named.class);
+
+            if (legacyNamed != null) {
+                hints = new String[] {legacyNamed.value()};
             } else {
-                if (component != null && component.value().trim().length() > 0) {
-                    hints = new String[] {component.value().trim()};
+                Component component = componentClass.getAnnotation(Component.class);
+
+                // If the Component annotation has several hints specified ignore the default
+                // hint value and for each
+                // specified hint create a Component Descriptor
+                if (component != null && component.hints().length > 0) {
+                    hints = component.hints();
                 } else {
-                    hints = new String[] {"default"};
+                    if (component != null && component.value().trim().length() > 0) {
+                        hints = new String[] {component.value().trim()};
+                    } else {
+                        hints = new String[] {"default"};
+                    }
                 }
             }
         }
@@ -160,8 +170,10 @@ public class ComponentDescriptorFactory
         descriptor.setRoleHintPriority(roleHintPriority);
 
         // Set the injected fields.
-        // Note: that we need to find all fields since we can have some inherited fields which are annotated in a
-        // superclass. Since Java doesn't offer a method to return all fields we have to traverse all parent classes
+        // Note: that we need to find all fields since we can have some inherited fields
+        // which are annotated in a
+        // superclass. Since Java doesn't offer a method to return all fields we have to
+        // traverse all parent classes
         // looking for declared fields.
         for (Field field : ReflectionUtils.getAllFields(componentClass)) {
             ComponentDependency<?> dependency = createComponentDependency(field);
@@ -183,17 +195,25 @@ public class ComponentDescriptorFactory
 
         // Support both InstantiationStrategy and JSR 330's Singleton annotations.
         Singleton singleton = componentClass.getAnnotation(Singleton.class);
+
         if (singleton != null) {
             strategy = ComponentInstantiationStrategy.SINGLETON;
         } else {
-            InstantiationStrategy instantiationStrategy = componentClass.getAnnotation(InstantiationStrategy.class);
-            if (instantiationStrategy != null) {
-                strategy = instantiationStrategy.value();
-            } else {
-                // TODO: In order to be JSR330 compliant we need to change this behavior and consider components are
-                // per lookup when no annotation is specified. Before we can do this we need to modify the full xwiki
-                // code base and possibly introduce a configuration option. To be discussed.
+            javax.inject.Singleton legacySingleton = componentClass.getAnnotation(javax.inject.Singleton.class);
+            if (legacySingleton != null) {
                 strategy = ComponentInstantiationStrategy.SINGLETON;
+            } else {
+                InstantiationStrategy instantiationStrategy = componentClass.getAnnotation(InstantiationStrategy.class);
+                if (instantiationStrategy != null) {
+                    strategy = instantiationStrategy.value();
+                } else {
+                    // TODO: In order to be JSR330 compliant we need to change this behavior and
+                    // consider components are
+                    // per lookup when no annotation is specified. Before we can do this we need to
+                    // modify the full xwiki
+                    // code base and possibly introduce a configuration option. To be discussed.
+                    strategy = ComponentInstantiationStrategy.SINGLETON;
+                }
             }
         }
 

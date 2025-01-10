@@ -22,7 +22,7 @@ package org.xwiki.websocket.internal;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.websocket.CloseReason;
+import jakarta.websocket.CloseReason;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;

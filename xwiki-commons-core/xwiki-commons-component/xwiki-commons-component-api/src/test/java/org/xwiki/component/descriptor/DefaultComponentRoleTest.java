@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
  * @version $Id$
  * @since 3.3M1
  */
-public class DefaultComponentRoleTest
+class DefaultComponentRoleTest
 {
     private interface Role
     {

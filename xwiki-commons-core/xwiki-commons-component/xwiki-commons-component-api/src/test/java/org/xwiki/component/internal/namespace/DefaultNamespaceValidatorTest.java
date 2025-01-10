@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class DefaultNamespaceValidatorTest
+class DefaultNamespaceValidatorTest
 {
     private DefaultNamespaceValidator validator = new DefaultNamespaceValidator();
 

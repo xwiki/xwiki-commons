@@ -22,10 +22,10 @@ package org.xwiki.websocket.internal;
 import java.util.Collections;
 
 import javax.inject.Named;
-import javax.websocket.CloseReason;
-import javax.websocket.Endpoint;
-import javax.websocket.EndpointConfig;
-import javax.websocket.Session;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.Session;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

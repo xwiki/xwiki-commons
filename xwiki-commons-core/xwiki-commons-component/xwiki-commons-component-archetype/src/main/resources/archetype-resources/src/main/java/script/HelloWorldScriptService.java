@@ -24,9 +24,9 @@ import org.xwiki.script.service.ScriptService;
 
 import ${package}.HelloWorld;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 /**
  * Make the HelloWorld API available to scripting.

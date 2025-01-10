@@ -19,6 +19,9 @@
  */
 package org.xwiki.test.mockito;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,8 +29,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.inject.Provider;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
@@ -39,8 +40,7 @@ import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.util.ReflectionUtils;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import jakarta.inject.Provider;
 
 /**
  * See javadoc for {@link MockitoComponentMockingRule}.
@@ -237,6 +237,7 @@ public class MockitoComponentMocker<T>
             // TODO: Handle multiple roles/hints.
             if (!this.excludedComponentRoleDependencies.contains(roleTypeClass) && Logger.class != roleTypeClass
                 && !roleTypeClass.isAssignableFrom(List.class) && !roleTypeClass.isAssignableFrom(Map.class)
+                && ComponentDescriptor.class != roleTypeClass
                 && !this.componentManager.hasComponent(dependencyDescriptor.getRoleType(),
                     dependencyDescriptor.getRoleHint()))
             {
@@ -252,7 +253,7 @@ public class MockitoComponentMocker<T>
 
                 Object dependencyMock = mock(roleTypeClass, dependencyDescriptor.getName());
 
-                if (Provider.class == roleTypeClass) {
+                if (javax.inject.Provider.class == roleTypeClass || Provider.class == roleTypeClass) {
                     Type providedType = ReflectionUtils.getLastTypeGenericArgument(dependencyDescriptor.getRoleType());
                     Class providedClass = ReflectionUtils.getTypeClass(providedType);
 
@@ -269,8 +270,13 @@ public class MockitoComponentMocker<T>
                     } else {
                         // If the dependency is a Provider not targeting a @Role register a mock Provider which provide
                         // a mock
-                        Provider provider = (Provider) dependencyMock;
-                        when(provider.get()).thenReturn(mock(providedClass, providedType.toString()));
+                        if (javax.inject.Provider.class == roleTypeClass) {
+                            javax.inject.Provider provider = (javax.inject.Provider) dependencyMock;
+                            when(provider.get()).thenReturn(mock(providedClass, providedType.toString()));
+                        } else {
+                            Provider provider = (Provider) dependencyMock;
+                            when(provider.get()).thenReturn(mock(providedClass, providedType.toString()));
+                        }
                     }
                 }
 
