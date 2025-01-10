@@ -363,7 +363,7 @@ public class ComponentAnnotationLoader
                     types.add(interfaceType);
                 }
 
-                // Handle javax.inject.Provider (retro-compatibility since **42.0.0**)
+                // Handle javax.inject.Provider (retro-compatibility since **17.0.0RC1**)
                 if (javax.inject.Provider.class.isAssignableFrom(interfaceClass)) {
                     types.add(interfaceType);
                 }

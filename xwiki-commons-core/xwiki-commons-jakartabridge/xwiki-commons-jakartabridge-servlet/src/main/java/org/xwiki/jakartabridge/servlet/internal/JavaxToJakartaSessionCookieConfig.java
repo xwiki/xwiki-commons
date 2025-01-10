@@ -25,7 +25,7 @@ import org.xwiki.jakartabridge.internal.AbstractJavaxToJakartaWrapper;
 
 /**
  * @version $Id$
- * @since 42.0.0
+ * @since 17.0.0RC1
  */
 public class JavaxToJakartaSessionCookieConfig
     extends AbstractJavaxToJakartaWrapper<jakarta.servlet.SessionCookieConfig> implements SessionCookieConfig

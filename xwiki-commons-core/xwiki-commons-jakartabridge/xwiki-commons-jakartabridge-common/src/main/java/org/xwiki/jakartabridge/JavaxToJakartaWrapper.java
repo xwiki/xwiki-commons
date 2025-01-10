@@ -22,7 +22,7 @@ package org.xwiki.jakartabridge;
 /**
  * @param <T> the type of the wrapped object
  * @version $Id$
- * @since 42.0.0
+ * @since 17.0.0RC1
  */
 public interface JavaxToJakartaWrapper<T>
 {

@@ -24,7 +24,7 @@ import org.xwiki.jakartabridge.JakartaToJavaxWrapper;
 /**
  * @param <T> the type of the wrapped object
  * @version $Id$
- * @since 42.0.0
+ * @since 17.0.0RC1
  */
 public abstract class AbstractJakartaToJavaxWrapper<T> implements JakartaToJavaxWrapper<T>
 {

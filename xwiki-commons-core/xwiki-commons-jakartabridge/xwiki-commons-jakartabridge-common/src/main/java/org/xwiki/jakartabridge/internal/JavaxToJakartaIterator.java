@@ -27,7 +27,7 @@ import java.util.function.Function;
  * @param <X> the javax type
  * @param <K> the jakarta type
  * @version $Id$
- * @since 42.0.0
+ * @since 17.0.0RC1
  */
 public class JavaxToJakartaIterator<I extends Iterator<K>, X, K> extends AbstractJavaxToJakartaWrapper<I>
     implements Iterator<X>

@@ -120,7 +120,7 @@ import org.xwiki.jakartabridge.servlet.internal.JavaxToJakartaWriteListener;
 
 /**
  * @version $Id$
- * @since 42.0.0
+ * @since 17.0.0RC1
  */
 public final class JakartaServletBridge
 {

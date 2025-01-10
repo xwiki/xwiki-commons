@@ -38,7 +38,7 @@ import org.xwiki.component.util.ReflectionUtils;
  *
  * @param <T> the role type
  * @version $Id$
- * @since 42.0.0
+ * @since 17.0.0RC1
  */
 public abstract class AbstractGenericProvider<T>
 {

@@ -30,7 +30,7 @@ import org.xwiki.jakartabridge.JakartaBridge;
  * @param <X> the javax type
  * @param <K> the jakarta type
  * @version $Id$
- * @since 42.0.0
+ * @since 17.0.0RC1
  */
 public class JakartaToJavaxCollection<C extends Collection<X>, K, X> extends AbstractJakartaToJavaxWrapper<C>
     implements Collection<K>

@@ -29,7 +29,7 @@ import org.xwiki.jakartabridge.internal.AbstractJavaxToJakartaWrapper;
 
 /**
  * @version $Id$
- * @since 42.0.0
+ * @since 17.0.0RC1
  */
 public class JavaxToJakartaPart extends AbstractJavaxToJakartaWrapper<jakarta.servlet.http.Part> implements Part
 {

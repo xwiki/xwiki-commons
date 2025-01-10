@@ -25,7 +25,7 @@ import org.xwiki.jakartabridge.JavaxToJakartaWrapper;
 
 /**
  * @version $Id$
- * @since 42.0.0
+ * @since 17.0.0RC1
  */
 public class JavaxToJakartaCookie extends Cookie implements JavaxToJakartaWrapper<jakarta.servlet.http.Cookie>
 {

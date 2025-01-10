@@ -29,7 +29,7 @@ import org.xwiki.jakartabridge.servlet.JakartaServletBridge;
 
 /**
  * @version $Id$
- * @since 42.0.0
+ * @since 17.0.0RC1
  */
 public class JakartaToJavaxServletOutputStream extends ServletOutputStream
     implements JakartaToJavaxWrapper<javax.servlet.ServletOutputStream>
