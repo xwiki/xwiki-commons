@@ -257,7 +257,7 @@
                   <code>java.class.nonFinalClassInheritsFromNewClass</code>
                   <old>class org.xwiki.component.embed.GenericProvider&lt;T&gt;</old>
                   <new>class org.xwiki.component.embed.GenericProvider&lt;T&gt;</new>
-                  <superClass>org.xwiki.component.internal.JavaXGenericProvider&lt;T&gt;</superClass>
+                  <superClass>org.xwiki.component.internal.JavaxGenericProvider&lt;T&gt;</superClass>
                 </item>
               </differences>
             </revapi.differences>
