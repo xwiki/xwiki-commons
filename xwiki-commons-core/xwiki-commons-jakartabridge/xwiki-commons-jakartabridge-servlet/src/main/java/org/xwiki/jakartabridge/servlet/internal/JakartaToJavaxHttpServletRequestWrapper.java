@@ -66,6 +66,16 @@ public class JakartaToJavaxHttpServletRequestWrapper<R extends javax.servlet.htt
         this.javax = javax;
     }
 
+    // JakartaToJavaxHttpServletRequestWrapper
+
+    @Override
+    public void setRequest(ServletRequest request)
+    {
+        super.setRequest(request);
+
+        this.javax.setRequest(JakartaServletBridge.toJavax(request));
+    }
+
     // JakartaToJavaxWrapper
 
     @Override

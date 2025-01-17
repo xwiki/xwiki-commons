@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Locale;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponseWrapper;
 
@@ -60,6 +61,16 @@ public class JavaxToJakartaHttpServletResponseWrapper<R extends jakarta.servlet.
     public R getJakarta()
     {
         return this.jakarta;
+    }
+
+    // HttpServletResponseWrapper
+
+    @Override
+    public void setResponse(ServletResponse response)
+    {
+        super.setResponse(response);
+
+        this.jakarta.setResponse(JakartaServletBridge.toJakarta(response));
     }
 
     // HttpServletResponse

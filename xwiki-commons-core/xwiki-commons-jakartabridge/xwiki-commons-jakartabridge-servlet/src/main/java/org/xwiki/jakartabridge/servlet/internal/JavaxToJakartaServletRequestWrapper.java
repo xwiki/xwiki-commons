@@ -69,6 +69,16 @@ public class JavaxToJakartaServletRequestWrapper<R extends jakarta.servlet.Servl
         return this.jakarta;
     }
 
+    // ServletRequestWrapper
+
+    @Override
+    public void setRequest(ServletRequest request)
+    {
+        super.setRequest(request);
+
+        this.jakarta.setRequest(JakartaServletBridge.toJakarta(request));
+    }
+
     // HttpServletRequest
 
     @Override

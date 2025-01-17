@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.util.Locale;
 
 import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.ServletResponseWrapper;
 
 import org.xwiki.jakartabridge.JakartaToJavaxWrapper;
@@ -55,6 +56,16 @@ public class JakartaToJavaxServletResponseWrapper<R extends javax.servlet.Servle
     public R getJavax()
     {
         return this.javax;
+    }
+
+    // JakartaToJavaxServletResponseWrapper
+
+    @Override
+    public void setResponse(ServletResponse response)
+    {
+        super.setResponse(response);
+
+        this.javax.setResponse(JakartaServletBridge.toJavax(response));
     }
 
     // ServletResponse
