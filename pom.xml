@@ -72,7 +72,7 @@
     <jackson.databind.version>${jackson.version}</jackson.databind.version>
 
     <!-- Bouncy Castle -->
-    <bouncycastle.version>1.79</bouncycastle.version>
+    <bouncycastle.version>1.80</bouncycastle.version>
 
     <!-- ASM -->
     <asm.version>9.7.1</asm.version>
