@@ -58,6 +58,7 @@ public class JavaxToJakartaHttpServletResponseWrapper<R extends jakarta.servlet.
     /**
      * @return the jakarta version
      */
+    @Override
     public R getJakarta()
     {
         return this.jakarta;
