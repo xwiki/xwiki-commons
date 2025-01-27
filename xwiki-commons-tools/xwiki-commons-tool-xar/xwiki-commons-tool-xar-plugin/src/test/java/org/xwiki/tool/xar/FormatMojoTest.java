@@ -22,12 +22,10 @@ package org.xwiki.tool.xar;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
@@ -131,13 +129,8 @@ class FormatMojoTest
     void formatSpecialContentFailingWithXercesFromJDK8() throws Exception
     {
         SAXReader reader = getSAXReader();
-        reader.setEncoding("UTF-8");
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("XWikiSyntaxLinks.it.xml");
         String expectedContent = IOUtils.toString(is, "UTF-8");
-        // github clients may automatically convert the file to use windows line returns.
-        if (!System.lineSeparator().equals("\n")) {
-            expectedContent = expectedContent.replaceAll(Pattern.quote(System.lineSeparator()), "\n");
-        }
 
         is = Thread.currentThread().getContextClassLoader().getResourceAsStream("XWikiSyntaxLinks.it.xml");
         Document domdoc = reader.read(is);
@@ -150,7 +143,7 @@ class FormatMojoTest
         writer.setVersion("1.1");
         writer.write(domdoc);
         writer.close();
-        String actual = baos.toString(Charset.forName("UTF-8"));
+        String actual = baos.toString(java.nio.charset.StandardCharsets.UTF_8);
 
         int offset = -1;
         if (!expectedContent.equals(actual)) {

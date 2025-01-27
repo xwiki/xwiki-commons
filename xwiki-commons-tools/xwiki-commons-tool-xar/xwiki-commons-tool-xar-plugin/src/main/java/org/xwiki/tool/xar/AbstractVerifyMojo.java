@@ -309,12 +309,13 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
 
     private boolean isMatchingPage(String filePath, List<Pattern> patterns)
     {
-        String tranformedFilePath = filePath;
-        // we use the unix file.seperator even if we're currently running on windows.
-        if (!File.separator.equals(UNIX_STYLE_FILE_SEPARATOR)) {
-            tranformedFilePath = filePath.replaceAll(Pattern.quote(File.separator), UNIX_STYLE_FILE_SEPARATOR);
-        }
-        if (patterns != null) {
+
+        if (patterns != null && patterns.size() > 0) {
+            String tranformedFilePath = filePath;
+            // we use the unix file.seperator even if we're currently running on windows.
+            if (!File.separator.equals(UNIX_STYLE_FILE_SEPARATOR)) {
+                tranformedFilePath = filePath.replaceAll(Pattern.quote(File.separator), UNIX_STYLE_FILE_SEPARATOR);
+            }
             for (Pattern pattern : patterns) {
                 if (pattern.matcher(tranformedFilePath).matches()) {
                     return true;
