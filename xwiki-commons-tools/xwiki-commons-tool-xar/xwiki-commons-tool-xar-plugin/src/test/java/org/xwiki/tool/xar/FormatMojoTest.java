@@ -19,10 +19,6 @@
  */
 package org.xwiki.tool.xar;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.xwiki.tool.xar.internal.XMLUtils.getSAXReader;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -38,6 +34,10 @@ import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.xwiki.tool.xar.internal.XMLUtils.getSAXReader;
 
 /**
  * Unit tests for {@link FormatMojo}.
@@ -80,7 +80,7 @@ class FormatMojoTest
         mojo.contentPages = Arrays.asList(".*/Document\\.xml");
         mojo.initializePatterns();
 
-        File file = new File("Some" + File.separator + "Space" + File.separator + "Document.xml");
+        File file = new File("Some/Space/Document.xml");
 
         assertEquals(Locale.ENGLISH, mojo.guessDefaultLocale(file, Collections.emptyList()));
     }
