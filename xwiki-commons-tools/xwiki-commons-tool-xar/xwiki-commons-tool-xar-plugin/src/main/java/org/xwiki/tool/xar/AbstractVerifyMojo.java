@@ -312,7 +312,7 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
         String tranformedFilePath = filePath;
         // we use the unix file.seperator even if we're currently running on windows.
         if (!File.separator.equals(UNIX_STYLE_FILE_SEPARATOR)) {
-            tranformedFilePath = filePath.replace(Pattern.quote(File.separator), UNIX_STYLE_FILE_SEPARATOR);
+            tranformedFilePath = filePath.replaceAll(Pattern.quote(File.separator), UNIX_STYLE_FILE_SEPARATOR);
         }
         if (patterns != null) {
             for (Pattern pattern : patterns) {

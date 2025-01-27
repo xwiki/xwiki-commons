@@ -77,7 +77,7 @@ class FormatMojoTest
     {
         FormatMojo mojo = new FormatMojo();
         mojo.defaultLanguage = "en";
-        mojo.contentPages = Arrays.asList(".*" + Pattern.quote(File.separator) + "Document\\.xml");
+        mojo.contentPages = Arrays.asList(".*/Document\\.xml");
         mojo.initializePatterns();
 
         File file = new File("Some" + File.separator + "Space" + File.separator + "Document.xml");
