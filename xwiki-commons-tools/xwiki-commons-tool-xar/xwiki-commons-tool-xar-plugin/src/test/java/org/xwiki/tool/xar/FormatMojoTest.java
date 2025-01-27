@@ -19,22 +19,25 @@
  */
 package org.xwiki.tool.xar;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.xwiki.tool.xar.internal.XMLUtils.getSAXReader;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.xwiki.tool.xar.internal.XMLUtils.getSAXReader;
 
 /**
  * Unit tests for {@link FormatMojo}.
@@ -51,9 +54,7 @@ class FormatMojoTest
         mojo.defaultLanguage = "en";
 
         File file = new File("Some/Space/Document.xml");
-        List<File> files = Arrays.asList(
-            new File("Some/Space/Document.xml"),
-            new File("Some/Space/Document.fr.xml"));
+        List<File> files = Arrays.asList(new File("Some/Space/Document.xml"), new File("Some/Space/Document.fr.xml"));
 
         assertEquals(Locale.ENGLISH, mojo.guessDefaultLocale(file, files));
     }
@@ -76,10 +77,10 @@ class FormatMojoTest
     {
         FormatMojo mojo = new FormatMojo();
         mojo.defaultLanguage = "en";
-        mojo.contentPages = Arrays.asList(".*/Document\\.xml");
+        mojo.contentPages = Arrays.asList(".*" + Pattern.quote(File.separator) + "Document\\.xml");
         mojo.initializePatterns();
 
-        File file = new File("Some/Space/Document.xml");
+        File file = new File("Some" + File.separator + "Space" + File.separator + "Document.xml");
 
         assertEquals(Locale.ENGLISH, mojo.guessDefaultLocale(file, Collections.emptyList()));
     }
@@ -118,9 +119,7 @@ class FormatMojoTest
 
         File file = new File("Space1/Document.xml");
         // Simulate a page with the same name and with a translation but in a different space.
-        List<File> files = Arrays.asList(
-            new File("Space2/Document.xml"),
-            new File("Space2/Document.fr.xml"));
+        List<File> files = Arrays.asList(new File("Space2/Document.xml"), new File("Space2/Document.fr.xml"));
 
         assertEquals(Locale.ROOT, mojo.guessDefaultLocale(file, files));
     }
@@ -132,8 +131,13 @@ class FormatMojoTest
     void formatSpecialContentFailingWithXercesFromJDK8() throws Exception
     {
         SAXReader reader = getSAXReader();
+        reader.setEncoding("UTF-8");
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("XWikiSyntaxLinks.it.xml");
         String expectedContent = IOUtils.toString(is, "UTF-8");
+        // github clients may automatically convert the file to use windows line returns.
+        if (!System.lineSeparator().equals("\n")) {
+            expectedContent = expectedContent.replaceAll(Pattern.quote(System.lineSeparator()), "\n");
+        }
 
         is = Thread.currentThread().getContextClassLoader().getResourceAsStream("XWikiSyntaxLinks.it.xml");
         Document domdoc = reader.read(is);
@@ -146,7 +150,28 @@ class FormatMojoTest
         writer.setVersion("1.1");
         writer.write(domdoc);
         writer.close();
+        String actual = baos.toString(Charset.forName("UTF-8"));
 
-        assertEquals(expectedContent, baos.toString());
+        int offset = -1;
+        if (!expectedContent.equals(actual)) {
+            for (int i = 0; i < Math.min(((String) expectedContent).length(), ((String) actual).length()); i++) {
+                char c1 = expectedContent.charAt(i);
+                char c2 = actual.charAt(i);
+                if (c1 != c2) {
+                    offset = i;
+                    break;
+                }
+            }
+            String result = "";
+            if (offset != -1) {
+                result += "Offset of first difference: " + offset + " expected char: " + expectedContent.charAt(offset)
+                    + " (" + ((int) expectedContent.charAt(offset)) + ")" + " actual char: " + actual.charAt(offset)
+                    + " (" + ((int) actual.charAt(offset)) + ")" + System.lineSeparator();
+            }
+            result += "Expected:" + System.lineSeparator() + expectedContent + System.lineSeparator()
+                + System.lineSeparator() + " Does not match actual: " + System.lineSeparator() + actual
+                + System.lineSeparator() + System.lineSeparator();
+            assertTrue(false, result);
+        }
     }
 }

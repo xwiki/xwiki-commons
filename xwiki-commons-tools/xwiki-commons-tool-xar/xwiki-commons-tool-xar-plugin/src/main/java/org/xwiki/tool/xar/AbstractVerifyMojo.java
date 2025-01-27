@@ -19,6 +19,13 @@
  */
 package org.xwiki.tool.xar;
 
+import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.element;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.executeMojo;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.goal;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.name;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,13 +51,6 @@ import org.codehaus.plexus.components.io.fileselectors.IncludeExcludeFileSelecto
 import org.codehaus.plexus.components.io.resources.PlexusIoFileResourceCollection;
 import org.codehaus.plexus.components.io.resources.PlexusIoResource;
 
-import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.element;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.executeMojo;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.goal;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.name;
-
 /**
  * Common code for the Verify and Format Mojos.
  *
@@ -72,6 +72,8 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     private static final String EXTENSION = ".xml";
 
     private static final Pattern TRANSLATION_PATTERN = Pattern.compile("(.*)\\..*\\.xml");
+
+    private static final String UNIX_STYLE_FILE_SEPARATOR = "/";
 
     /**
      * If true then don't check if the packaging is XAR before running mojos.
@@ -150,8 +152,8 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
 
     /**
      * Explicitly define a list of pages (it's a regex) that are technical pages but that should be visible (not
-     * hidden). For example, home pages of applications. These pages must have their default langue set to empty so
-     * that a search in a given language doesn't return them as they're not content.
+     * hidden). For example, home pages of applications. These pages must have their default langue set to empty so that
+     * a search in a given language doesn't return them as they're not content.
      *
      * @since 12.3RC1
      */
@@ -243,15 +245,16 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     /**
      * Guess the {@code &lt;defaultLanguage&gt;} value to use for the passed file using the following algorithm:
      * <ul>
-     *   <li>If the page name matches one of the regexes defined by the user as a translated page, then check that
-     *     the default language is {@link #defaultLanguage}.</li>
-     *   <li>Otherwise, if the page name matches one of the regexes defined by the user as a content page, then check
-     *     that the default language is {@link #defaultLanguage}.</li>
-     *   <li>Otherwise, if there's no other translation of the file then check that the default language is empty
-     *     since it's a technical page.</li>
-     *   <li>Otherwise, if there are other translations ("(prefix).(language).xml" format) then check that the default
-     *     language should is {@link #defaultLanguage}</li>
+     * <li>If the page name matches one of the regexes defined by the user as a translated page, then check that the
+     * default language is {@link #defaultLanguage}.</li>
+     * <li>Otherwise, if the page name matches one of the regexes defined by the user as a content page, then check that
+     * the default language is {@link #defaultLanguage}.</li>
+     * <li>Otherwise, if there's no other translation of the file then check that the default language is empty since
+     * it's a technical page.</li>
+     * <li>Otherwise, if there are other translations ("(prefix).(language).xml" format) then check that the default
+     * language should is {@link #defaultLanguage}</li>
      * </ul>
+     * 
      * @param file the XML file for which to guess the default language that it should have
      * @param xwikiXmlFiles the list of all XML files that is used to check for translations of the passed XML file
      * @return the default language as a string (e.g. "en" for English or "" for an empty default language)
@@ -306,9 +309,14 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
 
     private boolean isMatchingPage(String filePath, List<Pattern> patterns)
     {
+        String tranformedFilePath = filePath;
+        // we use the unix file.seperator even if we're currently running on windows.
+        if (!File.separator.equals(UNIX_STYLE_FILE_SEPARATOR)) {
+            tranformedFilePath = filePath.replace(Pattern.quote(File.separator), UNIX_STYLE_FILE_SEPARATOR);
+        }
         if (patterns != null) {
             for (Pattern pattern : patterns) {
-                if (pattern.matcher(filePath).matches()) {
+                if (pattern.matcher(tranformedFilePath).matches()) {
                     return true;
                 }
             }
@@ -347,25 +355,11 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
             throw new MojoExecutionException("License plugin could not be found in <pluginManagement>");
         }
 
-        executeMojo(
-            licensePlugin,
-            goal(goal),
-            configuration(
-                element(name("licenseSets"),
-                    element(name("licenseSet"),
-                        element(name("header"), "license.txt"),
-                        element(name("headerDefinitions"),
-                            element(name("headerDefinition"), "license-xml-definition.xml")),
-                        element(name("includes"),
-                            element(name("include"), "src/main/resources/**/*.xml"))
-                      )
-                  )
-            ),
-            executionEnvironment(
-                this.project,
-                this.mavenSession,
-                this.pluginManager
-            )
-        );
+        executeMojo(licensePlugin, goal(goal),
+            configuration(element(name("licenseSets"),
+                element(name("licenseSet"), element(name("header"), "license.txt"),
+                    element(name("headerDefinitions"), element(name("headerDefinition"), "license-xml-definition.xml")),
+                    element(name("includes"), element(name("include"), "src/main/resources/**/*.xml"))))),
+            executionEnvironment(this.project, this.mavenSession, this.pluginManager));
     }
 }
