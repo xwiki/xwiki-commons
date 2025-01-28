@@ -224,83 +224,11 @@
               </differences>
             </revapi.differences>
             -->
-            <revapi.differences>
-              <differences>
-                <item>
-                  <code>java.class.removed</code>
-                  <old>class org.xwiki.xml.html.HTMLUtils.XWikiXMLOutputter</old>
-                  <justification>
-                    For security reasons, we need to get rid of JDOM 1 and this class extended a class that can’t be
-                    extended in JDOM 2. As it makes little sense to expose this class, instead of breaking it, it has
-                    been made private. As far we're aware, it hasn't been used outside HTMLUtils and thus shouldn't
-                    break anything.
-                  </justification>
-                  <criticality>highlight</criticality>
-                </item>
-              </differences>
-            </revapi.differences>
+            
 
             <!-- Jakarta -->
-            <revapi.differences>
-              <justification>revapi false positives</justification>
-              <criticality>allowed</criticality>
-              <differences>
-                <item>
-                  <ignore>true</ignore>
-                  <code>java.class.nonFinalClassInheritsFromNewClass</code>
-                  <old>class org.xwiki.component.embed.GenericProvider&lt;T&gt;</old>
-                  <new>class org.xwiki.component.embed.GenericProvider&lt;T&gt;</new>
-                  <superClass>org.xwiki.component.internal.AbstractGenericProvider&lt;T&gt;</superClass>
-                </item>
-                <item>
-                  <ignore>true</ignore>
-                  <code>java.class.nonFinalClassInheritsFromNewClass</code>
-                  <old>class org.xwiki.component.embed.GenericProvider&lt;T&gt;</old>
-                  <new>class org.xwiki.component.embed.GenericProvider&lt;T&gt;</new>
-                  <superClass>org.xwiki.component.internal.JavaxGenericProvider&lt;T&gt;</superClass>
-                </item>
-              </differences>
-            </revapi.differences>
-            <revapi.differences>
-              <justification>Moved to WebSocket 2.1.1</justification>
-              <criticality>highlight</criticality>
-              <differences>
-                <item>
-                  <ignore>true</ignore>
-                  <code>java.class.noLongerImplementsInterface</code>
-                  <old>class org.xwiki.websocket.AbstractPartialMessageHandler&lt;T&gt;</old>
-                  <new>class org.xwiki.websocket.AbstractPartialMessageHandler&lt;T&gt;</new>
-                  <interface>javax.websocket.MessageHandler.Partial&lt;T&gt;</interface>
-                </item>
-                <item>
-                  <ignore>true</ignore>
-                  <code>java.class.noLongerImplementsInterface</code>
-                  <old>class org.xwiki.websocket.AbstractPartialMessageHandler&lt;T&gt;</old>
-                  <new>class org.xwiki.websocket.AbstractPartialMessageHandler&lt;T&gt;</new>
-                  <interface>javax.websocket.MessageHandler</interface>
-                </item>
-                <item>
-                  <ignore>true</ignore>
-                  <code>java.class.noLongerImplementsInterface</code>
-                  <old>class org.xwiki.websocket.AbstractPartialStringMessageHandler</old>
-                  <new>class org.xwiki.websocket.AbstractPartialStringMessageHandler</new>
-                  <interface>javax.websocket.MessageHandler.Partial&lt;java.lang.String&gt;</interface>
-                </item>
-                <item>
-                  <ignore>true</ignore>
-                  <code>java.class.noLongerImplementsInterface</code>
-                  <old>class org.xwiki.websocket.AbstractPartialStringMessageHandler</old>
-                  <new>class org.xwiki.websocket.AbstractPartialStringMessageHandler</new>
-                  <interface>javax.websocket.MessageHandler</interface>
-                </item>
-                <item>
-                  <ignore>true</ignore>
-                  <regex>true</regex>
-                  <code>java.method.parameterTypeChanged</code>
-                  <old>parameter .* org.xwiki.websocket.WebSocketContext::.*</old>
-                </item>
-              </differences>
-            </revapi.differences>
+            
+            
           </analysisConfiguration>
         </configuration>
       </plugin>
