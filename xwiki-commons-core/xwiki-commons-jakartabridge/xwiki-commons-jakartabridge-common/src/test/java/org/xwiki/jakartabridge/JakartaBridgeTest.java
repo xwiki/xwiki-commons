@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.xwiki.jakartabridge.internal.AbstractJakartaToJavaxWrapper;
 import org.xwiki.jakartabridge.internal.AbstractJavaxToJakartaWrapper;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -94,5 +95,25 @@ class JakartaBridgeTest
 
         assertNotNull(jakarta);
         assertSame(javax, JakartaBridge.toJavax(jakarta, TestJavaxToJakarta::new));
+    }
+
+    @Test
+    void equal()
+    {
+        TestJavax javax = new DefaultTestJavax();
+
+        TestJakarta jakarta1 = JakartaBridge.toJakarta(javax, TestJakartaToJavax::new);
+        TestJakarta jakarta2 = JakartaBridge.toJakarta(javax, TestJakartaToJavax::new);
+
+        assertEquals(jakarta1, jakarta2);
+        assertEquals(jakarta1.hashCode(), jakarta2.hashCode());
+
+        TestJakarta jakarta = new DefaultTestJakarta();
+
+        TestJavax javax1 = JakartaBridge.toJavax(jakarta, TestJavaxToJakarta::new);
+        TestJavax javax2 = JakartaBridge.toJavax(jakarta, TestJavaxToJakarta::new);
+
+        assertEquals(javax1, javax2);
+        assertEquals(javax1.hashCode(), javax2.hashCode());
     }
 }
