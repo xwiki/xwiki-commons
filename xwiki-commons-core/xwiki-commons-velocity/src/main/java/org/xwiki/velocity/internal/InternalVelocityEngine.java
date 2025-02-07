@@ -22,6 +22,7 @@ package org.xwiki.velocity.internal;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,6 +61,13 @@ import org.xwiki.velocity.XWikiVelocityException;
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
 public class InternalVelocityEngine implements VelocityEngine
 {
+    /**
+     * The field that stores the introspection cache. This field is accessed once here as it causes several exceptions
+     * to be thrown internally until the field is found, which is expensive.
+     */
+    private static final Field INTROSPECTION_CACHE_FIELD =
+        FieldUtils.getField(VelocityContext.class, "introspectionCache", true);
+
     private static final String ECONTEXT_TEMPLATES = "velocity.templates";
 
     private class TemplateEntry
@@ -245,8 +253,14 @@ public class InternalVelocityEngine implements VelocityEngine
     {
         if (context != null) {
             try {
-                Map introspectionCache = (Map) FieldUtils.readField(context, "introspectionCache", true);
-                introspectionCache.clear();
+                if (INTROSPECTION_CACHE_FIELD != null) {
+                    Map<?, ?> introspectionCache = (Map<?, ?>) INTROSPECTION_CACHE_FIELD.get(context);
+                    introspectionCache.clear();
+                } else {
+                    this.logger.warn(
+                        "Failed to clean the Velocity context introspection cache because the introspection cache "
+                            + "field could not be found.");
+                }
             } catch (IllegalAccessException e) {
                 this.logger.warn("Failed to clean the Velocity context introspection cache. Root error: [{}]",
                     ExceptionUtils.getRootCauseMessage(e));
