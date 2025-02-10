@@ -19,35 +19,49 @@
  */
 package org.xwiki.configuration.internal;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
 
 /**
- * Runtime configuration source stored in memory.
- * <p>
- * Can be modified by lookuping the component and using {@link MemoryConfigurationSource#setProperty(String, Object)}.
- *
+ * Configuration source that reads from the execution context.
+ * 
  * @version $Id$
- * @since 3.5M1
+ * @since 16.1.0RC1
+ * @since 15.10.6
  */
 @Component
+@Named("executionContext")
 @Singleton
-@Named("memory")
-public class MemoryConfigurationSource extends AbstractMemoryConfigurationSource
+public class ExecutionContextConfigurationSource extends AbstractMemoryConfigurationSource
 {
-    /**
-     * The properties.
-     */
-    private Map<String, Object> properties = new ConcurrentHashMap<>();
+    @Inject
+    private Execution execution;
 
+    @SuppressWarnings("unchecked")
     @Override
     protected Map<String, Object> getProperties()
     {
-        return this.properties;
+        ExecutionContext executionContext = this.execution.getContext();
+        if (executionContext != null) {
+            String key = this.getClass().getName();
+            if (!executionContext.hasProperty(key)) {
+                // Initialize with an empty map that ca be modified.
+                executionContext.newProperty(key).inherited().initial(new LinkedHashMap<>()).makeFinal().nonNull()
+                    .declare();
+            }
+            return (Map<String, Object>) executionContext.getProperty(key);
+        } else {
+            // Return an empty map that can't be modified.
+            return Collections.emptyMap();
+        }
     }
 }
