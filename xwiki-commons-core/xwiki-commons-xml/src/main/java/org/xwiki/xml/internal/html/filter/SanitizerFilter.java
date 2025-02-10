@@ -84,10 +84,19 @@ public class SanitizerFilter extends AbstractHTMLFilter
 
     protected static class TagInformation
     {
+        /**
+         * Placeholder for an invalid tag.
+         */
         public static final TagInformation INVALID = new TagInformation(null, null);
 
+        /**
+         * The name of the tag.
+         */
         public final String tagName;
 
+        /**
+         * The namespace of the tag.
+         */
         public final String namespace;
 
         /**
