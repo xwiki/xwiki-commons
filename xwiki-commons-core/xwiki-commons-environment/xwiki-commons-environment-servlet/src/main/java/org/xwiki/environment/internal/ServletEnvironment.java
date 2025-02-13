@@ -25,12 +25,20 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.xwiki.cache.Cache;
+import org.xwiki.cache.CacheControl;
+import org.xwiki.cache.CacheManager;
+import org.xwiki.cache.config.LRUCacheConfiguration;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentManager;
 
 /**
  * Defines what an Environment means in a Servlet environment.
@@ -46,6 +54,41 @@ public class ServletEnvironment extends AbstractEnvironment
      * @see #getServletContext()
      */
     private ServletContext servletContext;
+
+    @Inject
+    private ComponentManager componentManager;
+
+    @Inject
+    private CacheControl cacheControl;
+
+    private Cache<Optional<URL>> resourceURLCache;
+
+    private final AtomicBoolean cacheInitializing = new AtomicBoolean();
+
+    private Cache<Optional<URL>> getResourceURLCache()
+    {
+        // Don't block on cache initialization to avoid loops.
+        if (this.resourceURLCache == null && this.cacheInitializing.compareAndSet(false, true)) {
+            try {
+                // Compare again inside the "lock" to avoid race conditions. Only after seeing the false value we can
+                // be sure that we also see the resourceURLCache variable write from the thread that wrote it -
+                // writing atomics with "set" guarantees sequential consistency.
+                if (this.resourceURLCache == null) {
+                    // The cache manager can't be injected directly as it depends on this component, so it is
+                    // important to only request it once this component has been initialized.
+                    CacheManager cacheManager = this.componentManager.getInstance(CacheManager.class);
+                    this.resourceURLCache = cacheManager.createNewCache(
+                        new LRUCacheConfiguration("environment.servlet.resourceURLCache", 10000));
+                }
+            } catch (Exception e) {
+                this.logger.error("Failed to initialize resource URL cache.", e);
+            } finally {
+                this.cacheInitializing.set(false);
+            }
+        }
+
+        return this.resourceURLCache;
+    }
 
     /**
      * @param servletContext see {@link #getServletContext()}
@@ -75,6 +118,27 @@ public class ServletEnvironment extends AbstractEnvironment
 
     @Override
     public URL getResource(String resourceName)
+    {
+        Cache<Optional<URL>> cache = getResourceURLCache();
+
+        if (cache != null && this.cacheControl.isCacheReadAllowed()) {
+            Optional<URL> cachedURL = cache.get(resourceName);
+
+            if (cachedURL != null) {
+                return cachedURL.orElse(null);
+            }
+        }
+
+        URL url = getResourceInternal(resourceName);
+
+        if (cache != null) {
+            cache.set(resourceName, Optional.ofNullable(url));
+        }
+
+        return url;
+    }
+
+    private URL getResourceInternal(String resourceName)
     {
         URL url;
         try {
