@@ -211,14 +211,17 @@ class ServletEnvironmentTest
             when(this.cache.get(resourceName)).thenReturn(Optional.of(cachedURL));
         }
 
+        // Two futures to synchronize the background thread that creates the cache.
         CompletableFuture<Void> arrivedInCreateCacheFuture = new CompletableFuture<>();
         CompletableFuture<Void> blockCreateCacheFuture = new CompletableFuture<>();
 
         Mutable<URL> recursiveURL = new MutableObject<>();
 
         doAnswer(invocationOnMock -> {
+            // Signal that the background thread arrived in the cache creation call.
             arrivedInCreateCacheFuture.complete(null);
             recursiveURL.setValue(this.environment.getResource(resourceName));
+            // Wait until the main thread unblocks the cache creation (but don't wait forever just to be safe).
             blockCreateCacheFuture.get(20, TimeUnit.SECONDS);
             return this.cache;
         }).when(this.cacheManager).createNewCache(any());
@@ -230,15 +233,18 @@ class ServletEnvironmentTest
             CompletableFuture<URL> outerCall =
                 CompletableFuture.supplyAsync(() -> this.environment.getResource(resourceName), executor);
 
+            // Wait for the background thread to arrive in the cache creation call (but don't wait forever just to be
+            // safe).
             arrivedInCreateCacheFuture.get(20, TimeUnit.SECONDS);
 
             URL expectedURL = new URL("file:/resource");
             // Ensure that the cache creation doesn't block getting the resource URL.
             assertEquals(expectedURL, this.environment.getResource(resourceName));
 
+            // Unblock the cache creation call.
             blockCreateCacheFuture.complete(null);
 
-            // Ensure that the blocked call now got the value, too.
+            // Ensure that the blocked call now got the value, too. Again, don't wait forever just in case.
             URL actualOuterURL = outerCall.get(20, TimeUnit.SECONDS);
             if (cached) {
                 assertEquals(cachedURL, actualOuterURL);

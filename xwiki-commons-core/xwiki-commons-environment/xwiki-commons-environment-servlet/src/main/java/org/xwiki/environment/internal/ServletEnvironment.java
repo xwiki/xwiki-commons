@@ -85,7 +85,7 @@ public class ServletEnvironment extends AbstractEnvironment
                     // important to only request it once this component has been initialized.
                     CacheManager cacheManager = this.componentManager.getInstance(CacheManager.class);
                     this.resourceURLCache = cacheManager.createNewCache(
-                        new LRUCacheConfiguration("environment.servlet.resourceURLCache", 1000));
+                        new LRUCacheConfiguration("environment.servlet.resourceURLCache", 10000));
                 }
             } catch (Exception e) {
                 this.logger.error("Failed to initialize resource URL cache.", e);
