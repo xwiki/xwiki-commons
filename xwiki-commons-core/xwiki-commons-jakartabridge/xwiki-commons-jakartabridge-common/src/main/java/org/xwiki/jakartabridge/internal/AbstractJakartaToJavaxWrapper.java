@@ -43,4 +43,20 @@ public abstract class AbstractJakartaToJavaxWrapper<T> implements JakartaToJavax
     {
         return this.javax;
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof JakartaToJavaxWrapper<?> otherWrapper) {
+            return this.javax.equals(otherWrapper.getJavax());
+        }
+
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return this.javax.hashCode();
+    }
 }

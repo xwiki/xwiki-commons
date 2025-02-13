@@ -50,7 +50,7 @@
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
-    <xwiki.compatibility.previous.version>16.10.2</xwiki.compatibility.previous.version>
+    <xwiki.compatibility.previous.version>17.0.0</xwiki.compatibility.previous.version>
 
     <!-- Java -->
     <!-- Should be kept in sync with https://dev.xwiki.org/xwiki/bin/view/Community/SupportStrategy/JavaSupportStrategy/ -->
@@ -105,7 +105,7 @@
     <mockito.version>5.15.2</mockito.version>
 
     <!-- Byte Buddy -->
-    <bytebuddy.version>1.16.1</bytebuddy.version>
+    <bytebuddy.version>1.17.0</bytebuddy.version>
 
     <!-- AspectJ -->
     <aspectj.version>1.9.22.1</aspectj.version>
@@ -418,12 +418,12 @@
       <dependency>
         <groupId>org.apache.httpcomponents.core5</groupId>
         <artifactId>httpcore5</artifactId>
-        <version>5.3.2</version>
+        <version>5.3.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents.core5</groupId>
         <artifactId>httpcore5-h2</artifactId>
-        <version>5.3.2</version>
+        <version>5.3.3</version>
       </dependency>
       <!-- Apache HttpComponents 4 -->
       <dependency>
@@ -486,7 +486,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-pool2</artifactId>
-        <version>2.12.0</version>
+        <version>2.12.1</version>
       </dependency>
       <dependency>
         <groupId>commons-fileupload</groupId>
@@ -496,7 +496,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.17.2</version>
+        <version>1.18.0</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
@@ -694,7 +694,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.11.0</version>
+        <version>2.12.1</version>
       </dependency>
 
       <!-- Jackson -->
@@ -1244,7 +1244,7 @@
       <dependency>
         <groupId>org.wiremock</groupId>
         <artifactId>wiremock-standalone</artifactId>
-        <version>3.10.0</version>
+        <version>3.11.0</version>
       </dependency>
       <dependency>
         <groupId>org.objenesis</groupId>
@@ -1457,7 +1457,7 @@
       <dependency>
         <groupId>org.jgroups</groupId>
         <artifactId>jgroups</artifactId>
-        <version>5.4.1.Final</version>
+        <version>5.4.2.Final</version>
       </dependency>
       <!-- Used by Solr and Infinispan -->
       <dependency>
@@ -1466,9 +1466,14 @@
         <version>3.2.0</version>
       </dependency>
       <dependency>
+        <groupId>org.jspecify</groupId>
+        <artifactId>jspecify</artifactId>
+        <version>1.0.0</version>
+      </dependency>
+      <dependency>
         <groupId>org.checkerframework</groupId>
         <artifactId>checker-qual</artifactId>
-        <version>3.48.4</version>
+        <version>3.49.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.errorprone</groupId>
@@ -1486,7 +1491,7 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>3.25.6</version>
+        <version>3.25.5</version>
       </dependency>
       <dependency>
         <groupId>org.infinispan.protostream</groupId>

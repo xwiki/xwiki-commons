@@ -229,12 +229,12 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
             Inject injectAnnotation = field.getAnnotation(Inject.class);
             if (injectAnnotation != null) {
                 Named namedAnnotation = field.getAnnotation(Named.class);
-                processSingleInjectAnnotations(testInstance, field, injectAnnotation, namedAnnotation, mcm);
+                processSingleInjectAnnotations(testInstance, field, namedAnnotation, mcm);
             }
         }
     }
 
-    private void processSingleInjectAnnotations(Object testInstance, Field field, Inject injectAnnotation,
+    private void processSingleInjectAnnotations(Object testInstance, Field field,
         Named namedAnnotation, MockitoComponentManager mcm) throws Exception
     {
         // Must  be an instance
