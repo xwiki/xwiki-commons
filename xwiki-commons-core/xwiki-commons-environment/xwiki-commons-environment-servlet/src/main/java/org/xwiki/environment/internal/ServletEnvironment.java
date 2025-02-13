@@ -149,6 +149,8 @@ public class ServletEnvironment extends AbstractEnvironment
     }
 
     @Override
+    // As we store Optional<URL> in the cache, the cache can return null for the Optional which is unavoidable.
+    @SuppressWarnings("java:S2789")
     public URL getResource(String resourceName)
     {
         Cache<Optional<URL>> cache = getResourceURLCache();
