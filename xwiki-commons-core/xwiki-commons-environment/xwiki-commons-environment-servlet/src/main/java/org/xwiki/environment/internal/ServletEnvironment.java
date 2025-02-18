@@ -72,6 +72,10 @@ public class ServletEnvironment extends AbstractEnvironment
 
     private final AtomicBoolean cacheInitializing = new AtomicBoolean();
 
+    // SonarQube has no idea about concurrent modifications that make the repeated check for resourceURLCache == null
+    // necessary.
+    // See also the comment at the duplicate check that explains why we need to check again inside the "lock".
+    @SuppressWarnings("java:S2589")
     private Cache<Optional<URL>> getResourceURLCache()
     {
         // Don't block on cache initialization to avoid loops.
