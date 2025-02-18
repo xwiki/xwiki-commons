@@ -20,6 +20,7 @@
 package org.xwiki.velocity.tools;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.xwiki.stability.Unstable;
 
 /**
  * Miscellaneous methods around objects, including checks for null.
@@ -63,5 +64,21 @@ public class ObjectTool extends ObjectUtils
     public Object getNull()
     {
         return null;
+    }
+
+    /**
+     * Helper to do an {@code instanceof} in Velocity.
+     * 
+     * @param obj the {@link Object} on which to check the class
+     * @param otherClass the {@link Class} to compare to the object class
+     * @return true of the passed {@link Object} can be casted to the passed {@link Class}
+     * @since 17.2.0RC1
+     * @since 16.10.4
+     * @since 16.4.7
+     */
+    @Unstable
+    public boolean instanceOf(Object obj, Class<?> otherClass)
+    {
+        return obj != null && otherClass != null && otherClass.isAssignableFrom(obj.getClass());
     }
 }
