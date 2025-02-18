@@ -22,6 +22,7 @@ package org.xwiki.velocity.tools;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -53,5 +54,15 @@ class ObjectToolTest
     void getNull()
     {
         assertNull(this.objectTool.getNull());
+    }
+
+    @Test
+    void instanceOf()
+    {
+        assertTrue(this.objectTool.instanceOf("string", String.class));
+        assertTrue(this.objectTool.instanceOf(42, Number.class));
+
+        assertFalse(this.objectTool.instanceOf(null, String.class));
+        assertFalse(this.objectTool.instanceOf("string", Long.class));
     }
 }
