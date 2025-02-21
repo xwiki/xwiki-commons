@@ -136,6 +136,7 @@
         ComponentInstantiationStrategy, Unstable, Disposable, Initializable, InitializationException"/>
       <property name="excludedPackages"
         value="org.apache.maven.plugins.annotations, javax.annotation.concurrent, org.xwiki.component.annotation"/>
+      <property name="max" value="21"/>
     </module>
 
     <module name="ClassTypeParameterName"/>
