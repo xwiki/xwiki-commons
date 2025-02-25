@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-core</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>17.1.0-SNAPSHOT</version>
+    <version>17.1.0</version>
   </parent>
   <artifactId>xwiki-commons-jakartabridge</artifactId>
   <name>XWiki Commons - Jakarta Bridge</name>
