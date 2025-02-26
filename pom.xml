@@ -2514,7 +2514,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.8.0</version>
+          <version>3.9.0</version>
         </plugin>
         <!-- Used for checking backward compatibility (binary and source) -->
         <plugin>
