@@ -102,7 +102,7 @@
 
     <!-- Mock libraries -->
     <jmock.version>2.13.1</jmock.version>
-    <mockito.version>5.15.2</mockito.version>
+    <mockito.version>5.16.0</mockito.version>
 
     <!-- Byte Buddy -->
     <bytebuddy.version>1.17.1</bytebuddy.version>
