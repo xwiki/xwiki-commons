@@ -48,6 +48,7 @@ import org.xwiki.job.test.SerializableStandaloneComponent;
 import org.xwiki.job.test.StandaloneComponent;
 import org.xwiki.job.test.UnserializableJobStatus;
 import org.xwiki.logging.LoggerManager;
+import org.xwiki.logging.event.LogEvent;
 import org.xwiki.logging.internal.tail.XStreamFileLoggerTail;
 import org.xwiki.logging.marker.TranslationMarker;
 import org.xwiki.logging.tail.LoggerTail;
@@ -230,12 +231,17 @@ class DefaultJobStatusStoreTest
 
     private File storeDirectory;
 
+    private File wrongDirectory;
+
     @BeforeComponent
     void before() throws Exception
     {
         this.storeDirectory = XWikiTempDirUtil.createTemporaryDirectory();
 
         FileUtils.copyDirectory(new File("src/test/resources/jobs/status/"), this.storeDirectory);
+
+        this.wrongDirectory = new File(this.storeDirectory, "wrong/location");
+        assertTrue(this.wrongDirectory.isDirectory(), "Directory copied from resources doesn't exist.");
 
         when(this.jobManagerConfiguration.getStorage()).thenReturn(this.storeDirectory);
         when(this.jobManagerConfiguration.getJobStatusCacheSize()).thenReturn(100);
@@ -290,6 +296,22 @@ class DefaultJobStatusStoreTest
         this.store.flushCache();
 
         return getStatus();
+    }
+
+    @Test
+    void jobStatusAndLogMoved()
+    {
+        JobStatus status = this.store.getJobStatus(List.of("correct", "location"));
+        assertNotNull(status);
+        LogEvent lastLogEvent = status.getLogTail().getLastLogEvent();
+        assertNotNull(lastLogEvent);
+        assertEquals("Finished job of type [{}] with identifier [{}]", lastLogEvent.getMessage());
+
+        assertFalse(this.wrongDirectory.exists());
+        assertFalse(this.wrongDirectory.getParentFile().exists());
+        assertTrue(new File(this.storeDirectory, "correct/location/status.xml.zip").exists());
+        assertTrue(new File(this.storeDirectory, "correct/location/log.index").exists());
+        assertTrue(new File(this.storeDirectory, "correct/location/log.xml").exists());
     }
 
     @Test
@@ -424,6 +446,19 @@ class DefaultJobStatusStoreTest
         this.store.store(jobStatus);
 
         assertTrue(new File(this.storeDirectory, "first/&null/second/status.xml.zip").exists());
+    }
+
+    @Test
+    void storeJobStatusWithProlematicCharacters()
+    {
+        DefaultRequest request = new DefaultRequest();
+        request.setId("..", ".", " *");
+
+        JobStatus jobStatus = new DefaultJobStatus<>("type", request, null, null, null);
+
+        this.store.store(jobStatus);
+
+        assertTrue(new File(this.storeDirectory, "%2E%2E/%2E/%20%2A/status.xml.zip").exists());
     }
 
     @Test

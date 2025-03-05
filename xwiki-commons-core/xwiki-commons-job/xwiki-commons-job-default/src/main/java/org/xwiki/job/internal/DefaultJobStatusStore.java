@@ -21,9 +21,13 @@ package org.xwiki.job.internal;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -92,11 +96,6 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
      * The name of the property containing the version of the store.
      */
     private static final String INDEX_FILE_VERSION = "version";
-
-    /**
-     * Encoding used for file content and names.
-     */
-    private static final String DEFAULT_ENCODING = "UTF-8";
 
     /**
      * The encoded version of a <code>null</code> value in the id list.
@@ -210,13 +209,11 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         String encoded;
 
         if (name != null) {
-            try {
-                encoded = URLEncoder.encode(name, DEFAULT_ENCODING);
-            } catch (UnsupportedEncodingException e) {
-                // Should never happen
-
-                encoded = name;
-            }
+            encoded = URLEncoder.encode(name, StandardCharsets.UTF_8)
+                // Replace characters that might be problematic in file systems.
+                .replace("+", "%20")
+                .replace(".", "%2E")
+                .replace("*", "%2A");
         } else {
             encoded = FOLDER_NULL;
         }
@@ -258,18 +255,45 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
                         File properFolder = getJobFolder(status.getRequest().getId());
 
                         if (!folder.equals(properFolder)) {
-                            // Move the status in its right place
-                            try {
-                                FileUtils.moveFileToDirectory(file, properFolder, true);
-                            } catch (IOException e) {
-                                this.logger.error("Failed to move job status file", e);
-                            }
+                            moveJobStatus(folder, file, properFolder);
                         }
                     }
                 } catch (Exception e) {
                     this.logger.warn("Failed to load job status in folder [{}]", folder, e);
                 }
             }
+        }
+    }
+
+    private void moveJobStatus(File sourceDirectory, File statusFile, File targetDirectory)
+    {
+        try {
+            // Move the status in its right place
+            FileUtils.moveFileToDirectory(statusFile, targetDirectory, true);
+            // Move the job log, too.
+            for (File file : sourceDirectory.listFiles()) {
+                if (!file.isDirectory() && file.getName().startsWith(STATUS_LOG_PREFIX)) {
+                    FileUtils.moveFileToDirectory(file, targetDirectory, true);
+                }
+            }
+
+            Path storageDirectory = this.configuration.getStorage().toPath();
+
+            // Remove the source directory and its parents if they are empty now.
+            for (Path sourcePath = sourceDirectory.toPath();
+                !Objects.equals(storageDirectory, sourcePath) && sourcePath != null && isDirEmpty(sourcePath);
+                sourcePath = sourcePath.getParent()) {
+                Files.delete(sourcePath);
+            }
+        } catch (IOException e) {
+            this.logger.error("Failed to move job status and log files, and cleaning up", e);
+        }
+    }
+
+    private static boolean isDirEmpty(Path directory) throws IOException
+    {
+        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
+            return !dirStream.iterator().hasNext();
         }
     }
 
