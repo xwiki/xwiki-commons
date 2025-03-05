@@ -26,7 +26,6 @@ import java.util.Objects;
 
 import javax.inject.Provider;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
@@ -404,9 +403,27 @@ class DefaultJobStatusStoreTest
         DefaultRequest request = new DefaultRequest();
         request.setId(StringUtils.repeat('a', 768));
 
-        JobStatus jobStatus = new DefaultJobStatus("type", request, null, null, null);
+        JobStatus jobStatus = new DefaultJobStatus<>("type", request, null, null, null);
 
         this.store.store(jobStatus);
+
+        String longAName = StringUtils.repeat('a', 255);
+
+        assertTrue(new File(this.storeDirectory,
+            "%s/%s/%s/aaa/status.xml.zip".formatted(longAName, longAName, longAName)).exists());
+    }
+
+    @Test
+    void storeJobStatusWithNullPartInId()
+    {
+        DefaultRequest request = new DefaultRequest();
+        request.setId("first", null, "second");
+
+        JobStatus jobStatus = new DefaultJobStatus<>("type", request, null, null, null);
+
+        this.store.store(jobStatus);
+
+        assertTrue(new File(this.storeDirectory, "first/&null/second/status.xml.zip").exists());
     }
 
     @Test
@@ -455,8 +472,7 @@ class DefaultJobStatusStoreTest
 
         // Verify that the status has been serialized, indirectly verifying that isSerializable() has been called and
         // returned true.
-        assertTrue(new File(this.storeDirectory, Base64.encodeBase64String(id.get(0).getBytes()) + "/status.xml.zip")
-            .exists());
+        assertTrue(new File(this.storeDirectory, id.get(0) + "/status.xml.zip").exists());
     }
 
     @Test

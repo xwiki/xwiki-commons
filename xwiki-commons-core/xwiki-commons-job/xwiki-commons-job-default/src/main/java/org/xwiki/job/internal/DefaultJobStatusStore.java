@@ -35,7 +35,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
@@ -72,7 +71,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     /**
      * The current version of the store. Should be upgraded if any change is made.
      */
-    private static final int VERSION = 1;
+    private static final int VERSION = 2;
 
     /**
      * The name of the file where the job status is stored as XML.
@@ -346,18 +345,15 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         if (id != null) {
             // Create a different folder for each element
             for (String fullIdElement : id) {
-                // But cut each element is it's bigger than 255 bytes (and not characters) since it's a very common
+                // But cut each element if it's bigger than 255 bytes (and not characters) since it's a very common
                 // limit for a single element of the path among file systems
-                // To be sure to deal with characters not taking more than 1 byte, we start by encoding it in base 64
-                String encodedIdElement = Base64.encodeBase64String(fullIdElement.getBytes());
-                if (encodedIdElement.length() > 255) {
-                    do {
-                        folder = new File(folder, encode(encodedIdElement.substring(0, 255)));
-                        encodedIdElement = encodedIdElement.substring(255);
-                    } while (encodedIdElement.length() > 255);
-                } else {
-                    folder = new File(folder, encode(encodedIdElement));
+                // To be sure to deal with characters not taking more than 1 byte, we start by encoding it.
+                String encodedIdElement = encode(fullIdElement);
+                while (encodedIdElement.length() > 255) {
+                    folder = new File(folder, encodedIdElement.substring(0, 255));
+                    encodedIdElement = encodedIdElement.substring(255);
                 }
+                folder = new File(folder, encodedIdElement);
             }
         }
 
