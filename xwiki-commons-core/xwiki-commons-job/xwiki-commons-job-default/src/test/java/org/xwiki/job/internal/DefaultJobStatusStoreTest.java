@@ -449,7 +449,7 @@ class DefaultJobStatusStoreTest
     }
 
     @Test
-    void storeJobStatusWithProlematicCharacters()
+    void storeJobStatusWithProblematicCharacters()
     {
         DefaultRequest request = new DefaultRequest();
         request.setId("..", ".", " *");
