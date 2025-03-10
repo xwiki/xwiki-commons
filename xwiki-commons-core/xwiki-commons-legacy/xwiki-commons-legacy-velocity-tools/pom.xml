@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-legacy</artifactId>
-    <version>16.4.7-SNAPSHOT</version>
+    <version>16.4.7</version>
   </parent>
   <artifactId>xwiki-commons-legacy-velocity-tools</artifactId>
   <name>XWiki Commons - Legacy - Velocity Tools</name>
