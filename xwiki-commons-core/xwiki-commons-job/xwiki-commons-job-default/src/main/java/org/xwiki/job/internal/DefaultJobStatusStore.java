@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -244,10 +245,12 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
                 repairFolder(file);
             } else if (file.getName().equals(FILENAME_STATUS_ZIP) || file.getName().equals(FILENAME_STATUS_XML)) {
                 try {
-                    JobStatus status = loadStatus(folder);
+                    List<String> id = loadID(folder);
 
-                    if (status != null) {
-                        File properFolder = getJobFolder(status.getRequest().getId());
+                    // We don't differentiate between jobs with ID null and a failure to load the ID. Instead, we
+                    // just don't move the job status when the ID is null.
+                    if (id != null) {
+                        File properFolder = getJobFolder(id);
 
                         if (!folder.equals(properFolder)) {
                             moveJobStatus(folder, file, properFolder);
@@ -307,11 +310,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
         try {
             // First try as ZIP
-            File statusFile = new File(folder, FILENAME_STATUS_ZIP);
-            if (!statusFile.exists()) {
-                // Then try as XML
-                statusFile = new File(folder, FILENAME_STATUS_XML);
-            }
+            File statusFile = getStatusFile(folder);
             if (statusFile.exists()) {
                 JobStatus status = loadJobStatus(statusFile);
 
@@ -333,6 +332,42 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
                 }
 
                 return status;
+            }
+        } finally {
+            this.readLock.unlock();
+        }
+
+        return null;
+    }
+
+    private static File getStatusFile(File folder)
+    {
+        File statusFile = new File(folder, FILENAME_STATUS_ZIP);
+        if (!statusFile.exists()) {
+            // Then try as XML
+            statusFile = new File(folder, FILENAME_STATUS_XML);
+        }
+        return statusFile;
+    }
+
+    private List<String> loadID(File folder) throws IOException
+    {
+        this.readLock.lock();
+
+        try {
+            File statusFile = getStatusFile(folder);
+
+            if (statusFile.exists()) {
+                Optional<List<String>> result = this.serializer.loadID(statusFile);
+                if (result.isEmpty()) {
+                    JobStatus jobStatus = loadJobStatus(statusFile);
+
+                    if (jobStatus != null && jobStatus.getRequest() != null) {
+                        return jobStatus.getRequest().getId();
+                    }
+                } else {
+                    return result.get();
+                }
             }
         } finally {
             this.readLock.unlock();
