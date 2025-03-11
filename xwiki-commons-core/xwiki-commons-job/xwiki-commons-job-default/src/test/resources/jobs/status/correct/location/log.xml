@@ -41,7 +41,7 @@
     </references>
     <translationKey>job.log.endWithId</translationKey>
   </marker>
-  <message>Finished correct job of type [{}] with identifier [{}]</message>
+  <message>Finished old job of type [{}] with identifier [{}]</message>
   <argumentArray>
     <string>macrojob</string>
     <list>

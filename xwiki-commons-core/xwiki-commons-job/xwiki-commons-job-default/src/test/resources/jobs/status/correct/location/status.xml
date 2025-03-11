@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<org.xwiki.job.DefaultJobStatus>
+  <progress>
+    <listenerName>org.xwiki.job.internal.DefaultJobProgress_1926879268</listenerName>
+    <rootStep>
+      <message>
+        <message>Progress with name [{}]</message>
+        <marker class="org.xwiki.logging.marker.TranslationMarker">
+          <name>xwiki.translation</name>
+          <translationKey>job.progress</translationKey>
+        </marker>
+        <argumentArray>
+          <null/>
+        </argumentArray>
+      </message>
+      <offset>1.0</offset>
+      <startTime>286784319138981</startTime>
+      <levelFinished>true</levelFinished>
+      <elapsedTime>2178366</elapsedTime>
+    </rootStep>
+  </progress>
+  <jobType>macrojob</jobType>
+  <state>FINISHED</state>
+  <request class="org.xwiki.job.DefaultRequest">
+    <id>
+      <string>correct</string>
+      <string>location</string>
+    </id>
+    <properties>
+      <entry>
+        <string>property</string>
+        <string>value</string>
+      </entry>
+    </properties>
+  </request>
+  <startDate>2025-03-05 15:05:18.755 UTC</startDate>
+  <endDate>2025-03-05 15:05:18.756 UTC</endDate>
+  <isolated>true</isolated>
+  <canceled>false</canceled>
+  <cancelable>false</cancelable>
+  <serialized>true</serialized>
+  <questionEnd>-1</questionEnd>
+</org.xwiki.job.DefaultJobStatus>

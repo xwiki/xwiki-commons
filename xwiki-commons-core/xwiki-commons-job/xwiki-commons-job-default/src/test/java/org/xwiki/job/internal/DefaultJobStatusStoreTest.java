@@ -94,7 +94,10 @@ import static org.mockito.Mockito.when;
 // @formatter:on
 class DefaultJobStatusStoreTest
 {
+
     private static final List<String> ID = Arrays.asList("test");
+
+    private static final String STATUS_XML_ZIP = "status.xml.zip";
 
     @Serializable
     private static class SerializableCrossReferenceObject
@@ -233,6 +236,12 @@ class DefaultJobStatusStoreTest
 
     private File wrongDirectory;
 
+    private File wrongDirectory2;
+
+    private File correctDirectory;
+
+    private File wrongStatusInCorrectDirectory;
+
     @BeforeComponent
     void before() throws Exception
     {
@@ -241,7 +250,22 @@ class DefaultJobStatusStoreTest
         FileUtils.copyDirectory(new File("src/test/resources/jobs/status/"), this.storeDirectory);
 
         this.wrongDirectory = new File(this.storeDirectory, "wrong/location");
+        this.wrongDirectory2 = new File(this.storeDirectory, "wrong/location2");
+        this.correctDirectory = new File(this.storeDirectory, "correct/location");
         assertTrue(this.wrongDirectory.isDirectory(), "Directory copied from resources doesn't exist.");
+
+        File mostRecentFile = new File(this.wrongDirectory, STATUS_XML_ZIP);
+        File oldestFile = new File(this.wrongDirectory2, STATUS_XML_ZIP);
+        File middleFile = new File(this.correctDirectory, "status.xml");
+        this.wrongStatusInCorrectDirectory = middleFile;
+
+        assertTrue(mostRecentFile.exists());
+        assertTrue(oldestFile.exists());
+        assertTrue(middleFile.exists());
+
+        assertTrue(mostRecentFile.setLastModified(System.currentTimeMillis()));
+        assertTrue(oldestFile.setLastModified(System.currentTimeMillis() - 4000));
+        assertTrue(middleFile.setLastModified(System.currentTimeMillis() - 2000));
 
         when(this.jobManagerConfiguration.getStorage()).thenReturn(this.storeDirectory);
         when(this.jobManagerConfiguration.getJobStatusCacheSize()).thenReturn(100);
@@ -305,13 +329,16 @@ class DefaultJobStatusStoreTest
         assertNotNull(status);
         LogEvent lastLogEvent = status.getLogTail().getLastLogEvent();
         assertNotNull(lastLogEvent);
-        assertEquals("Finished job of type [{}] with identifier [{}]", lastLogEvent.getMessage());
+        // Verify that we got the correct job.
+        assertEquals("Finished correct job of type [{}] with identifier [{}]", lastLogEvent.getMessage());
 
         assertFalse(this.wrongDirectory.exists());
         assertFalse(this.wrongDirectory.getParentFile().exists());
-        assertTrue(new File(this.storeDirectory, "correct/location/status.xml.zip").exists());
-        assertTrue(new File(this.storeDirectory, "correct/location/log.index").exists());
-        assertTrue(new File(this.storeDirectory, "correct/location/log.xml").exists());
+        assertFalse(this.wrongDirectory2.exists());
+        assertFalse(this.wrongStatusInCorrectDirectory.exists());
+        assertTrue(new File(this.correctDirectory, STATUS_XML_ZIP).exists());
+        assertTrue(new File(this.correctDirectory, "log.index").exists());
+        assertTrue(new File(this.correctDirectory, "log.xml").exists());
     }
 
     @Test
