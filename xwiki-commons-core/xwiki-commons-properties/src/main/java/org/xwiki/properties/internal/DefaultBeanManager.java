@@ -140,6 +140,7 @@ public class DefaultBeanManager implements BeanManager
     private void populateBean(Object bean, Map<String, Object> values) throws PropertyException
     {
         BeanDescriptor beanDescriptor = getBeanDescriptor(bean.getClass());
+        Map<String, Object> alreadyPopulatedProperties = new HashMap<>();
 
         // Lower case provided properties to easily ignore properties name case
         Map<String, String> lowerKeyMap = new HashMap<>(values.size());
@@ -181,11 +182,14 @@ public class DefaultBeanManager implements BeanManager
                 }
 
                 // "Tick" already populated properties
+                alreadyPopulatedProperties.put(propertyId, value);
                 values.remove(propertyId);
             } else if (propertyDescriptor.isMandatory()) {
                 throw new PropertyMandatoryException(propertyId);
             }
-            checkFeatureMandatory(propertyDescriptor, beanDescriptor.getProperties(), values);
+            Map<String, Object> allPropertyValues = new HashMap<>(values);
+            allPropertyValues.putAll(alreadyPopulatedProperties);
+            checkFeatureMandatory(propertyDescriptor, beanDescriptor.getProperties(), allPropertyValues);
         }
     }
 
@@ -241,7 +245,7 @@ public class DefaultBeanManager implements BeanManager
             String feature = propertyDescriptor.getGroupDescriptor().getFeature();
             boolean hasValue = properties.stream().anyMatch(
                 property -> Objects.equals(property.getGroupDescriptor().getFeature(), feature)
-                    && values.get(property.getId()) != null);
+                && values.get(property.getId()) != null);
             if (!hasValue)
             {
                 throw new PropertyFeatureMandatoryException(feature);
