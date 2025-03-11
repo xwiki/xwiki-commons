@@ -21,6 +21,8 @@ package org.xwiki.job.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.xwiki.job.DefaultJobStatus;
@@ -78,5 +80,19 @@ class JobStatusSerializerTest
         assertEquals(0.0d, status.getProgress().getOffset(), 0.1d);
         assertEquals(0.0d, status.getProgress().getCurrentLevelOffset(), 0.1d);
         assertEquals("Progress with name [{}]", status.getProgress().getRootStep().getMessage().getMessage());
+    }
+
+    @Test
+    void readID() throws IOException
+    {
+        DefaultRequest request = new DefaultRequest();
+        List<String> id = Arrays.asList("one", null, "two");
+        request.setId(id);
+        JobStatus status = new DefaultJobStatus<Request>("type", request, null, null, null);
+
+        status = writeRead(status);
+
+        assertEquals(id, status.getRequest().getId());
+        assertEquals(id, this.serializer.readID(this.testFile).orElseThrow());
     }
 }

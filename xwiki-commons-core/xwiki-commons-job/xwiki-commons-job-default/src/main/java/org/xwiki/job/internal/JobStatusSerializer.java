@@ -174,9 +174,9 @@ public class JobStatusSerializer
      * @return the job ID if the file could be parsed
      * @throws IOException when failing to read the status file
      */
-    public Optional<List<String>> loadID(File file) throws IOException
+    public Optional<List<String>> readID(File file) throws IOException
     {
-        return processFile(file, this::loadID);
+        return processFile(file, this::readID);
     }
 
     /**
@@ -206,7 +206,7 @@ public class JobStatusSerializer
         }
     }
 
-    private Optional<List<String>> loadID(InputStream inputStream) throws IOException
+    private Optional<List<String>> readID(InputStream inputStream) throws IOException
     {
         XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
         xmlInputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);

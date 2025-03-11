@@ -358,7 +358,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             File statusFile = getStatusFile(folder);
 
             if (statusFile.exists()) {
-                Optional<List<String>> result = this.serializer.loadID(statusFile);
+                Optional<List<String>> result = this.serializer.readID(statusFile);
                 if (result.isEmpty()) {
                     JobStatus jobStatus = loadJobStatus(statusFile);
 
