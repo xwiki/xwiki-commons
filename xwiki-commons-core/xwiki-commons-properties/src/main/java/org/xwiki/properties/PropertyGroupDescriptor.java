@@ -33,6 +33,8 @@ public class PropertyGroupDescriptor
     private List<String> group;
 
     private String feature;
+    
+    private Boolean featureMandatory = false;
 
     /**
      * Default constructor.
@@ -70,5 +72,21 @@ public class PropertyGroupDescriptor
     public String getFeature()
     {
         return feature;
+    }
+
+    /**
+     * @param mandatory indicate if the feature of this property is mandatory
+     */
+    public void setFeatureMandatory(boolean mandatory)
+    {
+        this.featureMandatory = mandatory;
+    }
+
+    /**
+     * @return whether the feature upheld by this property is mandatory
+     */
+    public boolean isFeatureMandatory()
+    {
+        return this.featureMandatory;
     }
 }
