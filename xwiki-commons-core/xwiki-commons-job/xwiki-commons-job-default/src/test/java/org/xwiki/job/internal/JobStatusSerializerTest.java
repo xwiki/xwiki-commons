@@ -21,10 +21,16 @@ package org.xwiki.job.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.Request;
@@ -82,11 +88,11 @@ class JobStatusSerializerTest
         assertEquals("Progress with name [{}]", status.getProgress().getRootStep().getMessage().getMessage());
     }
 
-    @Test
-    void readID() throws IOException
+    @ParameterizedTest
+    @MethodSource("idListProvider")
+    void readID(List<String> id) throws IOException
     {
         DefaultRequest request = new DefaultRequest();
-        List<String> id = Arrays.asList("one", null, "two");
         request.setId(id);
         JobStatus status = new DefaultJobStatus<Request>("type", request, null, null, null);
 
@@ -94,5 +100,16 @@ class JobStatusSerializerTest
 
         assertEquals(id, status.getRequest().getId());
         assertEquals(id, this.serializer.readID(this.testFile).orElseThrow());
+    }
+
+    static Stream<List<String>> idListProvider()
+    {
+        List<String> elements = Arrays.asList("one", null, "two\n test");
+        return Stream.of(
+            new ArrayList<>(elements),
+            new LinkedList<>(elements),
+            elements,
+            Collections.unmodifiableList(new ArrayList<>(elements))
+        );
     }
 }

@@ -25,21 +25,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.EndElement;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -48,7 +52,6 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.function.FailableFunction;
-import org.apache.commons.lang3.function.FailableSupplier;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.environment.Environment;
@@ -66,6 +69,8 @@ import org.xwiki.xstream.internal.SafeXStream;
 @Singleton
 public class JobStatusSerializer
 {
+    private static final String ID_WRAPPER_CLASS_NAME = "org.xwiki.job.internal.JobStatusSerializer_-IDWrapper";
+
     /**
      * Encoding used for file content and names.
      */
@@ -212,23 +217,27 @@ public class JobStatusSerializer
         xmlInputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
 
         try {
-            XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(inputStream);
+            XMLEventReader xmlEventReader = xmlInputFactory.createXMLEventReader(inputStream);
 
             // Navigate to the root element
-            xmlStreamReader.nextTag();
-            if (!xmlStreamReader.isStartElement()) {
-                throw new IOException("Expected START_ELEMENT at the root, but got " + xmlStreamReader.getEventType());
+            while (xmlEventReader.hasNext()) {
+                XMLEvent event = xmlEventReader.nextEvent();
+                if (event.isStartElement()) {
+                    StartElement rootElement = event.asStartElement();
+                    String rootClassName = rootElement.getName().getLocalPart();
+
+                    // Verify the root class is a JobStatus
+                    if (!isSimpleJobStatusClass(rootClassName)) {
+                        this.logger.warn("Job status with class {} is not valid", rootClassName);
+                        return Optional.empty();
+                    }
+
+                    // Process the elements within the root
+                    return processRootElement(xmlEventReader, rootClassName);
+                }
             }
 
-            // Verify the root class is a JobStatus
-            String rootClassName = xmlStreamReader.getLocalName();
-            if (!isSimpleJobStatusClass(rootClassName)) {
-                this.logger.warn("Job status with class {} is not valid", rootClassName);
-                return Optional.empty();
-            }
-
-            // Process the elements within the root
-            return processRootElement(xmlStreamReader, rootClassName);
+            throw new IOException("No root element found in the XML");
         } catch (XMLStreamException e) {
             throw new IOException("Error parsing XML", e);
         }
@@ -279,16 +288,17 @@ public class JobStatusSerializer
         }
     }
 
-    private Optional<List<String>> processRootElement(XMLStreamReader xmlStreamReader, String rootClassName)
+    private Optional<List<String>> processRootElement(XMLEventReader xmlEventReader, String rootClassName)
         throws XMLStreamException
     {
-        return findDirectChild(xmlStreamReader, rootClassName, REQUEST_ELEMENT, () -> {
-            // Found request element, check its class
-            String requestClassName = getClassAttribute(xmlStreamReader);
+        return findDirectChild(xmlEventReader, rootClassName, REQUEST_ELEMENT, requestElement -> {
+            // Found the request element, check its class.
+            Attribute classAttr = requestElement.getAttributeByName(new QName("class"));
+            String requestClassName = classAttr != null ? classAttr.getValue() : null;
 
             if (isSimpleJobRequestClass(requestClassName)) {
                 // Process the request element looking for the id element
-                return processRequestElement(xmlStreamReader);
+                return processRequestElement(xmlEventReader);
             } else {
                 this.logger.warn("Invalid request class {}", requestClassName);
                 return Optional.empty();
@@ -296,50 +306,46 @@ public class JobStatusSerializer
         });
     }
 
-    private String getClassAttribute(XMLStreamReader xmlStreamReader)
+    private Optional<List<String>> processRequestElement(XMLEventReader xmlEventReader) throws XMLStreamException
     {
-        for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++) {
-            if ("class".equals(xmlStreamReader.getAttributeLocalName(i))) {
-                return xmlStreamReader.getAttributeValue(i);
-            }
-        }
-        return null;
-    }
-
-    private Optional<List<String>> processRequestElement(XMLStreamReader xmlStreamReader) throws XMLStreamException
-    {
-        return findDirectChild(xmlStreamReader, REQUEST_ELEMENT, ID_ELEMENT, () ->
+        return findDirectChild(xmlEventReader, REQUEST_ELEMENT, ID_ELEMENT, idElement ->
             // Found id element, process its string children
-            processIdElement(xmlStreamReader)
+            processIdElement(idElement, xmlEventReader)
         );
     }
 
     /**
      * Iterate through XML elements searching for a direct child with the specified name.
      *
-     * @param xmlStreamReader the XML stream reader
+     * @param xmlEventReader the XML event reader
      * @param parentElementName the name of the parent element to search within
      * @param childElementName the name of the direct child element to find
      * @param childHandler handler to process the child when found
      * @return the result from the child handler or an empty optional if no matching child was found
      * @throws XMLStreamException if there's an error parsing the XML
      */
-    private <T> Optional<T> findDirectChild(XMLStreamReader xmlStreamReader, String parentElementName,
-        String childElementName, FailableSupplier<Optional<T>, XMLStreamException> childHandler)
+    private <T> Optional<T> findDirectChild(XMLEventReader xmlEventReader, String parentElementName,
+        String childElementName, FailableFunction<StartElement, Optional<T>, XMLStreamException> childHandler)
         throws XMLStreamException
     {
         int depth = 0;
-        while (xmlStreamReader.hasNext()) {
-            int eventType = xmlStreamReader.next();
+        while (xmlEventReader.hasNext()) {
+            XMLEvent event = xmlEventReader.nextEvent();
 
-            if (eventType == XMLStreamConstants.START_ELEMENT) {
+            if (event.isStartElement()) {
                 depth++;
+                StartElement startElement = event.asStartElement();
+                String elementName = startElement.getName().getLocalPart();
+
                 // If we're at depth 1 (direct child) and found the element we're looking for
-                if (depth == 1 && childElementName.equals(xmlStreamReader.getLocalName())) {
-                    return childHandler.get();
+                if (depth == 1 && childElementName.equals(elementName)) {
+                    return childHandler.apply(startElement);
                 }
-            } else if (eventType == XMLStreamConstants.END_ELEMENT) {
-                if (parentElementName.equals(xmlStreamReader.getLocalName()) && depth == 0) {
+            } else if (event.isEndElement()) {
+                EndElement endElement = event.asEndElement();
+                String elementName = endElement.getName().getLocalPart();
+
+                if (parentElementName.equals(elementName) && depth == 0) {
                     // Reached the end of the parent element
                     break;
                 }
@@ -350,29 +356,46 @@ public class JobStatusSerializer
         return Optional.empty();
     }
 
-    private Optional<List<String>> processIdElement(XMLStreamReader xmlStreamReader) throws XMLStreamException
+    /**
+     * Helper class to unserialize just the {@code id} property of a job request.
+     */
+    private static final class IDWrapper
     {
-        List<String> jobIds = new ArrayList<>();
+        private List<String> id;
+    }
 
-        // Extract the string elements from the id element
-        while (xmlStreamReader.hasNext()) {
-            int eventType = xmlStreamReader.next();
+    private Optional<List<String>> processIdElement(StartElement idElement, XMLEventReader xmlEventReader)
+        throws XMLStreamException
+    {
+        // Extract the raw XML content so we can use XStream to parse it as the exact content depends on the used
+        // List implementation, and we need to be sure that the parsing is identical to XStream's parsing.
+        StringWriter stringWriter = new StringWriter();
+        idElement.writeAsEncodedUnicode(stringWriter);
 
-            if (eventType == XMLStreamConstants.START_ELEMENT && "string".equals(xmlStreamReader.getLocalName())) {
-                eventType = xmlStreamReader.next();
-                if (eventType == XMLStreamConstants.CHARACTERS) {
-                    jobIds.add(xmlStreamReader.getText());
-                }
-            } else if (eventType == XMLStreamConstants.START_ELEMENT && "null".equals(xmlStreamReader.getLocalName())) {
-                jobIds.add(null);
-            } else if (eventType == XMLStreamConstants.END_ELEMENT && ID_ELEMENT.equals(xmlStreamReader.getLocalName()))
-            {
+        int depth = 0;
+
+        while (xmlEventReader.hasNext()) {
+            XMLEvent event = xmlEventReader.nextEvent();
+            event.writeAsEncodedUnicode(stringWriter);
+
+            if (event.isStartElement()) {
+                depth++;
+            } else if (event.isEndElement()) {
                 // Reached the end of the id element
-                break;
+                if (depth == 0) {
+                    break;
+                }
+
+                --depth;
             }
         }
 
-        return Optional.of(jobIds);
+        String idToParse =
+            "<%s>%s</%s>".formatted(ID_WRAPPER_CLASS_NAME, stringWriter.toString(), ID_WRAPPER_CLASS_NAME);
+
+        IDWrapper idWrapper = (IDWrapper) this.xstream.fromXML(idToParse);
+
+        return Optional.of(idWrapper.id);
     }
 
     private boolean isZip(File file)
