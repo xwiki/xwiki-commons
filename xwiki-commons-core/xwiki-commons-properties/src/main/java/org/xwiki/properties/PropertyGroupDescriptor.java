@@ -22,6 +22,8 @@ package org.xwiki.properties;
 import java.util.Collections;
 import java.util.List;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * Contains a {@code List<String>} to view the group as a single object and the associated feature.
  *
@@ -75,16 +77,20 @@ public class PropertyGroupDescriptor
     }
 
     /**
+     * @since 17.2.0RC1
      * @param mandatory indicate if the feature of this property is mandatory
      */
+    @Unstable
     public void setFeatureMandatory(boolean mandatory)
     {
         this.featureMandatory = mandatory;
     }
 
     /**
+     * @since 17.2.0RC1
      * @return whether the feature upheld by this property is mandatory
      */
+    @Unstable
     public boolean isFeatureMandatory()
     {
         return this.featureMandatory;

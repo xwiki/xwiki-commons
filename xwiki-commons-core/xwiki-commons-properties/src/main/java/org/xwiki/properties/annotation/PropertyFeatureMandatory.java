@@ -25,6 +25,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * Use this annotation on a property binded to a feature {@link PropertyFeature} to tag this feature as mandatory.
  * A mandatory feature will enforce at least one of its properties is set.
@@ -36,6 +38,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.FIELD })
 @Inherited
+@Unstable
 public @interface PropertyFeatureMandatory
 {
 }
