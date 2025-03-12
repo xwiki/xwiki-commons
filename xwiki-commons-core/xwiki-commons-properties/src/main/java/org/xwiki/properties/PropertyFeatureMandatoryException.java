@@ -23,7 +23,7 @@ package org.xwiki.properties;
  * Thrown when a mandatory feature is not found in the map of values to populate.
  *
  * @version $Id$
- * @since 17.3.0RC1
+ * @since 17.2.0RC1
  */
 public class PropertyFeatureMandatoryException extends PropertyException
 {

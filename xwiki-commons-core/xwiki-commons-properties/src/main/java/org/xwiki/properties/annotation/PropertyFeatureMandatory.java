@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  * A mandatory feature will enforce at least one of its properties is set.
  *
  * @version $Id$
- * @since 17.2RC1
+ * @since 17.2.0RC1
  */
 
 @Retention(RetentionPolicy.RUNTIME)
