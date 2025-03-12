@@ -46,6 +46,7 @@ import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.PropertyException;
 import org.xwiki.properties.PropertyFeatureMandatoryException;
+import org.xwiki.properties.PropertyGroupDescriptor;
 import org.xwiki.properties.PropertyMandatoryException;
 import org.xwiki.properties.RawProperties;
 
@@ -239,16 +240,17 @@ public class DefaultBeanManager implements BeanManager
         Map<String, Object> values) throws PropertyFeatureMandatoryException
     {
         // Before all, we make sure we're in the case where this annotation actually means something.
-        if (propertyDescriptor.getGroupDescriptor().getFeature() != null
-            && propertyDescriptor.getGroupDescriptor().isFeatureMandatory())
+        PropertyGroupDescriptor groupDescriptor = propertyDescriptor.getGroupDescriptor();
+        if (groupDescriptor.getFeature() != null
+            && groupDescriptor.isFeatureMandatory())
         {
-            String feature = propertyDescriptor.getGroupDescriptor().getFeature();
+            String feature = groupDescriptor.getFeature();
             boolean hasValue = properties.stream().anyMatch(
                 property -> Objects.equals(property.getGroupDescriptor().getFeature(), feature)
                 && values.get(property.getId()) != null);
             if (!hasValue)
             {
-                throw new PropertyFeatureMandatoryException(feature);
+                throw new PropertyFeatureMandatoryException(propertyDescriptor);
             }
         }
     }

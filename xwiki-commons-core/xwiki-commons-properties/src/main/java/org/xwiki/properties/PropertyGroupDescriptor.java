@@ -36,7 +36,7 @@ public class PropertyGroupDescriptor
 
     private String feature;
     
-    private Boolean featureMandatory = false;
+    private boolean featureMandatory;
 
     /**
      * Default constructor.

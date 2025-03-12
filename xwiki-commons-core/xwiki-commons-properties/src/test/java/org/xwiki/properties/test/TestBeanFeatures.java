@@ -20,7 +20,6 @@
 package org.xwiki.properties.test;
 
 import org.xwiki.properties.annotation.PropertyFeature;
-import org.xwiki.properties.annotation.PropertyFeatureMandatory;
 
 public class TestBeanFeatures
 {
@@ -40,9 +39,8 @@ public class TestBeanFeatures
     {
         this.propertyFeatureMandatory1 = propertyFeatureMandatory1;
     }
-
-    @PropertyFeatureMandatory
-    @PropertyFeature("mandatoryFeature")
+    
+    @PropertyFeature(value = "mandatoryFeature", mandatory = true)
     public String getPropertyFeatureMandatory2()
     {
         return propertyFeatureMandatory2;

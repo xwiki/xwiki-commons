@@ -40,4 +40,9 @@ public @interface PropertyFeature
      * @return the group name.
      */
     String value();
+
+    /**
+     * @return whether the feature described in this annotation is mandatory.
+     */
+    boolean mandatory() default false;
 }

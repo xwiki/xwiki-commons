@@ -28,14 +28,13 @@ import org.xwiki.stability.Unstable;
  * @since 17.2.0RC1
  */
 @Unstable
-public class PropertyFeatureMandatoryException extends PropertyException
+public class PropertyFeatureMandatoryException extends PropertyMandatoryException
 {
-
     /**
-     * @param featureName the name of the mandatory feature
+     * @param property the descriptor of the property with the missing mandatory feature.
      */
-    public PropertyFeatureMandatoryException(String featureName)
+    public PropertyFeatureMandatoryException(PropertyDescriptor property)
     {
-        super("Feature [" + featureName + "] mandatory");
+        super(property.getName() + ":" + property.getGroupDescriptor().getFeature());
     }
 }

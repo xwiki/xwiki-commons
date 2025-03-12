@@ -181,6 +181,7 @@ class DefaultBeanManagerTest
         // We test when no property is filled up for the feature.
         Throwable exception = assertThrows(PropertyException.class,
             () -> this.defaultBeanManager.populate(new TestBeanFeatures(), new HashMap<>()));
-        assertEquals("Feature [mandatoryFeature] mandatory", exception.getMessage());
+        assertEquals("Property [propertyFeatureMandatory2:mandatoryFeature] mandatory", 
+            exception.getMessage());
     }
 }

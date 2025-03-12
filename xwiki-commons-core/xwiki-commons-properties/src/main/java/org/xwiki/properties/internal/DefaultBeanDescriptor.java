@@ -48,7 +48,6 @@ import org.xwiki.properties.annotation.PropertyDescription;
 import org.xwiki.properties.annotation.PropertyDisplayHidden;
 import org.xwiki.properties.annotation.PropertyDisplayType;
 import org.xwiki.properties.annotation.PropertyFeature;
-import org.xwiki.properties.annotation.PropertyFeatureMandatory;
 import org.xwiki.properties.annotation.PropertyGroup;
 import org.xwiki.properties.annotation.PropertyHidden;
 import org.xwiki.properties.annotation.PropertyId;
@@ -70,8 +69,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
 
     private static final List<Class<? extends Annotation>> COMMON_ANNOTATION_CLASSES = Arrays.asList(
         PropertyMandatory.class, Deprecated.class, PropertyAdvanced.class, PropertyGroup.class,
-        PropertyFeature.class, PropertyDisplayType.class, PropertyDisplayHidden.class,
-        PropertyFeatureMandatory.class);
+        PropertyFeature.class, PropertyDisplayType.class, PropertyDisplayHidden.class);
 
     /**
      * @see #getBeanClass()
@@ -301,8 +299,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                     + "(previous: [%s], new: [%s])", desc.getId(), group.getFeature(), parameterFeature.value()));
             }
             group.setFeature(parameterFeature.value());
-            // We only care about the mandatory aspect of the feature if the feature name is set.
-            group.setFeatureMandatory(annotations.get(PropertyFeatureMandatory.class) != null);
+            group.setFeatureMandatory(parameterFeature.mandatory());
         }
     }
 
