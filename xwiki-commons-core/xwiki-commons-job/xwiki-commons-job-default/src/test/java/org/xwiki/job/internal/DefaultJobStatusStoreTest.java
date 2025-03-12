@@ -479,13 +479,13 @@ class DefaultJobStatusStoreTest
     void storeJobStatusWithProblematicCharacters()
     {
         DefaultRequest request = new DefaultRequest();
-        request.setId("..", ".", " *");
+        request.setId("..", ".", " .*.");
 
         JobStatus jobStatus = new DefaultJobStatus<>("type", request, null, null, null);
 
         this.store.store(jobStatus);
 
-        assertTrue(new File(this.storeDirectory, "%2E%2E/%2E/%20%2A/status.xml.zip").exists());
+        assertTrue(new File(this.storeDirectory, "%2E%2E/%2E/+.%2A%2E/status.xml.zip").exists());
     }
 
     @Test

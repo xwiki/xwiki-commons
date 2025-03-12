@@ -75,6 +75,7 @@ import org.xwiki.logging.tail.LoggerTail;
 @Singleton
 public class DefaultJobStatusStore implements JobStatusStore, Initializable
 {
+
     /**
      * The current version of the store. Should be upgraded if any change is made.
      */
@@ -106,6 +107,10 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     private static final String FOLDER_NULL = "&null";
 
     private static final String STATUS_LOG_PREFIX = "log";
+
+    private static final String PERIOD = ".";
+
+    private static final String ENCODED_PERIOD = "%2E";
 
     private static final JobStatus NOSTATUS = new DefaultJobStatus<>(null, null, null, null, null);
 
@@ -213,10 +218,16 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
         if (name != null) {
             encoded = URLEncoder.encode(name, StandardCharsets.UTF_8)
-                // Replace characters that might be problematic in file systems.
-                .replace("+", "%20")
-                .replace(".", "%2E")
+                // Replace * as it's not allowed on Windows.
                 .replace("*", "%2A");
+            // Replace "." at the beginning or end of the string as they're not allowed/have special meaning, see
+            // https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
+            if (encoded.startsWith(PERIOD)) {
+                encoded = ENCODED_PERIOD + encoded.substring(1);
+            }
+            if (encoded.endsWith(PERIOD)) {
+                encoded = encoded.substring(0, encoded.length() - 1) + ENCODED_PERIOD;
+            }
         } else {
             encoded = FOLDER_NULL;
         }
