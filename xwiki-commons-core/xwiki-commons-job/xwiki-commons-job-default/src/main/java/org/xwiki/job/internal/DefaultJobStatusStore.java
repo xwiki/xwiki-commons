@@ -21,6 +21,8 @@ package org.xwiki.job.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -60,7 +62,6 @@ import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.logging.tail.LoggerTail;
-import org.xwiki.text.internal.FileSystemStoreUtils;
 
 /**
  * Default implementation of {@link JobStatusStorage}.
@@ -211,7 +212,11 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         String encoded;
 
         if (name != null) {
-            encoded = FileSystemStoreUtils.encode(name, true);
+            encoded = URLEncoder.encode(name, StandardCharsets.UTF_8)
+                // Replace characters that might be problematic in file systems.
+                .replace("+", "%20")
+                .replace(".", "%2E")
+                .replace("*", "%2A");
         } else {
             encoded = FOLDER_NULL;
         }
