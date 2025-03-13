@@ -25,6 +25,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * Use this annotation to bind a property to a feature.
  *
@@ -42,7 +44,9 @@ public @interface PropertyFeature
     String value();
 
     /**
+     * @since 17.2.0RC1
      * @return whether the feature described in this annotation is mandatory.
      */
+    @Unstable
     boolean mandatory() default false;
 }
