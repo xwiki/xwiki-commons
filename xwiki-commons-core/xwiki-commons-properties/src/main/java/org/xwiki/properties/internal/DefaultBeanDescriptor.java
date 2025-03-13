@@ -299,6 +299,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                     + "(previous: [%s], new: [%s])", desc.getId(), group.getFeature(), parameterFeature.value()));
             }
             group.setFeature(parameterFeature.value());
+            group.setFeatureMandatory(parameterFeature.mandatory());
         }
     }
 

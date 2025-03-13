@@ -22,8 +22,10 @@ package org.xwiki.properties.internal;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -43,6 +45,8 @@ import org.xwiki.properties.BeanManager;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.PropertyException;
+import org.xwiki.properties.PropertyFeatureMandatoryException;
+import org.xwiki.properties.PropertyGroupDescriptor;
 import org.xwiki.properties.PropertyMandatoryException;
 import org.xwiki.properties.RawProperties;
 
@@ -137,6 +141,7 @@ public class DefaultBeanManager implements BeanManager
     private void populateBean(Object bean, Map<String, Object> values) throws PropertyException
     {
         BeanDescriptor beanDescriptor = getBeanDescriptor(bean.getClass());
+        Map<String, Object> alreadyPopulatedProperties = new HashMap<>();
 
         // Lower case provided properties to easily ignore properties name case
         Map<String, String> lowerKeyMap = new HashMap<>(values.size());
@@ -178,10 +183,14 @@ public class DefaultBeanManager implements BeanManager
                 }
 
                 // "Tick" already populated properties
+                alreadyPopulatedProperties.put(propertyId, value);
                 values.remove(propertyId);
             } else if (propertyDescriptor.isMandatory()) {
                 throw new PropertyMandatoryException(propertyId);
             }
+            Map<String, Object> allPropertyValues = new HashMap<>(values);
+            allPropertyValues.putAll(alreadyPopulatedProperties);
+            checkFeatureMandatory(propertyDescriptor, beanDescriptor.getProperties(), allPropertyValues);
         }
     }
 
@@ -215,6 +224,33 @@ public class DefaultBeanManager implements BeanManager
             if (!constraintViolations.isEmpty()) {
                 throw new PropertyException(
                     "Failed to validate bean: [" + constraintViolations.iterator().next().getMessage() + "]");
+            }
+        }
+    }
+
+    /**
+     * We check that at least one property for this feature has a value.
+     * @param propertyDescriptor is the descriptor of the property to perform the check for
+     * @param properties is the collection of properties from which we can recover the ones that match the feature of
+     *  the current property
+     * @param values are the values associated to the properties above
+     */
+    private void checkFeatureMandatory(PropertyDescriptor propertyDescriptor,
+        Collection<PropertyDescriptor> properties,
+        Map<String, Object> values) throws PropertyFeatureMandatoryException
+    {
+        // Before all, we make sure we're in the case where this annotation actually means something.
+        PropertyGroupDescriptor groupDescriptor = propertyDescriptor.getGroupDescriptor();
+        if (groupDescriptor.getFeature() != null
+            && groupDescriptor.isFeatureMandatory())
+        {
+            String feature = groupDescriptor.getFeature();
+            boolean hasValue = properties.stream().anyMatch(
+                property -> Objects.equals(property.getGroupDescriptor().getFeature(), feature)
+                && values.get(property.getId()) != null);
+            if (!hasValue)
+            {
+                throw new PropertyFeatureMandatoryException(propertyDescriptor);
             }
         }
     }
