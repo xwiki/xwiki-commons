@@ -17,36 +17,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.properties.annotation;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.xwiki.properties;
 
 import org.xwiki.stability.Unstable;
 
 /**
- * Use this annotation to bind a property to a feature.
+ * Thrown when a mandatory feature is not found in the map of values to populate.
  *
  * @version $Id$
- * @since 10.11RC1
+ * @since 17.2.0RC1
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.FIELD })
-@Inherited
-public @interface PropertyFeature
+@Unstable
+public class PropertyFeatureMandatoryException extends PropertyMandatoryException
 {
     /**
-     * @return the group name.
+     * @param property the descriptor of the property with the missing mandatory feature.
      */
-    String value();
-
-    /**
-     * @since 17.2.0RC1
-     * @return whether the feature described in this annotation is mandatory.
-     */
-    @Unstable
-    boolean mandatory() default false;
+    public PropertyFeatureMandatoryException(PropertyDescriptor property)
+    {
+        super(property.getName() + ":" + property.getGroupDescriptor().getFeature());
+    }
 }

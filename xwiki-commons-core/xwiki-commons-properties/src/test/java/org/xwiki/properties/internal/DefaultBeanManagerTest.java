@@ -35,6 +35,7 @@ import org.xwiki.properties.internal.converter.ConvertUtilsConverter;
 import org.xwiki.properties.internal.converter.EnumConverter;
 import org.xwiki.properties.test.GenericTestConverter;
 import org.xwiki.properties.test.TestBean;
+import org.xwiki.properties.test.TestBeanFeatures;
 import org.xwiki.properties.test.TestBeanValidation;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -149,5 +150,38 @@ class DefaultBeanManagerTest
         this.defaultBeanManager.populate(bean, values);
 
         assertEquals(values, bean);
+    }
+    
+    @Test
+    void populateMandatoryFeatures() throws PropertyException
+    {
+        // The following tries should not throw any exception
+        // We test when a property defined before the annotated one is filled up
+        Map<String, Object> values1 = new HashMap<>();
+        values1.put("propertyFeatureMandatory1", "value");
+        this.defaultBeanManager.populate(new TestBeanFeatures(), values1);
+
+        // We test when the annotated property is the one filled up
+        Map<String, Object> values2 = new HashMap<>();
+        values2.put("propertyFeatureMandatory2", "value");
+        this.defaultBeanManager.populate(new TestBeanFeatures(), values2);
+
+        // We test when a property defined after the annotated one is filled up
+        Map<String, Object> values3 = new HashMap<>();
+        values3.put("propertyFeatureMandatory3", "value");
+        this.defaultBeanManager.populate(new TestBeanFeatures(), values3);
+
+        // We test when all properties are filled up for the feature.
+        Map<String, Object> values4 = new HashMap<>();
+        values4.put("propertyFeatureMandatory1", "value");
+        values4.put("propertyFeatureMandatory2", "value");
+        values4.put("propertyFeatureMandatory3", "value");
+        this.defaultBeanManager.populate(new TestBeanFeatures(), values4);
+
+        // We test when no property is filled up for the feature.
+        Throwable exception = assertThrows(PropertyException.class,
+            () -> this.defaultBeanManager.populate(new TestBeanFeatures(), new HashMap<>()));
+        assertEquals("Property [propertyFeatureMandatory2:mandatoryFeature] mandatory", 
+            exception.getMessage());
     }
 }
