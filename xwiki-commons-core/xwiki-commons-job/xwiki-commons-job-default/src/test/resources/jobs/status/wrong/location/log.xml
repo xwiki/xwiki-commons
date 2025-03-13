@@ -1,0 +1,54 @@
+<org.xwiki.logging.event.BeginLogEvent>
+  <marker class="org.xwiki.logging.marker.BeginTranslationMarker">
+    <name>job.log.beginWithId</name>
+    <references class="linked-hash-set">
+      <org.slf4j.helpers.BasicMarker>
+        <name>xwiki.begin</name>
+        <referenceList class="java.util.concurrent.CopyOnWriteArrayList" serialization="custom">
+          <java.util.concurrent.CopyOnWriteArrayList>
+            <default/>
+            <int>0</int>
+          </java.util.concurrent.CopyOnWriteArrayList>
+        </referenceList>
+      </org.slf4j.helpers.BasicMarker>
+    </references>
+    <translationKey>job.log.beginWithId</translationKey>
+  </marker>
+  <message>Starting job of type [{}] with identifier [{}]</message>
+  <argumentArray>
+    <string>macrojob</string>
+    <list>
+      <string>correct</string>
+      <string>location</string>
+    </list>
+  </argumentArray>
+  <level>INFO</level>
+  <timeStamp>1741187118755</timeStamp>
+</org.xwiki.logging.event.BeginLogEvent>
+<org.xwiki.logging.event.EndLogEvent>
+  <marker class="org.xwiki.logging.marker.EndTranslationMarker">
+    <name>job.log.endWithId</name>
+    <references class="linked-hash-set">
+      <org.slf4j.helpers.BasicMarker>
+        <name>xwiki.end</name>
+        <referenceList class="java.util.concurrent.CopyOnWriteArrayList" serialization="custom">
+          <java.util.concurrent.CopyOnWriteArrayList>
+            <default/>
+            <int>0</int>
+          </java.util.concurrent.CopyOnWriteArrayList>
+        </referenceList>
+      </org.slf4j.helpers.BasicMarker>
+    </references>
+    <translationKey>job.log.endWithId</translationKey>
+  </marker>
+  <message>Finished correct job of type [{}] with identifier [{}]</message>
+  <argumentArray>
+    <string>macrojob</string>
+    <list>
+      <string>correct</string>
+      <string>location</string>
+    </list>
+  </argumentArray>
+  <level>INFO</level>
+  <timeStamp>1741187118756</timeStamp>
+</org.xwiki.logging.event.EndLogEvent>

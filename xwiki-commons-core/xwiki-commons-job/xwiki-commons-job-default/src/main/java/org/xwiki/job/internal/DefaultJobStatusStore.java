@@ -21,9 +21,14 @@ package org.xwiki.job.internal;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -35,7 +40,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
@@ -65,14 +69,17 @@ import org.xwiki.logging.tail.LoggerTail;
  * @version $Id$
  * @since 6.1M2
  */
+// The job status store is too big and should be refactored.
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 @Component
 @Singleton
 public class DefaultJobStatusStore implements JobStatusStore, Initializable
 {
+
     /**
      * The current version of the store. Should be upgraded if any change is made.
      */
-    private static final int VERSION = 1;
+    private static final int VERSION = 2;
 
     /**
      * The name of the file where the job status is stored as XML.
@@ -95,16 +102,15 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     private static final String INDEX_FILE_VERSION = "version";
 
     /**
-     * Encoding used for file content and names.
-     */
-    private static final String DEFAULT_ENCODING = "UTF-8";
-
-    /**
      * The encoded version of a <code>null</code> value in the id list.
      */
     private static final String FOLDER_NULL = "&null";
 
     private static final String STATUS_LOG_PREFIX = "log";
+
+    private static final String PERIOD = ".";
+
+    private static final String ENCODED_PERIOD = "%2E";
 
     private static final JobStatus NOSTATUS = new DefaultJobStatus<>(null, null, null, null, null);
 
@@ -211,12 +217,16 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         String encoded;
 
         if (name != null) {
-            try {
-                encoded = URLEncoder.encode(name, DEFAULT_ENCODING);
-            } catch (UnsupportedEncodingException e) {
-                // Should never happen
-
-                encoded = name;
+            encoded = URLEncoder.encode(name, StandardCharsets.UTF_8)
+                // Replace * as it's not allowed on Windows.
+                .replace("*", "%2A");
+            // Replace "." at the beginning or end of the string as they're not allowed/have special meaning, see
+            // https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
+            if (encoded.startsWith(PERIOD)) {
+                encoded = ENCODED_PERIOD + encoded.substring(1);
+            }
+            if (encoded.endsWith(PERIOD)) {
+                encoded = encoded.substring(0, encoded.length() - 1) + ENCODED_PERIOD;
             }
         } else {
             encoded = FOLDER_NULL;
@@ -253,24 +263,76 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
                 repairFolder(file);
             } else if (file.getName().equals(FILENAME_STATUS_ZIP) || file.getName().equals(FILENAME_STATUS_XML)) {
                 try {
-                    JobStatus status = loadStatus(folder);
+                    List<String> id = loadID(folder);
 
-                    if (status != null) {
-                        File properFolder = getJobFolder(status.getRequest().getId());
+                    // We don't differentiate between jobs with ID null and a failure to load the ID. Instead, we
+                    // just don't move the job status when the ID is null.
+                    if (id != null) {
+                        File properFolder = getJobFolder(id);
 
                         if (!folder.equals(properFolder)) {
-                            // Move the status in its right place
-                            try {
-                                FileUtils.moveFileToDirectory(file, properFolder, true);
-                            } catch (IOException e) {
-                                this.logger.error("Failed to move job status file", e);
-                            }
+                            moveJobStatus(folder, file, properFolder);
                         }
                     }
                 } catch (Exception e) {
                     this.logger.warn("Failed to load job status in folder [{}]", folder, e);
                 }
             }
+        }
+    }
+
+    private void moveJobStatus(File sourceDirectory, File statusFile, File targetDirectory)
+    {
+        try {
+            // Check if the target already exists.
+            File targetStatusZip = new File(targetDirectory, FILENAME_STATUS_ZIP);
+            File targetStatus = new File(targetDirectory, FILENAME_STATUS_XML);
+
+            // Compare the last modified times of the source and the target status file.
+            long sourceLastModified = statusFile.lastModified();
+            // The target last modified time will be 0 if the target status file does not exist.
+            long targetLastModified = Math.max(targetStatusZip.lastModified(), targetStatus.lastModified());
+
+            if (sourceLastModified > targetLastModified) {
+                // Source is newer (or target doesn't exist), overwrite the target.
+                if (targetDirectory.isDirectory()) {
+                    deleteJobStatusFiles(targetDirectory);
+                }
+
+                // Move the status in its right place
+                FileUtils.moveFileToDirectory(statusFile, targetDirectory, true);
+                // Move the job log, too.
+                for (File file : sourceDirectory.listFiles()) {
+                    if (!file.isDirectory() && file.getName().startsWith(STATUS_LOG_PREFIX)) {
+                        FileUtils.moveFileToDirectory(file, targetDirectory, true);
+                    }
+                }
+            } else {
+                // Target is more recent, remove the source.
+                deleteJobStatusFiles(sourceDirectory);
+            }
+
+            // Remove the source directory and its parents if they are empty now.
+            cleanEmptyDirectories(sourceDirectory);
+        } catch (IOException e) {
+            this.logger.error("Failed to move job status and log files, and cleaning up", e);
+        }
+    }
+
+    private void cleanEmptyDirectories(File sourceDirectory) throws IOException
+    {
+        Path storagePath = this.configuration.getStorage().toPath();
+        for (Path sourcePath = sourceDirectory.toPath();
+            !Objects.equals(storagePath, sourcePath) && sourcePath != null && isDirEmpty(sourcePath);
+            sourcePath = sourcePath.getParent()) {
+            Files.delete(sourcePath);
+        }
+    }
+
+    private static boolean isDirEmpty(Path directory) throws IOException
+    {
+        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
+            return !dirStream.iterator().hasNext();
         }
     }
 
@@ -289,11 +351,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
         try {
             // First try as ZIP
-            File statusFile = new File(folder, FILENAME_STATUS_ZIP);
-            if (!statusFile.exists()) {
-                // Then try as XML
-                statusFile = new File(folder, FILENAME_STATUS_XML);
-            }
+            File statusFile = getStatusFile(folder);
             if (statusFile.exists()) {
                 JobStatus status = loadJobStatus(statusFile);
 
@@ -315,6 +373,42 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
                 }
 
                 return status;
+            }
+        } finally {
+            this.readLock.unlock();
+        }
+
+        return null;
+    }
+
+    private static File getStatusFile(File folder)
+    {
+        File statusFile = new File(folder, FILENAME_STATUS_ZIP);
+        if (!statusFile.exists()) {
+            // Then try as XML
+            statusFile = new File(folder, FILENAME_STATUS_XML);
+        }
+        return statusFile;
+    }
+
+    private List<String> loadID(File folder) throws IOException
+    {
+        this.readLock.lock();
+
+        try {
+            File statusFile = getStatusFile(folder);
+
+            if (statusFile.exists()) {
+                Optional<List<String>> result = this.serializer.readID(statusFile);
+                if (result.isEmpty()) {
+                    JobStatus jobStatus = loadJobStatus(statusFile);
+
+                    if (jobStatus != null && jobStatus.getRequest() != null) {
+                        return jobStatus.getRequest().getId();
+                    }
+                } else {
+                    return result.get();
+                }
             }
         } finally {
             this.readLock.unlock();
@@ -346,18 +440,15 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         if (id != null) {
             // Create a different folder for each element
             for (String fullIdElement : id) {
-                // But cut each element is it's bigger than 255 bytes (and not characters) since it's a very common
+                // But cut each element if it's bigger than 255 bytes (and not characters) since it's a very common
                 // limit for a single element of the path among file systems
-                // To be sure to deal with characters not taking more than 1 byte, we start by encoding it in base 64
-                String encodedIdElement = Base64.encodeBase64String(fullIdElement.getBytes());
-                if (encodedIdElement.length() > 255) {
-                    do {
-                        folder = new File(folder, encode(encodedIdElement.substring(0, 255)));
-                        encodedIdElement = encodedIdElement.substring(255);
-                    } while (encodedIdElement.length() > 255);
-                } else {
-                    folder = new File(folder, encode(encodedIdElement));
+                // To be sure to deal with characters not taking more than 1 byte, we start by encoding it.
+                String encodedIdElement = encode(fullIdElement);
+                while (encodedIdElement.length() > 255) {
+                    folder = new File(folder, encodedIdElement.substring(0, 255));
+                    encodedIdElement = encodedIdElement.substring(255);
                 }
+                folder = new File(folder, encodedIdElement);
             }
         }
 
@@ -467,9 +558,10 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         try {
             File jobFolder = getJobFolder(id);
 
-            if (jobFolder.exists()) {
+            if (jobFolder.isDirectory()) {
                 try {
-                    FileUtils.deleteDirectory(jobFolder);
+                    deleteJobStatusFiles(jobFolder);
+                    cleanEmptyDirectories(jobFolder);
                 } catch (IOException e) {
                     this.logger.warn("Failed to delete job folder [{}]", jobFolder, e);
                 }
@@ -478,6 +570,17 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             this.cache.remove(toUniqueString(id));
         } finally {
             this.writeLock.unlock();
+        }
+    }
+
+    private static void deleteJobStatusFiles(File jobFolder) throws IOException
+    {
+        for (File file : jobFolder.listFiles()) {
+            if (!file.isDirectory() && (file.getName().startsWith(STATUS_LOG_PREFIX)
+                || file.getName().startsWith(FILENAME_STATUS_XML)))
+            {
+                Files.delete(file.toPath());
+            }
         }
     }
 
