@@ -1809,6 +1809,25 @@
               </rules>
             </configuration>
           </execution>
+          <!-- Check that we're using Apache HTTP 5 and not 3 -->
+          <execution>
+            <id>enforce-apache-http5</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-apache-http5.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>false</searchTransitive>
+                  <message>Best practice is to use Apache HTTPClient 5.x</message>
+                  <excludes>
+                    <exclude>commons-httpclient:commons-httpclient</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
           <!-- Check that we are using the latest version of Jakarta Activation -->
           <execution>
             <id>enforce-jakarta.activation-api</id>
