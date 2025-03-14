@@ -242,7 +242,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             throw new IOException("Failed to build REST URL", e);
         }
 
-        HttpGet getMethod = new HttpGet(url);
+        HttpGet response = new HttpGet(url);
         getMethod.addHeader("Accept", "application/xml");
 
         CloseableHttpResponse response = getResponse(getMethod);
