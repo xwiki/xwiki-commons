@@ -33,6 +33,7 @@
   <description>XWiki Commons - Configuration - Parent POM</description>
   <modules>
     <module>xwiki-commons-configuration-api</module>
+    <module>xwiki-commons-configuration-default</module>
   </modules>
 </project>
        

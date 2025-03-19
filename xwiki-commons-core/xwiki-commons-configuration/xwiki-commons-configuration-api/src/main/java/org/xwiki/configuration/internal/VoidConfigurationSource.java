@@ -63,6 +63,12 @@ public class VoidConfigurationSource extends AbstractConfigurationSource
     }
 
     @Override
+    public List<String> getKeys(String prefix)
+    {
+        return Collections.emptyList();
+    }
+
+    @Override
     public boolean containsKey(String key)
     {
         return false;
@@ -70,6 +76,12 @@ public class VoidConfigurationSource extends AbstractConfigurationSource
 
     @Override
     public boolean isEmpty()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean isEmpty(String prefix)
     {
         return true;
     }
