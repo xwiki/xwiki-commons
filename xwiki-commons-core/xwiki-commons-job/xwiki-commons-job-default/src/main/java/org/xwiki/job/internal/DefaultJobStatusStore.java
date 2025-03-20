@@ -21,9 +21,11 @@ package org.xwiki.job.internal;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -35,7 +37,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
@@ -65,6 +66,8 @@ import org.xwiki.logging.tail.LoggerTail;
  * @version $Id$
  * @since 6.1M2
  */
+// The job status store is too big and should be refactored.
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 @Component
 @Singleton
 public class DefaultJobStatusStore implements JobStatusStore, Initializable
@@ -94,16 +97,6 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
      */
     private static final String INDEX_FILE_VERSION = "version";
 
-    /**
-     * Encoding used for file content and names.
-     */
-    private static final String DEFAULT_ENCODING = "UTF-8";
-
-    /**
-     * The encoded version of a <code>null</code> value in the id list.
-     */
-    private static final String FOLDER_NULL = "&null";
-
     private static final String STATUS_LOG_PREFIX = "log";
 
     private static final JobStatus NOSTATUS = new DefaultJobStatus<>(null, null, null, null, null);
@@ -122,6 +115,9 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
     @Inject
     private JobStatusSerializer serializer;
+
+    @Inject
+    private List<JobStatusFolderResolver> folderResolvers;
 
     /**
      * The logger to log.
@@ -203,29 +199,6 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     }
 
     /**
-     * @param name the file or directory name to encode
-     * @return the encoding name
-     */
-    private String encode(String name)
-    {
-        String encoded;
-
-        if (name != null) {
-            try {
-                encoded = URLEncoder.encode(name, DEFAULT_ENCODING);
-            } catch (UnsupportedEncodingException e) {
-                // Should never happen
-
-                encoded = name;
-            }
-        } else {
-            encoded = FOLDER_NULL;
-        }
-
-        return encoded;
-    }
-
-    /**
      * Load jobs from directory.
      * 
      * @throws IOException when failing to load statuses
@@ -256,15 +229,10 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
                     JobStatus status = loadStatus(folder);
 
                     if (status != null) {
-                        File properFolder = getJobFolder(status.getRequest().getId());
+                        File properFolder = getAndMoveJobFolder(status.getRequest().getId(), false);
 
                         if (!folder.equals(properFolder)) {
-                            // Move the status in its right place
-                            try {
-                                FileUtils.moveFileToDirectory(file, properFolder, true);
-                            } catch (IOException e) {
-                                this.logger.error("Failed to move job status file", e);
-                            }
+                            moveJobStatus(folder, file, properFolder);
                         }
                     }
                 } catch (Exception e) {
@@ -274,9 +242,59 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         }
     }
 
-    private JobStatus loadStatus(List<String> id) throws IOException
+    private void moveJobStatus(File sourceDirectory, File statusFile, File targetDirectory)
     {
-        return loadStatus(getJobFolder(id));
+        try {
+            // Check if the target already exists.
+            File targetStatusZip = new File(targetDirectory, FILENAME_STATUS_ZIP);
+            File targetStatus = new File(targetDirectory, FILENAME_STATUS_XML);
+
+            // Compare the last modified times of the source and the target status file.
+            long sourceLastModified = statusFile.lastModified();
+            // The target last modified time will be 0 if the target status file does not exist.
+            long targetLastModified = Math.max(targetStatusZip.lastModified(), targetStatus.lastModified());
+
+            if (sourceLastModified > targetLastModified) {
+                // Source is newer (or target doesn't exist), overwrite the target.
+                if (targetDirectory.isDirectory()) {
+                    deleteJobStatusFiles(targetDirectory);
+                }
+
+                // Move the status in its right place
+                FileUtils.moveFileToDirectory(statusFile, targetDirectory, true);
+                // Move the job log, too.
+                for (File file : sourceDirectory.listFiles()) {
+                    if (!file.isDirectory() && file.getName().startsWith(STATUS_LOG_PREFIX)) {
+                        FileUtils.moveFileToDirectory(file, targetDirectory, true);
+                    }
+                }
+            } else {
+                // Target is more recent, remove the source.
+                deleteJobStatusFiles(sourceDirectory);
+            }
+
+            // Remove the source directory and its parents if they are empty now.
+            cleanEmptyDirectories(sourceDirectory);
+        } catch (IOException e) {
+            this.logger.error("Failed to move job status and log files, and cleaning up", e);
+        }
+    }
+
+    private void cleanEmptyDirectories(File sourceDirectory) throws IOException
+    {
+        Path storagePath = this.configuration.getStorage().toPath();
+        for (Path sourcePath = sourceDirectory.toPath();
+            !Objects.equals(storagePath, sourcePath) && sourcePath != null && isDirEmpty(sourcePath);
+            sourcePath = sourcePath.getParent()) {
+            Files.delete(sourcePath);
+        }
+    }
+
+    private static boolean isDirEmpty(Path directory) throws IOException
+    {
+        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
+            return !dirStream.iterator().hasNext();
+        }
     }
 
     /**
@@ -289,11 +307,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
         try {
             // First try as ZIP
-            File statusFile = new File(folder, FILENAME_STATUS_ZIP);
-            if (!statusFile.exists()) {
-                // Then try as XML
-                statusFile = new File(folder, FILENAME_STATUS_XML);
-            }
+            File statusFile = getStatusFile(folder);
             if (statusFile.exists()) {
                 JobStatus status = loadJobStatus(statusFile);
 
@@ -323,6 +337,16 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         return null;
     }
 
+    private static File getStatusFile(File folder)
+    {
+        File statusFile = new File(folder, FILENAME_STATUS_ZIP);
+        if (!statusFile.exists()) {
+            // Then try as XML
+            statusFile = new File(folder, FILENAME_STATUS_XML);
+        }
+        return statusFile;
+    }
+
     /**
      * @param statusFile the file containing job status to load
      * @return the job status
@@ -337,27 +361,31 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
     /**
      * @param id the id of the job
+     * @param moveToCurrent if the job status should be moved from a previous to the current location
      * @return the folder where to store the job related informations
      */
-    private File getJobFolder(List<String> id)
+    private File getAndMoveJobFolder(List<String> id, boolean moveToCurrent)
     {
-        File folder = this.configuration.getStorage();
+        JobStatusFolderResolver currentResolver = this.folderResolvers.get(0);
 
-        if (id != null) {
-            // Create a different folder for each element
-            for (String fullIdElement : id) {
-                // But cut each element is it's bigger than 255 bytes (and not characters) since it's a very common
-                // limit for a single element of the path among file systems
-                // To be sure to deal with characters not taking more than 1 byte, we start by encoding it in base 64
-                String encodedIdElement = Base64.encodeBase64String(fullIdElement.getBytes());
-                if (encodedIdElement.length() > 255) {
-                    do {
-                        folder = new File(folder, encode(encodedIdElement.substring(0, 255)));
-                        encodedIdElement = encodedIdElement.substring(255);
-                    } while (encodedIdElement.length() > 255);
-                } else {
-                    folder = new File(folder, encode(encodedIdElement));
+        File folder = currentResolver.getFolder(id);
+
+        if (moveToCurrent && !getStatusFile(folder).exists()) {
+            File previousFolder = null;
+            File previousStatusFile = null;
+            for (JobStatusFolderResolver folderResolver
+                : this.folderResolvers.subList(1, this.folderResolvers.size())) {
+                File f = folderResolver.getFolder(id);
+                File s = getStatusFile(f);
+                if (s.exists()) {
+                    previousFolder = f;
+                    previousStatusFile = s;
+                    break;
                 }
+            }
+
+            if (previousFolder != null) {
+                moveJobStatus(previousFolder, previousStatusFile, folder);
             }
         }
 
@@ -366,7 +394,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
     private File getJobLogBaseFile(List<String> id)
     {
-        return new File(getJobFolder(id), STATUS_LOG_PREFIX);
+        return new File(getAndMoveJobFolder(id, true), STATUS_LOG_PREFIX);
     }
 
     /**
@@ -378,7 +406,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             this.writeLock.lock();
 
             try {
-                File statusFile = getJobFolder(status.getRequest().getId());
+                File statusFile = getAndMoveJobFolder(status.getRequest().getId(), true);
                 statusFile = new File(statusFile, FILENAME_STATUS_ZIP);
 
                 this.logger.debug("Serializing status [{}] in [{}]", status.getRequest().getId(), statusFile);
@@ -412,7 +440,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
         if (status == null) {
             try {
-                status = loadStatus(id);
+                status = loadStatus(getAndMoveJobFolder(id, true));
 
                 this.cache.set(idString, status);
             } catch (Exception e) {
@@ -465,19 +493,35 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         this.writeLock.lock();
 
         try {
-            File jobFolder = getJobFolder(id);
+            // Delete the job status from all possible locations to ensure that when loading it again, it indeed
+            // cannot be found anymore.
+            for (JobStatusFolderResolver folderResolver : this.folderResolvers) {
+                File jobFolder = folderResolver.getFolder(id);
 
-            if (jobFolder.exists()) {
-                try {
-                    FileUtils.deleteDirectory(jobFolder);
-                } catch (IOException e) {
-                    this.logger.warn("Failed to delete job folder [{}]", jobFolder, e);
+                if (jobFolder.isDirectory()) {
+                    try {
+                        deleteJobStatusFiles(jobFolder);
+                        cleanEmptyDirectories(jobFolder);
+                    } catch (IOException e) {
+                        this.logger.warn("Failed to delete job folder [{}]", jobFolder, e);
+                    }
                 }
             }
 
             this.cache.remove(toUniqueString(id));
         } finally {
             this.writeLock.unlock();
+        }
+    }
+
+    private static void deleteJobStatusFiles(File jobFolder) throws IOException
+    {
+        for (File file : jobFolder.listFiles()) {
+            if (!file.isDirectory() && (file.getName().startsWith(STATUS_LOG_PREFIX)
+                || file.getName().startsWith(FILENAME_STATUS_XML)))
+            {
+                Files.delete(file.toPath());
+            }
         }
     }
 
