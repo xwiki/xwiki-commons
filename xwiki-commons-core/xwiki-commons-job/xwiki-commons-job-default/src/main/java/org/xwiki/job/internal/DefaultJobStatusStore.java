@@ -406,7 +406,6 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             this.writeLock.lock();
 
             try {
-                // FIXME: not clear if the job status should be moved here.
                 File statusFile = getAndMoveJobFolder(status.getRequest().getId(), true);
                 statusFile = new File(statusFile, FILENAME_STATUS_ZIP);
 
