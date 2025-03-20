@@ -12,3 +12,6 @@ org.xwiki.job.internal.DefaultGoupedJobInitializer
 org.xwiki.job.internal.DefaultGroupedJobInitializerManager
 org.xwiki.job.internal.JobGroupPathLockTree
 org.xwiki.job.internal.GroupedJobInitializerComponentListener
+org.xwiki.job.internal.Version1JobStatusFolderResolver
+org.xwiki.job.internal.Version2JobStatusFolderResolver
+org.xwiki.job.internal.Version3JobStatusFolderResolver

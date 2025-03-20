@@ -26,7 +26,6 @@ import java.util.Objects;
 
 import javax.inject.Provider;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
@@ -49,6 +48,7 @@ import org.xwiki.job.test.SerializableStandaloneComponent;
 import org.xwiki.job.test.StandaloneComponent;
 import org.xwiki.job.test.UnserializableJobStatus;
 import org.xwiki.logging.LoggerManager;
+import org.xwiki.logging.event.LogEvent;
 import org.xwiki.logging.internal.tail.XStreamFileLoggerTail;
 import org.xwiki.logging.marker.TranslationMarker;
 import org.xwiki.logging.tail.LoggerTail;
@@ -89,12 +89,18 @@ import static org.mockito.Mockito.when;
     SerializableXStreamChecker.class,
     JobStatusSerializer.class,
     XStreamFileLoggerTail.class,
-    TestEnvironment.class
+    TestEnvironment.class,
+    // Add all components to ensure that the priority works as expected.
+    Version1JobStatusFolderResolver.class,
+    Version2JobStatusFolderResolver.class,
+    Version3JobStatusFolderResolver.class
 })
 // @formatter:on
 class DefaultJobStatusStoreTest
 {
     private static final List<String> ID = Arrays.asList("test");
+
+    private static final String STATUS_XML_ZIP = "status.xml.zip";
 
     @Serializable
     private static class SerializableCrossReferenceObject
@@ -231,12 +237,38 @@ class DefaultJobStatusStoreTest
 
     private File storeDirectory;
 
+    private File wrongDirectory;
+
+    private File wrongDirectory2;
+
+    private File correctDirectory;
+
+    private File wrongStatusInCorrectDirectory;
+
     @BeforeComponent
     void before() throws Exception
     {
         this.storeDirectory = XWikiTempDirUtil.createTemporaryDirectory();
 
         FileUtils.copyDirectory(new File("src/test/resources/jobs/status/"), this.storeDirectory);
+
+        this.wrongDirectory = new File(this.storeDirectory, "wrong/location");
+        this.wrongDirectory2 = new File(this.storeDirectory, "wrong/location2");
+        this.correctDirectory = new File(this.storeDirectory, "3/correct/location");
+        assertTrue(this.wrongDirectory.isDirectory(), "Directory copied from resources doesn't exist.");
+
+        File mostRecentFile = new File(this.wrongDirectory, STATUS_XML_ZIP);
+        File oldestFile = new File(this.wrongDirectory2, STATUS_XML_ZIP);
+        File middleFile = new File(this.correctDirectory, "status.xml");
+        this.wrongStatusInCorrectDirectory = middleFile;
+
+        assertTrue(mostRecentFile.exists());
+        assertTrue(oldestFile.exists());
+        assertTrue(middleFile.exists());
+
+        assertTrue(mostRecentFile.setLastModified(System.currentTimeMillis()));
+        assertTrue(oldestFile.setLastModified(System.currentTimeMillis() - 4000));
+        assertTrue(middleFile.setLastModified(System.currentTimeMillis() - 2000));
 
         when(this.jobManagerConfiguration.getStorage()).thenReturn(this.storeDirectory);
         when(this.jobManagerConfiguration.getJobStatusCacheSize()).thenReturn(100);
@@ -291,6 +323,25 @@ class DefaultJobStatusStoreTest
         this.store.flushCache();
 
         return getStatus();
+    }
+
+    @Test
+    void jobStatusAndLogMoved()
+    {
+        JobStatus status = this.store.getJobStatus(List.of("correct", "location"));
+        assertNotNull(status);
+        LogEvent lastLogEvent = status.getLogTail().getLastLogEvent();
+        assertNotNull(lastLogEvent);
+        // Verify that we got the correct job.
+        assertEquals("Finished correct job of type [{}] with identifier [{}]", lastLogEvent.getMessage());
+
+        assertFalse(this.wrongDirectory.exists());
+        assertFalse(this.wrongDirectory.getParentFile().exists());
+        assertFalse(this.wrongDirectory2.exists());
+        assertFalse(this.wrongStatusInCorrectDirectory.exists());
+        assertTrue(new File(this.correctDirectory, STATUS_XML_ZIP).exists());
+        assertTrue(new File(this.correctDirectory, "log.index").exists());
+        assertTrue(new File(this.correctDirectory, "log.xml").exists());
     }
 
     @Test
@@ -404,9 +455,40 @@ class DefaultJobStatusStoreTest
         DefaultRequest request = new DefaultRequest();
         request.setId(StringUtils.repeat('a', 768));
 
-        JobStatus jobStatus = new DefaultJobStatus("type", request, null, null, null);
+        JobStatus jobStatus = new DefaultJobStatus<>("type", request, null, null, null);
 
         this.store.store(jobStatus);
+
+        String longAName = StringUtils.repeat('a', 250);
+
+        assertTrue(new File(this.storeDirectory,
+            "3/%s/%s/%s/aaaaaaaaaaaaaaaaaa/status.xml.zip".formatted(longAName, longAName, longAName)).exists());
+    }
+
+    @Test
+    void storeJobStatusWithNullPartInId()
+    {
+        DefaultRequest request = new DefaultRequest();
+        request.setId("first", null, "second");
+
+        JobStatus jobStatus = new DefaultJobStatus<>("type", request, null, null, null);
+
+        this.store.store(jobStatus);
+
+        assertTrue(new File(this.storeDirectory, "3/first/&null/second/status.xml.zip").exists());
+    }
+
+    @Test
+    void storeJobStatusWithProblematicCharacters()
+    {
+        DefaultRequest request = new DefaultRequest();
+        request.setId("..", ".", " .*.");
+
+        JobStatus jobStatus = new DefaultJobStatus<>("type", request, null, null, null);
+
+        this.store.store(jobStatus);
+
+        assertTrue(new File(this.storeDirectory, "3/%2E%2E/%2E/+.%2A%2E/status.xml.zip").exists());
     }
 
     @Test
@@ -421,7 +503,7 @@ class DefaultJobStatusStoreTest
 
         // Verify that the status hasn't been serialized, indirectly verifying that isSerializable() has been called and
         // returned true.
-        assertFalse(new File(this.storeDirectory, "test/status.xml").exists());
+        assertFalse(new File(this.storeDirectory, "3/test/status.xml").exists());
     }
 
     @Test
@@ -437,7 +519,7 @@ class DefaultJobStatusStoreTest
 
         // Verify that the status hasn't been serialized, indirectly verifying that isSerializable() has been called and
         // returned true.
-        assertFalse(new File(this.storeDirectory, "test/status.xml").exists());
+        assertFalse(new File(this.storeDirectory, "3/test/status.xml").exists());
     }
 
     @Test
@@ -455,8 +537,7 @@ class DefaultJobStatusStoreTest
 
         // Verify that the status has been serialized, indirectly verifying that isSerializable() has been called and
         // returned true.
-        assertTrue(new File(this.storeDirectory, Base64.encodeBase64String(id.get(0).getBytes()) + "/status.xml.zip")
-            .exists());
+        assertTrue(new File(this.storeDirectory, "3/%s/status.xml.zip".formatted(id.get(0))).exists());
     }
 
     @Test
