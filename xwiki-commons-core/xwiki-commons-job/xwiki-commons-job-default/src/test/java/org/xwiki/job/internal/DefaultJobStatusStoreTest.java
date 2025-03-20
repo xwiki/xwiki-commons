@@ -89,12 +89,15 @@ import static org.mockito.Mockito.when;
     SerializableXStreamChecker.class,
     JobStatusSerializer.class,
     XStreamFileLoggerTail.class,
-    TestEnvironment.class
+    TestEnvironment.class,
+    // Add all components to ensure that the priority works as expected.
+    Version1JobStatusFolderResolver.class,
+    Version2JobStatusFolderResolver.class,
+    Version3JobStatusFolderResolver.class
 })
 // @formatter:on
 class DefaultJobStatusStoreTest
 {
-
     private static final List<String> ID = Arrays.asList("test");
 
     private static final String STATUS_XML_ZIP = "status.xml.zip";
@@ -251,7 +254,7 @@ class DefaultJobStatusStoreTest
 
         this.wrongDirectory = new File(this.storeDirectory, "wrong/location");
         this.wrongDirectory2 = new File(this.storeDirectory, "wrong/location2");
-        this.correctDirectory = new File(this.storeDirectory, "correct/location");
+        this.correctDirectory = new File(this.storeDirectory, "3/correct/location");
         assertTrue(this.wrongDirectory.isDirectory(), "Directory copied from resources doesn't exist.");
 
         File mostRecentFile = new File(this.wrongDirectory, STATUS_XML_ZIP);
@@ -456,10 +459,10 @@ class DefaultJobStatusStoreTest
 
         this.store.store(jobStatus);
 
-        String longAName = StringUtils.repeat('a', 255);
+        String longAName = StringUtils.repeat('a', 250);
 
         assertTrue(new File(this.storeDirectory,
-            "%s/%s/%s/aaa/status.xml.zip".formatted(longAName, longAName, longAName)).exists());
+            "3/%s/%s/%s/aaaaaaaaaaaaaaaaaa/status.xml.zip".formatted(longAName, longAName, longAName)).exists());
     }
 
     @Test
@@ -472,7 +475,7 @@ class DefaultJobStatusStoreTest
 
         this.store.store(jobStatus);
 
-        assertTrue(new File(this.storeDirectory, "first/&null/second/status.xml.zip").exists());
+        assertTrue(new File(this.storeDirectory, "3/first/&null/second/status.xml.zip").exists());
     }
 
     @Test
@@ -485,7 +488,7 @@ class DefaultJobStatusStoreTest
 
         this.store.store(jobStatus);
 
-        assertTrue(new File(this.storeDirectory, "%2E%2E/%2E/+.%2A%2E/status.xml.zip").exists());
+        assertTrue(new File(this.storeDirectory, "3/%2E%2E/%2E/+.%2A%2E/status.xml.zip").exists());
     }
 
     @Test
@@ -500,7 +503,7 @@ class DefaultJobStatusStoreTest
 
         // Verify that the status hasn't been serialized, indirectly verifying that isSerializable() has been called and
         // returned true.
-        assertFalse(new File(this.storeDirectory, "test/status.xml").exists());
+        assertFalse(new File(this.storeDirectory, "3/test/status.xml").exists());
     }
 
     @Test
@@ -516,7 +519,7 @@ class DefaultJobStatusStoreTest
 
         // Verify that the status hasn't been serialized, indirectly verifying that isSerializable() has been called and
         // returned true.
-        assertFalse(new File(this.storeDirectory, "test/status.xml").exists());
+        assertFalse(new File(this.storeDirectory, "3/test/status.xml").exists());
     }
 
     @Test
@@ -534,7 +537,7 @@ class DefaultJobStatusStoreTest
 
         // Verify that the status has been serialized, indirectly verifying that isSerializable() has been called and
         // returned true.
-        assertTrue(new File(this.storeDirectory, id.get(0) + "/status.xml.zip").exists());
+        assertTrue(new File(this.storeDirectory, "3/%s/status.xml.zip".formatted(id.get(0))).exists());
     }
 
     @Test
