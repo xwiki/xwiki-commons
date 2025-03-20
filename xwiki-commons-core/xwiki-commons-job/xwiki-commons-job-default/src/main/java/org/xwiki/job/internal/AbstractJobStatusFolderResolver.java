@@ -40,7 +40,7 @@ public abstract class AbstractJobStatusFolderResolver implements JobStatusFolder
     /**
      * The encoded version of a <code>null</code> value in the id list.
      */
-    private static final String FOLDER_NULL = "&null";
+    protected static final String FOLDER_NULL = "&null";
 
     /**
      * Used to get the storage directory.
