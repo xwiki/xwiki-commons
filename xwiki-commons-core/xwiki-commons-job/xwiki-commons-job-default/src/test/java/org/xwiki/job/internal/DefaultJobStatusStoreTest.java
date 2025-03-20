@@ -488,7 +488,7 @@ class DefaultJobStatusStoreTest
 
         this.store.store(jobStatus);
 
-        assertTrue(new File(this.storeDirectory, "3/%2E%2E/%2E/+.%2A%2E/status.xml.zip").exists());
+        assertTrue(new File(this.storeDirectory, "3/%2E%2E/%2E/%20.%2A%2E/status.xml.zip").exists());
     }
 
     @Test

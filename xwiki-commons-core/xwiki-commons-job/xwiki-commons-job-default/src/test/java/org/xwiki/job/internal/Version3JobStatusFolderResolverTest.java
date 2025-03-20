@@ -127,7 +127,9 @@ class Version3JobStatusFolderResolverTest
         ".filename., %2Efilename%2E",
         "file.name, file.name",
         "näme, n%C3%A4me",
-        "/?&, %2F%3F%26"
+        "/?&, %2F%3F%26",
+        "space inside, space%20inside",
+        "CamelCase, %43amel%43ase"
     })
     void getFolderWithSpecialCharactersInId(String idElement, String expectedEncodedElement)
     {
