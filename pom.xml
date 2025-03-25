@@ -78,7 +78,8 @@
     <asm.version>9.7.1</asm.version>
 
     <!-- Guava -->
-    <guava.version>33.4.0-jre</guava.version>
+    <guava.version>33.4.5-jre</guava.version>
+    <guava.failureaccess.version>1.0.3</guava.failureaccess.version>
 
     <!-- SLF4J API and implementation -->
     <slf4j.version>2.0.17</slf4j.version>
@@ -843,7 +844,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>failureaccess</artifactId>
-        <version>1.0.2</version>
+        <version>${guava.failureaccess.version}</version>
       </dependency>
 
       <!-- Groovy engine. Used in both commons and platform -->
