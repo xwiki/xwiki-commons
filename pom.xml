@@ -78,7 +78,7 @@
     <asm.version>9.7.1</asm.version>
 
     <!-- Guava -->
-    <guava.version>33.4.5-jre</guava.version>
+    <guava.version>33.4.6-jre</guava.version>
     <guava.failureaccess.version>1.0.3</guava.failureaccess.version>
 
     <!-- SLF4J API and implementation -->
