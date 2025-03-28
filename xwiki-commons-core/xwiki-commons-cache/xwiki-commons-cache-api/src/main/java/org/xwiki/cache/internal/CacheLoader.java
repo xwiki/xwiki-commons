@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.cache.util;
+package org.xwiki.cache.internal;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -29,7 +29,8 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang3.function.FailableBiConsumer;
 import org.apache.commons.lang3.function.FailableFunction;
-import org.xwiki.stability.Unstable;
+
+import com.google.common.util.concurrent.Uninterruptibles;
 
 /**
  * Cache loading helper. Handles parallel loads and invalidations during loads to ensure that no invalidated data is
@@ -40,11 +41,10 @@ import org.xwiki.stability.Unstable;
  * @param <E> the exception type thrown by the methods for getting, loading and storing values
  *
  * @version $Id$
- * @since 17.2.0
+ * @since 17.3.0RC1
  * @since 16.10.6
  * @since 16.4.8
  */
-@Unstable
 public class CacheLoader<V, E extends Exception>
 {
     private final ConcurrentHashMap<String, LoaderEntry> currentLoads = new ConcurrentHashMap<>();
@@ -95,19 +95,15 @@ public class CacheLoader<V, E extends Exception>
     public V loadAndStoreInCache(String key, FailableFunction<String, V, E> loader,
         FailableBiConsumer<String, V, E> setter) throws ExecutionException
     {
-        V result = null;
+        V result;
 
         LoaderEntry loaderEntry = new LoaderEntry(key, loader, setter);
         LoaderEntry existingEntry = this.currentLoads.putIfAbsent(key, loaderEntry);
-        try {
-            if (existingEntry == null) {
-                loaderEntry.future.run();
-                result = loaderEntry.future.get();
-            } else {
-                result = existingEntry.future.get();
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        if (existingEntry == null) {
+            loaderEntry.future.run();
+            result = Uninterruptibles.getUninterruptibly(loaderEntry.future);
+        } else {
+            result = Uninterruptibles.getUninterruptibly(existingEntry.future);
         }
 
         return result;
