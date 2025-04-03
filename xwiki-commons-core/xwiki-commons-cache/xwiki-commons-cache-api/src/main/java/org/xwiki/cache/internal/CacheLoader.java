@@ -42,8 +42,6 @@ import com.google.common.util.concurrent.Uninterruptibles;
  *
  * @version $Id$
  * @since 17.3.0RC1
- * @since 16.10.6
- * @since 16.4.8
  */
 public class CacheLoader<V, E extends Exception>
 {
