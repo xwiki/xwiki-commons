@@ -102,6 +102,9 @@ class DefaultBeanDescriptorTest
 
         PropertyDescriptor displayHiddenDescriptor = this.beanDescriptor.getProperty("displayHiddenParameter");
         assertTrue(displayHiddenDescriptor.isDisplayHidden());
+        // Ensure the feature is bound to whole list of groups, and not just one group
+        assertEquals("test1", displayHiddenDescriptor.getGroupDescriptor().getGroup().get(0));
+        assertNull(displayHiddenDescriptor.getGroupDescriptor().getFeature());
     }
 
     @Test

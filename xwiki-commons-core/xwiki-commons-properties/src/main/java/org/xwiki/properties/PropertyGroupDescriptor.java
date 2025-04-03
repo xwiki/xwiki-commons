@@ -22,7 +22,10 @@ package org.xwiki.properties;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.stability.Unstable;
+import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * Contains a {@code List<String>} to view the group as a single object and the associated feature.
@@ -94,5 +97,44 @@ public class PropertyGroupDescriptor
     public boolean isFeatureMandatory()
     {
         return this.featureMandatory;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        PropertyGroupDescriptor that = (PropertyGroupDescriptor) o;
+
+        return new EqualsBuilder()
+            .append(featureMandatory, that.featureMandatory)
+            .append(group, that.group)
+            .append(feature, that.feature)
+            .isEquals();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder(17, 39)
+            .append(group).append(feature)
+            .append(featureMandatory)
+            .toHashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        return new XWikiToStringBuilder(this)
+            .append("group", group)
+            .append("feature", feature)
+            .append("featureMandatory", featureMandatory)
+            .toString();
     }
 }

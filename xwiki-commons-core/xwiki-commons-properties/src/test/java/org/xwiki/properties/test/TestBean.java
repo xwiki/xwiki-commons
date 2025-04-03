@@ -214,6 +214,7 @@ public class TestBean
     }
 
     @PropertyDisplayHidden
+    @PropertyGroup("test1")
     public boolean getDisplayHiddenParameter()
     {
         return this.displayHiddenParameter;
