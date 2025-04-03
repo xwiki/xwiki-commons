@@ -22,9 +22,8 @@ package org.xwiki.netflux.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.websocket.DecodeException;
 import jakarta.websocket.EncodeException;
 

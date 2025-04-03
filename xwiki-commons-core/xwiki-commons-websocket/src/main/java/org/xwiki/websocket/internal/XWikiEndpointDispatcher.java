@@ -25,9 +25,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Provider;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Provider;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.Endpoint;
 import jakarta.websocket.EndpointConfig;
@@ -77,9 +77,9 @@ public class XWikiEndpointDispatcher extends Endpoint implements EndpointCompone
                 .getInstance(EndpointComponent.class, session.getPathParameters().get("roleHint"));
             if (endPointComponent instanceof XWikiEndpointDispatcher) {
                 // Prevent infinite loop.
-            } else if (endPointComponent instanceof Endpoint) {
+            } else if (endPointComponent instanceof Endpoint ep) {
                 SESSIONS.put(session.getId(), session);
-                this.endPoint = (Endpoint) endPointComponent;
+                this.endPoint = ep;
                 this.endPoint.onOpen(session, config);
             } else {
                 closeReason = new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, String

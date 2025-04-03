@@ -54,7 +54,7 @@ import static org.mockito.Mockito.withSettings;
  * @version $Id$
  */
 @ComponentTest
-public class XWikiEndpointDispatcherTest
+class XWikiEndpointDispatcherTest
 {
     @InjectMockComponents
     private XWikiEndpointDispatcher dispatcher;

@@ -24,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -94,8 +93,7 @@ public class Channel
      */
     public List<User> getConnectedUsers()
     {
-        return this.users.values().stream().filter(user -> user.getSession() != null && user.isConnected())
-            .collect(Collectors.toList());
+        return this.users.values().stream().filter(user -> user.getSession() != null && user.isConnected()).toList();
     }
 
     /**

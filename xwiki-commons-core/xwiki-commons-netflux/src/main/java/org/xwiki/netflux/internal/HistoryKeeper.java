@@ -23,9 +23,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
@@ -121,8 +121,8 @@ public class HistoryKeeper extends AbstractBot
         List<Object> msg = this.dispatcher.decode(message);
         if (!msg.isEmpty()) {
             Object lastItem = msg.get(msg.size() - 1);
-            if (lastItem instanceof String) {
-                return ((String) lastItem).startsWith("cp|[4,[");
+            if (lastItem instanceof String s) {
+                return s.startsWith("cp|[4,[");
             }
         }
         return false;

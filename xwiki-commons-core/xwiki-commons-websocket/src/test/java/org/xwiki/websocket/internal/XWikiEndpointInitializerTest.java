@@ -74,11 +74,13 @@ class XWikiEndpointInitializerTest
         @Override
         public void init(EndpointConfig config)
         {
+            // Do nothing.
         }
 
         @Override
         public void destroy()
         {
+            // Do nothing.
         }
 
         @Override
@@ -99,11 +101,13 @@ class XWikiEndpointInitializerTest
         @Override
         public void init(EndpointConfig config)
         {
+            // Do nothing.
         }
 
         @Override
         public void destroy()
         {
+            // Do nothing.
         }
 
         @Override
@@ -157,7 +161,7 @@ class XWikiEndpointInitializerTest
     }
 
     @BeforeComponent("initialize")
-    void setupInitialize() throws Exception
+    void setupInitialize()
     {
         @SuppressWarnings("unchecked")
         ComponentDescriptor<? extends EndpointComponent> endPointOne = mock(ComponentDescriptor.class);
@@ -202,7 +206,7 @@ class XWikiEndpointInitializerTest
     }
 
     @AfterAll
-    static void verifyLog() throws Exception
+    static void verifyLog()
     {
         // Assert log happening in the initialize() call.
         assertEquals(

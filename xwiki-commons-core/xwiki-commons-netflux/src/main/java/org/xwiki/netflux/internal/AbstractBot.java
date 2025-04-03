@@ -19,7 +19,7 @@
  */
 package org.xwiki.netflux.internal;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
