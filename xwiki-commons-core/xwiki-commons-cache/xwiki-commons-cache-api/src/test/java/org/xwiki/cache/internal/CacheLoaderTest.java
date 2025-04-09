@@ -545,4 +545,21 @@ class CacheLoaderTest
         assertEquals(expectedException, exception.getCause());
         verifyNoInteractions(setter);
     }
+
+    @Test
+    void recursiveLoad() throws Exception
+    {
+        CacheLoader<String, Exception> cacheLoader = new CacheLoader<>();
+
+        FailableBiConsumer<String, String, Exception> setter = mock();
+        FailableBiConsumer<String, String, Exception> setter2 = mock();
+        FailableFunction<String, String, Exception> loader = key -> {
+            assertEquals(VALUE_2, cacheLoader.loadAndStoreInCache(key, k -> VALUE_2, setter2));
+            return VALUE;
+        };
+
+        assertEquals(VALUE, cacheLoader.loadAndStoreInCache(KEY, loader, setter));
+        verify(setter2).accept(KEY, VALUE_2);
+        verifyNoInteractions(setter);
+    }
 }
