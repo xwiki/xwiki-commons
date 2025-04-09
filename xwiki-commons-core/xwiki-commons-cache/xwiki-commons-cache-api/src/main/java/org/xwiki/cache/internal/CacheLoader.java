@@ -51,6 +51,8 @@ public class CacheLoader<V, E extends Exception>
 
     private class LoaderEntry
     {
+        private final Thread creatingThread = Thread.currentThread();
+
         private final FutureTask<V> future;
 
         private volatile boolean invalidated;
@@ -93,18 +95,29 @@ public class CacheLoader<V, E extends Exception>
     public V loadAndStoreInCache(String key, FailableFunction<String, V, E> loader,
         FailableBiConsumer<String, V, E> setter) throws ExecutionException
     {
-        V result;
-
-        LoaderEntry loaderEntry = new LoaderEntry(key, loader, setter);
-        LoaderEntry existingEntry = this.currentLoads.putIfAbsent(key, loaderEntry);
-        if (existingEntry == null) {
+        LoaderEntry newEntry = new LoaderEntry(key, loader, setter);
+        LoaderEntry loaderEntry = this.currentLoads.compute(key, (k, value) -> {
+            if (value != null) {
+                if (value.creatingThread != Thread.currentThread()) {
+                    // If the entry is already being loaded by another thread, return it, everything is fine.
+                    return value;
+                } else {
+                    // If the entry is being loaded by this thread, we're in a recursive call from the loader.
+                    // This happens in Hibernate migrations.
+                    // Best is to just ignore the original call and call the loader again.
+                    // Make sure the original loader entry is invalidated so it doesn't store a value in the cache.
+                    // As it is the same thread, there is no need for a lock here.
+                    value.invalidated = true;
+                }
+            }
+            return newEntry;
+        });
+        if (loaderEntry == newEntry) {
+            // We've just inserted that entry, so we need to load it.
             loaderEntry.future.run();
-            result = Uninterruptibles.getUninterruptibly(loaderEntry.future);
-        } else {
-            result = Uninterruptibles.getUninterruptibly(existingEntry.future);
         }
 
-        return result;
+        return Uninterruptibles.getUninterruptibly(loaderEntry.future);
     }
 
     /**
