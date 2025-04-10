@@ -32,7 +32,7 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Cache - API</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.10</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.29</xwiki.jacoco.instructionRatio>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-cache-api</xwiki.extension.features>
   </properties>
