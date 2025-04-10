@@ -19,6 +19,7 @@
  */
 package org.xwiki.cache.internal;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -34,8 +35,11 @@ import org.apache.commons.lang3.function.FailableFunction;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.xwiki.component.util.ReflectionUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -652,5 +656,39 @@ class CacheLoaderTest
         }
 
         assertTrue(executorService.awaitTermination(10, TimeUnit.SECONDS));
+    }
+
+    @Test
+    void testRecursiveCallWithException() throws Exception
+    {
+        CacheLoader<String, Exception> cacheLoader = new CacheLoader<>();
+
+        FailableBiConsumer<String, String, Exception> setter = mock();
+        FailableBiConsumer<String, String, Exception> setter2 = mock();
+        FailableFunction<String, String, Exception> loader = key -> {
+            RuntimeException testException = new RuntimeException("Test exception");
+            ExecutionException executionException = assertThrows(ExecutionException.class,
+                () -> cacheLoader.loadAndStoreInCache(KEY_2, k -> {
+                    throw testException;
+                }, setter2));
+            assertSame(testException, executionException.getCause());
+            return VALUE;
+        };
+
+        assertEquals(VALUE, cacheLoader.loadAndStoreInCache(KEY, loader, setter));
+        verify(setter).accept(KEY, VALUE);
+        verifyNoInteractions(setter2);
+
+        // Get the internal cache loader map and check that it is empty.
+        Field currentLoadsField = ReflectionUtils.getField(CacheLoader.class, "currentLoads");
+        currentLoadsField.setAccessible(true);
+        Map<?, ?> currentLoads = (Map<?, ?>) currentLoadsField.get(cacheLoader);
+        assertTrue(currentLoads.isEmpty(), "CacheLoader should be empty after exception: " + currentLoads);
+
+        // Get the internal thread local and check that it has been cleared.
+        Field threadLocalField = ReflectionUtils.getField(CacheLoader.class, "currentLoad");
+        threadLocalField.setAccessible(true);
+        ThreadLocal<?> threadLocal = (ThreadLocal<?>) threadLocalField.get(cacheLoader);
+        assertNull(threadLocal.get(), "ThreadLocal should be empty after exception: " + threadLocal.get());
     }
 }
