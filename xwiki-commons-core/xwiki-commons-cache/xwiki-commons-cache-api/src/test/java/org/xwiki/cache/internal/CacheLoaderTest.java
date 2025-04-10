@@ -544,6 +544,26 @@ class CacheLoaderTest
 
         assertEquals(expectedException, exception.getCause());
         verifyNoInteractions(setter);
+
+        // Verify that the next load works again normally, even when executed by another thread.
+        // There is a special case for the current thread to remove the loader entry when it exists, ensure that it also
+        // works outside this special case.
+        doReturn(VALUE).when(loader).apply(KEY);
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        try {
+            Future<String> loadFuture =
+                executorService.submit(() -> cacheLoader.loadAndStoreInCache(KEY, loader, setter));
+
+            String result = loadFuture.get(5, TimeUnit.SECONDS);
+            assertEquals(VALUE, result);
+            verify(loader, times(2)).apply(KEY);
+            verify(setter).accept(KEY, VALUE);
+        } finally {
+            executorService.shutdown();
+        }
+
+        assertTrue(executorService.awaitTermination(10, TimeUnit.SECONDS));
     }
 
     @Test
@@ -561,5 +581,76 @@ class CacheLoaderTest
         assertEquals(VALUE, cacheLoader.loadAndStoreInCache(KEY, loader, setter));
         verify(setter2).accept(KEY, VALUE_2);
         verifyNoInteractions(setter);
+    }
+
+    @Test
+    void twoRecursiveLoads() throws Exception
+    {
+        // Create two threads where the first thread starts with KEY, the second starts with KEY_2, and then after
+        // both threads arrived in the loader, they load the other key.
+        CacheLoader<String, Exception> cacheLoader = new CacheLoader<>();
+
+        CompletableFuture<String> arrivedInLoad1 = new CompletableFuture<>();
+        CompletableFuture<String> continueLoad1 = new CompletableFuture<>();
+        FailableFunction<String, String, Exception> innerLoad1 = mock();
+        when(innerLoad1.apply(KEY_2)).thenReturn(VALUE_2);
+        FailableBiConsumer<String, String, Exception> setter1 = mock();
+        FailableBiConsumer<String, String, Exception> innerSetter1 = mock();
+
+        CompletableFuture<String> arrivedInLoad2 = new CompletableFuture<>();
+        CompletableFuture<String> continueLoad2 = new CompletableFuture<>();
+
+        FailableFunction<String, String, Exception> loader1 = key -> {
+            arrivedInLoad1.complete(key);
+            continueLoad1.get(10, TimeUnit.SECONDS);
+            assertEquals(VALUE_2, cacheLoader.loadAndStoreInCache(KEY_2, innerLoad1, innerSetter1));
+            return VALUE;
+        };
+
+        FailableFunction<String, String, Exception> innerLoad2 = mock();
+        when(innerLoad2.apply(KEY)).thenReturn(VALUE);
+        FailableBiConsumer<String, String, Exception> setter2 = mock();
+        FailableBiConsumer<String, String, Exception> innerSetter2 = mock();
+
+        FailableFunction<String, String, Exception> loader2 = key -> {
+            arrivedInLoad2.complete(key);
+            continueLoad2.get(10, TimeUnit.SECONDS);
+            assertEquals(VALUE, cacheLoader.loadAndStoreInCache(KEY, innerLoad2, innerSetter2));
+            return VALUE_2;
+        };
+
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        try {
+            Future<String> loadFuture1 =
+                executorService.submit(() -> cacheLoader.loadAndStoreInCache(KEY, loader1, setter1));
+            Future<String> loadFuture2 =
+                executorService.submit(() -> cacheLoader.loadAndStoreInCache(KEY_2, loader2, setter2));
+
+            // Wait until the first load reaches the loader function
+            assertEquals(KEY, arrivedInLoad1.get(5, TimeUnit.SECONDS));
+
+            // Wait until the second load reaches the loader function
+            assertEquals(KEY_2, arrivedInLoad2.get(5, TimeUnit.SECONDS));
+
+            // Allow the loads to complete
+            continueLoad1.complete(VALUE);
+            continueLoad2.complete(VALUE_2);
+
+            String result1 = loadFuture1.get(5, TimeUnit.SECONDS);
+            String result2 = loadFuture2.get(5, TimeUnit.SECONDS);
+
+            assertEquals(VALUE, result1);
+            assertEquals(VALUE_2, result2);
+
+            verify(innerLoad1).apply(KEY_2);
+            verify(innerLoad2).apply(KEY);
+            verifyNoInteractions(innerSetter1, innerSetter2);
+            verify(setter1).accept(KEY, VALUE);
+            verify(setter2).accept(KEY_2, VALUE_2);
+        } finally {
+            executorService.shutdown();
+        }
+
+        assertTrue(executorService.awaitTermination(10, TimeUnit.SECONDS));
     }
 }

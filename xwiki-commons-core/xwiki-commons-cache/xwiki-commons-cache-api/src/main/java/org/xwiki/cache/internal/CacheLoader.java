@@ -49,6 +49,11 @@ public class CacheLoader<V, E extends Exception>
 
     private final ReadWriteLock invalidationLock = new ReentrantReadWriteLock();
 
+    // Stores the current load of a thread to enable the detection of recursive calls to loadAndStoreInCache() with
+    // different keys.
+    // We store the full loader entry to make debugging easier.
+    private final ThreadLocal<LoaderEntry> currentLoad = new ThreadLocal<>();
+
     private class LoaderEntry
     {
         private final Thread creatingThread = Thread.currentThread();
@@ -60,23 +65,41 @@ public class CacheLoader<V, E extends Exception>
         LoaderEntry(String key, FailableFunction<String, V, E> loader, FailableBiConsumer<String, V, E> setter)
         {
             this.future = new FutureTask<>(() -> {
-                V value = loader.apply(key);
-
-                // Use the read lock to avoid that invalidated is set to true while this code runs.
-                Lock lock = CacheLoader.this.invalidationLock.readLock();
-                lock.lock();
+                // Store the current loader entry in the thread local variable to avoid that a recursive call to
+                // loadAndStoreInCache() creates a deadlock.
+                LoaderEntry oldEntry = CacheLoader.this.currentLoad.get();
                 try {
+                    CacheLoader.this.currentLoad.set(this);
+                    V value = loader.apply(key);
+
+                    // First check outside the lock if the entry is invalidated.
+                    // This avoids needless locking when the entry has already been invalidated.
                     if (!LoaderEntry.this.invalidated) {
-                        setter.accept(key, value);
+                        // Use the read lock to avoid that invalidated is set to true while this code runs.
+                        Lock lock = CacheLoader.this.invalidationLock.readLock();
+                        lock.lock();
+                        try {
+                            if (!LoaderEntry.this.invalidated) {
+                                setter.accept(key, value);
+                            }
+                        } finally {
+                            lock.unlock();
+                        }
                     }
+
+                    return value;
                 } finally {
-                    lock.unlock();
+                    if (oldEntry == null) {
+                        CacheLoader.this.currentLoad.remove();
+                    } else {
+                        // Restore the old entry.
+                        CacheLoader.this.currentLoad.set(oldEntry);
+                    }
+
                     // Remove this loader entry from the current loads, but only if it hasn't been superseded by a
                     // new entry yet.
                     CacheLoader.this.currentLoads.computeIfPresent(key, (k, v) -> v == LoaderEntry.this ? null : v);
                 }
-
-                return value;
             });
         }
     }
@@ -112,8 +135,23 @@ public class CacheLoader<V, E extends Exception>
             }
             return newEntry;
         });
+        if (loaderEntry != newEntry && this.currentLoad.get() != null) {
+            // We are inside a recursive call, but another thread is already loading the value.
+            // In theory, we should be able to wait for that other thread, but it would be possible that this other
+            // thread itself does a recursive call and waits for us.
+            // Imagine thread A loads X and that loads Y and thread B loads Y and that loads X.
+            // This would lead to a deadlock.
+            // Therefore, we don't wait for the other thread and just execute the loader again.
+            // We set the entry to "invalidated" to disable storing the value in the cache - it will already be stored
+            // by the other thread which is hopefully faster than this thread as it inserted the loader entry before
+            // this thread.
+            // Further, it is important that all entries that haven't been invalidated are in the map to allow the cache
+            // invalidation to work correctly.
+            loaderEntry = newEntry;
+            loaderEntry.invalidated = true;
+        }
         if (loaderEntry == newEntry) {
-            // We've just inserted that entry, so we need to load it.
+            // We've just inserted that entry, or we are in a recursive call. In both cases, we need to run the loader.
             loaderEntry.future.run();
         }
 
