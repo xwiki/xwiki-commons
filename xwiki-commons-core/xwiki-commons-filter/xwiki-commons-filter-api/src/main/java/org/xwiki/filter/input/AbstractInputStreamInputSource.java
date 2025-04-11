@@ -19,6 +19,7 @@
  */
 package org.xwiki.filter.input;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -40,7 +41,16 @@ public abstract class AbstractInputStreamInputSource implements InputStreamInput
     public InputStream getInputStream() throws IOException
     {
         if (this.inputStream == null) {
-            this.inputStream = openStream();
+            this.inputStream = new FilterInputStream(openStream()) {
+                @Override
+                public void close() throws IOException
+                {
+                    super.close();
+
+                    // Since the stream was closed, we need the InputStreamInputSourceto know about it
+                    AbstractInputStreamInputSource.this.inputStream = null;
+                }
+            };
         }
 
         return this.inputStream;
