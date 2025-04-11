@@ -22,6 +22,7 @@ package org.xwiki.cache.internal;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -594,51 +595,39 @@ class CacheLoaderTest
         // both threads arrived in the loader, they load the other key.
         CacheLoader<String, Exception> cacheLoader = new CacheLoader<>();
 
-        CompletableFuture<String> arrivedInLoad1 = new CompletableFuture<>();
-        CompletableFuture<String> continueLoad1 = new CompletableFuture<>();
-        FailableFunction<String, String, Exception> innerLoad1 = mock();
-        when(innerLoad1.apply(KEY_2)).thenReturn(VALUE_2);
-        FailableBiConsumer<String, String, Exception> setter1 = mock();
-        FailableBiConsumer<String, String, Exception> innerSetter1 = mock();
+        Map<String, String> values = Map.of(KEY, VALUE, KEY_2, VALUE_2);
 
-        CompletableFuture<String> arrivedInLoad2 = new CompletableFuture<>();
-        CompletableFuture<String> continueLoad2 = new CompletableFuture<>();
+        CyclicBarrier barrier = new CyclicBarrier(2);
 
-        FailableFunction<String, String, Exception> loader1 = key -> {
-            arrivedInLoad1.complete(key);
-            continueLoad1.get(10, TimeUnit.SECONDS);
-            assertEquals(VALUE_2, cacheLoader.loadAndStoreInCache(KEY_2, innerLoad1, innerSetter1));
-            return VALUE;
-        };
-
-        FailableFunction<String, String, Exception> innerLoad2 = mock();
-        when(innerLoad2.apply(KEY)).thenReturn(VALUE);
-        FailableBiConsumer<String, String, Exception> setter2 = mock();
-        FailableBiConsumer<String, String, Exception> innerSetter2 = mock();
-
-        FailableFunction<String, String, Exception> loader2 = key -> {
-            arrivedInLoad2.complete(key);
-            continueLoad2.get(10, TimeUnit.SECONDS);
-            assertEquals(VALUE, cacheLoader.loadAndStoreInCache(KEY, innerLoad2, innerSetter2));
-            return VALUE_2;
-        };
+        FailableFunction<String, String, Exception> innerLoader = mock();
+        FailableFunction<String, String, Exception> outerLoader = mock();
+        // There is only one inner setter as it shouldn't be called.
+        FailableBiConsumer<String, String, Exception> innerSetter = mock();
+        // Use two outer setters to be able to check that each of them gets the correct value.
+        FailableBiConsumer<String, String, Exception> outerSetter1 = mock();
+        FailableBiConsumer<String, String, Exception> outerSetter2 = mock();
+        when(outerLoader.apply(anyString())).then(invocationOnMock -> {
+            // Wait for both threads to arrive in the loader.
+            barrier.await(5, TimeUnit.SECONDS);
+            String key = invocationOnMock.getArgument(0);
+            String otherKey = key.equals(KEY) ? KEY_2 : KEY;
+            assertEquals(values.get(otherKey), cacheLoader.loadAndStoreInCache(otherKey, innerLoader, innerSetter));
+            return values.get(key);
+        });
+        when(innerLoader.apply(anyString())).then(invocationOnMock -> {
+            // Wait for both threads to arrive in the inner loader to ensure that both threads still find the entry
+            // of the other thread in the currently loaded entries when they start loading the inner value.
+            barrier.await(5, TimeUnit.SECONDS);
+            String key = invocationOnMock.getArgument(0);
+            return values.get(key);
+        });
 
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         try {
             Future<String> loadFuture1 =
-                executorService.submit(() -> cacheLoader.loadAndStoreInCache(KEY, loader1, setter1));
+                executorService.submit(() -> cacheLoader.loadAndStoreInCache(KEY, outerLoader, outerSetter1));
             Future<String> loadFuture2 =
-                executorService.submit(() -> cacheLoader.loadAndStoreInCache(KEY_2, loader2, setter2));
-
-            // Wait until the first load reaches the loader function
-            assertEquals(KEY, arrivedInLoad1.get(5, TimeUnit.SECONDS));
-
-            // Wait until the second load reaches the loader function
-            assertEquals(KEY_2, arrivedInLoad2.get(5, TimeUnit.SECONDS));
-
-            // Allow the loads to complete
-            continueLoad1.complete(VALUE);
-            continueLoad2.complete(VALUE_2);
+                executorService.submit(() -> cacheLoader.loadAndStoreInCache(KEY_2, outerLoader, outerSetter2));
 
             String result1 = loadFuture1.get(5, TimeUnit.SECONDS);
             String result2 = loadFuture2.get(5, TimeUnit.SECONDS);
@@ -646,11 +635,11 @@ class CacheLoaderTest
             assertEquals(VALUE, result1);
             assertEquals(VALUE_2, result2);
 
-            verify(innerLoad1).apply(KEY_2);
-            verify(innerLoad2).apply(KEY);
-            verifyNoInteractions(innerSetter1, innerSetter2);
-            verify(setter1).accept(KEY, VALUE);
-            verify(setter2).accept(KEY_2, VALUE_2);
+            verify(innerLoader).apply(KEY_2);
+            verify(innerLoader).apply(KEY);
+            verifyNoInteractions(innerSetter);
+            verify(outerSetter1).accept(KEY, VALUE);
+            verify(outerSetter2).accept(KEY_2, VALUE_2);
         } finally {
             executorService.shutdown();
         }
