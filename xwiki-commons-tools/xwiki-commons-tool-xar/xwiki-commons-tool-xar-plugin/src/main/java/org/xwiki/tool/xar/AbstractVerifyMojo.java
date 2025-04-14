@@ -149,6 +149,15 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     protected List<String> translatablePages;
 
     /**
+     * Explicitly define a list of pages (it's a regex) that contains translations, the group 1 .
+     *
+     * @since 17.3.0RC1
+     * @since 16.10.6
+     */
+    @Parameter(property = "xar.translatedPages", defaultValue = ".*/.*Translations\\.([\\w]+)\\.xml")
+    protected List<String> translatedPages;
+
+    /**
      * Explicitly define a list of pages (it's a regex) that are technical pages but that should be visible (not
      * hidden). For example, home pages of applications. These pages must have their default langue set to empty so
      * that a search in a given language doesn't return them as they're not content.
@@ -174,6 +183,8 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
 
     private List<Pattern> translatablePagePatterns;
 
+    private List<Pattern> translatedPagePatterns;
+
     private List<Pattern> visibleTechnicalPagePatterns;
 
     /**
@@ -183,6 +194,7 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     {
         this.contentPagePatterns = initializationPagePatterns(this.contentPages);
         this.translatablePagePatterns = initializationPagePatterns(this.translatablePages);
+        this.translatedPagePatterns = initializationPagePatterns(this.translatedPages);
         this.visibleTechnicalPagePatterns = initializationPagePatterns(this.visibleTechnicalPages);
     }
 
@@ -287,6 +299,30 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
             }
         }
         return locale;
+    }
+
+    /**
+     * If the page is identifed as a translation from its name, guess the translation according to
+     * "(prefix).(language).xml" format.
+     * 
+     * @param file the XML file for which to guess the default language that it should have
+     * @return the language extracted from the file name
+     * @since 17.3.0RC1
+     * @since 16.10.6
+     */
+    protected Locale guessLocaleFromName(File file)
+    {
+        for (Pattern pattern : this.translatedPagePatterns) {
+            Matcher matcher = pattern.matcher(file.getPath());
+
+            if (matcher.matches()) {
+                String localeString = matcher.group(1);
+
+                return LocaleUtils.toLocale(localeString);
+            }
+        }
+
+        return Locale.ROOT;
     }
 
     protected boolean isContentPage(String filePath)
