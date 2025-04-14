@@ -166,6 +166,18 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
+    void executeWithWrongTranslatedPageLocale() throws Exception
+    {
+        // @formatter:off
+        verifyExecution("/wrongTranslatedLocale",
+            "Verifying [Main/Translations.de.xml]... errors",
+            "- [Translations.de.xml] ([Main.WebHome]) translated page name does not match its locale [] (expected [de])",
+            "Verifying [Main/Translations.fr.xml]... errors",
+            "- [Translations.fr.xml] ([Main.WebHome]) translated page name does not match its locale [fr_FR] (expected [fr])");
+        // @formatter:on
+    }
+
+    @Test
     void executeWhenContentPages() throws Exception
     {
         Verifier verifier = createVerifier("/contentPages");

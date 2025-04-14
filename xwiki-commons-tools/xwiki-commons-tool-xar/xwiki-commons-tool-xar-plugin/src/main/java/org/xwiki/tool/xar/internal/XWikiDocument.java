@@ -214,6 +214,10 @@ public class XWikiDocument
         if (this.locale == null) {
             // Fallback on old <language> element
             this.locale = readLocaleElement(rootElement, "language");
+            if (this.locale == null) {
+                // The locale is ROOT by default
+                this.locale = Locale.ROOT;
+            }
         }
 
         this.defaultLocale = readLocaleElement(rootElement, "defaultLanguage");
