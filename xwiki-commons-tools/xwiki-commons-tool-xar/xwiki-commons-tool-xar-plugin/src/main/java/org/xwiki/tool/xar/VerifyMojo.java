@@ -57,6 +57,7 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  *   <li>ensure that translated pages don't contain any object</li>
  *   <li>ensure that attachments have a mimetype set. If the mimetype is missing then the attachment won't be
  *       filterable in the attachment view in Page Index.</li>
+ *   <li>ensure the locale of a page matches its name</li>
  * </ul>
  *
  * @version $Id$
@@ -227,13 +228,20 @@ public class VerifyMojo extends AbstractVerifyMojo
                 verifyAuthorFields(errors, xdoc);
             }
 
+            // Verification 17: Verify that translated page name matches the locale
+            Locale locale = guessLocaleFromName(file);
+            if (!locale.equals(xdoc.getLocale())) {
+                errors.add(String.format("[%s] ([%s]) translated page name does not match its locale [%s] (expected [%s])",
+                    file.getName(), xdoc.getReference(), xdoc.getLocale(), locale));
+            }
+
             // Display errors
             if (errors.isEmpty()) {
                 getLog().info(String.format("  Verifying [%s/%s]... ok", parentName, file.getName()));
             } else {
                 getLog().info(String.format("  Verifying [%s/%s]... errors", parentName, file.getName()));
                 for (String error : errors) {
-                    getLog().info(String.format("  - %s", error));
+                    getLog().error(String.format("  - %s", error));
                 }
                 hasErrors = true;
             }
