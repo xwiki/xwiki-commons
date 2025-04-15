@@ -171,9 +171,13 @@ public class VerifyMojoTest extends AbstractMojoTest
         // @formatter:off
         verifyExecution("/wrongTranslatedLocale",
             "Verifying [Main/Translations.de.xml]... errors",
-            "- [Translations.de.xml] ([Main.WebHome]) translated page name does not match its locale [] (expected [de])",
-            "Verifying [Main/Translations.fr.xml]... errors",
-            "- [Translations.fr.xml] ([Main.WebHome]) translated page name does not match its locale [fr_FR] (expected [fr])");
+            "- [Translations.de.xml] ([Main.Translations]) translated page name does not match its locale [] (expected [de])",
+            "Verifying [Main/Translations.pt_BR.xml]... errors",
+            "- [Translations.pt_BR.xml] ([Main.Translations]) translated page name does not match its locale [pt] (expected [pt_BR])",
+            "Verifying [Main/WebHome.fr.xml]... errors",
+            "- [WebHome.fr.xml] ([Main.WebHome]) translated page name does not match its locale [zh] (expected [fr])",
+            "Verifying [Main/WebHome.zh_TW.xml]... errors",
+            "- [WebHome.zh_TW.xml] ([Main.WebHome]) translated page name does not match its locale [zh] (expected [zh_TW])");
         // @formatter:on
     }
 
