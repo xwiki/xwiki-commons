@@ -149,12 +149,13 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     protected List<String> translatablePages;
 
     /**
-     * Explicitly define a list of pages (it's a regex) that contains translations, the group 1 .
+     * Explicitly define a list of pages (it's a regex) that contains translations, the group {@code 1} is expected to
+     * extract the locale.
      *
      * @since 17.3.0RC1
      * @since 16.10.6
      */
-    @Parameter(property = "xar.translatedPages", defaultValue = ".*/.*Translations\\.([\\w]+)\\.xml")
+    @Parameter(property = "xar.translatedPages", defaultValue = ".*\\.([a-z][a-z](_[\\w]+)?)\\.xml")
     protected List<String> translatedPages;
 
     /**

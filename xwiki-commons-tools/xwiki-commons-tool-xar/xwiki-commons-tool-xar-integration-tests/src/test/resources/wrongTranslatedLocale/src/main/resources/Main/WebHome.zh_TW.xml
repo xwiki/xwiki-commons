@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc locale="zh">
 <web>Main</web>
-<name>Translations</name>
+<name>WebHome</name>
 <defaultLanguage>en</defaultLanguage>
 <translation>0</translation>
 <parent></parent>
