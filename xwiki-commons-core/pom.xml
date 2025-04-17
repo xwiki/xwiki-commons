@@ -224,36 +224,11 @@
               </differences>
             </revapi.differences>
             -->
-            <revapi.differences>
-              <justification>Not breaking</justification>
-              <criticality>allowed</criticality>
-              <differences>
-                <item>
-                  <ignore>true</ignore>
-                  <code>java.method.varargOverloadsOnlyDifferInVarargParameter</code>
-                  <old>method boolean org.apache.commons.lang3.StringUtils::containsAny(java.lang.CharSequence, char[]) @ org.xwiki.text.StringUtils</old>
-                  <new>method boolean org.apache.commons.lang3.StringUtils::containsAny(java.lang.CharSequence, char[]) @ org.xwiki.text.StringUtils</new>
-                </item>
-                <item>
-                  <ignore>true</ignore>
-                  <code>java.method.varargOverloadsOnlyDifferInVarargParameter</code>
-                  <old>method boolean org.apache.commons.lang3.StringUtils::containsAny(java.lang.CharSequence, java.lang.CharSequence[]) @ org.xwiki.text.StringUtils</old>
-                  <new>method boolean org.apache.commons.lang3.StringUtils::containsAny(java.lang.CharSequence, java.lang.CharSequence[]) @ org.xwiki.text.StringUtils</new>
-                </item>
-                <item>
-                  <ignore>true</ignore>
-                  <code>java.method.varargOverloadsOnlyDifferInVarargParameter</code>
-                  <old>method int org.apache.commons.lang3.StringUtils::indexOfAny(java.lang.CharSequence, char[]) @ org.xwiki.text.StringUtils</old>
-                  <new>method int org.apache.commons.lang3.StringUtils::indexOfAny(java.lang.CharSequence, char[]) @ org.xwiki.text.StringUtils</new>
-                </item>
-                <item>
-                  <ignore>true</ignore>
-                  <code>java.method.varargOverloadsOnlyDifferInVarargParameter</code>
-                  <old>method int org.apache.commons.lang3.StringUtils::indexOfAny(java.lang.CharSequence, java.lang.CharSequence[]) @ org.xwiki.text.StringUtils</old>
-                  <new>method int org.apache.commons.lang3.StringUtils::indexOfAny(java.lang.CharSequence, java.lang.CharSequence[]) @ org.xwiki.text.StringUtils</new>
-                </item>
-              </differences>
-            </revapi.differences>
+            
+
+            <!-- Jakarta -->
+            
+            
           </analysisConfiguration>
         </configuration>
       </plugin>
