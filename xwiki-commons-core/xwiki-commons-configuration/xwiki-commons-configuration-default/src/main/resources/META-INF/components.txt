@@ -1,0 +1,3 @@
+org.xwiki.configuration.internal.EnvVarConfigurationSource
+org.xwiki.configuration.internal.SystemPropertiesConfigurationSource
+org.xwiki.configuration.internal.SystemConfigurationSource

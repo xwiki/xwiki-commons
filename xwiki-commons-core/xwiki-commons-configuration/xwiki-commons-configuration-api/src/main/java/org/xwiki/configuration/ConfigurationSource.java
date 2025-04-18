@@ -47,8 +47,8 @@ public interface ConfigurationSource
      * @return the property value is found. If the key wasn't found, null is returned except for the following special
      *         cases:
      *         <ul>
-     *           <li>List: empty List</li>
-     *           <li>Properties: empty Properties</li>
+     *         <li>List: empty List</li>
+     *         <li>Properties: empty Properties</li>
      *         </ul>
      * @since 2.0M1
      */
@@ -85,6 +85,16 @@ public interface ConfigurationSource
     List<String> getKeys();
 
     /**
+     * @param prefix the prefix to filter the keys
+     * @return the list of available keys in the configuration source that start with the passed prefix
+     * @since 17.3.0RC1
+     */
+    default List<String> getKeys(String prefix)
+    {
+        return getKeys().stream().filter(key -> key.startsWith(prefix)).toList();
+    }
+
+    /**
      * @param key the key to check
      * @return true if the key is present in the configuration source or false otherwise
      */
@@ -94,6 +104,22 @@ public interface ConfigurationSource
      * @return true if the configuration source doesn't have any key or false otherwise
      */
     boolean isEmpty();
+
+    /**
+     * @param prefix the prefix to filter the keys
+     * @return true if the configuration source doesn't have any key or false otherwise
+     * @since 17.3.0RC1
+     */
+    default boolean isEmpty(String prefix)
+    {
+        for (String key : getKeys()) {
+            if (key.startsWith(prefix)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     /**
      * Set a property, this will replace any previously set values.

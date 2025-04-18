@@ -24,16 +24,31 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
+    <artifactId>xwiki-commons-configuration</artifactId>
     <version>17.3.0-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-configuration</artifactId>
-  <name>XWiki Commons - Configuration - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Configuration - Parent POM</description>
-  <modules>
-    <module>xwiki-commons-configuration-api</module>
-    <module>xwiki-commons-configuration-default</module>
-  </modules>
+  <artifactId>xwiki-commons-configuration-default</artifactId>
+  <name>XWiki Commons - Configuration - Default</name>
+  <packaging>jar</packaging>
+  <description>Implement various APIs exposed xwiki-commons-configuration-api</description>
+  <properties>
+    <xwiki.jacoco.instructionRatio>1.00</xwiki.jacoco.instructionRatio>
+    <!-- Name to display by the Extension Manager -->
+    <xwiki.extension.name>Configuration Default</xwiki.extension.name>
+    <!-- Category to display in the Extension Manager -->
+    <xwiki.extension.category>api</xwiki.extension.category>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-configuration-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-properties</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>
        
