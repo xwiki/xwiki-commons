@@ -43,7 +43,7 @@ public class SystemEnvConfigurationSource extends AbstractPropertiesConfiguratio
     /**
      * The hint to use to get this configuration source.
      */
-    public static final String HINT = "envvars";
+    public static final String HINT = "systemenv";
 
     /**
      * The prefix used to identify env variables used to overwrite the configuration.
@@ -184,19 +184,29 @@ public class SystemEnvConfigurationSource extends AbstractPropertiesConfiguratio
             case '.', ':', '-':
                 break;
             default:
+                // For anything else, use URL encoding (but without the "%")
                 byte[] ba = String.valueOf(c).getBytes(StandardCharsets.UTF_8);
 
                 for (int j = 0; j < ba.length; j++) {
-                    char ch = Character.forDigit((ba[j] >> 4) & 0xF, 16);
-                    // Make it upper case
-                    ch = Character.toUpperCase(ch);
-                    builder.append(ch);
-
-                    ch = Character.forDigit(ba[j] & 0xF, 16);
-                    // Make it upper case
-                    ch = Character.toUpperCase(ch);
-                    builder.append(ch);
+                    urlEncode(c, builder);
                 }
+        }
+    }
+
+    private void urlEncode(char c, StringBuilder builder)
+    {
+        byte[] ba = String.valueOf(c).getBytes(StandardCharsets.UTF_8);
+
+        for (int j = 0; j < ba.length; j++) {
+            char ch = Character.forDigit((ba[j] >> 4) & 0xF, 16);
+            // Make it upper case
+            ch = Character.toUpperCase(ch);
+            builder.append(ch);
+
+            ch = Character.forDigit(ba[j] & 0xF, 16);
+            // Make it upper case
+            ch = Character.toUpperCase(ch);
+            builder.append(ch);
         }
     }
 
@@ -209,8 +219,9 @@ public class SystemEnvConfigurationSource extends AbstractPropertiesConfiguratio
     {
         String property = key.substring(PREFIX.length() + encodedPrefix.length());
 
-        // It's not really possible to fully accurately convert from env to property key but we doing our best based on
-        // the most common version (properties are generally lower cases, and the separator is generally ".").
+        // It's not really possible to fully accurately convert from env to property key but we are doing our best based
+        // on the most common use cases (properties are generally lower cases, and the separator that leaded to have a
+        // "_" is generally ".").
         property = property.replace('_', '.').toLowerCase(Locale.ROOT);
 
         return prefix + property;

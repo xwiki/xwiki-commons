@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
  * @version $Id$
@@ -89,6 +90,7 @@ public interface ConfigurationSource
      * @return the list of available keys in the configuration source that start with the passed prefix
      * @since 17.4.0RC1
      */
+    @Unstable
     default List<String> getKeys(String prefix)
     {
         return getKeys().stream().filter(key -> key.startsWith(prefix)).toList();
@@ -110,6 +112,7 @@ public interface ConfigurationSource
      * @return true if the configuration source doesn't have any key or false otherwise
      * @since 17.4.0RC1
      */
+    @Unstable
     default boolean isEmpty(String prefix)
     {
         return getKeys(prefix).isEmpty();

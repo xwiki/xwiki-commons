@@ -45,7 +45,7 @@ public class SystemConfigurationSource extends CompositeConfigurationSource impl
 {
     @Inject
     @Named(SystemEnvConfigurationSource.HINT)
-    private ConfigurationSource varsSource;
+    private ConfigurationSource envSource;
 
     @Inject
     @Named(SystemPropertiesConfigurationSource.HINT)
@@ -54,7 +54,7 @@ public class SystemConfigurationSource extends CompositeConfigurationSource impl
     @Override
     public void initialize() throws InitializationException
     {
-        addConfigurationSource(this.varsSource);
+        addConfigurationSource(this.envSource);
         addConfigurationSource(this.propertiesSource);
     }
 }
