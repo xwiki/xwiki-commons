@@ -104,9 +104,9 @@ class SystemEnvConfigurationSourceTest
 
         assertEquals("15", this.configuration.getProperty("key1:KEY2_key3.KEY4"));
 
-        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "_31Key_40", "value");
+        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "_31Key__40", "value");
 
-        assertEquals("value", this.configuration.getProperty("1Key@"));
+        assertEquals("value", this.configuration.getProperty("1Key.@"));
     }
 
     @Test
