@@ -32,14 +32,13 @@ import org.xwiki.configuration.ConfigurationSource;
 /**
  * Environment variables based configuration source.
  * <p>
- * Environment variable are expected to be prefixed with XCONF_ to be taken into account by this
+ * Environment variable are expected to be prefixed with {@code XCONF_} to be taken into account by this
  * {@link ConfigurationSource}. Also, to support all systems, we cannot expect environment variable to allow anything
- * else than [a-zA-Z_]+[a-zA-Z0-9_]* so we apply the following encoding:
+ * else than {@code [a-zA-Z_]+[a-zA-Z0-9_]*} so we apply the following encoding:
  * <ul>
- * <li>., : and - (don’t hesitate if you think of something else that might be common in a configuration file key) are
- * converted to _</li>
- * <li>_ remains _</li>
- * <li>any other forbidden character is converted to _<UTF8, URL style, code></li>
+ * <li>{@code .}, {@code :} and {@code -} are converted to {@code _}</li>
+ * <li>{@code _} remains {@code _}</li>
+ * <li>any other forbidden character is converted to {@code _<UTF8, URL style, code>}</li>
  * </ul>
  * <p>
  * For example the {@link ConfigurationSource} property key "configuration.1Key@" will lead the the environment variable

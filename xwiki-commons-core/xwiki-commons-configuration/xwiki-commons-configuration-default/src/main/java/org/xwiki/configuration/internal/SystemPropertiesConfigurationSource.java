@@ -28,10 +28,17 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSaveException;
+import org.xwiki.configuration.ConfigurationSource;
 
 /**
  * {@link System} properties based configuration source.
- *
+ * <p>
+ * System properties are expected to be prefixed with {@code xconf_} to be taken into account by this
+ * {@link org.xwiki.configuration.ConfigurationSource}.
+ * <p>
+ * For example the {@link ConfigurationSource} property key "configuration.key" will lead the the environment variable
+ * "xconf.configuration.key".
+ * 
  * @version $Id$
  * @since 17.4.0RC1
  */
