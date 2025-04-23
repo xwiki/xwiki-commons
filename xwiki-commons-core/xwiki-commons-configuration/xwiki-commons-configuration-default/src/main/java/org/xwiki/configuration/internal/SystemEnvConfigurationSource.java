@@ -21,7 +21,6 @@ package org.xwiki.configuration.internal;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import jakarta.inject.Named;
@@ -31,6 +30,15 @@ import org.xwiki.component.annotation.Component;
 
 /**
  * Environment variables based configuration source.
+ * <p>
+ * To support all systems, we cannot expect environment variable to allow anything else than [a-zA-Z_]+[a-zA-Z0-9_]* so
+ * we apply the following encoding:
+ * <ul>
+ * <li>., : and - (don’t hesitate if you think of something else that might be common in a configuration file key) are
+ * converted to _</li>
+ * <li>_ remains _</li>
+ * <li>any other forbidden character is converted to _<UTF8, URL style, code></li>
+ * </ul>
  *
  * @version $Id$
  * @since 17.4.0RC1
@@ -127,7 +135,7 @@ public class SystemEnvConfigurationSource extends AbstractPropertiesConfiguratio
 
         encode(property, builder);
 
-        return builder.toString().toUpperCase(Locale.ROOT);
+        return builder.toString();
     }
 
     private void encode(String property, StringBuilder builder)
@@ -169,7 +177,7 @@ public class SystemEnvConfigurationSource extends AbstractPropertiesConfiguratio
 
         encode(property, builder);
 
-        return builder.toString().toUpperCase(Locale.ROOT);
+        return builder.toString();
     }
 
     /**
@@ -220,9 +228,8 @@ public class SystemEnvConfigurationSource extends AbstractPropertiesConfiguratio
         String property = key.substring(PREFIX.length() + encodedPrefix.length());
 
         // It's not really possible to fully accurately convert from env to property key but we are doing our best based
-        // on the most common use cases (properties are generally lower cases, and the separator that leaded to have a
-        // "_" is generally ".").
-        property = property.replace('_', '.').toLowerCase(Locale.ROOT);
+        // on the most common use cases (the separator that leaded to have a "_" is generally ".").
+        property = property.replace('_', '.');
 
         return prefix + property;
     }
