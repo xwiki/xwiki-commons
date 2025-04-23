@@ -63,6 +63,13 @@ public abstract class AbstractPropertiesConfigurationSource implements Configura
         return getConvertedProperty(key, valueClass, null);
     }
 
+    /**
+     * @param <T> the value type
+     * @param key the property key for which we want the value
+     * @param valueClass the type of object that should be returned. The value is converted to the passed type.
+     * @param defaultValue the value to use if the key isn't found
+     * @return the value associated with the key, converted to the request type
+     */
     protected <T> T getConvertedProperty(String key, Class<T> valueClass, T defaultValue)
     {
         Object value = getProperty(key);
