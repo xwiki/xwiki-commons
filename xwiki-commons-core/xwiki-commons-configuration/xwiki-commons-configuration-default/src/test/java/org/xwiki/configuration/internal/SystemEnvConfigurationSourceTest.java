@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -66,6 +67,13 @@ class SystemEnvConfigurationSourceTest
     @MockComponent
     private ConverterManager converterManager;
 
+    @BeforeEach
+    void beforeEach()
+    {
+        when(this.converterManager.convert(Integer.class, "14")).thenReturn(14);
+        when(this.converterManager.convert(Integer.class, "15")).thenReturn(15);
+    }
+
     @Test
     void getProperty()
     {
@@ -78,31 +86,27 @@ class SystemEnvConfigurationSourceTest
 
         assertNull(this.configuration.getProperty("key"));
 
-        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "key", "15");
-
-        assertNull(this.configuration.getProperty("key"));
-
+        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "key", "14");
         this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "KEY", "15");
 
-        assertEquals("15", this.configuration.getProperty("key"));
+        assertEquals("14", this.configuration.getProperty("key"));
+        assertEquals("15", this.configuration.getProperty("KEY"));
 
-        when(this.converterManager.convert(Integer.class, "15")).thenReturn(15);
+        assertEquals(14, this.configuration.getProperty("key", 1));
+        assertEquals(14, this.configuration.getProperty("key", Integer.class));
+        assertEquals(14, this.configuration.getProperty("key", Integer.class, 1));
 
-        assertEquals(15, this.configuration.getProperty("key", 1));
-        assertEquals(15, this.configuration.getProperty("key", Integer.class));
-        assertEquals(15, this.configuration.getProperty("key", Integer.class, 1));
+        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "key1_KEY2_key3_KEY4", "15");
 
-        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "KEY1_KEY2_KEY3_KEY4", "15");
+        assertEquals("15", this.configuration.getProperty("key1:KEY2_key3.KEY4"));
 
-        assertEquals("15", this.configuration.getProperty("key1:key2_key3.key4"));
+        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "key1_KEY2_key3_KEY4", "15");
 
-        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "KEY1_KEY2_KEY3_KEY4", "15");
+        assertEquals("15", this.configuration.getProperty("key1:KEY2_key3.KEY4"));
 
-        assertEquals("15", this.configuration.getProperty("key1:key2_key3.key4"));
+        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "_31Key_40", "value");
 
-        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "_31KEY_40", "value");
-
-        assertEquals("value", this.configuration.getProperty("1key@"));
+        assertEquals("value", this.configuration.getProperty("1Key@"));
     }
 
     @Test
@@ -117,18 +121,18 @@ class SystemEnvConfigurationSourceTest
         assertEquals(List.of(), this.configuration.getKeys("prefix"));
         assertEquals(List.of(), this.configuration.getKeys("key"));
 
-        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "KEY", "15");
+        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "key", "15");
 
         assertEquals(List.of("key"), this.configuration.getKeys());
         assertEquals(List.of(), this.configuration.getKeys("prefix"));
         assertEquals(List.of("key"), this.configuration.getKeys("k"));
         assertEquals(List.of("key"), this.configuration.getKeys("key"));
 
-        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "KEY1_KEY2_KEY3_KEY4", "15");
+        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "key1_KEY2_key3_KEY4", "15");
 
-        assertEquals(List.of("key", "key1.key2.key3.key4"), this.configuration.getKeys());
+        assertEquals(List.of("key", "key1.KEY2.key3.KEY4"), this.configuration.getKeys());
         assertEquals(List.of(), this.configuration.getKeys("prefix"));
-        assertEquals(List.of("key1.key2.key3.key4"), this.configuration.getKeys("key1."));
+        assertEquals(List.of("key1.KEY2.key3.KEY4"), this.configuration.getKeys("key1."));
     }
 
     @Test
@@ -143,13 +147,13 @@ class SystemEnvConfigurationSourceTest
         assertTrue(this.configuration.isEmpty("prefix"));
         assertTrue(this.configuration.isEmpty("key"));
 
-        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "KEY", "15");
+        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "key", "15");
 
         assertFalse(this.configuration.isEmpty());
         assertTrue(this.configuration.isEmpty("prefix"));
         assertFalse(this.configuration.isEmpty("key"));
 
-        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "KEY1_KEY2_KEY3_KEY4", "15");
+        this.configuration.getenv().put(SystemEnvConfigurationSource.PREFIX + "key1_KEY2_key3_KEY4", "15");
 
         assertFalse(this.configuration.isEmpty());
         assertTrue(this.configuration.isEmpty("prefix"));
