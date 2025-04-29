@@ -229,15 +229,11 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     {
         String id = descriptor.getId();
 
-        String prefix = CK_REPOSITORIES_PREFIX + id + '.';
-
         ConfigurationSource configurationSource = this.configuration.get();
 
-        for (String key : configurationSource.getKeys()) {
-            if (key.startsWith(prefix)) {
-                descriptor.putProperty(key.substring(prefix.length()),
-                    configurationSource.getProperty(key, String.class));
-            }
+        String prefix = CK_REPOSITORIES_PREFIX + id + '.';
+        for (String key : configurationSource.getKeys(prefix)) {
+            descriptor.putProperty(key.substring(prefix.length()), configurationSource.getProperty(key, String.class));
         }
     }
 

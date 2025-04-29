@@ -119,6 +119,12 @@ public class MemoryConfigurationSource extends AbstractConfigurationSource
     }
 
     @Override
+    public List<String> getKeys(String prefix)
+    {
+        return this.properties.keySet().stream().filter(k -> k.startsWith(prefix)).toList();
+    }
+
+    @Override
     public boolean containsKey(String key)
     {
         return this.properties.containsKey(key);
@@ -128,5 +134,11 @@ public class MemoryConfigurationSource extends AbstractConfigurationSource
     public boolean isEmpty()
     {
         return this.properties.isEmpty();
+    }
+
+    @Override
+    public boolean isEmpty(String prefix)
+    {
+        return this.properties.keySet().stream().noneMatch(k -> k.startsWith(prefix));
     }
 }
