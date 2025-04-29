@@ -126,5 +126,17 @@
         }
       ]
     }
+  },
+  {
+    "extension": "revapi.java",
+    "configuration": {
+      "checks": {
+        "varargOverloadsOnlyDifferInVarargParameter": {
+          // While we are API to have a check for this kind of not very good API, it's not critical enough to break existing ones.
+          // So we only check it for new code.
+          "reportUnchanged": false
+        }
+      }
+    }
   }
 ]
