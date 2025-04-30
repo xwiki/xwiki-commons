@@ -1492,7 +1492,7 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>3.25.5</version>
+        <version>3.25.7</version>
       </dependency>
       <dependency>
         <groupId>org.infinispan.protostream</groupId>
