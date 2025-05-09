@@ -19,9 +19,15 @@
  */
 package org.xwiki.job.internal;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -72,11 +78,12 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
         private final JobGroupPath path;
 
-        private Job currentJob;
+        private final Set<Job> currentJobs =
+            Collections.synchronizedSet(Collections.newSetFromMap(new IdentityHashMap<>()));
 
-        private String groupThreadName;
+        private final String groupThreadName;
 
-        private GroupedJobInitializer initializer;
+        private final GroupedJobInitializer initializer;
 
         JobGroupExecutor(JobGroupPath path, GroupedJobInitializer initializer)
         {
@@ -96,7 +103,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
         @Override
         protected String getThreadName(Runnable r)
         {
-            return this.groupThreadName + " - " + this.currentJob;
+            return this.groupThreadName + " - " + r;
         }
 
         @Override
@@ -110,7 +117,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
         {
             DefaultJobExecutor.this.lockTree.lock(this.path);
 
-            this.currentJob = (Job) r;
+            this.currentJobs.add((Job) r);
 
             super.beforeExecute(t, r);
         }
@@ -120,22 +127,26 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
         {
             DefaultJobExecutor.this.lockTree.unlock(this.path);
 
-            this.currentJob = null;
+            Job job = (Job) r;
+
+            this.currentJobs.remove(job);
 
             super.afterExecute(r, t);
 
-            Job job = (Job) r;
-
             List<String> jobId = job.getRequest().getId();
             if (jobId != null) {
-                synchronized (DefaultJobExecutor.this.groupedJobs) {
-                    Queue<Job> jobQueue = DefaultJobExecutor.this.groupedJobs.get(jobId);
-                    if (jobQueue != null) {
-                        if (jobQueue.peek() == job) {
-                            jobQueue.poll();
-                        }
+                // Use compute() to synchronize on the job ID to avoid concurrent insertion/deletion by other threads.
+                DefaultJobExecutor.this.groupedJobs.compute(jobId, (k, v) -> {
+                    if (v != null && v.peek() == job) {
+                        v.poll();
                     }
-                }
+
+                    if (v == null || v.isEmpty()) {
+                        return null;
+                    }
+
+                    return v;
+                });
             }
         }
 
@@ -187,12 +198,13 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
             List<String> jobId = job.getRequest().getId();
             if (jobId != null) {
-                synchronized (DefaultJobExecutor.this.jobs) {
-                    Job storedJob = DefaultJobExecutor.this.jobs.get(jobId);
-                    if (storedJob == job) {
-                        DefaultJobExecutor.this.jobs.remove(jobId);
+                DefaultJobExecutor.this.jobs.computeIfPresent(jobId, (k, v) -> {
+                    if (v == job) {
+                        return null;
                     }
-                }
+
+                    return v;
+                });
             }
 
             // Reset thread name since it's not used anymore
@@ -262,11 +274,23 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     // JobManager
 
     @Override
-    public Job getCurrentJob(JobGroupPath path)
+    public Job getCurrentJob(JobGroupPath groupPath)
+    {
+        // Provide a default implementation so implementors of this interface can stop implementing this method.
+        return getCurrentJobs(groupPath).stream().findFirst().orElse(null);
+    }
+
+    @Override
+    public Collection<Job> getCurrentJobs(JobGroupPath path)
     {
         JobGroupExecutor executor = this.groupExecutors.get(path);
 
-        return executor != null ? executor.currentJob : null;
+        if (executor != null) {
+            // Return an unmodifiable copy of the set of currently running jobs.
+            return Collections.unmodifiableCollection(new ArrayList<>(executor.currentJobs));
+        }
+
+        return Collections.emptyList();
     }
 
     @Override
@@ -281,10 +305,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
         // Is it in a group
         Queue<Job> jobQueue = this.groupedJobs.get(id);
         if (jobQueue != null) {
-            job = jobQueue.peek();
-            if (job != null) {
-                return job;
-            }
+            return jobQueue.peek();
         }
 
         return null;
@@ -324,8 +345,8 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     public void execute(Job job)
     {
         if (!this.disposed) {
-            if (job instanceof GroupedJob) {
-                executeGroupedJob((GroupedJob) job);
+            if (job instanceof GroupedJob groupedJob) {
+                executeGroupedJob(groupedJob);
             } else {
                 executeSingleJob(job);
             }
@@ -348,6 +369,8 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
     private void executeGroupedJob(GroupedJob job)
     {
+        // While synchronization isn't necessary for the insertion in the group executors, this ensures that jobs in
+        // the "groupedJobs" queues have the same order as in the executor's queue.
         synchronized (this.groupExecutors) {
             JobGroupPath path = job.getGroupPath();
 
@@ -358,26 +381,20 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
                 return;
             }
 
-            JobGroupExecutor groupExecutor = this.groupExecutors.get(path);
-
-            if (groupExecutor == null) {
-                groupExecutor =
-                    new JobGroupExecutor(path, this.groupedJobInitializerManager.getGroupedJobInitializer(path));
-                this.groupExecutors.put(path, groupExecutor);
-            }
+            JobGroupExecutor groupExecutor = this.groupExecutors.computeIfAbsent(path,
+                p -> new JobGroupExecutor(p, this.groupedJobInitializerManager.getGroupedJobInitializer(p)));
 
             groupExecutor.execute(job);
 
             List<String> jobId = job.getRequest().getId();
             if (jobId != null) {
-                synchronized (this.groupedJobs) {
-                    Queue<Job> jobQueue = this.groupedJobs.get(jobId);
-                    if (jobQueue == null) {
-                        jobQueue = new ConcurrentLinkedQueue<>();
-                        this.groupedJobs.put(jobId, jobQueue);
-                    }
-                    jobQueue.offer(job);
-                }
+                // Use compute() to synchronize on the job ID to prevent that another thread would remove the empty
+                // queue again.
+                this.groupedJobs.compute(jobId, (k, v) -> {
+                    Queue<Job> queue = Objects.requireNonNullElseGet(v, ConcurrentLinkedQueue::new);
+                    queue.offer(job);
+                    return queue;
+                });
             }
         }
     }

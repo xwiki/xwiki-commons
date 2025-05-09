@@ -19,9 +19,12 @@
  */
 package org.xwiki.job;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
  * By default Jobs are either executed asynchronously whenever there is a free thread in the pool. Jobs can implement
@@ -40,8 +43,24 @@ public interface JobExecutor
      *
      * @param groupPath the group path
      * @return the currently running job in the passed group
+     * @deprecated Use {@link #getCurrentJobs(JobGroupPath)} instead.
      */
+    @Deprecated(since = "17.4.0RC1")
     Job getCurrentJob(JobGroupPath groupPath);
+
+    /**
+     * The set of jobs running within the specified job group.
+     *
+     * @param groupPath the path of the job group for which the current jobs should be retrieved
+     * @return a collection containing the currently running jobs in the provided group
+     * @since 17.4.0RC1
+     */
+    @Unstable
+    default Collection<Job> getCurrentJobs(JobGroupPath groupPath)
+    {
+        // Not really accurate, but better than nothing.
+        return Collections.singleton(getCurrentJob(groupPath));
+    }
 
     /**
      * Return job corresponding to the provided id from the current executed or waiting jobs.
