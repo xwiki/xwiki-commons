@@ -19,7 +19,6 @@
  */
 package org.xwiki.job;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,10 +55,15 @@ public interface JobExecutor
      * @since 17.4.0RC1
      */
     @Unstable
-    default Collection<Job> getCurrentJobs(JobGroupPath groupPath)
+    default List<Job> getCurrentJobs(JobGroupPath groupPath)
     {
         // Not really accurate, but better than nothing.
-        return Collections.singleton(getCurrentJob(groupPath));
+        Job currentJob = getCurrentJob(groupPath);
+        if (currentJob == null) {
+            return Collections.emptyList();
+        }
+
+        return List.of(currentJob);
     }
 
     /**

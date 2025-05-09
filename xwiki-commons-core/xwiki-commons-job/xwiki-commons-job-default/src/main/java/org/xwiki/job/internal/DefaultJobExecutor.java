@@ -19,8 +19,6 @@
  */
 package org.xwiki.job.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -281,13 +279,16 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     }
 
     @Override
-    public Collection<Job> getCurrentJobs(JobGroupPath path)
+    public List<Job> getCurrentJobs(JobGroupPath path)
     {
         JobGroupExecutor executor = this.groupExecutors.get(path);
 
         if (executor != null) {
             // Return an unmodifiable copy of the set of currently running jobs.
-            return Collections.unmodifiableCollection(new ArrayList<>(executor.currentJobs));
+            // As this is a synchronized set, we need to explicitly synchronize on it for the iteration.
+            synchronized (executor.currentJobs) {
+                return List.copyOf(executor.currentJobs);
+            }
         }
 
         return Collections.emptyList();
