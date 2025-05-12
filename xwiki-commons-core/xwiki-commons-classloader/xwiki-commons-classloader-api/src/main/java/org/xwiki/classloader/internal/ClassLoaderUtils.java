@@ -47,27 +47,31 @@ public final class ClassLoaderUtils
             fullPath = resourcePath;
 
             // Prevent access to resources from other directories
+            // TODO: find or implement something closed to Servlet ClassLoader behavior to be as accurate as possible
+            // and be able to reuse the normalized result
             Path normalizedResource = Paths.get(fullPath).normalize();
             if (normalizedResource.startsWith("../")) {
                 throw new IllegalArgumentException(String.format(
                     "The provided resource name [%s] is trying to navigate out of the mandatory root location",
                     resourcePath));
             }
-
-            fullPath = normalizedResource.toString();
         } else {
             fullPath = prefixPath + resourcePath;
 
             // Prevent access to resources from other directories
+            // TODO: find or implement something closed to Servlet ClassLoader behavior to be as accurate as possible
+            // and be able to reuse the normalized result
             Path normalizedResource = Paths.get(fullPath).normalize();
             if (!normalizedResource.startsWith(prefixPath)) {
                 throw new IllegalArgumentException(String.format(
                     "The provided resource name [%s] is trying to navigate out of the mandatory prefix [%s]",
                     resourcePath, prefixPath));
             }
-
-            fullPath = normalizedResource.toString();
         }
+
+        // We cannot sent back the normalized version as it might produce a result which is not compatible with the
+        // ClassLoader (for example, on Windows Path#normalize() is replacing all "/" by "\", which is not a path
+        // separator in ClassLoader)
 
         return fullPath;
     }
