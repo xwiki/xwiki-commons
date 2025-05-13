@@ -53,6 +53,7 @@ import org.xwiki.properties.annotation.PropertyHidden;
 import org.xwiki.properties.annotation.PropertyId;
 import org.xwiki.properties.annotation.PropertyMandatory;
 import org.xwiki.properties.annotation.PropertyName;
+import org.xwiki.properties.annotation.PropertyOrder;
 
 /**
  * Default implementation for BeanDescriptor.
@@ -69,7 +70,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
 
     private static final List<Class<? extends Annotation>> COMMON_ANNOTATION_CLASSES = Arrays.asList(
         PropertyMandatory.class, Deprecated.class, PropertyAdvanced.class, PropertyGroup.class,
-        PropertyFeature.class, PropertyDisplayType.class, PropertyDisplayHidden.class);
+        PropertyFeature.class, PropertyDisplayType.class, PropertyDisplayHidden.class, PropertyOrder.class);
 
     /**
      * @see #getBeanClass()
@@ -275,6 +276,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
         handlePropertyFeatureAndGroupAnnotations(desc, annotations);
         handlePropertyDisplayTypeAnnotation(desc, annotations);
         desc.setDisplayHidden(annotations.get(PropertyDisplayHidden.class) != null);
+        handlePropertyOrder(desc, annotations);
     }
 
     private void handlePropertyFeatureAndGroupAnnotations(DefaultPropertyDescriptor desc, Map<Class,
@@ -318,6 +320,14 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             displayType = desc.getPropertyType();
         }
         desc.setDisplayType(displayType);
+    }
+
+    private void handlePropertyOrder(DefaultPropertyDescriptor desc, Map<Class, Annotation> annotations)
+    {
+        PropertyOrder propertyOrderAnnotation = (PropertyOrder) annotations.get(PropertyOrder.class);
+        if (propertyOrderAnnotation != null && propertyOrderAnnotation.value() > 0) {
+            desc.setOrder(propertyOrderAnnotation.value());
+        }
     }
 
     /**

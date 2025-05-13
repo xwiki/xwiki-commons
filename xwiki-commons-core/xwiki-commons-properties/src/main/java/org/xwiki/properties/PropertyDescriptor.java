@@ -23,6 +23,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * Describe a property in a bean.
  *
@@ -138,5 +140,16 @@ public interface PropertyDescriptor
     default boolean isDisplayHidden()
     {
         return false;
+    }
+
+    /**
+     * @return the ordering value to use to display the property in the UI. The lower the value, the higher the
+     * priority. {@code -1} means no defined order.
+     * @since 17.4.0RC1
+     */
+    @Unstable
+    default int getOrder()
+    {
+        return -1;
     }
 }
