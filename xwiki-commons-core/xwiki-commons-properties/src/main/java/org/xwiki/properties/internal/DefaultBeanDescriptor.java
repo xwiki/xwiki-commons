@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -75,14 +77,27 @@ public class DefaultBeanDescriptor implements BeanDescriptor
     /**
      * @see #getBeanClass()
      */
-    private Class<?> beanClass;
+    private final Class<?> beanClass;
 
     /**
      * The properties of the bean.
      */
-    private Map<String, PropertyDescriptor> parameterDescriptorMap = new LinkedHashMap<>();
+    private final Map<String, PropertyDescriptor> parameterDescriptorMap = new LinkedHashMap<>();
+    private final SortedSet<PropertyDescriptor> descriptorSortedSet = new TreeSet<>((d1, d2) -> {
+        int o1 = d1.getOrder();
+        int o2 = d2.getOrder();
+        if (o1 >= 0 && o2 >= 0) {
+            return Integer.compare(o1, o2);
+        } else if (o1 >= 0) {
+            return -1;
+        } else if (o2 >= 0) {
+            return 1;
+        } else {
+            return d1.getId().compareTo(d2.getId());
+        }
+    });
 
-    private Map<PropertyGroup, PropertyGroupDescriptor> groups = new HashMap<>();
+    private final Map<PropertyGroup, PropertyGroupDescriptor> groups = new HashMap<>();
 
     /**
      * @param beanClass the class of the JAVA bean.
@@ -210,6 +225,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                 desc.setReadMethod(readMethod);
 
                 this.parameterDescriptorMap.put(desc.getId(), desc);
+                this.descriptorSortedSet.add(desc);
             }
         }
     }
@@ -265,6 +281,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             desc.setField(field);
 
             this.parameterDescriptorMap.put(desc.getId(), desc);
+            this.descriptorSortedSet.add(desc);
         }
     }
 
@@ -360,7 +377,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
     @Override
     public Collection<PropertyDescriptor> getProperties()
     {
-        return this.parameterDescriptorMap.values();
+        return this.descriptorSortedSet;
     }
 
     @Override

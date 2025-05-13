@@ -20,6 +20,7 @@
 package org.xwiki.properties.internal;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Triple;
@@ -289,5 +290,31 @@ class DefaultBeanDescriptorTest
         assertFalse(propertyDescriptor.isAdvanced());
         assertNull(propertyDescriptor.getGroupDescriptor().getGroup());
         assertNull(propertyDescriptor.getGroupDescriptor().getFeature());
+    }
+
+    @Test
+    void getProperties()
+    {
+        Collection<PropertyDescriptor> properties = this.beanDescriptor.getProperties();
+        assertEquals(16, properties.size());
+        assertEquals(List.of(
+            "publicField", // order: 8
+            "advancedParameter", // order: 10
+            // no defined order for other ones, so ordered by id
+            "deprecatedParameter",
+            "displayHiddenParameter",
+            "displayTypeParameter",
+            "displayTypeParameter2",
+            "genericField",
+            "genericProp",
+            "impossible.field.name",
+            "impossible.method.name",
+            "lowerprop",
+            "prop1",
+            "prop2",
+            "prop3",
+            "propertyWithDifferentId",
+            "upperProp"
+        ), properties.stream().map(PropertyDescriptor::getId).toList());
     }
 }
