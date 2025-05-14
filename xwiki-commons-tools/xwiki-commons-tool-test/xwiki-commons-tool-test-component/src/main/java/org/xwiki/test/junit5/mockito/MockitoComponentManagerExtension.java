@@ -120,6 +120,21 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
         }
     }
 
+    private String getFieldNamed(Field field)
+    {
+        jakarta.inject.Named jakartaAnnotation = field.getAnnotation(jakarta.inject.Named.class);
+        if (jakartaAnnotation != null) {
+            return jakartaAnnotation.value();
+        }
+
+        Named javaxAnnotation = field.getAnnotation(Named.class);
+        if (javaxAnnotation != null) {
+            return javaxAnnotation.value();
+        }
+
+        return null;
+    }
+
     private void initializeTestInstance(Object testInstance, ExtensionContext context) throws Exception
     {
         // Make sure tests don't leak one on another
@@ -164,13 +179,13 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
             MockComponent mockComponentAnnotation = field.getAnnotation(MockComponent.class);
             if (mockComponentAnnotation != null) {
                 // Get the hint from the @Named annotation (if any)
-                Named namedAnnotation = field.getAnnotation(Named.class);
+                String named = getFieldNamed(field);
                 Class<?> classToMock = mockComponentAnnotation.classToMock() != MockComponent.class
                     ? mockComponentAnnotation.classToMock() : null;
                 Object mockComponent;
-                if (namedAnnotation != null) {
+                if (named != null) {
                     mockComponent =
-                        mcm.registerMockComponent(field.getGenericType(), namedAnnotation.value(), classToMock, true);
+                        mcm.registerMockComponent(field.getGenericType(), named, classToMock, true);
                 } else {
                     mockComponent = mcm.registerMockComponent(field.getGenericType(), null, classToMock, true);
                 }
@@ -226,16 +241,14 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
     private void processInjectAnnotations(Object testInstance, MockitoComponentManager mcm) throws Exception
     {
         for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
-            Inject injectAnnotation = field.getAnnotation(Inject.class);
-            if (injectAnnotation != null) {
-                Named namedAnnotation = field.getAnnotation(Named.class);
-                processSingleInjectAnnotations(testInstance, field, namedAnnotation, mcm);
+            if (field.getAnnotation(Inject.class) != null || field.getAnnotation(jakarta.inject.Inject.class) != null) {
+                processSingleInjectAnnotations(testInstance, field, getFieldNamed(field), mcm);
             }
         }
     }
 
     private void processSingleInjectAnnotations(Object testInstance, Field field,
-        Named namedAnnotation, MockitoComponentManager mcm) throws Exception
+        String namedAnnotation, MockitoComponentManager mcm) throws Exception
     {
         // Must  be an instance
         if (!field.getType().isInterface()) {
@@ -244,7 +257,7 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
         }
 
         Object component = (namedAnnotation == null) ? mcm.getInstance(field.getGenericType())
-            : mcm.getInstance(field.getGenericType(), namedAnnotation.value());
+            : mcm.getInstance(field.getGenericType(), namedAnnotation);
         ReflectionUtils.setFieldValue(testInstance, field.getName(), component);
     }
 
