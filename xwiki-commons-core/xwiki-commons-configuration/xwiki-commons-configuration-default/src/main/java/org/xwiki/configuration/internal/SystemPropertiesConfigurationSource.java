@@ -79,7 +79,7 @@ public class SystemPropertiesConfigurationSource extends AbstractPropertiesConfi
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T getProperty(String key)
+    public <T> T getPropertyInternal(String key)
     {
         if (key == null) {
             return null;
@@ -89,13 +89,13 @@ public class SystemPropertiesConfigurationSource extends AbstractPropertiesConfi
     }
 
     @Override
-    public List<String> getKeys()
+    public List<String> getKeysInternal()
     {
         return getKeys("");
     }
 
     @Override
-    public List<String> getKeys(String prefix)
+    public List<String> getKeysInternal(String prefix)
     {
         String systemPrefix = toSystemKey(prefix);
 
@@ -104,7 +104,7 @@ public class SystemPropertiesConfigurationSource extends AbstractPropertiesConfi
     }
 
     @Override
-    public boolean containsKey(String key)
+    public boolean containsKeyInternal(String key)
     {
         if (key == null) {
             return false;
@@ -114,13 +114,13 @@ public class SystemPropertiesConfigurationSource extends AbstractPropertiesConfi
     }
 
     @Override
-    public boolean isEmpty()
+    public boolean isEmptyInternal()
     {
         return isEmpty("");
     }
 
     @Override
-    public boolean isEmpty(String prefix)
+    public boolean isEmptyInternal(String prefix)
     {
         Properties properties = getSystemProperties();
 

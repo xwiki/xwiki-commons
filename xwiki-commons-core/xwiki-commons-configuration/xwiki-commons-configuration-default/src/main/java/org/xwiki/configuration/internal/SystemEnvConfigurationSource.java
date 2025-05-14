@@ -74,7 +74,7 @@ public class SystemEnvConfigurationSource extends AbstractPropertiesConfiguratio
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T getProperty(String key)
+    public <T> T getPropertyInternal(String key)
     {
         if (key == null) {
             return null;
@@ -84,13 +84,13 @@ public class SystemEnvConfigurationSource extends AbstractPropertiesConfiguratio
     }
 
     @Override
-    public List<String> getKeys()
+    public List<String> getKeysInternal()
     {
         return getKeys("");
     }
 
     @Override
-    public List<String> getKeys(String prefix)
+    public List<String> getKeysInternal(String prefix)
     {
         String encodedPrefix = encode(prefix);
         String encodedCompletePrefix = PREFIX + encodedPrefix;
@@ -100,7 +100,7 @@ public class SystemEnvConfigurationSource extends AbstractPropertiesConfiguratio
     }
 
     @Override
-    public boolean containsKey(String key)
+    public boolean containsKeyInternal(String key)
     {
         if (key == null) {
             return false;
@@ -110,13 +110,13 @@ public class SystemEnvConfigurationSource extends AbstractPropertiesConfiguratio
     }
 
     @Override
-    public boolean isEmpty()
+    public boolean isEmptyInternal()
     {
         return isEmpty("");
     }
 
     @Override
-    public boolean isEmpty(String prefix)
+    public boolean isEmptyInternal(String prefix)
     {
         Map<String, String> env = getenv();
 

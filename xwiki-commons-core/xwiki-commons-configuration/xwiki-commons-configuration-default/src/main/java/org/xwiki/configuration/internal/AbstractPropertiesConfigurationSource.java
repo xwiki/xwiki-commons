@@ -31,7 +31,7 @@ import org.xwiki.properties.ConverterManager;
  * @version $Id$
  * @since 17.4.0RC1
  */
-public abstract class AbstractPropertiesConfigurationSource implements ConfigurationSource
+public abstract class AbstractPropertiesConfigurationSource extends AbstractSystemOverwriteConfigurationSource
 {
     /**
      * Component used for performing type conversions.
@@ -41,7 +41,7 @@ public abstract class AbstractPropertiesConfigurationSource implements Configura
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getProperty(String key, T defaultValue)
+    public <T> T getPropertyInternal(String key, T defaultValue)
     {
         T result;
         if (containsKey(key)) {
@@ -58,9 +58,15 @@ public abstract class AbstractPropertiesConfigurationSource implements Configura
     }
 
     @Override
-    public <T> T getProperty(String key, Class<T> valueClass)
+    public <T> T getPropertyInternal(String key, Class<T> valueClass)
     {
         return getConvertedProperty(key, valueClass, null);
+    }
+
+    @Override
+    protected <T> T getPropertyInternal(String key, Class<T> valueClass, T defaultValue)
+    {
+        return getConvertedProperty(key, valueClass, defaultValue);
     }
 
     /**

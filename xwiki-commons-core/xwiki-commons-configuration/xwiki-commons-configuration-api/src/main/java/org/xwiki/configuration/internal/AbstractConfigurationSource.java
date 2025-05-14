@@ -29,7 +29,7 @@ import org.xwiki.configuration.ConfigurationSource;
  * Base class to use to implement {@link ConfigurationSource}.
  *
  * @version $Id$
- * @since 3.5M1
+ * @since 17.5.0RC1
  */
 public abstract class AbstractConfigurationSource implements ConfigurationSource
 {
