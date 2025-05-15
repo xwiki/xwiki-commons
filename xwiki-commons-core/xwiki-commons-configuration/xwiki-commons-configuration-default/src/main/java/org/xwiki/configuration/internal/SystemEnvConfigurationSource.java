@@ -45,7 +45,7 @@ import org.xwiki.configuration.ConfigurationSource;
  * "XCONF_configuration__31Key_40".
  *
  * @version $Id$
- * @since 17.4.0RC1
+ * @since 17.5.0RC1
  */
 @Component
 @Singleton
