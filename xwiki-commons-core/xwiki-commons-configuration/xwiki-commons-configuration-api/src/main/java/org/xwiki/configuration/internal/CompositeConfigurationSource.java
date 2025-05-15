@@ -19,22 +19,37 @@
  */
 package org.xwiki.configuration.internal;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import org.xwiki.component.annotation.Component;
+import org.xwiki.configuration.ConfigurationSource;
 
 /**
- * Runtime configuration source stored in memory.
- * <p>
- * Can be modified by lookuping the component and using {@link MemoryConfigurationSource#setProperty(String, Object)}.
- *
+ * Allows composing (aka chaining) several Configuration Sources. The order of sources is important. Sources located
+ * before other sources take priority.
+ * 
  * @version $Id$
- * @since 3.5M1
+ * @since 2.0M1
  */
-@Component
-@Singleton
-@Named("memory")
-public class MemoryConfigurationSource extends MapConfigurationSource
+public class CompositeConfigurationSource extends AbstractCompositeConfigurationSource
 {
+    /**
+     * The order of sources is important. Sources located before other sources take priority.
+     */
+    protected List<ConfigurationSource> sources = new ArrayList<>();
+
+    /**
+     * @param source the source to add to the list of sources
+     */
+    public void addConfigurationSource(ConfigurationSource source)
+    {
+        this.sources.add(source);
+    }
+
+    @Override
+    public Iterator<ConfigurationSource> iterator()
+    {
+        return this.sources.iterator();
+    }
 }
