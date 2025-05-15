@@ -19,7 +19,6 @@
  */
 package org.xwiki.configuration.internal;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Named;
@@ -59,13 +58,13 @@ public class VoidConfigurationSource extends AbstractConfigurationSource
     @Override
     public List<String> getKeys()
     {
-        return Collections.emptyList();
+        return List.of();
     }
 
     @Override
     public List<String> getKeys(String prefix)
     {
-        return Collections.emptyList();
+        return List.of();
     }
 
     @Override

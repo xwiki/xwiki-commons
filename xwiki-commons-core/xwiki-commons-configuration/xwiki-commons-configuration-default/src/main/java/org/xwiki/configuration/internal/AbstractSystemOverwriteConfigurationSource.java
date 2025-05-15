@@ -69,8 +69,8 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
     }
 
     /**
-     * @param key the key
-     * @return the key to use with the system ConfigurationSource
+     * @param key the standard key name
+     * @return the name of key when overwritten by the system configuration
      */
     protected String toSystemOverwriteKey(String key)
     {
@@ -90,6 +90,12 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
         return getPropertyInternal(key);
     }
 
+    /**
+     * @param <T> the value type
+     * @param key the property key for which we want the value
+     * @return the property as an untyped Object or null if the key wasn't found. In general you should prefer
+     *         {@link #getProperty(String, Class)} or {@link #getProperty(String, Object)}
+     */
     protected abstract <T> T getPropertyInternal(String key);
 
     @Override
@@ -105,6 +111,12 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
         return getPropertyInternal(key, defaultValue);
     }
 
+    /**
+     * @param <T> the value type
+     * @param key the property key for which we want the value
+     * @param defaultValue the value to use if the key isn't found
+     * @return the property value is found or the default value if the key wasn't found
+     */
     protected abstract <T> T getPropertyInternal(String key, T defaultValue);
 
     @Override
@@ -135,6 +147,13 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
         return getPropertyInternal(key, valueClass, defaultValue);
     }
 
+    /**
+     * @param <T> the value type
+     * @param key the property key for which we want the value
+     * @param valueClass the type of object that should be returned. The value is converted to the passed type.
+     * @param defaultValue the value to use if the key isn't found
+     * @return the property value is found or the default value if the key wasn't found.
+     */
     protected abstract <T> T getPropertyInternal(String key, Class<T> valueClass, T defaultValue);
 
     @Override
@@ -155,6 +174,9 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
         return getKeysInternal();
     }
 
+    /**
+     * @return the list of available keys in the configuration source
+     */
     protected abstract List<String> getKeysInternal();
 
     @Override
@@ -175,6 +197,10 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
         return getKeysInternal(prefix);
     }
 
+    /**
+     * @param prefix the prefix to filter the keys
+     * @return the list of available keys in the configuration source that start with the passed prefix
+     */
     protected abstract List<String> getKeysInternal(String prefix);
 
     @Override
@@ -188,6 +214,10 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
         return containsKeyInternal(key);
     }
 
+    /**
+     * @param key the key to check
+     * @return true if the key is present in the configuration source or false otherwise
+     */
     protected abstract boolean containsKeyInternal(String key);
 
     @Override
@@ -201,6 +231,9 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
         return isEmptyInternal();
     }
 
+    /**
+     * @return true if the configuration source doesn't have any key or false otherwise
+     */
     protected abstract boolean isEmptyInternal();
 
     @Override
@@ -214,5 +247,9 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
         return isEmptyInternal(prefix);
     }
 
+    /**
+     * @param prefix the prefix to filter the keys
+     * @return true if the configuration source doesn't have any key or false otherwise
+     */
     protected abstract boolean isEmptyInternal(String prefix);
 }
