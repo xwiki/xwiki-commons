@@ -47,11 +47,6 @@ class SystemOverwriteConfigurationSourceTest
 {
     public static class TestSystemOverwiteConfigurationSource extends AbstractSystemOverwriteConfigurationSource
     {
-        public TestSystemOverwiteConfigurationSource()
-        {
-            this.systemOverwriteEnabled = true;
-        }
-
         @Override
         protected <T> T getPropertyInternal(String key)
         {
@@ -79,13 +74,13 @@ class SystemOverwriteConfigurationSourceTest
         @Override
         protected List<String> getKeysInternal()
         {
-            return List.of();
+            return List.of("internal", "prefix.internal");
         }
 
         @Override
         protected List<String> getKeysInternal(String prefix)
         {
-            return List.of();
+            return List.of("prefix.internal");
         }
 
         @Override
@@ -107,12 +102,33 @@ class SystemOverwriteConfigurationSourceTest
         }
     }
 
+    public static class TestEnabledSystemOverwiteConfigurationSource extends TestSystemOverwiteConfigurationSource
+    {
+        public TestEnabledSystemOverwiteConfigurationSource()
+        {
+            this.systemOverwriteEnabled = true;
+        }
+
+    }
+
+    public static class TestDisabledSystemOverwiteConfigurationSource extends TestSystemOverwiteConfigurationSource
+    {
+        public TestDisabledSystemOverwiteConfigurationSource()
+        {
+            this.systemOverwriteEnabled = false;
+        }
+
+    }
+
+    @InjectMockComponents
+    private TestEnabledSystemOverwiteConfigurationSource configurationWithSystem;
+
+    @InjectMockComponents
+    private TestDisabledSystemOverwiteConfigurationSource configurationWithoutSystem;
+
     @MockComponent
     @Named("system")
     private ConfigurationSource systemConfigurationSource;
-
-    @InjectMockComponents
-    private TestSystemOverwiteConfigurationSource configuration;
 
     @BeforeEach
     void beforeEach()
@@ -130,34 +146,30 @@ class SystemOverwriteConfigurationSourceTest
     }
 
     @Test
-    void overwriten()
+    void configurationWithSystem()
     {
-        this.configuration.systemOverwriteEnabled = true;
-
-        assertTrue(this.configuration.containsKey("key"));
-        assertEquals("system1", this.configuration.getProperty("key"));
-        assertEquals("system2", this.configuration.getProperty("key", String.class));
-        assertEquals("system3", this.configuration.getProperty("key", "other"));
-        assertEquals("system4", this.configuration.getProperty("key", String.class, "other"));
-        assertEquals(List.of("system5"), this.configuration.getKeys());
-        assertEquals(List.of("system6"), this.configuration.getKeys("prefix"));
-        assertFalse(this.configuration.isEmpty());
-        assertFalse(this.configuration.isEmpty("prefix"));
+        assertTrue(this.configurationWithSystem.containsKey("key"));
+        assertEquals("system1", this.configurationWithSystem.getProperty("key"));
+        assertEquals("system2", this.configurationWithSystem.getProperty("key", String.class));
+        assertEquals("system3", this.configurationWithSystem.getProperty("key", "other"));
+        assertEquals("system4", this.configurationWithSystem.getProperty("key", String.class, "other"));
+        assertEquals(List.of("internal", "prefix.internal", "system5"), this.configurationWithSystem.getKeys());
+        assertEquals(List.of("prefix.internal", "system6"), this.configurationWithSystem.getKeys("prefix"));
+        assertFalse(this.configurationWithSystem.isEmpty());
+        assertFalse(this.configurationWithSystem.isEmpty("prefix"));
     }
 
     @Test
     void notOverwritten()
     {
-        this.configuration.systemOverwriteEnabled = false;
-
-        assertFalse(this.configuration.containsKey("key"));
-        assertEquals("key", this.configuration.getProperty("key"));
-        assertEquals("key", this.configuration.getProperty("key", String.class));
-        assertEquals("key", this.configuration.getProperty("key", "other"));
-        assertEquals("key", this.configuration.getProperty("key", String.class, "other"));
-        assertEquals(List.of(), this.configuration.getKeys());
-        assertEquals(List.of(), this.configuration.getKeys("prefix"));
-        assertTrue(this.configuration.isEmpty());
-        assertTrue(this.configuration.isEmpty("prefix"));
+        assertFalse(this.configurationWithoutSystem.containsKey("key"));
+        assertEquals("key", this.configurationWithoutSystem.getProperty("key"));
+        assertEquals("key", this.configurationWithoutSystem.getProperty("key", String.class));
+        assertEquals("key", this.configurationWithoutSystem.getProperty("key", "other"));
+        assertEquals("key", this.configurationWithoutSystem.getProperty("key", String.class, "other"));
+        assertEquals(List.of("internal", "prefix.internal"), this.configurationWithoutSystem.getKeys());
+        assertEquals(List.of("prefix.internal"), this.configurationWithoutSystem.getKeys("prefix"));
+        assertTrue(this.configurationWithoutSystem.isEmpty());
+        assertTrue(this.configurationWithoutSystem.isEmpty("prefix"));
     }
 }

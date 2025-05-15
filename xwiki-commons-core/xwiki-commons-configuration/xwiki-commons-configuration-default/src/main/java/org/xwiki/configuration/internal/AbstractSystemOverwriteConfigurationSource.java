@@ -80,7 +80,7 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
     @Override
     public <T> T getProperty(String key)
     {
-        if (this.systemOverwriteEnabled) {
+        if (this.systemConfigurationSource != null) {
             String systemOverwriteKey = toSystemOverwriteKey(key);
             if (this.systemConfigurationSource.containsKey(systemOverwriteKey)) {
                 return this.systemConfigurationSource.getProperty(systemOverwriteKey);
@@ -95,7 +95,7 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
     @Override
     public <T> T getProperty(String key, T defaultValue)
     {
-        if (this.systemOverwriteEnabled) {
+        if (this.systemConfigurationSource != null) {
             String systemOverwriteKey = toSystemOverwriteKey(key);
             if (this.systemConfigurationSource.containsKey(systemOverwriteKey)) {
                 return this.systemConfigurationSource.getProperty(systemOverwriteKey, defaultValue);
@@ -110,7 +110,7 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
     @Override
     public <T> T getProperty(String key, Class<T> valueClass)
     {
-        if (this.systemOverwriteEnabled) {
+        if (this.systemConfigurationSource != null) {
             String systemOverwriteKey = toSystemOverwriteKey(key);
             if (this.systemConfigurationSource.containsKey(systemOverwriteKey)) {
                 return this.systemConfigurationSource.getProperty(systemOverwriteKey, valueClass);
@@ -125,7 +125,7 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
     @Override
     public <T> T getProperty(String key, Class<T> valueClass, T defaultValue)
     {
-        if (this.systemOverwriteEnabled) {
+        if (this.systemConfigurationSource != null) {
             String systemOverwriteKey = toSystemOverwriteKey(key);
             if (this.systemConfigurationSource.containsKey(systemOverwriteKey)) {
                 return this.systemConfigurationSource.getProperty(systemOverwriteKey, valueClass, defaultValue);
@@ -140,7 +140,7 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
     @Override
     public List<String> getKeys()
     {
-        if (this.systemOverwriteEnabled) {
+        if (this.systemConfigurationSource != null) {
             Set<String> keys = new LinkedHashSet<>();
 
             // Add current keys
@@ -160,11 +160,11 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
     @Override
     public List<String> getKeys(String prefix)
     {
-        if (this.systemOverwriteEnabled) {
+        if (this.systemConfigurationSource != null) {
             Set<String> keys = new LinkedHashSet<>();
 
             // Add current keys
-            keys.addAll(getKeysInternal());
+            keys.addAll(getKeysInternal(prefix));
 
             // Add system ones
             keys.addAll(this.systemConfigurationSource.getKeys(toSystemOverwriteKey(prefix)));
@@ -180,7 +180,8 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
     @Override
     public boolean containsKey(String key)
     {
-        if (this.systemOverwriteEnabled && this.systemConfigurationSource.containsKey(toSystemOverwriteKey(key))) {
+        if (this.systemConfigurationSource != null
+            && this.systemConfigurationSource.containsKey(toSystemOverwriteKey(key))) {
             return true;
         }
 
@@ -192,7 +193,8 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
     @Override
     public boolean isEmpty()
     {
-        if (this.systemOverwriteEnabled && !this.systemConfigurationSource.isEmpty(toSystemOverwriteKey(""))) {
+        if (this.systemConfigurationSource != null
+            && !this.systemConfigurationSource.isEmpty(toSystemOverwriteKey(""))) {
             return false;
         }
 
@@ -204,7 +206,8 @@ public abstract class AbstractSystemOverwriteConfigurationSource extends Abstrac
     @Override
     public boolean isEmpty(String prefix)
     {
-        if (this.systemOverwriteEnabled && !this.systemConfigurationSource.isEmpty(toSystemOverwriteKey(prefix))) {
+        if (this.systemConfigurationSource != null
+            && !this.systemConfigurationSource.isEmpty(toSystemOverwriteKey(prefix))) {
             return false;
         }
 

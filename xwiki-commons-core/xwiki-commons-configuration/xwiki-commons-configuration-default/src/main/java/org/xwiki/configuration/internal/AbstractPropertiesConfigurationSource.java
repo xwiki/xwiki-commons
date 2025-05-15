@@ -41,7 +41,7 @@ public abstract class AbstractPropertiesConfigurationSource extends AbstractSyst
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getPropertyInternal(String key, T defaultValue)
+    protected <T> T getPropertyInternal(String key, T defaultValue)
     {
         T result;
         if (containsKey(key)) {
@@ -58,7 +58,7 @@ public abstract class AbstractPropertiesConfigurationSource extends AbstractSyst
     }
 
     @Override
-    public <T> T getPropertyInternal(String key, Class<T> valueClass)
+    protected <T> T getPropertyInternal(String key, Class<T> valueClass)
     {
         return getConvertedProperty(key, valueClass, null);
     }
