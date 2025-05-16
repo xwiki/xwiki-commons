@@ -32,6 +32,7 @@ import org.xwiki.properties.annotation.PropertyHidden;
 import org.xwiki.properties.annotation.PropertyId;
 import org.xwiki.properties.annotation.PropertyMandatory;
 import org.xwiki.properties.annotation.PropertyName;
+import org.xwiki.properties.annotation.PropertyOrder;
 
 public class TestBean
 {
@@ -65,6 +66,7 @@ public class TestBean
 
     @PropertyName("Public Field")
     @PropertyDescription("a public field")
+    @PropertyOrder(8)
     public String publicField;
 
     public List<Integer> genericField;
@@ -106,6 +108,7 @@ public class TestBean
 
     @PropertyMandatory
     @PropertyDescription("prop2 description")
+    @PropertyOrder(-3)
     public void setProp2(int prop2)
     {
         this.prop2 = prop2;
@@ -176,6 +179,7 @@ public class TestBean
     @PropertyAdvanced
     @PropertyGroup({"test1", "test2"})
     @PropertyFeature("feature2")
+    @PropertyOrder(10)
     public String getAdvancedParameter()
     {
         return advancedParameter;

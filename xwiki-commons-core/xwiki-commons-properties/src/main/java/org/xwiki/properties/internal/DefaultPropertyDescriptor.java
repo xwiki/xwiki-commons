@@ -107,6 +107,11 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
      */
     private boolean displayHidden;
 
+    /**
+     * @see #getOrder()
+     */
+    private int order = -1;
+
     @Override
     public String getId()
     {
@@ -344,5 +349,20 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     public void setDisplayHidden(boolean isDisplayHidden)
     {
         this.displayHidden = isDisplayHidden;
+    }
+
+    @Override
+    public int getOrder()
+    {
+        return this.order;
+    }
+
+    /**
+     * @param order see {@link #getOrder()}.
+     * @since 17.5.0RC1
+     */
+    public void setOrder(int order)
+    {
+        this.order = order;
     }
 }
