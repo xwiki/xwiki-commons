@@ -19,69 +19,42 @@
  */
 package org.xwiki.configuration.internal;
 
-import java.util.List;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
+import org.xwiki.configuration.ConfigurationSource;
 
 /**
- * Implementation of {@link org.xwiki.configuration.ConfigurationSource} mimicking an empty configuration.
- *
+ * Composite Configuration Source that looks in the following sources in that order:
+ * <ul>
+ * <li>Environment variables.</li>
+ * <li>Java system properties.</li>
+ * </ul>
+ * 
  * @version $Id$
- * @since 3.5M1
+ * @since 17.5.0RC1
  */
 @Component
 @Singleton
-@Named("void")
-public class VoidConfigurationSource extends AbstractConfigurationSource
+@Named("system")
+public class SystemConfigurationSource extends CompositeConfigurationSource implements Initializable
 {
-    @Override
-    public <T> T getProperty(String key, T defaultValue)
-    {
-        return defaultValue;
-    }
+    @Inject
+    @Named(SystemEnvConfigurationSource.HINT)
+    private ConfigurationSource envSource;
+
+    @Inject
+    @Named(SystemPropertiesConfigurationSource.HINT)
+    private ConfigurationSource propertiesSource;
 
     @Override
-    public <T> T getProperty(String key, Class<T> valueClass)
+    public void initialize() throws InitializationException
     {
-        return getDefault(valueClass);
-    }
-
-    @Override
-    public <T> T getProperty(String key)
-    {
-        return null;
-    }
-
-    @Override
-    public List<String> getKeys()
-    {
-        return List.of();
-    }
-
-    @Override
-    public List<String> getKeys(String prefix)
-    {
-        return List.of();
-    }
-
-    @Override
-    public boolean containsKey(String key)
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return true;
-    }
-
-    @Override
-    public boolean isEmpty(String prefix)
-    {
-        return true;
+        addConfigurationSource(this.envSource);
+        addConfigurationSource(this.propertiesSource);
     }
 }

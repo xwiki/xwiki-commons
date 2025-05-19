@@ -91,6 +91,12 @@ public class ConfigurationSourceDecorator implements ConfigurationSource
     }
 
     @Override
+    public List<String> getKeys(String prefix)
+    {
+        return executeRead(() -> getWrappedConfigurationSource().getKeys(prefix));
+    }
+
+    @Override
     public boolean containsKey(String key)
     {
         return executeRead(() -> getWrappedConfigurationSource().containsKey(key));
@@ -100,6 +106,12 @@ public class ConfigurationSourceDecorator implements ConfigurationSource
     public boolean isEmpty()
     {
         return executeRead(() -> getWrappedConfigurationSource().isEmpty());
+    }
+
+    @Override
+    public boolean isEmpty(String prefix)
+    {
+        return executeRead(() -> getWrappedConfigurationSource().isEmpty(prefix));
     }
 
     @Override
