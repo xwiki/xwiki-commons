@@ -44,4 +44,10 @@ public class ArrayListConverter extends AbstractCollectionConverter<ArrayList>
 
         return super.convertToType(targetType, value);
     }
+
+    @Override
+    protected <G extends ArrayList> ArrayList newCollection(Type targetType)
+    {
+        return (G) new ArrayList<>();
+    }
 }

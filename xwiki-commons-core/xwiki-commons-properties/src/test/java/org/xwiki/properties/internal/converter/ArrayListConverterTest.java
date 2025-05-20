@@ -21,12 +21,18 @@ package org.xwiki.properties.internal.converter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.observation.EventListener;
 import org.xwiki.properties.internal.DefaultConverterManager;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -40,6 +46,9 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 @AllComponents
 class ArrayListConverterTest
 {
+    @InjectComponentManager
+    private MockitoComponentManager componentManager;
+
     @InjectMockComponents
     private DefaultConverterManager converterManager;
 
@@ -55,5 +64,20 @@ class ArrayListConverterTest
         ArrayList<String> expect = new ArrayList<>(Arrays.asList("1", "2", "3"));
 
         assertSame(expect, this.converterManager.convert(ArrayList.class, expect));
+    }
+
+    @Test
+    void convertToPrivateListTypes() throws ComponentLookupException
+    {
+        // Trigger the listener
+        this.componentManager.getInstance(EventListener.class, ConverterRegistratorListener.NAME);
+
+        assertEquals(List.of("1", "2"), this.converterManager.convert(List.of().getClass(), "1,2"));
+        assertEquals(List.of("1", "2"), this.converterManager.convert(List.of(1).getClass(), "1,2"));
+        assertEquals(List.of("1", "2"), this.converterManager.convert(List.of(1, 2, 3).getClass(), "1,2"));
+        assertEquals(List.of("1", "2"), this.converterManager.convert(Arrays.asList().getClass(), "1,2"));
+        assertEquals(List.of("1", "2"), this.converterManager.convert(Collections.emptyList().getClass(), "1,2"));
+        assertEquals(List.of("1", "2"),
+            this.converterManager.convert(Collections.unmodifiableList(Collections.emptyList()).getClass(), "1,2"));
     }
 }

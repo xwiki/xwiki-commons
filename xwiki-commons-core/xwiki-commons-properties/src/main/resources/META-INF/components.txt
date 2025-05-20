@@ -3,6 +3,7 @@ org.xwiki.properties.internal.DefaultConverterManager
 org.xwiki.properties.internal.converter.ArrayListConverter
 org.xwiki.properties.internal.converter.CollectionConverter
 org.xwiki.properties.internal.converter.ColorConverter
+org.xwiki.properties.internal.converter.ConverterRegistratorListener
 org.xwiki.properties.internal.converter.ConvertUtilsConverter
 org.xwiki.properties.internal.converter.EnumConverter
 org.xwiki.properties.internal.converter.HashSetConverter
