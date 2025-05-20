@@ -20,6 +20,7 @@
 package org.xwiki.properties.internal;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Triple;
@@ -92,6 +93,7 @@ class DefaultBeanDescriptorTest
         assertEquals("test1", advancedDescriptor.getGroupDescriptor().getGroup().get(0));
         assertEquals("test2", advancedDescriptor.getGroupDescriptor().getGroup().get(1));
         assertEquals("feature2", advancedDescriptor.getGroupDescriptor().getFeature());
+        assertEquals(10, advancedDescriptor.getOrder());
 
         PropertyDescriptor displayTypeDescriptor = this.beanDescriptor.getProperty("displayTypeParameter");
         assertEquals(new DefaultParameterizedType(null, Triple.class, Boolean.class, String.class, Long.class),
@@ -121,6 +123,7 @@ class DefaultBeanDescriptorTest
         assertNotNull(upperPropertyDescriptor.getWriteMethod());
         assertNotNull(upperPropertyDescriptor.getReadMethod());
         assertNull(upperPropertyDescriptor.getField());
+        assertEquals(-1, upperPropertyDescriptor.getOrder());
     }
 
     @Test
@@ -137,6 +140,7 @@ class DefaultBeanDescriptorTest
         assertNull(publicFieldPropertyDescriptor.getWriteMethod());
         assertNull(publicFieldPropertyDescriptor.getReadMethod());
         assertNotNull(publicFieldPropertyDescriptor.getField());
+        assertEquals(8, publicFieldPropertyDescriptor.getOrder());
     }
 
     @Test
@@ -158,6 +162,7 @@ class DefaultBeanDescriptorTest
         assertNotNull(prop1Descriptor.getWriteMethod());
         assertNotNull(prop1Descriptor.getReadMethod());
         assertNull(prop1Descriptor.getField());
+        assertEquals(-1, prop1Descriptor.getOrder());
     }
 
     @Test
@@ -173,6 +178,7 @@ class DefaultBeanDescriptorTest
         assertNotNull(prop2Descriptor.getWriteMethod());
         assertNotNull(prop2Descriptor.getReadMethod());
         assertNull(prop2Descriptor.getField());
+        assertEquals(-1, prop2Descriptor.getOrder());
     }
 
     @Test
@@ -188,6 +194,7 @@ class DefaultBeanDescriptorTest
         assertNotNull(prop3Descriptor.getWriteMethod());
         assertNotNull(prop3Descriptor.getReadMethod());
         assertNull(prop3Descriptor.getField());
+        assertEquals(-1, prop3Descriptor.getOrder());
     }
 
     @Test
@@ -283,5 +290,31 @@ class DefaultBeanDescriptorTest
         assertFalse(propertyDescriptor.isAdvanced());
         assertNull(propertyDescriptor.getGroupDescriptor().getGroup());
         assertNull(propertyDescriptor.getGroupDescriptor().getFeature());
+    }
+
+    @Test
+    void getProperties()
+    {
+        Collection<PropertyDescriptor> properties = this.beanDescriptor.getProperties();
+        assertEquals(16, properties.size());
+        assertEquals(List.of(
+            "publicField", // order: 8
+            "advancedParameter", // order: 10
+            // no defined order for other ones, so ordered by id
+            "deprecatedParameter",
+            "displayHiddenParameter",
+            "displayTypeParameter",
+            "displayTypeParameter2",
+            "genericField",
+            "genericProp",
+            "impossible.field.name",
+            "impossible.method.name",
+            "lowerprop",
+            "prop1",
+            "prop2",
+            "prop3",
+            "propertyWithDifferentId",
+            "upperProp"
+        ), properties.stream().map(PropertyDescriptor::getId).toList());
     }
 }
