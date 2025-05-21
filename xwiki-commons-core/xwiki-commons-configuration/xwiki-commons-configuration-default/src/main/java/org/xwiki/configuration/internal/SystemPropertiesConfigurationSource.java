@@ -59,7 +59,7 @@ public class SystemPropertiesConfigurationSource extends AbstractPropertiesConfi
 
     String getSystemProperty(String key)
     {
-        return System.getProperty(toSystemKey(key));
+        return System.getProperty(key);
     }
 
     Properties getSystemProperties()
