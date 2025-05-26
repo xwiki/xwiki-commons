@@ -24,6 +24,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import jakarta.inject.Provider;
 
 import org.junit.jupiter.api.Test;
@@ -71,6 +73,12 @@ public class EmbeddableComponentManagerTest
 
     public interface TestRole
     {
+    }
+
+    public static class CycleRoleImpl implements TestRole
+    {
+        @Inject
+        private TestRole recursion;
     }
 
     public static class RoleImpl implements TestRole
@@ -620,6 +628,29 @@ public class EmbeddableComponentManagerTest
         InitializableRoleImpl instance = ecm.getInstance(TestRole.class);
 
         assertTrue(instance.isInitialized());
+    }
+
+    @Test
+    void detectCycle() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        DefaultComponentDescriptor<TestRole> cd = new DefaultComponentDescriptor<>();
+        cd.setRoleType(TestRole.class);
+        cd.setImplementation(CycleRoleImpl.class);
+
+        DefaultComponentDependency<TestRole> dependency = new DefaultComponentDependency<>();
+        dependency.setRoleType(TestRole.class);
+        dependency.setName("recursion");
+        cd.addComponentDependency(dependency);
+
+        ecm.registerComponent(cd);
+
+        ComponentLookupException exception =
+            assertThrows(ComponentLookupException.class, () -> ecm.getInstance(TestRole.class));
+        assertEquals("Detected component construction cycle for component "
+                + "[interface org.xwiki.component.embed.EmbeddableComponentManagerTest$TestRole] of hint [default].",
+            exception.getCause().getCause().getMessage());
     }
 
     @Test
