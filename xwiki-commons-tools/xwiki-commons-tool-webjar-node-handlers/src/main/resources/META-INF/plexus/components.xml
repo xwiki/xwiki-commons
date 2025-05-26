@@ -55,6 +55,20 @@
               </mojo>
             </mojos>
           </validate>
+          <process>
+            <mojos>
+              <mojo>
+                <goal>org.xwiki.commons:xwiki-commons-tool-remote-resource-plugin</goal>
+                <configuration>
+                  <projectsData>LICENSES</projectsData>
+                  <resourceBundles>
+                    <resourceBundle>org.xwiki.commons:xwiki-commons-tool-license-resources:${commons.version}
+                    </resourceBundle>
+                  </resourceBundles>
+                </configuration>
+              </mojo>
+            </mojos>
+          </process>
           <process-resources>
             <mojos>
               <mojo>
