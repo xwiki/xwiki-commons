@@ -86,6 +86,8 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
          */
         boolean disposing = false;
 
+        boolean constructing = false;
+
         ComponentEntry(ComponentDescriptor<R> descriptor, R instance)
         {
             this.descriptor = descriptor;
@@ -632,8 +634,17 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
                     // Re-check in case it has been created while we were waiting
                     if (componentEntry.instance != null) {
                         instance = componentEntry.instance;
+                    } else if (componentEntry.constructing) {
+                        throw new ComponentLookupException(
+                            "Detected component construction cycle for component [%s] of hint [%s]."
+                                .formatted(descriptor.getRoleType(), descriptor.getRoleHint()));
                     } else {
-                        componentEntry.instance = createInstance(descriptor);
+                        componentEntry.constructing = true;
+                        try {
+                            componentEntry.instance = createInstance(descriptor);
+                        } finally {
+                            componentEntry.constructing = false;
+                        }
                         instance = componentEntry.instance;
                     }
                 }
