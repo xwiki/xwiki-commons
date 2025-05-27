@@ -35,10 +35,11 @@
               <mojo>
                 <goal>org.apache.maven.plugins:maven-resources-plugin:copy-resources</goal>
                 <configuration>
-                  <outputDirectory>${project.build.directory}/vue</outputDirectory>
+                  <!-- We use node-src because node is already use to store the node/npm executables. -->
+                  <outputDirectory>${project.build.directory}/node-src</outputDirectory>
                   <resources>
                     <resource>
-                      <directory>src/main/vue</directory>
+                      <directory>src/main/node</directory>
                       <excludes>
                         <exclude>dist</exclude>
                         <exclude>node_modules</exclude>
@@ -66,7 +67,7 @@
                 <goal>com.github.eirslett:frontend-maven-plugin:npm</goal>
                 <configuration>
                   <arguments>ci</arguments>
-                  <workingDirectory>${project.build.directory}/vue</workingDirectory>
+                  <workingDirectory>${project.build.directory}/node-src</workingDirectory>
                   <installDirectory>${basedir}/target</installDirectory>
                 </configuration>
               </mojo>
@@ -78,7 +79,7 @@
                 <goal>com.github.eirslett:frontend-maven-plugin:npm</goal>
                 <configuration>
                   <arguments>run build</arguments>
-                  <workingDirectory>${project.build.directory}/vue</workingDirectory>
+                  <workingDirectory>${project.build.directory}/node-src</workingDirectory>
                   <installDirectory>${basedir}/target</installDirectory>
                 </configuration>
               </mojo>
@@ -92,7 +93,7 @@
                 <goal>com.github.eirslett:frontend-maven-plugin:npm</goal>
                 <configuration>
                   <arguments>run lint</arguments>
-                  <workingDirectory>${project.build.directory}/vue</workingDirectory>
+                  <workingDirectory>${project.build.directory}/node-src</workingDirectory>
                   <installDirectory>${basedir}/target</installDirectory>
                 </configuration>
               </mojo>
@@ -100,7 +101,7 @@
                 <goal>com.github.eirslett:frontend-maven-plugin:npm</goal>
                 <configuration>
                   <arguments>run test:unit</arguments>
-                  <workingDirectory>${project.build.directory}/vue</workingDirectory>
+                  <workingDirectory>${project.build.directory}/node-src</workingDirectory>
                   <installDirectory>${basedir}/target</installDirectory>
                 </configuration>
               </mojo>
@@ -117,7 +118,7 @@
                   </outputDirectory>
                   <resources>
                     <resource>
-                      <directory>${project.build.directory}/vue/dist</directory>
+                      <directory>${project.build.directory}/node-src/dist</directory>
                     </resource>
                   </resources>
                 </configuration>
