@@ -144,9 +144,9 @@
       <role-hint>webjar-node</role-hint>
       <implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler</implementation>
       <configuration>
-        <type>webjar</type>
+        <type>webjar-node</type>
         <extension>jar</extension>
-        <packaging>webjar</packaging>
+        <packaging>webjar-node</packaging>
         <addedToClasspath>true</addedToClasspath>
         <includesDependencies>false</includesDependencies>
       </configuration>
