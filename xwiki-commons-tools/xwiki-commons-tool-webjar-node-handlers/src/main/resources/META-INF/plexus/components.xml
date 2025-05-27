@@ -22,12 +22,6 @@
  *
 -->
 
-<!-- TODO:
-* missing LICENSE file
-* missing NOTICE file
-* missing copy of variables.less for xwiki-platform-livedata-webjars
--->
-
 <component-set>
   <components>
     <component>
@@ -55,22 +49,11 @@
               </mojo>
             </mojos>
           </validate>
-          <process>
-            <mojos>
-              <mojo>
-                <goal>org.xwiki.commons:xwiki-commons-tool-remote-resource-plugin</goal>
-                <configuration>
-                  <projectsData>LICENSES</projectsData>
-                  <resourceBundles>
-                    <resourceBundle>org.xwiki.commons:xwiki-commons-tool-license-resources:${commons.version}
-                    </resourceBundle>
-                  </resourceBundles>
-                </configuration>
-              </mojo>
-            </mojos>
-          </process>
           <process-resources>
             <mojos>
+              <mojo>
+                <goal>org.apache.maven.plugins:maven-resources-plugin:resources</goal>
+              </mojo>
               <mojo>
                 <goal>com.github.eirslett:frontend-maven-plugin:install-node-and-npm</goal>
                 <configuration>
