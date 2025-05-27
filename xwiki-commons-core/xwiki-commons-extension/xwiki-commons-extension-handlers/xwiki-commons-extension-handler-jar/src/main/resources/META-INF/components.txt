@@ -1,3 +1,4 @@
 org.xwiki.extension.jar.internal.handler.JarExtensionHandler
 org.xwiki.extension.jar.internal.handler.JarExtensionJobFinishingListener
 org.xwiki.extension.jar.internal.handler.WebjarArtifactTypeConverter
+org.xwiki.extension.jar.internal.handler.WebjarNodeArtifactTypeConverter
