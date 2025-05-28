@@ -244,6 +244,8 @@ public class JarExtensionJobFinishingListener implements EventListener
         initializer.initialize(namespace, JarExtensionHandler.JAR);
         // Load WEBJAR extensions
         initializer.initialize(namespace, JarExtensionHandler.WEBJAR);
+        // Load WEBJAR Node extensions
+        initializer.initialize(namespace, JarExtensionHandler.WEBJAR_NODE);
     }
 
     private void onJobFinishedEvent()

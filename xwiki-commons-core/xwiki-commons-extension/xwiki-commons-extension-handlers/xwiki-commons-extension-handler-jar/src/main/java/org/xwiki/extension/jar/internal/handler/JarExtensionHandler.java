@@ -59,27 +59,32 @@ import org.xwiki.observation.ObservationManager;
  * @version $Id$
  * @since 4.0M1
  */
-@Component(hints = {JarExtensionHandler.JAR, JarExtensionHandler.WEBJAR})
+@Component(hints = { JarExtensionHandler.JAR, JarExtensionHandler.WEBJAR, JarExtensionHandler.WEBJAR_NODE, })
 @Singleton
 public class JarExtensionHandler extends AbstractExtensionHandler implements Initializable
 {
     /**
      * Type {@code jar}.
-     * 
+     *
      * @since 9.0RC1
      */
     public static final String JAR = "jar";
 
     /**
      * Type {@code webjar}.
-     * 
+     *
      * @since 9.0RC1
      */
     public static final String WEBJAR = "webjar";
 
     /**
+     * @since 17.5.0RC1
+     */
+    public static final String WEBJAR_NODE = "webjar-node";
+
+    /**
      * Custom property containing a JAR sub type (for example {@code webjar}).
-     * 
+     *
      * @since 9.0RC1
      */
     public static final String PROPERTY_TYPE = "xwiki.extension.jar.type";
@@ -99,12 +104,12 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
      */
     public static boolean isSupported(String type)
     {
-        return type != null && (type.equals(JarExtensionHandler.JAR) || type.equals(JarExtensionHandler.WEBJAR));
+        return type != null && (type.equals(JAR) || type.equals(WEBJAR)|| type.equals(WEBJAR_NODE));
     }
 
     /**
-     * Find of the passes extension if a webjar.
-     * 
+     * Find if the passed extension is a webjar.
+     *
      * @param extension the extension to test
      * @return true of the passed extension is a webjar, false otherwise
      * @since 9.0RC1
@@ -112,7 +117,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
     public static boolean isWebjar(Extension extension)
     {
         // Ideally webjar extensions should have "webjar" type
-        if (WEBJAR.equals(extension.getType())) {
+        if (WEBJAR.equals(extension.getType()) || WEBJAR_NODE.equals(extension.getType())) {
             return true;
         }
 
@@ -125,7 +130,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
         }
         // ** contrib extensions which support version of XWiki older than 9.0RC1. We support a custom property which
         // does not have any effect on older versions of XWiki
-        if (JarExtensionHandler.WEBJAR.equals(extension.getProperty(JarExtensionHandler.PROPERTY_TYPE))) {
+        if (WEBJAR.equals(extension.getProperty(PROPERTY_TYPE))) {
             return true;
         }
 
