@@ -117,20 +117,28 @@ class ServletEnvironmentTest
             exception.getMessage());
     }
 
-    @Test
-    void getResourceOk() throws Exception
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void getResourceOk(boolean initializeCache) throws Exception
     {
         ServletContext servletContext = mock(ServletContext.class);
         this.environment.setServletContext(servletContext);
         String resourceName = "/test";
         when(servletContext.getResource(resourceName)).thenReturn(new URL("file:/path/../test"));
+        if (initializeCache) {
+            this.environment.initializeCache();
+        }
 
         URL expectedURL = new URL("file:/test");
         assertEquals(expectedURL, this.environment.getResource(resourceName));
         verify(servletContext).getResource(resourceName);
-        verify(this.cache).set(resourceName, Optional.of(expectedURL));
-        // As cache control returns false, the cache shouldn't be read.
-        verify(this.cache, never()).get(any());
+        if (initializeCache) {
+            verify(this.cache).set(resourceName, Optional.of(expectedURL));
+            // As cache control returns false, the cache shouldn't be read.
+            verify(this.cache, never()).get(any());
+        } else {
+            verifyNoInteractions(this.cache);
+        }
     }
 
     @Test
@@ -145,37 +153,55 @@ class ServletEnvironmentTest
         verifyNoInteractions(this.cache);
     }
 
-    @Test
-    void getResourceNotExisting() throws Exception
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void getResourceNotExisting(boolean initializeCache)
     {
-        ServletContext servletContext = mock(ServletContext.class);
+        ServletContext servletContext = mock();
         this.environment.setServletContext(servletContext);
         String resourceName = "unknown resource";
+        if (initializeCache) {
+            this.environment.initializeCache();
+        }
+
         assertNull(this.environment.getResource(resourceName));
-        verify(this.cache).set(resourceName, Optional.empty());
-        // As cache control returns false, the cache shouldn't be read.
-        verify(this.cache, never()).get(any());
+        if (initializeCache) {
+            verify(this.cache).set(resourceName, Optional.empty());
+            // As cache control returns false, the cache shouldn't be read.
+            verify(this.cache, never()).get(any());
+        } else {
+            verifyNoInteractions(this.cache);
+        }
     }
 
-    @Test
-    void getResourceWhenMalformedURLException() throws Exception
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void getResourceWhenMalformedURLException(boolean initializeCache) throws Exception
     {
         ServletContext servletContext = mock(ServletContext.class);
         String resourceName = "bad resource";
         when(servletContext.getResource(resourceName)).thenThrow(new MalformedURLException("invalid url"));
         this.environment.setServletContext(servletContext);
+        if (initializeCache) {
+            this.environment.initializeCache();
+        }
         assertNull(this.environment.getResource(resourceName));
         assertEquals("Error getting resource [bad resource] because of invalid path format. Reason: [invalid url]",
             logCapture.getMessage(0));
-        verify(this.cache).set(resourceName, Optional.empty());
-        // As cache control returns false, the cache shouldn't be read.
-        verify(this.cache, never()).get(any());
+        if (initializeCache) {
+            verify(this.cache).set(resourceName, Optional.empty());
+            // As cache control returns false, the cache shouldn't be read.
+            verify(this.cache, never()).get(any());
+        } else {
+            verifyNoInteractions(this.cache);
+        }
     }
 
     @Test
     void getResourceNotExistingFromCache()
     {
         String resourceName = "unknown resource";
+        this.environment.initializeCache();
         when(this.cacheControl.isCacheReadAllowed()).thenReturn(true);
         when(this.cache.get(resourceName)).thenReturn(Optional.empty());
         assertNull(this.environment.getResource(resourceName));
@@ -188,6 +214,7 @@ class ServletEnvironmentTest
     {
         String resourceName = "known resource";
         URL expectedURL = mock(URL.class);
+        this.environment.initializeCache();
         when(this.cacheControl.isCacheReadAllowed()).thenReturn(true);
         when(this.cache.get(resourceName)).thenReturn(Optional.of(expectedURL));
         assertEquals(expectedURL, this.environment.getResource(resourceName));
@@ -230,8 +257,11 @@ class ServletEnvironmentTest
         ExecutorService executor = Executors.newFixedThreadPool(1);
 
         try {
-            CompletableFuture<URL> outerCall =
-                CompletableFuture.supplyAsync(() -> this.environment.getResource(resourceName), executor);
+            CompletableFuture<Void> initializeCall =
+                CompletableFuture.supplyAsync(() -> {
+                    this.environment.initializeCache();
+                    return null;
+                }, executor);
 
             // Wait for the background thread to arrive in the cache creation call (but don't wait forever just to be
             // safe).
@@ -244,18 +274,16 @@ class ServletEnvironmentTest
             // Unblock the cache creation call.
             blockCreateCacheFuture.complete(null);
 
-            // Ensure that the blocked call now got the value, too. Again, don't wait forever just in case.
-            URL actualOuterURL = outerCall.get(20, TimeUnit.SECONDS);
-            if (cached) {
-                assertEquals(cachedURL, actualOuterURL);
-            } else {
-                assertEquals(expectedURL, actualOuterURL);
-            }
+            // Ensure that the blocked call now completed. Again, don't wait forever just in case.
+            initializeCall.get(20, TimeUnit.SECONDS);
 
-            // Assert that the recursive call also got the URL.
+            // Assert that the recursive call got the URL.
             assertEquals(expectedURL, recursiveURL.getValue());
 
-            // Only the outer call should have accessed the cache. If the cache didn't return the value, it should
+            // Assert that we now get the cached URL.
+            assertEquals(cached ? cachedURL : expectedURL, this.environment.getResource(resourceName));
+
+            // Only the last call should have accessed the cache. If the cache didn't return the value, it should
             // have been stored.
             verify(this.cache).get(resourceName);
             if (cached) {

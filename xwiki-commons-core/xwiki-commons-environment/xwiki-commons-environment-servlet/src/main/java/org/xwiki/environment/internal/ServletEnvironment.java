@@ -26,7 +26,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -70,35 +69,29 @@ public class ServletEnvironment extends AbstractEnvironment
 
     private Cache<Optional<URL>> resourceURLCache;
 
-    private final AtomicBoolean cacheInitializing = new AtomicBoolean();
-
-    // SonarQube has no idea about concurrent modifications that make the repeated check for resourceURLCache == null
-    // necessary.
-    // See also the comment at the duplicate check that explains why we need to check again inside the "lock".
-    @SuppressWarnings("java:S2589")
-    private Cache<Optional<URL>> getResourceURLCache()
+    /**
+     * Initialize the cache for resource URLs. This method is called by {@link ServletEnvironmentCacheInitializer} when
+     * the application is started to ensure that the cache is initialized only once the cache builder is available. The
+     * cache builder depends on loading resources from this component, so we can't initialize the cache when it is
+     * first requested.
+     *
+     * @since 17.5.0RC1
+     * @since 17.4.1
+     * @since 16.10.9
+     */
+    synchronized void initializeCache()
     {
-        // Don't block on cache initialization to avoid loops.
-        if (this.resourceURLCache == null && this.cacheInitializing.compareAndSet(false, true)) {
+        if (this.resourceURLCache == null) {
             try {
-                // Compare again inside the "lock" to avoid race conditions. Only after seeing the false value we can
-                // be sure that we also see the resourceURLCache variable write from the thread that wrote it -
-                // writing atomics with "set" guarantees sequential consistency.
-                if (this.resourceURLCache == null) {
-                    // The cache manager can't be injected directly as it depends on this component, so it is
-                    // important to only request it once this component has been initialized.
-                    CacheManager cacheManager = this.componentManager.getInstance(CacheManager.class);
-                    this.resourceURLCache = cacheManager.createNewCache(
-                        new LRUCacheConfiguration("environment.servlet.resourceURLCache", 10000));
-                }
+                // The cache manager can't be injected directly as it depends on this component, so it is
+                // important to only request it once this component has been initialized.
+                CacheManager cacheManager = this.componentManager.getInstance(CacheManager.class);
+                this.resourceURLCache = cacheManager.createNewCache(
+                    new LRUCacheConfiguration("environment.servlet.resourceURLCache", 10000));
             } catch (Exception e) {
-                this.logger.error("Failed to initialize resource URL cache.", e);
-            } finally {
-                this.cacheInitializing.set(false);
+                this.logger.error("Failed to initialize the resource URL cache.", e);
             }
         }
-
-        return this.resourceURLCache;
     }
 
     /**
@@ -157,10 +150,8 @@ public class ServletEnvironment extends AbstractEnvironment
     @SuppressWarnings("java:S2789")
     public URL getResource(String resourceName)
     {
-        Cache<Optional<URL>> cache = getResourceURLCache();
-
-        if (cache != null && this.cacheControl.isCacheReadAllowed()) {
-            Optional<URL> cachedURL = cache.get(resourceName);
+        if (this.resourceURLCache != null && this.cacheControl.isCacheReadAllowed()) {
+            Optional<URL> cachedURL = this.resourceURLCache.get(resourceName);
 
             if (cachedURL != null) {
                 return cachedURL.orElse(null);
@@ -169,8 +160,8 @@ public class ServletEnvironment extends AbstractEnvironment
 
         URL url = getResourceInternal(resourceName);
 
-        if (cache != null) {
-            cache.set(resourceName, Optional.ofNullable(url));
+        if (this.resourceURLCache != null) {
+            this.resourceURLCache.set(resourceName, Optional.ofNullable(url));
         }
 
         return url;
