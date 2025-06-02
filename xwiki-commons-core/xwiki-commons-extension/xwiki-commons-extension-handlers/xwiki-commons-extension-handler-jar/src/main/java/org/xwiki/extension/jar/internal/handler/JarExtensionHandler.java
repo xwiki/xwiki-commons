@@ -104,7 +104,11 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
      */
     public static boolean isSupported(String type)
     {
-        return type != null && (type.equals(JAR) || type.equals(WEBJAR)|| type.equals(WEBJAR_NODE));
+        return type != null && (
+            type.equals(JarExtensionHandler.JAR)
+                || type.equals(JarExtensionHandler.WEBJAR)
+                || type.equals(JarExtensionHandler.WEBJAR_NODE)
+        );
     }
 
     /**
@@ -117,7 +121,9 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
     public static boolean isWebjar(Extension extension)
     {
         // Ideally webjar extensions should have "webjar" type
-        if (WEBJAR.equals(extension.getType()) || WEBJAR_NODE.equals(extension.getType())) {
+        if (JarExtensionHandler.WEBJAR.equals(extension.getType())
+            || JarExtensionHandler.WEBJAR_NODE.equals(extension.getType()))
+        {
             return true;
         }
 
@@ -130,7 +136,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
         }
         // ** contrib extensions which support version of XWiki older than 9.0RC1. We support a custom property which
         // does not have any effect on older versions of XWiki
-        if (WEBJAR.equals(extension.getProperty(PROPERTY_TYPE))) {
+        if (JarExtensionHandler.WEBJAR.equals(extension.getProperty(JarExtensionHandler.PROPERTY_TYPE))) {
             return true;
         }
 

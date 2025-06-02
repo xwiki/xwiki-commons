@@ -27,22 +27,21 @@ import org.xwiki.extension.maven.ArtifactPackagingToExtensionType;
 import org.xwiki.extension.maven.ArtifactTypeToExtensionType;
 
 /**
- * Conversion to webjar extension type.
- * 
+ * Conversion to webjar-node extension type.
+ *
  * @version $Id$
- * @since 16.4.0RC1
+ * @since 17.5.0RC1
  */
 @Component
 @Named("webjar-node")
 @Singleton
-public class WebjarNodeArtifactTypeConverter
-    implements ArtifactPackagingToExtensionType, ArtifactTypeToExtensionType
+public class WebjarNodeArtifactTypeConverter implements ArtifactPackagingToExtensionType, ArtifactTypeToExtensionType
 {
     @Override
     public String getExtensionType()
     {
-        // The Maven file extension for packaging "webjar" is "jar" but in the context of XWiki extension we want webjar
-        // to be recognized as being of a specific "webjar" type
+        // The Maven file extension for packaging "webjar-node" is "jar" but in the context of XWiki extension we want
+        // webjar-node to be recognized as being of a specific "webjar" type.
         return "webjar-node";
     }
 }
