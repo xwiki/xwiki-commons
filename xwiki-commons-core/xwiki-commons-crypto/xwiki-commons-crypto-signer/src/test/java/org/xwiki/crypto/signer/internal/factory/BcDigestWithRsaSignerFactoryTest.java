@@ -39,89 +39,59 @@ package org.xwiki.crypto.signer.internal.factory;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.crypto.internal.asymmetric.keyfactory.BcRSAKeyFactory;
 import org.xwiki.crypto.internal.encoder.Base64BinaryStringEncoder;
 import org.xwiki.crypto.signer.SignerFactory;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
 
-@ComponentList({Base64BinaryStringEncoder.class, BcRSAKeyFactory.class})
-public class BcDigestWithRsaSignerFactoryTest extends AbstractRsaSignerFactoryTest
+import static org.xwiki.crypto.signer.internal.factory.RsaSignerFactoryTestUtil.assertSignatureVerification;
+import static org.xwiki.crypto.signer.internal.factory.RsaSignerFactoryTestUtil.privateKey;
+import static org.xwiki.crypto.signer.internal.factory.RsaSignerFactoryTestUtil.publicKey;
+import static org.xwiki.crypto.signer.internal.factory.RsaSignerFactoryTestUtil.setupTest;
+
+@ComponentList({
+    Base64BinaryStringEncoder.class,
+    BcRSAKeyFactory.class,
+    BcSHA1withRsaSignerFactory.class,
+    BcSHA224withRsaSignerFactory.class,
+    BcSHA256withRsaSignerFactory.class,
+    BcSHA384withRsaSignerFactory.class,
+    BcSHA512withRsaSignerFactory.class,
+    BcMD5withRsaSignerFactory.class
+})
+@ComponentTest
+class BcDigestWithRsaSignerFactoryTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<SignerFactory> mocker =
-        new MockitoComponentMockingRule<>(BcSHA1withRsaSignerFactory.class);
+    @InjectComponentManager
+    private ComponentManager componentManager;
 
-    @Rule
-    public final MockitoComponentMockingRule<SignerFactory> mockerSha224 =
-        new MockitoComponentMockingRule<>(BcSHA224withRsaSignerFactory.class);
-
-    @Rule
-    public final MockitoComponentMockingRule<SignerFactory> mockerSha256 =
-        new MockitoComponentMockingRule<>(BcSHA256withRsaSignerFactory.class);
-
-    @Rule
-    public final MockitoComponentMockingRule<SignerFactory> mockerSha384 =
-        new MockitoComponentMockingRule<>(BcSHA384withRsaSignerFactory.class);
-
-    @Rule
-    public final MockitoComponentMockingRule<SignerFactory> mockerSha512 =
-        new MockitoComponentMockingRule<>(BcSHA512withRsaSignerFactory.class);
-
-    @Rule
-    public final MockitoComponentMockingRule<SignerFactory> mockerMD5 =
-        new MockitoComponentMockingRule<>(BcMD5withRsaSignerFactory.class);
-
-    @Before
-    public void configure() throws Exception
+    @BeforeEach
+    void setUp() throws Exception
     {
-        setupTest(mocker);
+        setupTest(this.componentManager);
     }
 
-    private void runTest(MockitoComponentMockingRule<SignerFactory> mocker) throws Exception
+    @ParameterizedTest
+    @CsvSource({
+        "SHA1withRSAEncryption",
+        "SHA224withRSAEncryption",
+        "SHA256withRSAEncryption",
+        "SHA384withRSAEncryption",
+        "SHA512withRSAEncryption",
+        "MD5withRSAEncryption"
+    })
+    void signatureVerification(String hint) throws Exception
     {
-        runTestSignatureVerification(
-            mocker.getComponentUnderTest().getInstance(true, privateKey),
-            mocker.getComponentUnderTest().getInstance(false, publicKey)
+        AbstractBcSignerFactory abstractBcSignerFactory = this.componentManager.getInstance(SignerFactory.class, hint);
+        assertSignatureVerification(
+            abstractBcSignerFactory.getInstance(true, privateKey),
+            abstractBcSignerFactory.getInstance(false, publicKey)
         );
-    }
-
-    @Test
-    public void testSha1SignatureVerification() throws Exception
-    {
-        runTest(mocker);
-    }
-
-    @Test
-    public void testSha224SignatureVerification() throws Exception
-    {
-        runTest(mockerSha224);
-    }
-
-    @Test
-    public void testSha256SignatureVerification() throws Exception
-    {
-        runTest(mockerSha256);
-    }
-
-    @Test
-    public void testSha384SignatureVerification() throws Exception
-    {
-        runTest(mockerSha384);
-    }
-
-    @Test
-    public void testSha512SignatureVerification() throws Exception
-    {
-        runTest(mockerSha512);
-    }
-
-    @Test
-    public void testMd5SignatureVerification() throws Exception
-    {
-        runTest(mockerMD5);
     }
 }
