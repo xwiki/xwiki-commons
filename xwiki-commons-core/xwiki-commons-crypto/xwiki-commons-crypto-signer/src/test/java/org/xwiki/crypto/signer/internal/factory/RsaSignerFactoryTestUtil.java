@@ -19,19 +19,20 @@
  */
 package org.xwiki.crypto.signer.internal.factory;
 
+import java.nio.charset.StandardCharsets;
+
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.crypto.AsymmetricKeyFactory;
 import org.xwiki.crypto.BinaryStringEncoder;
 import org.xwiki.crypto.params.cipher.asymmetric.PrivateKeyParameters;
 import org.xwiki.crypto.params.cipher.asymmetric.PublicKeyParameters;
 import org.xwiki.crypto.signer.Signer;
-import org.xwiki.crypto.signer.SignerFactory;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public abstract class AbstractRsaSignerFactoryTest
+public class RsaSignerFactoryTestUtil
 {
     private static final String PRIVATE_KEY =
         // Link to decoded ASN.1: https://goo.gl/kgV0IB
@@ -81,19 +82,19 @@ public abstract class AbstractRsaSignerFactoryTest
     protected static PublicKeyParameters publicKey;
     protected static byte[] text;
 
-    public void setupTest(MockitoComponentMockingRule<SignerFactory> mocker) throws Exception
+    static void setupTest(ComponentManager componentManager) throws Exception
     {
         // Decode keys once for all tests.
         if (privateKey == null) {
-            BinaryStringEncoder base64encoder = mocker.getInstance(BinaryStringEncoder.class, "Base64");
-            AsymmetricKeyFactory keyFactory = mocker.getInstance(AsymmetricKeyFactory.class, "RSA");
+            BinaryStringEncoder base64encoder = componentManager.getInstance(BinaryStringEncoder.class, "Base64");
+            AsymmetricKeyFactory keyFactory = componentManager.getInstance(AsymmetricKeyFactory.class, "RSA");
             privateKey = keyFactory.fromPKCS8(base64encoder.decode(PRIVATE_KEY));
             publicKey = keyFactory.fromX509(base64encoder.decode(PUBLIC_KEY));
-            text = TEXT.getBytes("UTF-8");
+            text = TEXT.getBytes(StandardCharsets.UTF_8);
         }
     }
 
-    protected void runTestSignatureVerification(Signer signer, Signer verifier) throws Exception
+    static void assertSignatureVerification(Signer signer, Signer verifier) throws Exception
     {
         byte[] signature = signer.generate(text);
 
