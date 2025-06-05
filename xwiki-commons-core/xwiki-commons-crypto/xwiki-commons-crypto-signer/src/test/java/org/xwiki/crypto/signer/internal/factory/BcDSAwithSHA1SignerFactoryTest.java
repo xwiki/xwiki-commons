@@ -20,9 +20,14 @@
 
 package org.xwiki.crypto.signer.internal.factory;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import java.nio.charset.StandardCharsets;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.crypto.AsymmetricKeyFactory;
 import org.xwiki.crypto.BinaryStringEncoder;
 import org.xwiki.crypto.internal.asymmetric.keyfactory.BcDSAKeyFactory;
@@ -30,20 +35,35 @@ import org.xwiki.crypto.internal.encoder.Base64BinaryStringEncoder;
 import org.xwiki.crypto.params.cipher.asymmetric.PrivateKeyParameters;
 import org.xwiki.crypto.params.cipher.asymmetric.PublicKeyParameters;
 import org.xwiki.crypto.signer.Signer;
-import org.xwiki.crypto.signer.SignerFactory;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ComponentList({Base64BinaryStringEncoder.class, BcDSAKeyFactory.class})
-public class BcDSAwithSHA1SignerFactoryTest
+@ComponentList({
+    Base64BinaryStringEncoder.class,
+    BcDSAKeyFactory.class
+})
+@ComponentTest
+class BcDSAwithSHA1SignerFactoryTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<SignerFactory> mocker =
-        new MockitoComponentMockingRule<>(BcDSAwithSHA1SignerFactory.class);
+    @InjectComponentManager
+    private ComponentManager componentManager;
+
+    @InjectMockComponents
+    private BcDSAwithSHA1SignerFactory bcDSAwithSHA1SignerFactory;
+
+    @Inject
+    @Named("Base64")
+    private BinaryStringEncoder base64encoder;
+
+    @Inject
+    @Named("DSA")
+    private AsymmetricKeyFactory keyFactory;
 
     private static final String PRIVATE_KEY = "MIIBTAIBADCCASwGByqGSM44BAEwggEfAoGBANQ9Oa1j9sWAhdXNyqz8HL/bA/e"
         + "d2VrBw6TPkgMyV1Upix58RSjOHMQNrgemSGkb80dRcLqVDYbI3ObnIJh83Zx6ze"
@@ -71,20 +91,10 @@ public class BcDSAwithSHA1SignerFactoryTest
         + "petition the Government for a redress of grievances.";
 
     protected static PrivateKeyParameters privateKey;
-    protected static PublicKeyParameters publicKey;
-    protected static byte[] text;
 
-    public void setupTest(MockitoComponentMockingRule<SignerFactory> mocker) throws Exception
-    {
-        // Decode keys once for all tests.
-        if (privateKey == null) {
-            BinaryStringEncoder base64encoder = mocker.getInstance(BinaryStringEncoder.class, "Base64");
-            AsymmetricKeyFactory keyFactory = mocker.getInstance(AsymmetricKeyFactory.class, "DSA");
-            privateKey = keyFactory.fromPKCS8(base64encoder.decode(PRIVATE_KEY));
-            publicKey = keyFactory.fromX509(base64encoder.decode(PUBLIC_KEY));
-            text = TEXT.getBytes("UTF-8");
-        }
-    }
+    protected static PublicKeyParameters publicKey;
+
+    protected static byte[] text;
 
     protected void runTestSignatureVerification(Signer signer, Signer verifier) throws Exception
     {
@@ -94,18 +104,23 @@ public class BcDSAwithSHA1SignerFactoryTest
         assertTrue(verifier.verify(signature, text));
     }
 
-    @Before
-    public void configure() throws Exception
+    @BeforeEach
+    void setUp() throws Exception
     {
-        setupTest(mocker);
+        // Decode keys once for all tests.
+        if (privateKey == null) {
+            privateKey = this.keyFactory.fromPKCS8(this.base64encoder.decode(PRIVATE_KEY));
+            publicKey = this.keyFactory.fromX509(this.base64encoder.decode(PUBLIC_KEY));
+            text = TEXT.getBytes(StandardCharsets.UTF_8);
+        }
     }
 
     @Test
-    public void testDSASignatureVerification() throws Exception
+    void dsaSignatureVerification() throws Exception
     {
         runTestSignatureVerification(
-            mocker.getComponentUnderTest().getInstance(true, privateKey),
-            mocker.getComponentUnderTest().getInstance(false, publicKey)
+            this.bcDSAwithSHA1SignerFactory.getInstance(true, privateKey),
+            this.bcDSAwithSHA1SignerFactory.getInstance(false, publicKey)
         );
     }
 }
