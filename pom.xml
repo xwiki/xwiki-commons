@@ -269,9 +269,12 @@
     <xwiki.extension.recommendedVersions>${xwiki.extension.recommendedVersion.commons}
     </xwiki.extension.recommendedVersions>
 
-    <!-- Control Nexus staging (release on Maven Central for xwiki-commons and xwiki-rendering) -->
-    <xwiki.nexus.serverId>ossrh</xwiki.nexus.serverId>
-    <xwiki.nexus.nexusUrl>https://s01.oss.sonatype.org/</xwiki.nexus.nexusUrl>
+    <!-- xwiki-commons and xwiki-rendering are release on Maven Central -->
+    <releaseProfiles>release,release-central</releaseProfiles>
+
+    <!-- Setup to do staging release on XWiki's own Nexus repository, mainly used for contrib projects -->
+    <xwiki.nexus.serverId>xwiki-staging</xwiki.nexus.serverId>
+    <xwiki.nexus.nexusUrl>http://nexus.xwiki.org/nexus/</xwiki.nexus.nexusUrl>
     <xwiki.nexus.autoReleaseAfterClose>true</xwiki.nexus.autoReleaseAfterClose>
     <xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure>true</xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure>
     <xwiki.nexus.skipLocalStaging>false</xwiki.nexus.skipLocalStaging>
@@ -2275,7 +2278,7 @@
             <!-- We always use the same version for submodules -->
             <autoVersionSubmodules>true</autoVersionSubmodules>
             <!-- Indicate the profiles to enable during release perform -->
-            <releaseProfiles>release</releaseProfiles>
+            <releaseProfiles>${releaseProfiles}</releaseProfiles>
           </configuration>
         </plugin>
         <plugin>
@@ -3037,7 +3040,35 @@
               </execution>
             </executions>
           </plugin>
-          <!-- Automatically close and release project on Nexus -->
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!-- Setup deployment and release on Maven Central -->
+      <!-- This profile is automatically enabled by release perform -->
+      <id>release-central</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.7.0</version>
+            <extensions>true</extensions>
+            <configuration>
+              <!-- Automatically publish -->
+              <autoPublish>true</autoPublish>
+              <!-- Wait until artifacts are published -->
+              <waitUntil>published</waitUntil>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!-- Setup deployment to release contrib projects -->
+      <id>release-contrib</id>
+      <build>
+        <plugins>
           <plugin>
             <groupId>org.sonatype.plugins</groupId>
             <artifactId>nexus-staging-maven-plugin</artifactId>
