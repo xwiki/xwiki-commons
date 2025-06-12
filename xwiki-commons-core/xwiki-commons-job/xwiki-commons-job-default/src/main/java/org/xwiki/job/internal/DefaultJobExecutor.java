@@ -133,18 +133,25 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
             List<String> jobId = job.getRequest().getId();
             if (jobId != null) {
-                // Use compute() to synchronize on the job ID to avoid concurrent insertion/deletion by other threads.
-                DefaultJobExecutor.this.groupedJobs.compute(jobId, (k, v) -> {
-                    if (v != null && v.peek() == job) {
-                        v.poll();
-                    }
+                // Synchronize on groupedJobs to avoid race conditions with jobs completing before they are inserted
+                // into the queue.
+                synchronized (DefaultJobExecutor.this.groupedJobs) {
+                    // Delete the job from the job group's queue. Remove the queue when it is empty.
+                    DefaultJobExecutor.this.groupedJobs.compute(jobId, (k, v) -> {
+                        // Remove the job, but only when it is the first job in the queue.
+                        if (v != null && v.peek() == job) {
+                            v.poll();
+                        }
 
-                    if (v == null || v.isEmpty()) {
-                        return null;
-                    }
+                        // If the queue is empty, remove it from the map.
+                        if (v == null || v.isEmpty()) {
+                            return null;
+                        }
 
-                    return v;
-                });
+                        // Otherwise, keep the (non-empty) queue.
+                        return v;
+                    });
+                }
             }
         }
 
@@ -196,11 +203,14 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
             List<String> jobId = job.getRequest().getId();
             if (jobId != null) {
+                // Remove the job from the jobs map if its job ID actually maps to the job instance.
                 DefaultJobExecutor.this.jobs.computeIfPresent(jobId, (k, v) -> {
                     if (v == job) {
+                        // If the job ID maps to the job instance, remove it from the map.
                         return null;
                     }
 
+                    // If the job ID does not map to the job instance, keep it in the map.
                     return v;
                 });
             }
@@ -389,10 +399,14 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
             List<String> jobId = job.getRequest().getId();
             if (jobId != null) {
+                // Insert a new queue into the map and add the job to it.
                 // Use compute() to synchronize on the job ID to prevent that another thread would remove the empty
                 // queue again.
                 this.groupedJobs.compute(jobId, (k, v) -> {
+                    // If there is no queue for that ID, create a new one.
                     Queue<Job> queue = Objects.requireNonNullElseGet(v, ConcurrentLinkedQueue::new);
+                    // Directly add the job to the queue before releasing the lock to ensure that all queues in the
+                    // map are non-empty.
                     queue.offer(job);
                     return queue;
                 });

@@ -19,7 +19,6 @@
  */
 package org.xwiki.job;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.xwiki.component.annotation.Role;
@@ -44,7 +43,7 @@ public interface JobExecutor
      * @return the currently running job in the passed group
      * @deprecated Use {@link #getCurrentJobs(JobGroupPath)} instead.
      */
-    @Deprecated(since = "17.4.0RC1")
+    @Deprecated(since = "17.5.0RC1")
     Job getCurrentJob(JobGroupPath groupPath);
 
     /**
@@ -52,7 +51,7 @@ public interface JobExecutor
      *
      * @param groupPath the path of the job group for which the current jobs should be retrieved
      * @return a collection containing the currently running jobs in the provided group
-     * @since 17.4.0RC1
+     * @since 17.5.0RC1
      */
     @Unstable
     default List<Job> getCurrentJobs(JobGroupPath groupPath)
@@ -60,7 +59,7 @@ public interface JobExecutor
         // Not really accurate, but better than nothing.
         Job currentJob = getCurrentJob(groupPath);
         if (currentJob == null) {
-            return Collections.emptyList();
+            return List.of();
         }
 
         return List.of(currentJob);
