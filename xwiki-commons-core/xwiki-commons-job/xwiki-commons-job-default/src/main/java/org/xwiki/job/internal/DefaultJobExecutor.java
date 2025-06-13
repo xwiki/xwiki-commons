@@ -365,13 +365,21 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
     private void executeSingleJob(Job job)
     {
-        this.jobExecutor.execute(job);
-
         List<String> jobId = job.getRequest().getId();
         if (jobId != null) {
-            synchronized (this.jobs) {
-                this.jobs.put(jobId, job);
+            this.jobs.put(jobId, job);
+        }
+
+        try {
+            this.jobExecutor.execute(job);
+        } catch (Exception e) {
+            // In case the job is rejected, remove the entry in the current jobs again.
+            if (jobId != null) {
+                this.jobs.computeIfPresent(jobId, (k, v) -> v == job ? null : v);
             }
+
+            // Let the caller handle the exception.
+            throw e;
         }
     }
 
@@ -409,7 +417,24 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
             // Execute the job only once it has been inserted in the groupedJobs to ensure that there is no race
             // condition when the job completes before it has been inserted into groupedJobs.
-            groupExecutor.execute(job);
+            try {
+                groupExecutor.execute(job);
+            } catch (Exception e) {
+                // Remove the queued job again.
+                if (jobId != null) {
+                    this.groupedJobs.computeIfPresent(jobId, (k, v) -> {
+                        // Remove the job object from the queue to ensure that queue and executor queue are in sync.
+                        if (v.removeIf(j -> j == job) && v.isEmpty()) {
+                            return null;
+                        }
+
+                        return v;
+                    });
+                }
+
+                // Let the caller handle the exception.
+                throw e;
+            }
         }
     }
 }
