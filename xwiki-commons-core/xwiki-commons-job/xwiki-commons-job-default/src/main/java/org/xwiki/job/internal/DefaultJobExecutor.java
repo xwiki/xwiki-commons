@@ -19,9 +19,13 @@
  */
 package org.xwiki.job.internal;
 
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -72,11 +76,12 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
         private final JobGroupPath path;
 
-        private Job currentJob;
+        private final Set<Job> currentJobs =
+            Collections.synchronizedSet(Collections.newSetFromMap(new IdentityHashMap<>()));
 
-        private String groupThreadName;
+        private final String groupThreadName;
 
-        private GroupedJobInitializer initializer;
+        private final GroupedJobInitializer initializer;
 
         JobGroupExecutor(JobGroupPath path, GroupedJobInitializer initializer)
         {
@@ -96,7 +101,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
         @Override
         protected String getThreadName(Runnable r)
         {
-            return this.groupThreadName + " - " + this.currentJob;
+            return this.groupThreadName + " - " + r;
         }
 
         @Override
@@ -110,7 +115,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
         {
             DefaultJobExecutor.this.lockTree.lock(this.path);
 
-            this.currentJob = (Job) r;
+            this.currentJobs.add((Job) r);
 
             super.beforeExecute(t, r);
         }
@@ -120,22 +125,30 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
         {
             DefaultJobExecutor.this.lockTree.unlock(this.path);
 
-            this.currentJob = null;
+            Job job = (Job) r;
+
+            this.currentJobs.remove(job);
 
             super.afterExecute(r, t);
 
-            Job job = (Job) r;
-
             List<String> jobId = job.getRequest().getId();
             if (jobId != null) {
-                synchronized (DefaultJobExecutor.this.groupedJobs) {
-                    Queue<Job> jobQueue = DefaultJobExecutor.this.groupedJobs.get(jobId);
-                    if (jobQueue != null) {
-                        if (jobQueue.peek() == job) {
-                            jobQueue.poll();
-                        }
+                // Delete the job from the job group's queue. Remove the queue when it is empty.
+                // Use computeIfPresent for synchronization.
+                DefaultJobExecutor.this.groupedJobs.computeIfPresent(jobId, (k, v) -> {
+                    // Remove the job, but only when it is the first job in the queue.
+                    if (v.peek() == job) {
+                        v.poll();
                     }
-                }
+
+                    // If the queue is empty, remove it from the map.
+                    if (v.isEmpty()) {
+                        return null;
+                    }
+
+                    // Otherwise, keep the (non-empty) queue.
+                    return v;
+                });
             }
         }
 
@@ -187,12 +200,17 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
             List<String> jobId = job.getRequest().getId();
             if (jobId != null) {
-                synchronized (DefaultJobExecutor.this.jobs) {
-                    Job storedJob = DefaultJobExecutor.this.jobs.get(jobId);
-                    if (storedJob == job) {
-                        DefaultJobExecutor.this.jobs.remove(jobId);
+                // Remove the job from the jobs map if its job ID actually maps to the job instance.
+                // Use computeIfPresent for synchronization.
+                DefaultJobExecutor.this.jobs.computeIfPresent(jobId, (k, v) -> {
+                    if (v == job) {
+                        // If the job ID maps to the job instance, remove it from the map.
+                        return null;
                     }
-                }
+
+                    // If the job ID does not map to the job instance, keep it in the map.
+                    return v;
+                });
             }
 
             // Reset thread name since it's not used anymore
@@ -262,11 +280,25 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     // JobManager
 
     @Override
-    public Job getCurrentJob(JobGroupPath path)
+    public Job getCurrentJob(JobGroupPath groupPath)
+    {
+        return getCurrentJobs(groupPath).stream().findFirst().orElse(null);
+    }
+
+    @Override
+    public List<Job> getCurrentJobs(JobGroupPath path)
     {
         JobGroupExecutor executor = this.groupExecutors.get(path);
 
-        return executor != null ? executor.currentJob : null;
+        if (executor != null) {
+            // Return an unmodifiable copy of the set of currently running jobs.
+            // As this is a synchronized set, we need to explicitly synchronize on it for the iteration.
+            synchronized (executor.currentJobs) {
+                return List.copyOf(executor.currentJobs);
+            }
+        }
+
+        return Collections.emptyList();
     }
 
     @Override
@@ -281,10 +313,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
         // Is it in a group
         Queue<Job> jobQueue = this.groupedJobs.get(id);
         if (jobQueue != null) {
-            job = jobQueue.peek();
-            if (job != null) {
-                return job;
-            }
+            return jobQueue.peek();
         }
 
         return null;
@@ -324,8 +353,8 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     public void execute(Job job)
     {
         if (!this.disposed) {
-            if (job instanceof GroupedJob) {
-                executeGroupedJob((GroupedJob) job);
+            if (job instanceof GroupedJob groupedJob) {
+                executeGroupedJob(groupedJob);
             } else {
                 executeSingleJob(job);
             }
@@ -336,18 +365,28 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
     private void executeSingleJob(Job job)
     {
-        this.jobExecutor.execute(job);
-
         List<String> jobId = job.getRequest().getId();
         if (jobId != null) {
-            synchronized (this.jobs) {
-                this.jobs.put(jobId, job);
+            this.jobs.put(jobId, job);
+        }
+
+        try {
+            this.jobExecutor.execute(job);
+        } catch (Exception e) {
+            // In case the job is rejected, remove the entry in the current jobs again.
+            if (jobId != null) {
+                this.jobs.computeIfPresent(jobId, (k, v) -> v == job ? null : v);
             }
+
+            // Let the caller handle the exception.
+            throw e;
         }
     }
 
     private void executeGroupedJob(GroupedJob job)
     {
+        // While synchronization isn't necessary for the insertion in the group executors, this ensures that jobs in
+        // the "groupedJobs" queues have the same order as in the executor's queue.
         synchronized (this.groupExecutors) {
             JobGroupPath path = job.getGroupPath();
 
@@ -358,26 +397,43 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
                 return;
             }
 
-            JobGroupExecutor groupExecutor = this.groupExecutors.get(path);
-
-            if (groupExecutor == null) {
-                groupExecutor =
-                    new JobGroupExecutor(path, this.groupedJobInitializerManager.getGroupedJobInitializer(path));
-                this.groupExecutors.put(path, groupExecutor);
-            }
-
-            groupExecutor.execute(job);
+            JobGroupExecutor groupExecutor = this.groupExecutors.computeIfAbsent(path,
+                p -> new JobGroupExecutor(p, this.groupedJobInitializerManager.getGroupedJobInitializer(p)));
 
             List<String> jobId = job.getRequest().getId();
             if (jobId != null) {
-                synchronized (this.groupedJobs) {
-                    Queue<Job> jobQueue = this.groupedJobs.get(jobId);
-                    if (jobQueue == null) {
-                        jobQueue = new ConcurrentLinkedQueue<>();
-                        this.groupedJobs.put(jobId, jobQueue);
-                    }
-                    jobQueue.offer(job);
+                // Insert a new queue into the map and add the job to it.
+                // Use compute() to synchronize on the job ID to prevent that another thread would remove the empty
+                // queue again.
+                this.groupedJobs.compute(jobId, (k, v) -> {
+                    // If there is no queue for that ID, create a new one.
+                    Queue<Job> queue = Objects.requireNonNullElseGet(v, ConcurrentLinkedQueue::new);
+                    // Directly add the job to the queue before releasing the lock to ensure that all queues in the
+                    // map are non-empty.
+                    queue.offer(job);
+                    return queue;
+                });
+            }
+
+            // Execute the job only once it has been inserted in the groupedJobs to ensure that there is no race
+            // condition when the job completes before it has been inserted into groupedJobs.
+            try {
+                groupExecutor.execute(job);
+            } catch (Exception e) {
+                // Remove the queued job again.
+                if (jobId != null) {
+                    this.groupedJobs.computeIfPresent(jobId, (k, v) -> {
+                        // Remove the job object from the queue to ensure that queue and executor queue are in sync.
+                        if (v.removeIf(j -> j == job) && v.isEmpty()) {
+                            return null;
+                        }
+
+                        return v;
+                    });
                 }
+
+                // Let the caller handle the exception.
+                throw e;
             }
         }
     }
