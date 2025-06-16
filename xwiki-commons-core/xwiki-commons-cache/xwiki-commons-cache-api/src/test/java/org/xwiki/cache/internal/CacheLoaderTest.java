@@ -34,9 +34,12 @@ import java.util.function.Consumer;
 import org.apache.commons.lang3.function.FailableBiConsumer;
 import org.apache.commons.lang3.function.FailableFunction;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.test.LogLevel;
+import org.xwiki.test.junit5.LogCaptureExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -46,6 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -66,6 +70,9 @@ class CacheLoaderTest
     protected static final String VALUE_2 = "value2";
 
     protected static final String KEY_2 = "key2";
+
+    @RegisterExtension
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.ERROR);
 
     @Test
     void basicLoadAndStore() throws Exception
@@ -679,5 +686,81 @@ class CacheLoaderTest
         threadLocalField.setAccessible(true);
         ThreadLocal<?> threadLocal = (ThreadLocal<?>) threadLocalField.get(cacheLoader);
         assertNull(threadLocal.get(), "ThreadLocal should be empty after exception: " + threadLocal.get());
+    }
+
+    @Test
+    void setterBlockingDoesNotBlockOtherThreadsFromGettingValue() throws Exception
+    {
+        CacheLoader<String, Exception> cacheLoader = new CacheLoader<>();
+
+        FailableFunction<String, String, Exception> loader = mock();
+        when(loader.apply(KEY)).thenReturn(VALUE);
+
+        CompletableFuture<Void> setterEntered = new CompletableFuture<>();
+        CompletableFuture<Void> unblockSetter = new CompletableFuture<>();
+
+        FailableBiConsumer<String, String, Exception> setter = mock();
+        doAnswer(invocation -> {
+            setterEntered.complete(null);
+            // Block until explicitly unblocked
+            unblockSetter.get(10, TimeUnit.SECONDS);
+            return null;
+        }).when(setter).accept(KEY, VALUE);
+
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        try {
+            // Start first thread: will block in setter
+            Future<String> first = executor.submit(() -> cacheLoader.loadAndStoreInCache(KEY, loader, setter));
+
+            // Wait until setter is entered (i.e., after loader completes)
+            setterEntered.get(5, TimeUnit.SECONDS);
+
+            // Start second thread: should get value immediately, not block on setter
+            Future<String> second = executor.submit(() -> cacheLoader.loadAndStoreInCache(KEY, loader, setter));
+            String secondResult = second.get(2, TimeUnit.SECONDS);
+            assertEquals(VALUE, secondResult);
+
+            // Unblock setter and ensure first thread completes
+            unblockSetter.complete(null);
+            String firstResult = first.get(5, TimeUnit.SECONDS);
+            assertEquals(VALUE, firstResult);
+
+            verify(loader).apply(KEY);
+            verify(setter).accept(KEY, VALUE);
+        } finally {
+            executor.shutdown();
+        }
+        assertTrue(executor.awaitTermination(10, TimeUnit.SECONDS));
+    }
+
+    @Test
+    void setterThrowsValueReturnedAndLoaderEntryRemoved() throws Exception
+    {
+        CacheLoader<String, Exception> cacheLoader = new CacheLoader<>();
+
+        FailableFunction<String, String, Exception> loader = mock();
+        when(loader.apply(KEY)).thenReturn(VALUE);
+
+        FailableBiConsumer<String, String, Exception> setter = mock();
+        doThrow(new RuntimeException("Setter failed")).when(setter).accept(KEY, VALUE);
+
+        // Should still return value, not propagate setter exception
+        String result = cacheLoader.loadAndStoreInCache(KEY, loader, setter);
+        assertEquals(VALUE, result);
+
+        verify(loader).apply(KEY);
+        verify(setter).accept(KEY, VALUE);
+
+        // LoaderEntry should be removed from currentLoads
+        Field currentLoadsField = ReflectionUtils.getField(CacheLoader.class, "currentLoads");
+        currentLoadsField.setAccessible(true);
+        Map<?, ?> currentLoads = (Map<?, ?>) currentLoadsField.get(cacheLoader);
+        assertTrue(currentLoads.isEmpty(), "LoaderEntry should be removed after setter exception");
+
+        // Assert error log
+        assertTrue(
+            this.logCapture.getMessage(0).contains("Error setting value for key [key] on cache."),
+            "Expected error log for setter exception"
+        );
     }
 }
