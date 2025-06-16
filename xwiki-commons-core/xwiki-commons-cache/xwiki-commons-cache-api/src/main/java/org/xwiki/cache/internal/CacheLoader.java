@@ -29,6 +29,8 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang3.function.FailableBiConsumer;
 import org.apache.commons.lang3.function.FailableFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 
@@ -45,6 +47,8 @@ import com.google.common.util.concurrent.Uninterruptibles;
  */
 public class CacheLoader<V, E extends Exception>
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CacheLoader.class);
+
     private final ConcurrentHashMap<String, LoaderEntry> currentLoads = new ConcurrentHashMap<>();
 
     private final ReadWriteLock invalidationLock = new ReentrantReadWriteLock();
@@ -62,45 +66,31 @@ public class CacheLoader<V, E extends Exception>
 
         private volatile boolean invalidated;
 
-        LoaderEntry(String key, FailableFunction<String, V, E> loader, FailableBiConsumer<String, V, E> setter)
+        LoaderEntry(String key, FailableFunction<String, V, E> loader)
         {
-            this.future = new FutureTask<>(() -> {
-                // Store the current loader entry in the thread local variable to avoid that a recursive call to
-                // loadAndStoreInCache() creates a deadlock.
-                LoaderEntry oldEntry = CacheLoader.this.currentLoad.get();
+            this.future = new FutureTask<>(() -> loader.apply(key));
+        }
+
+        private void maybeRunSetter(FailableBiConsumer<String, V, E> setter, String key, V value)
+        {
+            // First, check outside the lock if the entry is invalidated.
+            // This avoids needless locking when the entry has already been invalidated.
+            if (!LoaderEntry.this.invalidated) {
+                // Use the read lock to avoid that invalidated is set to true while this code runs.
+                Lock lock = CacheLoader.this.invalidationLock.readLock();
+                lock.lock();
                 try {
-                    CacheLoader.this.currentLoad.set(this);
-                    V value = loader.apply(key);
-
-                    // First check outside the lock if the entry is invalidated.
-                    // This avoids needless locking when the entry has already been invalidated.
                     if (!LoaderEntry.this.invalidated) {
-                        // Use the read lock to avoid that invalidated is set to true while this code runs.
-                        Lock lock = CacheLoader.this.invalidationLock.readLock();
-                        lock.lock();
-                        try {
-                            if (!LoaderEntry.this.invalidated) {
-                                setter.accept(key, value);
-                            }
-                        } finally {
-                            lock.unlock();
-                        }
+                        setter.accept(key, value);
                     }
-
-                    return value;
+                } catch (Exception e) {
+                    // Don't propagate exceptions from the setter as a failed cache store shouldn't block using the
+                    // read value.
+                    LOGGER.error("Error setting value for key [{}] on cache.", key, e);
                 } finally {
-                    if (oldEntry == null) {
-                        CacheLoader.this.currentLoad.remove();
-                    } else {
-                        // Restore the old entry.
-                        CacheLoader.this.currentLoad.set(oldEntry);
-                    }
-
-                    // Remove this loader entry from the current loads, but only if it hasn't been superseded by a
-                    // new entry yet.
-                    CacheLoader.this.currentLoads.computeIfPresent(key, (k, v) -> v == LoaderEntry.this ? null : v);
+                    lock.unlock();
                 }
-            });
+            }
         }
     }
 
@@ -118,7 +108,32 @@ public class CacheLoader<V, E extends Exception>
     public V loadAndStoreInCache(String key, FailableFunction<String, V, E> loader,
         FailableBiConsumer<String, V, E> setter) throws ExecutionException
     {
-        LoaderEntry newEntry = new LoaderEntry(key, loader, setter);
+        LoaderEntry newEntry = new LoaderEntry(key, loader);
+        LoaderEntry loaderEntry = getOrInsertLoaderEntry(key, newEntry);
+
+        if (loaderEntry == newEntry) {
+            try {
+                // We've just inserted that entry, or we are in a recursive call.
+                // In both cases, we need to run the loader.
+                runLoader(loaderEntry);
+
+                V value = Uninterruptibles.getUninterruptibly(loaderEntry.future);
+
+                loaderEntry.maybeRunSetter(setter, key, value);
+
+                return value;
+            } finally {
+                // Remove this loader entry from the current loads, but only if it hasn't been superseded by a
+                // new entry yet.
+                CacheLoader.this.currentLoads.computeIfPresent(key, (k, v) -> v == loaderEntry ? null : v);
+            }
+        }
+
+        return Uninterruptibles.getUninterruptibly(loaderEntry.future);
+    }
+
+    private LoaderEntry getOrInsertLoaderEntry(String key, LoaderEntry newEntry)
+    {
         LoaderEntry loaderEntry = this.currentLoads.compute(key, (k, value) -> {
             if (value != null) {
                 if (value.creatingThread != Thread.currentThread()) {
@@ -135,6 +150,7 @@ public class CacheLoader<V, E extends Exception>
             }
             return newEntry;
         });
+
         if (loaderEntry != newEntry && this.currentLoad.get() != null) {
             // We are inside a recursive call, but another thread is already loading the value.
             // In theory, we should be able to wait for that other thread, but it would be possible that this other
@@ -150,12 +166,25 @@ public class CacheLoader<V, E extends Exception>
             loaderEntry = newEntry;
             loaderEntry.invalidated = true;
         }
-        if (loaderEntry == newEntry) {
-            // We've just inserted that entry, or we are in a recursive call. In both cases, we need to run the loader.
-            loaderEntry.future.run();
-        }
 
-        return Uninterruptibles.getUninterruptibly(loaderEntry.future);
+        return loaderEntry;
+    }
+
+    private void runLoader(LoaderEntry loaderEntry)
+    {
+        LoaderEntry activeLoaderEntry = this.currentLoad.get();
+        try {
+            CacheLoader.this.currentLoad.set(loaderEntry);
+
+            loaderEntry.future.run();
+        } finally {
+            if (activeLoaderEntry == null) {
+                CacheLoader.this.currentLoad.remove();
+            } else {
+                // Restore the old entry.
+                CacheLoader.this.currentLoad.set(activeLoaderEntry);
+            }
+        }
     }
 
     /**
