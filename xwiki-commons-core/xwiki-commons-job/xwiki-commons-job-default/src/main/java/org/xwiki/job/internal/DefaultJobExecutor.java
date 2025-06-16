@@ -134,15 +134,15 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
             List<String> jobId = job.getRequest().getId();
             if (jobId != null) {
                 // Delete the job from the job group's queue. Remove the queue when it is empty.
-                // Use compute for synchronization.
-                DefaultJobExecutor.this.groupedJobs.compute(jobId, (k, v) -> {
+                // Use computeIfPresent for synchronization.
+                DefaultJobExecutor.this.groupedJobs.computeIfPresent(jobId, (k, v) -> {
                     // Remove the job, but only when it is the first job in the queue.
-                    if (v != null && v.peek() == job) {
+                    if (v.peek() == job) {
                         v.poll();
                     }
 
                     // If the queue is empty, remove it from the map.
-                    if (v == null || v.isEmpty()) {
+                    if (v.isEmpty()) {
                         return null;
                     }
 
