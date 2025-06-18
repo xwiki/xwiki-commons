@@ -92,14 +92,6 @@
               <mojo>
                 <goal>com.github.eirslett:frontend-maven-plugin:npm</goal>
                 <configuration>
-                  <arguments>run lint</arguments>
-                  <workingDirectory>${project.build.directory}/node-src</workingDirectory>
-                  <installDirectory>${basedir}/target</installDirectory>
-                </configuration>
-              </mojo>
-              <mojo>
-                <goal>com.github.eirslett:frontend-maven-plugin:npm</goal>
-                <configuration>
                   <arguments>run test:unit</arguments>
                   <workingDirectory>${project.build.directory}/node-src</workingDirectory>
                   <installDirectory>${basedir}/target</installDirectory>
@@ -107,6 +99,18 @@
               </mojo>
             </mojos>
           </test>
+          <verify>
+            <mojos>
+              <mojo>
+                <goal>com.github.eirslett:frontend-maven-plugin:npm</goal>
+                <configuration>
+                  <arguments>run lint</arguments>
+                  <workingDirectory>${project.build.directory}/node-src</workingDirectory>
+                  <installDirectory>${basedir}/target</installDirectory>
+                </configuration>
+              </mojo>
+            </mojos>
+          </verify>
           <package>
             <mojos>
               <mojo>
