@@ -32,7 +32,7 @@ import org.xwiki.stability.Unstable;
  * By convention, a lower value means a higher priority.
  *
  * @version $Id$
- * @since 17.5.0RC1
+ * @since 17.5.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.FIELD })

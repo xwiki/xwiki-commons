@@ -36,7 +36,7 @@ import org.xwiki.configuration.ConfigurationSource;
  * </ul>
  * 
  * @version $Id$
- * @since 17.5.0RC1
+ * @since 17.5.0
  */
 @Component
 @Singleton

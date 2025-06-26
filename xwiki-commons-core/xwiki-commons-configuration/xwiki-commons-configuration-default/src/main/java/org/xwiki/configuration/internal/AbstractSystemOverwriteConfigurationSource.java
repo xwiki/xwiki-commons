@@ -37,7 +37,7 @@ import org.xwiki.configuration.ConfigurationSource;
  * Helper to implement {@link ConfigurationSource}.
  * 
  * @version $Id$
- * @since 17.5.0RC1
+ * @since 17.5.0
  */
 public abstract class AbstractSystemOverwriteConfigurationSource extends AbstractConfigurationSource
     implements Initializable

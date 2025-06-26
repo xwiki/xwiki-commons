@@ -80,7 +80,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
     /**
      * Type {@code webjar-node}.
      *
-     * @since 17.5.0RC1
+     * @since 17.5.0
      */
     public static final String WEBJAR_NODE = "webjar-node";
 

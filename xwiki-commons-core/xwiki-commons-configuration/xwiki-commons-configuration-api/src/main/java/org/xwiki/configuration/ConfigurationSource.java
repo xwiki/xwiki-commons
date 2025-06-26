@@ -88,7 +88,7 @@ public interface ConfigurationSource
     /**
      * @param prefix the prefix to filter the keys
      * @return the list of available keys in the configuration source that start with the passed prefix
-     * @since 17.5.0RC1
+     * @since 17.5.0
      */
     @Unstable
     default List<String> getKeys(String prefix)
@@ -110,7 +110,7 @@ public interface ConfigurationSource
     /**
      * @param prefix the prefix to filter the keys
      * @return true if the configuration source doesn't have any key or false otherwise
-     * @since 17.5.0RC1
+     * @since 17.5.0
      */
     @Unstable
     default boolean isEmpty(String prefix)

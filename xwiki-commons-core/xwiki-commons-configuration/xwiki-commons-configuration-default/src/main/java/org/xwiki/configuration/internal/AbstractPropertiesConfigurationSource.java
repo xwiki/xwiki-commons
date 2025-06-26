@@ -29,7 +29,7 @@ import org.xwiki.properties.ConverterManager;
  * {@code xwiki-properties} framework.
  * 
  * @version $Id$
- * @since 17.5.0RC1
+ * @since 17.5.0
  */
 public abstract class AbstractPropertiesConfigurationSource extends AbstractSystemOverwriteConfigurationSource
 {
