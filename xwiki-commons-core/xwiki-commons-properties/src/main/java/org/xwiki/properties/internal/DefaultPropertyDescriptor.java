@@ -359,7 +359,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
 
     /**
      * @param order see {@link #getOrder()}.
-     * @since 17.5.0RC1
+     * @since 17.5.0
      */
     public void setOrder(int order)
     {

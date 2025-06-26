@@ -31,7 +31,7 @@ import org.xwiki.configuration.ConfigurationSource;
  * A simple Map based {@link ConfigurationSource}.
  *
  * @version $Id$
- * @since 17.5.0RC1
+ * @since 17.5.0
  */
 public class MapConfigurationSource extends AbstractConfigurationSource
 {

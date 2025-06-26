@@ -35,7 +35,7 @@ import org.xwiki.observation.event.Event;
 /**
  * Initializes the Servlet Environment Cache when the application starts.
  *
- * @since 17.5.0RC1
+ * @since 17.5.0
  * @since 17.4.1
  * @since 16.10.9
  * @version $Id$

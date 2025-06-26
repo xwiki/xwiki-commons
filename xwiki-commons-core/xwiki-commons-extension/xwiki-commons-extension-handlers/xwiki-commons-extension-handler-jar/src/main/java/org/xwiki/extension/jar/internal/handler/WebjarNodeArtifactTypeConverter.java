@@ -30,7 +30,7 @@ import org.xwiki.extension.maven.ArtifactTypeToExtensionType;
  * Conversion to webjar-node extension type.
  *
  * @version $Id$
- * @since 17.5.0RC1
+ * @since 17.5.0
  */
 @Component
 @Named("webjar-node")

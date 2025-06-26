@@ -47,7 +47,7 @@ import org.xwiki.properties.converter.Converter;
  * {@link Collections#EMPTY_LIST}, etc.
  * 
  * @version $Id$
- * @since 17.5.0RC1
+ * @since 17.5.0
  */
 @Component
 @Named(ConverterRegistratorListener.NAME)

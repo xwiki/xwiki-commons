@@ -43,7 +43,7 @@ public interface JobExecutor
      * @return the currently running job in the passed group
      * @deprecated Use {@link #getCurrentJobs(JobGroupPath)} instead.
      */
-    @Deprecated(since = "17.5.0RC1")
+    @Deprecated(since = "17.5.0")
     Job getCurrentJob(JobGroupPath groupPath);
 
     /**
@@ -51,7 +51,7 @@ public interface JobExecutor
      *
      * @param groupPath the path of the job group for which the current jobs should be retrieved
      * @return a collection containing the currently running jobs in the provided group
-     * @since 17.5.0RC1
+     * @since 17.5.0
      */
     @Unstable
     default List<Job> getCurrentJobs(JobGroupPath groupPath)

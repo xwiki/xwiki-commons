@@ -75,7 +75,7 @@ public class ServletEnvironment extends AbstractEnvironment
      * cache builder depends on loading resources from this component, so we can't initialize the cache when it is
      * first requested.
      *
-     * @since 17.5.0RC1
+     * @since 17.5.0
      * @since 17.4.1
      * @since 16.10.9
      */
