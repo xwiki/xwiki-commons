@@ -3059,6 +3059,8 @@
               <autoPublish>true</autoPublish>
               <!-- Wait until artifacts are published -->
               <waitUntil>published</waitUntil>
+              <!-- Publishing is not very fast, so we change the timeout to 3h -->
+              <waitMaxTime>10800</waitMaxTime>
             </configuration>
           </plugin>
         </plugins>
