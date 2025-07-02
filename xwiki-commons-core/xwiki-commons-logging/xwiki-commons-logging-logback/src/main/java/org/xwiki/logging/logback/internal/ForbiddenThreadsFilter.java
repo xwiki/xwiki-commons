@@ -20,12 +20,15 @@
 package org.xwiki.logging.logback.internal;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Marker;
 import org.xwiki.logging.Logger;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
 
@@ -41,11 +44,36 @@ public class ForbiddenThreadsFilter extends Filter<ILoggingEvent>
      */
     private Set<Thread> threads = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
+    private boolean canFilter(ILoggingEvent event)
+    {
+        // Checking the presence of a Logger.ROOT_MARKER marker
+        List<Marker> markers = event.getMarkerList();
+        if (markers != null) {
+            for (Marker marker : markers) {
+                if (marker == Logger.ROOT_MARKER) {
+                    return false;
+                }
+            }
+        }
+
+        // VirtualMachineError throwable should always end up in the main log
+        ThrowableProxy throwable =
+            event.getThrowableProxy() instanceof ThrowableProxy throwableProxy ? throwableProxy : null;
+        while (throwable != null) {
+            if (throwable.getThrowable() instanceof VirtualMachineError) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     @Override
     public FilterReply decide(ILoggingEvent event)
     {
-        // Let events marked with Logger.ROOT_MARKER go trough
-        if (event.getMarker() != Logger.ROOT_MARKER && this.threads.contains(Thread.currentThread())) {
+        // Make sure it's allowed to filter the event
+        // Check that the current thread is part of the allowed threads
+        if (canFilter(event) && this.threads.contains(Thread.currentThread())) {
             return FilterReply.DENY;
         }
 
