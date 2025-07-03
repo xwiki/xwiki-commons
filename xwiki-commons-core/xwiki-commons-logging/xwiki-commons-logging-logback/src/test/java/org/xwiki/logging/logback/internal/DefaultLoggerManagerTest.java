@@ -162,12 +162,19 @@ public class DefaultLoggerManagerTest
         // Make sure the log also been sent to the logback appender
         assertEquals("[test] stack overflow error", this.listAppender.list.get(3).getMessage());
 
+        this.logger.error("[test] caused by stack overflow error", new Exception(new StackOverflowError()));
+
+        // Make sure the log has been added to the queue
+        assertEquals("[test] caused by stack overflow error", queue.poll().getMessage());
+        // Make sure the log also been sent to the logback appender
+        assertEquals("[test] caused by stack overflow error", this.listAppender.list.get(4).getMessage());
+
         this.loggerManager.popLogListener();
 
         this.logger.error("[test] after pop");
 
         assertTrue(queue.isEmpty());
-        assertEquals("[test] after pop", this.listAppender.list.get(4).getMessage());
+        assertEquals("[test] after pop", this.listAppender.list.get(5).getMessage());
     }
 
     @Test
