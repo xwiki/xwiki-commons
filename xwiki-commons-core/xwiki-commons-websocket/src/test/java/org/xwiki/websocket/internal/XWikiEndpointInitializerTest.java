@@ -182,7 +182,7 @@ class XWikiEndpointInitializerTest
     @Test
     void initialize() throws Exception
     {
-        verify(this.serverContainer, times(2)).addEndpoint(this.endPointConfigCaptor.capture());
+        verify(this.serverContainer, times(3)).addEndpoint(this.endPointConfigCaptor.capture());
 
         ServerEndpointConfig dispatcherConfig = this.endPointConfigCaptor.getAllValues().get(0);
         assertSame(XWikiEndpointDispatcher.class, dispatcherConfig.getEndpointClass());
@@ -194,7 +194,17 @@ class XWikiEndpointInitializerTest
         assertEquals(Collections.emptyList(), dispatcherConfig.getSubprotocols());
         assertEquals(Collections.emptyMap(), dispatcherConfig.getUserProperties());
 
-        ServerEndpointConfig testConfig = this.endPointConfigCaptor.getAllValues().get(1);
+        ServerEndpointConfig dispatcherConfigWithRoom = this.endPointConfigCaptor.getAllValues().get(1);
+        assertEquals(XWikiEndpointDispatcher.class, dispatcherConfigWithRoom.getEndpointClass());
+        assertEquals("/websocket/{wiki}/{roleHint}/{room}", dispatcherConfigWithRoom.getPath());
+        assertSame(this.configurator, dispatcherConfigWithRoom.getConfigurator());
+        assertEquals(Collections.emptyList(), dispatcherConfigWithRoom.getDecoders());
+        assertEquals(Collections.emptyList(), dispatcherConfigWithRoom.getEncoders());
+        assertEquals(Collections.emptyList(), dispatcherConfigWithRoom.getExtensions());
+        assertEquals(Collections.emptyList(), dispatcherConfigWithRoom.getSubprotocols());
+        assertEquals(Collections.emptyMap(), dispatcherConfigWithRoom.getUserProperties());
+
+        ServerEndpointConfig testConfig = this.endPointConfigCaptor.getAllValues().get(2);
         assertEquals(TestEndpoint.class, testConfig.getEndpointClass());
         assertEquals("/websocket/test", testConfig.getPath());
         assertSame(this.configurator, testConfig.getConfigurator());
