@@ -28,6 +28,7 @@ import org.slf4j.Marker;
 import org.xwiki.logging.Logger;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.ThrowableProxy;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
@@ -44,6 +45,11 @@ public class ForbiddenThreadsFilter extends Filter<ILoggingEvent>
      */
     private Set<Thread> threads = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
+    private ThrowableProxy getThrowableProxy(IThrowableProxy proxy)
+    {
+        return proxy instanceof ThrowableProxy throwableProxy ? throwableProxy : null;
+    }
+
     private boolean canFilter(ILoggingEvent event)
     {
         // Checking the presence of a Logger.ROOT_MARKER marker
@@ -57,9 +63,8 @@ public class ForbiddenThreadsFilter extends Filter<ILoggingEvent>
         }
 
         // VirtualMachineError throwable should always end up in the main log
-        ThrowableProxy throwable =
-            event.getThrowableProxy() instanceof ThrowableProxy throwableProxy ? throwableProxy : null;
-        while (throwable != null) {
+        for (ThrowableProxy throwable = getThrowableProxy(event.getThrowableProxy()); throwable != null; throwable =
+            getThrowableProxy(throwable.getCause())) {
             if (throwable.getThrowable() instanceof VirtualMachineError) {
                 return false;
             }
