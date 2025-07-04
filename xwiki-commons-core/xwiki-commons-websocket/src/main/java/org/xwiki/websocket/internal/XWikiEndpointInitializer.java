@@ -109,6 +109,8 @@ public class XWikiEndpointInitializer implements Initializable
                 container);
         } else if (XWikiEndpointDispatcher.class.equals(implementation)) {
             initialize(ServerEndpointConfig.Builder.create(implementation, "/websocket/{wiki}/{roleHint}"), container);
+            initialize(ServerEndpointConfig.Builder.create(implementation, "/websocket/{wiki}/{roleHint}/{room}"),
+                container);
         } else if (!Endpoint.class.isAssignableFrom(implementation)) {
             // The end-point is marked with XWikiEndpointComponent but it doesn't have the @ServerEndpoint annotation
             // (for static end-points) nor does it extend Endpoint (for dynamic end-points). Something is wrong.
