@@ -267,4 +267,10 @@ class EscapeToolTest
                 + "/html&rcub;&rcub;",
             this.tool.html("<script>alert(\"Hello, &lt;World&gt;!\");</script>{{/html}}"));
     }
+
+    @Test
+    void javascript()
+    {
+        assertEquals("\\\"\\u007B", this.tool.javascript("\"{"));
+    }
 }

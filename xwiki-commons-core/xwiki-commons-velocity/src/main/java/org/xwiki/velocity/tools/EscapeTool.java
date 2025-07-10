@@ -29,6 +29,7 @@ import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.BCodec;
 import org.apache.commons.codec.net.QCodec;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.text.translate.CharSequenceTranslator;
 import org.apache.commons.text.translate.LookupTranslator;
@@ -68,9 +69,11 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
     /** And sign. */
     private static final String AND = "&";
 
+    private static final String CURLY_BRACE_OPEN = "{";
+
     private static final CharSequenceTranslator XWIKI_ESCAPE_HTML4 = StringEscapeUtils.ESCAPE_HTML4.with(
         new LookupTranslator(Map.ofEntries(
-            Map.entry("{", "&lcub;"),
+            Map.entry(CURLY_BRACE_OPEN, "&lcub;"),
             Map.entry("}", "&rcub;")
         ))
     );
@@ -299,5 +302,13 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
             encodedURL = encodedURL.replaceAll("\\+", "%20");
         }
         return encodedURL;
+    }
+
+    @Override
+    public String javascript(Object string)
+    {
+        // Escape { to avoid that when a JavaScript-escaped string is used inside the XWiki rendering framework, it
+        // influences macro opening/closing syntax or is wrongly escaped out of context.
+        return StringUtils.replace(super.javascript(string), CURLY_BRACE_OPEN, "\\u007B");
     }
 }
