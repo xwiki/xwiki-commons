@@ -30,6 +30,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.junit5.LogCaptureExtension;
 
@@ -169,11 +171,15 @@ class JSONToolTest
         assertFalse(json.contains("\"transientProperty\":\"transient\""));
     }
 
-    @Test
-    void serializeForwardSlash()
+    @ParameterizedTest
+    @CsvSource({
+        "</, \"<\\/\"",
+        "{{/, \"\\u007B\\u007B\\/\""
+    })
+    void serializeForwardSlashAndCurlyBrace(String input, String json)
     {
-        assertEquals("\"<\\/\"", this.tool.serialize("</"));
-        assertEquals("\"{{\\/\"", this.tool.serialize("{{/"));
+        assertEquals(json, this.tool.serialize(input));
+        assertEquals(input, this.tool.fromString(json));
     }
 
     @Test
