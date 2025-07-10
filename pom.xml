@@ -267,7 +267,7 @@
     <javax.websocket.version>1.1</javax.websocket.version>
     <jakarta.websocket.version>2.0.0</jakarta.websocket.version>
 
-    <webdrivermanager.version>6.1.0</webdrivermanager.version>
+    <webdrivermanager.version>6.1.1</webdrivermanager.version>
 
     <!-- The recommended version of known extensions to use -->
     <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]
