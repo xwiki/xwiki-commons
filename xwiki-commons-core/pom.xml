@@ -224,7 +224,17 @@
               </differences>
             </revapi.differences>
             -->
-            
+            <revapi.differences>
+              <differences>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.returnTypeChanged</code>
+                  <old>method net.sf.json.JSON org.xwiki.velocity.tools.JSONTool::parse(java.lang.String)</old>
+                  <new>method java.lang.Object org.xwiki.velocity.tools.JSONTool::parse(java.lang.String)</new>
+                  <justification>Drop dependency on json-lib that requires commons-lang which has known security vulnerabilities.</justification>
+                </item>
+              </differences>
+            </revapi.differences>
 
             <!-- Jakarta -->
             

@@ -39,10 +39,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONException;
-import net.sf.json.JSONSerializer;
-
 /**
  * Velocity tool to facilitate serialization of Java objects to the JSON format.
  *
@@ -172,30 +168,6 @@ public class JSONTool
                 return ESCAPED_LEFT_CURLY;
             }
 
-            return null;
-        }
-    }
-
-    // Deprecated
-
-    /**
-     * Parse a serialized JSON into a real JSON object. Only valid JSON strings can be parsed, and doesn't support
-     * JSONP. If the argument is not valid JSON, then {@code null} is returned.
-     *
-     * @param json the string to parse, must be valid JSON
-     * @return the parsed JSON, either a {@link net.sf.json.JSONObject} or a {@link net.sf.json.JSONArray}, or
-     *         {@code null} if the argument is not a valid JSON
-     * @since 5.2M1
-     * @deprecated since 9.9RC1, use {@link #fromString(String)} instead
-     */
-    @Deprecated
-    public JSON parse(String json)
-    {
-        try {
-            return JSONSerializer.toJSON(json);
-        } catch (JSONException e) {
-            LOGGER.warn("Tried to parse invalid JSON [{}]. Root error: [{}]", StringUtils.abbreviate(json, 32),
-                ExceptionUtils.getRootCauseMessage(e));
             return null;
         }
     }
