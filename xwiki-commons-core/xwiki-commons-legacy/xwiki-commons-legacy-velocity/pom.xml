@@ -32,15 +32,18 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Legacy - Velocity</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.51</xwiki.jacoco.instructionRatio>
+    <!-- This doesn't include the tests for the non-legacy code from xwiki-commons-velocity. -->
+    <xwiki.jacoco.instructionRatio>0.28</xwiki.jacoco.instructionRatio>
     <!-- TODO: Remove once the tests have been fixed to not output anything to the console! -->
     <xwiki.surefire.captureconsole.skip>true</xwiki.surefire.captureconsole.skip>
   </properties>
   <dependencies>
+    <!-- Trigger xwiki-commons-velocity (but without xwiki-commons-velocity jar itself) -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-velocity</artifactId>
       <version>${project.version}</version>
+      <type>pom</type>
       <!-- Trigger legacy version -->
       <exclusions>
         <exclusion>
@@ -49,6 +52,20 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- We need this dependency so that the wrapped module is built before this one -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-velocity</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Needed for backward compatibility Aspects -->
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-legacy-velocity-tools</artifactId>
@@ -75,5 +92,103 @@
       </exclusions>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <!-- Apply Compatibility Aspects -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>aspectj-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>backward-compatibility-aspects</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <weaveDependencies>
+            <weaveDependency>
+              <groupId>org.xwiki.commons</groupId>
+              <artifactId>xwiki-commons-velocity</artifactId>
+            </weaveDependency>
+          </weaveDependencies>
+        </configuration>
+      </plugin>
+      <!-- Exclude AspectJ's builddef.lst file form the generated JAR since it's not useful there. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/builddef.lst</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <!-- Merge components.txt files -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>process-classes</phase>
+            <configuration>
+              <target>
+                <concat destfile="${project.build.directory}/classes/META-INF/components.txt" append="true">
+                  <filelist dir="${basedir}/src/main/resources/META-INF/" files="components.txt" />
+                </concat>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Make sure we run the tests only with the aspectified JARs since otherwise components will be registered
+           twice for example. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <classpathDependencyExcludes>
+            <classpathDependencyExclude>org.xwiki.commons:xwiki-commons-velocity:jar</classpathDependencyExclude>
+            <classpathDependencyExclude>org.xwiki.commons:xwiki-commons-component-api:jar</classpathDependencyExclude>
+          </classpathDependencyExcludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>fr.inria.gforge.spoon</groupId>
+        <artifactId>spoon-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>spoon-main</id>
+            <configuration>
+              <processorProperties combine.children="append">
+                <processorProperty>
+                  <name>org.xwiki.tool.spoon.ComponentAnnotationProcessor</name>
+                  <properties>
+                    <property>
+                      <!-- Skip foreign declaration checks since we merge the components.txt -->
+                      <name>skipForeignDeclarations</name>
+                      <value>true</value>
+                    </property>
+                  </properties>
+                </processorProperty>
+              </processorProperties>
+            </configuration>
+          </execution>
+          <execution>
+            <id>spoon-test</id>
+            <configuration>
+              <!-- Disable because Spoon doesn't see the JSONTool.parse() method we add using AspectJ. -->
+              <!-- TODO: Remove once https://github.com/INRIA/spoon/issues/3583 is fixed -->
+              <skip>true</skip>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
        

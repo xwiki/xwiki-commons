@@ -32,7 +32,9 @@
   <packaging>jar</packaging>
   <description>APIs to evaluate content with Velocity</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.75</xwiki.jacoco.instructionRatio>
+    <!-- Skipping revapi since xwiki-commons-legacy-velocity wraps this module and runs checks on it -->
+    <xwiki.revapi.skip>true</xwiki.revapi.skip>
+    <xwiki.jacoco.instructionRatio>0.78</xwiki.jacoco.instructionRatio>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Velocity API</xwiki.extension.name>
   </properties>
@@ -109,13 +111,6 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-    </dependency>
-    <!-- Used by #parse which wrongly directly return an object of this library but buggy and dead so we need to find a way to get rid of it -->
-    <dependency>
-      <!-- Used by JSONTool -->
-      <groupId>net.sf.json-lib</groupId>
-      <artifactId>json-lib</artifactId>
-      <classifier>jdk15</classifier>
     </dependency>
     <dependency>
       <!-- Used by JSONTool -->

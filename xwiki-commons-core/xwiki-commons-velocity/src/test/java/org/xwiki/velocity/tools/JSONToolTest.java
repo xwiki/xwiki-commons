@@ -35,10 +35,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.junit5.LogCaptureExtension;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -53,7 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class JSONToolTest
 {
     @RegisterExtension
-    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO);
 
     public static class MockBean
     {
@@ -183,66 +179,6 @@ class JSONToolTest
     }
 
     @Test
-    void parseArray()
-    {
-        JSON json = this.tool.parse("[1,2,3]");
-        assertTrue(json.isArray());
-        assertEquals(3, json.size());
-    }
-
-    @Test
-    void parseEmptyArray()
-    {
-        JSON json = this.tool.parse("[]");
-        assertTrue(json.isArray());
-        assertTrue(json.isEmpty());
-        assertEquals(0, json.size());
-    }
-
-    @Test
-    void parseMap()
-    {
-        JSONObject json = (JSONObject) this.tool.parse("{\"a\" : 1, \"b\": [1], \"c\": true}");
-        assertFalse(json.isArray());
-        assertFalse(json.isEmpty());
-        assertEquals(3, json.size());
-        assertTrue(json.getBoolean("c"));
-    }
-
-    @Test
-    void parseEmptyMap()
-    {
-        JSONObject json = (JSONObject) this.tool.parse("{}");
-        assertFalse(json.isArray());
-        assertTrue(json.isEmpty());
-        assertEquals(0, json.size());
-    }
-
-    @Test
-    void parseNull()
-    {
-        assertTrue(this.tool.parse(null) instanceof JSONNull);
-    }
-
-    @Test
-    void parseEmptyString()
-    {
-        assertNull(this.tool.parse(""));
-
-        assertEquals("Tried to parse invalid JSON []. Root error: [JSONException: Invalid JSON String]",
-            this.logCapture.getMessage(0));
-    }
-
-    @Test
-    void parseInvalidJSON()
-    {
-        assertNull(this.tool.parse("This is not the JSON you are looking for..."));
-
-        assertEquals("Tried to parse invalid JSON [This is not the JSON you are ...]. "
-            + "Root error: [JSONException: Invalid JSON String]", this.logCapture.getMessage(0));
-    }
-
-    @Test
     void fromStringArray()
     {
         assertEquals(Arrays.asList(1, 2, 3), this.tool.fromString("[1,2,3]"));
@@ -287,6 +223,11 @@ class JSONToolTest
     void fromStringInvalidJSON()
     {
         assertNull(this.tool.fromString("This is not the JSON you are looking for..."));
+
+        assertTrue(this.logCapture.getMessage(0)
+            .startsWith("Failed to parse JSON [This is not the JSON you are ...]: "
+                + "JsonParseException: Unrecognized token 'This': was expecting (JSON String, Number, Array, Object or "
+                + "token 'null', 'true' or 'false')"));
     }
 
     @Test
