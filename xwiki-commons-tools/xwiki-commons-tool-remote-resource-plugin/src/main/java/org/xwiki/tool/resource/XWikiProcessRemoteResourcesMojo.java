@@ -19,12 +19,15 @@
  */
 package org.xwiki.tool.resource;
 
+import javax.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
@@ -38,7 +41,11 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.InvalidProjectModelException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
+import org.apache.maven.shared.filtering.MavenFileFilter;
+import org.codehaus.plexus.resource.ResourceManager;
+import org.eclipse.aether.RepositorySystem;
 
 /**
  * Extends the Maven Remote Resources plugin to fix memory issue found in it, see
@@ -95,6 +102,22 @@ public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
      */
     @Parameter(defaultValue = "${project.remoteArtifactRepositories}", readonly = true, required = true)
     private List<ArtifactRepository> remoteArtifactRepositoriesThis;
+
+    /**
+     * Creates a new instance.
+     *
+     * @param repoSystem
+     * @param fileFilter
+     * @param locator
+     * @param projectBuilder
+     * @param artifactHandlerManager
+     */
+    @Inject
+    public XWikiProcessRemoteResourcesMojo(RepositorySystem repoSystem, MavenFileFilter fileFilter,
+            ResourceManager locator, ProjectBuilder projectBuilder, ArtifactHandlerManager artifactHandlerManager)
+    {
+        super(repoSystem, fileFilter, locator, projectBuilder, artifactHandlerManager);
+    }
 
     @Override
     protected List<MavenProject> getProjects()
