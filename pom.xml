@@ -220,7 +220,7 @@
 
     <!-- Versions of Maven and Maven Resolver (both should remain in sync) used during the build
          (the one used as dependency when building and during Maven plugins executions)  -->
-    <maven.build.version>3.6.3</maven.build.version>
+    <maven.build.version>3.9.11</maven.build.version>
     <maven.resolver.build.version>1.4.1</maven.resolver.build.version>
 
     <!-- Versions of Maven and Maven Resolver embedded in XWiki runtime
