@@ -30,12 +30,16 @@
   <artifactId>xwiki-commons-legacy-velocity</artifactId>
   <name>XWiki Commons - Legacy - Velocity</name>
   <packaging>jar</packaging>
-  <description>XWiki Commons - Legacy - Velocity</description>
+  <description>Legacy module for xwiki-commons-velocity</description>
   <properties>
     <!-- This doesn't include the tests for the non-legacy code from xwiki-commons-velocity. -->
     <xwiki.jacoco.instructionRatio>0.28</xwiki.jacoco.instructionRatio>
     <!-- TODO: Remove once the tests have been fixed to not output anything to the console! -->
     <xwiki.surefire.captureconsole.skip>true</xwiki.surefire.captureconsole.skip>
+    <!-- The features provided by this module so that it's found when resolving extension -->
+    <xwiki.extension.features>org.xwiki.commons:xwiki-commons-velocity</xwiki.extension.features>
+    <!-- Name to display by the Extension Manager -->
+    <xwiki.extension.name>Velocity API (Legacy)</xwiki.extension.name>
   </properties>
   <dependencies>
     <!-- Trigger xwiki-commons-velocity (but without xwiki-commons-velocity jar itself) -->
