@@ -1,0 +1,71 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+package org.xwiki.store.blob.internal;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import jakarta.inject.Inject;
+
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.store.blob.BlobStore;
+import org.xwiki.store.blob.BlobStoreException;
+import org.xwiki.store.blob.BlobStoreManager;
+
+public class DefaultBlobStoreManager implements BlobStoreManager
+{
+    @Inject
+    private BlobStoreConfiguration configuration;
+
+    @Inject
+    private ComponentManager componentManager;
+
+    private final Map<String, BlobStore> blobStores = new ConcurrentHashMap<>();
+
+    @Override
+    public BlobStore getBlobStore(String name) throws BlobStoreException
+    {
+        try {
+            return this.blobStores.computeIfAbsent(name,
+                key -> {
+                    try {
+                        BlobStoreManager blobStoreManager;
+                        String storeHint = this.configuration.getStoreHint();
+                        // TODO: re-consider this design.
+                        String specificHint = storeHint + "/" + name;
+                        if (this.componentManager.hasComponent(BlobStoreManager.class, specificHint)) {
+                            blobStoreManager = this.componentManager.getInstance(BlobStoreManager.class, specificHint);
+                        } else {
+                            blobStoreManager = this.componentManager.getInstance(BlobStoreManager.class, storeHint);
+                        }
+                        return blobStoreManager.getBlobStore(name);
+                    } catch (ComponentLookupException | BlobStoreException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof BlobStoreException blobStoreException) {
+                throw blobStoreException;
+            }
+            throw new BlobStoreException("Failed to get or create blob store with name [" + name + "]", e);
+        }
+    }
+}
