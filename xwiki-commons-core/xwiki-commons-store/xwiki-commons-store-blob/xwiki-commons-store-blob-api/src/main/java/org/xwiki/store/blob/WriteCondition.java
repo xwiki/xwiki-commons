@@ -17,38 +17,25 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.store.blob.internal;
+package org.xwiki.store.blob;
 
-import java.nio.file.Path;
-
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
-import org.xwiki.environment.Environment;
-import org.xwiki.store.blob.BlobStore;
-import org.xwiki.store.blob.BlobStoreException;
-import org.xwiki.store.blob.BlobStoreManager;
+import org.xwiki.stability.Unstable;
 
 /**
- * Blob store manager for the file-system-based blob store.
+ * Base interface for conditions that must be met when writing to a blob.
+ * This allows for atomic operations by specifying preconditions that must be satisfied
+ * before the write operation proceeds.
  *
  * @version $Id$
  * @since 17.7.0RC1
  */
-@Component
-@Singleton
-@Named("filesystem")
-public class FileSystemBlobStoreManager implements BlobStoreManager
+@Unstable
+public interface WriteCondition
 {
-    @Inject
-    private Environment environment;
-
-    @Override
-    public BlobStore getBlobStore(String name) throws BlobStoreException
-    {
-        Path basePath = this.environment.getPermanentDirectory().toPath().resolve(name);
-        return new FileSystemBlobStore(name, basePath);
-    }
+    /**
+     * Get a human-readable description of this condition.
+     *
+     * @return a description of the condition
+     */
+    String getDescription();
 }
