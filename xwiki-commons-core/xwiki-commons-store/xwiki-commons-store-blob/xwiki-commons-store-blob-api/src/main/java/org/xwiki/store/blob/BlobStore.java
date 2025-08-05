@@ -19,7 +19,6 @@
  */
 package org.xwiki.store.blob;
 
-import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import org.xwiki.stability.Unstable;
@@ -47,7 +46,7 @@ public interface BlobStore
      * @return the blob with the given path
      * @throws BlobStoreException if there cannot be a blob with the given path (e.g., because the path is too long)
      */
-    Blob getBlob(Path path) throws BlobStoreException;
+    Blob getBlob(BlobPath path) throws BlobStoreException;
 
     /**
      * List all blobs under the given path.
@@ -56,7 +55,7 @@ public interface BlobStore
      * @return an iterator over all blobs under the given path
      * @throws BlobStoreException if the listing operation fails
      */
-    Stream<Blob> listBlobs(Path path) throws BlobStoreException;
+    Stream<Blob> listBlobs(BlobPath path) throws BlobStoreException;
 
     /**
      * Copy a blob from one path to another within this store.
@@ -65,9 +64,10 @@ public interface BlobStore
      * @param targetPath the target path
      * @return the copied blob at the target path
      * @throws BlobStoreException if the copy operation fails
+     * @throws BlobNotFoundException if the source blob does not exist
+     * @throws BlobAlreadyExistsException if a blob already exists at the target path
      */
-    // TODO: might be interesting to have dedicated exceptions for specific cases like target exists
-    Blob copyBlob(Path sourcePath, Path targetPath) throws BlobStoreException;
+    Blob copyBlob(BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException;
 
     /**
      * Copy a blob from one store to another.
@@ -76,9 +76,11 @@ public interface BlobStore
      * @param sourcePath the path of the blob in the source store
      * @param targetPath the path where the blob should be copied in this store
      * @return the copied blob at the target path
-     * @throws BlobStoreException if the copy operation fails, for example if the source blob does not exist
+     * @throws BlobStoreException if the copy operation fails
+     * @throws BlobNotFoundException if the source blob does not exist
+     * @throws BlobAlreadyExistsException if a blob already exists at the target path
      */
-    Blob copyBlob(BlobStore sourceStore, Path sourcePath, Path targetPath) throws BlobStoreException;
+    Blob copyBlob(BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException;
 
     /**
      * Delete the blob at the given path.
@@ -86,5 +88,5 @@ public interface BlobStore
      * @param path the path of the blob to delete
      * @throws BlobStoreException if the deletion fails
      */
-    void deleteBlob(Path path) throws BlobStoreException;
+    void deleteBlob(BlobPath path) throws BlobStoreException;
 }

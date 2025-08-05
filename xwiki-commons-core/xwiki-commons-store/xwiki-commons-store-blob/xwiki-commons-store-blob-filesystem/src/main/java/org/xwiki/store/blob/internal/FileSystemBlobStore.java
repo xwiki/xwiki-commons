@@ -20,14 +20,27 @@
 package org.xwiki.store.blob.internal;
 
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.xwiki.store.blob.Blob;
+import org.xwiki.store.blob.BlobAlreadyExistsException;
+import org.xwiki.store.blob.BlobDoesNotExistCondition;
+import org.xwiki.store.blob.BlobNotFoundException;
+import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
 
+/**
+ * A {@link BlobStore} implementation that stores blobs in the file system.
+ *
+ * @version $Id$
+ */
 public class FileSystemBlobStore implements BlobStore
 {
     private final String name;
@@ -47,28 +60,28 @@ public class FileSystemBlobStore implements BlobStore
     }
 
     @Override
-    public Blob getBlob(Path path) throws BlobStoreException
+    public Blob getBlob(BlobPath path) throws BlobStoreException
     {
-        Path blobPath = getBlobPath(path);
-        return new FileSystemBlob(path, blobPath, this);
+        Path blobFsPath = getBlobFsPath(path);
+        return new FileSystemBlob(path, blobFsPath, this);
     }
 
-    private Path getBlobPath(Path path)
+    private Path getBlobFsPath(BlobPath blobPath)
     {
-        // Remove the root from the given path.
-        Path relativePath;
-        if (path.isAbsolute()) {
-            relativePath = path.subpath(0, path.getNameCount());
-        } else {
-            relativePath = path;
+        Path currentPath = this.basePath;
+
+        // Append each segment of the BlobPath to the base path.
+        for (String segment : blobPath.getSegments()) {
+            currentPath = currentPath.resolve(segment);
         }
-        return this.basePath.resolve(relativePath).normalize();
+
+        return currentPath;
     }
 
     @Override
-    public Stream<Blob> listBlobs(Path path) throws BlobStoreException
+    public Stream<Blob> listBlobs(BlobPath path) throws BlobStoreException
     {
-        Path absolutePath = getBlobPath(path);
+        Path absolutePath = getBlobFsPath(path);
         if (!Files.exists(absolutePath)) {
             return Stream.empty();
         } else if (!Files.isDirectory(absolutePath)) {
@@ -80,8 +93,17 @@ public class FileSystemBlobStore implements BlobStore
                 return Files.walk(absolutePath)
                     .filter(Files::isRegularFile)
                     .map(p -> {
-                        Path relativePath = this.basePath.relativize(p);
-                        return new FileSystemBlob(relativePath, p, this);
+                        // Walk the path up until we reach absolutePath and collect the segments.
+                        // This is necessary to create a BlobPath that is relative to the base path.
+                        List<String> segments = new ArrayList<>(path.getSegments());
+                        Path currentPath = p;
+                        while (!absolutePath.equals(currentPath)) {
+                            segments.add(0, currentPath.getFileName().toString());
+                            currentPath = currentPath.getParent();
+                        }
+                        // Create a BlobPath from the segments.
+                        BlobPath blobPath = BlobPath.of(segments);
+                        return new FileSystemBlob(blobPath, p, this);
                     });
             } catch (IOException e) {
                 throw new BlobStoreException("Failed to list blobs in directory: " + absolutePath, e);
@@ -90,39 +112,31 @@ public class FileSystemBlobStore implements BlobStore
     }
 
     @Override
-    public Blob copyBlob(Path sourcePath, Path targetPath) throws BlobStoreException
+    public Blob copyBlob(BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException
     {
         if (sourcePath.equals(targetPath)) {
             throw new BlobStoreException("source and target paths are the same");
-        } else {
-            Path absoluteSourcePath = getBlobPath(sourcePath);
-            Path absoluteTargetPath = getBlobPath(targetPath);
-            try {
-                Files.copy(absoluteSourcePath, absoluteTargetPath);
-            } catch (IOException e) {
-                throw new BlobStoreException("copy blob failed", e);
-            }
         }
+
+        Path absoluteSourcePath = getBlobFsPath(sourcePath);
+        copyBlobInternal(sourcePath, targetPath, absoluteSourcePath);
 
         return getBlob(targetPath);
     }
 
     @Override
-    public Blob copyBlob(BlobStore sourceStore, Path sourcePath, Path targetPath) throws BlobStoreException
+    public Blob copyBlob(BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException
     {
         if (sourceStore instanceof FileSystemBlobStore fileSystemBlobStore) {
-            Path absoluteSourcePath = fileSystemBlobStore.getBlobPath(sourcePath);
-            Path absoluteTargetPath = getBlobPath(targetPath);
-            try {
-                Files.copy(absoluteSourcePath, absoluteTargetPath);
-            } catch (IOException e) {
-                throw new BlobStoreException("copy blob failed", e);
-            }
+            Path absoluteSourcePath = fileSystemBlobStore.getBlobFsPath(sourcePath);
+            copyBlobInternal(sourcePath, targetPath, absoluteSourcePath);
         } else {
-            Blob sourceBlob = sourceStore.getBlob(sourcePath);
-            Blob targetBlob = getBlob(targetPath);
-            try {
-                targetBlob.writeFromStream(sourceBlob.getStream());
+            // For cross-store copies, use streaming approach
+            try (var inputStream = sourceStore.getBlob(sourcePath).getStream()) {
+                Blob targetBlob = getBlob(targetPath);
+                targetBlob.writeFromStream(inputStream, BlobDoesNotExistCondition.INSTANCE);
+            } catch (BlobStoreException e) {
+                throw e;
             } catch (Exception e) {
                 throw new BlobStoreException("Reading source blob failed", e);
             }
@@ -131,11 +145,34 @@ public class FileSystemBlobStore implements BlobStore
         return getBlob(targetPath);
     }
 
+    private void copyBlobInternal(BlobPath sourcePath, BlobPath targetPath, Path absoluteSourcePath)
+        throws BlobStoreException
+    {
+        Path absoluteTargetPath = getBlobFsPath(targetPath);
+
+        try {
+            // Ensure parent directory exists
+            Path targetParent = absoluteTargetPath.getParent();
+            if (targetParent != null && !Files.exists(targetParent)) {
+                Files.createDirectories(targetParent);
+            }
+
+            // Use atomic copy operation - this will fail if source doesn't exist or target exists
+            Files.copy(absoluteSourcePath, absoluteTargetPath);
+        } catch (NoSuchFileException e) {
+            throw new BlobNotFoundException(sourcePath, e);
+        } catch (FileAlreadyExistsException e) {
+            throw new BlobAlreadyExistsException(targetPath, e);
+        } catch (IOException e) {
+            throw new BlobStoreException("copy blob failed", e);
+        }
+    }
+
     @Override
-    public void deleteBlob(Path path) throws BlobStoreException
+    public void deleteBlob(BlobPath path) throws BlobStoreException
     {
         try {
-            Files.deleteIfExists(getBlobPath(path));
+            Files.deleteIfExists(getBlobFsPath(path));
         } catch (IOException e) {
             throw new BlobStoreException("delete blob failed", e);
         }

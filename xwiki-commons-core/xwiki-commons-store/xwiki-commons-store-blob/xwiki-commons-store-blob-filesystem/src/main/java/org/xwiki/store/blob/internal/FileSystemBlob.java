@@ -22,26 +22,46 @@ package org.xwiki.store.blob.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
 import org.xwiki.store.blob.Blob;
+import org.xwiki.store.blob.BlobNotFoundException;
+import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
+import org.xwiki.store.blob.WriteCondition;
+import org.xwiki.store.blob.WriteConditionFailedException;
 
+/**
+ * A {@link Blob} implementation that represents a file in the file system.
+ *
+ * @version $Id$
+ * @since 17.7.0RC1
+ */
 public class FileSystemBlob implements Blob
 {
     private final FileSystemBlobStore blobStore;
 
+    private final BlobPath blobPath;
+
     private final Path absolutePath;
 
-    private final Path relativePath;
-
-    public FileSystemBlob(Path relativePath, Path absolutePath, FileSystemBlobStore store)
+    /**
+     * Creates a new FileSystemBlob.
+     *
+     * @param blobPath the path of the blob inside the store
+     * @param absolutePath the absolute file system path to the blob
+     * @param store the blob store where this blob is stored
+     */
+    public FileSystemBlob(BlobPath blobPath, Path absolutePath, FileSystemBlobStore store)
     {
-        this.relativePath = relativePath;
+        this.blobPath = blobPath;
         this.blobStore = store;
         this.absolutePath = absolutePath;
     }
@@ -53,9 +73,9 @@ public class FileSystemBlob implements Blob
     }
 
     @Override
-    public Path getPath()
+    public BlobPath getPath()
     {
-        return this.relativePath;
+        return this.blobPath;
     }
 
     @Override
@@ -77,7 +97,7 @@ public class FileSystemBlob implements Blob
     }
 
     @Override
-    public OutputStream getOutputStream() throws BlobStoreException
+    public OutputStream getOutputStream(WriteCondition... conditions) throws BlobStoreException
     {
         // Ensure the parent directory exists before creating the output stream.
         if (Files.notExists(this.absolutePath.getParent())) {
@@ -87,17 +107,27 @@ public class FileSystemBlob implements Blob
                 throw new BlobStoreException("Error creating parent directories.", e);
             }
         }
+
         try {
-            return Files.newOutputStream(this.absolutePath);
+            if (Arrays.stream(conditions).anyMatch(WriteConditionFailedException.class::isInstance)) {
+                // Use CREATE_NEW to ensure atomic create-only behavior
+                return Files.newOutputStream(this.absolutePath,
+                    StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+            } else {
+                // Default behavior - create or overwrite
+                return Files.newOutputStream(this.absolutePath);
+            }
+        } catch (FileAlreadyExistsException e) {
+            throw new WriteConditionFailedException(this.blobPath, Arrays.asList(conditions), e);
         } catch (IOException e) {
             throw new BlobStoreException("Error getting output stream.", e);
         }
     }
 
     @Override
-    public void writeFromStream(InputStream inputStream) throws BlobStoreException
+    public void writeFromStream(InputStream inputStream, WriteCondition... condition) throws BlobStoreException
     {
-        try (OutputStream outputStream = this.getOutputStream()) {
+        try (OutputStream outputStream = this.getOutputStream(condition)) {
             IOUtils.copy(inputStream, outputStream);
         } catch (IOException e) {
             throw new BlobStoreException("Error writing from InputStream to blob.", e);
@@ -109,9 +139,10 @@ public class FileSystemBlob implements Blob
     @Override
     public InputStream getStream() throws Exception
     {
-        if (!exists()) {
-            throw new BlobStoreException("Blob does not exist at " + this.absolutePath);
+        try {
+            return Files.newInputStream(this.absolutePath, LinkOption.NOFOLLOW_LINKS);
+        } catch (java.nio.file.NoSuchFileException e) {
+            throw new BlobNotFoundException(this.blobPath, e);
         }
-        return Files.newInputStream(this.absolutePath, LinkOption.NOFOLLOW_LINKS);
     }
 }

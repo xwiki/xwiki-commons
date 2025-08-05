@@ -138,6 +138,9 @@
     <!-- JAXB -->
     <jaxb.tools.version>2.0.15</jaxb.tools.version>
 
+    <!-- AWS SDK -->
+    <aws.java.sdk.version>2.32.15</aws.java.sdk.version>
+
     <!-- By default, Checkstyle, Backward compatibility check, Enforcer, License plugins, etc., are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.revapi.skip>false</xwiki.revapi.skip>
@@ -1502,6 +1505,13 @@
         <groupId>jakarta.enterprise</groupId>
         <artifactId>jakarta.enterprise.cdi-api</artifactId>
         <version>2.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>${aws.java.sdk.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
