@@ -17,38 +17,39 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.store.blob.internal;
+package org.xwiki.store.blob;
 
-import java.nio.file.Path;
-
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
-import org.xwiki.environment.Environment;
-import org.xwiki.store.blob.BlobStore;
-import org.xwiki.store.blob.BlobStoreException;
-import org.xwiki.store.blob.BlobStoreManager;
+import org.xwiki.stability.Unstable;
 
 /**
- * Blob store manager for the file-system-based blob store.
+ * A write condition that requires the blob to not exist before writing.
+ * This ensures atomic create-only operations.
  *
  * @version $Id$
  * @since 17.7.0RC1
  */
-@Component
-@Singleton
-@Named("filesystem")
-public class FileSystemBlobStoreManager implements BlobStoreManager
+@Unstable
+public final class BlobDoesNotExistCondition implements WriteCondition
 {
-    @Inject
-    private Environment environment;
+    /**
+     * Singleton instance of this condition.
+     */
+    public static final BlobDoesNotExistCondition INSTANCE = new BlobDoesNotExistCondition();
+
+    private BlobDoesNotExistCondition()
+    {
+        // Singleton pattern
+    }
 
     @Override
-    public BlobStore getBlobStore(String name) throws BlobStoreException
+    public String getDescription()
     {
-        Path basePath = this.environment.getPermanentDirectory().toPath().resolve(name);
-        return new FileSystemBlobStore(name, basePath);
+        return "Blob must not exist";
+    }
+
+    @Override
+    public String toString()
+    {
+        return getDescription();
     }
 }
