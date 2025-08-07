@@ -23,13 +23,24 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
+import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
 import org.xwiki.store.blob.BlobStoreManager;
 
+/**
+ * Default implementation of {@link BlobStoreManager} that retrieves blob stores based on the name and the
+ * configured store hint.
+ *
+ * @version $Id$
+ * @since 17.7.0RC1
+ */
+@Component
+@Singleton
 public class DefaultBlobStoreManager implements BlobStoreManager
 {
     @Inject

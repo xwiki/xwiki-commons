@@ -1,0 +1,2 @@
+org.xwiki.store.blob.internal.S3BlobStoreManager
+org.xwiki.store.blob.internal.S3ClientManager

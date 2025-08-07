@@ -19,9 +19,6 @@
  */
 package org.xwiki.store.blob.internal;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
@@ -60,8 +57,6 @@ public class S3BlobStoreManager implements BlobStoreManager, Initializable
     @Inject
     private S3ClientManager clientManager;
 
-    private final ConcurrentMap<String, S3BlobStore> stores = new ConcurrentHashMap<>();
-
     private String bucketName;
 
     @Override
@@ -84,11 +79,6 @@ public class S3BlobStoreManager implements BlobStoreManager, Initializable
 
     @Override
     public BlobStore getBlobStore(String name) throws BlobStoreException
-    {
-        return this.stores.computeIfAbsent(name, this::createBlobStore);
-    }
-
-    private S3BlobStore createBlobStore(String name)
     {
         String keyPrefix = this.configuration.getS3KeyPrefix();
         if (StringUtils.isNotBlank(keyPrefix) && !StringUtils.isNotBlank(name)) {
