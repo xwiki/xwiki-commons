@@ -21,6 +21,7 @@ package org.xwiki.store.blob.internal;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
@@ -29,8 +30,10 @@ import org.xwiki.configuration.ConfigurationSource;
  * Configuration for the Blob Store.
  *
  * @version $Id$
+ * @since 17.7.0RC1
  */
-@Component
+@Component(roles = BlobStoreConfiguration.class)
+@Singleton
 public class BlobStoreConfiguration
 {
     @Inject
