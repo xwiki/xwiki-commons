@@ -110,6 +110,8 @@ public class S3BlobStore implements BlobStore
 
         try {
             // Use S3 copyObject with conditional copy to ensure target doesn't exist
+            // TODO: according to the documentation, this only works for objects smaller than 5GB.
+            // See https://docs.aws.amazon.com/AmazonS3/latest/userguide/CopyingObjectsMPUapi.html
             CopyObjectRequest copyRequest = CopyObjectRequest.builder()
                 .sourceBucket(this.bucketName)
                 .sourceKey(sourceKey)
@@ -147,6 +149,7 @@ public class S3BlobStore implements BlobStore
         if (sourceStore instanceof S3BlobStore s3SourceStore
             && s3SourceStore.bucketName.equals(this.bucketName)) {
             // Optimize for same-bucket copies using S3 server-side copy
+            // TODO: This seems wrong as this discards the source store's prefix.
             return copyBlob(sourcePath, targetPath);
         } else {
             // Fall back to stream-based copy for different stores
