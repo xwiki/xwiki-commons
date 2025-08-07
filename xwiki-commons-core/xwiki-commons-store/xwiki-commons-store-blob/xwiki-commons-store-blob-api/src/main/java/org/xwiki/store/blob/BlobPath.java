@@ -33,7 +33,7 @@ import org.xwiki.stability.Unstable;
  * interpret them as needed (e.g. S3 keys).
  *
  * @version $Id$
- * @since 17.7.0RC
+ * @since 17.7.0RC1
  */
 @Unstable
 public final class BlobPath
