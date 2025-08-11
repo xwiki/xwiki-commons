@@ -61,7 +61,7 @@ import org.xwiki.logging.LoggerManager;
 import org.xwiki.logging.tail.LoggerTail;
 
 /**
- * Default implementation of {@link JobStatusStorage}.
+ * Default implementation of {@link JobStatusStore}.
  *
  * @version $Id$
  * @since 6.1M2
