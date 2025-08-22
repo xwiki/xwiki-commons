@@ -50,7 +50,7 @@
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
-    <xwiki.compatibility.previous.version>17.4.3</xwiki.compatibility.previous.version>
+    <xwiki.compatibility.previous.version>17.4.4</xwiki.compatibility.previous.version>
 
     <!-- Java -->
     <!-- Should be kept in sync with https://dev.xwiki.org/xwiki/bin/view/Community/SupportStrategy/JavaSupportStrategy/ -->
