@@ -258,8 +258,8 @@
     <antlr4.version>4.13.2</antlr4.version>
 
     <!-- Versions of Node related tools -->
-    <node.version>v22.16.0</node.version>
-    <npm.version>11.4.1</npm.version>
+    <node.version>v22.18.0</node.version>
+    <npm.version>11.5.2</npm.version>
 
     <!-- Servlet specifications -->
     <javax.servlet.version>3.1.0</javax.servlet.version>
