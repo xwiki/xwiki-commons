@@ -74,6 +74,8 @@ public interface Blob extends StreamProvider
      * @param conditions the conditions that must be satisfied before writing to this blob
      * @throws BlobStoreException if the InputStream cannot be read or the blob cannot be written, for example because
      * its name is invalid.
+     * @todo Recommend this method over {@link #getOutputStream(WriteCondition...)} once this is actually more than
+     * IOUtils#copy - or remove it, otherwise.
      */
     void writeFromStream(InputStream inputStream, WriteCondition... conditions) throws BlobStoreException;
 
@@ -86,28 +88,4 @@ public interface Blob extends StreamProvider
      */
     @Override
     InputStream getStream() throws Exception;
-
-    /**
-     * Copy this blob to another path within the same store.
-     *
-     * @param targetPath the target path for the copy
-     * @return the new blob at the target path
-     * @throws BlobStoreException if the copy operation fails, for example because this blob doesn't exist
-     * @throws BlobNotFoundException if this blob does not exist
-     * @throws BlobAlreadyExistsException if a blob already exists at the target path
-     */
-    default Blob copyTo(BlobPath targetPath) throws BlobStoreException
-    {
-        return getStore().copyBlob(getPath(), targetPath);
-    }
-
-    /**
-     * Delete this blob from the store if it exists.
-     *
-     * @throws BlobStoreException if the deletion fails
-     */
-    default void delete() throws BlobStoreException
-    {
-        getStore().deleteBlob(getPath());
-    }
 }

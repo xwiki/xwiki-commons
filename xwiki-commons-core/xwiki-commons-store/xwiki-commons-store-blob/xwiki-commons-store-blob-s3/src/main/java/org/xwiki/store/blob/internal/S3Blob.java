@@ -19,16 +19,13 @@
  */
 package org.xwiki.store.blob.internal;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-import org.apache.commons.io.IOUtils;
 import org.xwiki.store.blob.Blob;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobPath;
-import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
 import org.xwiki.store.blob.WriteCondition;
 
@@ -44,15 +41,11 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
  * @version $Id$
  * @since 17.7.0RC1
  */
-public class S3Blob implements Blob
+public class S3Blob extends AbstractBlob
 {
-    private final BlobPath path;
-
     private final String bucketName;
 
     private final String s3Key;
-
-    private final S3BlobStore store;
 
     private final S3Client s3Client;
 
@@ -67,23 +60,10 @@ public class S3Blob implements Blob
      */
     public S3Blob(BlobPath path, String bucketName, String s3Key, S3BlobStore store, S3Client s3Client)
     {
-        this.path = path;
+        super(store, path);
         this.bucketName = bucketName;
         this.s3Key = s3Key;
-        this.store = store;
         this.s3Client = s3Client;
-    }
-
-    @Override
-    public BlobStore getStore()
-    {
-        return this.store;
-    }
-
-    @Override
-    public BlobPath getPath()
-    {
-        return this.path;
     }
 
     @Override
@@ -100,7 +80,7 @@ public class S3Blob implements Blob
         } catch (NoSuchKeyException e) {
             return false;
         } catch (S3Exception e) {
-            throw new BlobStoreException("Error checking if the blob [%s] exists.".formatted(this.path), e);
+            throw new BlobStoreException("Error checking if the blob [%s] exists.".formatted(getPath()), e);
         }
     }
 
@@ -117,28 +97,14 @@ public class S3Blob implements Blob
         } catch (NoSuchKeyException e) {
             return -1;
         } catch (S3Exception e) {
-            throw new BlobStoreException("Failed to get size for blob: " + this.path, e);
+            throw new BlobStoreException("Failed to get size for blob: " + getPath(), e);
         }
     }
 
     @Override
     public OutputStream getOutputStream(WriteCondition... conditions) throws BlobStoreException
     {
-        return new S3BlobOutputStream(this.bucketName, this.s3Key, this.s3Client, Arrays.asList(conditions), this.path);
-    }
-
-    @Override
-    public void writeFromStream(InputStream inputStream, WriteCondition... conditions) throws BlobStoreException
-    {
-        try {
-            IOUtils.copy(inputStream, getOutputStream(conditions));
-        } catch (IOException e) {
-            if (e.getCause() instanceof BlobStoreException blobStoreException) {
-                throw blobStoreException;
-            }
-
-            throw new BlobStoreException("Failed to write to blob: " + this.path, e);
-        }
+        return new S3BlobOutputStream(this.bucketName, this.s3Key, this.s3Client, Arrays.asList(conditions), getPath());
     }
 
     @Override
@@ -152,9 +118,9 @@ public class S3Blob implements Blob
 
             return this.s3Client.getObject(getRequest);
         } catch (NoSuchKeyException e) {
-            throw new BlobNotFoundException(this.path, e);
+            throw new BlobNotFoundException(getPath(), e);
         } catch (S3Exception e) {
-            throw new BlobStoreException("Failed to get stream for blob: " + this.path, e);
+            throw new BlobStoreException("Failed to get stream for blob: " + getPath(), e);
         }
     }
 }

@@ -40,10 +40,6 @@
       <artifactId>xwiki-commons-store-blob-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>
     <!-- AWS S3 SDK for Java 2.x with better performance and connection pooling -->
     <dependency>
       <groupId>software.amazon.awssdk</groupId>

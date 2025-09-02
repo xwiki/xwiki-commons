@@ -52,7 +52,7 @@ public class S3BlobStoreManager implements BlobStoreManager, Initializable
     private Logger logger;
 
     @Inject
-    private BlobStoreConfiguration configuration;
+    private S3BlobStoreConfiguration configuration;
 
     @Inject
     private S3ClientManager clientManager;
