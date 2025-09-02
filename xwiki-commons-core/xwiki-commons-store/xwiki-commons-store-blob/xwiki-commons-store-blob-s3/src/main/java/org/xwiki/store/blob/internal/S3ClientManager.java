@@ -58,7 +58,7 @@ public class S3ClientManager implements Initializable, Disposable
     private Logger logger;
 
     @Inject
-    private BlobStoreConfiguration configuration;
+    private S3BlobStoreConfiguration configuration;
 
     private S3Client s3Client;
 

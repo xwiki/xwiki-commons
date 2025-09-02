@@ -29,11 +29,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 
-import org.apache.commons.io.IOUtils;
 import org.xwiki.store.blob.Blob;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobPath;
-import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
 import org.xwiki.store.blob.WriteCondition;
 import org.xwiki.store.blob.WriteConditionFailedException;
@@ -44,12 +42,8 @@ import org.xwiki.store.blob.WriteConditionFailedException;
  * @version $Id$
  * @since 17.7.0RC1
  */
-public class FileSystemBlob implements Blob
+public class FileSystemBlob extends AbstractBlob
 {
-    private final FileSystemBlobStore blobStore;
-
-    private final BlobPath blobPath;
-
     private final Path absolutePath;
 
     /**
@@ -61,21 +55,8 @@ public class FileSystemBlob implements Blob
      */
     public FileSystemBlob(BlobPath blobPath, Path absolutePath, FileSystemBlobStore store)
     {
-        this.blobPath = blobPath;
-        this.blobStore = store;
+        super(store, blobPath);
         this.absolutePath = absolutePath;
-    }
-
-    @Override
-    public BlobStore getStore()
-    {
-        return this.blobStore;
-    }
-
-    @Override
-    public BlobPath getPath()
-    {
-        return this.blobPath;
     }
 
     @Override
@@ -121,18 +102,6 @@ public class FileSystemBlob implements Blob
             throw new WriteConditionFailedException(this.blobPath, Arrays.asList(conditions), e);
         } catch (IOException e) {
             throw new BlobStoreException("Error getting output stream.", e);
-        }
-    }
-
-    @Override
-    public void writeFromStream(InputStream inputStream, WriteCondition... condition) throws BlobStoreException
-    {
-        try (OutputStream outputStream = this.getOutputStream(condition)) {
-            IOUtils.copy(inputStream, outputStream);
-        } catch (IOException e) {
-            throw new BlobStoreException("Error writing from InputStream to blob.", e);
-        } finally {
-            IOUtils.closeQuietly(inputStream);
         }
     }
 
