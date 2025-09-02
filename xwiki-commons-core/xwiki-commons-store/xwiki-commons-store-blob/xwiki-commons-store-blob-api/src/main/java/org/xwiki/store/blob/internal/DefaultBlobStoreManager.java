@@ -26,8 +26,10 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.phase.Disposable;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
 import org.xwiki.store.blob.BlobStoreManager;
@@ -41,7 +43,7 @@ import org.xwiki.store.blob.BlobStoreManager;
  */
 @Component
 @Singleton
-public class DefaultBlobStoreManager implements BlobStoreManager
+public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
 {
     @Inject
     private BlobStoreConfiguration configuration;
@@ -77,6 +79,16 @@ public class DefaultBlobStoreManager implements BlobStoreManager
                 throw blobStoreException;
             }
             throw new BlobStoreException("Failed to get or create blob store with name [" + name + "]", e);
+        }
+    }
+
+    @Override
+    public void dispose() throws ComponentLifecycleException
+    {
+        for (BlobStore blobStore : this.blobStores.values()) {
+            if (blobStore instanceof Disposable disposableStore) {
+                disposableStore.dispose();
+            }
         }
     }
 }
