@@ -21,7 +21,6 @@ package org.xwiki.store.blob;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -30,7 +29,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * An opaque identifier for blobs within a BlobStore. Segments are joined with '/' but implementations are free to
- * interpret them as needed (e.g. S3 keys).
+ * interpret them as needed (e.g. S3 keys). BlobPaths are immutable.
  *
  * @version $Id$
  * @since 17.7.0RC1
@@ -40,12 +39,38 @@ public final class BlobPath
 {
     private final List<String> segments;
 
-    private final String raw;
+    private final String canonical;
 
     private BlobPath(List<String> segments)
     {
+        // Validate segments to ensure each is a single file system component and disallow directory traversal.
+        if (segments == null || segments.isEmpty()) {
+            throw new IllegalArgumentException("At least one segment required");
+        }
+        for (int i = 0; i < segments.size(); i++) {
+            String s = segments.get(i);
+            validateSegment(s, i);
+        }
         this.segments = List.copyOf(segments);
-        this.raw = String.join("/", segments);
+        this.canonical = String.join("/", segments);
+    }
+
+    private static void validateSegment(String s, int i)
+    {
+        if (s == null) {
+            throw new IllegalArgumentException("Segment at index %d is null".formatted(i));
+        }
+        if (s.isEmpty()) {
+            throw new IllegalArgumentException("Segment at index %d is empty".formatted(i));
+        }
+        if (s.equals(".") || s.equals("..")) {
+            throw new IllegalArgumentException(
+                "Segment at index %d is a directory traversal component: %s".formatted(i, s));
+        }
+        if (s.indexOf('/') >= 0 || s.indexOf('\\') >= 0) {
+            throw new IllegalArgumentException(
+                "Segment at index %d contains an illegal path separator: %s".formatted(i, s));
+        }
     }
 
     /**
@@ -56,9 +81,6 @@ public final class BlobPath
      */
     public static BlobPath of(List<String> segments)
     {
-        if (segments.isEmpty()) {
-            throw new IllegalArgumentException("At least one segment required");
-        }
         return new BlobPath(segments);
     }
 
@@ -120,7 +142,7 @@ public final class BlobPath
     @Override
     public String toString()
     {
-        return this.raw;
+        return this.canonical;
     }
 
     @Override
@@ -132,12 +154,12 @@ public final class BlobPath
         if (!(o instanceof BlobPath other)) {
             return false;
         }
-        return this.raw.equals(other.raw);
+        return this.canonical.equals(other.canonical);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(this.raw);
+        return this.canonical.hashCode();
     }
 }
