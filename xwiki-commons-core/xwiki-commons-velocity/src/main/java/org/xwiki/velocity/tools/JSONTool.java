@@ -134,7 +134,8 @@ public class JSONTool
     }
 
     /**
-     * Custom character escapes to also escape forward slash and opening curly braces for enhanced safety in XWiki.
+     * Custom character escapes to also escape forward slash, less than and opening curly braces for enhanced safety in
+     * XWiki.
      * <p>
      * Inspired by <a href="https://stackoverflow.com/a/6826587/1293930">this answer on Stack Overflow</a>.
      *
@@ -145,6 +146,9 @@ public class JSONTool
     {
         // Use Unicode escaping for the left curly bracket as this is the only escaping that we can use in JSON.
         private static final SerializedString ESCAPED_LEFT_CURLY = new SerializedString("\\u007B");
+
+        // Use Unicode escaping for < as it works in JavaScript and JSON.
+        private static final SerializedString ESCAPED_LT = new SerializedString("\\u003C");
 
         private final int[] asciiEscapes;
 
@@ -157,6 +161,8 @@ public class JSONTool
             // and to avoid that escaping for opening/closing HTML macros interferes with JSON content.
             // As standard escaping isn't available in JSON for curly brackets, we use custom escaping for it.
             this.asciiEscapes['{'] = ESCAPE_CUSTOM;
+            // Escape < to make JSON safe to use in script tags that have special handling for nested HTML comments.
+            this.asciiEscapes['<'] = ESCAPE_CUSTOM;
         }
 
         @Override
@@ -168,11 +174,11 @@ public class JSONTool
         @Override
         public SerializableString getEscapeSequence(int i)
         {
-            if (i == '{') {
-                return ESCAPED_LEFT_CURLY;
-            }
-
-            return null;
+            return switch (i) {
+                case '{' -> ESCAPED_LEFT_CURLY;
+                case '<' -> ESCAPED_LT;
+                default -> null;
+            };
         }
     }
 
