@@ -94,8 +94,9 @@ class EscapeToolTest
     @Test
     void escapeJSON()
     {
-        String escapedText = this.tool.json("\"'\\/\b\f\n\r\t\u1234 plain  text");
+        String escapedText = this.tool.json("<\"'\\/\b\f\n\r\t\u1234 plain  text");
 
+        assertTrue(escapedText.contains("\\u003C"), "Failed to escape [<]");
         assertTrue(escapedText.contains("\\\""), "Failed to escape [\"]");
         assertTrue(escapedText.contains("'"), "Wrongly escaped [']");
         assertTrue(escapedText.contains("\\\\"), "Failed to escape [\\]");
@@ -272,5 +273,6 @@ class EscapeToolTest
     void javascript()
     {
         assertEquals("\\\"\\u007B", this.tool.javascript("\"{"));
+        assertEquals("\\u003C!--", this.tool.javascript("<!--"));
     }
 }
