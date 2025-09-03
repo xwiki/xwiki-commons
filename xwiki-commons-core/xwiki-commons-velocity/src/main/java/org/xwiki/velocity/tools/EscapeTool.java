@@ -71,6 +71,13 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
 
     private static final String CURLY_BRACE_OPEN = "{";
 
+    // Escape { to avoid that when a JavaScript-escaped string is used inside the XWiki rendering framework, it
+    // influences macro opening/closing syntax or is wrongly escaped out of context.
+    // Escape < to ensure the output can be used in script tags safely where comments are parsed weirdly.
+    private static final String[] JAVASCRIPT_TO_REPLACE = new String[] { CURLY_BRACE_OPEN, "<" };
+
+    private static final String[] JAVASCRIPT_REPLACEMENTS = new String[] { "\\u007B", "\\u003C" };
+
     private static final CharSequenceTranslator XWIKI_ESCAPE_HTML4 = StringEscapeUtils.ESCAPE_HTML4.with(
         new LookupTranslator(Map.ofEntries(
             Map.entry(CURLY_BRACE_OPEN, "&lcub;"),
@@ -134,7 +141,8 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
         if (string == null) {
             return null;
         }
-        return StringEscapeUtils.escapeJson(String.valueOf(string));
+        return StringUtils.replaceEach(StringEscapeUtils.escapeJson(String.valueOf(string)),
+            JAVASCRIPT_TO_REPLACE, JAVASCRIPT_REPLACEMENTS);
     }
 
     /**
@@ -307,8 +315,6 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
     @Override
     public String javascript(Object string)
     {
-        // Escape { to avoid that when a JavaScript-escaped string is used inside the XWiki rendering framework, it
-        // influences macro opening/closing syntax or is wrongly escaped out of context.
-        return StringUtils.replace(super.javascript(string), CURLY_BRACE_OPEN, "\\u007B");
+        return StringUtils.replaceEach(super.javascript(string), JAVASCRIPT_TO_REPLACE, JAVASCRIPT_REPLACEMENTS);
     }
 }
