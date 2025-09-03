@@ -70,6 +70,7 @@
     <!-- Jackson -->
     <jackson.version>2.20.0</jackson.version>
     <jackson.databind.version>${jackson.version}</jackson.databind.version>
+    <jackson.annotations.version>2.20</jackson.annotations.version>
 
     <!-- Bouncy Castle -->
     <bouncycastle.version>1.80</bouncycastle.version>
@@ -705,7 +706,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
-        <version>${jackson.version}</version>
+        <version>${jackson.annotations.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
