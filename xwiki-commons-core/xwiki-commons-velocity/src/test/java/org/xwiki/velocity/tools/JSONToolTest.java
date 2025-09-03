@@ -169,7 +169,7 @@ class JSONToolTest
 
     @ParameterizedTest
     @CsvSource({
-        "</, \"<\\/\"",
+        "</, \"\\u003C\\/\"",
         "{{/, \"\\u007B\\u007B\\/\""
     })
     void serializeForwardSlashAndCurlyBrace(String input, String json)
