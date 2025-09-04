@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.xwiki.logging.internal.helpers.MessageParser.MessageElement;
-import org.xwiki.logging.internal.helpers.MessageParser.MessageIndex;
-import org.xwiki.logging.internal.helpers.MessageParser.MessageString;
+import org.xwiki.logging.internal.helpers.AbstractMessageParser.MessageElement;
+import org.xwiki.logging.internal.helpers.AbstractMessageParser.MessageIndex;
+import org.xwiki.logging.internal.helpers.AbstractMessageParser.MessageString;
 
 /**
  * Provide what is missing in {@link org.slf4j.helpers.MessageFormatter}.
@@ -61,11 +61,11 @@ public final class ExtendedMessageFormatter
 
         List<String> messageList = new ArrayList<>(arguments.length + 1);
 
-        MessageParser parser = new MessageParser(messagePattern, false);
+        SLF4JMessageParser parser = new SLF4JMessageParser(messagePattern);
 
         StringBuilder lastElement = new StringBuilder();
         for (MessageElement element = parser.next(), previous = null; element != null; previous = element, element =
-                parser.next()) {
+            parser.next()) {
             if (arguments.length < messageList.size()) {
                 lastElement.append(element.getString());
             } else {

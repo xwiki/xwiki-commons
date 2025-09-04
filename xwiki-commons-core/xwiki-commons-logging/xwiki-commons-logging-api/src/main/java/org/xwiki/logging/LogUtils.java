@@ -19,15 +19,19 @@
  */
 package org.xwiki.logging;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 
+import org.apache.commons.lang3.Strings;
 import org.slf4j.Marker;
 import org.xwiki.logging.event.BeginLogEvent;
 import org.xwiki.logging.event.EndLogEvent;
 import org.xwiki.logging.event.LogEvent;
-import org.xwiki.logging.internal.helpers.MessageParser;
-import org.xwiki.logging.internal.helpers.MessageParser.MessageElement;
-import org.xwiki.logging.internal.helpers.MessageParser.MessageIndex;
+import org.xwiki.logging.internal.helpers.MessageFormatMessageParser;
+import org.xwiki.logging.internal.helpers.AbstractMessageParser;
+import org.xwiki.logging.internal.helpers.AbstractMessageParser.MessageElement;
+import org.xwiki.logging.internal.helpers.AbstractMessageParser.MessageIndex;
+import org.xwiki.logging.internal.helpers.SLF4JMessageParser;
 
 /**
  * @version $Id$
@@ -35,6 +39,11 @@ import org.xwiki.logging.internal.helpers.MessageParser.MessageIndex;
  */
 public final class LogUtils
 {
+    /**
+     * The identifier of the {@link MessageFormat} based translation syntax.
+     */
+    public static final String MESSAGE_FORMAT_SYNTAX = "messagetool/1.0";
+
     private LogUtils()
     {
         // Utility class
@@ -139,8 +148,30 @@ public final class LogUtils
      */
     public static Message translate(Message message, String translatedPattern)
     {
-        if (translatedPattern != null) {
-            MessageParser parser = new MessageParser(translatedPattern, true);
+        return translate(message, translatedPattern, null);
+    }
+
+    /**
+     * Translate the passed {@link Message} based on the passed translation message pattern.
+     * <p>
+     * The translation message pattern use the same syntax than standard message pattern except that it's optionally
+     * possible to provide a custom index as in <code>Some {1} translation {0} message</code> in order to modify the
+     * order of the argument which can be required depending on the language.
+     *
+     * @param <M> the type of Message
+     * @param message the {@link Message} to translate
+     * @param translationPattern the pattern to use to translate the {@link Message}
+     * @param translatedPatternSyntax the syntax of the translation pattern
+     * @return the translated version of the passed {@link Message}
+     * @since 17.8.0RC1
+     * @since 17.4.5
+     * @since 16.10.11
+     */
+    public static <M extends Message> M translate(M message, String translationPattern, String translatedPatternSyntax)
+    {
+        if (translationPattern != null) {
+            AbstractMessageParser parser = Strings.CS.equals(translatedPatternSyntax, MESSAGE_FORMAT_SYNTAX)
+                ? new MessageFormatMessageParser(translationPattern) : new SLF4JMessageParser(translationPattern);
 
             Object[] defaultArguments = message.getArgumentArray();
             Object[] arguments = new Object[defaultArguments.length];
@@ -148,9 +179,9 @@ public final class LogUtils
 
             int index = 0;
             for (MessageElement element = parser.next(); element != null; element = parser.next()) {
-                if (element instanceof MessageIndex) {
-                    translatedMessage.append(MessageParser.ARGUMENT_STR);
-                    arguments[index++] = defaultArguments[((MessageIndex) element).getIndex()];
+                if (element instanceof MessageIndex messageIndex) {
+                    translatedMessage.append(SLF4JMessageParser.ARGUMENT_STR);
+                    arguments[index++] = defaultArguments[messageIndex.getIndex()];
                 } else {
                     translatedMessage.append(element.getString());
                 }
@@ -160,13 +191,11 @@ public final class LogUtils
                 arguments[index] = defaultArguments[index];
             }
 
-            if (message instanceof LogEvent) {
-                LogEvent logEvent = (LogEvent) message;
-
-                return new LogEvent(logEvent.getMarker(), logEvent.getLevel(), translatedMessage.toString(), arguments,
-                    logEvent.getThrowable(), logEvent.getTimeStamp());
+            if (message instanceof LogEvent logEvent) {
+                return (M) new LogEvent(logEvent.getMarker(), logEvent.getLevel(), translatedMessage.toString(),
+                    arguments, logEvent.getThrowable(), logEvent.getTimeStamp());
             } else {
-                return new Message(message.getMarker(), translatedMessage.toString(), arguments,
+                return (M) new Message(message.getMarker(), translatedMessage.toString(), arguments,
                     message.getThrowable());
             }
         }
