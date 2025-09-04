@@ -21,7 +21,6 @@ package org.xwiki.store.blob;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,8 +43,8 @@ public final class BlobPath
     private BlobPath(List<String> segments)
     {
         // Validate segments to ensure each is a single file system component and disallow directory traversal.
-        if (segments == null || segments.isEmpty()) {
-            throw new IllegalArgumentException("At least one segment required");
+        if (segments == null) {
+            throw new IllegalArgumentException("segments must not be null");
         }
         for (int i = 0; i < segments.size(); i++) {
             String s = segments.get(i);
@@ -96,9 +95,7 @@ public final class BlobPath
         List<String> nonEmpty = Arrays.stream(parts)
             .filter(s -> !s.isEmpty())
             .toList();
-        if (nonEmpty.isEmpty()) {
-            throw new IllegalArgumentException("Path must contain at least one non-empty segment");
-        }
+
         return new BlobPath(nonEmpty);
     }
 
@@ -120,15 +117,33 @@ public final class BlobPath
     }
 
     /**
-     * @return the parent BlobPath, or empty if this is a single-segment path.
+     * @return the parent BlobPath.
      */
-    public Optional<BlobPath> getParent()
+    public BlobPath getParent()
     {
         if (this.segments.size() <= 1) {
-            return Optional.empty();
+            return BlobPath.of(List.of());
         }
         List<String> parentSegments = this.segments.subList(0, this.segments.size() - 1);
-        return Optional.of(new BlobPath(parentSegments));
+        return new BlobPath(parentSegments);
+    }
+
+    /**
+     * @param suffix the suffix to append to the filename
+     * @return a new BlobPath with the suffix appended to the filename (last segment)
+     */
+    public BlobPath appendSuffix(String suffix)
+    {
+        if (StringUtils.isBlank(suffix)) {
+            throw new IllegalArgumentException("Suffix must not be empty");
+        }
+
+        String lastSegment = this.segments.get(this.segments.size() - 1) + suffix;
+        List<String> newSegments = Stream.concat(
+                this.segments.stream().limit(this.segments.size() - 1L),
+                Stream.of(lastSegment))
+            .toList();
+        return new BlobPath(newSegments);
     }
 
     /**
