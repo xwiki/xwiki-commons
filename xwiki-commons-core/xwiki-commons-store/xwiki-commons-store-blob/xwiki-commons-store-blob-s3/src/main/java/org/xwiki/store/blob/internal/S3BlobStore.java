@@ -106,6 +106,11 @@ public class S3BlobStore implements BlobStore
         }
 
         String sourceKey = buildS3Key(sourcePath);
+        return copyBlobInternal(sourcePath, targetPath, sourceKey);
+    }
+
+    private Blob copyBlobInternal(BlobPath sourcePath, BlobPath targetPath, String sourceKey) throws BlobStoreException
+    {
         String targetKey = buildS3Key(targetPath);
 
         try {
@@ -148,9 +153,9 @@ public class S3BlobStore implements BlobStore
     {
         if (sourceStore instanceof S3BlobStore s3SourceStore
             && s3SourceStore.bucketName.equals(this.bucketName)) {
+            String sourceKey = s3SourceStore.buildS3Key(sourcePath);
             // Optimize for same-bucket copies using S3 server-side copy
-            // TODO: This seems wrong as this discards the source store's prefix.
-            return copyBlob(sourcePath, targetPath);
+            return copyBlobInternal(sourcePath, targetPath, sourceKey);
         } else {
             // Fall back to stream-based copy for different stores
             try (var inputStream = sourceStore.getBlob(sourcePath).getStream()) {
@@ -169,6 +174,22 @@ public class S3BlobStore implements BlobStore
                 throw new BlobStoreException("Failed to copy blob from external store", e);
             }
         }
+    }
+
+    @Override
+    public Blob moveBlob(BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException
+    {
+        Blob movedBlob = copyBlob(sourcePath, targetPath);
+        deleteBlob(sourcePath);
+        return movedBlob;
+    }
+
+    @Override
+    public Blob moveBlob(BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException
+    {
+        Blob movedBlob = copyBlob(sourceStore, sourcePath, targetPath);
+        sourceStore.deleteBlob(sourcePath);
+        return movedBlob;
     }
 
     @Override
