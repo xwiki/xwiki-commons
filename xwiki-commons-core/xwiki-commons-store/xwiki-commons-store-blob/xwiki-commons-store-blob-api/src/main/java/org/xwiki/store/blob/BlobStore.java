@@ -70,7 +70,7 @@ public interface BlobStore
     Blob copyBlob(BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException;
 
     /**
-     * Copy a blob from one store to another.
+     * Copy a blob from another store to this store.
      *
      * @param sourceStore the source blob store
      * @param sourcePath the path of the blob in the source store
@@ -81,6 +81,31 @@ public interface BlobStore
      * @throws BlobAlreadyExistsException if a blob already exists at the target path
      */
     Blob copyBlob(BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException;
+
+    /**
+     * Move a blob from one path to another within this store.
+     *
+     * @param sourcePath the source path
+     * @param targetPath the target path
+     * @return the moved blob at the target path
+     * @throws BlobStoreException if the move operation fails
+     * @throws BlobNotFoundException if the source blob does not exist
+     * @throws BlobAlreadyExistsException if a blob already exists at the target path
+     */
+    Blob moveBlob(BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException;
+
+    /**
+     * Move a blob from another store to this store.
+     *
+     * @param sourceStore the source blob store
+     * @param sourcePath the path of the blob in the source store
+     * @param targetPath the path where the blob should be moved in this store
+     * @return the moved blob at the target path
+     * @throws BlobStoreException if the move operation fails
+     * @throws BlobNotFoundException if the source blob does not exist
+     * @throws BlobAlreadyExistsException if a blob already exists at the target path
+     */
+    Blob moveBlob(BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException;
 
     /**
      * Delete the blob at the given path.
