@@ -61,5 +61,10 @@ class LogUtilsTest
 
         assertEquals("hello2 {}", translatedLogEvent.getMessage());
         assertArrayEquals(new Object[] {"two", "two"}, translatedLogEvent.getArgumentArray());
+
+        translatedLogEvent = LogUtils.translate(logEvent, "hello {1} {0} {0}", LogUtils.MESSAGE_FORMAT_SYNTAX);
+
+        assertEquals("hello {} {} {}", translatedLogEvent.getMessage());
+        assertArrayEquals(new Object[] {"two", "one", "one"}, translatedLogEvent.getArgumentArray());
     }
 }
