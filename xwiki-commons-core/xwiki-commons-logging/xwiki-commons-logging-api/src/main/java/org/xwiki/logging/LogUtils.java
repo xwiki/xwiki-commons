@@ -20,17 +20,19 @@
 package org.xwiki.logging;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang3.Strings;
 import org.slf4j.Marker;
 import org.xwiki.logging.event.BeginLogEvent;
 import org.xwiki.logging.event.EndLogEvent;
 import org.xwiki.logging.event.LogEvent;
-import org.xwiki.logging.internal.helpers.MessageFormatMessageParser;
 import org.xwiki.logging.internal.helpers.AbstractMessageParser;
 import org.xwiki.logging.internal.helpers.AbstractMessageParser.MessageElement;
 import org.xwiki.logging.internal.helpers.AbstractMessageParser.MessageIndex;
+import org.xwiki.logging.internal.helpers.MessageFormatMessageParser;
 import org.xwiki.logging.internal.helpers.SLF4JMessageParser;
 
 /**
@@ -174,28 +176,31 @@ public final class LogUtils
                 ? new MessageFormatMessageParser(translationPattern) : new SLF4JMessageParser(translationPattern);
 
             Object[] defaultArguments = message.getArgumentArray();
-            Object[] arguments = new Object[defaultArguments.length];
+            List<Object> arguments = new ArrayList<>(defaultArguments.length);
             StringBuilder translatedMessage = new StringBuilder();
 
-            int index = 0;
             for (MessageElement element = parser.next(); element != null; element = parser.next()) {
                 if (element instanceof MessageIndex messageIndex) {
+                    // Add place holder to the message
                     translatedMessage.append(SLF4JMessageParser.ARGUMENT_STR);
-                    arguments[index++] = defaultArguments[messageIndex.getIndex()];
+
+                    // Reorder argument based on the translation index
+                    arguments.add(defaultArguments[messageIndex.getIndex()]);
                 } else {
                     translatedMessage.append(element.getString());
                 }
             }
 
-            for (; index < arguments.length; ++index) {
-                arguments[index] = defaultArguments[index];
+            // Add remaining arguments
+            for (int index = arguments.size(); index < defaultArguments.length; ++index) {
+                arguments.add(defaultArguments[index]);
             }
 
             if (message instanceof LogEvent logEvent) {
                 return (M) new LogEvent(logEvent.getMarker(), logEvent.getLevel(), translatedMessage.toString(),
-                    arguments, logEvent.getThrowable(), logEvent.getTimeStamp());
+                    arguments.toArray(), logEvent.getThrowable(), logEvent.getTimeStamp());
             } else {
-                return (M) new Message(message.getMarker(), translatedMessage.toString(), arguments,
+                return (M) new Message(message.getMarker(), translatedMessage.toString(), arguments.toArray(),
                     message.getThrowable());
             }
         }
