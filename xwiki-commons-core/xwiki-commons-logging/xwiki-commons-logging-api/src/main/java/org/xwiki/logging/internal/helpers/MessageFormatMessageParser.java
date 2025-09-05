@@ -35,19 +35,8 @@ import java.text.MessageFormat;
  * @since 17.8.0RC1
  * @since 17.4.5
  */
-// TODO: add support for conditional argument syntax
 public class MessageFormatMessageParser extends AbstractMessageParser
 {
-    /**
-     * Argument start syntax in message pattern.
-     */
-    static final char ARGUMENT_START = '{';
-
-    /**
-     * Argument end syntax in message pattern.
-     */
-    static final char ARGUMENT_STOP = '}';
-
     /**
      * Character used to escape syntax in message pattern in case of SLF4J.
      */
@@ -70,63 +59,7 @@ public class MessageFormatMessageParser extends AbstractMessageParser
     }
 
     @Override
-    public MessageElement next()
-    {
-        StringBuilder str = new StringBuilder(this.buffer.length - this.bufferIndex);
-
-        int i = this.bufferIndex;
-        boolean escaped = false;
-        for (; i < this.buffer.length; ++i) {
-            char c = this.buffer[i];
-
-            if (!escaped) {
-                if (c == ESCAPE_CHAR) {
-                    // Mark next character as escaped
-                    escaped = true;
-
-                    continue;
-                } else if (c == ARGUMENT_START) {
-                    // If there is already bufferized plain text, stop parsing
-                    if (!str.isEmpty()) {
-                        break;
-                    }
-
-                    // Extract the number and return it if it's value
-                    MessageIndex index = extractIndex(i);
-                    if (index != null) {
-                        // Move the caret
-                        this.bufferIndex = i + index.getString().length();
-
-                        // Set the index as current element
-                        this.currentMessageElement = index;
-
-                        return index;
-                    }
-                }
-            }
-
-            // Remember the character as plain text
-            str.append(c);
-            escaped = false;
-        }
-
-        // If there is bufferized plain text, return it
-        if (!str.isEmpty()) {
-            // Move the caret
-            this.bufferIndex = i;
-
-            // Create the plain text message element
-            this.currentMessageElement = new MessageString(str.toString());
-
-            // Return the plain text message element
-            return this.currentMessageElement;
-        }
-
-        // We reached the end (or the string is empty)
-        return null;
-    }
-
-    private MessageIndex extractIndex(int current)
+    protected MessageIndex extractIndex(int current)
     {
         int i = current;
 
@@ -154,5 +87,17 @@ public class MessageFormatMessageParser extends AbstractMessageParser
 
         return new MessageIndex(new String(this.buffer, current, i + 1 - current),
             Integer.parseInt(new String(this.buffer, current + 1, i - current - 1)));
+    }
+
+    @Override
+    protected boolean shouldStopEscaping(boolean escaped, int current)
+    {
+        return true;
+    }
+
+    @Override
+    protected boolean isEscaped(int current)
+    {
+        return true;
     }
 }

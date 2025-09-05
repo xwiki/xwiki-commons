@@ -139,7 +139,90 @@ public abstract class AbstractMessageParser
     }
 
     /**
-     * @return move to the next element and return it
+     * Move the current element and return it.
+     * 
+     * @return the current element
      */
-    public abstract MessageElement next();
+    public MessageElement next()
+    {
+        StringBuilder str = new StringBuilder(this.buffer.length - this.bufferIndex);
+
+        int i = this.bufferIndex;
+        boolean escaped = false;
+        for (; i < this.buffer.length; ++i) {
+            char c = this.buffer[i];
+
+            if (!escaped) {
+                if (c == this.escapeChar) {
+                    if (isEscaped(i)) {
+                        // Mark next character as escaped
+                        escaped = true;
+
+                        continue;
+                    }
+                } else if (c == ARGUMENT_START) {
+                    // If there is already bufferized plain text, stop parsing
+                    if (!str.isEmpty()) {
+                        break;
+                    }
+
+                    // Extract the number and return it if it's valid
+                    MessageIndex index = handleMessageIndex(i);
+                    if (index != null) {
+                        return index;
+                    }
+                }
+            }
+
+            // Remember the character as plain text
+            str.append(c);
+
+            // Remove the escaping marker, if needed
+            if (shouldStopEscaping(escaped, i)) {
+                escaped = false;
+            }
+        }
+
+        // If there is bufferized plain text, return it
+        if (!str.isEmpty()) {
+            return handleMessageString(str, i);
+        }
+
+        // We reached the end (or the string is empty)
+        return null;
+    }
+
+    protected MessageIndex handleMessageIndex(int current)
+    {
+        MessageIndex index = extractIndex(current);
+        if (index != null) {
+            // Move the caret
+            this.bufferIndex = current + index.getString().length();
+
+            // Set the index as current element
+            this.currentMessageElement = index;
+
+            return index;
+        }
+
+        return null;
+    }
+
+    protected abstract MessageIndex extractIndex(int current);
+
+    protected MessageElement handleMessageString(StringBuilder str, int current)
+    {
+        // Move the caret
+        this.bufferIndex = current;
+
+        // Create the plain text message element
+        this.currentMessageElement = new MessageString(str.toString());
+
+        // Return the plain text message element
+        return this.currentMessageElement;
+    }
+
+    protected abstract boolean isEscaped(int current);
+
+    protected abstract boolean shouldStopEscaping(boolean escaped, int current);
 }
