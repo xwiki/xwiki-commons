@@ -164,14 +164,20 @@ public class ComponentAnnotationLoader
             }
 
             // Look for ComponentRole annotations and register one component per ComponentRole found
-            for (Type componentRoleType : findComponentRoleTypes(componentClass)) {
-                for (ComponentDescriptor<?> componentDescriptor : this.factory.createComponentDescriptors(
-                    componentClass, componentRoleType, componentDeclaration.getPriority())) {
-                    // If there's already a existing role/hint in the list of descriptors then decide which one
-                    // to keep by looking at their priorities. Highest priority wins (i.e. lowest integer value).
-                    RoleHint<?> roleHint =
-                        new RoleHint(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint());
-                    addComponent(descriptorMap, roleHint, componentDescriptor, componentDeclaration, true);
+            Set<Type> componentRoleTypes = findComponentRoleTypes(componentClass);
+            if (componentRoleTypes.isEmpty()) {
+                LOGGER.warn("The component implemented by class [{}] does not have any role type",
+                    componentClass.toString());
+            } else {
+                for (Type componentRoleType : componentRoleTypes) {
+                    for (ComponentDescriptor<?> componentDescriptor : this.factory.createComponentDescriptors(
+                        componentClass, componentRoleType, componentDeclaration.getPriority())) {
+                        // If there's already a existing role/hint in the list of descriptors then decide which one
+                        // to keep by looking at their priorities. Highest priority wins (i.e. lowest integer value).
+                        RoleHint<?> roleHint =
+                            new RoleHint(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint());
+                        addComponent(descriptorMap, roleHint, componentDescriptor, componentDeclaration, true);
+                    }
                 }
             }
         }
