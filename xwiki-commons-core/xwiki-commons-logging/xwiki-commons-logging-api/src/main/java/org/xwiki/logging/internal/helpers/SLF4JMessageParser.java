@@ -64,74 +64,14 @@ public class SLF4JMessageParser extends AbstractMessageParser
     }
 
     @Override
-    public MessageElement next()
+    protected boolean shouldStopEscaping(boolean escaped, int current)
     {
-        StringBuilder str = new StringBuilder(this.buffer.length - this.bufferIndex);
-
-        int i = this.bufferIndex;
-        boolean escaped = false;
-        for (; i < this.buffer.length; ++i) {
-            char c = this.buffer[i];
-
-            if (!escaped) {
-                if (c == ESCAPE_CHAR) {
-                    if (isEscaped(i)) {
-                        // Mark next character as escaped
-                        escaped = true;
-
-                        continue;
-                    }
-                } else if (c == ARGUMENT_START) {
-                    // If there is already bufferized plain text, stop parsing
-                    if (!str.isEmpty()) {
-                        break;
-                    }
-
-                    // Extract the number and return it if it's value
-                    MessageIndex index = extractIndex(i);
-                    if (index != null) {
-                        // Move the caret
-                        this.bufferIndex = i + index.getString().length();
-
-                        // Set the index as current element
-                        this.currentMessageElement = index;
-
-                        return index;
-                    }
-                }
-            }
-
-            // Remember the character as plain text
-            str.append(c);
-
-            // In SLF4J syntax an escaping character escape all following escaping characters
-            if (shouldStopEscaping(escaped, i)) {
-                escaped = false;
-            }
-        }
-
-        // If there is bufferized plain text, return it
-        if (!str.isEmpty()) {
-            // Move the caret
-            this.bufferIndex = i;
-
-            // Create the plain text message element
-            this.currentMessageElement = new MessageString(str.toString());
-
-            // Return the plain text message element
-            return this.currentMessageElement;
-        }
-
-        // We reached the end (or the string is empty)
-        return null;
-    }
-
-    private boolean shouldStopEscaping(boolean escaped, int current)
-    {
+        // In SLF4J syntax an escaping character escape all following escaping characters
         return escaped && this.buffer[current + 1] != ESCAPE_CHAR;
     }
 
-    private boolean isEscaped(int current)
+    @Override
+    protected boolean isEscaped(int current)
     {
         if (current < this.buffer.length) {
             char nextChar = this.buffer[current + 1];
@@ -144,7 +84,8 @@ public class SLF4JMessageParser extends AbstractMessageParser
         return false;
     }
 
-    private MessageIndex extractIndex(int current)
+    @Override
+    protected MessageIndex extractIndex(int current)
     {
         int i = current;
 
