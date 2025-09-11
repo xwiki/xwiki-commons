@@ -48,6 +48,7 @@ public class InjectAnnotationProcessor extends AbstractXWikiProcessor<CtAnnotati
         "java.util.List",
         "java.util.Map",
         "javax.inject.Provider",
+        "jakarta.inject.Provider",
         "org.xwiki.component.descriptor.ComponentDescriptor"
     );
 
