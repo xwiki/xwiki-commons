@@ -101,11 +101,11 @@ public abstract class AbstractCollectionConverter<T extends Collection> extends 
         }
 
         if (value instanceof Iterable) {
-            return fromIterable(targetType, (Iterable) value, elementType);
+            return this.<G>fromIterable(targetType, (Iterable) value, elementType);
         } else if (value.getClass().isArray()) {
-            return fromArray(targetType, value, elementType);
+            return this.<G>fromArray(targetType, value, elementType);
         } else {
-            return parseElements(targetType, value.toString(), elementType);
+            return this.<G>parseElements(targetType, value.toString(), elementType);
         }
     }
 

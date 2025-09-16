@@ -102,6 +102,6 @@ public abstract class AbstractConverter<T> implements Converter<T>
     @Deprecated
     protected <G extends T> G convertToType(Class<G> type, Object value)
     {
-        return convertToType((Type) type, value);
+        return this.<G>convertToType((Type) type, value);
     }
 }
