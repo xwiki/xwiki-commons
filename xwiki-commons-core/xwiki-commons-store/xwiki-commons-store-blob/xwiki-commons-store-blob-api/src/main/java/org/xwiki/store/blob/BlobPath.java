@@ -138,7 +138,7 @@ public final class BlobPath
             throw new IllegalArgumentException("Suffix must not be empty");
         }
 
-        String lastSegment = this.segments.get(this.segments.size() - 1) + suffix;
+        String lastSegment = getName() + suffix;
         List<String> newSegments = Stream.concat(
                 this.segments.stream().limit(this.segments.size() - 1L),
                 Stream.of(lastSegment))
@@ -152,6 +152,17 @@ public final class BlobPath
     public List<String> getSegments()
     {
         return this.segments;
+    }
+
+    /**
+     * @return the name of the final segment of this BlobPath
+     */
+    public String getName()
+    {
+        if (this.segments.isEmpty()) {
+            return "";
+        }
+        return this.segments.get(this.segments.size() - 1);
     }
 
     @Override
