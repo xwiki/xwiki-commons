@@ -83,9 +83,9 @@ public interface Blob extends StreamProvider
      * Get an InputStream to read data from this blob.
      *
      * @return an InputStream to read data from this blob
-     * @throws Exception if the blob cannot be read
+     * @throws BlobStoreException if the blob cannot be read
      * @throws BlobNotFoundException if the blob does not exist
      */
     @Override
-    InputStream getStream() throws Exception;
+    InputStream getStream() throws BlobStoreException;
 }
