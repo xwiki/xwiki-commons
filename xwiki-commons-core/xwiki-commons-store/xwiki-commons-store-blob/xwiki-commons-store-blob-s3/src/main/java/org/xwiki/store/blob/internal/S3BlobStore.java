@@ -19,11 +19,15 @@
  */
 package org.xwiki.store.blob.internal;
 
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xwiki.store.blob.AbstractBlobStore;
 import org.xwiki.store.blob.Blob;
 import org.xwiki.store.blob.BlobAlreadyExistsException;
 import org.xwiki.store.blob.BlobNotFoundException;
@@ -44,13 +48,11 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
  * @version $Id$
  * @since 17.7.0RC1
  */
-public class S3BlobStore implements BlobStore
+public class S3BlobStore extends AbstractBlobStore
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(S3BlobStore.class);
 
     private static final String PATH_SEPARATOR = "/";
-
-    private final String name;
 
     private final String bucketName;
 
@@ -68,16 +70,10 @@ public class S3BlobStore implements BlobStore
      */
     public S3BlobStore(String name, String bucketName, String keyPrefix, S3Client s3Client)
     {
-        this.name = name;
+        super(name);
         this.bucketName = bucketName;
         this.keyPrefix = keyPrefix != null ? keyPrefix : "";
         this.s3Client = s3Client;
-    }
-
-    @Override
-    public String getName()
-    {
-        return this.name;
     }
 
     @Override
@@ -90,12 +86,19 @@ public class S3BlobStore implements BlobStore
     @Override
     public Stream<Blob> listBlobs(BlobPath path) throws BlobStoreException
     {
+        String prefix = getS3KeyPrefix(path);
+
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(
+            new S3BlobIterator(prefix, this.bucketName, 1000, this.s3Client, this), Spliterator.ORDERED), false);
+    }
+
+    private String getS3KeyPrefix(BlobPath path)
+    {
         String prefix = buildS3Key(path);
         if (!prefix.endsWith(PATH_SEPARATOR)) {
             prefix += PATH_SEPARATOR;
         }
-
-        return new S3BlobStream(prefix, this.bucketName, this.s3Client, this).stream();
+        return prefix;
     }
 
     @Override
@@ -190,6 +193,13 @@ public class S3BlobStore implements BlobStore
         Blob movedBlob = copyBlob(sourceStore, sourcePath, targetPath);
         sourceStore.deleteBlob(sourcePath);
         return movedBlob;
+    }
+
+    @Override
+    public boolean isEmptyDirectory(BlobPath path) throws BlobStoreException
+    {
+        // Fetch with a page size of 1 as we only ever request the first element.
+        return new S3BlobIterator(getS3KeyPrefix(path), this.bucketName, 1, this.s3Client, this).hasNext();
     }
 
     @Override

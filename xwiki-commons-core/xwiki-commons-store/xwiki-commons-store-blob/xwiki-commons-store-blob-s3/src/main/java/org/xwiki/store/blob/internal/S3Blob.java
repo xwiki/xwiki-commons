@@ -108,7 +108,7 @@ public class S3Blob extends AbstractBlob
     }
 
     @Override
-    public InputStream getStream() throws Exception
+    public InputStream getStream() throws BlobStoreException
     {
         try {
             GetObjectRequest getRequest = GetObjectRequest.builder()

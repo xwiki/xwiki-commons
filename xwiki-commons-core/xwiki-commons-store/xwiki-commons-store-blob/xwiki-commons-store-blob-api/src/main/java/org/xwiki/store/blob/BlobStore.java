@@ -95,6 +95,38 @@ public interface BlobStore
     Blob moveBlob(BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException;
 
     /**
+     * Move a directory from one path to another within this store.
+     *
+     * <p>This operation is not necessarily efficient and might move each blob individually.</p>
+     *
+     * @param sourcePath the source path
+     * @param targetPath the target path
+     * @throws BlobStoreException if the move operation fails
+     */
+    void moveDirectory(BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException;
+
+    /**
+     * Move a directory from another store to this store.
+     *
+     * <p>This operation is not necessarily efficient and might move each blob individually.</p>
+     *
+     * @param sourceStore the source blob store
+     * @param sourcePath the path of the directory in the source store
+     * @param targetPath the path where the directory should be moved in this store
+     * @throws BlobStoreException if the move operation fails
+     */
+    void moveDirectory(BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException;
+
+    /**
+     * Check if a directory is empty (i.e., contains no blobs).
+     *
+     * @param path the path of the directory to check
+     * @return true if the directory is empty, false otherwise
+     * @throws BlobStoreException if the check operation fails
+     */
+    boolean isEmptyDirectory(BlobPath path) throws BlobStoreException;
+
+    /**
      * Move a blob from another store to this store.
      *
      * @param sourceStore the source blob store

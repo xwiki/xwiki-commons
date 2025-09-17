@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
@@ -106,12 +107,14 @@ public class FileSystemBlob extends AbstractBlob
     }
 
     @Override
-    public InputStream getStream() throws Exception
+    public InputStream getStream() throws BlobStoreException
     {
         try {
             return Files.newInputStream(this.absolutePath, LinkOption.NOFOLLOW_LINKS);
-        } catch (java.nio.file.NoSuchFileException e) {
+        } catch (NoSuchFileException e) {
             throw new BlobNotFoundException(this.blobPath, e);
+        } catch (IOException e) {
+            throw new BlobStoreException("Error getting input stream.", e);
         }
     }
 }
