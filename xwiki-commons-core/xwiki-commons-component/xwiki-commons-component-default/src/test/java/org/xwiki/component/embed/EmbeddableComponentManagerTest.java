@@ -50,6 +50,7 @@ import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.junit5.LogCaptureExtension;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -827,7 +828,7 @@ class EmbeddableComponentManagerTest
     }
 
     @Test
-    void diposeWhenImplementationIsECM()
+    void disposeWhenImplementationIsECM()
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
@@ -839,7 +840,7 @@ class EmbeddableComponentManagerTest
         ecm.registerComponent(cd, ecm);
 
         // If the test fails, the following line will generate a StackOverflowException
-        ecm.dispose();
+        assertDoesNotThrow(ecm::dispose);
     }
 
     public static class ComponentDescriptorRoleImpl implements TestRole
