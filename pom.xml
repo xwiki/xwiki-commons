@@ -73,7 +73,7 @@
     <jackson.annotations.version>2.20</jackson.annotations.version>
 
     <!-- Bouncy Castle -->
-    <bouncycastle.version>1.81</bouncycastle.version>
+    <bouncycastle.version>1.82</bouncycastle.version>
 
     <!-- ASM -->
     <asm.version>9.8</asm.version>
