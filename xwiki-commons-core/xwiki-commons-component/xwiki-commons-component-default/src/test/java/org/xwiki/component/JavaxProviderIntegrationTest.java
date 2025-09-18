@@ -33,8 +33,6 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.embed.EmbeddableComponentManager;
-import org.xwiki.component.embed.EmbeddableComponentManagerTest.RoleImpl;
-import org.xwiki.component.embed.EmbeddableComponentManagerTest.TestRole;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentRepositoryException;
 import org.xwiki.component.phase.Initializable;
@@ -51,7 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @version $Id$
  */
 //This class needs to remain public because some interfaces are reused in other tests
-public class JavaxProviderIntegrationTest
+class JavaxProviderIntegrationTest
 {
     @RegisterExtension
     private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.ERROR);
@@ -59,7 +57,6 @@ public class JavaxProviderIntegrationTest
     @ComponentRole
     public interface TestComponentRole
     {
-
     }
 
     @Component
@@ -202,10 +199,9 @@ public class JavaxProviderIntegrationTest
         cm.initialize(getClass().getClassLoader());
 
         TestComponentWithProviders component = cm.getInstance(TestComponentRole.class);
-        List<TestRole> components = component.providerList.get();
+        component.providerList.get();
 
-        assertEquals("Failed to lookup component with"
-            + " type [interface org.xwiki.component.embed.EmbeddableComponentManagerTest$TestRole] and hint [hint1]",
+        assertEquals("Failed to lookup component with type [interface org.xwiki.component.TestRole] and hint [hint1]",
             this.logCapture.getMessage(0));
     }
 }

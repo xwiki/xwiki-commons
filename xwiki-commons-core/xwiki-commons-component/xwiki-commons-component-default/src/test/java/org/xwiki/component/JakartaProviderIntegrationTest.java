@@ -19,26 +19,13 @@
  */
 package org.xwiki.component;
 
-import java.util.List;
-import java.util.Map;
-
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.inject.Provider;
-import jakarta.inject.Singleton;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Role;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.embed.EmbeddableComponentManager;
-import org.xwiki.component.embed.EmbeddableComponentManagerTest.RoleImpl;
-import org.xwiki.component.embed.EmbeddableComponentManagerTest.TestRole;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentRepositoryException;
 import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.junit5.LogCaptureExtension;
 
@@ -51,91 +38,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @version $Id$
  */
 //This class needs to remain public because some interfaces are reused in other tests
-public class JakartaProviderIntegrationTest
+class JakartaProviderIntegrationTest
 {
     @RegisterExtension
     private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.ERROR);
-
-    @Role
-    public interface TestComponentRole
-    {
-
-    }
-
-    @Component
-    @Singleton
-    public static class TestComponentWithProviders implements TestComponentRole
-    {
-        @Inject
-        public Provider<String> provider1;
-
-        @Inject
-        @Named("another")
-        public Provider<String> provider12;
-
-        @Inject
-        public Provider<Integer> provider2;
-
-        @Inject
-        public Provider<List<TestRole>> providerList;
-
-        @Inject
-        public Provider<Map<String, TestRole>> providerMap;
-    }
-
-    public static class TestProvider1 implements Provider<String>
-    {
-        @Override
-        public String get()
-        {
-            return "value";
-        }
-    }
-
-    @Named("another")
-    public static class TestProvider12 implements Provider<String>
-    {
-        @Override
-        public String get()
-        {
-            return "another value";
-        }
-    }
-
-    public static class TestProvider2 implements Provider<Integer>
-    {
-        @Override
-        public Integer get()
-        {
-            return 1;
-        }
-    }
-
-    @Component
-    @Named("exception")
-    @Singleton
-    public static class TestComponentWithProviderInException implements TestComponentRole
-    {
-        @Inject
-        @Named("exception")
-        public Provider<String> providerWithExceptionInInitialize;
-    }
-
-    @Named("exception")
-    public static class TestProviderWithExceptionInInitialize implements Provider<String>, Initializable
-    {
-        @Override
-        public void initialize() throws InitializationException
-        {
-            throw new InitializationException("Some error in init");
-        }
-
-        @Override
-        public String get()
-        {
-            throw new RuntimeException("should not be called!");
-        }
-    }
 
     @Test
     void loadAndInjectProviders() throws ComponentLookupException, ComponentRepositoryException
@@ -178,13 +84,11 @@ public class JakartaProviderIntegrationTest
 
         Throwable exception =
             assertThrows(ComponentLookupException.class, () -> cm.getInstance(TestComponentRole.class, "exception"));
-        assertEquals("Failed to lookup component "
-            + "[org.xwiki.component.JakartaProviderIntegrationTest$TestComponentWithProviderInException] identified by "
-            + "type [interface org.xwiki.component.JakartaProviderIntegrationTest$TestComponentRole] and hint [exception]",
+        assertEquals("Failed to lookup component [org.xwiki.component.TestComponentWithProviderInException] "
+            + "identified by type [interface org.xwiki.component.TestComponentRole] and hint [exception]",
             exception.getMessage());
-        assertEquals("Failed to lookup component "
-            + "[org.xwiki.component.JakartaProviderIntegrationTest$TestProviderWithExceptionInInitialize] identified by "
-            + "type [jakarta.inject.Provider<java.lang.String>] and hint [exception]",
+        assertEquals("Failed to lookup component [org.xwiki.component.TestProviderWithExceptionInInitialize] "
+            + "identified by type [jakarta.inject.Provider<java.lang.String>] and hint [exception]",
             exception.getCause().getMessage());
         assertEquals("Some error in init", exception.getCause().getCause().getMessage());
     }
@@ -203,10 +107,9 @@ public class JakartaProviderIntegrationTest
         cm.initialize(getClass().getClassLoader());
 
         TestComponentWithProviders component = cm.getInstance(TestComponentRole.class);
-        List<TestRole> components = component.providerList.get();
+        component.providerList.get();
 
-        assertEquals("Failed to lookup component with"
-            + " type [interface org.xwiki.component.embed.EmbeddableComponentManagerTest$TestRole] and hint [hint1]",
+        assertEquals("Failed to lookup component with type [interface org.xwiki.component.TestRole] and hint [hint1]",
             this.logCapture.getMessage(0));
     }
 }

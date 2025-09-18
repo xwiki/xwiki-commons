@@ -31,6 +31,8 @@ import jakarta.inject.Provider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.Logger;
+import org.xwiki.component.RoleImpl;
+import org.xwiki.component.TestRole;
 import org.xwiki.component.annotation.DisposePriority;
 import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
@@ -65,24 +67,15 @@ import static org.mockito.Mockito.verify;
  * @version $Id$
  * @since 2.0M1
  */
-// This class needs to remain public because some interfaces are reused in other tests
-public class EmbeddableComponentManagerTest
+class EmbeddableComponentManagerTest
 {
     @RegisterExtension
     private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.ERROR);
-
-    public interface TestRole
-    {
-    }
 
     public static class CycleRoleImpl implements TestRole
     {
         @Inject
         private TestRole recursion;
-    }
-
-    public static class RoleImpl implements TestRole
-    {
     }
 
     public static class OtherRoleImpl implements TestRole
@@ -290,7 +283,7 @@ public class EmbeddableComponentManagerTest
         ecm.unregisterComponent(d1.getRoleType(), d1.getRoleHint());
 
         // Verify that the component is not registered anymore
-        Throwable exception = assertThrows(ComponentLookupException.class, () -> {
+        assertThrows(ComponentLookupException.class, () -> {
             ecm.getInstance(d1.getRoleType());
         });
         // The exception message doesn't matter. All we need to know is that the component descriptor
@@ -519,16 +512,14 @@ public class EmbeddableComponentManagerTest
         assertEquals(1, instanceList.size());
         assertSame(RoleImpl.class, instanceList.get(0).getClass());
 
-        assertEquals("Failed to lookup component with"
-            + " type [interface org.xwiki.component.embed.EmbeddableComponentManagerTest$TestRole] and hint [hint2]",
+        assertEquals("Failed to lookup component with type [interface org.xwiki.component.TestRole] and hint [hint2]",
             this.logCapture.getMessage(0));
 
         instanceMap = ecm.getInstanceMap(TestRole.class);
         assertEquals(1, instanceMap.size());
         assertSame(RoleImpl.class, instanceMap.get("hint1").getClass());
 
-        assertEquals("Failed to lookup component with"
-            + " type [interface org.xwiki.component.embed.EmbeddableComponentManagerTest$TestRole] and hint [hint2]",
+        assertEquals("Failed to lookup component with type [interface org.xwiki.component.TestRole] and hint [hint2]",
             this.logCapture.getMessage(1));
 
         // Register a component which fail to initialize and is mandatory
@@ -542,15 +533,13 @@ public class EmbeddableComponentManagerTest
         exception = assertThrows(ComponentLookupException.class, () -> ecm.getInstanceList(TestRole.class));
         assertEquals("fail", exception.getCause().getMessage());
 
-        assertEquals("Failed to lookup component with"
-            + " type [interface org.xwiki.component.embed.EmbeddableComponentManagerTest$TestRole] and hint [hint2]",
+        assertEquals("Failed to lookup component with type [interface org.xwiki.component.TestRole] and hint [hint2]",
             this.logCapture.getMessage(2));
 
         exception = assertThrows(ComponentLookupException.class, () -> ecm.getInstanceMap(TestRole.class));
         assertEquals("fail", exception.getCause().getMessage());
 
-        assertEquals("Failed to lookup component with"
-            + " type [interface org.xwiki.component.embed.EmbeddableComponentManagerTest$TestRole] and hint [hint2]",
+        assertEquals("Failed to lookup component with type [interface org.xwiki.component.TestRole] and hint [hint2]",
             this.logCapture.getMessage(3));
     }
 
@@ -648,9 +637,8 @@ public class EmbeddableComponentManagerTest
 
         ComponentLookupException exception =
             assertThrows(ComponentLookupException.class, () -> ecm.getInstance(TestRole.class));
-        assertEquals("Detected component construction cycle for component "
-                + "[interface org.xwiki.component.embed.EmbeddableComponentManagerTest$TestRole] of hint [default].",
-            exception.getCause().getCause().getMessage());
+        assertEquals("Detected component construction cycle for component [interface org.xwiki.component.TestRole] of "
+            + "hint [default].", exception.getCause().getCause().getMessage());
     }
 
     @Test

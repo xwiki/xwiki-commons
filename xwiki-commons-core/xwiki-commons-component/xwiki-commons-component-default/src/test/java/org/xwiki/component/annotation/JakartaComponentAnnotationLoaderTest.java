@@ -29,7 +29,12 @@ import jakarta.inject.Singleton;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
-import org.xwiki.component.JakartaProviderIntegrationTest;
+import org.xwiki.component.TestComponentWithProviderInException;
+import org.xwiki.component.TestComponentWithProviders;
+import org.xwiki.component.TestProvider1;
+import org.xwiki.component.TestProvider12;
+import org.xwiki.component.TestProvider2;
+import org.xwiki.component.TestProviderWithExceptionInInitialize;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.ContextComponentManagerProvider;
@@ -200,25 +205,16 @@ class JakartaComponentAnnotationLoaderTest
         descriptor3.setRoleHintPriority(500);
         ComponentDescriptor descriptor4 =
             this.loader.getComponentsDescriptors(EmbeddableComponentManagerFactory.class).get(0);
-        ComponentDescriptor descriptor5 =
-            this.loader.getComponentsDescriptors(DefaultComponentManagerManager.class).get(0);
-        ComponentDescriptor descriptor6 =
-            this.loader.getComponentsDescriptors(ContextComponentManagerProvider.class).get(0);
-        ComponentDescriptor descriptor7 = this.loader.getComponentsDescriptors(DefaultNamespaceValidator.class).get(0);
+        this.loader.getComponentsDescriptors(DefaultComponentManagerManager.class).get(0);
+        this.loader.getComponentsDescriptors(ContextComponentManagerProvider.class).get(0);
+        this.loader.getComponentsDescriptors(DefaultNamespaceValidator.class).get(0);
 
-        ComponentDescriptor descriptor8 =
-            this.loader.getComponentsDescriptors(JakartaProviderIntegrationTest.TestProvider1.class).get(0);
-        ComponentDescriptor descriptor9 =
-            this.loader.getComponentsDescriptors(JakartaProviderIntegrationTest.TestProvider12.class).get(0);
-        ComponentDescriptor descriptor10 =
-            this.loader.getComponentsDescriptors(JakartaProviderIntegrationTest.TestProvider2.class).get(0);
-        ComponentDescriptor descriptor11 = this.loader
-            .getComponentsDescriptors(JakartaProviderIntegrationTest.TestComponentWithProviders.class).get(0);
-        ComponentDescriptor descriptor12 = this.loader
-            .getComponentsDescriptors(JakartaProviderIntegrationTest.TestProviderWithExceptionInInitialize.class)
-            .get(0);
-        ComponentDescriptor descriptor13 = this.loader
-            .getComponentsDescriptors(JakartaProviderIntegrationTest.TestComponentWithProviderInException.class).get(0);
+        this.loader.getComponentsDescriptors(TestProvider1.class).get(0);
+        this.loader.getComponentsDescriptors(TestProvider12.class).get(0);
+        this.loader.getComponentsDescriptors(TestProvider2.class).get(0);
+        this.loader.getComponentsDescriptors(TestComponentWithProviders.class).get(0);
+        this.loader.getComponentsDescriptors(TestProviderWithExceptionInInitialize.class).get(0);
+        this.loader.getComponentsDescriptors(TestComponentWithProviderInException.class).get(0);
 
         this.loader.initialize(componentManager, this.getClass().getClassLoader());
 
