@@ -20,8 +20,6 @@
 package org.xwiki.netflux.internal;
 
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Set;
 
 import jakarta.websocket.Session;
@@ -37,8 +35,6 @@ public class User
     private final Session session;
 
     private final String name;
-
-    private final Queue<String> messagesToBeSent = new LinkedList<>();
 
     private final Set<Channel> channels = new LinkedHashSet<>();
 
@@ -108,14 +104,6 @@ public class User
     public String getName()
     {
         return name;
-    }
-
-    /**
-     * @return the messages to be sent
-     */
-    public Queue<String> getMessagesToBeSent()
-    {
-        return messagesToBeSent;
     }
 
     /**
