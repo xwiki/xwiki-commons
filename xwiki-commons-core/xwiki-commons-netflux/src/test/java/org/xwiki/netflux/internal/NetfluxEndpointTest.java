@@ -19,13 +19,6 @@
  */
 package org.xwiki.netflux.internal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
@@ -35,6 +28,7 @@ import javax.websocket.CloseReason;
 import javax.websocket.RemoteEndpoint.Basic;
 import javax.websocket.Session;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -44,6 +38,13 @@ import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.mockito.MockitoComponentManager;
 import org.xwiki.websocket.AbstractPartialStringMessageHandler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 /**
  * Unit tests for {@link NetfluxEndpoint}.
  * 
@@ -51,7 +52,7 @@ import org.xwiki.websocket.AbstractPartialStringMessageHandler;
  * @since 13.9RC1
  */
 @ComponentTest
-@ComponentList({ChannelStore.class, MessageDispatcher.class, IdGenerator.class})
+@ComponentList({ChannelStore.class, MessageBuilder.class, IdGenerator.class})
 class NetfluxEndpointTest
 {
     @InjectMockComponents
@@ -119,6 +120,18 @@ class NetfluxEndpointTest
         assertEquals(2, secondChannel.getConnectedUsers().size());
         assertEquals(1, secondChannel.getBots().size());
 
+        // Bob tries to join a channel with an invalid key.
+        bobMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(4, "JOIN", "invalid-key")));
+
+        // Alice tries to join a non-existing channel.
+        aliceMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(5, "JOIN", StringUtils.repeat("a", 48))));
+
+        // Bob tries to leave an unspecified channel.
+        bobMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(5, "LEAVE")));
+
+        // Alice tries to leave a non-existing channel.
+        aliceMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(6, "LEAVE", "missing-channel")));
+
         User alice = (User) aliceSession.getUserProperties().get("netflux.user");
         assertEquals(Set.of(firstChannel.getKey(), secondChannel.getKey()),
             alice.getChannels().stream().map(Channel::getKey).collect(Collectors.toSet()));
@@ -128,7 +141,7 @@ class NetfluxEndpointTest
             bob.getChannels().stream().map(Channel::getKey).collect(Collectors.toSet()));
 
         // Bob leaves the first channel.
-        bobMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(4, "LEAVE", firstChannel.getKey())));
+        bobMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(6, "LEAVE", firstChannel.getKey())));
         assertEquals(1, firstChannel.getConnectedUsers().size());
         assertEquals(2, secondChannel.getConnectedUsers().size());
 
@@ -151,7 +164,7 @@ class NetfluxEndpointTest
         //
 
         ArgumentCaptor<String> aliceMessageCaptor = ArgumentCaptor.forClass(String.class);
-        verify(aliceSession.getBasicRemote(), times(13)).sendText(aliceMessageCaptor.capture());
+        verify(aliceSession.getBasicRemote(), times(16)).sendText(aliceMessageCaptor.capture());
         assertEquals(Arrays.asList(
             // Alice receives an identity.
             "[0,\"\",\"IDENT\",\"" + aliceId + "\"]",
@@ -177,12 +190,18 @@ class NetfluxEndpointTest
             "[0,\"" + bobId + "\",\"JOIN\",\"" + secondChannel.getKey() + "\"]",
             // Alice joined the second channel.
             "[0,\"" + aliceId + "\",\"JOIN\",\"" + secondChannel.getKey() + "\"]",
+            // Alice tries to join a non-existing channel.
+            "[5,\"ERROR\",\"ENOENT\",\"Channel [aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa] not found\"]",
+            // Alice tries to leave a non-existing channel.
+            "[6,\"ERROR\",\"ENOENT\",\"missing-channel\"]",
             // Bob left the first channel.
-            "[0,\"" + bobId + "\",\"LEAVE\",\"" + firstChannel.getKey() + "\",\"\"]"),
+            "[0,\"" + bobId + "\",\"LEAVE\",\"" + firstChannel.getKey() + "\",\"\"]",
+            // Bob is disconnected from the second channel.
+            "[0,\"" + bobId + "\",\"LEAVE\",\"" + secondChannel.getKey() + "\",\"Disconnected\"]"),
             aliceMessageCaptor.getAllValues());
 
         ArgumentCaptor<String> bobMessageCaptor = ArgumentCaptor.forClass(String.class);
-        verify(bobSession.getBasicRemote(), times(12)).sendText(bobMessageCaptor.capture());
+        verify(bobSession.getBasicRemote(), times(14)).sendText(bobMessageCaptor.capture());
         assertEquals(Arrays.asList(
             // Bob receives an identity.
             "[0,\"\",\"IDENT\",\"" + bobId + "\"]",
@@ -206,8 +225,12 @@ class NetfluxEndpointTest
             "[0,\"" + bobId + "\",\"JOIN\",\"" + secondChannel.getKey() + "\"]",
             // Alice joined the second channel.
             "[0,\"" + aliceId + "\",\"JOIN\",\"" + secondChannel.getKey() + "\"]",
+            // Bob tries to join a channel with an invalid key.
+            "[4,\"ERROR\",\"EINVAL\",\"Invalid channel key\"]",
+            // Bob tries to leave an unspecified channel.
+            "[5,\"ERROR\",\"EINVAL\",\"Channel key is not specified\"]",
             // Leave acknowledgement.
-            "[4,\"ACK\"]"), bobMessageCaptor.getAllValues());
+            "[6,\"ACK\"]"), bobMessageCaptor.getAllValues());
     }
 
     private Session mockSession(String name)

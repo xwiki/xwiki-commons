@@ -31,16 +31,16 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 
 /**
- * The component responsible for dispatching the Netflux messages.
+ * The component responsible for building the Netflux messages.
  *
  * @version $Id$
  * @since 15.10.11
  * @since 16.4.1
  * @since 16.5.0RC1
  */
-@Component(roles = MessageDispatcher.class)
+@Component(roles = MessageBuilder.class)
 @Singleton
-public class MessageDispatcher
+public class MessageBuilder
 {
     /**
      * The standard message type.
@@ -51,18 +51,6 @@ public class MessageDispatcher
     protected Logger logger;
 
     private final JsonConverter converter = new JsonConverter();
-
-    /**
-     * Add a message to the sending queue of a given user.
-     * 
-     * @param toUser the target user
-     * @param message the message to add
-     */
-    public void addMessage(User toUser, String message)
-    {
-        this.logger.debug("Adding message to [{}]: [{}]", toUser.getName(), message);
-        toUser.getMessagesToBeSent().add(message);
-    }
 
     /**
      * Build a message to be sent to a user.

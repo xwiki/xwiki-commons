@@ -20,7 +20,6 @@
 package org.xwiki.netflux.internal;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -89,7 +88,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
     private ChannelStore channels;
 
     @Inject
-    private MessageDispatcher dispatcher;
+    private MessageBuilder messageBuilder;
 
     @Override
     public void onOpen(Session session, EndpointConfig config)
@@ -101,7 +100,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
             User user = getOrRegisterUser(session);
 
             // Send the IDENT message.
-            String identMessage = this.dispatcher.buildDefault("", "IDENT", user.getName(), null);
+            String identMessage = this.messageBuilder.buildDefault("", "IDENT", user.getName(), null);
             if (!sendMessage(user, identMessage)) {
                 return;
             }
@@ -111,7 +110,9 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
                 @Override
                 public void onMessage(String message)
                 {
-                    handleMessage(session, message);
+                    synchronized (NetfluxEndpoint.this.bigLock) {
+                        NetfluxEndpoint.this.onMessage(session, message);
+                    }
                 }
             });
         }
@@ -121,7 +122,17 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
     public void onClose(Session session, CloseReason closeReason)
     {
         synchronized (this.bigLock) {
-            wsDisconnect(session, closeReason);
+            User user = getOrRegisterUser(session);
+
+            this.logger.debug("Last message from [{}] received [{}ms] ago. Session idle timeout is [{}].",
+                user.getName(), System.currentTimeMillis() - user.getTimeOfLastMessage(), session.getMaxIdleTimeout());
+            this.logger.debug("Disconnecting [{}] because [{}] ([{}])", user.getName(), closeReason.getReasonPhrase(),
+                closeReason.getCloseCode());
+            this.users.remove(user.getName());
+            user.setConnected(false);
+
+            // We copy the set of channels because we're modifying it while iterating over it.
+            new LinkedList<Channel>(user.getChannels()).forEach(channel -> leaveChannel(user, channel, "Disconnected"));
         }
     }
 
@@ -131,44 +142,6 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
         this.logger.debug("Session closed with error.", e);
         onClose(session,
             new CloseReason(CloseReason.CloseCodes.CLOSED_ABNORMALLY, ExceptionUtils.getRootCauseMessage(e)));
-    }
-
-    private void handleMessage(Session session, String message)
-    {
-        SendJob sendJob;
-        synchronized (this.bigLock) {
-            onMessage(session, message);
-            sendJob = getSendJob();
-        }
-        while (sendJob != null) {
-            for (String msg : sendJob.getMessages()) {
-                if (!sendJob.getUser().isConnected()) {
-                    break;
-                }
-                if (!sendMessage(sendJob.getUser(), msg)) {
-                    return;
-                }
-            }
-            sendJob = getSendJob();
-        }
-    }
-
-    private void wsDisconnect(Session session, CloseReason closeReason)
-    {
-        synchronized (this.bigLock) {
-            User user = getOrRegisterUser(session);
-
-            this.logger.debug("Last message from [{}] received [{}ms] ago. Session idle timeout is [{}].",
-                user.getName(), System.currentTimeMillis() - user.getTimeOfLastMessage(), session.getMaxIdleTimeout());
-            this.logger.debug("Disconnect [{}] because [{}] ([{}])", user.getName(), closeReason.getReasonPhrase(),
-                closeReason.getCloseCode());
-            this.users.remove(user.getName());
-            user.setConnected(false);
-
-            // We copy the set of channels because we're modifying it while iterating over it.
-            new LinkedList<Channel>(user.getChannels())
-                .forEach(channel -> leaveChannel(user, channel, "Quit: [ wsDisconnect() ]"));
-        }
     }
 
     private User getOrRegisterUser(Session session)
@@ -187,7 +160,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
 
     private void onMessage(Session session, String message)
     {
-        List<Object> msg = this.dispatcher.decode(message);
+        List<Object> msg = this.messageBuilder.decode(message);
         if (msg == null) {
             return;
         }
@@ -222,7 +195,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
              * PING: - Send an ACK
              */
             onCommandPing(user, seq);
-        } else if (MessageDispatcher.COMMAND_MSG.equals(cmd)) {
+        } else if (MessageBuilder.COMMAND_MSG.equals(cmd)) {
             /*
              * MSG (patch): - Send an ACK - Check if the history of the channel is requested - Yes : send the history -
              * No : transfer the message to the recipient
@@ -233,11 +206,10 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
 
     private void onCommandJoin(User user, Integer seq, String channelKey)
     {
-        // Key Length == 32 ==> Cryptpad key
-        // Key Length == 48 ==> RTFrontend key
-        if (!StringUtils.isEmpty(channelKey) && channelKey.length() != 32 && channelKey.length() != 48) {
-            String errorMsg = this.dispatcher.buildError(seq, ERROR_INVALID, "");
-            this.dispatcher.addMessage(user, errorMsg);
+        // Expected channel key length is 48, see IdGenerator.generateChannelId().
+        if (!StringUtils.isEmpty(channelKey) && channelKey.length() != 48) {
+            String errorMsg = this.messageBuilder.buildError(seq, ERROR_INVALID, "Invalid channel key");
+            sendMessage(user, errorMsg);
             return;
         }
         Channel channel = (channelKey == null) ? null : this.channels.get(channelKey);
@@ -245,24 +217,25 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
         if (channel == null && StringUtils.isEmpty(channelKey)) {
             channel = this.channels.create();
         } else if (channel == null) {
-            String errorMsg = this.dispatcher.buildError(seq, ERROR_NO_ENTITY, "");
-            this.dispatcher.addMessage(user, errorMsg);
+            String errorMsg = this.messageBuilder.buildError(seq, ERROR_NO_ENTITY,
+                String.format("Channel [%s] not found", channelKey));
+            sendMessage(user, errorMsg);
             return;
         }
-        String jackMsg = this.dispatcher.buildJoinAck(seq, channel.getKey());
-        this.dispatcher.addMessage(user, jackMsg);
+        String jackMsg = this.messageBuilder.buildJoinAck(seq, channel.getKey());
+        sendMessage(user, jackMsg);
         user.getChannels().add(channel);
         // The user that just joined the channel has to know what other users and bots are in the channel (for instance
         // to find out the history keeper) so we send them a JOIN command for each member of the channel.
         Set<String> botsAndUsers = new LinkedHashSet<>(channel.getBots().keySet());
         botsAndUsers.addAll(channel.getUsers().keySet());
         for (String userOrBotId : botsAndUsers) {
-            String inChannelMsg = this.dispatcher.buildDefault(userOrBotId, COMMAND_JOIN, channel.getKey(), null);
-            this.dispatcher.addMessage(user, inChannelMsg);
+            String inChannelMsg = this.messageBuilder.buildDefault(userOrBotId, COMMAND_JOIN, channel.getKey(), null);
+            sendMessage(user, inChannelMsg);
         }
         channel.getUsers().put(user.getName(), user);
         this.channels.prune();
-        String joinMsg = this.dispatcher.buildDefault(user.getName(), COMMAND_JOIN, channel.getKey(), null);
+        String joinMsg = this.messageBuilder.buildDefault(user.getName(), COMMAND_JOIN, channel.getKey(), null);
         sendChannelMessage(COMMAND_JOIN, user, channel, joinMsg);
     }
 
@@ -270,20 +243,18 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
     {
         String errorMsg = null;
         if (StringUtils.isEmpty(channelKey)) {
-            errorMsg = this.dispatcher.buildError(seq, ERROR_INVALID, "undefined");
-        }
-        if (errorMsg != null && this.channels.get(channelKey) == null) {
-            errorMsg = this.dispatcher.buildError(seq, ERROR_NO_ENTITY, channelKey);
-        }
-        if (errorMsg != null && !this.channels.get(channelKey).getUsers().containsKey(user.getName())) {
-            errorMsg = this.dispatcher.buildError(seq, "NOT_IN_CHAN", channelKey);
+            errorMsg = this.messageBuilder.buildError(seq, ERROR_INVALID, "Channel key is not specified");
+        } else if (this.channels.get(channelKey) == null) {
+            errorMsg = this.messageBuilder.buildError(seq, ERROR_NO_ENTITY, channelKey);
+        } else if (!this.channels.get(channelKey).getUsers().containsKey(user.getName())) {
+            errorMsg = this.messageBuilder.buildError(seq, "NOT_IN_CHAN", channelKey);
         }
         if (errorMsg != null) {
-            this.dispatcher.addMessage(user, errorMsg);
+            sendMessage(user, errorMsg);
             return;
         }
-        String ackMsg = this.dispatcher.buildAck(seq);
-        this.dispatcher.addMessage(user, ackMsg);
+        String ackMsg = this.messageBuilder.buildAck(seq);
+        sendMessage(user, ackMsg);
         Channel channel = this.channels.get(channelKey);
         leaveChannel(user, channel, "");
     }
@@ -293,7 +264,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
         channel.getUsers().remove(user.getName());
         user.getChannels().remove(channel);
 
-        String leaveMessage = this.dispatcher.buildDefault(user.getName(), COMMAND_LEAVE, channel.getKey(), reason);
+        String leaveMessage = this.messageBuilder.buildDefault(user.getName(), COMMAND_LEAVE, channel.getKey(), reason);
         sendChannelMessage(COMMAND_LEAVE, user, channel, leaveMessage);
 
         // Remove the channel when there is no user anymore (the history keeper doesn't count).
@@ -304,31 +275,31 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
 
     private void onCommandPing(User user, Integer seq)
     {
-        String ackMsg = this.dispatcher.buildAck(seq);
-        this.dispatcher.addMessage(user, ackMsg);
+        String ackMsg = this.messageBuilder.buildAck(seq);
+        sendMessage(user, ackMsg);
     }
 
     private void onCommandMessage(User user, Integer seq, String channelKeyOrUserName, List<Object> msg)
     {
-        String ackMsg = this.dispatcher.buildAck(seq);
-        this.dispatcher.addMessage(user, ackMsg);
+        String ackMsg = this.messageBuilder.buildAck(seq);
+        sendMessage(user, ackMsg);
         Optional<Bot> bot = getBot(user, channelKeyOrUserName);
         if (bot.isPresent()) {
             // Send message to the specified bot.
             bot.get().onUserMessage(user, msg);
         } else if (this.channels.get(channelKeyOrUserName) != null) {
             // Send message to the specified channel.
-            String msgMsg = this.dispatcher.buildMessage(0, user.getName(), channelKeyOrUserName, msg.get(3));
+            String msgMsg = this.messageBuilder.buildMessage(0, user.getName(), channelKeyOrUserName, msg.get(3));
             Channel chan = this.channels.get(channelKeyOrUserName);
-            sendChannelMessage(MessageDispatcher.COMMAND_MSG, user, chan, msgMsg);
+            sendChannelMessage(MessageBuilder.COMMAND_MSG, user, chan, msgMsg);
         } else if (this.users.containsKey(channelKeyOrUserName)) {
             // Send message to the specified user.
-            String msgMsg = this.dispatcher.buildMessage(0, user.getName(), channelKeyOrUserName, msg.get(3));
-            this.dispatcher.addMessage(this.users.get(channelKeyOrUserName), msgMsg);
+            String msgMsg = this.messageBuilder.buildMessage(0, user.getName(), channelKeyOrUserName, msg.get(3));
+            sendMessage(this.users.get(channelKeyOrUserName), msgMsg);
         } else if (!channelKeyOrUserName.isEmpty()) {
             // Unknown channel / user / bot.
-            String errorMsg = this.dispatcher.buildError(seq, ERROR_NO_ENTITY, channelKeyOrUserName);
-            this.dispatcher.addMessage(user, errorMsg);
+            String errorMsg = this.messageBuilder.buildError(seq, ERROR_NO_ENTITY, channelKeyOrUserName);
+            sendMessage(user, errorMsg);
         }
     }
 
@@ -346,23 +317,9 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
             return true;
         } catch (IOException e) {
             this.logger.debug("Sending failed.", e);
-            wsDisconnect(user.getSession(),
+            onClose(user.getSession(),
                 new CloseReason(CloseReason.CloseCodes.CLOSED_ABNORMALLY, ExceptionUtils.getRootCauseMessage(e)));
             return false;
-        }
-    }
-
-    private SendJob getSendJob()
-    {
-        synchronized (this.bigLock) {
-            for (User user : this.users.values()) {
-                if (user.isConnected() && !user.getMessagesToBeSent().isEmpty()) {
-                    SendJob out = new SendJob(user, new ArrayList<>(user.getMessagesToBeSent()));
-                    user.getMessagesToBeSent().clear();
-                    return out;
-                }
-            }
-            return null;
         }
     }
 
@@ -381,7 +338,7 @@ public class NetfluxEndpoint extends Endpoint implements EndpointComponent
 
         // Broadcast the message to all the users connected to the channel.
         channel.getUsers().values().stream()
-            .filter(user -> !(MessageDispatcher.COMMAND_MSG.equals(cmd) && user.equals(me)))
-            .forEach(user -> this.dispatcher.addMessage(user, message));
+            .filter(user -> !(MessageBuilder.COMMAND_MSG.equals(cmd) && user.equals(me)))
+            .forEach(user -> sendMessage(user, message));
     }
 }
