@@ -22,6 +22,7 @@ package org.xwiki.netflux.internal;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -48,7 +49,7 @@ public class HistoryKeeper extends AbstractBot
     private ChannelStore channels;
 
     @Inject
-    private MessageDispatcher dispatcher;
+    private MessageBuilder messageBuilder;
 
     @Override
     public String getId()
@@ -61,32 +62,48 @@ public class HistoryKeeper extends AbstractBot
     @Override
     public void onUserMessage(User sender, List<Object> message)
     {
+        // The history keeper responds only to GET_HISTORY messages.
+
         if (message.size() <= 3) {
-            // Unsupported message format.
+            // Doesn't match the GET_HISTORY message format. Ignore.
             return;
         }
 
         List<Object> messageBody;
         try {
-            messageBody = this.dispatcher.decode(message.get(3).toString());
+            messageBody = this.messageBuilder.decode(message.get(3).toString());
         } catch (Exception e) {
             this.logger.debug("Failed to parse message body.", e);
             return;
         }
 
         if (messageBody.size() < 2 || !"GET_HISTORY".equals(messageBody.get(0))) {
-            // Unsupported message format.
+            // It is either not a GET_HISTORY message or a GET_HISTORY message that doesn't specify the channel for
+            // which to return the history. Ignore.
             return;
         }
 
-        String channelKey = (String) messageBody.get(1);
+        sendChannelHistory(sender, (String) messageBody.get(1));
+    }
+
+    private void sendChannelHistory(User user, String channelKey)
+    {
+        Stream<String> messages = Stream.of();
         Channel channel = this.channels.get(channelKey);
         if (channel != null) {
-            channel.getMessages().forEach(msgStr -> this.dispatcher.addMessage(sender, msgStr));
+            messages = Stream.concat(messages, channel.getMessages().stream());
         }
         String endHistoryBody = "{\"state\":1, \"channel\":\"" + channelKey + "\"}";
-        String endHistoryMessage = this.dispatcher.buildMessage(0, getId(), sender.getName(), endHistoryBody);
-        this.dispatcher.addMessage(sender, endHistoryMessage);
+        String endHistoryMessage = this.messageBuilder.buildMessage(0, getId(), user.getName(), endHistoryBody);
+        messages = Stream.concat(messages, Stream.of(endHistoryMessage));
+
+        try {
+            for (String msg : (Iterable<String>) messages::iterator) {
+                user.getSession().getBasicRemote().sendText(msg);
+            }
+        } catch (Exception e) {
+            this.logger.debug("Failed to send channel history.", e);
+        }
     }
 
     @Override
@@ -95,7 +112,7 @@ public class HistoryKeeper extends AbstractBot
         // We keep only command messages in the channel history. Note that the channel history is replayed when a user
         // joins a channel, so we don't want to replay messages like JOIN or LEAVE (an user can join and leave a channel
         // multiple times).
-        if (MessageDispatcher.COMMAND_MSG.equals(messageType)) {
+        if (MessageBuilder.COMMAND_MSG.equals(messageType)) {
             this.logger.debug("Added in history: [{}]", message);
             if (isCheckpoint(message)) {
                 // Prune old messages from memory.
@@ -118,7 +135,7 @@ public class HistoryKeeper extends AbstractBot
 
     private boolean isCheckpoint(String message)
     {
-        List<Object> msg = this.dispatcher.decode(message);
+        List<Object> msg = this.messageBuilder.decode(message);
         if (!msg.isEmpty()) {
             Object lastItem = msg.get(msg.size() - 1);
             if (lastItem instanceof String s) {
