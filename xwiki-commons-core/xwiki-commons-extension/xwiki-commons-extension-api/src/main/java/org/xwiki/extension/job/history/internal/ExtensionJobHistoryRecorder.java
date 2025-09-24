@@ -46,7 +46,7 @@ import org.xwiki.job.event.JobFinishedEvent;
 import org.xwiki.job.event.JobStartedEvent;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.event.status.QuestionAnsweredEvent;
-import org.xwiki.job.internal.AbstractJobStatus;
+import org.xwiki.job.AbstractJobStatus;
 import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 

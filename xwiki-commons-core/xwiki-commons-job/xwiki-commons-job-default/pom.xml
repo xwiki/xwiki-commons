@@ -37,6 +37,8 @@
       org.xwiki.commons:xwiki-commons-job
     </xwiki.extension.features>
     <xwiki.jacoco.instructionRatio>0.62</xwiki.jacoco.instructionRatio>
+    <!-- Revapi skipped because it's check in the legacy module -->
+    <xwiki.revapi.skip>true</xwiki.revapi.skip>
   </properties>
   <dependencies>
     <dependency>
