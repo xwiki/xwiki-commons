@@ -21,8 +21,8 @@ package org.xwiki.netflux.internal;
 
 import java.util.List;
 
-import jakarta.websocket.RemoteEndpoint.Basic;
-import jakarta.websocket.Session;
+import javax.websocket.RemoteEndpoint.Basic;
+import javax.websocket.Session;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
