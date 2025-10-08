@@ -30,6 +30,7 @@ import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Disposable;
+import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
 import org.xwiki.store.blob.BlobStoreManager;
@@ -60,16 +61,7 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
             return this.blobStores.computeIfAbsent(name,
                 key -> {
                     try {
-                        BlobStoreManager blobStoreManager;
-                        String storeHint = this.configuration.getStoreHint();
-                        // TODO: re-consider this design.
-                        String specificHint = storeHint + "/" + name;
-                        if (this.componentManager.hasComponent(BlobStoreManager.class, specificHint)) {
-                            blobStoreManager = this.componentManager.getInstance(BlobStoreManager.class, specificHint);
-                        } else {
-                            blobStoreManager = this.componentManager.getInstance(BlobStoreManager.class, storeHint);
-                        }
-                        return blobStoreManager.getBlobStore(name);
+                        return getAndMaybeMigrateStore(name);
                     } catch (ComponentLookupException | BlobStoreException e) {
                         throw new RuntimeException(e);
                     }
@@ -80,6 +72,35 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
             }
             throw new BlobStoreException("Failed to get or create blob store with name [" + name + "]", e);
         }
+    }
+
+    private BlobStore getAndMaybeMigrateStore(String name) throws ComponentLookupException, BlobStoreException
+    {
+        String storeHint = this.configuration.getStoreHint();
+        String migrationStoreHint = this.configuration.getMigrationStoreHint();
+        BlobStore blobStore = getBlobStore(name, storeHint);
+
+        if (migrationStoreHint != null && !migrationStoreHint.equals(storeHint)) {
+            BlobStore migrationStore = getBlobStore(name, migrationStoreHint);
+            // Check if the current store is empty before migrating data.
+            if (blobStore.isEmptyDirectory(BlobPath.ROOT)) {
+                blobStore.moveDirectory(migrationStore, BlobPath.ROOT, BlobPath.ROOT);
+            }
+        }
+        return blobStore;
+    }
+
+    private BlobStore getBlobStore(String name, String storeHint) throws ComponentLookupException, BlobStoreException
+    {
+        BlobStoreManager blobStoreManager;
+        // TODO: re-consider this design.
+        String specificHint = storeHint + "/" + name;
+        if (this.componentManager.hasComponent(BlobStoreManager.class, specificHint)) {
+            blobStoreManager = this.componentManager.getInstance(BlobStoreManager.class, specificHint);
+        } else {
+            blobStoreManager = this.componentManager.getInstance(BlobStoreManager.class, storeHint);
+        }
+        return blobStoreManager.getBlobStore(name);
     }
 
     @Override
