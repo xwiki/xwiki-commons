@@ -219,6 +219,18 @@ public class S3BlobStore extends AbstractBlobStore
         }
     }
 
+    @Override
+    public void deleteBlobs(BlobPath path) throws BlobStoreException
+    {
+        try (Stream<Blob> blobs = listBlobs(path)) {
+            for (Blob blob : (Iterable<Blob>) blobs::iterator) {
+                // TODO: check with other client libraries if they have something
+                // TODO: clarify the behavior if some deletions fail
+                deleteBlob(blob.getPath());
+            }
+        }
+    }
+
     /**
      * Build the S3 key from a BlobPath.
      *

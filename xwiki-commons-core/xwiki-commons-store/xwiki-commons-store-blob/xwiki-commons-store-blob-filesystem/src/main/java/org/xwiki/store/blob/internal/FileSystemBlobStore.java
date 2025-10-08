@@ -258,4 +258,17 @@ public class FileSystemBlobStore extends AbstractBlobStore
             throw new BlobStoreException("delete blob failed", e);
         }
     }
+
+    @Override
+    public void deleteBlobs(BlobPath path) throws BlobStoreException
+    {
+        try {
+            Path absolutePath = getBlobFilePath(path);
+            if (Files.exists(absolutePath) && Files.isDirectory(absolutePath)) {
+                PathUtils.deleteDirectory(absolutePath);
+            }
+        } catch (IOException e) {
+            throw new BlobStoreException("delete blobs failed", e);
+        }
+    }
 }
