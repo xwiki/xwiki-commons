@@ -120,6 +120,8 @@ public interface BlobStore
     /**
      * Check if a directory is empty (i.e., contains no blobs).
      *
+     * @todo Clarify semantics when the path itself is a blob.
+     *
      * @param path the path of the directory to check
      * @return true if the directory is empty, false otherwise
      * @throws BlobStoreException if the check operation fails
@@ -146,4 +148,12 @@ public interface BlobStore
      * @throws BlobStoreException if the deletion fails
      */
     void deleteBlob(BlobPath path) throws BlobStoreException;
+
+    /**
+     * Delete all blobs under the given path.
+     *
+     * @param path the path prefix to delete under
+     * @throws BlobStoreException if the deletion fails
+     */
+    void deleteBlobs(BlobPath path) throws BlobStoreException;
 }
