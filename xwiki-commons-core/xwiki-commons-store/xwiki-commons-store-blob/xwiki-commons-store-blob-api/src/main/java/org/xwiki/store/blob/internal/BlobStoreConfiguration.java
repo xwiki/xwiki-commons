@@ -36,6 +36,8 @@ import org.xwiki.configuration.ConfigurationSource;
 @Singleton
 public class BlobStoreConfiguration
 {
+    private static final String FILESYSTEM_STORE_HINT = "filesystem";
+
     @Inject
     @Named("xwikiproperties")
     private ConfigurationSource configurationSource;
@@ -46,6 +48,15 @@ public class BlobStoreConfiguration
      */
     public String getStoreHint()
     {
-        return this.configurationSource.getProperty("store.blobStoreHint", "filesystem");
+        return this.configurationSource.getProperty("store.blobStoreHint", FILESYSTEM_STORE_HINT);
+    }
+
+    /**
+     * @return the hint for the blob store from which data should be migrated when there is no data in the current blob
+     *    store. This can be used, e.g., to migrate from the filesystem blob store to an S3 blob store.
+     */
+    public String getMigrationStoreHint()
+    {
+        return this.configurationSource.getProperty("store.blobMigrationStoreHint", FILESYSTEM_STORE_HINT);
     }
 }
