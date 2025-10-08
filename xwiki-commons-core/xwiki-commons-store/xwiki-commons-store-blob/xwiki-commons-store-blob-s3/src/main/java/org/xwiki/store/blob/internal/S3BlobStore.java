@@ -199,7 +199,7 @@ public class S3BlobStore extends AbstractBlobStore
     public boolean isEmptyDirectory(BlobPath path) throws BlobStoreException
     {
         // Fetch with a page size of 1 as we only ever request the first element.
-        return new S3BlobIterator(getS3KeyPrefix(path), this.bucketName, 1, this.s3Client, this).hasNext();
+        return !new S3BlobIterator(getS3KeyPrefix(path), this.bucketName, 1, this.s3Client, this).hasNext();
     }
 
     @Override
