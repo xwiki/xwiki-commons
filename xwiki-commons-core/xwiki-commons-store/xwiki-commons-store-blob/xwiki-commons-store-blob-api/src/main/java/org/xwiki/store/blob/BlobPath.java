@@ -36,6 +36,11 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public final class BlobPath
 {
+    /**
+     * The root BlobPath with no segments.
+     */
+    public static final BlobPath ROOT = new BlobPath(List.of());
+
     private final List<String> segments;
 
     private final String canonical;
