@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.xwiki.observation.event.AllEvent;
 
+import static org.mockito.Mockito.never;
+
 /**
  * Unit tests for {@link WrappedThreadEventListener}.
  *
@@ -61,7 +63,7 @@ public class WrappedThreadEventListenerTest
         Thread thread = new Thread(runnable);
         thread.start();
         thread.join();
-        Mockito.verify(this.listenermock, Mockito.times(0)).onEvent(AllEvent.ALLEVENT, null, null);
+        Mockito.verify(this.listenermock, never()).onEvent(AllEvent.ALLEVENT, null, null);
 
         wrapper.onEvent(AllEvent.ALLEVENT, null, null);
         Mockito.verify(this.listenermock).onEvent(AllEvent.ALLEVENT, null, null);
@@ -90,7 +92,7 @@ public class WrappedThreadEventListenerTest
         Thread thread = new Thread(runnable);
         thread.start();
         thread.join();
-        Mockito.verify(this.listenermock, Mockito.times(0)).onEvent(AllEvent.ALLEVENT, null, null);
+        Mockito.verify(this.listenermock, never()).onEvent(AllEvent.ALLEVENT, null, null);
 
         wrapper.onEvent(AllEvent.ALLEVENT, null, null);
         Mockito.verify(this.listenermock).onEvent(AllEvent.ALLEVENT, null, null);

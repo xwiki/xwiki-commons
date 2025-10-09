@@ -161,8 +161,8 @@ class CacheLoaderTest
 
             assertEquals(VALUE, firstResult);
             assertEquals(VALUE, secondResult);
-            verify(loader, times(1)).apply(KEY);
-            verify(setter, times(1)).accept(KEY, VALUE);
+            verify(loader).apply(KEY);
+            verify(setter).accept(KEY, VALUE);
         } finally {
             executorService.shutdown();
         }

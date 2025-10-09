@@ -90,11 +90,11 @@ public class StackingComponentEventManagerTest
 
         this.eventManager.flushEvents();
 
-        verify(this.observationManager, times(1)).notify(eq(addedEvent), same(this.componentManager),
+        verify(this.observationManager).notify(eq(addedEvent), same(this.componentManager),
             same(this.descriptor1));
-        verify(this.observationManager, times(1)).notify(eq(addedEvent), eq(null), same(this.descriptor1));
-        verify(this.observationManager, times(1)).notify(eq(removedEvent), same(this.componentManager),
+        verify(this.observationManager).notify(eq(addedEvent), eq(null), same(this.descriptor1));
+        verify(this.observationManager).notify(eq(removedEvent), same(this.componentManager),
             same(this.descriptor2));
-        verify(this.observationManager, times(1)).notify(eq(removedEvent), eq(null), same(this.descriptor2));
+        verify(this.observationManager).notify(eq(removedEvent), eq(null), same(this.descriptor2));
     }
 }
