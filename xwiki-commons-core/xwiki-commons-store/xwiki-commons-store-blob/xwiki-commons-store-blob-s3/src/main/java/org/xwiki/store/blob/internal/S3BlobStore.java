@@ -25,6 +25,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.store.blob.AbstractBlobStore;
@@ -272,5 +274,27 @@ public class S3BlobStore extends AbstractBlobStore
             LOGGER.warn("Invalid blob path from S3 key: {}", s3Key, e);
             return null;
         }
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof S3BlobStore that)) {
+            return false;
+        }
+
+        return new EqualsBuilder().append(this.bucketName, that.bucketName)
+            .append(this.keyPrefix, that.keyPrefix)
+            .isEquals();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder(17, 37).append(this.bucketName).append(this.keyPrefix).toHashCode();
     }
 }

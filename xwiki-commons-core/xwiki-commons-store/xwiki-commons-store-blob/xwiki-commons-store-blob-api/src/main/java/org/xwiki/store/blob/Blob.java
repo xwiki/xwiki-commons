@@ -29,7 +29,7 @@ import org.xwiki.store.StreamProvider;
  * A Blob is a piece of data stored in a BlobStore.
  *
  * @version $Id$
- * @since 17.7.0RC1
+ * @since 17.9.0RC1
  */
 @Unstable
 public interface Blob extends StreamProvider
@@ -59,6 +59,8 @@ public interface Blob extends StreamProvider
     long getSize() throws BlobStoreException;
 
     /**
+     * Get an OutputStream to write data to this blob. The caller must close the returned stream after use.
+     *
      * @param conditions the conditions that must be satisfied before writing to this blob
      * @return an OutputStream to write data to this blob
      * @throws BlobStoreException if the blob cannot be written, for example because its name is invalid. There is no
@@ -68,7 +70,7 @@ public interface Blob extends StreamProvider
     OutputStream getOutputStream(WriteCondition... conditions) throws BlobStoreException;
 
     /**
-     * Write the content of the given InputStream to this blob.
+     * Write the content of the given InputStream to this blob. The given InputStream will be closed by this method.
      *
      * @param inputStream the InputStream to read data from
      * @param conditions the conditions that must be satisfied before writing to this blob
@@ -80,7 +82,7 @@ public interface Blob extends StreamProvider
     void writeFromStream(InputStream inputStream, WriteCondition... conditions) throws BlobStoreException;
 
     /**
-     * Get an InputStream to read data from this blob.
+     * Get an InputStream to read data from this blob. The caller must close the returned stream after use.
      *
      * @return an InputStream to read data from this blob
      * @throws BlobStoreException if the blob cannot be read

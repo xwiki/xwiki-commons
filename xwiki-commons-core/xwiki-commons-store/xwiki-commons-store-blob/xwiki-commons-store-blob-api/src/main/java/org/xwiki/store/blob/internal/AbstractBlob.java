@@ -34,7 +34,7 @@ import org.xwiki.store.blob.WriteCondition;
  * Abstract base class for {@link Blob} implementations.
  *
  * @version $Id$
- * @since 17.8.0RC1
+ * @since 17.9.0RC1
  */
 public abstract class AbstractBlob implements Blob
 {
