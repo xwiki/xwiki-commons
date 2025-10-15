@@ -25,6 +25,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.xwiki.extension.Extension;
 import org.xwiki.tool.extension.util.AbstractExtensionMojo;
 
 /**
@@ -57,8 +58,8 @@ public class RegisterMojo extends AbstractExtensionMojo
 
         // Write descriptor
         try {
-            this.extensionHelper.serializeExtension(new File(directory, "extension.xed"), this.project.getArtifact(),
-                this.project.getModel());
+            Extension extension = this.extensionHelper.toExtension(this.project.getArtifact(), this.project.getModel());
+            this.extensionHelper.serializeExtension(new File(directory, "extension.xed"), extension);
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to write WAR descriptor", e);
         }
