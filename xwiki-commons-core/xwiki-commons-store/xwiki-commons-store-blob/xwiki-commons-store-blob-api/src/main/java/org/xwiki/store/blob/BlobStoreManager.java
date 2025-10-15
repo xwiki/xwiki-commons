@@ -26,7 +26,7 @@ import org.xwiki.stability.Unstable;
  * Blob store manager for getting or creating blob stores.
  *
  * @version $Id$
- * @since 17.7.0RC1
+ * @since 17.9.0RC1
  */
 @Role
 @Unstable

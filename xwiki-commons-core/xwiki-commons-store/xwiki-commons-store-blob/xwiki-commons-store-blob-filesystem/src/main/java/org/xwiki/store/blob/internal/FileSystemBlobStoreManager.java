@@ -25,6 +25,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.environment.Environment;
 import org.xwiki.store.blob.BlobStore;
@@ -35,7 +36,7 @@ import org.xwiki.store.blob.BlobStoreManager;
  * Blob store manager for the file-system-based blob store.
  *
  * @version $Id$
- * @since 17.7.0RC1
+ * @since 17.9.0RC1
  */
 @Component
 @Singleton
@@ -48,6 +49,10 @@ public class FileSystemBlobStoreManager implements BlobStoreManager
     @Override
     public BlobStore getBlobStore(String name) throws BlobStoreException
     {
+        if (StringUtils.isBlank(name)) {
+            throw new BlobStoreException("The blob store name must not be null or empty");
+        }
+
         Path basePath = this.environment.getPermanentDirectory().toPath().resolve(name);
         return new FileSystemBlobStore(name, basePath);
     }

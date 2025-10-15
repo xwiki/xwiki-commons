@@ -32,7 +32,7 @@
   <packaging>jar</packaging>
   <description>Blob storage implementation based on the local filesystem.</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.76</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.94</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
@@ -48,7 +48,7 @@
     <!-- Testing dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-tool-test-simple</artifactId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

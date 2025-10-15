@@ -40,7 +40,7 @@ public abstract class AbstractBlobStore implements BlobStore
      *
      * @param name the name of this blob store
      */
-    public AbstractBlobStore(String name)
+    protected AbstractBlobStore(String name)
     {
         this.name = name;
     }
@@ -60,11 +60,15 @@ public abstract class AbstractBlobStore implements BlobStore
     @Override
     public void moveDirectory(BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException
     {
+        if (sourceStore.equals(this)) {
+            if (sourcePath.isAncestorOfOrEquals(targetPath)) {
+                throw new BlobStoreException("Cannot move a directory to inside itself");
+            } else if (targetPath.isAncestorOfOrEquals(sourcePath)) {
+                throw new BlobStoreException("Cannot move a directory to one of its ancestors");
+            }
+        }
         try (Stream<Blob> blobs = sourceStore.listBlobs(sourcePath)) {
             int numSourceSegments = sourcePath.getSegments().size();
-            // TODO: when source store is this store, we might want to check better that what we're doing here is
-            //  safe, i.e., that target isn't inside source - or, alternatively, first list all blobs and then move
-            //  them. Or skip any blob that starts with the target path?
             for (Blob blob : (Iterable<Blob>) blobs::iterator) {
                 List<String> sourceSegments = blob.getPath().getSegments();
                 List<String> relativeSourceSegments = sourceSegments.subList(numSourceSegments, sourceSegments.size());
