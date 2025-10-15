@@ -40,6 +40,17 @@ public interface MutableExtension extends Extension
     void set(Extension extension);
 
     /**
+     * @param extensionId the new extension identifier
+     * @since 17.9.0RC1
+     * @since 17.4.6
+     * @since 16.10.13
+     */
+    default void setId(ExtensionId extensionId)
+    {
+        
+    }
+
+    /**
      * @param features the extension ids also provided by this extension
      * @deprecated since 8.0M1, use {@link #setExtensionFeatures(Collection)} instead
      */

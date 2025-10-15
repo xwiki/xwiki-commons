@@ -183,7 +183,7 @@ public abstract class AbstractExtension implements MutableExtension
 
     @Override
     public void set(Extension extension)
-    {
+    {        
         setName(extension.getName());
         setDescription(extension.getDescription());
         setAuthors(extension.getAuthors());
@@ -275,7 +275,8 @@ public abstract class AbstractExtension implements MutableExtension
      * @param id the extension id
      * @see #getId()
      */
-    protected void setId(ExtensionId id)
+    @Override
+    public void setId(ExtensionId id)
     {
         this.id = id;
     }
