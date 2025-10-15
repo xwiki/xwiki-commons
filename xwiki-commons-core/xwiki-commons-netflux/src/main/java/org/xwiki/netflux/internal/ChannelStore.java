@@ -106,7 +106,7 @@ public class ChannelStore
         try {
             long currentTime = System.currentTimeMillis();
             for (Channel channel : this.channelByKey.values()) {
-                if (channel.getConnectedUsers().isEmpty()
+                if (channel.getUsers().isEmpty()
                     && (currentTime - channel.getCreationDate()) > (1000 * 60 * 60 * 2)) {
                     remove(channel);
                 }

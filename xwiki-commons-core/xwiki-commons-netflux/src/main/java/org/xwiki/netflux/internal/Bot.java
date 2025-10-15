@@ -22,6 +22,7 @@ package org.xwiki.netflux.internal;
 import java.util.List;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.netflux.internal.user.local.LocalUser;
 
 /**
  * Represents a fake user that joins a {@link Channel} to perform a specific task.
@@ -57,7 +58,7 @@ public interface Bot
      * @param sender the user who sent the message
      * @param message the message that was sent
      */
-    default void onUserMessage(User sender, List<Object> message)
+    default void onUserMessage(LocalUser sender, List<Object> message)
     {
         // Do nothing by default
     }

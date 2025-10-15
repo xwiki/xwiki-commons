@@ -27,6 +27,7 @@ import jakarta.websocket.Session;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.xwiki.netflux.internal.user.local.LocalUser;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
@@ -60,7 +61,7 @@ class HistoryKeeperTest
     @Mock
     Basic basicRemote;
 
-    private User user;
+    private LocalUser user;
 
     private Channel channel = new Channel("test");
 
@@ -68,7 +69,7 @@ class HistoryKeeperTest
     void beforeEach()
     {
         when(this.session.getBasicRemote()).thenReturn(this.basicRemote);
-        this.user = new User(this.session, "alice");
+        this.user = new LocalUser(this.session, "alice");
         when(this.channels.get("test")).thenReturn(this.channel);
     }
 

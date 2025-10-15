@@ -91,15 +91,15 @@ class NetfluxEndpointTest
         // Alice joins the first channel.
         aliceMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(1, "JOIN", firstChannel.getKey())));
 
-        assertEquals(1, firstChannel.getConnectedUsers().size());
-        String aliceId = firstChannel.getConnectedUsers().get(0).getName();
+        assertEquals(1, firstChannel.getUsers().size());
+        String aliceId = firstChannel.getUsers().values().iterator().next().getName();
 
         // Bob joins the first channel.
         bobMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(1, "JOIN", firstChannel.getKey())));
 
-        assertEquals(2, firstChannel.getConnectedUsers().size());
+        assertEquals(2, firstChannel.getUsers().size());
         assertEquals(1, firstChannel.getBots().size());
-        String bobId = firstChannel.getConnectedUsers().get(1).getName();
+        String bobId = firstChannel.getUsers().values().iterator().next().getName();
 
         // Alice sends a message to the channel.
         aliceMessageHandler
@@ -117,7 +117,7 @@ class NetfluxEndpointTest
         // Both users join the second channel.
         bobMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(3, "JOIN", secondChannel.getKey())));
         aliceMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(4, "JOIN", secondChannel.getKey())));
-        assertEquals(2, secondChannel.getConnectedUsers().size());
+        assertEquals(2, secondChannel.getUsers().size());
         assertEquals(1, secondChannel.getBots().size());
 
         // Bob tries to join a channel with an invalid key.
@@ -142,15 +142,15 @@ class NetfluxEndpointTest
 
         // Bob leaves the first channel.
         bobMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(6, "LEAVE", firstChannel.getKey())));
-        assertEquals(1, firstChannel.getConnectedUsers().size());
-        assertEquals(2, secondChannel.getConnectedUsers().size());
+        assertEquals(1, firstChannel.getUsers().size());
+        assertEquals(2, secondChannel.getUsers().size());
 
         // Close both sessions.
         this.endPoint.onClose(bobSession, new CloseReason(CloseReason.CloseCodes.GOING_AWAY, "Bye!"));
         this.endPoint.onError(aliceSession, null);
 
-        assertEquals(0, firstChannel.getConnectedUsers().size());
-        assertEquals(0, secondChannel.getConnectedUsers().size());
+        assertEquals(0, firstChannel.getUsers().size());
+        assertEquals(0, secondChannel.getUsers().size());
 
         // The history keeper is still connected.
         assertEquals(1, firstChannel.getBots().size());

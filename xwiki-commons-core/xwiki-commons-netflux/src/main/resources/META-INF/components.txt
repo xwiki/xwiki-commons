@@ -3,3 +3,5 @@ org.xwiki.netflux.internal.HistoryKeeper
 org.xwiki.netflux.internal.IdGenerator
 org.xwiki.netflux.internal.MessageBuilder
 org.xwiki.netflux.internal.NetfluxEndpoint
+org.xwiki.netflux.internal.user.DefaultUserHandler
+org.xwiki.netflux.internal.user.local.LocalUserHandler
