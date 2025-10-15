@@ -19,46 +19,23 @@
  */
 package org.xwiki.netflux.internal;
 
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.inject.Singleton;
-import jakarta.websocket.CloseReason;
-import jakarta.websocket.Endpoint;
-import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.Session;
 
-import org.xwiki.component.annotation.Component;
-import org.xwiki.websocket.EndpointComponent;
+import org.xwiki.component.annotation.Role;
 
 /**
- * The Netflux WebSocket end-point.
+ * Component in charge of generating a new local user for a given session.
  * 
  * @version $Id$
- * @since 13.9RC1
+ * @since 17.10.1
+ * @since 18.0.0RC1
  */
-@Component
-@Singleton
-@Named("netflux")
-public class NetfluxEndpoint extends Endpoint implements EndpointComponent
+@Role
+public interface LocalUserFactory
 {
-    @Inject
-    private Netflux netflux;
-
-    @Override
-    public void onOpen(Session session, EndpointConfig config)
-    {
-        this.netflux.onOpen(session);
-    }
-
-    @Override
-    public void onClose(Session session, CloseReason closeReason)
-    {
-        this.netflux.onClose(session, closeReason);
-    }
-
-    @Override
-    public void onError(Session session, Throwable thr)
-    {
-        this.netflux.onError(session, thr);
-    }
+    /**
+     * @param session the WebSocket session
+     * @return the new instance of {@link LocalUser}
+     */
+    LocalUser createLocalUser(Session session);
 }

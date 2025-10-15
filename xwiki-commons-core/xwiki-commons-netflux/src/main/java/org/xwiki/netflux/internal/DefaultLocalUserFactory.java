@@ -19,46 +19,32 @@
  */
 package org.xwiki.netflux.internal;
 
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
 import jakarta.inject.Singleton;
-import jakarta.websocket.CloseReason;
-import jakarta.websocket.Endpoint;
-import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.Session;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.websocket.EndpointComponent;
 
 /**
- * The Netflux WebSocket end-point.
+ * Default implementation of {@link LocalUserFactory}.
+ * <p>
+ * Use the session id as user id.
  * 
  * @version $Id$
- * @since 13.9RC1
+ * @since 17.10.1
+ * @since 18.0.0RC1
  */
 @Component
 @Singleton
-@Named("netflux")
-public class NetfluxEndpoint extends Endpoint implements EndpointComponent
+public class DefaultLocalUserFactory implements LocalUserFactory
 {
-    @Inject
-    private Netflux netflux;
-
     @Override
-    public void onOpen(Session session, EndpointConfig config)
+    public LocalUser createLocalUser(Session session)
     {
-        this.netflux.onOpen(session);
+        return new LocalUser(session, getId(session));
     }
 
-    @Override
-    public void onClose(Session session, CloseReason closeReason)
+    protected String getId(Session session)
     {
-        this.netflux.onClose(session, closeReason);
-    }
-
-    @Override
-    public void onError(Session session, Throwable thr)
-    {
-        this.netflux.onError(session, thr);
+        return session.getId();
     }
 }

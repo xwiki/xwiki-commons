@@ -54,9 +54,23 @@ public class ChannelStore
      */
     public Channel create()
     {
-        Channel channel = new Channel(this.idGenerator.generateChannelId());
+        return create(this.idGenerator.generateChannelId());
+    }
+
+    /**
+     * Creates a new channel with a passed key.
+     * 
+     * @param channelKey the identifier of the new channel
+     * @return the new channel
+     * @since 17.10.1
+     * @since 18.0.0RC1
+     */
+    public Channel create(String channelKey)
+    {
+        Channel channel = new Channel(channelKey);
         askBotsToJoin(channel);
         this.channelByKey.put(channel.getKey(), channel);
+
         return channel;
     }
 
@@ -86,6 +100,26 @@ public class ChannelStore
     }
 
     /**
+     * Access an existing channel by its key.
+     * 
+     * @param key the channel key
+     * @param create if true, create the channel when it does not exist
+     * @return the corresponding channel
+     * @since 17.10.1
+     * @since 18.0.0RC1
+     */
+    public Channel get(String key, boolean create)
+    {
+        Channel channel = get(key);
+
+        if (channel == null) {
+            channel = create(key);
+        }
+
+        return channel;
+    }
+
+    /**
      * Remove a channel from memory.
      * 
      * @param channel the channel to remove
@@ -106,8 +140,7 @@ public class ChannelStore
         try {
             long currentTime = System.currentTimeMillis();
             for (Channel channel : this.channelByKey.values()) {
-                if (channel.getConnectedUsers().isEmpty()
-                    && (currentTime - channel.getCreationDate()) > (1000 * 60 * 60 * 2)) {
+                if (channel.getUsers().isEmpty() && (currentTime - channel.getCreationDate()) > (1000 * 60 * 60 * 2)) {
                     remove(channel);
                 }
             }

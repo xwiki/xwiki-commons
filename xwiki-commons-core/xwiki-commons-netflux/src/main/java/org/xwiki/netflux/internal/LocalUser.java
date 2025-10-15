@@ -19,46 +19,37 @@
  */
 package org.xwiki.netflux.internal;
 
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.inject.Singleton;
-import jakarta.websocket.CloseReason;
-import jakarta.websocket.Endpoint;
-import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.Session;
 
-import org.xwiki.component.annotation.Component;
-import org.xwiki.websocket.EndpointComponent;
-
 /**
- * The Netflux WebSocket end-point.
+ * A user accessing the current instance.
  * 
  * @version $Id$
- * @since 13.9RC1
+ * @since 17.10.1
+ * @since 18.0.0RC1
  */
-@Component
-@Singleton
-@Named("netflux")
-public class NetfluxEndpoint extends Endpoint implements EndpointComponent
+public class LocalUser extends User
 {
-    @Inject
-    private Netflux netflux;
+    private final Session session;
 
-    @Override
-    public void onOpen(Session session, EndpointConfig config)
+    /**
+     * Creates a new user with the specified name, using the given WebSocket session.
+     * 
+     * @param session the WebSocket session used to communicate with the user
+     * @param name the identifier of the user
+     */
+    public LocalUser(Session session, String name)
     {
-        this.netflux.onOpen(session);
+        super(name);
+
+        this.session = session;
     }
 
-    @Override
-    public void onClose(Session session, CloseReason closeReason)
+    /**
+     * @return the WebSocket session
+     */
+    public Session getSession()
     {
-        this.netflux.onClose(session, closeReason);
-    }
-
-    @Override
-    public void onError(Session session, Throwable thr)
-    {
-        this.netflux.onError(session, thr);
+        return this.session;
     }
 }
