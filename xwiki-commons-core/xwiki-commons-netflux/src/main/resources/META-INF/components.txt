@@ -1,5 +1,8 @@
 org.xwiki.netflux.internal.ChannelStore
 org.xwiki.netflux.internal.HistoryKeeper
 org.xwiki.netflux.internal.IdGenerator
+org.xwiki.netflux.internal.DefaultLocalUserFactory
 org.xwiki.netflux.internal.MessageBuilder
+org.xwiki.netflux.internal.Netflux
 org.xwiki.netflux.internal.NetfluxEndpoint
+org.xwiki.netflux.internal.event.CommandListener
