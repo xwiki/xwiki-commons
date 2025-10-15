@@ -76,7 +76,6 @@ import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepositoryException;
 import org.xwiki.extension.repository.internal.ExtensionSerializer;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
-import org.xwiki.extension.version.internal.DefaultVersion;
 import org.xwiki.job.Job;
 import org.xwiki.properties.converter.Converter;
 import org.xwiki.tool.extension.ComponentRepresentation;
@@ -330,6 +329,16 @@ public class ExtensionMojoHelper implements AutoCloseable
         return toExtension(toArtifactModel(artifact, project.getModel()));
     }
 
+    /**
+     * @since 17.9.0RC1
+     * @since 17.4.6
+     * @since 16.10.13
+     */
+    public Extension toExtension(Artifact artifact, Model model)
+    {
+        return toExtension(toArtifactModel(artifact, model));
+    }
+
     public Extension toExtension(ArtifactModel model)
     {
         Extension extension = this.extensionConverter.convert(Extension.class, model);
@@ -568,6 +577,12 @@ public class ExtensionMojoHelper implements AutoCloseable
         // Get Extension instance
         Extension mavenExtension = toExtension(artifactModel);
 
+        serializeExtension(path, mavenExtension);
+    }
+
+    public void serializeExtension(File path, Extension mavenExtension)
+        throws IOException, ParserConfigurationException, TransformerException
+    {
         if (!path.exists()) {
             // Save the Extension descriptor
             try (FileOutputStream stream = new FileOutputStream(path)) {
@@ -580,10 +595,16 @@ public class ExtensionMojoHelper implements AutoCloseable
     {
         if (this.extensionOverrides != null) {
             for (ExtensionOverride extensionOverride : this.extensionOverrides) {
-                String id = extensionOverride.get(Extension.FIELD_ID);
-                if (extension.getId().getId().equals(id)) {
-                    String version = extensionOverride.get(Extension.FIELD_VERSION);
-                    if (version == null || extension.getId().getVersion().equals(new DefaultVersion(id))) {
+                ExtensionId extensionId =
+                    ExtensionIdConverter.toExtensionId(extensionOverride.get(Extension.FIELD_ID), null);
+                if (extension.getId().getId().equals(extensionId.getId())) {
+                    if (extensionId.getVersion() == null
+                        || extension.getId().getVersion().equals(extensionId.getVersion())) {
+                        // Override version
+                        String versionString = extensionOverride.get(Extension.FIELD_VERSION);
+                        if (versionString != null) {
+                            extension.setId(new ExtensionId(extension.getId().getId(), versionString));
+                        }
                         // Override features
                         String featuresString = extensionOverride.get(Extension.FIELD_FEATURES);
                         if (featuresString != null) {
