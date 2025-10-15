@@ -28,10 +28,13 @@ import jakarta.websocket.CloseReason;
 import jakarta.websocket.RemoteEndpoint.Basic;
 import jakarta.websocket.Session;
 
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.xwiki.netflux.internal.event.CommandListener;
+import org.xwiki.observation.internal.DefaultObservationManager;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
@@ -52,7 +55,8 @@ import static org.mockito.Mockito.when;
  * @since 13.9RC1
  */
 @ComponentTest
-@ComponentList({ChannelStore.class, MessageBuilder.class, IdGenerator.class})
+@ComponentList({Netflux.class, ChannelStore.class, MessageBuilder.class, IdGenerator.class,
+    DefaultObservationManager.class, CommandListener.class, DefaultLocalUserFactory.class})
 class NetfluxEndpointTest
 {
     @InjectMockComponents
@@ -72,6 +76,7 @@ class NetfluxEndpointTest
 
         // Alice opens a new session.
         Session aliceSession = mockSession("alice");
+        when(aliceSession.getId()).thenReturn("alisesession");
         this.endPoint.onOpen(aliceSession, null);
 
         verify(aliceSession).addMessageHandler(this.messageHandlerCaptor.capture());
@@ -79,6 +84,7 @@ class NetfluxEndpointTest
 
         // Bob opens a new session.
         Session bobSession = mockSession("bob");
+        when(bobSession.getId()).thenReturn("bobSession");
         this.endPoint.onOpen(bobSession, null);
 
         verify(bobSession).addMessageHandler(this.messageHandlerCaptor.capture());
@@ -91,15 +97,15 @@ class NetfluxEndpointTest
         // Alice joins the first channel.
         aliceMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(1, "JOIN", firstChannel.getKey())));
 
-        assertEquals(1, firstChannel.getConnectedUsers().size());
-        String aliceId = firstChannel.getConnectedUsers().get(0).getName();
+        assertEquals(1, firstChannel.getUsers().size());
+        String aliceId = IterableUtils.get(firstChannel.getUsers().values(), 0).getName();
 
         // Bob joins the first channel.
         bobMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(1, "JOIN", firstChannel.getKey())));
 
-        assertEquals(2, firstChannel.getConnectedUsers().size());
+        assertEquals(2, firstChannel.getUsers().size());
         assertEquals(1, firstChannel.getBots().size());
-        String bobId = firstChannel.getConnectedUsers().get(1).getName();
+        String bobId = IterableUtils.get(firstChannel.getUsers().values(), 1).getName();
 
         // Alice sends a message to the channel.
         aliceMessageHandler
@@ -117,7 +123,7 @@ class NetfluxEndpointTest
         // Both users join the second channel.
         bobMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(3, "JOIN", secondChannel.getKey())));
         aliceMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(4, "JOIN", secondChannel.getKey())));
-        assertEquals(2, secondChannel.getConnectedUsers().size());
+        assertEquals(2, secondChannel.getUsers().size());
         assertEquals(1, secondChannel.getBots().size());
 
         // Bob tries to join a channel with an invalid key.
@@ -142,15 +148,15 @@ class NetfluxEndpointTest
 
         // Bob leaves the first channel.
         bobMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(6, "LEAVE", firstChannel.getKey())));
-        assertEquals(1, firstChannel.getConnectedUsers().size());
-        assertEquals(2, secondChannel.getConnectedUsers().size());
+        assertEquals(1, firstChannel.getUsers().size());
+        assertEquals(2, secondChannel.getUsers().size());
 
         // Close both sessions.
         this.endPoint.onClose(bobSession, new CloseReason(CloseReason.CloseCodes.GOING_AWAY, "Bye!"));
         this.endPoint.onError(aliceSession, null);
 
-        assertEquals(0, firstChannel.getConnectedUsers().size());
-        assertEquals(0, secondChannel.getConnectedUsers().size());
+        assertEquals(0, firstChannel.getUsers().size());
+        assertEquals(0, secondChannel.getUsers().size());
 
         // The history keeper is still connected.
         assertEquals(1, firstChannel.getBots().size());
@@ -236,6 +242,7 @@ class NetfluxEndpointTest
     private Session mockSession(String name)
     {
         Session session = mock(Session.class, name);
+        when(session.getId()).thenReturn("sessionid");
         when(session.getUserProperties()).thenReturn(new HashMap<>());
         Basic basicRemote = mock(Basic.class);
         when(session.getBasicRemote()).thenReturn(basicRemote);
