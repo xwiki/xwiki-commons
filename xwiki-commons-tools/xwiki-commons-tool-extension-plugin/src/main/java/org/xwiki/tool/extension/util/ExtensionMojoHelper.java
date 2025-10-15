@@ -597,32 +597,30 @@ public class ExtensionMojoHelper implements AutoCloseable
             for (ExtensionOverride extensionOverride : this.extensionOverrides) {
                 ExtensionId extensionId =
                     ExtensionIdConverter.toExtensionId(extensionOverride.get(Extension.FIELD_ID), null);
-                if (extension.getId().getId().equals(extensionId.getId())) {
-                    if (extensionId.getVersion() == null
-                        || extension.getId().getVersion().equals(extensionId.getVersion())) {
-                        // Override version
-                        String versionString = extensionOverride.get(Extension.FIELD_VERSION);
-                        if (versionString != null) {
-                            extension.setId(new ExtensionId(extension.getId().getId(), versionString));
+                if (extension.getId().getId().equals(extensionId.getId()) && (extensionId.getVersion() == null
+                    || extension.getId().getVersion().equals(extensionId.getVersion()))) {
+                    // Override version
+                    String versionString = extensionOverride.get(Extension.FIELD_VERSION);
+                    if (versionString != null) {
+                        extension.setId(new ExtensionId(extension.getId().getId(), versionString));
+                    }
+                    // Override features
+                    String featuresString = extensionOverride.get(Extension.FIELD_FEATURES);
+                    if (featuresString != null) {
+                        Collection<String> features = ExtensionUtils.importPropertyStringList(featuresString, true);
+                        extension.setExtensionFeatures(
+                            ExtensionIdConverter.toExtensionIdList(features, extension.getId().getVersion()));
+                    }
+                    // Override properties
+                    String propertiesString = extensionOverride.get(Extension.FIELD_PROPERTIES);
+                    if (propertiesString != null) {
+                        Properties properties = new Properties();
+                        try {
+                            properties.load(new StringReader(propertiesString));
+                        } catch (IOException e) {
+                            // Does not make sense with a StringReader
                         }
-                        // Override features
-                        String featuresString = extensionOverride.get(Extension.FIELD_FEATURES);
-                        if (featuresString != null) {
-                            Collection<String> features = ExtensionUtils.importPropertyStringList(featuresString, true);
-                            extension.setExtensionFeatures(
-                                ExtensionIdConverter.toExtensionIdList(features, extension.getId().getVersion()));
-                        }
-                        // Override properties
-                        String propertiesString = extensionOverride.get(Extension.FIELD_PROPERTIES);
-                        if (propertiesString != null) {
-                            Properties properties = new Properties();
-                            try {
-                                properties.load(new StringReader(propertiesString));
-                            } catch (IOException e) {
-                                // Does not make sense with a StringReader
-                            }
-                            properties.forEach((key, value) -> extension.putProperty((String) key, value));
-                        }
+                        properties.forEach((key, value) -> extension.putProperty((String) key, value));
                     }
                 }
             }
