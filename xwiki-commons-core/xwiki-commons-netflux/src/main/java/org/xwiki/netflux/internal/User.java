@@ -22,8 +22,6 @@ package org.xwiki.netflux.internal;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import jakarta.websocket.Session;
-
 /**
  * Represents an user connected to a Netflux channel.
  * 
@@ -32,44 +30,20 @@ import jakarta.websocket.Session;
  */
 public class User
 {
-    private final Session session;
-
     private final String name;
 
     private final Set<Channel> channels = new LinkedHashSet<>();
 
-    private boolean connected = true;
-
     private long timeOfLastMessage = System.currentTimeMillis();
 
     /**
-     * Creates a new user with the specified name, using the given WebSocket session.
+     * Creates a new user with the specified identifier.
      * 
-     * @param session the WebSocket session used to communicate with the user
-     * @param name the user name
+     * @param name the identifier of the user
      */
-    public User(Session session, String name)
+    public User(String name)
     {
-        this.session = session;
         this.name = name;
-    }
-
-    /**
-     * @return whether this user is connected or not
-     */
-    public boolean isConnected()
-    {
-        return connected;
-    }
-
-    /**
-     * Sets whether this user is connected or not.
-     * 
-     * @param connected {@code true} if the user is connected, {@code false} otherwise
-     */
-    public void setConnected(boolean connected)
-    {
-        this.connected = connected;
     }
 
     /**
@@ -77,7 +51,7 @@ public class User
      */
     public long getTimeOfLastMessage()
     {
-        return timeOfLastMessage;
+        return this.timeOfLastMessage;
     }
 
     /**
@@ -91,19 +65,11 @@ public class User
     }
 
     /**
-     * @return the WebSocket session
-     */
-    public Session getSession()
-    {
-        return session;
-    }
-
-    /**
      * @return the user name
      */
     public String getName()
     {
-        return name;
+        return this.name;
     }
 
     /**
@@ -111,6 +77,6 @@ public class User
      */
     public Set<Channel> getChannels()
     {
-        return channels;
+        return this.channels;
     }
 }

@@ -60,7 +60,7 @@ class HistoryKeeperTest
     @Mock
     Basic basicRemote;
 
-    private User user;
+    private LocalUser user;
 
     private Channel channel = new Channel("test");
 
@@ -68,7 +68,7 @@ class HistoryKeeperTest
     void beforeEach()
     {
         when(this.session.getBasicRemote()).thenReturn(this.basicRemote);
-        this.user = new User(this.session, "alice");
+        this.user = new LocalUser(this.session, "alice");
         when(this.channels.get("test")).thenReturn(this.channel);
     }
 
