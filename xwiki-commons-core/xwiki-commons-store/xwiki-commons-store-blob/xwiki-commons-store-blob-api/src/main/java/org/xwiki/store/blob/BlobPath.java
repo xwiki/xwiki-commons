@@ -31,7 +31,7 @@ import org.xwiki.stability.Unstable;
  * interpret them as needed (e.g. S3 keys). BlobPaths are immutable.
  *
  * @version $Id$
- * @since 17.7.0RC1
+ * @since 17.9.0RC1
  */
 @Unstable
 public final class BlobPath
@@ -96,6 +96,12 @@ public final class BlobPath
      */
     public static BlobPath from(String path)
     {
+        if (path == null) {
+            throw new IllegalArgumentException("path must not be null");
+        }
+        if (path.isEmpty()) {
+            return BlobPath.ROOT;
+        }
         String[] parts = StringUtils.split(path, '/');
         List<String> nonEmpty = Arrays.stream(parts)
             .filter(s -> !s.isEmpty())
@@ -145,10 +151,31 @@ public final class BlobPath
 
         String lastSegment = getName() + suffix;
         List<String> newSegments = Stream.concat(
-                this.segments.stream().limit(this.segments.size() - 1L),
+                this.segments.stream().limit(this.segments.isEmpty() ? 0 : this.segments.size() - 1L),
                 Stream.of(lastSegment))
             .toList();
         return new BlobPath(newSegments);
+    }
+
+    /**
+     * Check if this path is an ancestor of another path or equals it.
+     *
+     * @param other the other path to compare against
+     * @return true if this path is an ancestor of the other path or equals it, false otherwise
+     */
+    public boolean isAncestorOfOrEquals(BlobPath other)
+    {
+        if (this.segments.size() > other.segments.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < this.segments.size(); i++) {
+            if (!this.segments.get(i).equals(other.segments.get(i))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

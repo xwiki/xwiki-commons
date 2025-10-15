@@ -20,6 +20,7 @@
 package org.xwiki.store.blob;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.xwiki.stability.Unstable;
 
@@ -27,7 +28,7 @@ import org.xwiki.stability.Unstable;
  * Exception thrown when a write condition is not satisfied.
  *
  * @version $Id$
- * @since 17.7.0RC1
+ * @since 17.9.0RC1
  */
 @Unstable
 public class WriteConditionFailedException extends BlobStoreException
@@ -86,6 +87,6 @@ public class WriteConditionFailedException extends BlobStoreException
     private static String formatWriteConditionError(BlobPath blobPath, List<WriteCondition> conditions)
     {
         return "Write conditions failed for blob " + blobPath + ": "
-            + conditions.stream().map(WriteCondition::getDescription).toList();
+            + conditions.stream().map(WriteCondition::getDescription).collect(Collectors.joining(", "));
     }
 }

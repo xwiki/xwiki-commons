@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
  * A storage that allows storing blob data.
  *
  * @version $Id$
- * @since 17.7.0RC1
+ * @since 17.9.0RC1
  */
 @Unstable
 public interface BlobStore
@@ -49,7 +49,7 @@ public interface BlobStore
     Blob getBlob(BlobPath path) throws BlobStoreException;
 
     /**
-     * List all blobs under the given path.
+     * List all blobs under the given path. The caller must close the returned stream after use.
      *
      * @param path the path prefix to search under
      * @return an iterator over all blobs under the given path
@@ -120,7 +120,10 @@ public interface BlobStore
     /**
      * Check if a directory is empty (i.e., contains no blobs).
      *
-     * @todo Clarify semantics when the path itself is a blob.
+     * <p>Only child blobs under the given path prefix are considered. If there is a blob
+     * with the exact same path as the directory being checked, it is not counted
+     * when determining if the directory is empty. This maintains consistency with
+     * {@link #listBlobs(BlobPath)} which lists only child blobs under the path prefix.</p>
      *
      * @param path the path of the directory to check
      * @return true if the directory is empty, false otherwise

@@ -28,7 +28,7 @@ import org.xwiki.store.StoreException;
  * Any exception raised in the XWiki BlobStore component must raise an exception of this type.
  *
  * @version $Id$
- * @since 17.7.0RC1
+ * @since 17.9.0RC1
  */
 @Unstable
 public class BlobStoreException extends StoreException

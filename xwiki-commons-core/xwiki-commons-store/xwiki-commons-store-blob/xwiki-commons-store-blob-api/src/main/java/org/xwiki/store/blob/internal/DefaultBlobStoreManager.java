@@ -19,12 +19,14 @@
  */
 package org.xwiki.store.blob.internal;
 
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
+import org.apache.commons.lang3.function.Failable;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -40,7 +42,7 @@ import org.xwiki.store.blob.BlobStoreManager;
  * configured store hint.
  *
  * @version $Id$
- * @since 17.7.0RC1
+ * @since 17.9.0RC1
  */
 @Component
 @Singleton
@@ -63,14 +65,15 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
                     try {
                         return getAndMaybeMigrateStore(name);
                     } catch (ComponentLookupException | BlobStoreException e) {
-                        throw new RuntimeException(e);
+                        throw Failable.rethrow(e);
                     }
                 });
-        } catch (RuntimeException e) {
-            if (e.getCause() instanceof BlobStoreException blobStoreException) {
+        } catch (UndeclaredThrowableException e) {
+            if (e.getUndeclaredThrowable() instanceof BlobStoreException blobStoreException) {
                 throw blobStoreException;
             }
-            throw new BlobStoreException("Failed to get or create blob store with name [" + name + "]", e);
+            throw new BlobStoreException("Failed to get or create blob store with name [" + name + "]",
+                e.getUndeclaredThrowable());
         }
     }
 
@@ -80,13 +83,13 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
         String migrationStoreHint = this.configuration.getMigrationStoreHint();
         BlobStore blobStore = getBlobStore(name, storeHint);
 
-        if (migrationStoreHint != null && !migrationStoreHint.equals(storeHint)) {
+        if (migrationStoreHint != null && !migrationStoreHint.equals(storeHint)
+            && blobStore.isEmptyDirectory(BlobPath.ROOT))
+        {
             BlobStore migrationStore = getBlobStore(name, migrationStoreHint);
-            // Check if the current store is empty before migrating data.
-            if (blobStore.isEmptyDirectory(BlobPath.ROOT)) {
-                blobStore.moveDirectory(migrationStore, BlobPath.ROOT, BlobPath.ROOT);
-            }
+            blobStore.moveDirectory(migrationStore, BlobPath.ROOT, BlobPath.ROOT);
         }
+
         return blobStore;
     }
 
