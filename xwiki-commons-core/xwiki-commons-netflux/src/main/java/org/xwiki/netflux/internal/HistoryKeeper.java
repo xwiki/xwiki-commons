@@ -30,6 +30,8 @@ import jakarta.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.netflux.internal.event.NetfluxMessageUserEvent;
+import org.xwiki.observation.ObservationManager;
 
 /**
  * Holds the key of the history keeper fake user that is added to all Netflux channels.
@@ -51,6 +53,9 @@ public class HistoryKeeper extends AbstractBot
     @Inject
     private MessageBuilder messageBuilder;
 
+    @Inject
+    private ObservationManager observation;
+
     @Override
     public String getId()
     {
@@ -60,7 +65,7 @@ public class HistoryKeeper extends AbstractBot
     }
 
     @Override
-    public void onUserMessage(User sender, List<Object> message)
+    public void onUserMessage(LocalUser sender, List<Object> message)
     {
         // The history keeper responds only to GET_HISTORY messages.
 
@@ -99,7 +104,7 @@ public class HistoryKeeper extends AbstractBot
 
         try {
             for (String msg : (Iterable<String>) messages::iterator) {
-                user.getSession().getBasicRemote().sendText(msg);
+                this.observation.notify(new NetfluxMessageUserEvent(user.getName(), msg), null);
             }
         } catch (Exception e) {
             this.logger.debug("Failed to send channel history.", e);
