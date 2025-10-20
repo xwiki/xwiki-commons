@@ -19,6 +19,8 @@
  */
 package org.xwiki.store.blob.internal;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
@@ -32,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.xwiki.store.blob.AbstractBlobStore;
 import org.xwiki.store.blob.Blob;
 import org.xwiki.store.blob.BlobAlreadyExistsException;
+import org.xwiki.store.blob.BlobDoesNotExistCondition;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
@@ -40,9 +43,11 @@ import org.xwiki.store.blob.BlobStoreException;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
-import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectsResponse;
+import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
+import software.amazon.awssdk.services.s3.model.UploadPartCopyRequest;
+import software.amazon.awssdk.services.s3.model.UploadPartCopyResponse;
 
 /**
  * S3-based blob store implementation.
@@ -55,6 +60,16 @@ public class S3BlobStore extends AbstractBlobStore
     private static final Logger LOGGER = LoggerFactory.getLogger(S3BlobStore.class);
 
     private static final String PATH_SEPARATOR = "/";
+
+    /**
+     * Maximum size for single-operation copy (5GB as per AWS documentation).
+     */
+    private static final long MULTIPART_COPY_THRESHOLD = 5L * 1024 * 1024 * 1024;
+
+    /**
+     * Size of each part in multipart copy (5GB, the maximum allowed part size).
+     */
+    private static final long MULTIPART_COPY_PART_SIZE = 5L * 1024 * 1024 * 1024;
 
     private final String bucketName;
 
@@ -86,7 +101,7 @@ public class S3BlobStore extends AbstractBlobStore
     }
 
     @Override
-    public Stream<Blob> listBlobs(BlobPath path) throws BlobStoreException
+    public Stream<Blob> listBlobs(BlobPath path)
     {
         String prefix = getS3KeyPrefix(path);
 
@@ -110,20 +125,52 @@ public class S3BlobStore extends AbstractBlobStore
             throw new BlobStoreException("Source and target paths are the same");
         }
 
-        String sourceKey = buildS3Key(sourcePath);
-        return copyBlobInternal(sourcePath, targetPath, sourceKey);
+        return copyBlobInternal(this, sourcePath, targetPath);
     }
 
-    private Blob copyBlobInternal(BlobPath sourcePath, BlobPath targetPath, String sourceKey) throws BlobStoreException
+    private Blob copyBlobInternal(S3BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath)
+        throws BlobStoreException
     {
+        String sourceKey = sourceStore.buildS3Key(sourcePath);
         String targetKey = buildS3Key(targetPath);
 
+        // Check if target already exists
+        Blob targetBlob = getBlob(targetPath);
+        if (targetBlob.exists()) {
+            throw new BlobAlreadyExistsException(targetPath);
+        }
+
+        // Get source object size using the source store
+        Blob sourceBlob = sourceStore.getBlob(sourcePath);
+        long objectSize = sourceBlob.getSize();
+
+        if (objectSize < 0) {
+            throw new BlobNotFoundException(sourcePath);
+        }
+
+        // Choose copy strategy based on object size.
+        if (objectSize < MULTIPART_COPY_THRESHOLD) {
+            performSimpleCopy(sourceStore.bucketName, sourceKey, targetKey);
+        } else {
+            performMultipartCopy(sourceStore.bucketName, sourceKey, targetKey, objectSize, targetPath);
+        }
+
+        return getBlob(targetPath);
+    }
+
+    /**
+     * Performs a simple single-operation copy for objects smaller than 5GB.
+     *
+     * @param sourceBucket the source S3 bucket
+     * @param sourceKey the source S3 key
+     * @param targetKey the target S3 key
+     * @throws BlobStoreException if the copy operation fails
+     */
+    private void performSimpleCopy(String sourceBucket, String sourceKey, String targetKey) throws BlobStoreException
+    {
         try {
-            // Use S3 copyObject with conditional copy to ensure target doesn't exist
-            // TODO: according to the documentation, this only works for objects smaller than 5GB.
-            // See https://docs.aws.amazon.com/AmazonS3/latest/userguide/CopyingObjectsMPUapi.html
             CopyObjectRequest copyRequest = CopyObjectRequest.builder()
-                .sourceBucket(this.bucketName)
+                .sourceBucket(sourceBucket)
                 .sourceKey(sourceKey)
                 .destinationBucket(this.bucketName)
                 .destinationKey(targetKey)
@@ -131,24 +178,78 @@ public class S3BlobStore extends AbstractBlobStore
                 .build();
 
             this.s3Client.copyObject(copyRequest);
+        } catch (Exception e) {
+            throw new BlobStoreException("Failed to perform simple copy", e);
+        }
+    }
 
-            return getBlob(targetPath);
-        } catch (NoSuchKeyException e) {
-            // This means the source key doesn't exist
-            throw new BlobNotFoundException(sourcePath, e);
-        } catch (S3Exception e) {
-            // Check if this is because target already exists by trying to get target metadata
-            try {
-                HeadObjectRequest headRequest = HeadObjectRequest.builder()
-                    .bucket(this.bucketName)
-                    .key(targetKey)
+    /**
+     * Performs a multipart copy for objects larger than 5GB.
+     *
+     * @param sourceBucket the source S3 bucket
+     * @param sourceKey the source S3 key
+     * @param targetKey the target S3 key
+     * @param objectSize the size of the object in bytes
+     * @param targetPath the target blob path (for error reporting)
+     * @throws BlobStoreException if the multipart copy operation fails
+     */
+    private void performMultipartCopy(String sourceBucket, String sourceKey, String targetKey, long objectSize,
+        BlobPath targetPath) throws BlobStoreException
+    {
+        S3MultipartUploadHelper uploadHelper = null;
+        boolean success = false;
+        try {
+            // Step 1: Initialize multipart upload
+            uploadHelper = new S3MultipartUploadHelper(
+                this.bucketName,
+                targetKey,
+                this.s3Client,
+                targetPath,
+                null
+            );
+
+            LOGGER.debug("Initiated multipart copy with upload ID: {}", uploadHelper.getUploadId());
+
+            // Step 2: Copy parts
+            long bytePosition = 0;
+
+            while (bytePosition < objectSize) {
+                long lastByte = Math.min(bytePosition + MULTIPART_COPY_PART_SIZE - 1, objectSize - 1);
+                String copySourceRange = "bytes=%d-%d".formatted(bytePosition, lastByte);
+
+                int partNumber = uploadHelper.getNextPartNumber();
+
+                UploadPartCopyRequest uploadPartCopyRequest = UploadPartCopyRequest.builder()
+                    .sourceBucket(sourceBucket)
+                    .sourceKey(sourceKey)
+                    .destinationBucket(this.bucketName)
+                    .destinationKey(targetKey)
+                    .uploadId(uploadHelper.getUploadId())
+                    .partNumber(partNumber)
+                    .copySourceRange(copySourceRange)
                     .build();
-                this.s3Client.headObject(headRequest);
-                // Target exists, this might be why copy failed
-                throw new BlobAlreadyExistsException(targetPath);
-            } catch (NoSuchKeyException targetNotFound) {
-                // Target doesn't exist, so the error was something else
-                throw new BlobStoreException("Failed to copy blob from " + sourcePath + " to " + targetPath, e);
+
+                UploadPartCopyResponse uploadPartCopyResponse = this.s3Client.uploadPartCopy(uploadPartCopyRequest);
+
+                uploadHelper.addCompletedPart(uploadPartCopyResponse.copyPartResult().eTag());
+
+                LOGGER.debug("Copied part {} (bytes {}-{})", partNumber, bytePosition, lastByte);
+
+                bytePosition += MULTIPART_COPY_PART_SIZE;
+            }
+
+            // Step 3: Complete multipart upload
+            uploadHelper.complete();
+
+            LOGGER.debug("Completed multipart copy for key: {}", targetKey);
+
+            success = true;
+        } catch (Exception e) {
+            throw new BlobStoreException("Failed to perform multipart copy", e);
+        } finally {
+            // Abort the multipart upload on any kind of failure.
+            if (!success && uploadHelper != null) {
+                uploadHelper.abort();
             }
         }
     }
@@ -158,9 +259,8 @@ public class S3BlobStore extends AbstractBlobStore
     {
         if (sourceStore instanceof S3BlobStore s3SourceStore
             && s3SourceStore.bucketName.equals(this.bucketName)) {
-            String sourceKey = s3SourceStore.buildS3Key(sourcePath);
             // Optimize for same-bucket copies using S3 server-side copy
-            return copyBlobInternal(sourcePath, targetPath, sourceKey);
+            return copyBlobInternal(s3SourceStore, sourcePath, targetPath);
         } else {
             // Fall back to stream-based copy for different stores
             try (var inputStream = sourceStore.getBlob(sourcePath).getStream()) {
@@ -171,7 +271,7 @@ public class S3BlobStore extends AbstractBlobStore
                     throw new BlobAlreadyExistsException(targetPath);
                 }
 
-                targetBlob.writeFromStream(inputStream);
+                targetBlob.writeFromStream(inputStream, BlobDoesNotExistCondition.INSTANCE);
                 return targetBlob;
             } catch (BlobStoreException e) {
                 throw e;
@@ -200,8 +300,14 @@ public class S3BlobStore extends AbstractBlobStore
     @Override
     public boolean isEmptyDirectory(BlobPath path) throws BlobStoreException
     {
-        // Fetch with a page size of 1 as we only ever request the first element.
-        return !new S3BlobIterator(getS3KeyPrefix(path), this.bucketName, 1, this.s3Client, this).hasNext();
+        try {
+            // Fetch with a page size of 1 as we only ever request the first element.
+            return !new S3BlobIterator(getS3KeyPrefix(path), this.bucketName, 1, this.s3Client, this).hasNext();
+        } catch (Exception e) {
+            // The code doesn't throw any checked exceptions as the iterator cannot throw them, but we catch any
+            // runtime exceptions to make them nicer to handle for the caller.
+            throw new BlobStoreException("Failed to check if directory is empty: " + path, e);
+        }
     }
 
     @Override
@@ -210,13 +316,11 @@ public class S3BlobStore extends AbstractBlobStore
         String s3Key = buildS3Key(path);
 
         try {
-            DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+            this.s3Client.deleteObject(DeleteObjectRequest.builder()
                 .bucket(this.bucketName)
                 .key(s3Key)
-                .build();
-
-            this.s3Client.deleteObject(deleteRequest);
-        } catch (S3Exception e) {
+                .build());
+        } catch (Exception e) {
             throw new BlobStoreException("Failed to delete blob: " + path, e);
         }
     }
@@ -225,11 +329,41 @@ public class S3BlobStore extends AbstractBlobStore
     public void deleteBlobs(BlobPath path) throws BlobStoreException
     {
         try (Stream<Blob> blobs = listBlobs(path)) {
+            // Collect groups of 1000 blobs to delete at a time using S3 batch delete.
+            List<String> keysToDelete = new ArrayList<>();
             for (Blob blob : (Iterable<Blob>) blobs::iterator) {
-                // TODO: check with other client libraries if they have something
-                // TODO: clarify the behavior if some deletions fail
-                deleteBlob(blob.getPath());
+                keysToDelete.add(buildS3Key(blob.getPath()));
+                if (keysToDelete.size() >= 1000) {
+                    batchDeleteKeys(keysToDelete);
+                    keysToDelete.clear();
+                }
             }
+            if (!keysToDelete.isEmpty()) {
+                batchDeleteKeys(keysToDelete);
+            }
+        }
+    }
+
+    private void batchDeleteKeys(List<String> s3Keys) throws BlobStoreException
+    {
+        if (s3Keys.size() > 1000) {
+            throw new IllegalArgumentException("Can only delete up to 1000 keys at a time");
+        }
+
+        try {
+            DeleteObjectsRequest deleteRequest = DeleteObjectsRequest.builder()
+                .bucket(this.bucketName)
+                .delete(b -> b.objects(s3Keys.stream().map(key ->
+                    ObjectIdentifier.builder().key(key).build()
+                ).toList()))
+                .build();
+
+            DeleteObjectsResponse deleteObjectsResponse = this.s3Client.deleteObjects(deleteRequest);
+            if (!deleteObjectsResponse.errors().isEmpty()) {
+                throw new BlobStoreException("Failed to delete some blobs: " + deleteObjectsResponse.errors());
+            }
+        } catch (Exception e) {
+            throw new BlobStoreException("Failed to batch delete blobs", e);
         }
     }
 

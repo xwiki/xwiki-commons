@@ -32,6 +32,7 @@ import org.xwiki.store.blob.WriteCondition;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
@@ -70,12 +71,7 @@ public class S3Blob extends AbstractBlob
     public boolean exists() throws BlobStoreException
     {
         try {
-            HeadObjectRequest headRequest = HeadObjectRequest.builder()
-                .bucket(this.bucketName)
-                .key(this.s3Key)
-                .build();
-
-            this.s3Client.headObject(headRequest);
+            getHeadObject();
             return true;
         } catch (NoSuchKeyException e) {
             return false;
@@ -84,20 +80,25 @@ public class S3Blob extends AbstractBlob
         }
     }
 
+    private HeadObjectResponse getHeadObject()
+    {
+        HeadObjectRequest headRequest = HeadObjectRequest.builder()
+            .bucket(this.bucketName)
+            .key(this.s3Key)
+            .build();
+
+        return this.s3Client.headObject(headRequest);
+    }
+
     @Override
     public long getSize() throws BlobStoreException
     {
         try {
-            HeadObjectRequest headRequest = HeadObjectRequest.builder()
-                .bucket(this.bucketName)
-                .key(this.s3Key)
-                .build();
-
-            return this.s3Client.headObject(headRequest).contentLength();
+            return getHeadObject().contentLength();
         } catch (NoSuchKeyException e) {
             return -1;
         } catch (S3Exception e) {
-            throw new BlobStoreException("Failed to get size for blob: " + getPath(), e);
+            throw new BlobStoreException("Failed to get size for blob: %s".formatted(getPath()), e);
         }
     }
 
@@ -120,7 +121,7 @@ public class S3Blob extends AbstractBlob
         } catch (NoSuchKeyException e) {
             throw new BlobNotFoundException(getPath(), e);
         } catch (S3Exception e) {
-            throw new BlobStoreException("Failed to get stream for blob: " + getPath(), e);
+            throw new BlobStoreException("Failed to get stream for blob: %s".formatted(getPath()), e);
         }
     }
 }
