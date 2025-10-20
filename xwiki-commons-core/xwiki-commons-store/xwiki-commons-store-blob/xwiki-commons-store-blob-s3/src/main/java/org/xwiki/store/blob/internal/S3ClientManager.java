@@ -42,7 +42,6 @@ import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3ClientBuilder;
-import software.amazon.awssdk.services.s3.S3Configuration;
 
 /**
  * Component responsible for managing S3 client connections with proper pooling and configuration.
@@ -78,6 +77,7 @@ public class S3ClientManager implements Initializable, Disposable
     {
         if (this.s3Client != null) {
             this.s3Client.close();
+            this.s3Client = null;
             this.logger.info("S3 client disposed");
         }
     }
@@ -113,10 +113,7 @@ public class S3ClientManager implements Initializable, Disposable
         }
 
         // Configure S3-specific settings
-        S3Configuration s3Config = S3Configuration.builder()
-            .pathStyleAccessEnabled(this.configuration.isS3PathStyleAccess())
-            .build();
-        builder.serviceConfiguration(s3Config);
+        builder.serviceConfiguration(c -> c.pathStyleAccessEnabled(this.configuration.isS3PathStyleAccess()));
 
         // Configure HTTP client with connection pooling
         SdkHttpClient httpClient = ApacheHttpClient.builder()

@@ -81,7 +81,7 @@ public class S3BlobStoreManager implements BlobStoreManager, Initializable
     public BlobStore getBlobStore(String name) throws BlobStoreException
     {
         String keyPrefix = this.configuration.getS3KeyPrefix();
-        if (StringUtils.isNotBlank(keyPrefix) && !StringUtils.isNotBlank(name)) {
+        if (StringUtils.isNotBlank(keyPrefix) && StringUtils.isNotBlank(name)) {
             // Use store name as additional prefix if not default
             keyPrefix = keyPrefix + "/" + name;
         } else if (!StringUtils.isBlank(name)) {

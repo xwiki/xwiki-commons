@@ -19,10 +19,11 @@
  */
 package org.xwiki.store.blob.internal;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.xwiki.store.blob.BlobDoesNotExistCondition;
@@ -32,11 +33,6 @@ import org.xwiki.store.blob.WriteConditionFailedException;
 
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.AbortMultipartUploadRequest;
-import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadRequest;
-import software.amazon.awssdk.services.s3.model.CompletedPart;
-import software.amazon.awssdk.services.s3.model.CreateMultipartUploadRequest;
-import software.amazon.awssdk.services.s3.model.CreateMultipartUploadResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.UploadPartRequest;
@@ -53,11 +49,28 @@ public class S3BlobOutputStream extends OutputStream
 {
     // Use 5MB as the minimum part size for multipart uploads (AWS requirement)
     // There can be at maximum 10k parts, so this allows for files up to 50GB.
-    private static final int MULTIPART_THRESHOLD = 5 * 1024 * 1024;
-
-    private static final int PART_SIZE = 5 * 1024 * 1024;
+    private static final int PART_SIZE = S3MultipartUploadHelper.MIN_PART_SIZE;
 
     private static final String WILDCARD = "*";
+
+    private static final String GENERIC_FAILED_UPLOAD_MESSAGE = "Failed to upload to S3";
+
+    /**
+     * Extended ByteArrayOutputStream to expose an InputStream view of the current buffer. This avoids unnecessary
+     * copying of the internal buffer when uploading to S3.
+     */
+    private static class ByteArrayOutputStreamWithInputStream extends ByteArrayOutputStream
+    {
+        ByteArrayOutputStreamWithInputStream()
+        {
+            super();
+        }
+
+        public InputStream toInputStream()
+        {
+            return new ByteArrayInputStream(this.buf, 0, this.count);
+        }
+    }
 
     private final String bucketName;
 
@@ -65,22 +78,18 @@ public class S3BlobOutputStream extends OutputStream
 
     private final S3Client s3Client;
 
-    private final ByteArrayOutputStream buffer;
+    private final ByteArrayOutputStreamWithInputStream buffer;
 
     private boolean closed;
+
+    private boolean failed;
 
     private final List<WriteCondition> writeConditions;
 
     private final BlobPath blobPath;
 
-    // Multipart upload state
-    private String uploadId;
-
-    private final List<CompletedPart> completedParts;
-
-    private int partNumber;
-
-    private long totalBytesWritten;
+    // Multipart upload helper
+    private S3MultipartUploadHelper uploadHelper;
 
     /**
      * Constructor with write condition.
@@ -99,21 +108,31 @@ public class S3BlobOutputStream extends OutputStream
         this.s3Client = s3Client;
         this.writeConditions = conditions;
         this.blobPath = blobPath;
-        this.buffer = new ByteArrayOutputStream();
-        this.completedParts = new ArrayList<>();
-        this.partNumber = 1;
+        this.buffer = new ByteArrayOutputStreamWithInputStream();
+        this.failed = false;
     }
 
     @Override
     public void write(int b) throws IOException
     {
-        checkClosed();
-        this.buffer.write(b);
-        this.totalBytesWritten++;
+        checkStreamState();
 
-        // Check if we need to upload a part
-        if (this.buffer.size() >= PART_SIZE) {
-            uploadPart();
+        // Success flag to track if write completed without exceptions.
+        boolean success = false;
+        try {
+            this.buffer.write(b);
+
+            // Check if we need to upload a part.
+            if (this.buffer.size() >= PART_SIZE) {
+                uploadPartFromBuffer();
+            }
+
+            success = true;
+        } finally {
+            if (!success) {
+                // An error occurred during write, mark stream as failed.
+                markAsFailedAndCleanup();
+            }
         }
     }
 
@@ -126,23 +145,33 @@ public class S3BlobOutputStream extends OutputStream
     @Override
     public void write(byte[] b, int off, int len) throws IOException
     {
-        checkClosed();
+        checkStreamState();
 
-        int remaining = len;
-        int offset = off;
+        // Success flag to track if write completed without exceptions.
+        boolean success = false;
+        try {
+            int remaining = len;
+            int offset = off;
 
-        while (remaining > 0) {
-            int spaceInBuffer = PART_SIZE - this.buffer.size();
-            int toWrite = Math.min(remaining, spaceInBuffer);
+            while (remaining > 0) {
+                int spaceInBuffer = PART_SIZE - this.buffer.size();
+                int toWrite = Math.min(remaining, spaceInBuffer);
 
-            this.buffer.write(b, offset, toWrite);
-            this.totalBytesWritten += toWrite;
-            offset += toWrite;
-            remaining -= toWrite;
+                this.buffer.write(b, offset, toWrite);
+                offset += toWrite;
+                remaining -= toWrite;
 
-            // Check if we need to upload a part
-            if (this.buffer.size() >= PART_SIZE) {
-                uploadPart();
+                // Check if we need to upload a part
+                if (this.buffer.size() >= PART_SIZE) {
+                    uploadPartFromBuffer();
+                }
+            }
+
+            success = true;
+        } finally {
+            if (!success) {
+                // An error occurred during write, mark stream as failed.
+                markAsFailedAndCleanup();
             }
         }
     }
@@ -150,7 +179,7 @@ public class S3BlobOutputStream extends OutputStream
     @Override
     public void flush() throws IOException
     {
-        checkClosed();
+        checkStreamState();
         // For S3, we don't need to do anything special on flush
         // Data will be uploaded in parts or on close
     }
@@ -162,167 +191,133 @@ public class S3BlobOutputStream extends OutputStream
             return;
         }
 
+        this.closed = true;
+
+        if (this.failed) {
+            // If already in failed state, just return.
+            return;
+        }
+
+        // Success flag to track if close completed without exceptions.
+        boolean success = false;
         try {
-            if (this.uploadId != null) {
-                // Complete multipart upload
-                if (this.buffer.size() > 0) {
-                    // Upload the final part
-                    uploadPart();
-                }
-                completeMultipartUpload();
-            } else if (this.buffer.size() > 0) {
+            if (this.uploadHelper != null) {
+                // Complete multipart upload.
+                // Upload the final part (if any data is left in the buffer).
+                uploadPartFromBuffer();
+                this.uploadHelper.complete();
+            } else {
                 // Small file - use simple upload
                 uploadSimple();
             }
-        } catch (Exception e) {
-            // Clean up multipart upload if it was started
-            if (this.uploadId != null) {
-                try {
-                    abortMultipartUpload();
-                } catch (Exception abortException) {
-                    // Log but don't mask the original exception
-                    e.addSuppressed(abortException);
-                }
-            }
-            throw new IOException("Failed to finish upload to S3", e);
+            success = true;
         } finally {
-            this.buffer.close();
-            this.closed = true;
+            if (!success) {
+                // An error occurred during close, mark stream as failed.
+                markAsFailedAndCleanup();
+            }
         }
     }
 
-    private void uploadPart() throws IOException
+    private void uploadPartFromBuffer() throws IOException
     {
         if (this.buffer.size() == 0) {
             return;
         }
 
-        try {
-            // Initialize multipart upload if not already done
-            if (this.uploadId == null && this.totalBytesWritten >= MULTIPART_THRESHOLD) {
-                initializeMultipartUpload();
-            }
+        // Initialize multipart upload if not already done.
+        ensureMultipartUploadInitialized();
 
-            if (this.uploadId != null) {
-                // Upload as part of multipart upload
-                byte[] data = this.buffer.toByteArray();
+        // Get the next part number and ensure we haven't exceeded limits.
+        int partNumber = this.uploadHelper.getNextPartNumber();
 
-                UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
-                    .bucket(this.bucketName)
-                    .key(this.s3Key)
-                    .uploadId(this.uploadId)
-                    .partNumber(this.partNumber)
-                    .build();
+        try (InputStream inputStream = this.buffer.toInputStream()) {
+            // Upload as part of multipart upload.
+            UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
+                .bucket(this.bucketName)
+                .key(this.s3Key)
+                .uploadId(this.uploadHelper.getUploadId())
+                .partNumber(partNumber)
+                .build();
 
-                UploadPartResponse response = this.s3Client.uploadPart(uploadPartRequest,
-                    RequestBody.fromBytes(data));
+            UploadPartResponse response = this.s3Client.uploadPart(uploadPartRequest,
+                RequestBody.fromInputStream(inputStream, this.buffer.size()));
 
-                CompletedPart completedPart = CompletedPart.builder()
-                    .partNumber(this.partNumber)
-                    .eTag(response.eTag())
-                    .build();
+            this.uploadHelper.addCompletedPart(response.eTag());
 
-                this.completedParts.add(completedPart);
-                this.partNumber++;
-
-                // Clear the buffer for the next part
-                this.buffer.reset();
-            }
+            // Clear the buffer for the next part
+            this.buffer.reset();
         } catch (Exception e) {
             throw new IOException("Failed to upload part to S3", e);
         }
     }
 
-    private void initializeMultipartUpload() throws IOException
+    private void ensureMultipartUploadInitialized() throws IOException
     {
-        try {
-            CreateMultipartUploadRequest createRequest = CreateMultipartUploadRequest.builder()
-                .bucket(this.bucketName)
-                .key(this.s3Key)
-                .build();
-
-            CreateMultipartUploadResponse response = this.s3Client.createMultipartUpload(createRequest);
-            this.uploadId = response.uploadId();
-        } catch (Exception e) {
-            throw new IOException("Failed to initialize multipart upload", e);
+        if (this.uploadHelper != null) {
+            return;
         }
-    }
 
-    private void completeMultipartUpload() throws IOException
-    {
-        boolean ifNotExists = this.writeConditions.contains(BlobDoesNotExistCondition.INSTANCE);
-        try {
-            CompleteMultipartUploadRequest.Builder builder = CompleteMultipartUploadRequest.builder()
-                .bucket(this.bucketName)
-                .key(this.s3Key)
-                .uploadId(this.uploadId)
-                .multipartUpload(completedUpload -> completedUpload.parts(this.completedParts));
-
-            if (ifNotExists) {
-                builder.ifNoneMatch(WILDCARD);
-            }
-
-            CompleteMultipartUploadRequest completeRequest = builder.build();
-
-            this.s3Client.completeMultipartUpload(completeRequest);
-        } catch (S3Exception e) {
-            handleS3Exception(e, ifNotExists);
-        }
-    }
-
-    private void handleS3Exception(S3Exception e, boolean ifNotExists) throws IOException
-    {
-        // Check if this is a precondition failed error (412) for conditional requests
-        if (e.statusCode() == 412 && ifNotExists) {
-            throw new IOException("Write condition failed - blob already exists",
-                new WriteConditionFailedException(this.blobPath, this.writeConditions, e));
-        }
-        throw new IOException("Failed to upload to S3", e);
-    }
-
-    private void abortMultipartUpload()
-    {
-        if (this.uploadId != null) {
-            try {
-                AbortMultipartUploadRequest abortRequest = AbortMultipartUploadRequest.builder()
-                    .bucket(this.bucketName)
-                    .key(this.s3Key)
-                    .uploadId(this.uploadId)
-                    .build();
-
-                this.s3Client.abortMultipartUpload(abortRequest);
-            } catch (Exception e) {
-                // Ignore exceptions during cleanup
-            }
-        }
+        this.uploadHelper = new S3MultipartUploadHelper(
+            this.bucketName,
+            this.s3Key,
+            this.s3Client,
+            this.blobPath,
+            this.writeConditions
+        );
     }
 
     private void uploadSimple() throws IOException
     {
-        boolean ifNotExists = this.writeConditions.stream().anyMatch(BlobDoesNotExistCondition.class::isInstance);
-        try {
-            byte[] data = this.buffer.toByteArray();
+        try (InputStream inputStream = this.buffer.toInputStream()) {
             PutObjectRequest.Builder requestBuilder = PutObjectRequest.builder()
                 .bucket(this.bucketName)
                 .key(this.s3Key);
 
-            // Add conditional headers if needed
-            if (ifNotExists) {
+            // Add conditional headers if needed.
+            if (hasIfNotExistsCondition()) {
                 requestBuilder.ifNoneMatch(WILDCARD);
             }
 
-            PutObjectRequest putRequest = requestBuilder.build();
-            this.s3Client.putObject(putRequest, RequestBody.fromBytes(data));
+            this.s3Client.putObject(requestBuilder.build(),
+                RequestBody.fromInputStream(inputStream, this.buffer.size()));
         } catch (S3Exception e) {
-            // Check if this is a precondition failed error (412) for conditional requests
-            handleS3Exception(e, ifNotExists);
+            handleS3Exception(e);
+        } catch (Exception e) {
+            throw new IOException(GENERIC_FAILED_UPLOAD_MESSAGE, e);
         }
     }
 
-    private void checkClosed() throws IOException
+    private void handleS3Exception(S3Exception e) throws IOException
+    {
+        // Check if this is a precondition failed error (412) for conditional requests.
+        if (e.statusCode() == 412 && hasIfNotExistsCondition()) {
+            throw new IOException("Write condition failed - blob already exists",
+                new WriteConditionFailedException(this.blobPath, this.writeConditions, e));
+        }
+        throw new IOException(GENERIC_FAILED_UPLOAD_MESSAGE, e);
+    }
+
+    private boolean hasIfNotExistsCondition()
+    {
+        return this.writeConditions != null && this.writeConditions.contains(BlobDoesNotExistCondition.INSTANCE);
+    }
+
+    private void checkStreamState() throws IOException
     {
         if (this.closed) {
-            throw new IOException("Stream is closed");
+            throw new IOException("Stream closed");
+        }
+        if (this.failed) {
+            throw new IOException("Stream is in failed state due to previous error");
+        }
+    }
+
+    private void markAsFailedAndCleanup()
+    {
+        this.failed = true;
+        if (this.uploadHelper != null) {
+            this.uploadHelper.abort();
         }
     }
 }
