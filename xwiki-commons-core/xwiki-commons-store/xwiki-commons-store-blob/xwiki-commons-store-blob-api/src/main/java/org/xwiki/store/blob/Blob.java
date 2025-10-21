@@ -29,7 +29,7 @@ import org.xwiki.store.StreamProvider;
  * A Blob is a piece of data stored in a BlobStore.
  *
  * @version $Id$
- * @since 17.9.0RC1
+ * @since 17.10.0RC1
  */
 @Unstable
 public interface Blob extends StreamProvider

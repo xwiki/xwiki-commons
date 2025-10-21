@@ -28,7 +28,7 @@ import org.xwiki.stability.Unstable;
  * Exception thrown when a write condition is not satisfied.
  *
  * @version $Id$
- * @since 17.9.0RC1
+ * @since 17.10.0RC1
  */
 @Unstable
 public class WriteConditionFailedException extends BlobStoreException

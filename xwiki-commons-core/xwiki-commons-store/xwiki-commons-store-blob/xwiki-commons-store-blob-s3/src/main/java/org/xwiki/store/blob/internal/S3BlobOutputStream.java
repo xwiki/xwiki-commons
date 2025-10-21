@@ -43,7 +43,7 @@ import software.amazon.awssdk.services.s3.model.UploadPartResponse;
  * and simple uploads for small files to efficiently handle data without loading everything into memory.
  *
  * @version $Id$
- * @since 17.7.0RC1
+ * @since 17.10.0RC1
  */
 public class S3BlobOutputStream extends OutputStream
 {

@@ -26,7 +26,7 @@ import org.xwiki.stability.Unstable;
  * This ensures atomic create-only operations.
  *
  * @version $Id$
- * @since 17.9.0RC1
+ * @since 17.10.0RC1
  */
 @Unstable
 public final class BlobDoesNotExistCondition implements WriteCondition

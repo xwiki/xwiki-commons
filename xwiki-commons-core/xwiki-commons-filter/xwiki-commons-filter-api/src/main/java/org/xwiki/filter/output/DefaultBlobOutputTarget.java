@@ -29,7 +29,7 @@ import org.xwiki.store.blob.Blob;
  * An implementation of {@link OutputStreamOutputTarget} that writes to a {@link Blob}.
  *
  * @version $Id$
- * @since 17.8.0RC1
+ * @since 17.10.0RC1
  */
 @Unstable
 public class DefaultBlobOutputTarget extends AbstractOutputStreamOutputTarget

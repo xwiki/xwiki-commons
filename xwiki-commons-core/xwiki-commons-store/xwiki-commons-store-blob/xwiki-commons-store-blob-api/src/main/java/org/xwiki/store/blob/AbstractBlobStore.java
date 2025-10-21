@@ -28,7 +28,7 @@ import org.xwiki.stability.Unstable;
  * Abstract base class for {@link BlobStore} implementations.
  *
  * @version $Id$
- * @since 17.9.0RC1
+ * @since 17.10.0RC1
  */
 @Unstable
 public abstract class AbstractBlobStore implements BlobStore

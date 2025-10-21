@@ -31,7 +31,7 @@ import org.xwiki.stability.Unstable;
  * interpret them as needed (e.g. S3 keys). BlobPaths are immutable.
  *
  * @version $Id$
- * @since 17.9.0RC1
+ * @since 17.10.0RC1
  */
 @Unstable
 public final class BlobPath

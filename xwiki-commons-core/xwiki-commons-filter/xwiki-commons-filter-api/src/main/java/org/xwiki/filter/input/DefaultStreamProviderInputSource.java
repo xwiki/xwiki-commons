@@ -29,7 +29,7 @@ import org.xwiki.store.StreamProvider;
  * An input source based on a {@link StreamProvider}.
  *
  * @version $Id$
- * @since 17.8.0RC1
+ * @since 17.10.0RC1
  */
 @Unstable
 public class DefaultStreamProviderInputSource extends AbstractInputStreamInputSource

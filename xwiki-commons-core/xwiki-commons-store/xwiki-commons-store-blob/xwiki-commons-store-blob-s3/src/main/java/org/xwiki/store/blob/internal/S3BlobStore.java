@@ -41,7 +41,7 @@ import org.xwiki.store.blob.BlobStoreException;
  * S3-based blob store implementation.
  *
  * @version $Id$
- * @since 17.7.0RC1
+ * @since 17.10.0RC1
  */
 @Component(roles = S3BlobStore.class)
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)

@@ -30,7 +30,7 @@ import org.xwiki.store.blob.BlobPath;
  * Utility class for converting between BlobPath and S3 keys.
  *
  * @version $Id$
- * @since 17.7.0RC1
+ * @since 17.10.0RC1
  */
 class S3KeyMapper
 {

@@ -40,7 +40,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
  * A {@link Blob} implementation that represents a blob stored in S3.
  *
  * @version $Id$
- * @since 17.7.0RC1
+ * @since 17.10.0RC1
  */
 public class S3Blob extends AbstractBlob
 {
