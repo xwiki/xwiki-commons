@@ -30,7 +30,7 @@ import org.xwiki.configuration.ConfigurationSource;
  * Configuration for the Blob Store.
  *
  * @version $Id$
- * @since 17.9.0RC1
+ * @since 17.10.0RC1
  */
 @Component(roles = BlobStoreConfiguration.class)
 @Singleton

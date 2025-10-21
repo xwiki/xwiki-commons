@@ -44,7 +44,7 @@ import org.xwiki.store.blob.BlobStoreException;
  * A {@link BlobStore} implementation that stores blobs in the file system.
  *
  * @version $Id$
- * @since 17.9.0RC1
+ * @since 17.10.0RC1
  */
 public class FileSystemBlobStore extends AbstractBlobStore
 {

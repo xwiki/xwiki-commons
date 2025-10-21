@@ -35,7 +35,7 @@ import software.amazon.awssdk.services.s3.model.S3Object;
  * Iterator that fetches S3 objects page by page and converts them to Blob objects.
  *
  * @version $Id$
- * @since 17.7.0RC1
+ * @since 17.10.0RC1
  */
 final class S3BlobIterator implements Iterator<Blob>
 {

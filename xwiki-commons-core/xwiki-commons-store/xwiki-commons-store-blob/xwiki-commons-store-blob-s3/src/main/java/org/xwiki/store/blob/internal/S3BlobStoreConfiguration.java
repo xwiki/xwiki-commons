@@ -30,7 +30,7 @@ import org.xwiki.configuration.ConfigurationSource;
  * Configuration for the S3-based Blob Store.
  *
  * @version $Id$
- * @since 17.8.0RC1
+ * @since 17.10.0RC1
  */
 @Component(roles = S3BlobStoreConfiguration.class)
 @Singleton

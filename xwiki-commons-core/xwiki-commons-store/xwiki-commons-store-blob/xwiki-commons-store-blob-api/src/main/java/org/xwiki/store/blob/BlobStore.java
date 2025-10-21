@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
  * A storage that allows storing blob data.
  *
  * @version $Id$
- * @since 17.9.0RC1
+ * @since 17.10.0RC1
  */
 @Unstable
 public interface BlobStore

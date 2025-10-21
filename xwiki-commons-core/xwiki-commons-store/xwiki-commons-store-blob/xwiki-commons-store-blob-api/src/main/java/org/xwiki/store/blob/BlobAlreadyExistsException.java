@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
  * Exception thrown when trying to copy a blob to a target path that already contains a blob.
  *
  * @version $Id$
- * @since 17.9.0RC1
+ * @since 17.10.0RC1
  */
 @Unstable
 public class BlobAlreadyExistsException extends BlobStoreException

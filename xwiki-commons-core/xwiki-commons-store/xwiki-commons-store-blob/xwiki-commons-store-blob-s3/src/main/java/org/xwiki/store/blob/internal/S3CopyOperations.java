@@ -47,7 +47,7 @@ import software.amazon.awssdk.services.s3.model.UploadPartCopyResponse;
  * Strategy for copying blobs in S3, supporting both simple and multipart copies.
  *
  * @version $Id$
- * @since 17.7.0RC1
+ * @since 17.10.0RC1
  */
 @Component(roles = S3CopyOperations.class)
 @Singleton

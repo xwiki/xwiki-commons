@@ -42,7 +42,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
  * Blob store manager for the S3-based blob store.
  *
  * @version $Id$
- * @since 17.7.0RC1
+ * @since 17.10.0RC1
  */
 @Component
 @Named("s3")

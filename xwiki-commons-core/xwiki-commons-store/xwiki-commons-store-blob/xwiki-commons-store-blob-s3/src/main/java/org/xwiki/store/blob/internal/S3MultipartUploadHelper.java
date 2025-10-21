@@ -47,7 +47,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
  * completion, and cleanup on failure.
  *
  * @version $Id$
- * @since 17.7.0RC1
+ * @since 17.10.0RC1
  */
 public class S3MultipartUploadHelper
 {

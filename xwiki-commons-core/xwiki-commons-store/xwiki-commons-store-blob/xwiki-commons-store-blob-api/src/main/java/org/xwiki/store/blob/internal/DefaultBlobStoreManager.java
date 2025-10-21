@@ -42,7 +42,7 @@ import org.xwiki.store.blob.BlobStoreManager;
  * configured store hint.
  *
  * @version $Id$
- * @since 17.9.0RC1
+ * @since 17.10.0RC1
  */
 @Component
 @Singleton
