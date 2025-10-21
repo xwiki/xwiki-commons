@@ -61,6 +61,8 @@ public class S3ClientManager implements Initializable, Disposable
 
     private S3Client s3Client;
 
+    private SdkHttpClient httpClient;
+
     @Override
     public void initialize() throws InitializationException
     {
@@ -79,6 +81,12 @@ public class S3ClientManager implements Initializable, Disposable
             this.s3Client.close();
             this.s3Client = null;
             this.logger.info("S3 client disposed");
+        }
+
+        // Properly close the HTTP client to release connection pools.
+        if (this.httpClient != null) {
+            this.httpClient.close();
+            this.httpClient = null;
         }
     }
 
@@ -116,12 +124,12 @@ public class S3ClientManager implements Initializable, Disposable
         builder.serviceConfiguration(c -> c.pathStyleAccessEnabled(this.configuration.isS3PathStyleAccess()));
 
         // Configure HTTP client with connection pooling
-        SdkHttpClient httpClient = ApacheHttpClient.builder()
+        this.httpClient = ApacheHttpClient.builder()
             .maxConnections(this.configuration.getS3MaxConnections())
             .connectionTimeout(Duration.ofMillis(this.configuration.getS3ConnectionTimeout()))
             .socketTimeout(Duration.ofMillis(this.configuration.getS3SocketTimeout()))
             .build();
-        builder.httpClient(httpClient);
+        builder.httpClient(this.httpClient);
 
         // Configure timeouts and retry strategy
         builder.overrideConfiguration(c -> c

@@ -21,6 +21,7 @@ package org.xwiki.store.blob.internal;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
@@ -57,6 +58,9 @@ public class S3BlobStoreManager implements BlobStoreManager, Initializable
     @Inject
     private S3ClientManager clientManager;
 
+    @Inject
+    private Provider<S3BlobStore> blobStoreProvider;
+
     private String bucketName;
 
     @Override
@@ -89,8 +93,9 @@ public class S3BlobStoreManager implements BlobStoreManager, Initializable
             keyPrefix = name;
         }
 
-        S3Client s3Client = this.clientManager.getS3Client();
-        return new S3BlobStore(name, this.bucketName, keyPrefix, s3Client);
+        S3BlobStore blobStore = this.blobStoreProvider.get();
+        blobStore.initialize(name, this.bucketName, keyPrefix);
+        return blobStore;
     }
 
     private void validateBucketAccess() throws BlobStoreException

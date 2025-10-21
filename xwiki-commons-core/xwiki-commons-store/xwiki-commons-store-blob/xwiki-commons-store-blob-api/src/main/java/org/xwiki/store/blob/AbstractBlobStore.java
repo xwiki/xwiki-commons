@@ -33,7 +33,7 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public abstract class AbstractBlobStore implements BlobStore
 {
-    protected final String name;
+    protected String name;
 
     /**
      * Create a new blob store with the given name.

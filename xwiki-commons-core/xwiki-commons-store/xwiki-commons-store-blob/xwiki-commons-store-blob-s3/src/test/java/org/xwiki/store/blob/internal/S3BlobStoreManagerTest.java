@@ -19,12 +19,13 @@
  */
 package org.xwiki.store.blob.internal;
 
+import jakarta.inject.Provider;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.MockedConstruction;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
@@ -48,11 +49,11 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -73,6 +74,9 @@ class S3BlobStoreManagerTest
 
     @MockComponent
     private S3ClientManager clientManager;
+
+    @MockComponent
+    private Provider<S3BlobStore> blobStoreProvider;
 
     @RegisterExtension
     private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO);
@@ -226,26 +230,13 @@ class S3BlobStoreManagerTest
         BlobStoreManager manager = initializeManager();
         when(this.configuration.getS3KeyPrefix()).thenReturn(prefix);
 
-        // Mock the S3BlobStore constructor to capture the parameters.
-        try (MockedConstruction<S3BlobStore> mocked =
-            mockConstruction(S3BlobStore.class, (mock, context) -> {
-                // Verify the arguments.
-                String nameArgument = (String) context.arguments().get(0);
-                String bucketName = (String) context.arguments().get(1);
-                String keyPrefixArgument = (String) context.arguments().get(2);
-                S3Client client = (S3Client) context.arguments().get(3);
+        S3BlobStore store = mock();
+        when(this.blobStoreProvider.get()).thenReturn(store);
 
-                assertEquals(name, nameArgument);
-                assertEquals("test-bucket", bucketName);
-                assertEquals(keyPrefix, keyPrefixArgument);
-                assertEquals(this.s3Client, client);
-            })) {
+        BlobStore blobStore = manager.getBlobStore(name);
 
-            BlobStore blobStore = manager.getBlobStore(name);
-
-            assertNotNull(blobStore);
-            assertInstanceOf(S3BlobStore.class, blobStore);
-        }
+        assertSame(store, blobStore);
+        verify(store).initialize(name, "test-bucket", keyPrefix);
     }
 
     private BlobStoreManager initializeManager() throws Exception
