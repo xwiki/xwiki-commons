@@ -22,6 +22,7 @@ package org.xwiki.store.blob.internal;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -102,6 +103,23 @@ public class S3MultipartUploadHelper
     public S3MultipartUploadHelper(String bucketName, String s3Key, S3Client s3Client, BlobPath blobPath,
         List<WriteCondition> writeConditions) throws IOException
     {
+        this(bucketName, s3Key, s3Client, blobPath, writeConditions, null);
+    }
+
+    /**
+     * Constructor. Initializes the multipart upload immediately with metadata.
+     *
+     * @param bucketName the S3 bucket name
+     * @param s3Key the S3 key for the object
+     * @param s3Client the S3 client
+     * @param blobPath the blob path (for error reporting)
+     * @param writeConditions optional write conditions to enforce
+     * @param metadata optional metadata to apply to the object
+     * @throws IOException if initialization fails
+     */
+    public S3MultipartUploadHelper(String bucketName, String s3Key, S3Client s3Client, BlobPath blobPath,
+        List<WriteCondition> writeConditions, Map<String, String> metadata) throws IOException
+    {
         this.bucketName = bucketName;
         this.s3Key = s3Key;
         this.s3Client = s3Client;
@@ -112,11 +130,16 @@ public class S3MultipartUploadHelper
         this.completed = false;
         this.aborted = false;
 
-        // Initialize the multipart upload immediately
+        // Initialize the multipart upload immediately.
         try {
             CreateMultipartUploadRequest.Builder requestBuilder = CreateMultipartUploadRequest.builder()
                 .bucket(this.bucketName)
                 .key(this.s3Key);
+
+            // Add metadata if provided.
+            if (metadata != null && !metadata.isEmpty()) {
+                requestBuilder.metadata(metadata);
+            }
 
             CreateMultipartUploadRequest createRequest = requestBuilder.build();
             CreateMultipartUploadResponse response = this.s3Client.createMultipartUpload(createRequest);
@@ -265,7 +288,7 @@ public class S3MultipartUploadHelper
 
     private void handleS3Exception(S3Exception e) throws IOException
     {
-        // Check if this is a precondition failed error (412) for conditional requests
+        // Check if this is a precondition failed error (412) for conditional requests.
         if (e.statusCode() == 412 && hasIfNotExistsCondition()) {
             throw new IOException("Write condition failed - blob already exists",
                 new WriteConditionFailedException(this.blobPath, this.writeConditions, e));

@@ -146,7 +146,7 @@ final class S3BlobIterator implements Iterator<Blob>
             return null;
         }
 
-        BlobPath blobPath = this.store.s3KeyToBlobPath(key);
+        BlobPath blobPath = this.store.getKeyMapper().s3KeyToBlobPath(key);
         if (blobPath != null) {
             return new S3Blob(blobPath, this.bucketName, key, this.store, this.s3Client);
         }

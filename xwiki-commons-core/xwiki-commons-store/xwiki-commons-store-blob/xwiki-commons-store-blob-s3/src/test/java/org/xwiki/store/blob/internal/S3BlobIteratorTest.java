@@ -45,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -70,12 +71,16 @@ class S3BlobIteratorTest
     @Mock
     private S3BlobStore store;
 
+    @Mock
+    private S3KeyMapper keyMapper;
+
     private S3BlobIterator iterator;
 
     @BeforeEach
     void setUp()
     {
         this.iterator = new S3BlobIterator(PREFIX, BUCKET_NAME, PAGE_SIZE, this.s3Client, this.store);
+        lenient().when(this.store.getKeyMapper()).thenReturn(this.keyMapper);
     }
 
     @Test
@@ -96,8 +101,8 @@ class S3BlobIteratorTest
         // Mock blob path conversion
         BlobPath path1 = mock();
         BlobPath path2 = mock();
-        when(this.store.s3KeyToBlobPath("test/prefix/file1.txt")).thenReturn(path1);
-        when(this.store.s3KeyToBlobPath("test/prefix/file2.txt")).thenReturn(path2);
+        when(this.keyMapper.s3KeyToBlobPath("test/prefix/file1.txt")).thenReturn(path1);
+        when(this.keyMapper.s3KeyToBlobPath("test/prefix/file2.txt")).thenReturn(path2);
 
         // Verify iteration
         assertTrue(this.iterator.hasNext());
@@ -141,8 +146,8 @@ class S3BlobIteratorTest
         // Mock blob path conversion
         BlobPath path1 = mock();
         BlobPath path2 = mock();
-        when(this.store.s3KeyToBlobPath("test/prefix/file1.txt")).thenReturn(path1);
-        when(this.store.s3KeyToBlobPath("test/prefix/file2.txt")).thenReturn(path2);
+        when(this.keyMapper.s3KeyToBlobPath("test/prefix/file1.txt")).thenReturn(path1);
+        when(this.keyMapper.s3KeyToBlobPath("test/prefix/file2.txt")).thenReturn(path2);
 
         // Verify iteration
         assertTrue(this.iterator.hasNext());
@@ -185,8 +190,8 @@ class S3BlobIteratorTest
         // Mock blob path conversion
         BlobPath path1 = mock();
         BlobPath path2 = mock();
-        when(this.store.s3KeyToBlobPath("test/prefix/file1.txt")).thenReturn(path1);
-        when(this.store.s3KeyToBlobPath("test/prefix/file2.txt")).thenReturn(path2);
+        when(this.keyMapper.s3KeyToBlobPath("test/prefix/file1.txt")).thenReturn(path1);
+        when(this.keyMapper.s3KeyToBlobPath("test/prefix/file2.txt")).thenReturn(path2);
 
         // Verify iteration - directory should be skipped
         List<Blob> blobs = new ArrayList<>();
@@ -217,9 +222,9 @@ class S3BlobIteratorTest
         // Mock blob path conversion - obj2 returns null (invalid path)
         BlobPath path1 = mock();
         BlobPath path3 = mock();
-        when(this.store.s3KeyToBlobPath("test/prefix/file1.txt")).thenReturn(path1);
-        when(this.store.s3KeyToBlobPath("test/prefix/invalid.txt")).thenReturn(null);
-        when(this.store.s3KeyToBlobPath("test/prefix/file3.txt")).thenReturn(path3);
+        when(this.keyMapper.s3KeyToBlobPath("test/prefix/file1.txt")).thenReturn(path1);
+        when(this.keyMapper.s3KeyToBlobPath("test/prefix/invalid.txt")).thenReturn(null);
+        when(this.keyMapper.s3KeyToBlobPath("test/prefix/file3.txt")).thenReturn(path3);
 
         // Verify iteration - invalid path should be skipped
         List<Blob> blobs = new ArrayList<>();
@@ -258,7 +263,7 @@ class S3BlobIteratorTest
         when(this.s3Client.listObjectsV2(any(ListObjectsV2Request.class))).thenReturn(response);
 
         BlobPath path1 = mock();
-        when(this.store.s3KeyToBlobPath("test/prefix/file1.txt")).thenReturn(path1);
+        when(this.keyMapper.s3KeyToBlobPath("test/prefix/file1.txt")).thenReturn(path1);
 
         // Call next() without hasNext()
         Blob blob = this.iterator.next();
@@ -280,7 +285,7 @@ class S3BlobIteratorTest
         when(this.s3Client.listObjectsV2(any(ListObjectsV2Request.class))).thenReturn(response);
 
         BlobPath path1 = mock();
-        when(this.store.s3KeyToBlobPath("test/prefix/file1.txt")).thenReturn(path1);
+        when(this.keyMapper.s3KeyToBlobPath("test/prefix/file1.txt")).thenReturn(path1);
 
         // Multiple hasNext() calls should not advance the iterator
         assertTrue(this.iterator.hasNext());
@@ -331,7 +336,7 @@ class S3BlobIteratorTest
             .thenReturn(response2);
 
         BlobPath path1 = mock();
-        when(this.store.s3KeyToBlobPath("test/prefix/file1.txt")).thenReturn(path1);
+        when(this.keyMapper.s3KeyToBlobPath("test/prefix/file1.txt")).thenReturn(path1);
 
         assertTrue(this.iterator.hasNext());
         Blob blob = this.iterator.next();
