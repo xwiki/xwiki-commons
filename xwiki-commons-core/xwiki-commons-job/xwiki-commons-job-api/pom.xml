@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-job</artifactId>
-    <version>16.10.13</version>
+    <version>16.10.14-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-job-api</artifactId>
   <name>XWiki Commons - Job - API</name>
