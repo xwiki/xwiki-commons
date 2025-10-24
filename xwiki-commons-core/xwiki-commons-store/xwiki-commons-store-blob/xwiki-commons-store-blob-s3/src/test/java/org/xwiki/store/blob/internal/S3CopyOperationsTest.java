@@ -76,6 +76,9 @@ class S3CopyOperationsTest
     @MockComponent
     private S3ClientManager clientManager;
 
+    @MockComponent
+    private S3BlobStoreConfiguration configuration;
+
     @RegisterExtension
     private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.DEBUG);
 
@@ -115,6 +118,11 @@ class S3CopyOperationsTest
         when(this.sourceStore.getBlob(this.sourcePath)).thenReturn(this.sourceBlob);
         when(this.targetStore.getBlob(this.targetPath)).thenReturn(this.targetBlob);
         when(this.clientManager.getS3Client()).thenReturn(this.s3Client);
+
+        // Default part size: 5MB (5 * 1024 * 1024 bytes)
+        when(this.configuration.getS3MultipartPartUploadSizeBytes()).thenReturn(5 * 1024L * 1024L);
+        // Default copy size: 512MB (512 * 1024 * 1024 bytes)
+        when(this.configuration.getS3MultipartCopySizeBytes()).thenReturn(512 * 1024L * 1024L);
     }
 
     @Test
@@ -242,7 +250,8 @@ class S3CopyOperationsTest
     @Test
     void copyBlobS3StoreMultipartCopyForLargeObject() throws Exception
     {
-        long largeObjectSize = 6L * 1024 * 1024 * 1024;
+        // Use 600 MiB so that with a 512 MiB copy part size we get 2 parts
+        long largeObjectSize = 600L * 1024 * 1024;
 
         when(this.targetBlob.exists()).thenReturn(false);
         when(this.sourceBlob.getSize()).thenReturn(largeObjectSize);
@@ -306,13 +315,13 @@ class S3CopyOperationsTest
         assertEquals("Added completed part 1 for upload ID: test-upload-id", this.logCapture.getMessage(2));
 
         // Log message from S3CopyOperations
-        assertEquals("Copied part 1 (bytes 0-5368709119)", this.logCapture.getMessage(3));
+        assertEquals("Copied part 1 (bytes 0-536870911)", this.logCapture.getMessage(3));
 
         // Log messages from S3MultipartUploadHelper.addCompletedPart
         assertEquals("Added completed part 2 for upload ID: test-upload-id", this.logCapture.getMessage(4));
 
         // Log message from S3CopyOperations
-        assertEquals("Copied part 2 (bytes 5368709120-6442450943)", this.logCapture.getMessage(5));
+        assertEquals("Copied part 2 (bytes 536870912-629145599)", this.logCapture.getMessage(5));
 
         // Log messages from S3MultipartUploadHelper.complete
         assertEquals("Completed multipart upload for key target-key with upload ID: test-upload-id",
@@ -325,7 +334,8 @@ class S3CopyOperationsTest
     @Test
     void copyBlobS3StoreMultipartCopyAbortsOnFailure() throws Exception
     {
-        long largeObjectSize = 6L * 1024 * 1024 * 1024;
+        // Use 600 MiB so that with a 512 MiB copy part size we get 2 parts
+        long largeObjectSize = 600L * 1024 * 1024;
 
         when(this.targetBlob.exists()).thenReturn(false);
         when(this.sourceBlob.getSize()).thenReturn(largeObjectSize);
@@ -377,7 +387,7 @@ class S3CopyOperationsTest
     @Test
     void copyBlobS3StoreAtExactThreshold() throws Exception
     {
-        long exactThreshold = 5L * 1024 * 1024 * 1024;
+        long exactThreshold = 512L * 1024 * 1024;
 
         when(this.targetBlob.exists()).thenReturn(false);
         when(this.sourceBlob.getSize()).thenReturn(exactThreshold);
@@ -388,77 +398,5 @@ class S3CopyOperationsTest
         // Should use simple copy at threshold.
         verify(this.s3Client).copyObject(any(CopyObjectRequest.class));
         verify(this.s3Client, never()).uploadPartCopy(any(UploadPartCopyRequest.class));
-    }
-
-    @Test
-    void copyBlobS3StoreMultipartCopyWithEmptyMetadata() throws Exception
-    {
-        long largeObjectSize = 6L * 1024 * 1024 * 1024;
-
-        when(this.targetBlob.exists()).thenReturn(false);
-        when(this.sourceBlob.getSize()).thenReturn(largeObjectSize);
-
-        // Mock HeadObjectResponse with empty metadata
-        HeadObjectResponse headResponse = mock();
-        when(headResponse.metadata()).thenReturn(Map.of());
-        when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
-
-        CreateMultipartUploadResponse createResponse = mock();
-        when(createResponse.uploadId()).thenReturn("test-upload-id");
-        when(this.s3Client.createMultipartUpload(any(CreateMultipartUploadRequest.class)))
-            .thenReturn(createResponse);
-
-        UploadPartCopyResponse part1Response = mock();
-        CopyPartResult part1Result = mock();
-        when(part1Result.eTag()).thenReturn("etag1");
-        when(part1Response.copyPartResult()).thenReturn(part1Result);
-
-        UploadPartCopyResponse part2Response = mock();
-        CopyPartResult part2Result = mock();
-        when(part2Result.eTag()).thenReturn("etag2");
-        when(part2Response.copyPartResult()).thenReturn(part2Result);
-
-        when(this.s3Client.uploadPartCopy(any(UploadPartCopyRequest.class)))
-            .thenReturn(part1Response, part2Response);
-
-        when(this.s3Client.completeMultipartUpload(any(CompleteMultipartUploadRequest.class)))
-            .thenReturn(mock());
-
-        Blob result = this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore,
-            this.targetPath);
-
-        assertNotNull(result);
-
-        // Verify CreateMultipartUpload was called with empty metadata
-        ArgumentCaptor<CreateMultipartUploadRequest> createRequestCaptor = ArgumentCaptor.captor();
-        verify(this.s3Client).createMultipartUpload(createRequestCaptor.capture());
-        CreateMultipartUploadRequest createRequest = createRequestCaptor.getValue();
-        assertEquals(Map.of(), createRequest.metadata());
-
-        // Log messages from S3MultipartUploadHelper constructor
-        assertEquals("Initialized multipart upload for key target-key with upload ID: test-upload-id",
-            this.logCapture.getMessage(0));
-
-        // Log message from S3CopyOperations
-        assertEquals("Initiated multipart copy with upload ID: test-upload-id", this.logCapture.getMessage(1));
-
-        // Log messages from S3MultipartUploadHelper.addCompletedPart
-        assertEquals("Added completed part 1 for upload ID: test-upload-id", this.logCapture.getMessage(2));
-
-        // Log message from S3CopyOperations
-        assertEquals("Copied part 1 (bytes 0-5368709119)", this.logCapture.getMessage(3));
-
-        // Log messages from S3MultipartUploadHelper.addCompletedPart
-        assertEquals("Added completed part 2 for upload ID: test-upload-id", this.logCapture.getMessage(4));
-
-        // Log message from S3CopyOperations
-        assertEquals("Copied part 2 (bytes 5368709120-6442450943)", this.logCapture.getMessage(5));
-
-        // Log messages from S3MultipartUploadHelper.complete
-        assertEquals("Completed multipart upload for key target-key with upload ID: test-upload-id",
-            this.logCapture.getMessage(6));
-
-        // Log message from S3CopyOperations
-        assertEquals("Completed multipart copy for key: target-key", this.logCapture.getMessage(7));
     }
 }

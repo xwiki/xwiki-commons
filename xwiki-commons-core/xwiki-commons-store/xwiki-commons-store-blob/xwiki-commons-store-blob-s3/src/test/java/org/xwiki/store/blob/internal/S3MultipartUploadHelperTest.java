@@ -148,7 +148,8 @@ class S3MultipartUploadHelperTest
         // Try to get part 10001
         IOException exception = assertThrows(IOException.class, helper::getNextPartNumber);
         assertEquals(
-            "Exceeded maximum number of parts (10000) for multipart upload. Maximum supported size is 50000 GB",
+            "Exceeded maximum number of parts (10000) for multipart upload. "
+                + "Consider increasing the part size to reduce the number of parts.",
             exception.getMessage());
 
         assertInitializationLog(0);

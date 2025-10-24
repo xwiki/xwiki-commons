@@ -166,8 +166,7 @@ public class S3MultipartUploadHelper
         if (this.nextPartNumber > MAX_PARTS) {
             throw new IOException(String.format(
                 "Exceeded maximum number of parts (%d) for multipart upload. "
-                    + "Maximum supported size is %d GB",
-                MAX_PARTS, MAX_PARTS * MAX_PART_SIZE / (1024 * 1024 * 1024)));
+                    + "Consider increasing the part size to reduce the number of parts.", MAX_PARTS));
         }
 
         return this.nextPartNumber;

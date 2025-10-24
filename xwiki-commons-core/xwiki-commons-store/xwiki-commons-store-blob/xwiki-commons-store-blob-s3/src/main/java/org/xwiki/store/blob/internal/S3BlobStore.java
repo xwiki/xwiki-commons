@@ -52,6 +52,9 @@ public class S3BlobStore extends AbstractBlobStore
     @Inject
     private S3ClientManager clientManager;
 
+    @Inject
+    private S3BlobStoreConfiguration configuration;
+
     private S3KeyMapper keyMapper;
 
     @Inject
@@ -173,6 +176,14 @@ public class S3BlobStore extends AbstractBlobStore
     S3KeyMapper getKeyMapper()
     {
         return this.keyMapper;
+    }
+
+    /**
+     * @return the configured multipart part size in bytes
+     */
+    public long getMultipartPartUploadSizeBytes()
+    {
+        return this.configuration.getS3MultipartPartUploadSizeBytes();
     }
 
     @Override
