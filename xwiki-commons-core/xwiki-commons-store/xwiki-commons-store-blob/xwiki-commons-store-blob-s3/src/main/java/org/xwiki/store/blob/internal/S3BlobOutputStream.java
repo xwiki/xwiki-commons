@@ -47,17 +47,13 @@ import software.amazon.awssdk.services.s3.model.UploadPartResponse;
  */
 public class S3BlobOutputStream extends OutputStream
 {
-    // Use 5MB as the minimum part size for multipart uploads (AWS requirement)
-    // There can be at maximum 10k parts, so this allows for files up to 50GB.
-    private static final int PART_SIZE = S3MultipartUploadHelper.MIN_PART_SIZE;
-
     private static final String WILDCARD = "*";
 
     private static final String GENERIC_FAILED_UPLOAD_MESSAGE = "Failed to upload to S3";
 
     /**
-     * Extended ByteArrayOutputStream to expose an InputStream view of the current buffer. This avoids unnecessary
-     * copying of the internal buffer when uploading to S3.
+     * Extended ByteArrayOutputStream to expose an InputStream view of the current buffer.
+     * This avoids unnecessary copying of the internal buffer when uploading to S3.
      */
     private static class ByteArrayOutputStreamWithInputStream extends ByteArrayOutputStream
     {
@@ -80,6 +76,8 @@ public class S3BlobOutputStream extends OutputStream
 
     private final ByteArrayOutputStreamWithInputStream buffer;
 
+    private final int partSize;
+
     private boolean closed;
 
     private boolean failed;
@@ -99,9 +97,10 @@ public class S3BlobOutputStream extends OutputStream
      * @param s3Client the S3 client
      * @param conditions the write conditions to check
      * @param blobPath the blob path for error reporting
+     * @param partSizeBytes the configured multipart upload part size in bytes
      */
     public S3BlobOutputStream(String bucketName, String s3Key, S3Client s3Client, List<WriteCondition> conditions,
-        BlobPath blobPath)
+        BlobPath blobPath, long partSizeBytes)
     {
         this.bucketName = bucketName;
         this.s3Key = s3Key;
@@ -110,6 +109,9 @@ public class S3BlobOutputStream extends OutputStream
         this.blobPath = blobPath;
         this.buffer = new ByteArrayOutputStreamWithInputStream();
         this.failed = false;
+        // Cap part size to Integer.MAX_VALUE since ByteArrayOutputStream uses int for size (and about 2GB is in
+        // fact already too much as upload buffer).
+        this.partSize = (int) Math.min(partSizeBytes, Integer.MAX_VALUE);
     }
 
     @Override
@@ -123,7 +125,7 @@ public class S3BlobOutputStream extends OutputStream
             this.buffer.write(b);
 
             // Check if we need to upload a part.
-            if (this.buffer.size() >= PART_SIZE) {
+            if (this.buffer.size() >= this.partSize) {
                 uploadPartFromBuffer();
             }
 
@@ -154,7 +156,7 @@ public class S3BlobOutputStream extends OutputStream
             int offset = off;
 
             while (remaining > 0) {
-                int spaceInBuffer = PART_SIZE - this.buffer.size();
+                int spaceInBuffer = this.partSize - this.buffer.size();
                 int toWrite = Math.min(remaining, spaceInBuffer);
 
                 this.buffer.write(b, offset, toWrite);
@@ -162,7 +164,7 @@ public class S3BlobOutputStream extends OutputStream
                 remaining -= toWrite;
 
                 // Check if we need to upload a part
-                if (this.buffer.size() >= PART_SIZE) {
+                if (this.buffer.size() >= this.partSize) {
                     uploadPartFromBuffer();
                 }
             }
@@ -180,7 +182,7 @@ public class S3BlobOutputStream extends OutputStream
     public void flush() throws IOException
     {
         checkStreamState();
-        // For S3, we don't need to do anything special on flush
+        // For S3, we do not need to do anything special on flush
         // Data will be uploaded in parts or on close
     }
 
@@ -228,7 +230,7 @@ public class S3BlobOutputStream extends OutputStream
         // Initialize multipart upload if not already done.
         ensureMultipartUploadInitialized();
 
-        // Get the next part number and ensure we haven't exceeded limits.
+        // Get the next part number and ensure we have not exceeded limits.
         int partNumber = this.uploadHelper.getNextPartNumber();
 
         try (InputStream inputStream = this.buffer.toInputStream()) {

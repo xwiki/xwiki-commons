@@ -105,7 +105,9 @@ public class S3Blob extends AbstractBlob
     @Override
     public OutputStream getOutputStream(WriteCondition... conditions) throws BlobStoreException
     {
-        return new S3BlobOutputStream(this.bucketName, this.s3Key, this.s3Client, Arrays.asList(conditions), getPath());
+        long partSizeBytes = ((S3BlobStore) this.getStore()).getMultipartPartUploadSizeBytes();
+        return new S3BlobOutputStream(this.bucketName, this.s3Key, this.s3Client,
+            Arrays.asList(conditions), getPath(), partSizeBytes);
     }
 
     @Override

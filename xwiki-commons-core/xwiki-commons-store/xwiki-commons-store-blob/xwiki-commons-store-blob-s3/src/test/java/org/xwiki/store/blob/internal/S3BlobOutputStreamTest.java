@@ -143,7 +143,7 @@ class S3BlobOutputStreamTest
     {
         // Test simple upload for files smaller than the multipart threshold
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         byte[] data = "Hello, World!".getBytes();
         outputStream.write(data);
@@ -173,7 +173,7 @@ class S3BlobOutputStreamTest
             .thenReturn(createResponse);
 
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         // Write more than one part of data.
         byte[] data = new byte[PART_SIZE + 1000];
@@ -195,11 +195,11 @@ class S3BlobOutputStreamTest
 
         assertEquals(2, this.capturedUploadPartData.size());
         assertArrayEquals(Arrays.copyOfRange(data, 0, PART_SIZE), this.capturedUploadPartData.get(0));
-        assertArrayEquals(Arrays.copyOfRange(data, PART_SIZE, PART_SIZE + 1000), this.capturedUploadPartData.get(1));
+        assertArrayEquals(Arrays.copyOfRange(data, PART_SIZE, data.length), this.capturedUploadPartData.get(1));
     }
 
     @Test
-    void writeMultiplePartsWithRemainder() throws IOException
+    void writeMultiplePartsWithoutRemainder() throws IOException
     {
         // Test multipart upload with 3 full parts
         CreateMultipartUploadResponse createResponse = CreateMultipartUploadResponse.builder()
@@ -209,7 +209,7 @@ class S3BlobOutputStreamTest
             .thenReturn(createResponse);
 
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         // 3 full parts
         byte[] data = new byte[PART_SIZE * 3];
@@ -232,7 +232,7 @@ class S3BlobOutputStreamTest
     {
         // Test writing single bytes
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         // 'A'
         outputStream.write(65);
@@ -250,7 +250,7 @@ class S3BlobOutputStreamTest
     {
         // Test writing with offset and length parameters
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         byte[] data = "Hello, World!".getBytes();
         // Write "World"
@@ -267,7 +267,7 @@ class S3BlobOutputStreamTest
     {
         // Test closing an empty stream
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         outputStream.close();
 
@@ -284,7 +284,7 @@ class S3BlobOutputStreamTest
         this.writeConditions.add(BlobDoesNotExistCondition.INSTANCE);
 
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         byte[] data = "Test data".getBytes();
         outputStream.write(data);
@@ -312,7 +312,7 @@ class S3BlobOutputStreamTest
             .thenReturn(createResponse);
 
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         byte[] data = new byte[PART_SIZE + 1000];
         fillArray(data);
@@ -344,7 +344,7 @@ class S3BlobOutputStreamTest
             .thenThrow(s3Exception);
 
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         byte[] data = "Test data".getBytes();
         outputStream.write(data);
@@ -380,7 +380,7 @@ class S3BlobOutputStreamTest
             .thenThrow(s3Exception);
 
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         byte[] data = new byte[PART_SIZE + 1000];
         outputStream.write(data);
@@ -410,7 +410,7 @@ class S3BlobOutputStreamTest
             .thenThrow(new RuntimeException("Upload failed"));
 
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         byte[] data = new byte[PART_SIZE + 1000];
         assertThrows(IOException.class, () -> outputStream.write(data));
@@ -428,7 +428,7 @@ class S3BlobOutputStreamTest
             .thenThrow(new RuntimeException("Creation failed"));
 
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         byte[] data = new byte[PART_SIZE + 1000];
         assertThrows(IOException.class, () -> outputStream.write(data));
@@ -451,7 +451,7 @@ class S3BlobOutputStreamTest
             .thenThrow(new RuntimeException("Second upload failed"));
 
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         // First write should succeed.
         byte[] firstPart = new byte[PART_SIZE + 1000];
@@ -468,7 +468,7 @@ class S3BlobOutputStreamTest
     {
         // Test that writing after close throws an exception
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         outputStream.close();
 
@@ -482,7 +482,7 @@ class S3BlobOutputStreamTest
     {
         // Test that flush doesn't trigger any S3 operations
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         byte[] data = "Test data".getBytes();
         outputStream.write(data);
@@ -501,7 +501,7 @@ class S3BlobOutputStreamTest
     {
         // Test that closing multiple times doesn't cause issues
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         byte[] data = "Test data".getBytes();
         outputStream.write(data);
@@ -525,7 +525,7 @@ class S3BlobOutputStreamTest
             .thenReturn(createResponse);
 
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         byte[] data = new byte[PART_SIZE];
         fillArray(data);
@@ -552,7 +552,7 @@ class S3BlobOutputStreamTest
             .thenThrow(s3Exception);
 
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.writeConditions, this.blobPath);
+            this.writeConditions, this.blobPath, PART_SIZE);
 
         byte[] data = "Test data".getBytes();
         outputStream.write(data);

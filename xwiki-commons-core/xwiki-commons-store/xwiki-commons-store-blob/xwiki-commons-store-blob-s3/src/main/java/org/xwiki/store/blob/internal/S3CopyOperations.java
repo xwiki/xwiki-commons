@@ -53,18 +53,11 @@ import software.amazon.awssdk.services.s3.model.UploadPartCopyResponse;
 @Singleton
 public class S3CopyOperations
 {
-    /**
-     * Maximum size for single-operation copy (5GB as per AWS documentation).
-     */
-    private static final long MULTIPART_COPY_THRESHOLD = 5L * 1024 * 1024 * 1024;
-
-    /**
-     * Size of each part in multipart copy (5GB, the maximum allowed part size).
-     */
-    private static final long MULTIPART_COPY_PART_SIZE = 5L * 1024 * 1024 * 1024;
-
     @Inject
     private S3ClientManager clientManager;
+
+    @Inject
+    private S3BlobStoreConfiguration configuration;
 
     @Inject
     private Logger logger;
@@ -157,7 +150,7 @@ public class S3CopyOperations
         }
 
         // Choose copy strategy based on object size
-        if (objectSize <= MULTIPART_COPY_THRESHOLD) {
+        if (objectSize <= this.configuration.getS3MultipartCopySizeBytes()) {
             performSimpleCopy(sourceStore.getBucketName(), sourceKey, targetStore.getBucketName(), targetKey);
         } else {
             performMultipartCopy(sourceStore.getBucketName(), sourceKey, targetStore.getBucketName(), targetKey,
@@ -233,11 +226,13 @@ public class S3CopyOperations
 
             this.logger.debug("Initiated multipart copy with upload ID: {}", uploadHelper.getUploadId());
 
-            // Step 2: Copy parts
+            // Step 2: Copy parts using configured part size
+            // Use the configured multipart copy size for the size of copy parts.
+            long partSizeBytes = this.configuration.getS3MultipartCopySizeBytes();
             long bytePosition = 0;
 
             while (bytePosition < objectSize) {
-                long lastByte = Math.min(bytePosition + MULTIPART_COPY_PART_SIZE - 1, objectSize - 1);
+                long lastByte = Math.min(bytePosition + partSizeBytes - 1, objectSize - 1);
                 String copySourceRange = "bytes=%d-%d".formatted(bytePosition, lastByte);
 
                 int partNumber = uploadHelper.getNextPartNumber();
@@ -258,7 +253,7 @@ public class S3CopyOperations
 
                 this.logger.debug("Copied part {} (bytes {}-{})", partNumber, bytePosition, lastByte);
 
-                bytePosition += MULTIPART_COPY_PART_SIZE;
+                bytePosition += partSizeBytes;
             }
 
             // Step 3: Complete multipart upload

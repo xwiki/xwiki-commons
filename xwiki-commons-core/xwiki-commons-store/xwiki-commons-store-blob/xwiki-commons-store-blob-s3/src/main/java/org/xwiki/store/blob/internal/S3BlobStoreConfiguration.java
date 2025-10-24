@@ -135,4 +135,42 @@ public class S3BlobStoreConfiguration
     {
         return this.configurationSource.getProperty("store.s3.keyPrefix", "");
     }
+
+    /**
+     * Returns the configured multipart upload part size in bytes. Defaults to 5 MB if not configured. Uploads above
+     * this size will use multipart upload with parts of this size.
+     *
+     * @return the part size in bytes
+     */
+    public long getS3MultipartPartUploadSizeBytes()
+    {
+        int sizeMB = this.configurationSource.getProperty("store.s3.multipartPartUploadSizeMB", 5);
+
+        return convertToBytesAndLimitPartSize(sizeMB);
+    }
+
+    /**
+     * Returns the configured multipart copy size threshold in bytes. Defaults to 512 MB if not configured.
+     * Objects larger than this threshold will use multipart copy operations with parts of this size.
+     * If the size is smaller than {@link #getS3MultipartPartUploadSizeBytes()}, it will be increased to match it.
+     *
+     * @return the copy size threshold in bytes
+     */
+    public long getS3MultipartCopySizeBytes()
+    {
+        int sizeMB = this.configurationSource.getProperty("store.s3.multipartCopySizeMB", 512);
+
+        long copyBytes = convertToBytesAndLimitPartSize(sizeMB);
+
+        // Ensure the copy part size is at least the upload part size so that copying an object won't require more
+        // parts than uploading the same object.
+        long uploadPartSize = getS3MultipartPartUploadSizeBytes();
+        return Math.max(copyBytes, uploadPartSize);
+    }
+
+    private static long convertToBytesAndLimitPartSize(int sizeMB)
+    {
+        return Math.max(Math.min(sizeMB * 1024L * 1024L, S3MultipartUploadHelper.MAX_PART_SIZE),
+            S3MultipartUploadHelper.MIN_PART_SIZE);
+    }
 }
