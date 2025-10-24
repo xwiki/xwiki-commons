@@ -19,11 +19,6 @@
  */
 package org.xwiki.netflux.internal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,6 +26,11 @@ import java.util.Set;
 import jakarta.websocket.Session;
 
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link Channel}.
@@ -53,20 +53,17 @@ class ChannelTest
         assertTrue(channel.getMessages().isEmpty());
 
         assertEquals(0, channel.getUsers().size());
-        assertEquals(0, channel.getConnectedUsers().size());
 
         Session session = mock(Session.class);
 
-        channel.getUsers().put("alice", new User(null, "alice"));
-        channel.getUsers().put("bob", new User(session, "bob"));
+        channel.getUsers().put("alice", new LocalUser(null, "alice"));
+        channel.getUsers().put("bob", new LocalUser(session, "bob"));
 
-        User carol = new User(session, "carol");
-        carol.setConnected(false);
+        User carol = new LocalUser(session, "carol");
         channel.getUsers().put("carol", carol);
 
         assertEquals(3, channel.getUsers().size());
-        assertEquals(1, channel.getConnectedUsers().size());
-        assertEquals("bob", channel.getConnectedUsers().iterator().next().getName());
+        assertEquals("bob", channel.getUsers().values().iterator().next().getName());
     }
 
     @Test
