@@ -25,6 +25,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.xml.internal.html.CachedDocumentBuilderProvider;
 import org.xwiki.xml.internal.html.DefaultHTMLCleaner;
 import org.xwiki.xml.internal.html.XWikiHTML5TagProvider;
 import org.xwiki.xml.internal.html.filter.AttributeFilter;
@@ -52,6 +53,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ TYPE, METHOD, ANNOTATION_TYPE })
 @ComponentList({
     DefaultHTMLCleaner.class,
+    // Helper component to cache the document builder
+    CachedDocumentBuilderProvider.class,
     // Filters
     ListFilter.class,
     ListItemFilter.class,

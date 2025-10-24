@@ -25,8 +25,6 @@ import java.util.Arrays;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.htmlcleaner.CleanerProperties;
@@ -38,8 +36,6 @@ import org.htmlcleaner.TrimAttributeTagTransformation;
 import org.htmlcleaner.XWikiDOMSerializer;
 import org.w3c.dom.Document;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.context.Execution;
-import org.xwiki.context.ExecutionContext;
 import org.xwiki.xml.html.HTMLCleaner;
 import org.xwiki.xml.html.HTMLCleanerConfiguration;
 import org.xwiki.xml.html.HTMLConstants;
@@ -104,7 +100,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner
     private HTMLFilter sanitizerFilter;
 
     @Inject
-    private Execution execution;
+    private CachedDocumentBuilderProvider documentBuilderProvider;
 
     @Inject
     private XWikiHTML5TagProvider html5TagInfoProvider;
@@ -113,28 +109,6 @@ public class DefaultHTMLCleaner implements HTMLCleaner
     public Document clean(Reader originalHtmlContent)
     {
         return clean(originalHtmlContent, getDefaultConfiguration());
-    }
-
-    private DocumentBuilder getAvailableDocumentBuilder() throws ParserConfigurationException
-    {
-        ExecutionContext econtext = this.execution.getContext();
-
-        if (econtext != null) {
-            DocumentBuilder documentBuilder = (DocumentBuilder) econtext.getProperty(DocumentBuilder.class.getName());
-
-            if (documentBuilder == null) {
-                // The following line doesn't allow for XXE attacks since it's used in the clean() method where the
-                // DOCTYPE is set explicitly (and thus cannot be controlled by the user).
-                documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                econtext.setProperty(DocumentBuilder.class.getName(), documentBuilder);
-            }
-
-            return documentBuilder;
-        }
-
-        // The following line doesn't allow for XXE attacks since it's used in the clean() method where the
-        // DOCTYPE is set explicitly (and thus cannot be controlled by the user).
-        return DocumentBuilderFactory.newInstance().newDocumentBuilder();
     }
 
     @Override
@@ -150,7 +124,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner
         if (isHTML5(configuration)) {
             // Use our custom provider to fix bugs, should be checked on each upgrade if still necessary.
             cleaner = new HtmlCleaner(this.html5TagInfoProvider, cleanerProperties);
-        }  else {
+        } else {
             cleaner = new HtmlCleaner(cleanerProperties);
         }
 
@@ -177,7 +151,8 @@ public class DefaultHTMLCleaner implements HTMLCleaner
                         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"));
             }
             result =
-                new XWikiDOMSerializer(cleanerProperties).createDOM(getAvailableDocumentBuilder(), cleanedNode);
+                new XWikiDOMSerializer(cleanerProperties).createDOM(
+                    this.documentBuilderProvider.getAvailableDocumentBuilder(), cleanedNode);
         } catch (ParserConfigurationException ex) {
             throw new RuntimeException("Error while serializing TagNode into w3c dom.", ex);
         }
@@ -275,7 +250,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner
     /**
      * @param configuration The cleaner configuration.
      * @return the default cleaning transformations to perform on tags, in addition to the base transformations done by
-     *         HTML Cleaner
+     *     HTML Cleaner
      */
     private TrimAttributeCleanerTransformations getDefaultCleanerTransformations(HTMLCleanerConfiguration configuration)
     {
