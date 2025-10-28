@@ -55,20 +55,12 @@ class AbstractBlobStoreTest
     @Mock
     private BlobStore otherStore;
 
-    private AbstractBlobStore blobStore;
+    private AbstractBlobStore<?> blobStore;
 
     @BeforeEach
     void setUp()
     {
         this.blobStore = mock(AbstractBlobStore.class, Mockito.CALLS_REAL_METHODS);
-    }
-
-    @Test
-    void getName()
-    {
-        String expectedName = "testStore";
-        this.blobStore.name = expectedName;
-        assertEquals(expectedName, this.blobStore.getName());
     }
 
     @Test

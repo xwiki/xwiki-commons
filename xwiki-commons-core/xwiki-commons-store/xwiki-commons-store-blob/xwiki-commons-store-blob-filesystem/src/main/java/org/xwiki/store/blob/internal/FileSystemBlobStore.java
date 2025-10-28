@@ -39,6 +39,7 @@ import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
+import org.xwiki.store.blob.FileSystemBlobStoreProperties;
 
 /**
  * A {@link BlobStore} implementation that stores blobs in the file system.
@@ -46,7 +47,7 @@ import org.xwiki.store.blob.BlobStoreException;
  * @version $Id$
  * @since 17.10.0RC1
  */
-public class FileSystemBlobStore extends AbstractBlobStore
+public class FileSystemBlobStore extends AbstractBlobStore<FileSystemBlobStoreProperties>
 {
     /**
      * Number of attempts to make when trying to create parent directories for a blob operation.
@@ -58,15 +59,14 @@ public class FileSystemBlobStore extends AbstractBlobStore
     private final Path basePath;
 
     /**
-     * Creates a new FileSystemBlobStore with the given name and base path.
+     * Creates a new FileSystemBlobStore with the given properties.
      *
-     * @param name the name of the blob store
-     * @param basePath the base path in the file system where blobs are stored
+     * @param properties the properties for this blob store
      */
-    public FileSystemBlobStore(String name, Path basePath)
+    public FileSystemBlobStore(FileSystemBlobStoreProperties properties)
     {
-        super(name);
-        this.basePath = basePath;
+        super(properties);
+        this.basePath = properties.getRootDirectory();
     }
 
     @Override
@@ -104,6 +104,8 @@ public class FileSystemBlobStore extends AbstractBlobStore
             // List files recursively, ignoring directories.
             try {
                 Path normalizedAbsolutePath = absolutePath.normalize();
+                // The caller is responsible for closing the stream.
+                //noinspection resource
                 return Files.walk(normalizedAbsolutePath)
                     .filter(Files::isRegularFile)
                     .map(p -> {

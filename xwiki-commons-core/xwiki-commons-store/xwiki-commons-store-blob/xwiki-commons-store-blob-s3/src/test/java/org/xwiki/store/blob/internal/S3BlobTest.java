@@ -28,11 +28,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.xwiki.store.blob.BlobDoesNotExistCondition;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStoreException;
+import org.xwiki.store.blob.S3BlobStoreProperties;
 
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -48,11 +50,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -154,9 +158,25 @@ class S3BlobTest
     @Test
     void getOutputStreamReturnsS3BlobOutputStream() throws BlobStoreException
     {
-        OutputStream outputStream = this.blob.getOutputStream(BlobDoesNotExistCondition.INSTANCE);
+        S3BlobStoreProperties properties = new S3BlobStoreProperties();
+        properties.setMultipartUploadPartSize(5 * 1024 * 1024);
+        when(this.store.getProperties()).thenReturn(properties);
 
-        assertThat(outputStream, instanceOf(S3BlobOutputStream.class));
+        try (MockedConstruction<S3BlobOutputStream> mockedOutputStream = mockConstruction(S3BlobOutputStream.class,
+            (mock, context) -> {
+                assertEquals(BUCKET, context.arguments().get(0));
+                assertEquals(KEY, context.arguments().get(1));
+                assertSame(this.s3Client, context.arguments().get(2));
+                assertInstanceOf(List.class, context.arguments().get(3));
+                assertEquals(BLOB_PATH, context.arguments().get(4));
+                assertEquals(5 * 1024 * 1024L, context.arguments().get(5));
+            })) {
+
+            OutputStream outputStream = this.blob.getOutputStream(BlobDoesNotExistCondition.INSTANCE);
+
+            assertThat(outputStream, instanceOf(S3BlobOutputStream.class));
+            assertEquals(1, mockedOutputStream.constructed().size());
+        }
     }
 
     @Test

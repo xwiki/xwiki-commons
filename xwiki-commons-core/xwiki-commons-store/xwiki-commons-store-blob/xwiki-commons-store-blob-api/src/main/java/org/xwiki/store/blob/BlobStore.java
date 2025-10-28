@@ -33,11 +33,9 @@ import org.xwiki.stability.Unstable;
 public interface BlobStore
 {
     /**
-     * Get the name of this blob store.
-     *
-     * @return the name of this blob store
+     * @return the properties used to create this store
      */
-    String getName();
+    BlobStoreProperties getProperties();
 
     /**
      * Get the blob with the given identifier.

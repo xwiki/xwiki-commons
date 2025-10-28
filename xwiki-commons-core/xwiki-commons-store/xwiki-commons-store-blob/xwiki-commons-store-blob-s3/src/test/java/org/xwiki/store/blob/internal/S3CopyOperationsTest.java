@@ -76,9 +76,6 @@ class S3CopyOperationsTest
     @MockComponent
     private S3ClientManager clientManager;
 
-    @MockComponent
-    private S3BlobStoreConfiguration configuration;
-
     @RegisterExtension
     private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.DEBUG);
 
@@ -119,10 +116,8 @@ class S3CopyOperationsTest
         when(this.targetStore.getBlob(this.targetPath)).thenReturn(this.targetBlob);
         when(this.clientManager.getS3Client()).thenReturn(this.s3Client);
 
-        // Default part size: 5MB (5 * 1024 * 1024 bytes)
-        when(this.configuration.getS3MultipartPartUploadSizeBytes()).thenReturn(5 * 1024L * 1024L);
         // Default copy size: 512MB (512 * 1024 * 1024 bytes)
-        when(this.configuration.getS3MultipartCopySizeBytes()).thenReturn(512 * 1024L * 1024L);
+        when(this.targetStore.getMultipartPartCopySizeBytes()).thenReturn(512 * 1024L * 1024L);
     }
 
     @Test

@@ -33,23 +33,24 @@ import org.xwiki.store.blob.WriteCondition;
 /**
  * Abstract base class for {@link Blob} implementations.
  *
+ * @param <T> the typed blob store
  * @version $Id$
  * @since 17.10.0RC1
  */
-public abstract class AbstractBlob implements Blob
+public abstract class AbstractBlob<T extends BlobStore> implements Blob
 {
-    protected final BlobStore blobStore;
+    protected final T blobStore;
 
     protected final BlobPath blobPath;
 
-    protected AbstractBlob(BlobStore store, BlobPath blobPath)
+    protected AbstractBlob(T store, BlobPath blobPath)
     {
         this.blobStore = store;
         this.blobPath = blobPath;
     }
 
     @Override
-    public BlobStore getStore()
+    public T getStore()
     {
         return this.blobStore;
     }

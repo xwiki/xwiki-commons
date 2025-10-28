@@ -27,11 +27,12 @@ import jakarta.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
-import org.xwiki.store.blob.BlobStoreManager;
+import org.xwiki.store.blob.BlobStoreFactory;
+import org.xwiki.store.blob.BlobStoreProperties;
+import org.xwiki.store.blob.BlobStorePropertiesBuilder;
+import org.xwiki.store.blob.S3BlobStoreProperties;
 
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
@@ -39,15 +40,15 @@ import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 /**
- * Blob store manager for the S3-based blob store.
+ * Factory for S3 BlobStore backed by {@link S3BlobStore}.
  *
  * @version $Id$
  * @since 17.10.0RC1
  */
 @Component
-@Named("s3")
 @Singleton
-public class S3BlobStoreManager implements BlobStoreManager, Initializable
+@Named("s3")
+public class S3BlobStoreFactory implements BlobStoreFactory
 {
     @Inject
     private Logger logger;
@@ -61,61 +62,82 @@ public class S3BlobStoreManager implements BlobStoreManager, Initializable
     @Inject
     private Provider<S3BlobStore> blobStoreProvider;
 
-    private String bucketName;
-
     @Override
-    public void initialize() throws InitializationException
+    public String getType()
     {
-        this.bucketName = this.configuration.getS3BucketName();
-        if (StringUtils.isBlank(this.bucketName)) {
-            throw new InitializationException("S3 bucket name is required but not configured. "
-                + "Please set the 'store.s3.bucketName' property.");
-        }
-
-        // Verify bucket access
-        try {
-            validateBucketAccess();
-            this.logger.info("S3 blob store manager initialized for bucket: {}", this.bucketName);
-        } catch (Exception e) {
-            throw new InitializationException("Failed to validate S3 bucket access", e);
-        }
+        return "s3";
     }
 
     @Override
-    public BlobStore getBlobStore(String name) throws BlobStoreException
+    public Class<? extends BlobStoreProperties> getPropertiesClass()
     {
+        return S3BlobStoreProperties.class;
+    }
+
+    @Override
+    public BlobStorePropertiesBuilder newPropertiesBuilder(String name)
+    {
+        BlobStorePropertiesBuilder builder = new BlobStorePropertiesBuilder(name, getType());
+
+        // Initialize from configuration.
+        String bucket = this.configuration.getS3BucketName();
+        if (StringUtils.isNotBlank(bucket)) {
+            builder.set(S3BlobStoreProperties.BUCKET, bucket);
+        }
+
         String keyPrefix = this.configuration.getS3KeyPrefix();
         if (StringUtils.isNotBlank(keyPrefix) && StringUtils.isNotBlank(name)) {
-            // Use store name as additional prefix if not default
             keyPrefix = keyPrefix + "/" + name;
-        } else if (!StringUtils.isBlank(name)) {
-            // Use store name as prefix if no global prefix configured
+        } else if (StringUtils.isNotBlank(name)) {
             keyPrefix = name;
         }
+        builder.set(S3BlobStoreProperties.KEY_PREFIX, keyPrefix);
 
-        S3BlobStore blobStore = this.blobStoreProvider.get();
-        blobStore.initialize(name, this.bucketName, keyPrefix);
-        return blobStore;
+        builder.set(S3BlobStoreProperties.MULTIPART_UPLOAD_PART_SIZE,
+            this.configuration.getS3MultipartPartUploadSizeBytes());
+        builder.set(S3BlobStoreProperties.MULTIPART_COPY_PART_SIZE, this.configuration.getS3MultipartCopySizeBytes());
+
+        return builder;
     }
 
-    private void validateBucketAccess() throws BlobStoreException
+    @Override
+    public BlobStore create(BlobStoreProperties properties) throws BlobStoreException
+    {
+        if (!(properties instanceof S3BlobStoreProperties s3Properties)) {
+            throw new BlobStoreException("Invalid properties type for S3 blob store factory: "
+                + properties.getClass().getName());
+        }
+
+        // Validate bucket access before creating the store.
+        validateBucketAccess(s3Properties.getBucket());
+
+        S3BlobStore store = this.blobStoreProvider.get();
+        store.initialize(s3Properties);
+
+        this.logger.info("Created S3 blob store [{}] for bucket [{}]", s3Properties.getName(),
+            s3Properties.getBucket());
+
+        return store;
+    }
+
+    private void validateBucketAccess(String bucketName) throws BlobStoreException
     {
         try {
             S3Client s3Client = this.clientManager.getS3Client();
             HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                .bucket(this.bucketName)
+                .bucket(bucketName)
                 .build();
 
             s3Client.headBucket(headBucketRequest);
-            this.logger.debug("Successfully validated access to S3 bucket: {}", this.bucketName);
+            this.logger.debug("Successfully validated access to S3 bucket: {}", bucketName);
         } catch (NoSuchBucketException e) {
-            throw new BlobStoreException("S3 bucket does not exist: " + this.bucketName, e);
+            throw new BlobStoreException("S3 bucket does not exist: " + bucketName, e);
         } catch (S3Exception e) {
             if (e.statusCode() == 403) {
-                throw new BlobStoreException("Access denied to S3 bucket: " + this.bucketName
+                throw new BlobStoreException("Access denied to S3 bucket: " + bucketName
                     + ". Please check credentials and bucket permissions.", e);
             } else {
-                throw new BlobStoreException("Failed to access S3 bucket: " + this.bucketName, e);
+                throw new BlobStoreException("Failed to access S3 bucket: " + bucketName, e);
             }
         } catch (Exception e) {
             throw new BlobStoreException("Unexpected error while validating S3 bucket access", e);
