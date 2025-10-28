@@ -33,6 +33,9 @@
   <description>XWiki Commons - XML</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.90</xwiki.jacoco.instructionRatio>
+
+    <!-- Workaround a limitation in Eclipse M2E which prevent using classes from this test-jar in other module's main classes -->
+    <m2e.disableTestClasspathFlag>true</m2e.disableTestClasspathFlag>
   </properties>
   <dependencies>
     <dependency>
