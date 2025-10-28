@@ -44,7 +44,7 @@ import org.xwiki.store.blob.WriteConditionFailedException;
  * @version $Id$
  * @since 17.10.0RC1
  */
-public class FileSystemBlob extends AbstractBlob
+public class FileSystemBlob extends AbstractBlob<FileSystemBlobStore>
 {
     private final Path absolutePath;
 
@@ -86,7 +86,7 @@ public class FileSystemBlob extends AbstractBlob
         for (int attempt = 0; attempt < FileSystemBlobStore.NUM_ATTEMPTS; ++attempt) {
             try {
                 // Ensure the parent directory exists before creating the output stream.
-                ((FileSystemBlobStore) this.blobStore).createParents(this.absolutePath);
+                this.blobStore.createParents(this.absolutePath);
 
                 if (Arrays.stream(conditions).anyMatch(BlobDoesNotExistCondition.class::isInstance)) {
                     // Use CREATE_NEW to ensure atomic create-only behavior
@@ -105,7 +105,7 @@ public class FileSystemBlob extends AbstractBlob
             } catch (IOException e) {
                 // Something went wrong creating the output stream. Attempt to clean up any parent directories we may
                 // have created.
-                ((FileSystemBlobStore) this.blobStore).cleanUpParents(this.absolutePath);
+                this.blobStore.cleanUpParents(this.absolutePath);
                 throw new BlobStoreException("Error getting output stream.", e);
             }
         }

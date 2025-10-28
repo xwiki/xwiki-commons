@@ -57,9 +57,6 @@ public class S3CopyOperations
     private S3ClientManager clientManager;
 
     @Inject
-    private S3BlobStoreConfiguration configuration;
-
-    @Inject
     private Logger logger;
 
     /**
@@ -150,11 +147,10 @@ public class S3CopyOperations
         }
 
         // Choose copy strategy based on object size
-        if (objectSize <= this.configuration.getS3MultipartCopySizeBytes()) {
+        if (objectSize <= targetStore.getMultipartPartCopySizeBytes()) {
             performSimpleCopy(sourceStore.getBucketName(), sourceKey, targetStore.getBucketName(), targetKey);
         } else {
-            performMultipartCopy(sourceStore.getBucketName(), sourceKey, targetStore.getBucketName(), targetKey,
-                targetPath, objectSize);
+            performMultipartCopy(sourceStore, sourceKey, targetStore, targetKey, targetPath, objectSize);
         }
 
         return targetStore.getBlob(targetPath);
@@ -190,16 +186,16 @@ public class S3CopyOperations
     /**
      * Performs a multipart copy for objects larger than 5GB.
      *
-     * @param sourceBucket the source S3 bucket
+     * @param sourceStore the source S3 blob store
      * @param sourceKey the source S3 key
-     * @param targetBucket the target S3 bucket
+     * @param targetStore the target S3 blob store
      * @param targetKey the target S3 key
      * @param targetPath the target blob path (for error reporting)
      * @param objectSize the size of the object in bytes
      * @throws BlobStoreException if the multipart copy operation fails
      */
-    private void performMultipartCopy(String sourceBucket, String sourceKey, String targetBucket, String targetKey,
-        BlobPath targetPath, long objectSize) throws BlobStoreException
+    private void performMultipartCopy(S3BlobStore sourceStore, String sourceKey, S3BlobStore targetStore,
+        String targetKey, BlobPath targetPath, long objectSize) throws BlobStoreException
     {
         S3MultipartUploadHelper uploadHelper = null;
         boolean success = false;
@@ -208,7 +204,7 @@ public class S3CopyOperations
 
             // Retrieve source object metadata
             HeadObjectRequest headRequest = HeadObjectRequest.builder()
-                .bucket(sourceBucket)
+                .bucket(sourceStore.getBucketName())
                 .key(sourceKey)
                 .build();
             HeadObjectResponse headResponse = s3Client.headObject(headRequest);
@@ -216,7 +212,7 @@ public class S3CopyOperations
 
             // Step 1: Initialize multipart upload with metadata
             uploadHelper = new S3MultipartUploadHelper(
-                targetBucket,
+                targetStore.getBucketName(),
                 targetKey,
                 s3Client,
                 targetPath,
@@ -228,7 +224,7 @@ public class S3CopyOperations
 
             // Step 2: Copy parts using configured part size
             // Use the configured multipart copy size for the size of copy parts.
-            long partSizeBytes = this.configuration.getS3MultipartCopySizeBytes();
+            long partSizeBytes = targetStore.getMultipartPartCopySizeBytes();
             long bytePosition = 0;
 
             while (bytePosition < objectSize) {
@@ -238,9 +234,9 @@ public class S3CopyOperations
                 int partNumber = uploadHelper.getNextPartNumber();
 
                 UploadPartCopyRequest uploadPartCopyRequest = UploadPartCopyRequest.builder()
-                    .sourceBucket(sourceBucket)
+                    .sourceBucket(sourceStore.getBucketName())
                     .sourceKey(sourceKey)
-                    .destinationBucket(targetBucket)
+                    .destinationBucket(targetStore.getBucketName())
                     .destinationKey(targetKey)
                     .uploadId(uploadHelper.getUploadId())
                     .partNumber(partNumber)

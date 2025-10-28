@@ -55,5 +55,16 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- Enable bean validation in tests -->
+    <dependency>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.expressly</groupId>
+      <artifactId>expressly</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

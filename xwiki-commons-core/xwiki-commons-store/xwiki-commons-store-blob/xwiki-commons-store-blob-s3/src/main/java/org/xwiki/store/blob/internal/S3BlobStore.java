@@ -36,6 +36,7 @@ import org.xwiki.store.blob.Blob;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
+import org.xwiki.store.blob.S3BlobStoreProperties;
 
 /**
  * S3-based blob store implementation.
@@ -45,7 +46,7 @@ import org.xwiki.store.blob.BlobStoreException;
  */
 @Component(roles = S3BlobStore.class)
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
-public class S3BlobStore extends AbstractBlobStore
+public class S3BlobStore extends AbstractBlobStore<S3BlobStoreProperties>
 {
     private String bucketName;
 
@@ -74,19 +75,17 @@ public class S3BlobStore extends AbstractBlobStore
     /**
      * Initialize this blob store, must be called before performing any other operations.
      *
-     * @param name the name of this blob store
-     * @param bucketName the S3 bucket name
-     * @param keyPrefix the key prefix for all objects in this store
+     * @param properties the typed properties of this blob store
      */
-    public void initialize(String name, String bucketName, String keyPrefix)
+    public void initialize(S3BlobStoreProperties properties)
     {
-        this.name = name;
-        this.bucketName = bucketName;
-        this.keyMapper = new S3KeyMapper(keyPrefix);
+        this.properties = properties;
+        this.bucketName = properties.getBucket();
+        this.keyMapper = new S3KeyMapper(properties.getKeyPrefix());
     }
 
     @Override
-    public Blob getBlob(BlobPath path) throws BlobStoreException
+    public Blob getBlob(BlobPath path)
     {
         String s3Key = this.keyMapper.buildS3Key(path);
         return new S3Blob(path, this.bucketName, s3Key, this, this.clientManager.getS3Client());
@@ -179,11 +178,11 @@ public class S3BlobStore extends AbstractBlobStore
     }
 
     /**
-     * @return the configured multipart part size in bytes
+     * @return the configured multipart copy part size in bytes
      */
-    public long getMultipartPartUploadSizeBytes()
+    public long getMultipartPartCopySizeBytes()
     {
-        return this.configuration.getS3MultipartPartUploadSizeBytes();
+        return getProperties().getMultipartCopyPartSize();
     }
 
     @Override

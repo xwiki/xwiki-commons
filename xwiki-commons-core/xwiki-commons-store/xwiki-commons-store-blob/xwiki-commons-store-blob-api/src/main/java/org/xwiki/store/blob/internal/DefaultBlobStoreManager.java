@@ -26,16 +26,23 @@ import java.util.concurrent.ConcurrentHashMap;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.function.Failable;
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Disposable;
+import org.xwiki.properties.BeanManager;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
+import org.xwiki.store.blob.BlobStoreFactory;
 import org.xwiki.store.blob.BlobStoreManager;
+import org.xwiki.store.blob.BlobStoreProperties;
+import org.xwiki.store.blob.BlobStorePropertiesBuilder;
+import org.xwiki.store.blob.BlobStorePropertiesCustomizer;
 
 /**
  * Default implementation of {@link BlobStoreManager} that retrieves blob stores based on the name and the
@@ -53,6 +60,12 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
 
     @Inject
     private ComponentManager componentManager;
+
+    @Inject
+    private BeanManager beanManager;
+
+    @Inject
+    private Logger logger;
 
     private final Map<String, BlobStore> blobStores = new ConcurrentHashMap<>();
 
@@ -87,6 +100,7 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
             && blobStore.isEmptyDirectory(BlobPath.ROOT))
         {
             BlobStore migrationStore = getBlobStore(name, migrationStoreHint);
+            // TODO: if migration stops midway (e.g., with an error), it won't be resumed automatically.
             blobStore.moveDirectory(migrationStore, BlobPath.ROOT, BlobPath.ROOT);
         }
 
@@ -95,15 +109,27 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
 
     private BlobStore getBlobStore(String name, String storeHint) throws ComponentLookupException, BlobStoreException
     {
-        BlobStoreManager blobStoreManager;
-        // TODO: re-consider this design.
-        String specificHint = storeHint + "/" + name;
-        if (this.componentManager.hasComponent(BlobStoreManager.class, specificHint)) {
-            blobStoreManager = this.componentManager.getInstance(BlobStoreManager.class, specificHint);
-        } else {
-            blobStoreManager = this.componentManager.getInstance(BlobStoreManager.class, storeHint);
+        BlobStoreFactory factory = this.componentManager.getInstance(BlobStoreFactory.class, storeHint);
+
+        BlobStorePropertiesBuilder propertiesBuilder = factory.newPropertiesBuilder(name);
+
+        // Apply customizers.
+        for (BlobStorePropertiesCustomizer customizer : this.componentManager
+            .<BlobStorePropertiesCustomizer>getInstanceList(BlobStorePropertiesCustomizer.class)) {
+            customizer.customize(propertiesBuilder);
         }
-        return blobStoreManager.getBlobStore(name);
+
+        // Create properties bean and populate it using BeanManager.
+        Class<? extends BlobStoreProperties> propertiesClass = factory.getPropertiesClass();
+        BlobStoreProperties properties;
+        try {
+            properties = propertiesClass.getDeclaredConstructor().newInstance();
+            this.beanManager.populate(properties, propertiesBuilder.getAllProperties());
+        } catch (Exception e) {
+            throw new BlobStoreException("Failed to populate blob store properties for store [" + name + "]", e);
+        }
+
+        return factory.create(properties);
     }
 
     @Override
@@ -111,7 +137,12 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
     {
         for (BlobStore blobStore : this.blobStores.values()) {
             if (blobStore instanceof Disposable disposableStore) {
-                disposableStore.dispose();
+                try {
+                    disposableStore.dispose();
+                } catch (Exception e) {
+                    this.logger.warn("Failed to dispose blob store [{}], root cause: [{}].",
+                        blobStore.getProperties().getName(), ExceptionUtils.getRootCauseMessage(e));
+                }
             }
         }
     }

@@ -1,6 +1,6 @@
 org.xwiki.store.blob.internal.S3BlobStore
 org.xwiki.store.blob.internal.S3BlobStoreConfiguration
-org.xwiki.store.blob.internal.S3BlobStoreManager
+org.xwiki.store.blob.internal.S3ClientManager
 org.xwiki.store.blob.internal.S3CopyOperations
 org.xwiki.store.blob.internal.S3DeleteOperations
-org.xwiki.store.blob.internal.S3ClientManager
+org.xwiki.store.blob.internal.S3BlobStoreFactory

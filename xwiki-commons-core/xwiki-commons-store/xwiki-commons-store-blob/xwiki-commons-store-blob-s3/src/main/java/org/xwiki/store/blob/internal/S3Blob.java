@@ -42,7 +42,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
  * @version $Id$
  * @since 17.10.0RC1
  */
-public class S3Blob extends AbstractBlob
+public class S3Blob extends AbstractBlob<S3BlobStore>
 {
     private final String bucketName;
 
@@ -105,7 +105,7 @@ public class S3Blob extends AbstractBlob
     @Override
     public OutputStream getOutputStream(WriteCondition... conditions) throws BlobStoreException
     {
-        long partSizeBytes = ((S3BlobStore) this.getStore()).getMultipartPartUploadSizeBytes();
+        long partSizeBytes = this.getStore().getProperties().getMultipartUploadPartSize();
         return new S3BlobOutputStream(this.bucketName, this.s3Key, this.s3Client,
             Arrays.asList(conditions), getPath(), partSizeBytes);
     }

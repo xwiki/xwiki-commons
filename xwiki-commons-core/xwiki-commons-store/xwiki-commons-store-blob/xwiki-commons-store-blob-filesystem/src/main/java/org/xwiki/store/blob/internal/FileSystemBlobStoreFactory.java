@@ -20,20 +20,23 @@
 package org.xwiki.store.blob.internal;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.environment.Environment;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
-import org.xwiki.store.blob.BlobStoreManager;
+import org.xwiki.store.blob.BlobStoreFactory;
+import org.xwiki.store.blob.BlobStoreProperties;
+import org.xwiki.store.blob.BlobStorePropertiesBuilder;
+import org.xwiki.store.blob.FileSystemBlobStoreProperties;
 
 /**
- * Blob store manager for the file-system-based blob store.
+ * Factory for filesystem BlobStore backed by {@link FileSystemBlobStore}.
  *
  * @version $Id$
  * @since 17.10.0RC1
@@ -41,19 +44,44 @@ import org.xwiki.store.blob.BlobStoreManager;
 @Component
 @Singleton
 @Named("filesystem")
-public class FileSystemBlobStoreManager implements BlobStoreManager
+public class FileSystemBlobStoreFactory implements BlobStoreFactory
 {
     @Inject
     private Environment environment;
 
     @Override
-    public BlobStore getBlobStore(String name) throws BlobStoreException
+    public String getType()
     {
-        if (StringUtils.isBlank(name)) {
-            throw new BlobStoreException("The blob store name must not be null or empty");
+        return "filesystem";
+    }
+
+    @Override
+    public Class<? extends BlobStoreProperties> getPropertiesClass()
+    {
+        return FileSystemBlobStoreProperties.class;
+    }
+
+    @Override
+    public BlobStorePropertiesBuilder newPropertiesBuilder(String name) throws BlobStoreException
+    {
+        Objects.requireNonNull(name, "Blob store name cannot be null");
+        BlobStorePropertiesBuilder builder = new BlobStorePropertiesBuilder(name, getType());
+
+        // Default base path: $permanentDir/<name>
+        Path basePath = this.environment.getPermanentDirectory().toPath().resolve(name);
+        builder.set(FileSystemBlobStoreProperties.ROOT_DIRECTORY, basePath);
+
+        return builder;
+    }
+
+    @Override
+    public BlobStore create(BlobStoreProperties properties) throws BlobStoreException
+    {
+        if (!(properties instanceof FileSystemBlobStoreProperties fileSystemProperties)) {
+            throw new BlobStoreException("Invalid properties type for filesystem blob store factory: "
+                + properties.getClass().getName());
         }
 
-        Path basePath = this.environment.getPermanentDirectory().toPath().resolve(name);
-        return new FileSystemBlobStore(name, basePath);
+        return new FileSystemBlobStore(fileSystemProperties);
     }
 }

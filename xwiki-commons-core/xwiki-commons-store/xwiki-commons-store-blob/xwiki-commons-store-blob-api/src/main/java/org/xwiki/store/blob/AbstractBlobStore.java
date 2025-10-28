@@ -27,28 +27,29 @@ import org.xwiki.stability.Unstable;
 /**
  * Abstract base class for {@link BlobStore} implementations.
  *
+ * @param <T> the typed properties bean for this store
  * @version $Id$
  * @since 17.10.0RC1
  */
 @Unstable
-public abstract class AbstractBlobStore implements BlobStore
+public abstract class AbstractBlobStore<T extends BlobStoreProperties> implements BlobStore
 {
-    protected String name;
+    protected T properties;
 
     /**
-     * Create a new blob store with the given name.
+     * Create a new blob store with the given properties.
      *
-     * @param name the name of this blob store
+     * @param properties the typed properties for this blob store
      */
-    protected AbstractBlobStore(String name)
+    protected AbstractBlobStore(T properties)
     {
-        this.name = name;
+        this.properties = properties;
     }
 
     @Override
-    public String getName()
+    public T getProperties()
     {
-        return this.name;
+        return this.properties;
     }
 
     @Override
