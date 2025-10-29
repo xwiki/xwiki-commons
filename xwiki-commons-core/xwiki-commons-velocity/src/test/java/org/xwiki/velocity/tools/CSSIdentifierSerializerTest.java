@@ -19,7 +19,6 @@
  */
 package org.xwiki.velocity.tools;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,7 +43,6 @@ class CSSIdentifierSerializerTest
      *       https://github.com/mathiasbynens/CSS.escape/blob/master/tests/tests.js</a>
      */
     @Test
-    @DisplayName("Various CSS serialization tests")
     void serialize()
     {
         assertCssThrowsException("\u0000");

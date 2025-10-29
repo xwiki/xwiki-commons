@@ -19,7 +19,6 @@
  */
 package org.xwiki.text;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,7 +32,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class StringUtilsTest
 {
     @Test
-    @DisplayName("Doubling of characters")
     void doubleChar()
     {
         assertNull(StringUtils.doubleChar(null, 'a'));
@@ -46,7 +44,6 @@ class StringUtilsTest
     }
 
     @Test
-    @DisplayName("Alphanumeric conversion")
     void toAlphaNumeric()
     {
         assertNull(StringUtils.toAlphaNumeric(null));
