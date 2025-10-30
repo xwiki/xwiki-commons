@@ -78,8 +78,6 @@ class S3BlobStoreTest
 
     private static final BlobPath TARGET_PATH = BlobPath.of(List.of("target", "file.txt"));
 
-    private static final String S3_TYPE = "s3";
-
     @InjectMockComponents
     private S3BlobStore store;
 
@@ -99,15 +97,13 @@ class S3BlobStoreTest
     {
         this.s3Client = mock();
         when(this.clientManager.getS3Client()).thenReturn(this.s3Client);
-        S3BlobStoreProperties props = getS3BlobStoreProperties(STORE_NAME, BUCKET_NAME, KEY_PREFIX);
-        this.store.initialize(props);
+        S3BlobStoreProperties props = getS3BlobStoreProperties(BUCKET_NAME, KEY_PREFIX);
+        this.store.initialize(STORE_NAME, props);
     }
 
-    private static S3BlobStoreProperties getS3BlobStoreProperties(String name, String bucket, String keyPrefix)
+    private static S3BlobStoreProperties getS3BlobStoreProperties(String bucket, String keyPrefix)
     {
         S3BlobStoreProperties props = new S3BlobStoreProperties();
-        props.setName(name);
-        props.setType(S3_TYPE);
         props.setBucket(bucket);
         props.setKeyPrefix(keyPrefix);
         return props;
@@ -120,10 +116,10 @@ class S3BlobStoreTest
     })
     void initialize(String storeName, String bucketName, String inputKeyPrefix, String expectedKeyPrefix)
     {
-        S3BlobStoreProperties props = getS3BlobStoreProperties(storeName, bucketName, inputKeyPrefix);
-        this.store.initialize(props);
+        S3BlobStoreProperties props = getS3BlobStoreProperties(bucketName, inputKeyPrefix);
+        this.store.initialize(storeName, props);
 
-        assertEquals(storeName, this.store.getProperties().getName());
+        assertEquals(storeName, this.store.getName());
         assertEquals(bucketName, this.store.getBucketName());
         assertEquals(expectedKeyPrefix, this.store.getKeyMapper().getKeyPrefix());
     }
@@ -236,7 +232,7 @@ class S3BlobStoreTest
     {
         BlobPath rootPath = BlobPath.of(List.of());
 
-        try (MockedConstruction<S3BlobIterator> mockedIterator = mockConstruction(S3BlobIterator.class,
+        try (MockedConstruction<S3BlobIterator> ignored = mockConstruction(S3BlobIterator.class,
             (mock, context) -> when(mock.hasNext()).thenReturn(false))) {
 
             try (Stream<Blob> blobs = this.store.listBlobs(rootPath)) {
@@ -372,9 +368,7 @@ class S3BlobStoreTest
     void isEmptyDirectoryWrapsRuntimeException()
     {
         try (MockedConstruction<S3BlobIterator> mockedIterator = mockConstruction(S3BlobIterator.class,
-            (mock, context) -> {
-                when(mock.hasNext()).thenThrow(new RuntimeException("S3 connection failed"));
-            })) {
+            (mock, context) -> when(mock.hasNext()).thenThrow(new RuntimeException("S3 connection failed")))) {
 
             BlobPath path = BlobPath.of(List.of("error", "path"));
 
@@ -393,9 +387,7 @@ class S3BlobStoreTest
     void isEmptyDirectoryWrapsIllegalStateException()
     {
         try (MockedConstruction<S3BlobIterator> mockedIterator = mockConstruction(S3BlobIterator.class,
-            (mock, context) -> {
-                when(mock.hasNext()).thenThrow(new IllegalStateException("Invalid state"));
-            })) {
+            (mock, context) -> when(mock.hasNext()).thenThrow(new IllegalStateException("Invalid state")))) {
 
             BlobStoreException thrown = assertThrows(BlobStoreException.class,
                 () -> this.store.isEmptyDirectory(BLOB_PATH));
@@ -450,9 +442,7 @@ class S3BlobStoreTest
     void deleteBlobsClosesStream() throws BlobStoreException
     {
         try (MockedConstruction<S3BlobIterator> mockedIterator = mockConstruction(S3BlobIterator.class,
-            (mock, context) -> {
-                when(mock.hasNext()).thenReturn(false);
-            })) {
+            (mock, context) -> when(mock.hasNext()).thenReturn(false))) {
 
             this.store.deleteBlobs(BLOB_PATH);
 
@@ -491,10 +481,11 @@ class S3BlobStoreTest
         // Different name but same other properties should still be equal.
         "different-name, test-bucket, prefix, true"
     })
-    void equalsAndHashCode(String otherStoreName, String otherBucketName, String otherKeyPrefix, boolean expectedEquality)
+    void equalsAndHashCode(String otherStoreName, String otherBucketName, String otherKeyPrefix,
+        boolean expectedEquality)
     {
         S3BlobStore other = new S3BlobStore();
-        other.initialize(getS3BlobStoreProperties(otherStoreName, otherBucketName, otherKeyPrefix));
+        other.initialize(otherStoreName, getS3BlobStoreProperties(otherBucketName, otherKeyPrefix));
 
         if (expectedEquality) {
             assertEquals(this.store, other);
@@ -534,6 +525,6 @@ class S3BlobStoreTest
     @Test
     void getNameReturnsCorrectValue()
     {
-        assertEquals(STORE_NAME, this.store.getProperties().getName());
+        assertEquals(STORE_NAME, this.store.getName());
     }
 }

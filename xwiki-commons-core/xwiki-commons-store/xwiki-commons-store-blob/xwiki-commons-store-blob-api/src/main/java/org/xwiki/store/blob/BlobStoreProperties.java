@@ -22,7 +22,7 @@ package org.xwiki.store.blob;
 import org.xwiki.stability.Unstable;
 
 /**
- * Marker + minimal contract for typed blob store properties beans, used by factories and stores.
+ * Marker interface for typed blob store properties beans, used by factories and stores.
  * Implementations are regular Java beans annotated with XWiki {@code @Property*} annotations
  * and JSR-303 constraints. Values are populated using the BeanManager.
  *
@@ -32,14 +32,5 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public interface BlobStoreProperties
 {
-    /**
-     * @return the unique store name
-     */
-    String getName();
-
-    /**
-     * @return the store type (factory hint)
-     */
-    String getType();
 }
 

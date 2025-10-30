@@ -129,7 +129,7 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
             throw new BlobStoreException("Failed to populate blob store properties for store [" + name + "]", e);
         }
 
-        return factory.create(properties);
+        return factory.create(name, properties);
     }
 
     @Override
@@ -141,7 +141,7 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
                     disposableStore.dispose();
                 } catch (Exception e) {
                     this.logger.warn("Failed to dispose blob store [{}], root cause: [{}].",
-                        blobStore.getProperties().getName(), ExceptionUtils.getRootCauseMessage(e));
+                        blobStore.getName(), ExceptionUtils.getRootCauseMessage(e));
                 }
             }
         }

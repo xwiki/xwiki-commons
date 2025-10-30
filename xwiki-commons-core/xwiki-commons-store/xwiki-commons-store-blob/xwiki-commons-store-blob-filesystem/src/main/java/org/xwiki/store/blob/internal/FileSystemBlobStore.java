@@ -59,13 +59,14 @@ public class FileSystemBlobStore extends AbstractBlobStore<FileSystemBlobStorePr
     private final Path basePath;
 
     /**
-     * Creates a new FileSystemBlobStore with the given properties.
+     * Creates a new FileSystemBlobStore with the given name and properties.
      *
+     * @param name the name of this blob store
      * @param properties the properties for this blob store
      */
-    public FileSystemBlobStore(FileSystemBlobStoreProperties properties)
+    public FileSystemBlobStore(String name, FileSystemBlobStoreProperties properties)
     {
-        super(properties);
+        initialize(name, "filesystem", properties);
         this.basePath = properties.getRootDirectory();
     }
 

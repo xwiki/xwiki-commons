@@ -29,9 +29,10 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.store.blob.BaseBlobStoreProperties;
+
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
+import org.xwiki.store.blob.BlobStoreProperties;
 import org.xwiki.store.blob.BlobStorePropertiesBuilder;
 import org.xwiki.store.blob.S3BlobStoreProperties;
 import org.xwiki.test.LogLevel;
@@ -116,9 +117,9 @@ class S3BlobStoreFactoryTest
     }
 
     @Test
-    void getType()
+    void getHint()
     {
-        assertEquals(TYPE, this.factory.getType());
+        assertEquals(TYPE, this.factory.getHint());
     }
 
     @Test
@@ -133,7 +134,7 @@ class S3BlobStoreFactoryTest
 
         assertNotNull(builder);
         assertEquals(NAME, builder.getName());
-        assertEquals(TYPE, builder.getType());
+        assertEquals(TYPE, builder.getHint());
         assertEquals(BUCKET, builder.get(S3BlobStoreProperties.BUCKET).orElse(null));
         assertEquals(PREFIX + "/" + NAME, builder.get(S3BlobStoreProperties.KEY_PREFIX).orElse(null));
         assertEquals(VALID_MULTIPART_UPLOAD_SIZE,
@@ -169,18 +170,16 @@ class S3BlobStoreFactoryTest
 
         // Create a populated properties bean
         S3BlobStoreProperties properties = new S3BlobStoreProperties();
-        properties.setName(NAME);
-        properties.setType(TYPE);
         properties.setBucket(BUCKET);
         properties.setKeyPrefix(PREFIX);
         properties.setMultipartUploadPartSize(VALID_MULTIPART_UPLOAD_SIZE);
         properties.setMultipartCopyPartSize(VALID_MULTIPART_COPY_SIZE);
 
-        BlobStore result = this.factory.create(properties);
+        BlobStore result = this.factory.create(NAME, properties);
 
         assertSame(mockStore, result);
         verify(this.s3Client).headBucket(any(HeadBucketRequest.class));
-        verify(mockStore).initialize(properties);
+        verify(mockStore).initialize(NAME, properties);
         assertEquals("Created S3 blob store [mystore] for bucket [test-bucket]",
             this.logCapture.getMessage(0));
     }
@@ -196,15 +195,13 @@ class S3BlobStoreFactoryTest
 
         // Create a populated properties bean
         S3BlobStoreProperties properties = new S3BlobStoreProperties();
-        properties.setName(NAME);
-        properties.setType(TYPE);
         properties.setBucket("non-existent-bucket");
         properties.setKeyPrefix(PREFIX);
         properties.setMultipartUploadPartSize(VALID_MULTIPART_UPLOAD_SIZE);
         properties.setMultipartCopyPartSize(VALID_MULTIPART_COPY_SIZE);
 
         BlobStoreException exception = assertThrows(BlobStoreException.class,
-            () -> this.factory.create(properties));
+            () -> this.factory.create(NAME, properties));
 
         assertThat(exception.getMessage(), containsString("S3 bucket does not exist"));
     }
@@ -224,15 +221,13 @@ class S3BlobStoreFactoryTest
 
         // Create a populated properties bean
         S3BlobStoreProperties properties = new S3BlobStoreProperties();
-        properties.setName(NAME);
-        properties.setType(TYPE);
         properties.setBucket("forbidden-bucket");
         properties.setKeyPrefix(PREFIX);
         properties.setMultipartUploadPartSize(VALID_MULTIPART_UPLOAD_SIZE);
         properties.setMultipartCopyPartSize(VALID_MULTIPART_COPY_SIZE);
 
         BlobStoreException exception = assertThrows(BlobStoreException.class,
-            () -> this.factory.create(properties));
+            () -> this.factory.create(NAME, properties));
 
         assertThat(exception.getMessage(), containsString("Access denied to S3 bucket"));
         assertThat(exception.getMessage(), containsString("credentials and bucket permissions"));
@@ -253,15 +248,13 @@ class S3BlobStoreFactoryTest
 
         // Create a populated properties bean
         S3BlobStoreProperties properties = new S3BlobStoreProperties();
-        properties.setName(NAME);
-        properties.setType(TYPE);
         properties.setBucket("error-bucket");
         properties.setKeyPrefix(PREFIX);
         properties.setMultipartUploadPartSize(VALID_MULTIPART_UPLOAD_SIZE);
         properties.setMultipartCopyPartSize(VALID_MULTIPART_COPY_SIZE);
 
         BlobStoreException exception = assertThrows(BlobStoreException.class,
-            () -> this.factory.create(properties));
+            () -> this.factory.create(NAME, properties));
 
         assertThat(exception.getMessage(), containsString("Failed to access S3 bucket"));
     }
@@ -274,15 +267,13 @@ class S3BlobStoreFactoryTest
 
         // Create a populated properties bean
         S3BlobStoreProperties properties = new S3BlobStoreProperties();
-        properties.setName(NAME);
-        properties.setType(TYPE);
         properties.setBucket(BUCKET);
         properties.setKeyPrefix(PREFIX);
         properties.setMultipartUploadPartSize(VALID_MULTIPART_UPLOAD_SIZE);
         properties.setMultipartCopyPartSize(VALID_MULTIPART_COPY_SIZE);
 
         BlobStoreException exception = assertThrows(BlobStoreException.class,
-            () -> this.factory.create(properties));
+            () -> this.factory.create(NAME, properties));
 
         assertThat(exception.getMessage(), containsString("Unexpected error while validating S3 bucket access"));
     }
@@ -291,14 +282,12 @@ class S3BlobStoreFactoryTest
     void createWithWrongPropertiesType()
     {
         // Create properties of wrong type.
-        BaseBlobStoreProperties wrongProperties = new BaseBlobStoreProperties();
-        wrongProperties.setName(NAME);
-        wrongProperties.setType(TYPE);
+        BlobStoreProperties wrongProperties = mock(BlobStoreProperties.class);
 
         BlobStoreException exception = assertThrows(BlobStoreException.class,
-            () -> this.factory.create(wrongProperties));
+            () -> this.factory.create(NAME, wrongProperties));
 
-        assertEquals("Invalid properties type for S3 blob store factory: " + BaseBlobStoreProperties.class.getName(),
+        assertEquals("Invalid properties type for S3 blob store factory: " + wrongProperties.getClass().getName(),
             exception.getMessage());
     }
 }

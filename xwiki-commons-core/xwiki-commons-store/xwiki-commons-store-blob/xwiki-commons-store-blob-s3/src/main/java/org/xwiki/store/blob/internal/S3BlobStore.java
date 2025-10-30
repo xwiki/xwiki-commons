@@ -65,21 +65,14 @@ public class S3BlobStore extends AbstractBlobStore<S3BlobStoreProperties>
     private S3DeleteOperations deleteOperations;
 
     /**
-     * Default constructor for component manager.
-     */
-    public S3BlobStore()
-    {
-        super(null);
-    }
-
-    /**
      * Initialize this blob store, must be called before performing any other operations.
      *
+     * @param name the unique name of this blob store
      * @param properties the typed properties of this blob store
      */
-    public void initialize(S3BlobStoreProperties properties)
+    public void initialize(String name, S3BlobStoreProperties properties)
     {
-        this.properties = properties;
+        super.initialize(name, "s3", properties);
         this.bucketName = properties.getBucket();
         this.keyMapper = new S3KeyMapper(properties.getKeyPrefix());
     }

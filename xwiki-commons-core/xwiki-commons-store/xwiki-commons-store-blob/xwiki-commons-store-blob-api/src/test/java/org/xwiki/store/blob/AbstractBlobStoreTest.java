@@ -55,12 +55,13 @@ class AbstractBlobStoreTest
     @Mock
     private BlobStore otherStore;
 
-    private AbstractBlobStore<?> blobStore;
+    private AbstractBlobStore<BlobStoreProperties> blobStore;
 
     @BeforeEach
     void setUp()
     {
-        this.blobStore = mock(AbstractBlobStore.class, Mockito.CALLS_REAL_METHODS);
+        this.blobStore = mock(Mockito.CALLS_REAL_METHODS);
+        this.blobStore.initialize("test-store", "test-hint", mock(BlobStoreProperties.class));
     }
 
     @Test

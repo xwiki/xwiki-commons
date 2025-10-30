@@ -92,10 +92,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     {
         this.basePath = this.tmpDir.toPath();
         this.properties = new FileSystemBlobStoreProperties();
-        this.properties.setName("testStore");
-        this.properties.setType("filesystem");
         this.properties.setRootDirectory(this.basePath);
-        this.blobStore = new FileSystemBlobStore(this.properties);
+        this.blobStore = new FileSystemBlobStore("test-store", this.properties);
     }
 
     @Test
@@ -290,10 +288,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         BlobPath targetPath = BlobPath.of(List.of("target.txt"));
 
         FileSystemBlobStoreProperties sourceProps = new FileSystemBlobStoreProperties();
-        sourceProps.setName("source");
-        sourceProps.setType("filesystem");
         sourceProps.setRootDirectory(this.basePath);
-        FileSystemBlobStore sourceStore = new FileSystemBlobStore(sourceProps);
+        FileSystemBlobStore sourceStore = new FileSystemBlobStore("source-store", sourceProps);
 
         Blob result = this.blobStore.copyBlob(sourceStore, sourcePath, targetPath);
 
@@ -612,10 +608,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         Path sourceBasePath = this.tmpDir.toPath().resolve("source-store");
         Files.createDirectories(sourceBasePath);
         FileSystemBlobStoreProperties sourceStoreProps = new FileSystemBlobStoreProperties();
-        sourceStoreProps.setName("sourceStore");
-        sourceStoreProps.setType("filesystem");
         sourceStoreProps.setRootDirectory(sourceBasePath);
-        FileSystemBlobStore sourceStore = new FileSystemBlobStore(sourceStoreProps);
+        FileSystemBlobStore sourceStore = new FileSystemBlobStore("source-store", sourceStoreProps);
 
         // Create source file in the source store
         BlobPath sourcePath = BlobPath.of(List.of("documents", "file.txt"));
@@ -648,10 +642,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         Path sourceBasePath = this.tmpDir.toPath().resolve("source-store");
         Files.createDirectories(sourceBasePath);
         FileSystemBlobStoreProperties sourceStoreProps = new FileSystemBlobStoreProperties();
-        sourceStoreProps.setName("sourceStore");
-        sourceStoreProps.setType("filesystem");
         sourceStoreProps.setRootDirectory(sourceBasePath);
-        FileSystemBlobStore sourceStore = new FileSystemBlobStore(sourceStoreProps);
+        FileSystemBlobStore sourceStore = new FileSystemBlobStore("source-store", sourceStoreProps);
 
         // Create source directory structure in the source store
         BlobPath sourcePath = BlobPath.of(List.of("project"));
@@ -851,20 +843,14 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     void equalsAndHashCode()
     {
         FileSystemBlobStoreProperties props1 = new FileSystemBlobStoreProperties();
-        props1.setName("store1");
-        props1.setType("filesystem");
         props1.setRootDirectory(this.basePath);
-        FileSystemBlobStore store1 = new FileSystemBlobStore(props1);
+        FileSystemBlobStore store1 = new FileSystemBlobStore("store1", props1);
         FileSystemBlobStoreProperties props2 = new FileSystemBlobStoreProperties();
-        props2.setName("store2");
-        props2.setType("filesystem");
         props2.setRootDirectory(this.basePath);
-        FileSystemBlobStore store2 = new FileSystemBlobStore(props2);
+        FileSystemBlobStore store2 = new FileSystemBlobStore("store2", props2);
         FileSystemBlobStoreProperties props3 = new FileSystemBlobStoreProperties();
-        props3.setName("store3");
-        props3.setType("filesystem");
         props3.setRootDirectory(this.tmpDir.toPath().resolve("different"));
-        FileSystemBlobStore store3 = new FileSystemBlobStore(props3);
+        FileSystemBlobStore store3 = new FileSystemBlobStore("store3", props3);
 
         // Equals based on base path only
         assertEquals(store1, store2);
