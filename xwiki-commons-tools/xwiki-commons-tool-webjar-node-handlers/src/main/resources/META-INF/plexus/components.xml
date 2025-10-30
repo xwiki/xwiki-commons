@@ -30,45 +30,29 @@
       <implementation>org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping</implementation>
       <configuration>
         <phases>
-          <validate>
-            <mojos>
-              <mojo>
-                <goal>org.apache.maven.plugins:maven-resources-plugin:copy-resources</goal>
-                <configuration>
-                  <!-- We use node-src because node is already use to store the node/npm executables. -->
-                  <outputDirectory>${project.build.directory}/node-src</outputDirectory>
-                  <resources>
-                    <resource>
-                      <directory>src/main/node</directory>
-                      <excludes>
-                        <exclude>dist</exclude>
-                        <exclude>node_modules</exclude>
-                      </excludes>
-                    </resource>
-                  </resources>
-                </configuration>
-              </mojo>
-            </mojos>
-          </validate>
           <process-resources>
             <mojos>
               <mojo>
                 <goal>org.apache.maven.plugins:maven-resources-plugin:resources</goal>
               </mojo>
               <mojo>
-                <goal>com.github.eirslett:frontend-maven-plugin:install-node-and-npm</goal>
+                <goal>com.github.eirslett:frontend-maven-plugin:install-node-and-pnpm</goal>
                 <configuration>
                   <nodeVersion>${node.version}</nodeVersion>
                   <npmVersion>${npm.version}</npmVersion>
+                  <pnpmVersion>${pnpm.version}</pnpmVersion>
                   <installDirectory>${basedir}/target</installDirectory>
                 </configuration>
               </mojo>
               <mojo>
-                <goal>com.github.eirslett:frontend-maven-plugin:npm</goal>
+                <goal>com.github.eirslett:frontend-maven-plugin:pnpm</goal>
                 <configuration>
-                  <arguments>ci</arguments>
-                  <workingDirectory>${project.build.directory}/node-src</workingDirectory>
+                  <arguments>install</arguments>
+                  <workingDirectory>${basedir}/src/main/node</workingDirectory>
                   <installDirectory>${basedir}/target</installDirectory>
+                  <environmentVariables>
+                    <CI>true</CI>
+                  </environmentVariables>
                 </configuration>
               </mojo>
             </mojos>
@@ -76,10 +60,10 @@
           <compile>
             <mojos>
               <mojo>
-                <goal>com.github.eirslett:frontend-maven-plugin:npm</goal>
+                <goal>com.github.eirslett:frontend-maven-plugin:pnpm</goal>
                 <configuration>
                   <arguments>run build</arguments>
-                  <workingDirectory>${project.build.directory}/node-src</workingDirectory>
+                  <workingDirectory>${basedir}/src/main/node</workingDirectory>
                   <installDirectory>${basedir}/target</installDirectory>
                 </configuration>
               </mojo>
@@ -90,10 +74,10 @@
           <test>
             <mojos>
               <mojo>
-                <goal>com.github.eirslett:frontend-maven-plugin:npm</goal>
+                <goal>com.github.eirslett:frontend-maven-plugin:pnpm</goal>
                 <configuration>
                   <arguments>run test:unit</arguments>
-                  <workingDirectory>${project.build.directory}/node-src</workingDirectory>
+                  <workingDirectory>${basedir}/src/main/node</workingDirectory>
                   <installDirectory>${basedir}/target</installDirectory>
                 </configuration>
               </mojo>
@@ -102,10 +86,10 @@
           <verify>
             <mojos>
               <mojo>
-                <goal>com.github.eirslett:frontend-maven-plugin:npm</goal>
+                <goal>com.github.eirslett:frontend-maven-plugin:pnpm</goal>
                 <configuration>
                   <arguments>run lint</arguments>
-                  <workingDirectory>${project.build.directory}/node-src</workingDirectory>
+                  <workingDirectory>${basedir}/src/main/node</workingDirectory>
                   <installDirectory>${basedir}/target</installDirectory>
                 </configuration>
               </mojo>
@@ -122,7 +106,7 @@
                   </outputDirectory>
                   <resources>
                     <resource>
-                      <directory>${project.build.directory}/node-src/dist</directory>
+                      <directory>${basedir}/src/main/node/dist</directory>
                     </resource>
                   </resources>
                 </configuration>
