@@ -35,7 +35,7 @@ import org.xwiki.stability.Unstable;
  * @since 17.10.0RC1
  */
 @Unstable
-public class S3BlobStoreProperties extends BaseBlobStoreProperties
+public class S3BlobStoreProperties implements BlobStoreProperties
 {
     /**
      * The property ID for the S3 bucket.

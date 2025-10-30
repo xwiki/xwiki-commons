@@ -33,6 +33,16 @@ import org.xwiki.stability.Unstable;
 public interface BlobStore
 {
     /**
+     * @return the unique name of this blob store
+     */
+    String getName();
+
+    /**
+     * @return the hint of this blob store (e.g., "filesystem", "s3")
+     */
+    String getHint();
+
+    /**
      * @return the properties used to create this store
      */
     BlobStoreProperties getProperties();

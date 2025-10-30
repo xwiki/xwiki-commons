@@ -63,7 +63,7 @@ public class S3BlobStoreFactory implements BlobStoreFactory
     private Provider<S3BlobStore> blobStoreProvider;
 
     @Override
-    public String getType()
+    public String getHint()
     {
         return "s3";
     }
@@ -77,7 +77,7 @@ public class S3BlobStoreFactory implements BlobStoreFactory
     @Override
     public BlobStorePropertiesBuilder newPropertiesBuilder(String name)
     {
-        BlobStorePropertiesBuilder builder = new BlobStorePropertiesBuilder(name, getType());
+        BlobStorePropertiesBuilder builder = new BlobStorePropertiesBuilder(name, getHint());
 
         // Initialize from configuration.
         String bucket = this.configuration.getS3BucketName();
@@ -101,7 +101,7 @@ public class S3BlobStoreFactory implements BlobStoreFactory
     }
 
     @Override
-    public BlobStore create(BlobStoreProperties properties) throws BlobStoreException
+    public BlobStore create(String name, BlobStoreProperties properties) throws BlobStoreException
     {
         if (!(properties instanceof S3BlobStoreProperties s3Properties)) {
             throw new BlobStoreException("Invalid properties type for S3 blob store factory: "
@@ -112,10 +112,9 @@ public class S3BlobStoreFactory implements BlobStoreFactory
         validateBucketAccess(s3Properties.getBucket());
 
         S3BlobStore store = this.blobStoreProvider.get();
-        store.initialize(s3Properties);
+        store.initialize(name, s3Properties);
 
-        this.logger.info("Created S3 blob store [{}] for bucket [{}]", s3Properties.getName(),
-            s3Properties.getBucket());
+        this.logger.info("Created S3 blob store [{}] for bucket [{}]", name, s3Properties.getBucket());
 
         return store;
     }

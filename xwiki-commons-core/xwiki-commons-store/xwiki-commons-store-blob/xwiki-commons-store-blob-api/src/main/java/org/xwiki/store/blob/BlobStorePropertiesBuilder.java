@@ -27,7 +27,8 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Mutable properties map used to build a typed properties bean for creating a BlobStore.
- * Holds the store name, type, and implementation-specific options keyed by property id.
+ * Holds the store name, hint, and implementation-specific options keyed by property id.
+ * The name and hint are stored separately from the options map and are immutable after construction.
  *
  * @version $Id$
  * @since 17.10.0RC1
@@ -35,38 +36,38 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public final class BlobStorePropertiesBuilder
 {
-    private static final String NAME = "name";
+    private final String name;
 
-    private static final String TYPE = "type";
+    private final String hint;
 
     private final Map<String, Object> options = new HashMap<>();
 
     /**
-     * Create a new builder with the specified name and type.
+     * Create a new builder with the specified name and hint.
      *
-     * @param name the unique store name
-     * @param type the store type (factory hint)
+     * @param name the store name
+     * @param hint the store hint (factory hint, e.g., "filesystem", "s3")
      */
-    public BlobStorePropertiesBuilder(String name, String type)
+    public BlobStorePropertiesBuilder(String name, String hint)
     {
-        this.options.put(NAME, name);
-        this.options.put(TYPE, type);
+        this.name = name;
+        this.hint = hint;
     }
 
     /**
-     * @return the unique store name
+     * @return the name of the store
      */
     public String getName()
     {
-        return this.options.get(NAME).toString();
+        return this.name;
     }
 
     /**
-     * @return the store type (factory hint)
+     * @return the store hint (factory hint)
      */
-    public String getType()
+    public String getHint()
     {
-        return this.options.get(TYPE).toString();
+        return this.hint;
     }
 
     /**
@@ -86,13 +87,9 @@ public final class BlobStorePropertiesBuilder
      * @param propertyId the property id
      * @param value the value
      * @return this builder
-     * @throws IllegalArgumentException if trying to set name or type properties
      */
     public BlobStorePropertiesBuilder set(String propertyId, Object value)
     {
-        if (isImmutable(propertyId)) {
-            throw new IllegalArgumentException("Cannot modify immutable property: " + propertyId);
-        }
         this.options.put(propertyId, value);
         return this;
     }
@@ -102,28 +99,18 @@ public final class BlobStorePropertiesBuilder
      *
      * @param propertyId the property id
      * @return this builder
-     * @throws IllegalArgumentException if trying to remove name or type properties
      */
     public BlobStorePropertiesBuilder remove(String propertyId)
     {
-        if (isImmutable(propertyId)) {
-            throw new IllegalArgumentException("Cannot remove immutable property: " + propertyId);
-        }
         this.options.remove(propertyId);
         return this;
     }
 
     /**
-     * @return a view of all properties keyed by property id
+     * @return a view of all properties keyed by property id (excludes name and hint)
      */
     public Map<String, Object> getAllProperties()
     {
         return this.options;
-    }
-
-
-    private static boolean isImmutable(String propertyId)
-    {
-        return NAME.equals(propertyId) || TYPE.equals(propertyId);
     }
 }

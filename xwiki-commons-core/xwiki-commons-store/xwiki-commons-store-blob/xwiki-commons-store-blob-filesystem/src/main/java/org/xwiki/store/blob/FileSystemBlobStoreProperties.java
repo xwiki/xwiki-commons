@@ -33,7 +33,7 @@ import org.xwiki.stability.Unstable;
  * @since 17.10.0RC1
  */
 @Unstable
-public class FileSystemBlobStoreProperties extends BaseBlobStoreProperties
+public class FileSystemBlobStoreProperties implements BlobStoreProperties
 {
     /**
      * The property ID for the root directory.

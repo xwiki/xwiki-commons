@@ -32,7 +32,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -49,10 +48,10 @@ class BlobStorePropertiesBuilderTest
     }
 
     @Test
-    void constructorShouldSetNameAndType()
+    void constructorShouldSetNameAndHint()
     {
         assertEquals("testStore", this.builder.getName());
-        assertEquals("file", this.builder.getType());
+        assertEquals("file", this.builder.getHint());
     }
 
     @Test
@@ -73,24 +72,6 @@ class BlobStorePropertiesBuilderTest
         assertEquals(value, result.get());
     }
 
-    @ParameterizedTest
-    @MethodSource("immutablePropertyTestCases")
-    void setShouldThrowExceptionWhenTryingToModifyImmutableProperty(String property)
-    {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-            () -> this.builder.set(property, "newValue"));
-        assertEquals("Cannot modify immutable property: " + property, exception.getMessage());
-    }
-
-    @ParameterizedTest
-    @MethodSource("immutablePropertyTestCases")
-    void removeShouldThrowExceptionWhenTryingToRemoveImmutableProperty(String property)
-    {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-            () -> this.builder.remove(property));
-        assertEquals("Cannot remove immutable property: " + property, exception.getMessage());
-    }
-
     private static Stream<Arguments> propertyTestCases()
     {
         return Stream.of(
@@ -99,11 +80,6 @@ class BlobStorePropertiesBuilderTest
             Arguments.of("prop1", "value1"),
             Arguments.of("prop2", 42)
         );
-    }
-
-    private static Stream<String> immutablePropertyTestCases()
-    {
-        return Stream.of("name", "type");
     }
 
     @Test
@@ -135,10 +111,8 @@ class BlobStorePropertiesBuilderTest
 
         Map<String, Object> options = this.builder.getAllProperties();
 
-        // name, type, and 2 custom properties
-        assertEquals(4, options.size());
-        assertEquals("testStore", options.get("name"));
-        assertEquals("file", options.get("type"));
+        // Only custom properties, not name and hint
+        assertEquals(2, options.size());
         assertEquals("value1", options.get("prop1"));
         assertEquals(42, options.get("prop2"));
     }

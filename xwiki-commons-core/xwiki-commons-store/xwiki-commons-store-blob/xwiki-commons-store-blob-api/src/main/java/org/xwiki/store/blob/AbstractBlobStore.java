@@ -34,16 +34,37 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public abstract class AbstractBlobStore<T extends BlobStoreProperties> implements BlobStore
 {
+    protected String name;
+
+    protected String hint;
+
     protected T properties;
 
     /**
-     * Create a new blob store with the given properties.
+     * Initialize this blob store with the given name, hint, and properties.
+     * Must be called before performing any other operations.
      *
+     * @param name the name of this blob store
+     * @param hint the hint of this blob store implementation
      * @param properties the typed properties for this blob store
      */
-    protected AbstractBlobStore(T properties)
+    protected void initialize(String name, String hint, T properties)
     {
+        this.name = name;
+        this.hint = hint;
         this.properties = properties;
+    }
+
+    @Override
+    public String getName()
+    {
+        return this.name;
+    }
+
+    @Override
+    public String getHint()
+    {
+        return this.hint;
     }
 
     @Override

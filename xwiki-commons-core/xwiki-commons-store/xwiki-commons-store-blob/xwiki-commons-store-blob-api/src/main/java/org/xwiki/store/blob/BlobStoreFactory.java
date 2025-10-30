@@ -33,13 +33,13 @@ import org.xwiki.stability.Unstable;
 public interface BlobStoreFactory
 {
     /**
-     * @return the type this factory supports (e.g., "filesystem", "s3")
+     * @return the hint this factory supports (e.g., "filesystem", "s3")
      */
-    String getType();
+    String getHint();
 
     /**
      * Create a new properties builder pre-initialized with defaults for the given store name.
-     * Implementations should set the type and any implementation-specific defaults.
+     * Implementations should set any implementation-specific defaults.
      *
      * @param name the store name
      * @return a property builder initialized with defaults
@@ -48,13 +48,14 @@ public interface BlobStoreFactory
     BlobStorePropertiesBuilder newPropertiesBuilder(String name) throws BlobStoreException;
 
     /**
-     * Create a BlobStore from the given properties.
+     * Create a BlobStore from the given name and properties.
      *
+     * @param name the unique name for this blob store
      * @param properties the populated properties bean to use
      * @return a BlobStore instance
      * @throws BlobStoreException if the properties are invalid or creation fails
      */
-    BlobStore create(BlobStoreProperties properties) throws BlobStoreException;
+    BlobStore create(String name, BlobStoreProperties properties) throws BlobStoreException;
 
     /**
      * @return the properties class used by this factory

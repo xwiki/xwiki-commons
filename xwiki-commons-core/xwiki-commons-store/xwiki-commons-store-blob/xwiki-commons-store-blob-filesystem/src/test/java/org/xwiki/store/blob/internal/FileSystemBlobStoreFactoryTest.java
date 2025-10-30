@@ -26,20 +26,23 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.xwiki.environment.Environment;
-import org.xwiki.store.blob.BaseBlobStoreProperties;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
+import org.xwiki.store.blob.BlobStoreProperties;
 import org.xwiki.store.blob.BlobStorePropertiesBuilder;
 import org.xwiki.store.blob.FileSystemBlobStoreProperties;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -77,7 +80,7 @@ class FileSystemBlobStoreFactoryTest
         BlobStorePropertiesBuilder builder = this.factory.newPropertiesBuilder(storeName);
 
         assertEquals(storeName, builder.getName());
-        assertEquals(this.factory.getType(), builder.getType());
+        assertEquals(this.factory.getHint(), builder.getHint());
         Path rootDir = (Path) builder.get(FileSystemBlobStoreProperties.ROOT_DIRECTORY).orElseThrow();
         assertEquals(Path.of(expectedPath), rootDir);
     }
@@ -96,31 +99,28 @@ class FileSystemBlobStoreFactoryTest
     {
         // Create a populated properties bean
         FileSystemBlobStoreProperties properties = new FileSystemBlobStoreProperties();
-        properties.setName("name");
-        properties.setType("filesystem");
         Path rootDir = Path.of("/var/blobstore");
         properties.setRootDirectory(rootDir);
 
-        BlobStore blobStore = this.factory.create(properties);
+        BlobStore blobStore = this.factory.create("test-store", properties);
 
         assertNotNull(blobStore);
         assertInstanceOf(FileSystemBlobStore.class, blobStore);
+        assertEquals("test-store", blobStore.getName());
+        assertEquals("filesystem", blobStore.getHint());
         assertEquals(rootDir, ((FileSystemBlobStore) blobStore).getBlobFilePath(BlobPath.ROOT));
     }
 
     @Test
     void createWithWrongPropertiesType()
     {
-        // Create properties of wrong type
-        BaseBlobStoreProperties wrongProperties = new BaseBlobStoreProperties();
-        wrongProperties.setName("testStore");
-        wrongProperties.setType("filesystem");
+        // Create properties of wrong type.
+        BlobStoreProperties wrongProperties = mock();
 
         BlobStoreException blobStoreException =
-            assertThrows(BlobStoreException.class, () -> this.factory.create(wrongProperties));
+            assertThrows(BlobStoreException.class, () -> this.factory.create("test", wrongProperties));
 
-        assertEquals("Invalid properties type for filesystem blob store factory: "
-                + BaseBlobStoreProperties.class.getName(),
-            blobStoreException.getMessage());
+        assertThat(blobStoreException.getMessage(),
+            containsString("Invalid properties type for filesystem blob store factory"));
     }
 }
