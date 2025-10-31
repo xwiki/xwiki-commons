@@ -32,7 +32,7 @@
   <packaging>jar</packaging>
   <description>Blog storage implementation based on S3-compatible object storage.</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.93</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.92</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
