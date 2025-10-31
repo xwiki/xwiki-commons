@@ -21,6 +21,7 @@ package org.xwiki.store.blob.internal;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
@@ -37,15 +38,15 @@ import org.xwiki.configuration.ConfigurationSource;
 public class S3BlobStoreConfiguration
 {
     @Inject
-    @Named("xwikiproperties")
-    private ConfigurationSource configurationSource;
+    @Named("restricted")
+    private Provider<ConfigurationSource> configurationSourceProvider;
 
     /**
      * @return the name of the S3 bucket where blobs will be stored
      */
     public String getS3BucketName()
     {
-        return this.configurationSource.getProperty("store.s3.bucketName");
+        return this.configurationSourceProvider.get().getProperty("store.s3.bucketName");
     }
 
     /**
@@ -53,7 +54,7 @@ public class S3BlobStoreConfiguration
      */
     public String getS3Region()
     {
-        return this.configurationSource.getProperty("store.s3.region", "us-east-1");
+        return this.configurationSourceProvider.get().getProperty("store.s3.region", "us-east-1");
     }
 
     /**
@@ -61,7 +62,7 @@ public class S3BlobStoreConfiguration
      */
     public String getS3AccessKey()
     {
-        return this.configurationSource.getProperty("store.s3.accessKey");
+        return this.configurationSourceProvider.get().getProperty("store.s3.accessKey");
     }
 
     /**
@@ -69,7 +70,7 @@ public class S3BlobStoreConfiguration
      */
     public String getS3SecretKey()
     {
-        return this.configurationSource.getProperty("store.s3.secretKey");
+        return this.configurationSourceProvider.get().getProperty("store.s3.secretKey");
     }
 
     /**
@@ -77,7 +78,7 @@ public class S3BlobStoreConfiguration
      */
     public String getS3Endpoint()
     {
-        return this.configurationSource.getProperty("store.s3.endpoint");
+        return this.configurationSourceProvider.get().getProperty("store.s3.endpoint");
     }
 
     /**
@@ -85,7 +86,7 @@ public class S3BlobStoreConfiguration
      */
     public boolean isS3PathStyleAccess()
     {
-        return this.configurationSource.getProperty("store.s3.pathStyleAccess", false);
+        return this.configurationSourceProvider.get().getProperty("store.s3.pathStyleAccess", false);
     }
 
     /**
@@ -93,7 +94,7 @@ public class S3BlobStoreConfiguration
      */
     public int getS3MaxConnections()
     {
-        return this.configurationSource.getProperty("store.s3.maxConnections", 50);
+        return this.configurationSourceProvider.get().getProperty("store.s3.maxConnections", 50);
     }
 
     /**
@@ -101,7 +102,7 @@ public class S3BlobStoreConfiguration
      */
     public int getS3ConnectionTimeout()
     {
-        return this.configurationSource.getProperty("store.s3.connectionTimeout", 10000);
+        return this.configurationSourceProvider.get().getProperty("store.s3.connectionTimeout", 10000);
     }
 
     /**
@@ -109,7 +110,7 @@ public class S3BlobStoreConfiguration
      */
     public int getS3SocketTimeout()
     {
-        return this.configurationSource.getProperty("store.s3.socketTimeout", 50000);
+        return this.configurationSourceProvider.get().getProperty("store.s3.socketTimeout", 50000);
     }
 
     /**
@@ -117,7 +118,7 @@ public class S3BlobStoreConfiguration
      */
     public int getS3RequestTimeout()
     {
-        return this.configurationSource.getProperty("store.s3.requestTimeout", 300000);
+        return this.configurationSourceProvider.get().getProperty("store.s3.requestTimeout", 300000);
     }
 
     /**
@@ -125,7 +126,7 @@ public class S3BlobStoreConfiguration
      */
     public int getS3MaxRetries()
     {
-        return this.configurationSource.getProperty("store.s3.maxRetries", 3);
+        return this.configurationSourceProvider.get().getProperty("store.s3.maxRetries", 3);
     }
 
     /**
@@ -133,7 +134,7 @@ public class S3BlobStoreConfiguration
      */
     public String getS3KeyPrefix()
     {
-        return this.configurationSource.getProperty("store.s3.keyPrefix", "");
+        return this.configurationSourceProvider.get().getProperty("store.s3.keyPrefix", "");
     }
 
     /**
@@ -144,7 +145,7 @@ public class S3BlobStoreConfiguration
      */
     public long getS3MultipartPartUploadSizeBytes()
     {
-        int sizeMB = this.configurationSource.getProperty("store.s3.multipartPartUploadSizeMB", 5);
+        int sizeMB = this.configurationSourceProvider.get().getProperty("store.s3.multipartPartUploadSizeMB", 5);
 
         return convertToBytesAndLimitPartSize(sizeMB);
     }
@@ -158,7 +159,7 @@ public class S3BlobStoreConfiguration
      */
     public long getS3MultipartCopySizeBytes()
     {
-        int sizeMB = this.configurationSource.getProperty("store.s3.multipartCopySizeMB", 512);
+        int sizeMB = this.configurationSourceProvider.get().getProperty("store.s3.multipartCopySizeMB", 512);
 
         long copyBytes = convertToBytesAndLimitPartSize(sizeMB);
 

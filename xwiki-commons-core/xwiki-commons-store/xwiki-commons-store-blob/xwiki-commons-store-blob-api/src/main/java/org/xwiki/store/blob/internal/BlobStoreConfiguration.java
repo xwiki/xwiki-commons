@@ -21,6 +21,7 @@ package org.xwiki.store.blob.internal;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
@@ -39,8 +40,8 @@ public class BlobStoreConfiguration
     private static final String FILESYSTEM_STORE_HINT = "filesystem";
 
     @Inject
-    @Named("xwikiproperties")
-    private ConfigurationSource configurationSource;
+    @Named("restricted")
+    private Provider<ConfigurationSource> configurationSourceProvider;
 
     /**
      * @return the hint for the blob store type to use, e.g., "filesystem" or "s3". This is used to determine which blob
@@ -48,7 +49,7 @@ public class BlobStoreConfiguration
      */
     public String getStoreHint()
     {
-        return this.configurationSource.getProperty("store.blobStoreHint", FILESYSTEM_STORE_HINT);
+        return this.configurationSourceProvider.get().getProperty("store.blobStoreHint", FILESYSTEM_STORE_HINT);
     }
 
     /**
@@ -57,6 +58,7 @@ public class BlobStoreConfiguration
      */
     public String getMigrationStoreHint()
     {
-        return this.configurationSource.getProperty("store.blobMigrationStoreHint", FILESYSTEM_STORE_HINT);
+        return this.configurationSourceProvider.get()
+            .getProperty("store.blobMigrationStoreHint", FILESYSTEM_STORE_HINT);
     }
 }
