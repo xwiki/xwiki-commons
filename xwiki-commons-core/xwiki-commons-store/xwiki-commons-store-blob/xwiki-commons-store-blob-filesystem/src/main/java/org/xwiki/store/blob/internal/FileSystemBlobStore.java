@@ -40,6 +40,7 @@ import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
 import org.xwiki.store.blob.FileSystemBlobStoreProperties;
+import org.xwiki.store.blob.WriteConditionFailedException;
 
 /**
  * A {@link BlobStore} implementation that stores blobs in the file system.
@@ -157,6 +158,8 @@ public class FileSystemBlobStore extends AbstractBlobStore<FileSystemBlobStorePr
             try (var inputStream = sourceStore.getBlob(sourcePath).getStream()) {
                 Blob targetBlob = getBlob(targetPath);
                 targetBlob.writeFromStream(inputStream, BlobDoesNotExistCondition.INSTANCE);
+            } catch (WriteConditionFailedException e) {
+                throw new BlobAlreadyExistsException(targetPath, e);
             } catch (BlobStoreException e) {
                 throw e;
             } catch (Exception e) {

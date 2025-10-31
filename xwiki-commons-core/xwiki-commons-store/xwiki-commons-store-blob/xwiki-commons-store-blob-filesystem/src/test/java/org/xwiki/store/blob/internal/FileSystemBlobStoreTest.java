@@ -602,6 +602,30 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     }
 
     @Test
+    void moveBlobFromDifferentStoreTargetExists() throws Exception
+    {
+        // Create target file that will cause the move to fail
+        Path targetFile = this.basePath.resolve("target.txt");
+        Files.createFile(targetFile);
+
+        BlobPath sourcePath = BlobPath.of(List.of("source.txt"));
+        BlobPath targetPath = BlobPath.of(List.of("target.txt"));
+
+        when(this.mockSourceStore.getBlob(sourcePath)).thenReturn(this.mockSourceBlob);
+        when(this.mockSourceBlob.getStream()).thenReturn(new ByteArrayInputStream("content".getBytes()));
+
+        assertThrows(BlobAlreadyExistsException.class,
+            () -> this.blobStore.moveBlob(this.mockSourceStore, sourcePath, targetPath));
+
+        // Verify that delete was not called on the source store
+        verify(this.mockSourceStore, never()).deleteBlob(sourcePath);
+
+        // Verify that the target file still exists and is unchanged
+        assertTrue(Files.exists(targetFile));
+        assertEquals(0, Files.size(targetFile));
+    }
+
+    @Test
     void moveBlobFromDifferentFileSystemStore() throws IOException, BlobStoreException
     {
         // Create a second FileSystemBlobStore with different base path.
