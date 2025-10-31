@@ -46,7 +46,7 @@ class S3BlobStoreConfigurationTest
     private S3BlobStoreConfiguration configuration;
 
     @MockComponent
-    @Named("xwikiproperties")
+    @Named("restricted")
     private ConfigurationSource configurationSource;
 
     @Test
