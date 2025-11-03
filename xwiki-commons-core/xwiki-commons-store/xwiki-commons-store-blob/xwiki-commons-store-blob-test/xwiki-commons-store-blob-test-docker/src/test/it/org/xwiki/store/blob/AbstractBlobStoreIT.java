@@ -301,16 +301,16 @@ abstract class AbstractBlobStoreIT
         BlobStoreTestUtils.writeBlob(store, path, data);
 
         Blob blob = store.getBlob(path);
-        // S3 wraps WriteConditionFailedException in IOException, filesystem throws WriteConditionFailedException
+        // S3 wraps BlobAlreadyExistsException in IOException, filesystem throws BlobAlreadyExistsException
         Exception exception = assertThrows(Exception.class, () -> {
-            try (OutputStream os = blob.getOutputStream(BlobDoesNotExistCondition.INSTANCE)) {
+            try (OutputStream os = blob.getOutputStream(BlobDoesNotExistOption.INSTANCE)) {
                 os.write(data);
             }
         });
         // Verify it's one of the expected exceptions
-        assertTrue(exception instanceof WriteConditionFailedException 
-            || (exception instanceof IOException && exception.getCause() instanceof WriteConditionFailedException),
-            "Expected WriteConditionFailedException or IOException with WriteConditionFailedException cause");
+        assertTrue(exception instanceof BlobAlreadyExistsException
+            || (exception instanceof IOException && exception.getCause() instanceof BlobAlreadyExistsException),
+            "Expected BlobAlreadyExistsException or IOException with BlobAlreadyExistsException cause");
     }
 
     @Test

@@ -20,7 +20,6 @@
 package org.xwiki.store.blob.internal;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -31,10 +30,10 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.xwiki.store.blob.BlobDoesNotExistCondition;
+import org.xwiki.store.blob.BlobAlreadyExistsException;
+import org.xwiki.store.blob.BlobDoesNotExistOption;
+import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
-import org.xwiki.store.blob.WriteCondition;
-import org.xwiki.store.blob.WriteConditionFailedException;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.junit5.LogCaptureExtension;
 
@@ -45,6 +44,8 @@ import software.amazon.awssdk.services.s3.model.CreateMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.CreateMultipartUploadResponse;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -235,13 +236,12 @@ class S3MultipartUploadHelperTest
     }
 
     @Test
-    void completeWithBlobDoesNotExistConditionAddsIfNoneMatch() throws IOException
+    void completeWithBlobDoesNotExistOptionAddsIfNoneMatch() throws IOException
     {
-        List<WriteCondition> conditions = new ArrayList<>();
-        conditions.add(BlobDoesNotExistCondition.INSTANCE);
+        List<BlobOption> options = List.of(BlobDoesNotExistOption.INSTANCE);
 
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, conditions);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, options);
 
         helper.getNextPartNumber();
         helper.addCompletedPart("etag1");
@@ -259,13 +259,12 @@ class S3MultipartUploadHelperTest
     }
 
     @Test
-    void completeThrowsWriteConditionFailedExceptionOn412WithCondition() throws IOException
+    void completeThrowsIOExceptionOn412WithOption() throws IOException
     {
-        List<WriteCondition> conditions = new ArrayList<>();
-        conditions.add(BlobDoesNotExistCondition.INSTANCE);
+        List<BlobOption> options = List.of(BlobDoesNotExistOption.INSTANCE);
 
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, conditions);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, options);
 
         S3Exception s3Exception = (S3Exception) S3Exception.builder()
             .message("Precondition failed")
@@ -279,8 +278,9 @@ class S3MultipartUploadHelperTest
         helper.addCompletedPart("etag1");
 
         IOException exception = assertThrows(IOException.class, helper::complete);
-        assertTrue(exception.getMessage().contains("Write condition failed"));
-        assertInstanceOf(WriteConditionFailedException.class, exception.getCause());
+        assertThat(exception.getMessage(), containsString("Blob already exists"));
+        assertInstanceOf(BlobAlreadyExistsException.class, exception.getCause());
+        assertEquals(this.blobPath, ((BlobAlreadyExistsException) exception.getCause()).getBlobPath());
 
         assertInitializationLog(0);
         assertCompletedPartLog(1, 1);

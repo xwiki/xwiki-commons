@@ -30,7 +30,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.xwiki.store.blob.BlobDoesNotExistCondition;
+import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStoreException;
@@ -172,7 +172,7 @@ class S3BlobTest
                 assertEquals(5 * 1024 * 1024L, context.arguments().get(5));
             })) {
 
-            OutputStream outputStream = this.blob.getOutputStream(BlobDoesNotExistCondition.INSTANCE);
+            OutputStream outputStream = this.blob.getOutputStream(BlobDoesNotExistOption.INSTANCE);
 
             assertThat(outputStream, instanceOf(S3BlobOutputStream.class));
             assertEquals(1, mockedOutputStream.constructed().size());

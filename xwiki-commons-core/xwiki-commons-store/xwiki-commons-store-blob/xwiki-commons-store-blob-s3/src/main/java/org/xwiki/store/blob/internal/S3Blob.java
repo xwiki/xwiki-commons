@@ -27,7 +27,7 @@ import org.xwiki.store.blob.Blob;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStoreException;
-import org.xwiki.store.blob.WriteCondition;
+import org.xwiki.store.blob.BlobOption;
 
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -103,11 +103,11 @@ public class S3Blob extends AbstractBlob<S3BlobStore>
     }
 
     @Override
-    public OutputStream getOutputStream(WriteCondition... conditions) throws BlobStoreException
+    public OutputStream getOutputStream(BlobOption... options) throws BlobStoreException
     {
         long partSizeBytes = this.getStore().getProperties().getMultipartUploadPartSize();
         return new S3BlobOutputStream(this.bucketName, this.s3Key, this.s3Client,
-            Arrays.asList(conditions), getPath(), partSizeBytes);
+            Arrays.asList(options), getPath(), partSizeBytes);
     }
 
     @Override

@@ -22,20 +22,34 @@ package org.xwiki.store.blob;
 import org.xwiki.stability.Unstable;
 
 /**
- * Base interface for conditions that must be met when writing to a blob.
- * This allows for atomic operations by specifying preconditions that must be satisfied
- * before the write operation proceeds.
+ * An option that requires the blob to not exist before writing.
+ * This ensures atomic create-only operations.
  *
  * @version $Id$
  * @since 17.10.0RC1
  */
 @Unstable
-public interface WriteCondition
+public final class BlobDoesNotExistOption implements BlobOption
 {
     /**
-     * Get a human-readable description of this condition.
-     *
-     * @return a description of the condition
+     * Singleton instance of this condition.
      */
-    String getDescription();
+    public static final BlobDoesNotExistOption INSTANCE = new BlobDoesNotExistOption();
+
+    private BlobDoesNotExistOption()
+    {
+        // Singleton pattern
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return "Blob must not exist";
+    }
+
+    @Override
+    public String toString()
+    {
+        return getDescription();
+    }
 }

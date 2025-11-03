@@ -31,12 +31,12 @@ import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 
 import org.xwiki.store.blob.Blob;
-import org.xwiki.store.blob.BlobDoesNotExistCondition;
+import org.xwiki.store.blob.BlobAlreadyExistsException;
+import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobNotFoundException;
+import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStoreException;
-import org.xwiki.store.blob.WriteCondition;
-import org.xwiki.store.blob.WriteConditionFailedException;
 
 /**
  * A {@link Blob} implementation that represents a file in the file system.
@@ -80,7 +80,7 @@ public class FileSystemBlob extends AbstractBlob<FileSystemBlobStore>
     }
 
     @Override
-    public OutputStream getOutputStream(WriteCondition... conditions) throws BlobStoreException
+    public OutputStream getOutputStream(BlobOption... options) throws BlobStoreException
     {
         NoSuchFileException lastNoSuchFileException = null;
         for (int attempt = 0; attempt < FileSystemBlobStore.NUM_ATTEMPTS; ++attempt) {
@@ -88,7 +88,7 @@ public class FileSystemBlob extends AbstractBlob<FileSystemBlobStore>
                 // Ensure the parent directory exists before creating the output stream.
                 this.blobStore.createParents(this.absolutePath);
 
-                if (Arrays.stream(conditions).anyMatch(BlobDoesNotExistCondition.class::isInstance)) {
+                if (Arrays.stream(options).anyMatch(BlobDoesNotExistOption.class::isInstance)) {
                     // Use CREATE_NEW to ensure atomic create-only behavior
                     return Files.newOutputStream(this.absolutePath,
                         StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
@@ -97,7 +97,7 @@ public class FileSystemBlob extends AbstractBlob<FileSystemBlobStore>
                     return Files.newOutputStream(this.absolutePath);
                 }
             } catch (FileAlreadyExistsException e) {
-                throw new WriteConditionFailedException(this.blobPath, Arrays.asList(conditions), e);
+                throw new BlobAlreadyExistsException(this.blobPath, e);
             } catch (NoSuchFileException e) {
                 // This can happen if the parent directory was deleted between our check and the attempt to create the
                 // output stream. Loop around and try again. Remember the exception in case we fail multiple times.

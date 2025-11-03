@@ -24,7 +24,7 @@ import java.io.Serial;
 import org.xwiki.stability.Unstable;
 
 /**
- * Exception thrown when trying to copy a blob to a target path that already contains a blob.
+ * Exception thrown when trying to write to a location that already contains a blob.
  *
  * @version $Id$
  * @since 17.10.0RC1
@@ -40,36 +40,36 @@ public class BlobAlreadyExistsException extends BlobStoreException
 
     private static final String BLOB_ALREADY_EXISTS_MESSAGE = "Blob already exists at target path: ";
 
-    private final BlobPath targetPath;
+    private final BlobPath blobPath;
 
     /**
      * Constructs a new exception with the specified target path.
      *
-     * @param targetPath the path where a blob already exists
+     * @param blobPath the path where a blob already exists
      */
-    public BlobAlreadyExistsException(BlobPath targetPath)
+    public BlobAlreadyExistsException(BlobPath blobPath)
     {
-        super(BLOB_ALREADY_EXISTS_MESSAGE + targetPath);
-        this.targetPath = targetPath;
+        super(BLOB_ALREADY_EXISTS_MESSAGE + blobPath);
+        this.blobPath = blobPath;
     }
 
     /**
      * Constructs a new exception with the specified target path and cause.
      *
-     * @param targetPath the path where a blob already exists
+     * @param blobPath the path where a blob already exists
      * @param cause the cause of the exception
      */
-    public BlobAlreadyExistsException(BlobPath targetPath, Throwable cause)
+    public BlobAlreadyExistsException(BlobPath blobPath, Throwable cause)
     {
-        super(BLOB_ALREADY_EXISTS_MESSAGE + targetPath, cause);
-        this.targetPath = targetPath;
+        super(BLOB_ALREADY_EXISTS_MESSAGE + blobPath, cause);
+        this.blobPath = blobPath;
     }
 
     /**
      * @return the path where a blob already exists
      */
-    public BlobPath getTargetPath()
+    public BlobPath getBlobPath()
     {
-        return this.targetPath;
+        return this.blobPath;
     }
 }

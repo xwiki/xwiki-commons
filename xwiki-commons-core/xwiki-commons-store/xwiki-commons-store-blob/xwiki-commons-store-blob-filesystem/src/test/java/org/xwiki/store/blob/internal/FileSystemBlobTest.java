@@ -37,11 +37,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.xwiki.store.blob.BlobDoesNotExistCondition;
+import org.xwiki.store.blob.BlobAlreadyExistsException;
+import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStoreException;
-import org.xwiki.store.blob.WriteConditionFailedException;
 import org.xwiki.test.junit5.XWikiTempDir;
 import org.xwiki.test.junit5.XWikiTempDirExtension;
 
@@ -135,7 +135,7 @@ class FileSystemBlobTest
     }
 
     @Test
-    void getOutputStreamWithoutConditions() throws Exception
+    void getOutputStreamWithoutOptions() throws Exception
     {
         try (OutputStream result = this.blob.getOutputStream()) {
             assertNotNull(result);
@@ -148,9 +148,9 @@ class FileSystemBlobTest
     }
 
     @Test
-    void getOutputStreamWithCreateNewCondition() throws Exception
+    void getOutputStreamWithBlobDoesNotExistOption() throws Exception
     {
-        try (OutputStream result = this.blob.getOutputStream(BlobDoesNotExistCondition.INSTANCE)) {
+        try (OutputStream result = this.blob.getOutputStream(BlobDoesNotExistOption.INSTANCE)) {
             assertNotNull(result);
             result.write("test data".getBytes());
         }
@@ -161,13 +161,13 @@ class FileSystemBlobTest
     }
 
     @Test
-    void getOutputStreamThrowsWriteConditionFailedOnFileExists() throws Exception
+    void getOutputStreamBlobAlreadyExistsExceptionOnFileExists() throws Exception
     {
         // Create the file first so it exists
         Files.createFile(this.absolutePath);
 
-        WriteConditionFailedException exception = assertThrows(WriteConditionFailedException.class,
-            () -> this.blob.getOutputStream(BlobDoesNotExistCondition.INSTANCE));
+        BlobAlreadyExistsException exception = assertThrows(BlobAlreadyExistsException.class,
+            () -> this.blob.getOutputStream(BlobDoesNotExistOption.INSTANCE));
 
         assertEquals(this.blobPath, exception.getBlobPath());
         assertInstanceOf(FileAlreadyExistsException.class, exception.getCause());

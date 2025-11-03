@@ -28,7 +28,7 @@ import org.xwiki.store.blob.Blob;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
-import org.xwiki.store.blob.WriteCondition;
+import org.xwiki.store.blob.BlobOption;
 
 /**
  * Abstract base class for {@link Blob} implementations.
@@ -62,9 +62,9 @@ public abstract class AbstractBlob<T extends BlobStore> implements Blob
     }
 
     @Override
-    public void writeFromStream(InputStream inputStream, WriteCondition... condition) throws BlobStoreException
+    public void writeFromStream(InputStream inputStream, BlobOption... options) throws BlobStoreException
     {
-        try (OutputStream outputStream = this.getOutputStream(condition)) {
+        try (OutputStream outputStream = this.getOutputStream(options)) {
             IOUtils.copy(inputStream, outputStream);
         } catch (IOException e) {
             if (e.getCause() instanceof BlobStoreException blobStoreException) {

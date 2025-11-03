@@ -61,25 +61,29 @@ public interface Blob extends StreamProvider
     /**
      * Get an OutputStream to write data to this blob. The caller must close the returned stream after use.
      *
-     * @param conditions the conditions that must be satisfied before writing to this blob
+     * @param options the options to use when writing to this blob
      * @return an OutputStream to write data to this blob
+     * @throws BlobAlreadyExistsException if the blob already exists and {@link BlobDoesNotExistOption} is among the
+     * given options
      * @throws BlobStoreException if the blob cannot be written, for example because its name is invalid. There is no
      *     guarantee that in such a case an exception will be thrown, the exception could also only be thrown when data
      *     is written to the stream, or when the stream is closed.
      */
-    OutputStream getOutputStream(WriteCondition... conditions) throws BlobStoreException;
+    OutputStream getOutputStream(BlobOption... options) throws BlobStoreException;
 
     /**
      * Write the content of the given InputStream to this blob. The given InputStream will be closed by this method.
      *
      * @param inputStream the InputStream to read data from
-     * @param conditions the conditions that must be satisfied before writing to this blob
+     * @param options the options to use when writing to this blob
+     * @throws BlobAlreadyExistsException if the blob already exists and {@link BlobDoesNotExistOption} is among the
+     * given options
      * @throws BlobStoreException if the InputStream cannot be read or the blob cannot be written, for example because
      * its name is invalid.
-     * @todo Recommend this method over {@link #getOutputStream(WriteCondition...)} once this is actually more than
+     * @todo Recommend this method over {@link #getOutputStream(BlobOption...)} once this is actually more than
      * IOUtils#copy - or remove it, otherwise.
      */
-    void writeFromStream(InputStream inputStream, WriteCondition... conditions) throws BlobStoreException;
+    void writeFromStream(InputStream inputStream, BlobOption... options) throws BlobStoreException;
 
     /**
      * Get an InputStream to read data from this blob. The caller must close the returned stream after use.

@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.store.blob.Blob;
 import org.xwiki.store.blob.BlobAlreadyExistsException;
-import org.xwiki.store.blob.BlobDoesNotExistCondition;
+import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
@@ -106,7 +106,7 @@ public class S3CopyOperations
                 throw new BlobAlreadyExistsException(targetPath);
             }
 
-            targetBlob.writeFromStream(inputStream, BlobDoesNotExistCondition.INSTANCE);
+            targetBlob.writeFromStream(inputStream, BlobDoesNotExistOption.INSTANCE);
             return targetBlob;
         } catch (BlobStoreException e) {
             throw e;
@@ -216,7 +216,7 @@ public class S3CopyOperations
                 targetKey,
                 s3Client,
                 targetPath,
-                List.of(BlobDoesNotExistCondition.INSTANCE),
+                List.of(BlobDoesNotExistOption.INSTANCE),
                 metadata
             );
 

@@ -26,10 +26,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-import org.xwiki.store.blob.BlobDoesNotExistCondition;
+import org.xwiki.store.blob.BlobAlreadyExistsException;
+import org.xwiki.store.blob.BlobDoesNotExistOption;
+import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
-import org.xwiki.store.blob.WriteCondition;
-import org.xwiki.store.blob.WriteConditionFailedException;
 
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -82,7 +82,7 @@ public class S3BlobOutputStream extends OutputStream
 
     private boolean failed;
 
-    private final List<WriteCondition> writeConditions;
+    private final List<BlobOption> options;
 
     private final BlobPath blobPath;
 
@@ -90,22 +90,22 @@ public class S3BlobOutputStream extends OutputStream
     private S3MultipartUploadHelper uploadHelper;
 
     /**
-     * Constructor with write condition.
+     * Constructor with options.
      *
      * @param bucketName the S3 bucket name
      * @param s3Key the S3 key
      * @param s3Client the S3 client
-     * @param conditions the write conditions to check
+     * @param options the options for writing to the stream
      * @param blobPath the blob path for error reporting
      * @param partSizeBytes the configured multipart upload part size in bytes
      */
-    public S3BlobOutputStream(String bucketName, String s3Key, S3Client s3Client, List<WriteCondition> conditions,
+    public S3BlobOutputStream(String bucketName, String s3Key, S3Client s3Client, List<BlobOption> options,
         BlobPath blobPath, long partSizeBytes)
     {
         this.bucketName = bucketName;
         this.s3Key = s3Key;
         this.s3Client = s3Client;
-        this.writeConditions = conditions;
+        this.options = options;
         this.blobPath = blobPath;
         this.buffer = new ByteArrayOutputStreamWithInputStream();
         this.failed = false;
@@ -265,7 +265,7 @@ public class S3BlobOutputStream extends OutputStream
             this.s3Key,
             this.s3Client,
             this.blobPath,
-            this.writeConditions
+            this.options
         );
     }
 
@@ -277,7 +277,7 @@ public class S3BlobOutputStream extends OutputStream
                 .key(this.s3Key);
 
             // Add conditional headers if needed.
-            if (hasIfNotExistsCondition()) {
+            if (hasIfNotExistsOption()) {
                 requestBuilder.ifNoneMatch(WILDCARD);
             }
 
@@ -293,16 +293,16 @@ public class S3BlobOutputStream extends OutputStream
     private void handleS3Exception(S3Exception e) throws IOException
     {
         // Check if this is a precondition failed error (412) for conditional requests.
-        if (e.statusCode() == 412 && hasIfNotExistsCondition()) {
-            throw new IOException("Write condition failed - blob already exists",
-                new WriteConditionFailedException(this.blobPath, this.writeConditions, e));
+        if (e.statusCode() == 412 && hasIfNotExistsOption()) {
+            throw new IOException("Blob already exists",
+                new BlobAlreadyExistsException(this.blobPath, e));
         }
         throw new IOException(GENERIC_FAILED_UPLOAD_MESSAGE, e);
     }
 
-    private boolean hasIfNotExistsCondition()
+    private boolean hasIfNotExistsOption()
     {
-        return this.writeConditions != null && this.writeConditions.contains(BlobDoesNotExistCondition.INSTANCE);
+        return this.options != null && this.options.contains(BlobDoesNotExistOption.INSTANCE);
     }
 
     private void checkStreamState() throws IOException

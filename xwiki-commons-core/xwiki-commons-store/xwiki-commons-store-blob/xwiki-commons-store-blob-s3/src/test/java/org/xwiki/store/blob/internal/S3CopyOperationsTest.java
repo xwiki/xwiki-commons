@@ -30,7 +30,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.xwiki.store.blob.Blob;
 import org.xwiki.store.blob.BlobAlreadyExistsException;
-import org.xwiki.store.blob.BlobDoesNotExistCondition;
+import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
@@ -104,7 +104,7 @@ class S3CopyOperationsTest
     private Blob targetBlob;
 
     @BeforeEach
-    void setUp() throws BlobStoreException
+    void setUp()
     {
         when(this.sourceStore.getKeyMapper()).thenReturn(this.keyMapper);
         when(this.targetStore.getKeyMapper()).thenReturn(this.keyMapper);
@@ -154,7 +154,7 @@ class S3CopyOperationsTest
 
         assertNotNull(result);
         assertEquals(nonS3TargetBlob, result);
-        verify(nonS3TargetBlob).writeFromStream(any(InputStream.class), any(BlobDoesNotExistCondition.class));
+        verify(nonS3TargetBlob).writeFromStream(any(InputStream.class), any(BlobDoesNotExistOption.class));
     }
 
     @Test

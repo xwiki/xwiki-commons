@@ -28,10 +28,10 @@ import java.util.function.Consumer;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xwiki.store.blob.BlobDoesNotExistCondition;
+import org.xwiki.store.blob.BlobAlreadyExistsException;
+import org.xwiki.store.blob.BlobDoesNotExistOption;
+import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
-import org.xwiki.store.blob.WriteCondition;
-import org.xwiki.store.blob.WriteConditionFailedException;
 
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.AbortMultipartUploadRequest;
@@ -78,7 +78,7 @@ public class S3MultipartUploadHelper
 
     private final BlobPath blobPath;
 
-    private final List<WriteCondition> writeConditions;
+    private final List<BlobOption> blobOptions;
 
     private final String uploadId;
 
@@ -97,13 +97,13 @@ public class S3MultipartUploadHelper
      * @param s3Key the S3 key for the object
      * @param s3Client the S3 client
      * @param blobPath the blob path (for error reporting)
-     * @param writeConditions optional write conditions to enforce
+     * @param blobOptions optional options to use for the upload
      * @throws IOException if initialization fails
      */
     public S3MultipartUploadHelper(String bucketName, String s3Key, S3Client s3Client, BlobPath blobPath,
-        List<WriteCondition> writeConditions) throws IOException
+        List<BlobOption> blobOptions) throws IOException
     {
-        this(bucketName, s3Key, s3Client, blobPath, writeConditions, null);
+        this(bucketName, s3Key, s3Client, blobPath, blobOptions, null);
     }
 
     /**
@@ -113,18 +113,18 @@ public class S3MultipartUploadHelper
      * @param s3Key the S3 key for the object
      * @param s3Client the S3 client
      * @param blobPath the blob path (for error reporting)
-     * @param writeConditions optional write conditions to enforce
+     * @param blobOptions optional options to use for the upload
      * @param metadata optional metadata to apply to the object
      * @throws IOException if initialization fails
      */
     public S3MultipartUploadHelper(String bucketName, String s3Key, S3Client s3Client, BlobPath blobPath,
-        List<WriteCondition> writeConditions, Map<String, String> metadata) throws IOException
+        List<BlobOption> blobOptions, Map<String, String> metadata) throws IOException
     {
         this.bucketName = bucketName;
         this.s3Key = s3Key;
         this.s3Client = s3Client;
         this.blobPath = blobPath;
-        this.writeConditions = writeConditions;
+        this.blobOptions = blobOptions;
         this.completedParts = new ArrayList<>();
         this.nextPartNumber = 1;
         this.completed = false;
@@ -225,7 +225,7 @@ public class S3MultipartUploadHelper
                 .multipartUpload(b -> b.parts(this.completedParts));
 
             // Add conditional headers if needed
-            if (hasIfNotExistsCondition()) {
+            if (hasIfNotExistsOption()) {
                 builder.ifNoneMatch(WILDCARD);
             }
 
@@ -288,16 +288,16 @@ public class S3MultipartUploadHelper
     private void handleS3Exception(S3Exception e) throws IOException
     {
         // Check if this is a precondition failed error (412) for conditional requests.
-        if (e.statusCode() == 412 && hasIfNotExistsCondition()) {
-            throw new IOException("Write condition failed - blob already exists",
-                new WriteConditionFailedException(this.blobPath, this.writeConditions, e));
+        if (e.statusCode() == 412 && hasIfNotExistsOption()) {
+            throw new IOException("Blob already exists",
+                new BlobAlreadyExistsException(this.blobPath, e));
         }
         throw new IOException("S3 operation failed for blob at path " + this.blobPath, e);
     }
 
-    private boolean hasIfNotExistsCondition()
+    private boolean hasIfNotExistsOption()
     {
-        return this.writeConditions != null && this.writeConditions.contains(BlobDoesNotExistCondition.INSTANCE);
+        return this.blobOptions != null && this.blobOptions.contains(BlobDoesNotExistOption.INSTANCE);
     }
 
     private void ensureNotCompleted() throws IOException
