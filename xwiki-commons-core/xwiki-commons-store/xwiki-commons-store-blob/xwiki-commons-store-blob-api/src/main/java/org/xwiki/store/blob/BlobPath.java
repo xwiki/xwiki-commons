@@ -19,6 +19,8 @@
  */
 package org.xwiki.store.blob;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -34,12 +36,15 @@ import org.xwiki.stability.Unstable;
  * @since 17.10.0RC1
  */
 @Unstable
-public final class BlobPath
+public final class BlobPath implements Serializable
 {
     /**
      * The root BlobPath with no segments.
      */
     public static final BlobPath ROOT = new BlobPath(List.of());
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final List<String> segments;
 
