@@ -35,6 +35,7 @@
     <xwiki.enforcer.no-legacy-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.no-legacy-dependencies.skip>
     <!-- By default we perform checks on the POM content -->
     <xwiki.enforcer.valid-poms.skip>${xwiki.enforcer.skip}</xwiki.enforcer.valid-poms.skip>
+    <xwiki.enforcer.valid-importmap.skip>${xwiki.enforcer.skip}</xwiki.enforcer.valid-importmap.skip>
     <!-- By default don't skip Spoon checks -->
     <xwiki.spoon.skip>false</xwiki.spoon.skip>
     <!-- Tell SonarQube to not report usage of deprecated APIs in XWiki legacy code as it's fine there and in any
@@ -143,6 +144,18 @@
               <skip>${xwiki.enforcer.valid-poms.skip}</skip>
               <rules>
                 <externalExtensionCheck />
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enforce-valid-javascript-importmap</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.valid-importmap.skip}</skip>
+              <rules>
+                <javascriptImportMapCheck />
               </rules>
             </configuration>
           </execution>

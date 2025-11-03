@@ -34,4 +34,10 @@
   <properties>
     <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
   </properties>
+  <dependencies>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+  </dependencies>
 </project>
