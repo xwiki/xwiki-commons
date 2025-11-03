@@ -49,10 +49,12 @@ import software.amazon.awssdk.services.s3.model.CreateMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.CreateMultipartUploadResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.UploadPartCopyRequest;
 import software.amazon.awssdk.services.s3.model.UploadPartCopyResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -67,6 +69,7 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id$
  */
+@SuppressWarnings({"checkstyle:ClassFanOutComplexity", "checkstyle:MultipleStringLiterals"})
 @ComponentTest
 class S3CopyOperationsTest
 {
@@ -205,13 +208,28 @@ class S3CopyOperationsTest
     void copyBlobS3StoreSimpleCopyForSmallObject() throws Exception
     {
         when(this.targetBlob.exists()).thenReturn(false);
-        when(this.sourceBlob.getSize()).thenReturn(1024L);
+
+        HeadObjectResponse headResponse = mock();
+        when(headResponse.eTag()).thenReturn("source-etag-123");
+        when(headResponse.contentLength()).thenReturn(1024L);
+        when(headResponse.metadata()).thenReturn(Map.of());
+        when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
+
         when(this.s3Client.copyObject(any(CopyObjectRequest.class))).thenReturn(mock());
 
         Blob result = this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore,
             this.targetPath);
 
         assertNotNull(result);
+
+        // Verify HeadObject was called to get ETag
+        ArgumentCaptor<HeadObjectRequest> headRequestCaptor = ArgumentCaptor.captor();
+        verify(this.s3Client).headObject(headRequestCaptor.capture());
+        HeadObjectRequest headRequest = headRequestCaptor.getValue();
+        assertEquals("source-bucket", headRequest.bucket());
+        assertEquals("source-key", headRequest.key());
+
+        // Verify CopyObject was called with ETag condition
         ArgumentCaptor<CopyObjectRequest> requestCaptor = ArgumentCaptor.captor();
         verify(this.s3Client).copyObject(requestCaptor.capture());
 
@@ -221,6 +239,7 @@ class S3CopyOperationsTest
         assertEquals("target-bucket", request.destinationBucket());
         assertEquals("target-key", request.destinationKey());
         assertEquals("COPY", request.metadataDirective().toString());
+        assertEquals("source-etag-123", request.copySourceIfMatch());
     }
 
     @Test
@@ -236,10 +255,27 @@ class S3CopyOperationsTest
     void copyBlobS3StoreThrowsExceptionWhenSourceNotFound() throws Exception
     {
         when(this.targetBlob.exists()).thenReturn(false);
-        when(this.sourceBlob.getSize()).thenReturn(-1L);
+        when(this.s3Client.headObject(any(HeadObjectRequest.class)))
+            .thenThrow(NoSuchKeyException.builder().message("Object not found").build());
 
-        assertThrows(BlobNotFoundException.class,
+        BlobNotFoundException exception = assertThrows(BlobNotFoundException.class,
             () -> this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath));
+
+        assertInstanceOf(NoSuchKeyException.class, exception.getCause());
+    }
+
+    @Test
+    void copyBlobS3StoreThrowsExceptionOnHeadObjectFailure() throws Exception
+    {
+        when(this.targetBlob.exists()).thenReturn(false);
+        when(this.s3Client.headObject(any(HeadObjectRequest.class)))
+            .thenThrow(new RuntimeException("S3 service error"));
+
+        BlobStoreException exception = assertThrows(BlobStoreException.class,
+            () -> this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath));
+
+        assertEquals("Failed to retrieve source object metadata", exception.getMessage());
+        assertInstanceOf(RuntimeException.class, exception.getCause());
     }
 
     @Test
@@ -249,12 +285,13 @@ class S3CopyOperationsTest
         long largeObjectSize = 600L * 1024 * 1024;
 
         when(this.targetBlob.exists()).thenReturn(false);
-        when(this.sourceBlob.getSize()).thenReturn(largeObjectSize);
 
-        // Mock HeadObjectResponse with metadata
+        // Mock HeadObjectResponse with metadata and ETag
         HeadObjectResponse headResponse = mock();
         Map<String, String> metadata = Map.of("content-type", "application/octet-stream", "custom-key", "custom-value");
         when(headResponse.metadata()).thenReturn(metadata);
+        when(headResponse.eTag()).thenReturn("source-etag-456");
+        when(headResponse.contentLength()).thenReturn(largeObjectSize);
         when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
 
         CreateMultipartUploadResponse createResponse = mock();
@@ -283,9 +320,9 @@ class S3CopyOperationsTest
 
         assertNotNull(result);
 
-        // Verify HeadObject was called to retrieve metadata
+        // Verify HeadObject was called to retrieve metadata and ETag
         ArgumentCaptor<HeadObjectRequest> headRequestCaptor = ArgumentCaptor.captor();
-        verify(this.s3Client).headObject(headRequestCaptor.capture());
+        verify(this.s3Client, times(2)).headObject(headRequestCaptor.capture());
         HeadObjectRequest headRequest = headRequestCaptor.getValue();
         assertEquals("source-bucket", headRequest.bucket());
         assertEquals("source-key", headRequest.key());
@@ -296,7 +333,14 @@ class S3CopyOperationsTest
         CreateMultipartUploadRequest createRequest = createRequestCaptor.getValue();
         assertEquals(metadata, createRequest.metadata());
 
-        verify(this.s3Client, times(2)).uploadPartCopy(any(UploadPartCopyRequest.class));
+        // Verify UploadPartCopy was called with ETag condition
+        ArgumentCaptor<UploadPartCopyRequest> uploadPartCaptor = ArgumentCaptor.captor();
+        verify(this.s3Client, times(2)).uploadPartCopy(uploadPartCaptor.capture());
+
+        for (UploadPartCopyRequest uploadPartRequest : uploadPartCaptor.getAllValues()) {
+            assertEquals("source-etag-456", uploadPartRequest.copySourceIfMatch());
+        }
+
         verify(this.s3Client).completeMultipartUpload(any(CompleteMultipartUploadRequest.class));
 
         // Log messages from S3MultipartUploadHelper constructor
@@ -327,16 +371,42 @@ class S3CopyOperationsTest
     }
 
     @Test
-    void copyBlobS3StoreMultipartCopyAbortsOnFailure() throws Exception
+    void copyBlobS3StoreSimpleCopyFailsOnETagMismatch() throws Exception
     {
-        // Use 600 MiB so that with a 512 MiB copy part size we get 2 parts
+        when(this.targetBlob.exists()).thenReturn(false);
+
+        HeadObjectResponse headResponse = mock();
+        when(headResponse.eTag()).thenReturn("original-etag");
+        when(headResponse.contentLength()).thenReturn(1024L);
+        when(headResponse.metadata()).thenReturn(Map.of());
+        when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
+
+        // Simulate ETag mismatch error from S3
+        when(this.s3Client.copyObject(any(CopyObjectRequest.class)))
+            .thenThrow(new RuntimeException(
+                "PreconditionFailed: At least one of the pre-conditions you specified did not hold"));
+
+        BlobStoreException exception = assertThrows(BlobStoreException.class,
+            () -> this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath));
+
+        assertEquals("Failed to perform simple copy", exception.getMessage());
+
+        // Verify the copy request included the ETag condition
+        ArgumentCaptor<CopyObjectRequest> requestCaptor = ArgumentCaptor.captor();
+        verify(this.s3Client).copyObject(requestCaptor.capture());
+        assertEquals("original-etag", requestCaptor.getValue().copySourceIfMatch());
+    }
+
+    @Test
+    void copyBlobS3StoreMultipartCopyFailsOnETagMismatch() throws Exception
+    {
         long largeObjectSize = 600L * 1024 * 1024;
 
         when(this.targetBlob.exists()).thenReturn(false);
-        when(this.sourceBlob.getSize()).thenReturn(largeObjectSize);
 
-        // Mock HeadObjectResponse with metadata
         HeadObjectResponse headResponse = mock();
+        when(headResponse.eTag()).thenReturn("original-etag");
+        when(headResponse.contentLength()).thenReturn(largeObjectSize);
         when(headResponse.metadata()).thenReturn(Map.of());
         when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
 
@@ -345,38 +415,29 @@ class S3CopyOperationsTest
         when(this.s3Client.createMultipartUpload(any(CreateMultipartUploadRequest.class)))
             .thenReturn(createResponse);
 
+        // Simulate ETag mismatch on first part copy
         when(this.s3Client.uploadPartCopy(any(UploadPartCopyRequest.class)))
-            .thenThrow(new RuntimeException("Upload failed"));
+            .thenThrow(new RuntimeException(
+                "PreconditionFailed: At least one of the pre-conditions you specified did not hold"));
 
         BlobStoreException exception = assertThrows(BlobStoreException.class,
             () -> this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath));
 
         assertEquals("Failed to perform multipart copy", exception.getMessage());
 
-        // Log messages from S3MultipartUploadHelper constructor
+        // Verify the upload part copy request included the ETag condition
+        ArgumentCaptor<UploadPartCopyRequest> uploadPartCaptor = ArgumentCaptor.captor();
+        verify(this.s3Client).uploadPartCopy(uploadPartCaptor.capture());
+        assertEquals("original-etag", uploadPartCaptor.getValue().copySourceIfMatch());
+
+        // Assert log messages that were generated before the exception
         assertEquals("Initialized multipart upload for key target-key with upload ID: test-upload-id",
             this.logCapture.getMessage(0));
-
-        // Log message from S3CopyOperations
         assertEquals("Initiated multipart copy with upload ID: test-upload-id", this.logCapture.getMessage(1));
 
-        // Log message from S3MultipartUploadHelper.abort
+        // Verify abort was called
         assertEquals("Aborted multipart upload for key target-key with upload ID: test-upload-id",
             this.logCapture.getMessage(2));
-    }
-
-    @Test
-    void copyBlobS3StoreSimpleCopyThrowsExceptionOnFailure() throws Exception
-    {
-        when(this.targetBlob.exists()).thenReturn(false);
-        when(this.sourceBlob.getSize()).thenReturn(1024L);
-        when(this.s3Client.copyObject(any(CopyObjectRequest.class)))
-            .thenThrow(new RuntimeException("Copy failed"));
-
-        BlobStoreException exception = assertThrows(BlobStoreException.class,
-            () -> this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath));
-
-        assertEquals("Failed to perform simple copy", exception.getMessage());
     }
 
     @Test
@@ -385,13 +446,22 @@ class S3CopyOperationsTest
         long exactThreshold = 512L * 1024 * 1024;
 
         when(this.targetBlob.exists()).thenReturn(false);
-        when(this.sourceBlob.getSize()).thenReturn(exactThreshold);
+
+        HeadObjectResponse headResponse = mock();
+        when(headResponse.eTag()).thenReturn("threshold-etag");
+        when(headResponse.contentLength()).thenReturn(exactThreshold);
+        when(headResponse.metadata()).thenReturn(Map.of());
+        when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
+
         when(this.s3Client.copyObject(any(CopyObjectRequest.class))).thenReturn(mock());
 
         this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath);
 
-        // Should use simple copy at threshold.
-        verify(this.s3Client).copyObject(any(CopyObjectRequest.class));
+        // Should use simple copy at threshold with ETag
+        ArgumentCaptor<CopyObjectRequest> requestCaptor = ArgumentCaptor.captor();
+        verify(this.s3Client).copyObject(requestCaptor.capture());
+        assertEquals("threshold-etag", requestCaptor.getValue().copySourceIfMatch());
+
         verify(this.s3Client, never()).uploadPartCopy(any(UploadPartCopyRequest.class));
     }
 }

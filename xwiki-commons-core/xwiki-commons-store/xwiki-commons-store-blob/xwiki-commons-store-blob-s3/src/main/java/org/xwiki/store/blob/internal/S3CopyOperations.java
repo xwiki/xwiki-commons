@@ -40,6 +40,7 @@ import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.MetadataDirective;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.UploadPartCopyRequest;
 import software.amazon.awssdk.services.s3.model.UploadPartCopyResponse;
 
@@ -138,19 +139,36 @@ public class S3CopyOperations
             throw new BlobAlreadyExistsException(targetPath);
         }
 
-        // Get source object size
-        Blob sourceBlob = sourceStore.getBlob(sourcePath);
-        long objectSize = sourceBlob.getSize();
+        // Get source object metadata including ETag
+        S3Client s3Client = this.clientManager.getS3Client();
+        HeadObjectRequest headRequest = HeadObjectRequest.builder()
+            .bucket(sourceStore.getBucketName())
+            .key(sourceKey)
+            .build();
+
+        HeadObjectResponse headResponse;
+        try {
+            headResponse = s3Client.headObject(headRequest);
+        } catch (NoSuchKeyException e) {
+            throw new BlobNotFoundException(sourcePath, e);
+        } catch (Exception e) {
+            throw new BlobStoreException("Failed to retrieve source object metadata", e);
+        }
+
+        long objectSize = headResponse.contentLength();
+        String sourceETag = headResponse.eTag();
 
         if (objectSize < 0) {
             throw new BlobNotFoundException(sourcePath);
         }
 
-        // Choose copy strategy based on object size
+        // Choose copy strategy based on object size.
         if (objectSize <= targetStore.getMultipartPartCopySizeBytes()) {
-            performSimpleCopy(sourceStore.getBucketName(), sourceKey, targetStore.getBucketName(), targetKey);
+            performSimpleCopy(sourceStore.getBucketName(), sourceKey, targetStore.getBucketName(), targetKey,
+                sourceETag);
         } else {
-            performMultipartCopy(sourceStore, sourceKey, targetStore, targetKey, targetPath, objectSize);
+            performMultipartCopy(sourceStore, sourceKey, targetStore, targetKey, targetPath, objectSize,
+                sourceETag);
         }
 
         return targetStore.getBlob(targetPath);
@@ -163,9 +181,11 @@ public class S3CopyOperations
      * @param sourceKey the source S3 key
      * @param targetBucket the target S3 bucket
      * @param targetKey the target S3 key
+     * @param sourceETag the ETag of the source object to ensure it hasn't changed
      * @throws BlobStoreException if the copy operation fails
      */
-    private void performSimpleCopy(String sourceBucket, String sourceKey, String targetBucket, String targetKey)
+    private void performSimpleCopy(String sourceBucket, String sourceKey, String targetBucket, String targetKey,
+        String sourceETag)
         throws BlobStoreException
     {
         try {
@@ -175,6 +195,7 @@ public class S3CopyOperations
                 .destinationBucket(targetBucket)
                 .destinationKey(targetKey)
                 .metadataDirective(MetadataDirective.COPY)
+                .copySourceIfMatch(sourceETag)
                 .build();
 
             this.clientManager.getS3Client().copyObject(copyRequest);
@@ -192,10 +213,11 @@ public class S3CopyOperations
      * @param targetKey the target S3 key
      * @param targetPath the target blob path (for error reporting)
      * @param objectSize the size of the object in bytes
+     * @param sourceETag the ETag of the source object to ensure it hasn't changed
      * @throws BlobStoreException if the multipart copy operation fails
      */
     private void performMultipartCopy(S3BlobStore sourceStore, String sourceKey, S3BlobStore targetStore,
-        String targetKey, BlobPath targetPath, long objectSize) throws BlobStoreException
+        String targetKey, BlobPath targetPath, long objectSize, String sourceETag) throws BlobStoreException
     {
         S3MultipartUploadHelper uploadHelper = null;
         boolean success = false;
@@ -241,6 +263,7 @@ public class S3CopyOperations
                     .uploadId(uploadHelper.getUploadId())
                     .partNumber(partNumber)
                     .copySourceRange(copySourceRange)
+                    .copySourceIfMatch(sourceETag)
                     .build();
 
                 UploadPartCopyResponse uploadPartCopyResponse = s3Client.uploadPartCopy(uploadPartCopyRequest);
