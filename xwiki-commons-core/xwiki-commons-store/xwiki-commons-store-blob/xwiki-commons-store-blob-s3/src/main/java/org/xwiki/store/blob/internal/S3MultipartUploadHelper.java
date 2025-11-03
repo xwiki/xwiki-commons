@@ -78,7 +78,7 @@ public class S3MultipartUploadHelper
 
     private final BlobPath blobPath;
 
-    private final List<BlobOption> blobOptions;
+    private final BlobOption[] blobOptions;
 
     private final String uploadId;
 
@@ -97,13 +97,13 @@ public class S3MultipartUploadHelper
      * @param s3Key the S3 key for the object
      * @param s3Client the S3 client
      * @param blobPath the blob path (for error reporting)
-     * @param blobOptions optional options to use for the upload
+     * @param options optional options to use for the upload
      * @throws IOException if initialization fails
      */
     public S3MultipartUploadHelper(String bucketName, String s3Key, S3Client s3Client, BlobPath blobPath,
-        List<BlobOption> blobOptions) throws IOException
+        BlobOption... options) throws IOException
     {
-        this(bucketName, s3Key, s3Client, blobPath, blobOptions, null);
+        this(bucketName, s3Key, s3Client, blobPath, null, options);
     }
 
     /**
@@ -113,18 +113,18 @@ public class S3MultipartUploadHelper
      * @param s3Key the S3 key for the object
      * @param s3Client the S3 client
      * @param blobPath the blob path (for error reporting)
-     * @param blobOptions optional options to use for the upload
      * @param metadata optional metadata to apply to the object
+     * @param options optional options to use for the upload
      * @throws IOException if initialization fails
      */
     public S3MultipartUploadHelper(String bucketName, String s3Key, S3Client s3Client, BlobPath blobPath,
-        List<BlobOption> blobOptions, Map<String, String> metadata) throws IOException
+        Map<String, String> metadata, BlobOption... options) throws IOException
     {
         this.bucketName = bucketName;
         this.s3Key = s3Key;
         this.s3Client = s3Client;
         this.blobPath = blobPath;
-        this.blobOptions = blobOptions;
+        this.blobOptions = options;
         this.completedParts = new ArrayList<>();
         this.nextPartNumber = 1;
         this.completed = false;
@@ -297,7 +297,7 @@ public class S3MultipartUploadHelper
 
     private boolean hasIfNotExistsOption()
     {
-        return this.blobOptions != null && this.blobOptions.contains(BlobDoesNotExistOption.INSTANCE);
+        return BlobOptionSupport.hasOption(BlobDoesNotExistOption.class, this.blobOptions);
     }
 
     private void ensureNotCompleted() throws IOException

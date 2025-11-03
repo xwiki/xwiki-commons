@@ -22,20 +22,25 @@ package org.xwiki.store.blob.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
+import java.util.OptionalLong;
+import java.util.Set;
 
+import org.apache.commons.io.input.BoundedInputStream;
 import org.xwiki.store.blob.Blob;
 import org.xwiki.store.blob.BlobAlreadyExistsException;
 import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
+import org.xwiki.store.blob.BlobRangeOption;
 import org.xwiki.store.blob.BlobStoreException;
 
 /**
@@ -46,6 +51,14 @@ import org.xwiki.store.blob.BlobStoreException;
  */
 public class FileSystemBlob extends AbstractBlob<FileSystemBlobStore>
 {
+    private static final Set<Class<? extends BlobOption>> SUPPORTED_OUTPUT_OPTIONS = Set.of(
+        BlobDoesNotExistOption.class
+    );
+
+    private static final Set<Class<? extends BlobOption>> SUPPORTED_INPUT_OPTIONS = Set.of(
+        BlobRangeOption.class
+    );
+
     private final Path absolutePath;
 
     /**
@@ -82,13 +95,15 @@ public class FileSystemBlob extends AbstractBlob<FileSystemBlobStore>
     @Override
     public OutputStream getOutputStream(BlobOption... options) throws BlobStoreException
     {
+        BlobOptionSupport.validateSupportedOptions(SUPPORTED_OUTPUT_OPTIONS, options);
+
         NoSuchFileException lastNoSuchFileException = null;
         for (int attempt = 0; attempt < FileSystemBlobStore.NUM_ATTEMPTS; ++attempt) {
             try {
                 // Ensure the parent directory exists before creating the output stream.
                 this.blobStore.createParents(this.absolutePath);
 
-                if (Arrays.stream(options).anyMatch(BlobDoesNotExistOption.class::isInstance)) {
+                if (BlobOptionSupport.hasOption(BlobDoesNotExistOption.class, options)) {
                     // Use CREATE_NEW to ensure atomic create-only behavior
                     return Files.newOutputStream(this.absolutePath,
                         StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
@@ -116,14 +131,41 @@ public class FileSystemBlob extends AbstractBlob<FileSystemBlobStore>
     }
 
     @Override
-    public InputStream getStream() throws BlobStoreException
+    public InputStream getStream(BlobOption... options) throws BlobStoreException
     {
+        BlobOptionSupport.validateSupportedOptions(SUPPORTED_INPUT_OPTIONS, options);
+        BlobRangeOption rangeOption = BlobOptionSupport.findSingleOption(BlobRangeOption.class, options);
         try {
-            return Files.newInputStream(this.absolutePath, LinkOption.NOFOLLOW_LINKS);
+            if (rangeOption == null) {
+                return Files.newInputStream(this.absolutePath, LinkOption.NOFOLLOW_LINKS);
+            }
+            return openRangeStream(rangeOption);
         } catch (NoSuchFileException e) {
             throw new BlobNotFoundException(this.blobPath, e);
         } catch (IOException e) {
             throw new BlobStoreException("Error getting input stream.", e);
+        }
+    }
+
+    private InputStream openRangeStream(BlobRangeOption rangeOption) throws IOException
+    {
+        SeekableByteChannel channel = Files.newByteChannel(this.absolutePath, StandardOpenOption.READ);
+        try {
+            channel.position(rangeOption.getStartOffset());
+            InputStream baseStream = Channels.newInputStream(channel);
+
+            OptionalLong length = rangeOption.getLength();
+            if (length.isEmpty()) {
+                return baseStream;
+            }
+
+            return BoundedInputStream.builder()
+                .setInputStream(baseStream)
+                .setMaxCount(length.getAsLong())
+                .get();
+        } catch (IOException e) {
+            channel.close();
+            throw e;
         }
     }
 }

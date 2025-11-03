@@ -19,7 +19,6 @@
  */
 package org.xwiki.store.blob.internal;
 
-import java.util.List;
 import java.util.Map;
 
 import jakarta.inject.Inject;
@@ -238,8 +237,8 @@ public class S3CopyOperations
                 targetKey,
                 s3Client,
                 targetPath,
-                List.of(BlobDoesNotExistOption.INSTANCE),
-                metadata
+                metadata,
+                BlobDoesNotExistOption.INSTANCE
             );
 
             this.logger.debug("Initiated multipart copy with upload ID: {}", uploadHelper.getUploadId());

@@ -32,7 +32,9 @@ import org.mockito.MockedConstruction;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobNotFoundException;
+import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
+import org.xwiki.store.blob.BlobRangeOption;
 import org.xwiki.store.blob.BlobStoreException;
 import org.xwiki.store.blob.S3BlobStoreProperties;
 
@@ -51,6 +53,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -167,9 +170,11 @@ class S3BlobTest
                 assertEquals(BUCKET, context.arguments().get(0));
                 assertEquals(KEY, context.arguments().get(1));
                 assertSame(this.s3Client, context.arguments().get(2));
-                assertInstanceOf(List.class, context.arguments().get(3));
-                assertEquals(BLOB_PATH, context.arguments().get(4));
-                assertEquals(5 * 1024 * 1024L, context.arguments().get(5));
+                assertEquals(BLOB_PATH, context.arguments().get(3));
+                assertEquals(5 * 1024 * 1024L, context.arguments().get(4));
+                BlobOption[] options = (BlobOption[]) context.arguments().get(5);
+                assertEquals(1, options.length);
+                assertInstanceOf(BlobDoesNotExistOption.class, options[0]);
             })) {
 
             OutputStream outputStream = this.blob.getOutputStream(BlobDoesNotExistOption.INSTANCE);
@@ -193,6 +198,7 @@ class S3BlobTest
         GetObjectRequest request = captor.getValue();
         assertEquals(BUCKET, request.bucket());
         assertEquals(KEY, request.key());
+        assertNull(request.range());
     }
 
     @Test
@@ -202,6 +208,36 @@ class S3BlobTest
             .thenThrow(NoSuchKeyException.builder().message("missing").build());
 
         assertThrows(BlobNotFoundException.class, () -> this.blob.getStream());
+    }
+
+    @Test
+    void getStreamWithRangeFromOffset() throws BlobStoreException
+    {
+        ResponseInputStream<GetObjectResponse> responseStream = mock();
+        when(this.s3Client.getObject(any(GetObjectRequest.class))).thenReturn(responseStream);
+
+        InputStream actual = this.blob.getStream(BlobRangeOption.from(128));
+
+        assertSame(responseStream, actual);
+        ArgumentCaptor<GetObjectRequest> captor = ArgumentCaptor.captor();
+        verify(this.s3Client).getObject(captor.capture());
+        GetObjectRequest request = captor.getValue();
+        assertEquals("bytes=128-", request.range());
+    }
+
+    @Test
+    void getStreamWithRangeAndLength() throws BlobStoreException
+    {
+        ResponseInputStream<GetObjectResponse> responseStream = mock();
+        when(this.s3Client.getObject(any(GetObjectRequest.class))).thenReturn(responseStream);
+
+        InputStream actual = this.blob.getStream(BlobRangeOption.withLength(256, 512));
+
+        assertSame(responseStream, actual);
+        ArgumentCaptor<GetObjectRequest> captor = ArgumentCaptor.captor();
+        verify(this.s3Client).getObject(captor.capture());
+        GetObjectRequest request = captor.getValue();
+        assertEquals("bytes=256-767", request.range());
     }
 
     @Test

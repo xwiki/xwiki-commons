@@ -20,7 +20,6 @@
 package org.xwiki.store.blob.internal;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -62,6 +61,7 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id$
  */
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
 @ExtendWith(MockitoExtension.class)
 class S3MultipartUploadHelperTest
 {
@@ -95,7 +95,7 @@ class S3MultipartUploadHelperTest
     void constructorInitializesMultipartUpload() throws IOException
     {
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
 
         assertNotNull(helper.getUploadId());
         assertEquals(UPLOAD_ID, helper.getUploadId());
@@ -111,7 +111,7 @@ class S3MultipartUploadHelperTest
             .thenThrow(S3Exception.builder().message("S3 error").build());
 
         IOException exception = assertThrows(IOException.class, () -> {
-            new S3MultipartUploadHelper(BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            new S3MultipartUploadHelper(BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
         });
 
         assertTrue(exception.getMessage().contains("Failed to initialize multipart upload"));
@@ -121,7 +121,7 @@ class S3MultipartUploadHelperTest
     void getNextPartNumberReturnsSequentialNumbers() throws IOException
     {
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
 
         assertEquals(1, helper.getNextPartNumber());
         helper.addCompletedPart("etag1");
@@ -138,7 +138,7 @@ class S3MultipartUploadHelperTest
     void getNextPartNumberThrowsWhenExceedingMaxParts() throws IOException
     {
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
 
         // Add MAX_PARTS parts
         for (int i = 0; i < S3MultipartUploadHelper.MAX_PARTS; i++) {
@@ -163,7 +163,7 @@ class S3MultipartUploadHelperTest
     void addCompletedPartAddsPartInOrder() throws IOException
     {
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
 
         helper.getNextPartNumber();
         helper.addCompletedPart("etag1");
@@ -191,7 +191,7 @@ class S3MultipartUploadHelperTest
     void completeSuccessfullyCompletesUpload() throws IOException
     {
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
 
         helper.getNextPartNumber();
         helper.addCompletedPart("etag1");
@@ -214,7 +214,7 @@ class S3MultipartUploadHelperTest
     void completeWithCustomizerAppliesCustomization() throws IOException
     {
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
 
         helper.getNextPartNumber();
         helper.addCompletedPart("etag1");
@@ -238,7 +238,7 @@ class S3MultipartUploadHelperTest
     @Test
     void completeWithBlobDoesNotExistOptionAddsIfNoneMatch() throws IOException
     {
-        List<BlobOption> options = List.of(BlobDoesNotExistOption.INSTANCE);
+        BlobOption[] options = new BlobOption[] { BlobDoesNotExistOption.INSTANCE };
 
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
             BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, options);
@@ -261,7 +261,7 @@ class S3MultipartUploadHelperTest
     @Test
     void completeThrowsIOExceptionOn412WithOption() throws IOException
     {
-        List<BlobOption> options = List.of(BlobDoesNotExistOption.INSTANCE);
+        BlobOption[] options = new BlobOption[] { BlobDoesNotExistOption.INSTANCE };
 
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
             BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, options);
@@ -290,7 +290,7 @@ class S3MultipartUploadHelperTest
     void completeThrowsIOExceptionOnS3Error() throws IOException
     {
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
 
         when(this.s3Client.completeMultipartUpload(any(CompleteMultipartUploadRequest.class)))
             .thenThrow(S3Exception.builder().message("S3 error").statusCode(500).build());
@@ -309,7 +309,7 @@ class S3MultipartUploadHelperTest
     void completeThrowsWhenAlreadyCompleted() throws IOException
     {
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
 
         helper.getNextPartNumber();
         helper.addCompletedPart("etag1");
@@ -327,7 +327,7 @@ class S3MultipartUploadHelperTest
     void abortAbortsMultipartUpload() throws IOException
     {
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
 
         helper.abort();
 
@@ -347,7 +347,7 @@ class S3MultipartUploadHelperTest
     void abortIsIdempotent() throws IOException
     {
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
 
         helper.abort();
         helper.abort();
@@ -363,7 +363,7 @@ class S3MultipartUploadHelperTest
     void abortLogsWarningOnFailure() throws IOException
     {
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
 
         when(this.s3Client.abortMultipartUpload(any(AbortMultipartUploadRequest.class)))
             .thenThrow(new RuntimeException("Abort failed"));
@@ -381,7 +381,7 @@ class S3MultipartUploadHelperTest
     void getNextPartNumberThrowsWhenAborted() throws IOException
     {
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
 
         helper.abort();
 
@@ -396,7 +396,7 @@ class S3MultipartUploadHelperTest
     void addCompletedPartThrowsWhenAborted() throws IOException
     {
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
 
         helper.abort();
 
@@ -411,7 +411,7 @@ class S3MultipartUploadHelperTest
     void completeThrowsWhenAborted() throws IOException
     {
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
 
         helper.abort();
 
@@ -426,7 +426,7 @@ class S3MultipartUploadHelperTest
     void addCompletedPartThrowsWhenCompleted() throws IOException
     {
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
 
         helper.getNextPartNumber();
         helper.addCompletedPart("etag1");
@@ -444,7 +444,7 @@ class S3MultipartUploadHelperTest
     void getNextPartNumberThrowsWhenCompleted() throws IOException
     {
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath);
 
         helper.getNextPartNumber();
         helper.addCompletedPart("etag1");

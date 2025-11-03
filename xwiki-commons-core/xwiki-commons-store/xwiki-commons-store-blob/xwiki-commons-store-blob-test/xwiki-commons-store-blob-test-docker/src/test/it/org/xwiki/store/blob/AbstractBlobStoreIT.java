@@ -20,7 +20,9 @@
 package org.xwiki.store.blob;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -28,6 +30,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -86,6 +89,25 @@ abstract class AbstractBlobStoreIT
 
         BlobStoreTestUtils.writeBlob(store, path, data);
         BlobStoreTestUtils.assertBlobEquals(store, path, data);
+    }
+
+    @Test
+    void readBlobRange() throws Exception
+    {
+        BlobStore store = getOrCreateBlobStore("testReadBlobRange");
+        BlobPath path = BlobPath.of(List.of("range.dat"));
+        byte[] data = BlobStoreTestUtils.createTestData(4096, 12345L);
+        BlobStoreTestUtils.writeBlob(store, path, data);
+
+        Blob blob = store.getBlob(path);
+
+        try (InputStream input = blob.getStream(BlobRangeOption.withLength(512, 256))) {
+            assertArrayEquals(Arrays.copyOfRange(data, 512, 768), input.readAllBytes());
+        }
+
+        try (InputStream input = blob.getStream(BlobRangeOption.from(2048))) {
+            assertArrayEquals(Arrays.copyOfRange(data, 2048, data.length), input.readAllBytes());
+        }
     }
 
     @Test

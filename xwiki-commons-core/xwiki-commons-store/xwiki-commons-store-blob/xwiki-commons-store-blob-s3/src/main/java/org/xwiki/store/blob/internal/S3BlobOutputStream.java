@@ -24,7 +24,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 
 import org.xwiki.store.blob.BlobAlreadyExistsException;
 import org.xwiki.store.blob.BlobDoesNotExistOption;
@@ -82,7 +81,7 @@ public class S3BlobOutputStream extends OutputStream
 
     private boolean failed;
 
-    private final List<BlobOption> options;
+    private final BlobOption[] options;
 
     private final BlobPath blobPath;
 
@@ -95,12 +94,12 @@ public class S3BlobOutputStream extends OutputStream
      * @param bucketName the S3 bucket name
      * @param s3Key the S3 key
      * @param s3Client the S3 client
-     * @param options the options for writing to the stream
      * @param blobPath the blob path for error reporting
      * @param partSizeBytes the configured multipart upload part size in bytes
+     * @param options the options for writing to the stream
      */
-    public S3BlobOutputStream(String bucketName, String s3Key, S3Client s3Client, List<BlobOption> options,
-        BlobPath blobPath, long partSizeBytes)
+    public S3BlobOutputStream(String bucketName, String s3Key, S3Client s3Client, BlobPath blobPath, long partSizeBytes,
+        BlobOption... options)
     {
         this.bucketName = bucketName;
         this.s3Key = s3Key;
@@ -277,7 +276,7 @@ public class S3BlobOutputStream extends OutputStream
                 .key(this.s3Key);
 
             // Add conditional headers if needed.
-            if (hasIfNotExistsOption()) {
+            if (BlobOptionSupport.hasOption(BlobDoesNotExistOption.class, this.options)) {
                 requestBuilder.ifNoneMatch(WILDCARD);
             }
 
@@ -293,16 +292,11 @@ public class S3BlobOutputStream extends OutputStream
     private void handleS3Exception(S3Exception e) throws IOException
     {
         // Check if this is a precondition failed error (412) for conditional requests.
-        if (e.statusCode() == 412 && hasIfNotExistsOption()) {
+        if (e.statusCode() == 412 && BlobOptionSupport.hasOption(BlobDoesNotExistOption.class, this.options)) {
             throw new IOException("Blob already exists",
                 new BlobAlreadyExistsException(this.blobPath, e));
         }
         throw new IOException(GENERIC_FAILED_UPLOAD_MESSAGE, e);
-    }
-
-    private boolean hasIfNotExistsOption()
-    {
-        return this.options != null && this.options.contains(BlobDoesNotExistOption.INSTANCE);
     }
 
     private void checkStreamState() throws IOException

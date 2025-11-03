@@ -41,10 +41,12 @@ import org.xwiki.store.blob.BlobAlreadyExistsException;
 import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobPath;
+import org.xwiki.store.blob.BlobRangeOption;
 import org.xwiki.store.blob.BlobStoreException;
 import org.xwiki.test.junit5.XWikiTempDir;
 import org.xwiki.test.junit5.XWikiTempDirExtension;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -269,6 +271,26 @@ class FileSystemBlobTest
 
             assertEquals("Error getting input stream.", exception.getMessage());
             assertSame(ioException, exception.getCause());
+        }
+    }
+
+    @Test
+    void getStreamWithRangeOption() throws Exception
+    {
+        Files.writeString(this.absolutePath, "abcdefghijklmnopqrstuvwxyz");
+
+        try (InputStream result = this.blob.getStream(BlobRangeOption.withLength(5, 10))) {
+            assertArrayEquals("fghijklmno".getBytes(StandardCharsets.UTF_8), result.readAllBytes());
+        }
+    }
+
+    @Test
+    void getStreamFromOffsetOption() throws Exception
+    {
+        Files.writeString(this.absolutePath, "0123456789");
+
+        try (InputStream result = this.blob.getStream(BlobRangeOption.from(7))) {
+            assertArrayEquals("789".getBytes(StandardCharsets.UTF_8), result.readAllBytes());
         }
     }
 }

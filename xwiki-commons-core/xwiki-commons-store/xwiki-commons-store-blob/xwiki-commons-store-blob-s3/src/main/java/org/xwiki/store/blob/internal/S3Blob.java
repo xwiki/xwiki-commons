@@ -21,13 +21,16 @@ package org.xwiki.store.blob.internal;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
+import java.util.OptionalLong;
+import java.util.Set;
 
 import org.xwiki.store.blob.Blob;
+import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobNotFoundException;
-import org.xwiki.store.blob.BlobPath;
-import org.xwiki.store.blob.BlobStoreException;
 import org.xwiki.store.blob.BlobOption;
+import org.xwiki.store.blob.BlobPath;
+import org.xwiki.store.blob.BlobRangeOption;
+import org.xwiki.store.blob.BlobStoreException;
 
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -44,6 +47,14 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
  */
 public class S3Blob extends AbstractBlob<S3BlobStore>
 {
+    private static final Set<Class<? extends BlobOption>> SUPPORTED_OUTPUT_OPTIONS = Set.of(
+        BlobDoesNotExistOption.class
+    );
+
+    private static final Set<Class<? extends BlobOption>> SUPPORTED_INPUT_OPTIONS = Set.of(
+        BlobRangeOption.class
+    );
+
     private final String bucketName;
 
     private final String s3Key;
@@ -105,25 +116,41 @@ public class S3Blob extends AbstractBlob<S3BlobStore>
     @Override
     public OutputStream getOutputStream(BlobOption... options) throws BlobStoreException
     {
+        BlobOptionSupport.validateSupportedOptions(SUPPORTED_OUTPUT_OPTIONS, options);
+
         long partSizeBytes = this.getStore().getProperties().getMultipartUploadPartSize();
         return new S3BlobOutputStream(this.bucketName, this.s3Key, this.s3Client,
-            Arrays.asList(options), getPath(), partSizeBytes);
+            getPath(), partSizeBytes, options);
     }
 
     @Override
-    public InputStream getStream() throws BlobStoreException
+    public InputStream getStream(BlobOption... options) throws BlobStoreException
     {
+        BlobOptionSupport.validateSupportedOptions(SUPPORTED_INPUT_OPTIONS, options);
+        BlobRangeOption rangeOption = BlobOptionSupport.findSingleOption(BlobRangeOption.class, options);
         try {
-            GetObjectRequest getRequest = GetObjectRequest.builder()
+            GetObjectRequest.Builder getRequestBuilder = GetObjectRequest.builder()
                 .bucket(this.bucketName)
-                .key(this.s3Key)
-                .build();
+                .key(this.s3Key);
 
-            return this.s3Client.getObject(getRequest);
+            if (rangeOption != null) {
+                getRequestBuilder.range(buildRangeHeader(rangeOption));
+            }
+
+            return this.s3Client.getObject(getRequestBuilder.build());
         } catch (NoSuchKeyException e) {
             throw new BlobNotFoundException(getPath(), e);
         } catch (S3Exception e) {
             throw new BlobStoreException("Failed to get stream for blob: %s".formatted(getPath()), e);
         }
+    }
+
+    private String buildRangeHeader(BlobRangeOption option)
+    {
+        OptionalLong endOffset = option.getEndOffset();
+        if (endOffset.isPresent()) {
+            return "bytes=%d-%d".formatted(option.getStartOffset(), endOffset.getAsLong());
+        }
+        return "bytes=%d-".formatted(option.getStartOffset());
     }
 }

@@ -93,5 +93,18 @@ public interface Blob extends StreamProvider
      * @throws BlobNotFoundException if the blob does not exist
      */
     @Override
-    InputStream getStream() throws BlobStoreException;
+    default InputStream getStream() throws BlobStoreException
+    {
+        return getStream(new BlobOption[0]);
+    }
+
+    /**
+     * Get an InputStream to read data from this blob. The caller must close the returned stream after use.
+     *
+     * @param options the options to use when reading from this blob, supports {@link BlobRangeOption}.
+     * @return an InputStream to read data from this blob
+     * @throws BlobStoreException if the blob cannot be read
+     * @throws BlobNotFoundException if the blob does not exist
+     */
+    InputStream getStream(BlobOption... options) throws BlobStoreException;
 }
