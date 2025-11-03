@@ -106,7 +106,7 @@
                   </outputDirectory>
                   <resources>
                     <resource>
-                      <directory>${basedir}/src/main/node/dist</directory>
+                      <directory>${project.build.directory}/node-dist</directory>
                     </resource>
                   </resources>
                 </configuration>
