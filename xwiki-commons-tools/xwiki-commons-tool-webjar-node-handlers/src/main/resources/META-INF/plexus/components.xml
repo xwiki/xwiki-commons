@@ -39,7 +39,6 @@
                 <goal>com.github.eirslett:frontend-maven-plugin:install-node-and-pnpm</goal>
                 <configuration>
                   <nodeVersion>${node.version}</nodeVersion>
-                  <npmVersion>${npm.version}</npmVersion>
                   <pnpmVersion>${pnpm.version}</pnpmVersion>
                   <installDirectory>${basedir}/target</installDirectory>
                 </configuration>
