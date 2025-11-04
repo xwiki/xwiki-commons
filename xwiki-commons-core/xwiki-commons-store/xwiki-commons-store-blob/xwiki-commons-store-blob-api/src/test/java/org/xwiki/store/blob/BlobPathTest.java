@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -39,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class BlobPathTest
 {
     @Test
-    void testRootIsEmptyAndEqualsOfEmpty()
+    void rootIsEmptyAndEqualsOfEmpty()
     {
         BlobPath root = BlobPath.ROOT;
         BlobPath empty = BlobPath.of(List.of());
@@ -51,7 +53,7 @@ class BlobPathTest
     }
 
     @Test
-    void testOfCreatesPathAndAccessors()
+    void ofCreatesPathAndAccessors()
     {
         // Create a path and verify segments, name, and canonical string.
         BlobPath p = BlobPath.of(List.of("a", "b", "c"));
@@ -61,7 +63,7 @@ class BlobPathTest
     }
 
     @Test
-    void testFromSplitsPath()
+    void fromSplitsPath()
     {
         // From should split slash-delimited strings (ignores empty parts).
         BlobPath p = BlobPath.from("a/b/c");
@@ -73,7 +75,7 @@ class BlobPathTest
     }
 
     @Test
-    void testResolveAppendsSegmentsAndNoOp()
+    void resolveAppendsSegmentsAndNoOp()
     {
         // Resolve should append new segments and be no-op for empty input.
         BlobPath base = BlobPath.of(List.of("x"));
@@ -85,7 +87,7 @@ class BlobPathTest
     }
 
     @Test
-    void testGetParentBehavior()
+    void getParentBehavior()
     {
         // Parent of root and single-segment returns root; multi-segment returns trimmed path.
         assertEquals(BlobPath.ROOT, BlobPath.of(List.of()).getParent());
@@ -96,7 +98,7 @@ class BlobPathTest
     }
 
     @Test
-    void testAppendSuffix()
+    void appendSuffix()
     {
         // AppendSuffix should append to last segment; for empty path it creates a single segment.
         BlobPath p = BlobPath.of(List.of("file"));
@@ -112,7 +114,7 @@ class BlobPathTest
     }
 
     @Test
-    void testValidationNullSegmentsList()
+    void validationNullSegmentsList()
     {
         // of(null) should fail with IllegalArgumentException per constructor check.
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> BlobPath.of(null));
@@ -120,7 +122,7 @@ class BlobPathTest
     }
 
     @Test
-    void testValidationNullSegmentElement()
+    void validationNullSegmentElement()
     {
         // null element in segments should be rejected with informative message.
         List<String> segments = Arrays.asList("ok", null);
@@ -130,7 +132,7 @@ class BlobPathTest
     }
 
     @Test
-    void testValidationEmptySegment()
+    void validationEmptySegment()
     {
         // Empty segment not allowed.
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
@@ -139,7 +141,7 @@ class BlobPathTest
     }
 
     @Test
-    void testValidationDirectoryTraversal()
+    void validationDirectoryTraversal()
     {
         // '.' or '..' are rejected.
         IllegalArgumentException ex1 = assertThrows(IllegalArgumentException.class,
@@ -152,7 +154,7 @@ class BlobPathTest
     }
 
     @Test
-    void testValidationIllegalSeparatorCharacters()
+    void validationIllegalSeparatorCharacters()
     {
         // Segments cannot contain '/' or '\'.
         IllegalArgumentException ex1 = assertThrows(IllegalArgumentException.class,
@@ -165,7 +167,7 @@ class BlobPathTest
     }
 
     @Test
-    void testFromNullThrows()
+    void fromNullThrows()
     {
         IllegalArgumentException illegalArgumentException =
             assertThrows(IllegalArgumentException.class, () -> BlobPath.from(null));
@@ -173,7 +175,7 @@ class BlobPathTest
     }
 
     @Test
-    void testFromEmptyIsRoot()
+    void fromEmptyIsRoot()
     {
         // From("") should return ROOT.
         BlobPath p = BlobPath.from("");
@@ -181,7 +183,7 @@ class BlobPathTest
     }
 
     @Test
-    void testResolveWithInvalidSegmentThrows()
+    void resolveWithInvalidSegmentThrows()
     {
         // Resolve should validate new segments via constructor and therefore throw on invalid input.
         BlobPath base = BlobPath.of(List.of("a"));
@@ -189,7 +191,7 @@ class BlobPathTest
     }
 
     @Test
-    void testEqualsAndHashCodeConsistency()
+    void equalsAndHashCodeConsistency()
     {
         // Equal paths must be equal and have equal hash codes.
         BlobPath a = BlobPath.of(List.of("x", "y"));
@@ -199,5 +201,47 @@ class BlobPathTest
         assertEquals(a, b);
         assertEquals(a.hashCode(), b.hashCode());
         assertNotEquals(a, c);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        // Root is ancestor of everything including itself
+        "'', '', true",
+        "'', 'a', true",
+        "'', 'a/b', true",
+        "'', 'a/b/c', true",
+
+        // Same path equals itself
+        "'a', 'a', true",
+        "'a/b', 'a/b', true",
+        "'a/b/c', 'a/b/c', true",
+
+        // Proper ancestor relationships
+        "'a', 'a/b', true",
+        "'a', 'a/b/c', true",
+        "'a/b', 'a/b/c', true",
+        "'a/b', 'a/b/c/d', true",
+
+        // Not ancestors - different branches
+        "'a', 'b', false",
+        "'a/b', 'a/c', false",
+        "'a/b', 'x/y', false",
+
+        // Not ancestors - child cannot be ancestor of parent
+        "'a/b', 'a', false",
+        "'a/b/c', 'a/b', false",
+        "'a/b/c', 'a', false",
+
+        // Not ancestors - partial prefix match
+        "'a/b', 'a/bc', false",
+        "'ab', 'a/b', false"
+    })
+    void isAncestorOfOrEquals(String thisPath, String otherPath, boolean expected)
+    {
+        BlobPath thisBlob = BlobPath.from(thisPath);
+        BlobPath otherBlob = BlobPath.from(otherPath);
+
+        assertEquals(expected, thisBlob.isAncestorOfOrEquals(otherBlob),
+            String.format("Expected '%s'.isAncestorOfOrEquals('%s') to be %b", thisPath, otherPath, expected));
     }
 }
