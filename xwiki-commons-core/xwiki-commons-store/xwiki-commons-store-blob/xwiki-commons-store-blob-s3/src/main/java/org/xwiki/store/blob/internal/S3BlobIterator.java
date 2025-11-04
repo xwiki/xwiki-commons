@@ -28,7 +28,6 @@ import org.xwiki.store.blob.BlobPath;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
-import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 /**
@@ -120,7 +119,7 @@ final class S3BlobIterator implements Iterator<Blob>
         }
     }
 
-    private void fetchNextPage() throws S3Exception
+    private void fetchNextPage()
     {
         ListObjectsV2Request.Builder requestBuilder = ListObjectsV2Request.builder()
             .bucket(this.bucketName)
@@ -131,6 +130,8 @@ final class S3BlobIterator implements Iterator<Blob>
             requestBuilder.continuationToken(this.continuationToken);
         }
 
+        // This could throw an exception. As there aren't any checked exceptions on Iterator methods, we let it
+        // propagate as a runtime exception.
         ListObjectsV2Response response = this.s3Client.listObjectsV2(requestBuilder.build());
 
         this.currentPageIterator = response.contents().iterator();

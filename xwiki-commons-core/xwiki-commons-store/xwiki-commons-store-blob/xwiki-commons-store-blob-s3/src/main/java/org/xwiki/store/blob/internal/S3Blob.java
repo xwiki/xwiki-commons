@@ -37,7 +37,6 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
-import software.amazon.awssdk.services.s3.model.S3Exception;
 
 /**
  * A {@link Blob} implementation that represents a blob stored in S3.
@@ -86,7 +85,7 @@ public class S3Blob extends AbstractBlob<S3BlobStore>
             return true;
         } catch (NoSuchKeyException e) {
             return false;
-        } catch (S3Exception e) {
+        } catch (Exception e) {
             throw new BlobStoreException("Error checking if the blob [%s] exists.".formatted(getPath()), e);
         }
     }
@@ -108,7 +107,7 @@ public class S3Blob extends AbstractBlob<S3BlobStore>
             return getHeadObject().contentLength();
         } catch (NoSuchKeyException e) {
             return -1;
-        } catch (S3Exception e) {
+        } catch (Exception e) {
             throw new BlobStoreException("Failed to get size for blob: %s".formatted(getPath()), e);
         }
     }
@@ -140,7 +139,7 @@ public class S3Blob extends AbstractBlob<S3BlobStore>
             return this.s3Client.getObject(getRequestBuilder.build());
         } catch (NoSuchKeyException e) {
             throw new BlobNotFoundException(getPath(), e);
-        } catch (S3Exception e) {
+        } catch (Exception e) {
             throw new BlobStoreException("Failed to get stream for blob: %s".formatted(getPath()), e);
         }
     }
