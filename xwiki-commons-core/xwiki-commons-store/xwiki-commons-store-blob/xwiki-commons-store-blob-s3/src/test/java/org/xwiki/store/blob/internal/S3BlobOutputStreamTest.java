@@ -34,8 +34,8 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.xwiki.store.blob.BlobAlreadyExistsException;
-import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobPath;
+import org.xwiki.store.blob.BlobWriteMode;
 
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -277,11 +277,11 @@ class S3BlobOutputStreamTest
     }
 
     @Test
-    void writeWithBlobDoesNotExistOption() throws IOException
+    void writeWithCreateNewMode() throws IOException
     {
-        // Test conditional write with BlobDoesNotExistOption
+        // Test conditional write with CREATE_NEW mode
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.blobPath, PART_SIZE, BlobDoesNotExistOption.INSTANCE);
+            this.blobPath, PART_SIZE, BlobWriteMode.CREATE_NEW);
 
         byte[] data = "Test data".getBytes();
         outputStream.write(data);
@@ -297,7 +297,7 @@ class S3BlobOutputStreamTest
     }
 
     @Test
-    void writeWithBlobDoesNotExistOptionMultipart() throws IOException
+    void writeWithCreateNewModeMultipart() throws IOException
     {
         // Test conditional write with multipart upload
         CreateMultipartUploadResponse createResponse = CreateMultipartUploadResponse.builder()
@@ -307,7 +307,7 @@ class S3BlobOutputStreamTest
             .thenReturn(createResponse);
 
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.blobPath, PART_SIZE, BlobDoesNotExistOption.INSTANCE);
+            this.blobPath, PART_SIZE, BlobWriteMode.CREATE_NEW);
 
         byte[] data = new byte[PART_SIZE + 1000];
         fillArray(data);
@@ -337,7 +337,7 @@ class S3BlobOutputStreamTest
             .thenThrow(s3Exception);
 
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.blobPath, PART_SIZE, BlobDoesNotExistOption.INSTANCE);
+            this.blobPath, PART_SIZE, BlobWriteMode.CREATE_NEW);
 
         byte[] data = "Test data".getBytes();
         outputStream.write(data);
@@ -372,7 +372,7 @@ class S3BlobOutputStreamTest
             .thenThrow(s3Exception);
 
         S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
-            this.blobPath, PART_SIZE, BlobDoesNotExistOption.INSTANCE);
+            this.blobPath, PART_SIZE, BlobWriteMode.CREATE_NEW);
 
         byte[] data = new byte[PART_SIZE + 1000];
         outputStream.write(data);

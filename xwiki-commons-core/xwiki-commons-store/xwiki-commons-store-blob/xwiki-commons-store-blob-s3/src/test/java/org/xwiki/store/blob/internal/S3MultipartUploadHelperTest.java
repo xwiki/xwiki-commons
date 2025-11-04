@@ -30,9 +30,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.xwiki.store.blob.BlobAlreadyExistsException;
-import org.xwiki.store.blob.BlobDoesNotExistOption;
-import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
+import org.xwiki.store.blob.BlobWriteMode;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.junit5.LogCaptureExtension;
 
@@ -236,12 +235,10 @@ class S3MultipartUploadHelperTest
     }
 
     @Test
-    void completeWithBlobDoesNotExistOptionAddsIfNoneMatch() throws IOException
+    void completeWithCreateNewModeAddsIfNoneMatch() throws IOException
     {
-        BlobOption[] options = new BlobOption[] { BlobDoesNotExistOption.INSTANCE };
-
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, options);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, BlobWriteMode.CREATE_NEW);
 
         helper.getNextPartNumber();
         helper.addCompletedPart("etag1");
@@ -259,12 +256,10 @@ class S3MultipartUploadHelperTest
     }
 
     @Test
-    void completeThrowsIOExceptionOn412WithOption() throws IOException
+    void completeThrowsIOExceptionOn412WithCreateNew() throws IOException
     {
-        BlobOption[] options = new BlobOption[] { BlobDoesNotExistOption.INSTANCE };
-
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
-            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, options);
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, BlobWriteMode.CREATE_NEW);
 
         S3Exception s3Exception = (S3Exception) S3Exception.builder()
             .message("Precondition failed")

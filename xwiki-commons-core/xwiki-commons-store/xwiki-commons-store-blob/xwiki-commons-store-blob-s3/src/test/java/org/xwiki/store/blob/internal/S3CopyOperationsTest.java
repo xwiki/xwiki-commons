@@ -26,15 +26,17 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.xwiki.store.blob.Blob;
 import org.xwiki.store.blob.BlobAlreadyExistsException;
-import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
+import org.xwiki.store.blob.BlobWriteMode;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -58,6 +60,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -157,7 +160,7 @@ class S3CopyOperationsTest
 
         assertNotNull(result);
         assertEquals(nonS3TargetBlob, result);
-        verify(nonS3TargetBlob).writeFromStream(any(InputStream.class), any(BlobDoesNotExistOption.class));
+        verify(nonS3TargetBlob).writeFromStream(any(InputStream.class), eq(BlobWriteMode.CREATE_NEW));
     }
 
     @Test
@@ -320,9 +323,9 @@ class S3CopyOperationsTest
 
         assertNotNull(result);
 
-        // Verify HeadObject was called to retrieve metadata and ETag
+        // Verify HeadObject was called once to retrieve metadata and ETag
         ArgumentCaptor<HeadObjectRequest> headRequestCaptor = ArgumentCaptor.captor();
-        verify(this.s3Client, times(2)).headObject(headRequestCaptor.capture());
+        verify(this.s3Client).headObject(headRequestCaptor.capture());
         HeadObjectRequest headRequest = headRequestCaptor.getValue();
         assertEquals("source-bucket", headRequest.bucket());
         assertEquals("source-key", headRequest.key());
@@ -397,6 +400,32 @@ class S3CopyOperationsTest
         assertEquals("original-etag", requestCaptor.getValue().copySourceIfMatch());
     }
 
+    @ParameterizedTest
+    @CsvSource({
+        "CREATE_NEW, *",
+        "REPLACE_EXISTING, "
+    })
+    void copyBlobS3StoreSimpleCopyHonorsWriteMode(BlobWriteMode writeMode, String expectedIfNoneMatch) throws Exception
+    {
+        when(this.targetBlob.exists()).thenReturn(false);
+
+        HeadObjectResponse headResponse = mock();
+        when(headResponse.eTag()).thenReturn("conditional-etag");
+        when(headResponse.contentLength()).thenReturn(4_096L);
+        when(headResponse.metadata()).thenReturn(Map.of());
+        when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
+        when(this.s3Client.copyObject(any(CopyObjectRequest.class))).thenReturn(mock());
+
+        this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath,
+            writeMode);
+
+        ArgumentCaptor<CopyObjectRequest> captor = ArgumentCaptor.captor();
+        verify(this.s3Client).copyObject(captor.capture());
+        CopyObjectRequest request = captor.getValue();
+        assertEquals(expectedIfNoneMatch, request.ifNoneMatch());
+        assertEquals("conditional-etag", request.copySourceIfMatch());
+    }
+
     @Test
     void copyBlobS3StoreMultipartCopyFailsOnETagMismatch() throws Exception
     {
@@ -438,6 +467,46 @@ class S3CopyOperationsTest
         // Verify abort was called
         assertEquals("Aborted multipart upload for key target-key with upload ID: test-upload-id",
             this.logCapture.getMessage(2));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "CREATE_NEW, *",
+        "REPLACE_EXISTING, "
+    })
+    void copyBlobS3StoreMultipartCopyHonorsWriteMode(BlobWriteMode writeMode, String expectedIfNoneMatch)
+        throws Exception
+    {
+        long largeObjectSize = 600L * 1024 * 1024;
+
+        when(this.targetBlob.exists()).thenReturn(false);
+
+        HeadObjectResponse headResponse = mock();
+        when(headResponse.eTag()).thenReturn("multipart-etag");
+        when(headResponse.contentLength()).thenReturn(largeObjectSize);
+        when(headResponse.metadata()).thenReturn(Map.of());
+        when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
+
+        CreateMultipartUploadResponse createResponse = mock();
+        when(createResponse.uploadId()).thenReturn("upload-id");
+        when(this.s3Client.createMultipartUpload(any(CreateMultipartUploadRequest.class))).thenReturn(createResponse);
+
+        UploadPartCopyResponse partResponse = mock();
+        CopyPartResult partResult = mock();
+        when(partResult.eTag()).thenReturn("part-etag");
+        when(partResponse.copyPartResult()).thenReturn(partResult);
+        when(this.s3Client.uploadPartCopy(any(UploadPartCopyRequest.class))).thenReturn(partResponse);
+        when(this.s3Client.completeMultipartUpload(any(CompleteMultipartUploadRequest.class))).thenReturn(mock());
+
+        this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath,
+            writeMode);
+
+        ArgumentCaptor<CompleteMultipartUploadRequest> completeCaptor = ArgumentCaptor.captor();
+        verify(this.s3Client).completeMultipartUpload(completeCaptor.capture());
+        CompleteMultipartUploadRequest request = completeCaptor.getValue();
+        assertEquals(expectedIfNoneMatch, request.ifNoneMatch());
+
+        this.logCapture.ignoreAllMessages();
     }
 
     @Test

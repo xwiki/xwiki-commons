@@ -25,12 +25,12 @@ import java.util.OptionalLong;
 import java.util.Set;
 
 import org.xwiki.store.blob.Blob;
-import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobRangeOption;
 import org.xwiki.store.blob.BlobStoreException;
+import org.xwiki.store.blob.BlobWriteMode;
 
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -48,7 +48,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 public class S3Blob extends AbstractBlob<S3BlobStore>
 {
     private static final Set<Class<? extends BlobOption>> SUPPORTED_OUTPUT_OPTIONS = Set.of(
-        BlobDoesNotExistOption.class
+        BlobWriteMode.class
     );
 
     private static final Set<Class<? extends BlobOption>> SUPPORTED_INPUT_OPTIONS = Set.of(

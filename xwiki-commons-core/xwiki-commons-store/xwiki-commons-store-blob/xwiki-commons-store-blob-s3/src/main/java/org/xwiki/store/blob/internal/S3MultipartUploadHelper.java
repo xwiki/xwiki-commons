@@ -23,15 +23,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.store.blob.BlobAlreadyExistsException;
-import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
+import org.xwiki.store.blob.BlobWriteMode;
 
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.AbortMultipartUploadRequest;
@@ -78,7 +79,7 @@ public class S3MultipartUploadHelper
 
     private final BlobPath blobPath;
 
-    private final BlobOption[] blobOptions;
+    private final BlobWriteMode writeMode;
 
     private final String uploadId;
 
@@ -124,7 +125,8 @@ public class S3MultipartUploadHelper
         this.s3Key = s3Key;
         this.s3Client = s3Client;
         this.blobPath = blobPath;
-        this.blobOptions = options;
+        BlobOptionSupport.validateSupportedOptions(Set.of(BlobWriteMode.class), options);
+        this.writeMode = BlobWriteMode.resolve(BlobWriteMode.REPLACE_EXISTING, options);
         this.completedParts = new ArrayList<>();
         this.nextPartNumber = 1;
         this.completed = false;
@@ -225,7 +227,7 @@ public class S3MultipartUploadHelper
                 .multipartUpload(b -> b.parts(this.completedParts));
 
             // Add conditional headers if needed
-            if (hasIfNotExistsOption()) {
+            if (this.writeMode == BlobWriteMode.CREATE_NEW) {
                 builder.ifNoneMatch(WILDCARD);
             }
 
@@ -288,16 +290,11 @@ public class S3MultipartUploadHelper
     private void handleS3Exception(S3Exception e) throws IOException
     {
         // Check if this is a precondition failed error (412) for conditional requests.
-        if (e.statusCode() == 412 && hasIfNotExistsOption()) {
+        if (e.statusCode() == 412 && this.writeMode == BlobWriteMode.CREATE_NEW) {
             throw new IOException("Blob already exists",
                 new BlobAlreadyExistsException(this.blobPath, e));
         }
         throw new IOException("S3 operation failed for blob at path " + this.blobPath, e);
-    }
-
-    private boolean hasIfNotExistsOption()
-    {
-        return BlobOptionSupport.hasOption(BlobDoesNotExistOption.class, this.blobOptions);
     }
 
     private void ensureNotCompleted() throws IOException

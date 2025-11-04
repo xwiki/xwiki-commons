@@ -67,6 +67,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -112,6 +113,9 @@ class DefaultBlobStoreManagerTest
     private BlobStore migrationStore;
 
     @MockComponent
+    private BlobStoreMigrator blobStoreMigrator;
+
+    @MockComponent
     @Named("file")
     private BlobStoreFactory fileFactory;
 
@@ -147,6 +151,7 @@ class DefaultBlobStoreManagerTest
             inv -> new BlobStorePropertiesBuilder(inv.getArgument(0), FILE_HINT));
         when(this.fileFactory.create(any(), any())).thenReturn(this.testStore);
         doReturn(ExtendedBlobStoreProperties.class).when(this.fileFactory).getPropertiesClass();
+        when(this.blobStoreMigrator.isMigrationInProgress(any())).thenReturn(false);
     }
 
     @Test
@@ -174,8 +179,9 @@ class DefaultBlobStoreManagerTest
         BlobStore result = this.blobStoreManager.getBlobStore(TEST_STORE);
 
         assertSame(this.testStore, result);
+        verify(this.blobStoreMigrator).isMigrationInProgress(this.testStore);
         verify(this.testStore).isEmptyDirectory(BlobPath.ROOT);
-        verify(this.testStore).moveDirectory(this.migrationStore, BlobPath.ROOT, BlobPath.ROOT);
+        verify(this.blobStoreMigrator).migrate(this.testStore, this.migrationStore);
         verify(this.configuration).getMigrationStoreHint();
         // Verify both factories were called exactly once
         verify(this.fileFactory, times(1)).create(any(), any());
@@ -193,9 +199,29 @@ class DefaultBlobStoreManagerTest
         BlobStore result = this.blobStoreManager.getBlobStore(TEST_STORE);
 
         assertSame(this.testStore, result);
+        verify(this.blobStoreMigrator).isMigrationInProgress(this.testStore);
         verify(this.testStore).isEmptyDirectory(BlobPath.ROOT);
-        verify(this.testStore, never()).moveDirectory(any(), any(), any());
+        verifyNoMoreInteractions(this.blobStoreMigrator);
         verifyNoInteractions(s3Factory);
+    }
+
+    @Test
+    void getBlobStoreResumesMigrationWhenMarkerPresent() throws Exception
+    {
+        when(this.configuration.getMigrationStoreHint()).thenReturn(S3_HINT);
+        BlobStoreFactory s3Factory = registerMigrationFactory(S3_HINT, this.migrationStore);
+
+        when(this.testStore.isEmptyDirectory(BlobPath.ROOT)).thenReturn(false);
+        when(this.blobStoreMigrator.isMigrationInProgress(this.testStore)).thenReturn(true);
+
+        BlobStore result = this.blobStoreManager.getBlobStore(TEST_STORE);
+
+        assertSame(this.testStore, result);
+        verify(this.blobStoreMigrator).isMigrationInProgress(this.testStore);
+        verify(this.testStore, never()).isEmptyDirectory(BlobPath.ROOT);
+        verify(this.blobStoreMigrator).migrate(this.testStore, this.migrationStore);
+        verifyNoMoreInteractions(this.blobStoreMigrator);
+        verify(s3Factory, times(1)).create(any(), any());
     }
 
     @Test
@@ -207,7 +233,7 @@ class DefaultBlobStoreManagerTest
 
         assertSame(this.testStore, result);
         verify(this.testStore, never()).isEmptyDirectory(any());
-        verify(this.testStore, never()).moveDirectory(any(), any(), any());
+        verifyNoInteractions(this.blobStoreMigrator);
     }
 
     @Test
@@ -220,7 +246,7 @@ class DefaultBlobStoreManagerTest
         assertSame(this.testStore, result);
         verify(this.configuration).getMigrationStoreHint();
         verify(this.testStore, never()).isEmptyDirectory(any());
-        verify(this.testStore, never()).moveDirectory(any(), any(), any());
+        verifyNoInteractions(this.blobStoreMigrator);
     }
 
     @Test
@@ -267,12 +293,13 @@ class DefaultBlobStoreManagerTest
 
         when(this.testStore.isEmptyDirectory(BlobPath.ROOT)).thenReturn(true);
         doThrow(new BlobStoreException("Migration failed"))
-            .when(this.testStore).moveDirectory(any(), any(), any());
+            .when(this.blobStoreMigrator).migrate(eq(this.testStore), eq(this.migrationStore));
 
         BlobStoreException exception = assertThrows(BlobStoreException.class,
             () -> this.blobStoreManager.getBlobStore(TEST_STORE));
 
         assertEquals("Migration failed", exception.getMessage());
+        verify(this.blobStoreMigrator).isMigrationInProgress(this.testStore);
     }
 
     @Test

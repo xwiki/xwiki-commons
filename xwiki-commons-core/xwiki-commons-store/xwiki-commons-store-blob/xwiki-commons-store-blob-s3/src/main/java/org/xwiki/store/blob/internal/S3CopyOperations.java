@@ -19,7 +19,7 @@
  */
 package org.xwiki.store.blob.internal;
 
-import java.util.Map;
+import java.util.Set;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -28,11 +28,12 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.store.blob.Blob;
 import org.xwiki.store.blob.BlobAlreadyExistsException;
-import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobNotFoundException;
+import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
+import org.xwiki.store.blob.BlobWriteMode;
 
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
@@ -67,21 +68,25 @@ public class S3CopyOperations
      * @param sourcePath the source blob path
      * @param targetStore the target blob store
      * @param targetPath the target blob path
+     * @param options the copy options
      * @return the copied blob
      * @throws BlobStoreException if the copy operation fails
      */
-    public Blob copyBlob(BlobStore sourceStore, BlobPath sourcePath, BlobStore targetStore, BlobPath targetPath)
-        throws BlobStoreException
+    public Blob copyBlob(BlobStore sourceStore, BlobPath sourcePath, BlobStore targetStore, BlobPath targetPath,
+        BlobOption... options) throws BlobStoreException
     {
         if (sourceStore.equals(targetStore) && sourcePath.equals(targetPath)) {
             throw new BlobStoreException("Source and target blob are the same: " + sourcePath);
         }
 
+        BlobOptionSupport.validateSupportedOptions(Set.of(BlobWriteMode.class), options);
+        BlobWriteMode writeMode = BlobWriteMode.resolve(BlobWriteMode.CREATE_NEW, options);
+
         if (sourceStore instanceof S3BlobStore sourceS3Store && targetStore instanceof S3BlobStore targetS3Store) {
-            return copyBlobS3Store(sourceS3Store, sourcePath, targetS3Store, targetPath);
+            return copyBlobS3Store(sourceS3Store, sourcePath, targetS3Store, targetPath, writeMode);
         }
 
-        return copyBlobWithStream(sourceStore, sourcePath, targetStore, targetPath);
+        return copyBlobWithStream(sourceStore, sourcePath, targetStore, targetPath, writeMode);
     }
 
     /**
@@ -91,22 +96,23 @@ public class S3CopyOperations
      * @param sourcePath the source blob path
      * @param targetStore the target blob store
      * @param targetPath the target blob path
+     * @param writeMode the write mode to use for the target
      * @return the copied blob
      * @throws BlobStoreException if the copy operation fails
      */
     private Blob copyBlobWithStream(BlobStore sourceStore, BlobPath sourcePath, BlobStore targetStore,
-        BlobPath targetPath)
+        BlobPath targetPath, BlobWriteMode writeMode)
         throws BlobStoreException
     {
         try (var inputStream = sourceStore.getBlob(sourcePath).getStream()) {
             Blob targetBlob = targetStore.getBlob(targetPath);
 
             // Check if target already exists before writing
-            if (targetBlob.exists()) {
+            if (writeMode == BlobWriteMode.CREATE_NEW && targetBlob.exists()) {
                 throw new BlobAlreadyExistsException(targetPath);
             }
 
-            targetBlob.writeFromStream(inputStream, BlobDoesNotExistOption.INSTANCE);
+            targetBlob.writeFromStream(inputStream, writeMode);
             return targetBlob;
         } catch (BlobStoreException e) {
             throw e;
@@ -122,23 +128,22 @@ public class S3CopyOperations
      * @param sourcePath the source blob path
      * @param targetStore the target S3 blob store
      * @param targetPath the target blob path
+     * @param writeMode the write mode to use for the target
      * @return the copied blob
      * @throws BlobStoreException if the copy operation fails
      */
     private Blob copyBlobS3Store(S3BlobStore sourceStore, BlobPath sourcePath, S3BlobStore targetStore,
-        BlobPath targetPath)
+        BlobPath targetPath, BlobWriteMode writeMode)
         throws BlobStoreException
     {
-        String sourceKey = sourceStore.getKeyMapper().buildS3Key(sourcePath);
-        String targetKey = targetStore.getKeyMapper().buildS3Key(targetPath);
-
         // Check if target already exists
         Blob targetBlob = targetStore.getBlob(targetPath);
-        if (targetBlob.exists()) {
+        if (writeMode == BlobWriteMode.CREATE_NEW && targetBlob.exists()) {
             throw new BlobAlreadyExistsException(targetPath);
         }
 
         // Get source object metadata including ETag
+        String sourceKey = sourceStore.getKeyMapper().buildS3Key(sourcePath);
         S3Client s3Client = this.clientManager.getS3Client();
         HeadObjectRequest headRequest = HeadObjectRequest.builder()
             .bucket(sourceStore.getBucketName())
@@ -155,7 +160,6 @@ public class S3CopyOperations
         }
 
         long objectSize = headResponse.contentLength();
-        String sourceETag = headResponse.eTag();
 
         if (objectSize < 0) {
             throw new BlobNotFoundException(sourcePath);
@@ -163,11 +167,9 @@ public class S3CopyOperations
 
         // Choose copy strategy based on object size.
         if (objectSize <= targetStore.getMultipartPartCopySizeBytes()) {
-            performSimpleCopy(sourceStore.getBucketName(), sourceKey, targetStore.getBucketName(), targetKey,
-                sourceETag);
+            performSimpleCopy(sourceStore, sourcePath, targetStore, targetPath, headResponse.eTag(), writeMode);
         } else {
-            performMultipartCopy(sourceStore, sourceKey, targetStore, targetKey, targetPath, objectSize,
-                sourceETag);
+            performMultipartCopy(sourceStore, sourcePath, targetStore, targetPath, headResponse, writeMode);
         }
 
         return targetStore.getBlob(targetPath);
@@ -176,26 +178,35 @@ public class S3CopyOperations
     /**
      * Performs a simple single-operation copy for objects smaller than 5GB.
      *
-     * @param sourceBucket the source S3 bucket
-     * @param sourceKey the source S3 key
-     * @param targetBucket the target S3 bucket
-     * @param targetKey the target S3 key
+     * @param sourceStore the source S3 blob store
+     * @param sourcePath the source blob path
+     * @param targetStore the target S3 blob store
+     * @param targetPath the target blob path
      * @param sourceETag the ETag of the source object to ensure it hasn't changed
+     * @param writeMode the write mode to use for the target
      * @throws BlobStoreException if the copy operation fails
      */
-    private void performSimpleCopy(String sourceBucket, String sourceKey, String targetBucket, String targetKey,
-        String sourceETag)
+    private void performSimpleCopy(S3BlobStore sourceStore, BlobPath sourcePath, S3BlobStore targetStore,
+        BlobPath targetPath, String sourceETag, BlobWriteMode writeMode)
         throws BlobStoreException
     {
+        String sourceKey = sourceStore.getKeyMapper().buildS3Key(sourcePath);
+        String targetKey = targetStore.getKeyMapper().buildS3Key(targetPath);
+
         try {
-            CopyObjectRequest copyRequest = CopyObjectRequest.builder()
-                .sourceBucket(sourceBucket)
+            CopyObjectRequest.Builder builder = CopyObjectRequest.builder()
+                .sourceBucket(sourceStore.getBucketName())
                 .sourceKey(sourceKey)
-                .destinationBucket(targetBucket)
+                .destinationBucket(targetStore.getBucketName())
                 .destinationKey(targetKey)
                 .metadataDirective(MetadataDirective.COPY)
-                .copySourceIfMatch(sourceETag)
-                .build();
+                .copySourceIfMatch(sourceETag);
+
+            if (writeMode == BlobWriteMode.CREATE_NEW) {
+                builder.ifNoneMatch("*");
+            }
+
+            CopyObjectRequest copyRequest = builder.build();
 
             this.clientManager.getS3Client().copyObject(copyRequest);
         } catch (Exception e) {
@@ -207,44 +218,40 @@ public class S3CopyOperations
      * Performs a multipart copy for objects larger than 5GB.
      *
      * @param sourceStore the source S3 blob store
-     * @param sourceKey the source S3 key
+     * @param sourcePath the source blob path
      * @param targetStore the target S3 blob store
-     * @param targetKey the target S3 key
-     * @param targetPath the target blob path (for error reporting)
-     * @param objectSize the size of the object in bytes
-     * @param sourceETag the ETag of the source object to ensure it hasn't changed
+     * @param targetPath the target blob path
+     * @param headResponse the head object response containing metadata, size, and ETag
+     * @param writeMode the write mode to use for the target
      * @throws BlobStoreException if the multipart copy operation fails
      */
-    private void performMultipartCopy(S3BlobStore sourceStore, String sourceKey, S3BlobStore targetStore,
-        String targetKey, BlobPath targetPath, long objectSize, String sourceETag) throws BlobStoreException
+    private void performMultipartCopy(S3BlobStore sourceStore, BlobPath sourcePath, S3BlobStore targetStore,
+        BlobPath targetPath, HeadObjectResponse headResponse, BlobWriteMode writeMode)
+        throws BlobStoreException
     {
+        String sourceKey = sourceStore.getKeyMapper().buildS3Key(sourcePath);
+        String targetKey = targetStore.getKeyMapper().buildS3Key(targetPath);
+
         S3MultipartUploadHelper uploadHelper = null;
         boolean success = false;
         try {
             S3Client s3Client = this.clientManager.getS3Client();
 
-            // Retrieve source object metadata
-            HeadObjectRequest headRequest = HeadObjectRequest.builder()
-                .bucket(sourceStore.getBucketName())
-                .key(sourceKey)
-                .build();
-            HeadObjectResponse headResponse = s3Client.headObject(headRequest);
-            Map<String, String> metadata = headResponse.metadata();
-
-            // Step 1: Initialize multipart upload with metadata
+            // Step 1: Initialize multipart upload with metadata from head response
             uploadHelper = new S3MultipartUploadHelper(
                 targetStore.getBucketName(),
                 targetKey,
                 s3Client,
                 targetPath,
-                metadata,
-                BlobDoesNotExistOption.INSTANCE
+                headResponse.metadata(),
+                writeMode
             );
 
             this.logger.debug("Initiated multipart copy with upload ID: {}", uploadHelper.getUploadId());
 
             // Step 2: Copy parts using configured part size
-            // Use the configured multipart copy size for the size of copy parts.
+            long objectSize = headResponse.contentLength();
+            String sourceETag = headResponse.eTag();
             long partSizeBytes = targetStore.getMultipartPartCopySizeBytes();
             long bytePosition = 0;
 

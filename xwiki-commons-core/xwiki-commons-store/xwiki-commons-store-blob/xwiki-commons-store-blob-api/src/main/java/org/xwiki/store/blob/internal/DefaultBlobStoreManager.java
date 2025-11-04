@@ -67,6 +67,9 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
     @Inject
     private Logger logger;
 
+    @Inject
+    private BlobStoreMigrator blobStoreMigrator;
+
     private final Map<String, BlobStore> blobStores = new ConcurrentHashMap<>();
 
     @Override
@@ -96,12 +99,13 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
         String migrationStoreHint = this.configuration.getMigrationStoreHint();
         BlobStore blobStore = getBlobStore(name, storeHint);
 
-        if (migrationStoreHint != null && !migrationStoreHint.equals(storeHint)
-            && blobStore.isEmptyDirectory(BlobPath.ROOT))
-        {
-            BlobStore migrationStore = getBlobStore(name, migrationStoreHint);
-            // TODO: if migration stops midway (e.g., with an error), it won't be resumed automatically.
-            blobStore.moveDirectory(migrationStore, BlobPath.ROOT, BlobPath.ROOT);
+        if (migrationStoreHint != null && !migrationStoreHint.equals(storeHint)) {
+            boolean migrationInProgress = this.blobStoreMigrator.isMigrationInProgress(blobStore);
+            boolean needsMigration = migrationInProgress || blobStore.isEmptyDirectory(BlobPath.ROOT);
+            if (needsMigration) {
+                BlobStore migrationStore = getBlobStore(name, migrationStoreHint);
+                this.blobStoreMigrator.migrate(blobStore, migrationStore);
+            }
         }
 
         return blobStore;

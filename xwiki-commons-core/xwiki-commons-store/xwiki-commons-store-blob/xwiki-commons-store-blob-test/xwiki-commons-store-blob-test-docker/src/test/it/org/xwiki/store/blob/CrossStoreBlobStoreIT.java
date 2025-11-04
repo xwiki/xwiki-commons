@@ -21,6 +21,7 @@ package org.xwiki.store.blob;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 import jakarta.inject.Inject;
@@ -31,7 +32,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.store.blob.internal.BlobStoreMigrator;
 import org.xwiki.store.blob.internal.FileSystemBlobStoreFactory;
 import org.xwiki.store.blob.internal.S3BlobStore;
 import org.xwiki.store.blob.internal.S3BlobStoreFactory;
@@ -44,10 +47,17 @@ import org.xwiki.test.junit5.XWikiTempDir;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectComponentManager;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.spy;
 
 /**
  * Integration tests for cross-store operations between filesystem and S3 blob stores.
@@ -60,6 +70,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ComponentList({
     TestEnvironment.class,
     FileSystemBlobStoreFactory.class,
+    BlobStoreMigrator.class,
     S3BlobStoreFactory.class,
     S3BlobStore.class,
     S3ClientManager.class,
@@ -68,6 +79,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 })
 class CrossStoreBlobStoreIT
 {
+    private static final BlobPath MIGRATION_BLOB_PATH = BlobPath.of(List.of("_migration.txt"));
+
     private enum StoreType
     {
         FILESYSTEM, S3
@@ -90,6 +103,8 @@ class CrossStoreBlobStoreIT
 
     private BlobStore s3Store;
 
+    private BlobStoreMigrator blobStoreMigrator;
+
     @BeforeEach
     void setUp() throws Exception
     {
@@ -109,6 +124,9 @@ class CrossStoreBlobStoreIT
         // initialized too late. Injecting a provider isn't supported by the test framework.
         S3BlobStoreFactory s3Factory = this.componentManager.getInstance(BlobStoreFactory.class, "s3");
         this.s3Store = s3Factory.create("s3store", s3Props);
+
+        // We can't directly inject the migrator because @Inject only supports interfaces in tests.
+        this.blobStoreMigrator = this.componentManager.getInstance(BlobStoreMigrator.class);
     }
 
     @AfterEach
@@ -143,87 +161,6 @@ class CrossStoreBlobStoreIT
 
     @ParameterizedTest
     @MethodSource("getStorePairs")
-    void copyBlob(StoreType sourceStoreType, StoreType targetStoreType) throws Exception
-    {
-        BlobStore sourceStore = getStore(sourceStoreType);
-        BlobStore targetStore = getStore(targetStoreType);
-
-        BlobPath sourcePath = BlobPath.of(List.of("source.dat"));
-        BlobPath targetPath = BlobPath.of(List.of("target.dat"));
-        byte[] data = BlobStoreTestUtils.createTestData(1024);
-
-        // Write to source store
-        BlobStoreTestUtils.writeBlob(sourceStore, sourcePath, data);
-
-        // Copy from source to target
-        Blob copiedBlob = targetStore.copyBlob(sourceStore, sourcePath, targetPath);
-        assertNotNull(copiedBlob);
-        assertTrue(copiedBlob.exists());
-
-        // Verify data in target store
-        BlobStoreTestUtils.assertBlobEquals(targetStore, targetPath, data);
-
-        // Verify source still exists
-        assertTrue(sourceStore.getBlob(sourcePath).exists());
-    }
-
-    @ParameterizedTest
-    @MethodSource("getStorePairs")
-    void moveBlob(StoreType sourceStoreType, StoreType targetStoreType) throws Exception
-    {
-        BlobStore sourceStore = getStore(sourceStoreType);
-        BlobStore targetStore = getStore(targetStoreType);
-
-        BlobPath sourcePath = BlobPath.of(List.of("source.dat"));
-        BlobPath targetPath = BlobPath.of(List.of("target.dat"));
-        byte[] data = BlobStoreTestUtils.createTestData(1024);
-
-        // Write to source store
-        BlobStoreTestUtils.writeBlob(sourceStore, sourcePath, data);
-
-        // Move from source to target
-        Blob movedBlob = targetStore.moveBlob(sourceStore, sourcePath, targetPath);
-        assertNotNull(movedBlob);
-        assertTrue(movedBlob.exists());
-
-        // Verify data in target store
-        BlobStoreTestUtils.assertBlobEquals(targetStore, targetPath, data);
-
-        // Verify source no longer exists
-        assertFalse(sourceStore.getBlob(sourcePath).exists());
-    }
-
-    @ParameterizedTest
-    @MethodSource("getStorePairs")
-    void moveDirectory(StoreType sourceStoreType, StoreType targetStoreType) throws Exception
-    {
-        BlobStore sourceStore = getStore(sourceStoreType);
-        BlobStore targetStore = getStore(targetStoreType);
-
-        byte[] data = BlobStoreTestUtils.createTestData(100);
-
-        // Create directory structure in source store
-        BlobStoreTestUtils.writeBlob(sourceStore, BlobPath.of(List.of("sourceDir", "file1.dat")), data);
-        BlobStoreTestUtils.writeBlob(sourceStore, BlobPath.of(List.of("sourceDir", "file2.dat")), data);
-        BlobStoreTestUtils.writeBlob(sourceStore, BlobPath.of(List.of("sourceDir", "subdir", "file3.dat")), data);
-
-        BlobPath sourcePath = BlobPath.of(List.of("sourceDir"));
-        BlobPath targetPath = BlobPath.of(List.of("targetDir"));
-
-        // Move directory from source to target
-        targetStore.moveDirectory(sourceStore, sourcePath, targetPath);
-
-        // Verify files are in target store
-        assertTrue(targetStore.getBlob(targetPath.resolve("file1.dat")).exists());
-        assertTrue(targetStore.getBlob(targetPath.resolve("file2.dat")).exists());
-        assertTrue(targetStore.getBlob(targetPath.resolve("subdir", "file3.dat")).exists());
-
-        // Verify source directory is empty
-        assertFalse(sourceStore.getBlob(BlobPath.of(List.of("sourceDir", "file1.dat"))).exists());
-    }
-
-    @ParameterizedTest
-    @MethodSource("getStorePairs")
     void copyLargeBlob(StoreType sourceStoreType, StoreType targetStoreType) throws Exception
     {
         BlobStore sourceStore = getStore(sourceStoreType);
@@ -244,6 +181,49 @@ class CrossStoreBlobStoreIT
 
         // Verify data in target store
         BlobStoreTestUtils.assertBlobEquals(targetStore, targetPath, data);
+    }
+
+    @ParameterizedTest
+    @MethodSource("getStorePairs")
+    void copyBlobWithReplaceExistingMode(StoreType sourceStoreType, StoreType targetStoreType) throws Exception
+    {
+        BlobStore sourceStore = getStore(sourceStoreType);
+        BlobStore targetStore = getStore(targetStoreType);
+
+        BlobPath sourcePath = BlobPath.of(List.of("shared", "document.dat"));
+        BlobPath targetPath = BlobPath.of(List.of("shared", "document.dat"));
+        byte[] sourceData = BlobStoreTestUtils.createTestData(2048, 111L);
+        byte[] targetData = BlobStoreTestUtils.createTestData(1024, 222L);
+
+        BlobStoreTestUtils.writeBlob(sourceStore, sourcePath, sourceData);
+        BlobStoreTestUtils.writeBlob(targetStore, targetPath, targetData);
+
+        Blob copiedBlob = targetStore.copyBlob(sourceStore, sourcePath, targetPath, BlobWriteMode.REPLACE_EXISTING);
+
+        assertNotNull(copiedBlob);
+        BlobStoreTestUtils.assertBlobEquals(targetStore, targetPath, sourceData);
+        BlobStoreTestUtils.assertBlobEquals(sourceStore, sourcePath, sourceData);
+    }
+
+    @ParameterizedTest
+    @MethodSource("getStorePairs")
+    void copyBlobCreateNewFailsWhenTargetExists(StoreType sourceStoreType, StoreType targetStoreType) throws Exception
+    {
+        BlobStore sourceStore = getStore(sourceStoreType);
+        BlobStore targetStore = getStore(targetStoreType);
+
+        BlobPath sourcePath = BlobPath.of(List.of("shared", "existing.dat"));
+        BlobPath targetPath = BlobPath.of(List.of("shared", "existing.dat"));
+        byte[] sourceData = BlobStoreTestUtils.createTestData(128, 333L);
+        byte[] targetData = BlobStoreTestUtils.createTestData(128, 444L);
+
+        BlobStoreTestUtils.writeBlob(sourceStore, sourcePath, sourceData);
+        BlobStoreTestUtils.writeBlob(targetStore, targetPath, targetData);
+
+        assertThrows(BlobAlreadyExistsException.class,
+            () -> targetStore.copyBlob(sourceStore, sourcePath, targetPath, BlobWriteMode.CREATE_NEW));
+
+        BlobStoreTestUtils.assertBlobEquals(targetStore, targetPath, targetData);
     }
 
     @ParameterizedTest
@@ -274,5 +254,121 @@ class CrossStoreBlobStoreIT
         BlobStoreTestUtils.assertBlobEquals(sourceStore, sourcePath, sourceData);
         // Verify target data is unchanged.
         BlobStoreTestUtils.assertBlobEquals(targetStore, targetPath, targetData);
+    }
+
+    @ParameterizedTest
+    @MethodSource("getStorePairs")
+    void moveBlobWithReplaceExistingMode(StoreType sourceStoreType, StoreType targetStoreType) throws Exception
+    {
+        BlobStore sourceStore = getStore(sourceStoreType);
+        BlobStore targetStore = getStore(targetStoreType);
+
+        BlobPath sourcePath = BlobPath.of(List.of("shared", "move.dat"));
+        BlobPath targetPath = BlobPath.of(List.of("shared", "move.dat"));
+        byte[] sourceData = BlobStoreTestUtils.createTestData(1024, 555L);
+        byte[] targetData = BlobStoreTestUtils.createTestData(512, 666L);
+
+        BlobStoreTestUtils.writeBlob(sourceStore, sourcePath, sourceData);
+        BlobStoreTestUtils.writeBlob(targetStore, targetPath, targetData);
+
+        Blob movedBlob = targetStore.moveBlob(sourceStore, sourcePath, targetPath, BlobWriteMode.REPLACE_EXISTING);
+
+        assertNotNull(movedBlob);
+        BlobStoreTestUtils.assertBlobEquals(targetStore, targetPath, sourceData);
+        assertFalse(sourceStore.getBlob(sourcePath).exists());
+    }
+
+    @ParameterizedTest
+    @MethodSource("getStorePairs")
+    void moveBlobCreateNewFailsWhenTargetExists(StoreType sourceStoreType, StoreType targetStoreType) throws Exception
+    {
+        BlobStore sourceStore = getStore(sourceStoreType);
+        BlobStore targetStore = getStore(targetStoreType);
+
+        BlobPath sourcePath = BlobPath.of(List.of("shared", "existingMove.dat"));
+        BlobPath targetPath = BlobPath.of(List.of("shared", "existingMove.dat"));
+        byte[] sourceData = BlobStoreTestUtils.createTestData(256, 777L);
+        byte[] targetData = BlobStoreTestUtils.createTestData(256, 888L);
+
+        BlobStoreTestUtils.writeBlob(sourceStore, sourcePath, sourceData);
+        BlobStoreTestUtils.writeBlob(targetStore, targetPath, targetData);
+
+        assertThrows(BlobAlreadyExistsException.class,
+            () -> targetStore.moveBlob(sourceStore, sourcePath, targetPath, BlobWriteMode.CREATE_NEW));
+
+        BlobStoreTestUtils.assertBlobEquals(targetStore, targetPath, targetData);
+        BlobStoreTestUtils.assertBlobEquals(sourceStore, sourcePath, sourceData);
+    }
+
+    @ParameterizedTest
+    @MethodSource("getStorePairs")
+    void migrateCopiesBlobsAndCleansMarker(StoreType sourceStoreType, StoreType targetStoreType) throws Exception
+    {
+        BlobStore sourceStore = getStore(sourceStoreType);
+        BlobStore targetStore = getStore(targetStoreType);
+
+        BlobPath blobOne = BlobPath.of(List.of("docs", "report.pdf"));
+        BlobPath blobTwo = BlobPath.of(List.of("images", "logo.png"));
+        byte[] blobOneData = BlobStoreTestUtils.createTestData(1024, 999L);
+        byte[] blobTwoData = BlobStoreTestUtils.createTestData(2048, 1001L);
+
+        BlobStoreTestUtils.writeBlob(sourceStore, blobOne, blobOneData);
+        BlobStoreTestUtils.writeBlob(sourceStore, blobTwo, blobTwoData);
+
+        this.blobStoreMigrator.migrate(targetStore, sourceStore);
+
+        BlobStoreTestUtils.assertBlobEquals(targetStore, blobOne, blobOneData);
+        BlobStoreTestUtils.assertBlobEquals(targetStore, blobTwo, blobTwoData);
+
+        // Verify that the source store is empty now. For better assertion messages, we collect the remaining blobs.
+        try (Stream<Blob> remainingBlobs = sourceStore.listBlobs(BlobPath.ROOT)) {
+            List<BlobPath> remainingPaths = remainingBlobs.map(Blob::getPath).toList();
+            assertThat("The source store should be emtpy after migration", remainingPaths, is(empty()));
+        }
+
+        // List all blobs in the target store and compare to the expected two blobs to ensure no migration marker
+        // remains.
+        try (Stream<Blob> blobs = targetStore.listBlobs(BlobPath.ROOT)) {
+            List<BlobPath> actualPaths = blobs.map(Blob::getPath).toList();
+            assertThat(actualPaths, containsInAnyOrder(blobOne, blobTwo));
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("getStorePairs")
+    void migrateResumesAfterFailure(StoreType sourceStoreType, StoreType targetStoreType) throws Exception
+    {
+        BlobStore sourceStore = getStore(sourceStoreType);
+        BlobStore targetStore = getStore(targetStoreType);
+
+        BlobPath blobPath = BlobPath.of(List.of("resume", "item.bin"));
+        byte[] blobData = BlobStoreTestUtils.createTestData(1536, 2024L);
+        BlobStoreTestUtils.writeBlob(sourceStore, blobPath, blobData);
+
+        BlobStore spyTargetStore = spy(targetStore);
+        AtomicBoolean shouldFail = new AtomicBoolean(true);
+        Mockito.doAnswer(invocation -> {
+            if (shouldFail.getAndSet(false)) {
+                throw new BlobStoreException("Simulated move failure");
+            }
+            return invocation.callRealMethod();
+        })
+            .when(spyTargetStore)
+            .moveBlob(eq(sourceStore), any(BlobPath.class), any(BlobPath.class), any());
+
+        assertThrows(BlobStoreException.class,
+            () -> this.blobStoreMigrator.migrate(spyTargetStore, sourceStore));
+
+        assertTrue(this.blobStoreMigrator.isMigrationInProgress(spyTargetStore));
+        assertTrue(spyTargetStore.getBlob(MIGRATION_BLOB_PATH).exists());
+        // Data should still be only in source store at this point.
+        BlobStoreTestUtils.assertBlobEquals(sourceStore, blobPath, blobData);
+        assertFalse(targetStore.getBlob(blobPath).exists());
+
+        this.blobStoreMigrator.migrate(spyTargetStore, sourceStore);
+
+        BlobStoreTestUtils.assertBlobEquals(targetStore, blobPath, blobData);
+        assertFalse(sourceStore.getBlob(blobPath).exists());
+        assertFalse(spyTargetStore.getBlob(MIGRATION_BLOB_PATH).exists());
     }
 }

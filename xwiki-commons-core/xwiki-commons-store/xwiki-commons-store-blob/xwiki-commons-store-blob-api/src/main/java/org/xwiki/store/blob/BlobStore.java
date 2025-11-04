@@ -70,12 +70,14 @@ public interface BlobStore
      *
      * @param sourcePath the source path
      * @param targetPath the target path
+     * @param options optional behaviors for the copy, supports {@link BlobWriteMode}
      * @return the copied blob at the target path
      * @throws BlobStoreException if the copy operation fails
      * @throws BlobNotFoundException if the source blob does not exist
-     * @throws BlobAlreadyExistsException if a blob already exists at the target path
+     * @throws BlobAlreadyExistsException if a blob already exists at the target path and
+     *     {@link BlobWriteMode#CREATE_NEW} is requested
      */
-    Blob copyBlob(BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException;
+    Blob copyBlob(BlobPath sourcePath, BlobPath targetPath, BlobOption... options) throws BlobStoreException;
 
     /**
      * Copy a blob from another store to this store.
@@ -83,47 +85,29 @@ public interface BlobStore
      * @param sourceStore the source blob store
      * @param sourcePath the path of the blob in the source store
      * @param targetPath the path where the blob should be copied in this store
+     * @param options optional behaviors for the copy, supports {@link BlobWriteMode}
      * @return the copied blob at the target path
      * @throws BlobStoreException if the copy operation fails
      * @throws BlobNotFoundException if the source blob does not exist
-     * @throws BlobAlreadyExistsException if a blob already exists at the target path
+     * @throws BlobAlreadyExistsException if a blob already exists at the target path and
+     *     {@link BlobWriteMode#CREATE_NEW} is requested
      */
-    Blob copyBlob(BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException;
+    Blob copyBlob(BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath, BlobOption... options)
+        throws BlobStoreException;
 
     /**
      * Move a blob from one path to another within this store.
      *
      * @param sourcePath the source path
      * @param targetPath the target path
+     * @param options optional behaviors for the move, supports {@link BlobWriteMode}
      * @return the moved blob at the target path
      * @throws BlobStoreException if the move operation fails
      * @throws BlobNotFoundException if the source blob does not exist
-     * @throws BlobAlreadyExistsException if a blob already exists at the target path
+     * @throws BlobAlreadyExistsException if a blob already exists at the target path and
+     *     {@link BlobWriteMode#CREATE_NEW} is requested
      */
-    Blob moveBlob(BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException;
-
-    /**
-     * Move a directory from one path to another within this store.
-     *
-     * <p>This operation is not necessarily efficient and might move each blob individually.</p>
-     *
-     * @param sourcePath the source path
-     * @param targetPath the target path
-     * @throws BlobStoreException if the move operation fails
-     */
-    void moveDirectory(BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException;
-
-    /**
-     * Move a directory from another store to this store.
-     *
-     * <p>This operation is not necessarily efficient and might move each blob individually.</p>
-     *
-     * @param sourceStore the source blob store
-     * @param sourcePath the path of the directory in the source store
-     * @param targetPath the path where the directory should be moved in this store
-     * @throws BlobStoreException if the move operation fails
-     */
-    void moveDirectory(BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException;
+    Blob moveBlob(BlobPath sourcePath, BlobPath targetPath, BlobOption... options) throws BlobStoreException;
 
     /**
      * Check if a directory is empty (i.e., contains no blobs).
@@ -145,12 +129,15 @@ public interface BlobStore
      * @param sourceStore the source blob store
      * @param sourcePath the path of the blob in the source store
      * @param targetPath the path where the blob should be moved in this store
+     * @param options optional behaviors for the move, supports {@link BlobWriteMode}
      * @return the moved blob at the target path
      * @throws BlobStoreException if the move operation fails
      * @throws BlobNotFoundException if the source blob does not exist
-     * @throws BlobAlreadyExistsException if a blob already exists at the target path
+     * @throws BlobAlreadyExistsException if a blob already exists at the target path and
+     *     {@link BlobWriteMode#CREATE_NEW} is requested
      */
-    Blob moveBlob(BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException;
+    Blob moveBlob(BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath, BlobOption... options)
+        throws BlobStoreException;
 
     /**
      * Delete the blob at the given path.

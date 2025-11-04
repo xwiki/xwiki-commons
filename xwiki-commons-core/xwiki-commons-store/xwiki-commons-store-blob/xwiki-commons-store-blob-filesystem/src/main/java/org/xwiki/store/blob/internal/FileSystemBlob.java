@@ -36,12 +36,12 @@ import java.util.Set;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.xwiki.store.blob.Blob;
 import org.xwiki.store.blob.BlobAlreadyExistsException;
-import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobRangeOption;
 import org.xwiki.store.blob.BlobStoreException;
+import org.xwiki.store.blob.BlobWriteMode;
 
 /**
  * A {@link Blob} implementation that represents a file in the file system.
@@ -52,7 +52,7 @@ import org.xwiki.store.blob.BlobStoreException;
 public class FileSystemBlob extends AbstractBlob<FileSystemBlobStore>
 {
     private static final Set<Class<? extends BlobOption>> SUPPORTED_OUTPUT_OPTIONS = Set.of(
-        BlobDoesNotExistOption.class
+        BlobWriteMode.class
     );
 
     private static final Set<Class<? extends BlobOption>> SUPPORTED_INPUT_OPTIONS = Set.of(
@@ -96,6 +96,7 @@ public class FileSystemBlob extends AbstractBlob<FileSystemBlobStore>
     public OutputStream getOutputStream(BlobOption... options) throws BlobStoreException
     {
         BlobOptionSupport.validateSupportedOptions(SUPPORTED_OUTPUT_OPTIONS, options);
+        BlobWriteMode writeMode = BlobOptionSupport.findSingleOption(BlobWriteMode.class, options);
 
         NoSuchFileException lastNoSuchFileException = null;
         for (int attempt = 0; attempt < FileSystemBlobStore.NUM_ATTEMPTS; ++attempt) {
@@ -103,7 +104,7 @@ public class FileSystemBlob extends AbstractBlob<FileSystemBlobStore>
                 // Ensure the parent directory exists before creating the output stream.
                 this.blobStore.createParents(this.absolutePath);
 
-                if (BlobOptionSupport.hasOption(BlobDoesNotExistOption.class, options)) {
+                if (writeMode == BlobWriteMode.CREATE_NEW) {
                     // Use CREATE_NEW to ensure atomic create-only behavior
                     return Files.newOutputStream(this.absolutePath,
                         StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);

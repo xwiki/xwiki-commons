@@ -63,8 +63,8 @@ public interface Blob extends StreamProvider
      *
      * @param options the options to use when writing to this blob
      * @return an OutputStream to write data to this blob
-     * @throws BlobAlreadyExistsException if the blob already exists and {@link BlobDoesNotExistOption} is among the
-     * given options
+     * @throws BlobAlreadyExistsException if the blob already exists and {@link BlobWriteMode#CREATE_NEW} is among the
+     *     given options
      * @throws BlobStoreException if the blob cannot be written, for example because its name is invalid. There is no
      *     guarantee that in such a case an exception will be thrown, the exception could also only be thrown when data
      *     is written to the stream, or when the stream is closed.
@@ -76,8 +76,8 @@ public interface Blob extends StreamProvider
      *
      * @param inputStream the InputStream to read data from
      * @param options the options to use when writing to this blob
-     * @throws BlobAlreadyExistsException if the blob already exists and {@link BlobDoesNotExistOption} is among the
-     * given options
+     * @throws BlobAlreadyExistsException if the blob already exists and {@link BlobWriteMode#CREATE_NEW} is among the
+     *     given options
      * @throws BlobStoreException if the InputStream cannot be read or the blob cannot be written, for example because
      * its name is invalid.
      * @todo Recommend this method over {@link #getOutputStream(BlobOption...)} once this is actually more than

@@ -38,11 +38,11 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.xwiki.store.blob.BlobAlreadyExistsException;
-import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobRangeOption;
 import org.xwiki.store.blob.BlobStoreException;
+import org.xwiki.store.blob.BlobWriteMode;
 import org.xwiki.test.junit5.XWikiTempDir;
 import org.xwiki.test.junit5.XWikiTempDirExtension;
 
@@ -150,9 +150,9 @@ class FileSystemBlobTest
     }
 
     @Test
-    void getOutputStreamWithBlobDoesNotExistOption() throws Exception
+    void getOutputStreamWithCreateNewMode() throws Exception
     {
-        try (OutputStream result = this.blob.getOutputStream(BlobDoesNotExistOption.INSTANCE)) {
+        try (OutputStream result = this.blob.getOutputStream(BlobWriteMode.CREATE_NEW)) {
             assertNotNull(result);
             result.write("test data".getBytes());
         }
@@ -169,7 +169,7 @@ class FileSystemBlobTest
         Files.createFile(this.absolutePath);
 
         BlobAlreadyExistsException exception = assertThrows(BlobAlreadyExistsException.class,
-            () -> this.blob.getOutputStream(BlobDoesNotExistOption.INSTANCE));
+            () -> this.blob.getOutputStream(BlobWriteMode.CREATE_NEW));
 
         assertEquals(this.blobPath, exception.getBlobPath());
         assertInstanceOf(FileAlreadyExistsException.class, exception.getCause());

@@ -30,12 +30,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobRangeOption;
 import org.xwiki.store.blob.BlobStoreException;
+import org.xwiki.store.blob.BlobWriteMode;
 import org.xwiki.store.blob.S3BlobStoreProperties;
 
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
@@ -174,10 +174,10 @@ class S3BlobTest
                 assertEquals(5 * 1024 * 1024L, context.arguments().get(4));
                 BlobOption[] options = (BlobOption[]) context.arguments().get(5);
                 assertEquals(1, options.length);
-                assertInstanceOf(BlobDoesNotExistOption.class, options[0]);
+                assertInstanceOf(BlobWriteMode.class, options[0]);
             })) {
 
-            OutputStream outputStream = this.blob.getOutputStream(BlobDoesNotExistOption.INSTANCE);
+            OutputStream outputStream = this.blob.getOutputStream(BlobWriteMode.CREATE_NEW);
 
             assertThat(outputStream, instanceOf(S3BlobOutputStream.class));
             assertEquals(1, mockedOutputStream.constructed().size());

@@ -33,6 +33,7 @@ import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.store.blob.AbstractBlobStore;
 import org.xwiki.store.blob.Blob;
+import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
@@ -95,29 +96,31 @@ public class S3BlobStore extends AbstractBlobStore<S3BlobStoreProperties>
     }
 
     @Override
-    public Blob copyBlob(BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException
+    public Blob copyBlob(BlobPath sourcePath, BlobPath targetPath, BlobOption... options) throws BlobStoreException
     {
-        return this.copyOperations.copyBlob(this, sourcePath, this, targetPath);
+        return this.copyOperations.copyBlob(this, sourcePath, this, targetPath, options);
     }
 
     @Override
-    public Blob copyBlob(BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException
+    public Blob copyBlob(BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath, BlobOption... options)
+        throws BlobStoreException
     {
-        return this.copyOperations.copyBlob(sourceStore, sourcePath, this, targetPath);
+        return this.copyOperations.copyBlob(sourceStore, sourcePath, this, targetPath, options);
     }
 
     @Override
-    public Blob moveBlob(BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException
+    public Blob moveBlob(BlobPath sourcePath, BlobPath targetPath, BlobOption... options) throws BlobStoreException
     {
-        Blob movedBlob = copyBlob(sourcePath, targetPath);
+        Blob movedBlob = copyBlob(sourcePath, targetPath, options);
         deleteBlob(sourcePath);
         return movedBlob;
     }
 
     @Override
-    public Blob moveBlob(BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath) throws BlobStoreException
+    public Blob moveBlob(BlobStore sourceStore, BlobPath sourcePath, BlobPath targetPath, BlobOption... options)
+        throws BlobStoreException
     {
-        Blob movedBlob = copyBlob(sourceStore, sourcePath, targetPath);
+        Blob movedBlob = copyBlob(sourceStore, sourcePath, targetPath, options);
         sourceStore.deleteBlob(sourcePath);
         return movedBlob;
     }

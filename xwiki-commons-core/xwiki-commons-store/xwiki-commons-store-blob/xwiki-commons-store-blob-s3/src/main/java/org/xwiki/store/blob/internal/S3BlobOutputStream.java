@@ -24,11 +24,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Set;
 
 import org.xwiki.store.blob.BlobAlreadyExistsException;
-import org.xwiki.store.blob.BlobDoesNotExistOption;
 import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
+import org.xwiki.store.blob.BlobWriteMode;
 
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -81,9 +82,9 @@ public class S3BlobOutputStream extends OutputStream
 
     private boolean failed;
 
-    private final BlobOption[] options;
-
     private final BlobPath blobPath;
+
+    private final BlobWriteMode writeMode;
 
     // Multipart upload helper
     private S3MultipartUploadHelper uploadHelper;
@@ -104,10 +105,11 @@ public class S3BlobOutputStream extends OutputStream
         this.bucketName = bucketName;
         this.s3Key = s3Key;
         this.s3Client = s3Client;
-        this.options = options;
         this.blobPath = blobPath;
         this.buffer = new ByteArrayOutputStreamWithInputStream();
         this.failed = false;
+        BlobOptionSupport.validateSupportedOptions(Set.of(BlobWriteMode.class), options);
+        this.writeMode = BlobWriteMode.resolve(BlobWriteMode.REPLACE_EXISTING, options);
         // Cap part size to Integer.MAX_VALUE since ByteArrayOutputStream uses int for size (and about 2GB is in
         // fact already too much as upload buffer).
         this.partSize = (int) Math.min(partSizeBytes, Integer.MAX_VALUE);
@@ -264,7 +266,7 @@ public class S3BlobOutputStream extends OutputStream
             this.s3Key,
             this.s3Client,
             this.blobPath,
-            this.options
+            this.writeMode
         );
     }
 
@@ -276,7 +278,7 @@ public class S3BlobOutputStream extends OutputStream
                 .key(this.s3Key);
 
             // Add conditional headers if needed.
-            if (BlobOptionSupport.hasOption(BlobDoesNotExistOption.class, this.options)) {
+            if (this.writeMode == BlobWriteMode.CREATE_NEW) {
                 requestBuilder.ifNoneMatch(WILDCARD);
             }
 
@@ -292,7 +294,7 @@ public class S3BlobOutputStream extends OutputStream
     private void handleS3Exception(S3Exception e) throws IOException
     {
         // Check if this is a precondition failed error (412) for conditional requests.
-        if (e.statusCode() == 412 && BlobOptionSupport.hasOption(BlobDoesNotExistOption.class, this.options)) {
+        if (e.statusCode() == 412 && this.writeMode == BlobWriteMode.CREATE_NEW) {
             throw new IOException("Blob already exists",
                 new BlobAlreadyExistsException(this.blobPath, e));
         }

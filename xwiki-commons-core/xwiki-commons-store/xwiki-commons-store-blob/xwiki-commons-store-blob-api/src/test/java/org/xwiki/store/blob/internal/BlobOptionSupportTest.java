@@ -23,11 +23,9 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.xwiki.store.blob.BlobOption;
-import org.xwiki.store.blob.BlobStoreException;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -72,7 +70,7 @@ class BlobOptionSupportTest
     }
 
     @Test
-    void findSingleOptionWhenPresent() throws Exception
+    void findSingleOptionWhenPresent()
     {
         OptionA optionA = new OptionA();
         OptionB optionB = new OptionB();
@@ -83,7 +81,7 @@ class BlobOptionSupportTest
     }
 
     @Test
-    void findSingleOptionWhenNotPresent() throws Exception
+    void findSingleOptionWhenNotPresent()
     {
         OptionA optionA = new OptionA();
         OptionB optionB = new OptionB();
@@ -92,7 +90,7 @@ class BlobOptionSupportTest
     }
 
     @Test
-    void findSingleOptionWithNullArray() throws Exception
+    void findSingleOptionWithNullArray()
     {
         assertNull(BlobOptionSupport.findSingleOption(OptionA.class, (BlobOption[]) null));
     }
@@ -103,14 +101,14 @@ class BlobOptionSupportTest
         OptionA optionA1 = new OptionA();
         OptionA optionA2 = new OptionA();
 
-        BlobStoreException exception = assertThrows(BlobStoreException.class,
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
             () -> BlobOptionSupport.findSingleOption(OptionA.class, optionA1, optionA2));
 
         assertEquals(MULTIPLE_OPTIONS_ERROR, exception.getMessage());
     }
 
     @Test
-    void findSingleOptionIgnoresNullOptions() throws Exception
+    void findSingleOptionIgnoresNullOptions()
     {
         OptionA optionA = new OptionA();
 
@@ -138,7 +136,7 @@ class BlobOptionSupportTest
     }
 
     @Test
-    void validateSupportedOptionsWithEmptyArray() throws Exception
+    void validateSupportedOptionsWithEmptyArray()
     {
         Set<Class<? extends BlobOption>> supportedTypes = Set.of(OptionA.class);
 
@@ -153,7 +151,7 @@ class BlobOptionSupportTest
         OptionA optionA = new OptionA();
         OptionB optionB = new OptionB();
 
-        BlobStoreException exception = assertThrows(BlobStoreException.class,
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
             () -> BlobOptionSupport.validateSupportedOptions(supportedTypes, optionA, optionB));
 
         assertTrue(exception.getMessage().contains(UNSUPPORTED_OPTION_ERROR));
@@ -167,7 +165,7 @@ class BlobOptionSupportTest
         OptionB optionB = new OptionB();
         OptionC optionC = new OptionC();
 
-        BlobStoreException exception = assertThrows(BlobStoreException.class,
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
             () -> BlobOptionSupport.validateSupportedOptions(supportedTypes, optionB, optionC));
 
         assertTrue(exception.getMessage().contains("Unsupported option types:"));
@@ -183,35 +181,5 @@ class BlobOptionSupportTest
 
         // Should not throw exception
         assertDoesNotThrow(() -> BlobOptionSupport.validateSupportedOptions(supportedTypes, null, optionA, null));
-    }
-
-    @Test
-    void hasOptionReturnsTrueWhenPresent()
-    {
-        OptionA optionA = new OptionA();
-        OptionB optionB = new OptionB();
-
-        assertTrue(BlobOptionSupport.hasOption(OptionA.class, optionA, optionB));
-    }
-
-    @Test
-    void hasOptionReturnsFalseWhenNotPresent()
-    {
-        OptionA optionA = new OptionA();
-        OptionB optionB = new OptionB();
-
-        assertFalse(BlobOptionSupport.hasOption(OptionC.class, optionA, optionB));
-    }
-
-    @Test
-    void hasOptionReturnsFalseForNullArray()
-    {
-        assertFalse(BlobOptionSupport.hasOption(OptionA.class, (BlobOption[]) null));
-    }
-
-    @Test
-    void hasOptionReturnsFalseForEmptyArray()
-    {
-        assertFalse(BlobOptionSupport.hasOption(OptionA.class));
     }
 }

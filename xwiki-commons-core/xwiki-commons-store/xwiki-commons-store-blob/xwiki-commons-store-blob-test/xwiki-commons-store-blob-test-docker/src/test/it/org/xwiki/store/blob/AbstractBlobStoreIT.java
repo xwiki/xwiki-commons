@@ -193,6 +193,43 @@ abstract class AbstractBlobStoreIT
     }
 
     @Test
+    void copyBlobWithReplaceExistingOption() throws Exception
+    {
+        BlobStore store = getOrCreateBlobStore("copyBlobWithReplaceExistingOption");
+        BlobPath sourcePath = BlobPath.of(List.of("source.dat"));
+        BlobPath targetPath = BlobPath.of(List.of("target.dat"));
+        byte[] sourceData = BlobStoreTestUtils.createTestData(1024, 42L);
+        byte[] originalTargetData = BlobStoreTestUtils.createTestData(256, 84L);
+
+        BlobStoreTestUtils.writeBlob(store, sourcePath, sourceData);
+        BlobStoreTestUtils.writeBlob(store, targetPath, originalTargetData);
+
+        Blob copiedBlob = store.copyBlob(sourcePath, targetPath, BlobWriteMode.REPLACE_EXISTING);
+
+        assertNotNull(copiedBlob);
+        BlobStoreTestUtils.assertBlobEquals(store, targetPath, sourceData);
+        BlobStoreTestUtils.assertBlobEquals(store, sourcePath, sourceData);
+    }
+
+    @Test
+    void copyBlobCreateNewStillFailsWhenTargetExists() throws Exception
+    {
+        BlobStore store = getOrCreateBlobStore("copyBlobCreateNewFails");
+        BlobPath sourcePath = BlobPath.of(List.of("source.dat"));
+        BlobPath targetPath = BlobPath.of(List.of("target.dat"));
+        byte[] sourceData = BlobStoreTestUtils.createTestData(64, 100L);
+        byte[] targetData = BlobStoreTestUtils.createTestData(64, 200L);
+
+        BlobStoreTestUtils.writeBlob(store, sourcePath, sourceData);
+        BlobStoreTestUtils.writeBlob(store, targetPath, targetData);
+
+        assertThrows(BlobAlreadyExistsException.class,
+            () -> store.copyBlob(sourcePath, targetPath, BlobWriteMode.CREATE_NEW));
+
+        BlobStoreTestUtils.assertBlobEquals(store, targetPath, targetData);
+    }
+
+    @Test
     void moveBlobWithinStore() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testMoveBlobWithinStore");
@@ -227,33 +264,22 @@ abstract class AbstractBlobStoreIT
     }
 
     @Test
-    void moveDirectory() throws Exception
+    void moveBlobWithReplaceExistingOption() throws Exception
     {
-        BlobStore store = getOrCreateBlobStore("testMoveDirectory");
-        byte[] data = BlobStoreTestUtils.createTestData(100);
+        BlobStore store = getOrCreateBlobStore("moveBlobWithReplaceExistingOption");
+        BlobPath sourcePath = BlobPath.of(List.of("source.dat"));
+        BlobPath targetPath = BlobPath.of(List.of("target.dat"));
+        byte[] sourceData = BlobStoreTestUtils.createTestData(1024, 1234L);
+        byte[] targetData = BlobStoreTestUtils.createTestData(512, 4321L);
 
-        // Create source directory with files
-        BlobStoreTestUtils.writeBlob(store, BlobPath.of(List.of("sourceDir", "file1.dat")), data);
-        BlobStoreTestUtils.writeBlob(store, BlobPath.of(List.of("sourceDir", "file2.dat")), data);
-        BlobStoreTestUtils.writeBlob(store, BlobPath.of(List.of("sourceDir", "subdir", "file3.dat")), data);
+        BlobStoreTestUtils.writeBlob(store, sourcePath, sourceData);
+        BlobStoreTestUtils.writeBlob(store, targetPath, targetData);
 
-        BlobPath sourcePath = BlobPath.of(List.of("sourceDir"));
-        BlobPath targetPath = BlobPath.of(List.of("targetDir"));
+        Blob movedBlob = store.moveBlob(sourcePath, targetPath, BlobWriteMode.REPLACE_EXISTING);
 
-        store.moveDirectory(sourcePath, targetPath);
-
-        // Verify files are in target location
-        BlobPath targetPath1 = targetPath.resolve("file1.dat");
-        assertTrue(store.getBlob(targetPath1).exists(), "Blob should exist: " + targetPath1);
-        BlobPath targetPath2 = targetPath.resolve("file2.dat");
-        assertTrue(store.getBlob(targetPath2).exists(), "Blob should exist: " + targetPath2);
-        BlobPath targetPath3 = targetPath.resolve("subdir", "file3.dat");
-        assertTrue(store.getBlob(targetPath3).exists(), "Blob should exist: " + targetPath3);
-
-        // Verify source is empty or doesn't exist
-        try (Stream<Blob> blobs = store.listBlobs(sourcePath)) {
-            assertEquals(0, blobs.count());
-        }
+        assertNotNull(movedBlob);
+        BlobStoreTestUtils.assertBlobEquals(store, targetPath, sourceData);
+        assertFalse(store.getBlob(sourcePath).exists());
     }
 
     @Test
@@ -325,7 +351,7 @@ abstract class AbstractBlobStoreIT
         Blob blob = store.getBlob(path);
         // S3 wraps BlobAlreadyExistsException in IOException, filesystem throws BlobAlreadyExistsException
         Exception exception = assertThrows(Exception.class, () -> {
-            try (OutputStream os = blob.getOutputStream(BlobDoesNotExistOption.INSTANCE)) {
+            try (OutputStream os = blob.getOutputStream(BlobWriteMode.CREATE_NEW)) {
                 os.write(data);
             }
         });

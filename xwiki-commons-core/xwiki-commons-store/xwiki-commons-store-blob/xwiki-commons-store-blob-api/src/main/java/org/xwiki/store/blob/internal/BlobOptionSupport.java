@@ -19,13 +19,11 @@
  */
 package org.xwiki.store.blob.internal;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.xwiki.store.blob.BlobOption;
-import org.xwiki.store.blob.BlobStoreException;
 
 /**
  * Utility methods to work with {@link BlobOption blob options}.
@@ -51,10 +49,9 @@ public final class BlobOptionSupport
      * @param options the options passed to the blob call
      * @param <T> the option type
      * @return the option instance if present, or {@code null} otherwise
-     * @throws BlobStoreException if multiple options of the same type are provided
+     * @throws IllegalArgumentException if multiple options of the same type are provided
      */
     public static <T extends BlobOption> T findSingleOption(Class<T> optionType, BlobOption... options)
-        throws BlobStoreException
     {
         T result = null;
         if (options == null) {
@@ -63,7 +60,7 @@ public final class BlobOptionSupport
         for (BlobOption option : options) {
             if (optionType.isInstance(option)) {
                 if (result != null) {
-                    throw new BlobStoreException(MULTIPLE_OPTIONS_ERROR.formatted(optionType.getSimpleName()));
+                    throw new IllegalArgumentException(MULTIPLE_OPTIONS_ERROR.formatted(optionType.getSimpleName()));
                 }
                 result = optionType.cast(option);
             }
@@ -76,10 +73,10 @@ public final class BlobOptionSupport
      *
      * @param supportedTypes the set of option types that are supported
      * @param options the options to validate
-     * @throws BlobStoreException if any option is not of a supported type
+     * @throws IllegalArgumentException if any option is not of a supported type
      */
     public static void validateSupportedOptions(Set<Class<? extends BlobOption>> supportedTypes,
-        BlobOption... options) throws BlobStoreException
+        BlobOption... options)
     {
         if (options == null || options.length == 0) {
             return;
@@ -99,25 +96,9 @@ public final class BlobOptionSupport
             String supportedNames = supportedTypes.stream()
                 .map(Class::getSimpleName)
                 .collect(Collectors.joining(SEPARATOR));
-            throw new BlobStoreException(
+            throw new IllegalArgumentException(
                 "Unsupported option types: [%s]. Supported types are: [%s]"
                     .formatted(unsupportedNames, supportedNames));
         }
-    }
-
-    /**
-     * Checks if an option of the given type is present in the provided array.
-     *
-     * @param optionType the type of option to look for
-     * @param options the options to search
-     * @param <T> the option type
-     * @return {@code true} if an option of the given type is present, {@code false} otherwise
-     */
-    public static <T extends BlobOption> boolean hasOption(Class<T> optionType, BlobOption... options)
-    {
-        if (options == null) {
-            return false;
-        }
-        return Arrays.stream(options).anyMatch(optionType::isInstance);
     }
 }
