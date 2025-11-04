@@ -110,20 +110,6 @@ public interface BlobStore
     Blob moveBlob(BlobPath sourcePath, BlobPath targetPath, BlobOption... options) throws BlobStoreException;
 
     /**
-     * Check if a directory is empty (i.e., contains no blobs).
-     *
-     * <p>Only child blobs under the given path prefix are considered. If there is a blob
-     * with the exact same path as the directory being checked, it is not counted
-     * when determining if the directory is empty. This maintains consistency with
-     * {@link #listBlobs(BlobPath)} which lists only child blobs under the path prefix.</p>
-     *
-     * @param path the path of the directory to check
-     * @return true if the directory is empty, false otherwise
-     * @throws BlobStoreException if the check operation fails
-     */
-    boolean isEmptyDirectory(BlobPath path) throws BlobStoreException;
-
-    /**
      * Move a blob from another store to this store.
      *
      * @param sourceStore the source blob store
@@ -154,4 +140,18 @@ public interface BlobStore
      * @throws BlobStoreException if the deletion fails
      */
     void deleteBlobs(BlobPath path) throws BlobStoreException;
+
+    /**
+     * Check if a directory is empty (i.e., contains no blobs).
+     *
+     * <p>Only child blobs under the given path prefix are considered. If there is a blob
+     * with the exact same path as the directory being checked, it is not counted
+     * when determining if the directory is empty. This maintains consistency with
+     * {@link #listBlobs(BlobPath)} which lists only child blobs under the path prefix.</p>
+     *
+     * @param path the path of the directory to check
+     * @return true if the directory is empty, false otherwise
+     * @throws BlobStoreException if the check operation fails
+     */
+    boolean isEmptyDirectory(BlobPath path) throws BlobStoreException;
 }
