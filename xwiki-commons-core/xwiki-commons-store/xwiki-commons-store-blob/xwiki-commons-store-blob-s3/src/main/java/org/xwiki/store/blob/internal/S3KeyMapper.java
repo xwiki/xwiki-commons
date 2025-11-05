@@ -70,7 +70,8 @@ class S3KeyMapper
      */
     String buildS3Key(BlobPath blobPath)
     {
-        String pathStr = blobPath.toString();
+        // S3 keys shouldn't start with a separator, so we join them manually instead of using blobPath.toString().
+        String pathStr = String.join(PATH_SEPARATOR, blobPath.getNames());
         if (StringUtils.isNotBlank(this.keyPrefix)) {
             return this.keyPrefix + PATH_SEPARATOR + pathStr;
         }
@@ -113,7 +114,8 @@ class S3KeyMapper
         }
 
         try {
-            return BlobPath.from(pathStr);
+            // Add the leading separator back for parsing as absolute path.
+            return BlobPath.parse(PATH_SEPARATOR + pathStr);
         } catch (IllegalArgumentException e) {
             LOGGER.warn("Invalid blob path from S3 key: {}", s3Key, e);
             return null;

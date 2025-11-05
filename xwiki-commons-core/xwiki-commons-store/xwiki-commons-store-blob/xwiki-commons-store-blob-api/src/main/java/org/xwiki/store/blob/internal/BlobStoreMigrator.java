@@ -23,7 +23,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.List;
 import java.util.stream.Stream;
 
 import jakarta.inject.Inject;
@@ -49,7 +48,7 @@ import org.xwiki.store.blob.BlobWriteMode;
 @Singleton
 public class BlobStoreMigrator
 {
-    private static final BlobPath MIGRATION_MARKER_PATH = BlobPath.of(List.of("_migration.txt"));
+    private static final BlobPath MIGRATION_MARKER_PATH = BlobPath.absolute("_migration.txt");
 
     @Inject
     private Logger logger;
@@ -126,7 +125,7 @@ public class BlobStoreMigrator
     private void migrateContent(String storeName, BlobStore targetStore, BlobStore sourceStore)
         throws BlobStoreException
     {
-        try (Stream<Blob> blobs = sourceStore.listBlobs(BlobPath.ROOT)) {
+        try (Stream<Blob> blobs = sourceStore.listBlobs(BlobPath.root())) {
             for (Blob sourceBlob : (Iterable<Blob>) blobs::iterator) {
                 BlobPath path = sourceBlob.getPath();
                 moveBlob(path, sourceStore, targetStore);

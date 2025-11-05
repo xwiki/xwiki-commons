@@ -21,7 +21,6 @@ package org.xwiki.store.blob.internal;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,7 +74,7 @@ class S3BlobTest
 
     private static final String KEY = "key";
 
-    private static final BlobPath BLOB_PATH = BlobPath.of(List.of("my", "blob.txt"));
+    private static final BlobPath BLOB_PATH = BlobPath.absolute("my", "blob.txt");
 
     @Mock
     private S3Client s3Client;

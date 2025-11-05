@@ -67,7 +67,7 @@ class S3DeleteOperationsTest
 
     private static final String TEST_KEY = "test-key";
 
-    private static final BlobPath TEST_BLOB_PATH = BlobPath.of(List.of("test-path.txt"));
+    private static final BlobPath TEST_BLOB_PATH = BlobPath.absolute("test-path.txt");
 
     @InjectMockComponents
     private S3DeleteOperations deleteOperations;
@@ -140,7 +140,7 @@ class S3DeleteOperationsTest
     void deleteBlobsWithSingleBlob() throws BlobStoreException
     {
         Blob blob = mock();
-        BlobPath path = BlobPath.of(List.of("single.txt"));
+        BlobPath path = BlobPath.absolute("single.txt");
         when(blob.getPath()).thenReturn(path);
         when(this.keyMapper.buildS3Key(path)).thenReturn("single-key");
 
@@ -165,7 +165,7 @@ class S3DeleteOperationsTest
         List<Blob> blobs = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             Blob blob = mock();
-            BlobPath path = BlobPath.of(List.of("file" + i + ".txt"));
+            BlobPath path = BlobPath.absolute("file" + i + ".txt");
             when(blob.getPath()).thenReturn(path);
             when(this.keyMapper.buildS3Key(path)).thenReturn("key" + i);
             blobs.add(blob);
@@ -192,7 +192,7 @@ class S3DeleteOperationsTest
         List<Blob> blobs = new ArrayList<>();
         for (int i = 0; i < 1000; i++) {
             Blob blob = mock();
-            BlobPath path = BlobPath.of(List.of("file" + i + ".txt"));
+            BlobPath path = BlobPath.absolute("file" + i + ".txt");
             when(blob.getPath()).thenReturn(path);
             when(this.keyMapper.buildS3Key(path)).thenReturn("key" + i);
             blobs.add(blob);
@@ -214,7 +214,7 @@ class S3DeleteOperationsTest
         List<Blob> blobs = new ArrayList<>();
         for (int i = 0; i < 2500; i++) {
             Blob blob = mock();
-            BlobPath path = BlobPath.of(List.of("file" + i + ".txt"));
+            BlobPath path = BlobPath.absolute("file" + i + ".txt");
             when(blob.getPath()).thenReturn(path);
             when(this.keyMapper.buildS3Key(path)).thenReturn("key" + i);
             blobs.add(blob);
@@ -237,7 +237,7 @@ class S3DeleteOperationsTest
         List<Blob> blobs = new ArrayList<>();
         for (int i = 0; i < 1500; i++) {
             Blob blob = mock();
-            BlobPath path = BlobPath.of(List.of("file" + i + ".txt"));
+            BlobPath path = BlobPath.absolute("file" + i + ".txt");
             when(blob.getPath()).thenReturn(path);
             when(this.keyMapper.buildS3Key(path)).thenReturn("key" + i);
             blobs.add(blob);
@@ -275,8 +275,8 @@ class S3DeleteOperationsTest
         // Setup
         Blob blob1 = mock();
         Blob blob2 = mock();
-        BlobPath path1 = BlobPath.of(List.of("file1.txt"));
-        BlobPath path2 = BlobPath.of(List.of("file2.txt"));
+        BlobPath path1 = BlobPath.absolute("file1.txt");
+        BlobPath path2 = BlobPath.absolute("file2.txt");
         when(blob1.getPath()).thenReturn(path1);
         when(blob2.getPath()).thenReturn(path2);
         when(this.keyMapper.buildS3Key(path1)).thenReturn("key1");
@@ -305,7 +305,7 @@ class S3DeleteOperationsTest
     {
         // Setup
         Blob blob = mock();
-        BlobPath path = BlobPath.of(List.of("file.txt"));
+        BlobPath path = BlobPath.absolute("file.txt");
         when(blob.getPath()).thenReturn(path);
         when(this.keyMapper.buildS3Key(path)).thenReturn("key");
 

@@ -75,7 +75,7 @@ abstract class AbstractBlobStoreIT
     void cleanup() throws Exception
     {
         for (BlobStore store : this.createdStores) {
-            store.deleteBlobs(BlobPath.ROOT);
+            store.deleteBlobs(BlobPath.root());
         }
         this.createdStores.clear();
     }
@@ -84,7 +84,7 @@ abstract class AbstractBlobStoreIT
     void writeAndReadBlob() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testWriteAndReadBlob");
-        BlobPath path = BlobPath.of(List.of("test.dat"));
+        BlobPath path = BlobPath.absolute("test.dat");
         byte[] data = BlobStoreTestUtils.createTestData(1024);
 
         BlobStoreTestUtils.writeBlob(store, path, data);
@@ -95,7 +95,7 @@ abstract class AbstractBlobStoreIT
     void readBlobRange() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testReadBlobRange");
-        BlobPath path = BlobPath.of(List.of("range.dat"));
+        BlobPath path = BlobPath.absolute("range.dat");
         byte[] data = BlobStoreTestUtils.createTestData(4096, 12345L);
         BlobStoreTestUtils.writeBlob(store, path, data);
 
@@ -114,7 +114,7 @@ abstract class AbstractBlobStoreIT
     void blobExists() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testBlobExists");
-        BlobPath path = BlobPath.of(List.of("exists.dat"));
+        BlobPath path = BlobPath.absolute("exists.dat");
         byte[] data = BlobStoreTestUtils.createTestData(100);
 
         Blob blob = store.getBlob(path);
@@ -128,7 +128,7 @@ abstract class AbstractBlobStoreIT
     void listBlobsEmpty() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testListBlobsEmpty");
-        BlobPath path = BlobPath.of(List.of("empty"));
+        BlobPath path = BlobPath.absolute("empty");
 
         try (Stream<Blob> blobs = store.listBlobs(path)) {
             assertEquals(0, blobs.count());
@@ -142,18 +142,18 @@ abstract class AbstractBlobStoreIT
         byte[] data = BlobStoreTestUtils.createTestData(100);
 
         // Create nested structure
-        BlobStoreTestUtils.writeBlob(store, BlobPath.of(List.of("dir1", "file1.dat")), data);
-        BlobStoreTestUtils.writeBlob(store, BlobPath.of(List.of("dir1", "file2.dat")), data);
-        BlobStoreTestUtils.writeBlob(store, BlobPath.of(List.of("dir1", "subdir", "file3.dat")), data);
-        BlobStoreTestUtils.writeBlob(store, BlobPath.of(List.of("dir2", "file4.dat")), data);
+        BlobStoreTestUtils.writeBlob(store, BlobPath.absolute("dir1", "file1.dat"), data);
+        BlobStoreTestUtils.writeBlob(store, BlobPath.absolute("dir1", "file2.dat"), data);
+        BlobStoreTestUtils.writeBlob(store, BlobPath.absolute("dir1", "subdir", "file3.dat"), data);
+        BlobStoreTestUtils.writeBlob(store, BlobPath.absolute("dir2", "file4.dat"), data);
 
         // List all under dir1
-        try (Stream<Blob> blobs = store.listBlobs(BlobPath.of(List.of("dir1")))) {
+        try (Stream<Blob> blobs = store.listBlobs(BlobPath.absolute("dir1"))) {
             assertEquals(3, blobs.count());
         }
 
         // List all under root
-        try (Stream<Blob> blobs = store.listBlobs(BlobPath.of(List.of()))) {
+        try (Stream<Blob> blobs = store.listBlobs(BlobPath.absolute(List.of()))) {
             assertEquals(4, blobs.count());
         }
     }
@@ -162,8 +162,8 @@ abstract class AbstractBlobStoreIT
     void copyBlobWithinStore() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testCopyBlobWithinStore");
-        BlobPath sourcePath = BlobPath.of(List.of("source.dat"));
-        BlobPath targetPath = BlobPath.of(List.of("target.dat"));
+        BlobPath sourcePath = BlobPath.absolute("source.dat");
+        BlobPath targetPath = BlobPath.absolute("target.dat");
         byte[] data = BlobStoreTestUtils.createTestData(1024);
 
         BlobStoreTestUtils.writeBlob(store, sourcePath, data);
@@ -180,8 +180,8 @@ abstract class AbstractBlobStoreIT
     void copyBlobTargetExists() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("copyBlobTargetExists");
-        BlobPath sourcePath = BlobPath.of(List.of("source.dat"));
-        BlobPath targetPath = BlobPath.of(List.of("target.dat"));
+        BlobPath sourcePath = BlobPath.absolute("source.dat");
+        BlobPath targetPath = BlobPath.absolute("target.dat");
         byte[] data = BlobStoreTestUtils.createTestData(1024);
 
         BlobStoreTestUtils.writeBlob(store, sourcePath, data);
@@ -196,8 +196,8 @@ abstract class AbstractBlobStoreIT
     void copyBlobWithReplaceExistingOption() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("copyBlobWithReplaceExistingOption");
-        BlobPath sourcePath = BlobPath.of(List.of("source.dat"));
-        BlobPath targetPath = BlobPath.of(List.of("target.dat"));
+        BlobPath sourcePath = BlobPath.absolute("source.dat");
+        BlobPath targetPath = BlobPath.absolute("target.dat");
         byte[] sourceData = BlobStoreTestUtils.createTestData(1024, 42L);
         byte[] originalTargetData = BlobStoreTestUtils.createTestData(256, 84L);
 
@@ -215,8 +215,8 @@ abstract class AbstractBlobStoreIT
     void copyBlobCreateNewStillFailsWhenTargetExists() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("copyBlobCreateNewFails");
-        BlobPath sourcePath = BlobPath.of(List.of("source.dat"));
-        BlobPath targetPath = BlobPath.of(List.of("target.dat"));
+        BlobPath sourcePath = BlobPath.absolute("source.dat");
+        BlobPath targetPath = BlobPath.absolute("target.dat");
         byte[] sourceData = BlobStoreTestUtils.createTestData(64, 100L);
         byte[] targetData = BlobStoreTestUtils.createTestData(64, 200L);
 
@@ -233,8 +233,8 @@ abstract class AbstractBlobStoreIT
     void moveBlobWithinStore() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testMoveBlobWithinStore");
-        BlobPath sourcePath = BlobPath.of(List.of("source.dat"));
-        BlobPath targetPath = BlobPath.of(List.of("target.dat"));
+        BlobPath sourcePath = BlobPath.absolute("source.dat");
+        BlobPath targetPath = BlobPath.absolute("target.dat");
         byte[] data = BlobStoreTestUtils.createTestData(1024);
 
         BlobStoreTestUtils.writeBlob(store, sourcePath, data);
@@ -251,8 +251,8 @@ abstract class AbstractBlobStoreIT
     void moveBlobTargetExists() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("moveBlobTargetExists");
-        BlobPath sourcePath = BlobPath.of(List.of("source.dat"));
-        BlobPath targetPath = BlobPath.of(List.of("target.dat"));
+        BlobPath sourcePath = BlobPath.absolute("source.dat");
+        BlobPath targetPath = BlobPath.absolute("target.dat");
         byte[] data = BlobStoreTestUtils.createTestData(1024);
 
         BlobStoreTestUtils.writeBlob(store, sourcePath, data);
@@ -267,8 +267,8 @@ abstract class AbstractBlobStoreIT
     void moveBlobWithReplaceExistingOption() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("moveBlobWithReplaceExistingOption");
-        BlobPath sourcePath = BlobPath.of(List.of("source.dat"));
-        BlobPath targetPath = BlobPath.of(List.of("target.dat"));
+        BlobPath sourcePath = BlobPath.absolute("source.dat");
+        BlobPath targetPath = BlobPath.absolute("target.dat");
         byte[] sourceData = BlobStoreTestUtils.createTestData(1024, 1234L);
         byte[] targetData = BlobStoreTestUtils.createTestData(512, 4321L);
 
@@ -286,12 +286,12 @@ abstract class AbstractBlobStoreIT
     void isEmptyDirectory() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testIsEmptyDirectory");
-        BlobPath emptyPath = BlobPath.of(List.of("empty"));
-        BlobPath nonEmptyPath = BlobPath.of(List.of("nonempty"));
+        BlobPath emptyPath = BlobPath.absolute("empty");
+        BlobPath nonEmptyPath = BlobPath.absolute("nonempty");
 
         assertTrue(store.isEmptyDirectory(emptyPath));
 
-        BlobStoreTestUtils.writeBlob(store, BlobPath.of(List.of("nonempty", "file.dat")),
+        BlobStoreTestUtils.writeBlob(store, BlobPath.absolute("nonempty", "file.dat"),
             BlobStoreTestUtils.createTestData(100));
 
         assertFalse(store.isEmptyDirectory(nonEmptyPath));
@@ -301,7 +301,7 @@ abstract class AbstractBlobStoreIT
     void deleteBlob() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testDeleteBlob");
-        BlobPath path = BlobPath.of(List.of("delete.dat"));
+        BlobPath path = BlobPath.absolute("delete.dat");
         byte[] data = BlobStoreTestUtils.createTestData(100);
 
         BlobStoreTestUtils.writeBlob(store, path, data);
@@ -317,11 +317,11 @@ abstract class AbstractBlobStoreIT
         BlobStore store = getOrCreateBlobStore("testDeleteBlobs");
         byte[] data = BlobStoreTestUtils.createTestData(100);
 
-        BlobStoreTestUtils.writeBlob(store, BlobPath.of(List.of("deleteDir", "file1.dat")), data);
-        BlobStoreTestUtils.writeBlob(store, BlobPath.of(List.of("deleteDir", "file2.dat")), data);
-        BlobStoreTestUtils.writeBlob(store, BlobPath.of(List.of("deleteDir", "subdir", "file3.dat")), data);
+        BlobStoreTestUtils.writeBlob(store, BlobPath.absolute("deleteDir", "file1.dat"), data);
+        BlobStoreTestUtils.writeBlob(store, BlobPath.absolute("deleteDir", "file2.dat"), data);
+        BlobStoreTestUtils.writeBlob(store, BlobPath.absolute("deleteDir", "subdir", "file3.dat"), data);
 
-        BlobPath dirPath = BlobPath.of(List.of("deleteDir"));
+        BlobPath dirPath = BlobPath.absolute("deleteDir");
         store.deleteBlobs(dirPath);
 
         try (Stream<Blob> blobs = store.listBlobs(dirPath)) {
@@ -333,7 +333,7 @@ abstract class AbstractBlobStoreIT
     void blobNotFound() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testBlobNotFoundException");
-        BlobPath path = BlobPath.of(List.of("nonexistent.dat"));
+        BlobPath path = BlobPath.absolute("nonexistent.dat");
 
         Blob blob = store.getBlob(path);
         assertFalse(blob.exists());
@@ -343,7 +343,7 @@ abstract class AbstractBlobStoreIT
     void blobAlreadyExistsException() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testBlobAlreadyExistsException");
-        BlobPath path = BlobPath.of(List.of("exists.dat"));
+        BlobPath path = BlobPath.absolute("exists.dat");
         byte[] data = BlobStoreTestUtils.createTestData(100);
 
         BlobStoreTestUtils.writeBlob(store, path, data);
@@ -365,7 +365,7 @@ abstract class AbstractBlobStoreIT
     void nestedPaths() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testNestedPaths");
-        BlobPath deepPath = BlobPath.of(List.of("level1", "level2", "level3", "level4", "file.dat"));
+        BlobPath deepPath = BlobPath.absolute("level1", "level2", "level3", "level4", "file.dat");
         byte[] data = BlobStoreTestUtils.createTestData(100);
 
         BlobStoreTestUtils.writeBlob(store, deepPath, data);
@@ -376,7 +376,7 @@ abstract class AbstractBlobStoreIT
     void largeBlob() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testLargeBlob");
-        BlobPath path = BlobPath.of(List.of("large.dat"));
+        BlobPath path = BlobPath.absolute("large.dat");
         // 6 MB - should trigger multipart upload for S3
         byte[] data = BlobStoreTestUtils.createTestData(6 * 1024 * 1024, 12345L);
 
@@ -388,7 +388,7 @@ abstract class AbstractBlobStoreIT
     void veryLargeBlob() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testVeryLargeBlob");
-        BlobPath path = BlobPath.of(List.of("verylarge.dat"));
+        BlobPath path = BlobPath.absolute("verylarge.dat");
         // 12 MB - definitely multipart
         byte[] data = BlobStoreTestUtils.createTestData(12 * 1024 * 1024, 67890L);
 
@@ -400,8 +400,8 @@ abstract class AbstractBlobStoreIT
     void copyLargeBlob() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testCopyLargeBlob");
-        BlobPath sourcePath = BlobPath.of(List.of("largesource.dat"));
-        BlobPath targetPath = BlobPath.of(List.of("largetarget.dat"));
+        BlobPath sourcePath = BlobPath.absolute("largesource.dat");
+        BlobPath targetPath = BlobPath.absolute("largetarget.dat");
         // 6 MB - should trigger multipart copy for S3
         byte[] data = BlobStoreTestUtils.createTestData(6 * 1024 * 1024, 11111L);
 
@@ -423,11 +423,11 @@ abstract class AbstractBlobStoreIT
 
         BlobStoreTestUtils.createManyBlobs(store, prefix, count);
 
-        try (Stream<Blob> blobs = store.listBlobs(BlobPath.of(List.of(prefix)))) {
+        try (Stream<Blob> blobs = store.listBlobs(BlobPath.absolute(prefix))) {
             assertEquals(count, blobs.count());
         }
 
-        BlobPath dirPath = BlobPath.of(List.of(prefix));
+        BlobPath dirPath = BlobPath.absolute(prefix);
         store.deleteBlobs(dirPath);
 
         try (Stream<Blob> blobs = store.listBlobs(dirPath)) {

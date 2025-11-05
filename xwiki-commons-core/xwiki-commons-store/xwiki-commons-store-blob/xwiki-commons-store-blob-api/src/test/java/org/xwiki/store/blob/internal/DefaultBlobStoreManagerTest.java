@@ -174,13 +174,13 @@ class DefaultBlobStoreManagerTest
         when(this.configuration.getMigrationStoreHint()).thenReturn(S3_HINT);
         BlobStoreFactory s3Factory = registerMigrationFactory(S3_HINT, this.migrationStore);
 
-        when(this.testStore.isEmptyDirectory(BlobPath.ROOT)).thenReturn(true);
+        when(this.testStore.isEmptyDirectory(BlobPath.root())).thenReturn(true);
 
         BlobStore result = this.blobStoreManager.getBlobStore(TEST_STORE);
 
         assertSame(this.testStore, result);
         verify(this.blobStoreMigrator).isMigrationInProgress(this.testStore);
-        verify(this.testStore).isEmptyDirectory(BlobPath.ROOT);
+        verify(this.testStore).isEmptyDirectory(BlobPath.root());
         verify(this.blobStoreMigrator).migrate(this.testStore, this.migrationStore);
         verify(this.configuration).getMigrationStoreHint();
         // Verify both factories were called exactly once
@@ -194,13 +194,13 @@ class DefaultBlobStoreManagerTest
         when(this.configuration.getMigrationStoreHint()).thenReturn(S3_HINT);
         BlobStoreFactory s3Factory = registerMigrationFactory(S3_HINT, this.migrationStore);
 
-        when(this.testStore.isEmptyDirectory(BlobPath.ROOT)).thenReturn(false);
+        when(this.testStore.isEmptyDirectory(BlobPath.root())).thenReturn(false);
 
         BlobStore result = this.blobStoreManager.getBlobStore(TEST_STORE);
 
         assertSame(this.testStore, result);
         verify(this.blobStoreMigrator).isMigrationInProgress(this.testStore);
-        verify(this.testStore).isEmptyDirectory(BlobPath.ROOT);
+        verify(this.testStore).isEmptyDirectory(BlobPath.root());
         verifyNoMoreInteractions(this.blobStoreMigrator);
         verifyNoInteractions(s3Factory);
     }
@@ -211,14 +211,14 @@ class DefaultBlobStoreManagerTest
         when(this.configuration.getMigrationStoreHint()).thenReturn(S3_HINT);
         BlobStoreFactory s3Factory = registerMigrationFactory(S3_HINT, this.migrationStore);
 
-        when(this.testStore.isEmptyDirectory(BlobPath.ROOT)).thenReturn(false);
+        when(this.testStore.isEmptyDirectory(BlobPath.root())).thenReturn(false);
         when(this.blobStoreMigrator.isMigrationInProgress(this.testStore)).thenReturn(true);
 
         BlobStore result = this.blobStoreManager.getBlobStore(TEST_STORE);
 
         assertSame(this.testStore, result);
         verify(this.blobStoreMigrator).isMigrationInProgress(this.testStore);
-        verify(this.testStore, never()).isEmptyDirectory(BlobPath.ROOT);
+        verify(this.testStore, never()).isEmptyDirectory(BlobPath.root());
         verify(this.blobStoreMigrator).migrate(this.testStore, this.migrationStore);
         verifyNoMoreInteractions(this.blobStoreMigrator);
         verify(s3Factory, times(1)).create(any(), any());
@@ -291,9 +291,9 @@ class DefaultBlobStoreManagerTest
         when(this.configuration.getMigrationStoreHint()).thenReturn(S3_HINT);
         registerMigrationFactory(S3_HINT, this.migrationStore);
 
-        when(this.testStore.isEmptyDirectory(BlobPath.ROOT)).thenReturn(true);
+        when(this.testStore.isEmptyDirectory(BlobPath.root())).thenReturn(true);
         doThrow(new BlobStoreException("Migration failed"))
-            .when(this.blobStoreMigrator).migrate(eq(this.testStore), eq(this.migrationStore));
+            .when(this.blobStoreMigrator).migrate(this.testStore, this.migrationStore);
 
         BlobStoreException exception = assertThrows(BlobStoreException.class,
             () -> this.blobStoreManager.getBlobStore(TEST_STORE));

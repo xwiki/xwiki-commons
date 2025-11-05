@@ -22,7 +22,6 @@ package org.xwiki.store.blob;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -104,7 +103,7 @@ public final class BlobStoreTestUtils
         // Small blobs for bulk creation
         byte[] data = createTestData(100);
         for (int i = 0; i < count; i++) {
-            BlobPath path = BlobPath.of(List.of(prefix, String.format("blob-%05d.dat", i)));
+            BlobPath path = BlobPath.absolute(prefix, String.format("blob-%05d.dat", i));
             writeBlob(store, path, data);
         }
     }

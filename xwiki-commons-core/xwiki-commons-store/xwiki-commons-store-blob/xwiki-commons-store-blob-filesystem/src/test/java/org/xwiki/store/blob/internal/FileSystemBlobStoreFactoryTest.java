@@ -108,7 +108,7 @@ class FileSystemBlobStoreFactoryTest
         assertInstanceOf(FileSystemBlobStore.class, blobStore);
         assertEquals("test-store", blobStore.getName());
         assertEquals("filesystem", blobStore.getHint());
-        assertEquals(rootDir, ((FileSystemBlobStore) blobStore).getBlobFilePath(BlobPath.ROOT));
+        assertEquals(rootDir, ((FileSystemBlobStore) blobStore).getBlobFilePath(BlobPath.root()));
     }
 
     @Test

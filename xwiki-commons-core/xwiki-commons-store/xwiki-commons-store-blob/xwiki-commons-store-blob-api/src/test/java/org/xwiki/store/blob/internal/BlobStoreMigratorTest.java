@@ -20,7 +20,6 @@
 package org.xwiki.store.blob.internal;
 
 import java.io.InputStream;
-import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -66,7 +65,7 @@ class BlobStoreMigratorTest
 {
     private static final String STORE_NAME = "testStore";
 
-    private static final BlobPath MARKER_PATH = BlobPath.of(List.of("_migration.txt"));
+    private static final BlobPath MARKER_PATH = BlobPath.absolute("_migration.txt");
 
     @InjectMockComponents
     private BlobStoreMigrator migrator;
@@ -97,10 +96,10 @@ class BlobStoreMigratorTest
     @Test
     void migrateMovesBlobs() throws Exception
     {
-        BlobPath blobPath = BlobPath.from("documents/file.txt");
+        BlobPath blobPath = BlobPath.parse("/documents/file.txt");
         Blob sourceBlob = mockBlob(blobPath);
 
-        when(this.sourceStore.listBlobs(BlobPath.ROOT)).thenReturn(Stream.of(sourceBlob));
+        when(this.sourceStore.listBlobs(BlobPath.root())).thenReturn(Stream.of(sourceBlob));
 
         this.migrator.migrate(this.targetStore, this.sourceStore);
 
@@ -119,13 +118,13 @@ class BlobStoreMigratorTest
     {
         doThrow(new BlobAlreadyExistsException(MARKER_PATH)).when(this.markerBlob)
             .writeFromStream(any(InputStream.class), eq(BlobWriteMode.CREATE_NEW));
-        when(this.sourceStore.listBlobs(BlobPath.ROOT)).thenReturn(Stream.empty());
+        when(this.sourceStore.listBlobs(BlobPath.root())).thenReturn(Stream.empty());
 
         assertDoesNotThrow(() -> this.migrator.migrate(this.targetStore, this.sourceStore));
 
         verify(this.targetStore).deleteBlob(MARKER_PATH);
 
-        assertEquals("Detected existing migration marker [_migration.txt]; "
+        assertEquals("Detected existing migration marker [/_migration.txt]; "
                 + "resuming migration of blob store [testStore].", this.logCapture.getMessage(0));
         assertEquals("Completed blob store migration for [testStore].", this.logCapture.getMessage(1));
     }
@@ -133,16 +132,16 @@ class BlobStoreMigratorTest
     @Test
     void migrateStopsOnMoveFailure() throws Exception
     {
-        BlobPath blobPath = BlobPath.from("documents/file.txt");
+        BlobPath blobPath = BlobPath.parse("/documents/file.txt");
         Blob sourceBlob = mockBlob(blobPath);
-        when(this.sourceStore.listBlobs(BlobPath.ROOT)).thenReturn(Stream.of(sourceBlob));
+        when(this.sourceStore.listBlobs(BlobPath.root())).thenReturn(Stream.of(sourceBlob));
         doThrow(new BlobStoreException("move failed")).when(this.targetStore)
             .moveBlob(this.sourceStore, blobPath, blobPath, BlobWriteMode.REPLACE_EXISTING);
 
         BlobStoreException exception = assertThrows(BlobStoreException.class,
             () -> this.migrator.migrate(this.targetStore, this.sourceStore));
 
-        assertThat(exception.getMessage(), containsString("Failed to move blob [documents/file.txt]"));
+        assertThat(exception.getMessage(), containsString("Failed to move blob [/documents/file.txt]"));
         assertThat(exception.getMessage(), containsString("while migrating [testStore]"));
         assertThat(exception.getMessage(), containsString("from [filesystem] to [s3]"));
         verify(this.targetStore, never()).deleteBlob(MARKER_PATH);
@@ -155,12 +154,12 @@ class BlobStoreMigratorTest
     @Test
     void migrateSkipsBlobThatDisappears() throws Exception
     {
-        BlobPath blobPath1 = BlobPath.from("documents/file1.txt");
-        BlobPath blobPath2 = BlobPath.from("documents/file2.txt");
+        BlobPath blobPath1 = BlobPath.parse("/documents/file1.txt");
+        BlobPath blobPath2 = BlobPath.parse("/documents/file2.txt");
         Blob sourceBlob1 = mockBlob(blobPath1);
         Blob sourceBlob2 = mockBlob(blobPath2);
 
-        when(this.sourceStore.listBlobs(BlobPath.ROOT)).thenReturn(Stream.of(sourceBlob1, sourceBlob2));
+        when(this.sourceStore.listBlobs(BlobPath.root())).thenReturn(Stream.of(sourceBlob1, sourceBlob2));
 
         // First blob disappears during migration
         doThrow(new BlobNotFoundException(blobPath1)).when(this.targetStore)
@@ -181,13 +180,13 @@ class BlobStoreMigratorTest
     @Test
     void migrateFailsWhenMarkerCannotBeDeleted() throws Exception
     {
-        when(this.sourceStore.listBlobs(BlobPath.ROOT)).thenReturn(Stream.empty());
+        when(this.sourceStore.listBlobs(BlobPath.root())).thenReturn(Stream.empty());
         doThrow(new BlobStoreException("marker deletion failed")).when(this.targetStore).deleteBlob(MARKER_PATH);
 
         BlobStoreException exception = assertThrows(BlobStoreException.class,
             () -> this.migrator.migrate(this.targetStore, this.sourceStore));
 
-        assertThat(exception.getMessage(), containsString("Failed to delete migration marker [_migration.txt]"));
+        assertThat(exception.getMessage(), containsString("Failed to delete migration marker [/_migration.txt]"));
         assertThat(exception.getMessage(), containsString("after migrating store [testStore]"));
         assertThat(exception.getMessage(), containsString("Remove the marker manually"));
 

@@ -79,7 +79,7 @@ import static org.mockito.Mockito.spy;
 })
 class CrossStoreBlobStoreIT
 {
-    private static final BlobPath MIGRATION_BLOB_PATH = BlobPath.of(List.of("_migration.txt"));
+    private static final BlobPath MIGRATION_BLOB_PATH = BlobPath.absolute("_migration.txt");
 
     private enum StoreType
     {
@@ -134,12 +134,12 @@ class CrossStoreBlobStoreIT
     {
         // Cleanup filesystem
         if (this.filesystemStore != null) {
-            this.filesystemStore.deleteBlobs(BlobPath.ROOT);
+            this.filesystemStore.deleteBlobs(BlobPath.root());
         }
 
         // Cleanup S3
         if (this.s3Store != null) {
-            this.s3Store.deleteBlobs(BlobPath.ROOT);
+            this.s3Store.deleteBlobs(BlobPath.root());
         }
     }
 
@@ -166,8 +166,8 @@ class CrossStoreBlobStoreIT
         BlobStore sourceStore = getStore(sourceStoreType);
         BlobStore targetStore = getStore(targetStoreType);
 
-        BlobPath sourcePath = BlobPath.of(List.of("large.dat"));
-        BlobPath targetPath = BlobPath.of(List.of("large-copy.dat"));
+        BlobPath sourcePath = BlobPath.absolute("large.dat");
+        BlobPath targetPath = BlobPath.absolute("large-copy.dat");
         // 6 MB - should trigger multipart for S3
         byte[] data = BlobStoreTestUtils.createTestData(6 * 1024 * 1024, 99999L);
 
@@ -190,8 +190,8 @@ class CrossStoreBlobStoreIT
         BlobStore sourceStore = getStore(sourceStoreType);
         BlobStore targetStore = getStore(targetStoreType);
 
-        BlobPath sourcePath = BlobPath.of(List.of("shared", "document.dat"));
-        BlobPath targetPath = BlobPath.of(List.of("shared", "document.dat"));
+        BlobPath sourcePath = BlobPath.absolute("shared", "document.dat");
+        BlobPath targetPath = BlobPath.absolute("shared", "document.dat");
         byte[] sourceData = BlobStoreTestUtils.createTestData(2048, 111L);
         byte[] targetData = BlobStoreTestUtils.createTestData(1024, 222L);
 
@@ -212,8 +212,8 @@ class CrossStoreBlobStoreIT
         BlobStore sourceStore = getStore(sourceStoreType);
         BlobStore targetStore = getStore(targetStoreType);
 
-        BlobPath sourcePath = BlobPath.of(List.of("shared", "existing.dat"));
-        BlobPath targetPath = BlobPath.of(List.of("shared", "existing.dat"));
+        BlobPath sourcePath = BlobPath.absolute("shared", "existing.dat");
+        BlobPath targetPath = BlobPath.absolute("shared", "existing.dat");
         byte[] sourceData = BlobStoreTestUtils.createTestData(128, 333L);
         byte[] targetData = BlobStoreTestUtils.createTestData(128, 444L);
 
@@ -233,8 +233,8 @@ class CrossStoreBlobStoreIT
         BlobStore sourceStore = getStore(sourceStoreType);
         BlobStore targetStore = getStore(targetStoreType);
 
-        BlobPath sourcePath = BlobPath.of(List.of("source.dat"));
-        BlobPath targetPath = BlobPath.of(List.of("target.dat"));
+        BlobPath sourcePath = BlobPath.absolute("source.dat");
+        BlobPath targetPath = BlobPath.absolute("target.dat");
         byte[] sourceData = BlobStoreTestUtils.createTestData(1024, 12345L);
         byte[] targetData = BlobStoreTestUtils.createTestData(512, 54321L);
 
@@ -263,8 +263,8 @@ class CrossStoreBlobStoreIT
         BlobStore sourceStore = getStore(sourceStoreType);
         BlobStore targetStore = getStore(targetStoreType);
 
-        BlobPath sourcePath = BlobPath.of(List.of("shared", "move.dat"));
-        BlobPath targetPath = BlobPath.of(List.of("shared", "move.dat"));
+        BlobPath sourcePath = BlobPath.absolute("shared", "move.dat");
+        BlobPath targetPath = BlobPath.absolute("shared", "move.dat");
         byte[] sourceData = BlobStoreTestUtils.createTestData(1024, 555L);
         byte[] targetData = BlobStoreTestUtils.createTestData(512, 666L);
 
@@ -285,8 +285,8 @@ class CrossStoreBlobStoreIT
         BlobStore sourceStore = getStore(sourceStoreType);
         BlobStore targetStore = getStore(targetStoreType);
 
-        BlobPath sourcePath = BlobPath.of(List.of("shared", "existingMove.dat"));
-        BlobPath targetPath = BlobPath.of(List.of("shared", "existingMove.dat"));
+        BlobPath sourcePath = BlobPath.absolute("shared", "existingMove.dat");
+        BlobPath targetPath = BlobPath.absolute("shared", "existingMove.dat");
         byte[] sourceData = BlobStoreTestUtils.createTestData(256, 777L);
         byte[] targetData = BlobStoreTestUtils.createTestData(256, 888L);
 
@@ -307,8 +307,8 @@ class CrossStoreBlobStoreIT
         BlobStore sourceStore = getStore(sourceStoreType);
         BlobStore targetStore = getStore(targetStoreType);
 
-        BlobPath blobOne = BlobPath.of(List.of("docs", "report.pdf"));
-        BlobPath blobTwo = BlobPath.of(List.of("images", "logo.png"));
+        BlobPath blobOne = BlobPath.absolute("docs", "report.pdf");
+        BlobPath blobTwo = BlobPath.absolute("images", "logo.png");
         byte[] blobOneData = BlobStoreTestUtils.createTestData(1024, 999L);
         byte[] blobTwoData = BlobStoreTestUtils.createTestData(2048, 1001L);
 
@@ -321,14 +321,14 @@ class CrossStoreBlobStoreIT
         BlobStoreTestUtils.assertBlobEquals(targetStore, blobTwo, blobTwoData);
 
         // Verify that the source store is empty now. For better assertion messages, we collect the remaining blobs.
-        try (Stream<Blob> remainingBlobs = sourceStore.listBlobs(BlobPath.ROOT)) {
+        try (Stream<Blob> remainingBlobs = sourceStore.listBlobs(BlobPath.root())) {
             List<BlobPath> remainingPaths = remainingBlobs.map(Blob::getPath).toList();
             assertThat("The source store should be emtpy after migration", remainingPaths, is(empty()));
         }
 
         // List all blobs in the target store and compare to the expected two blobs to ensure no migration marker
         // remains.
-        try (Stream<Blob> blobs = targetStore.listBlobs(BlobPath.ROOT)) {
+        try (Stream<Blob> blobs = targetStore.listBlobs(BlobPath.root())) {
             List<BlobPath> actualPaths = blobs.map(Blob::getPath).toList();
             assertThat(actualPaths, containsInAnyOrder(blobOne, blobTwo));
         }
@@ -341,7 +341,7 @@ class CrossStoreBlobStoreIT
         BlobStore sourceStore = getStore(sourceStoreType);
         BlobStore targetStore = getStore(targetStoreType);
 
-        BlobPath blobPath = BlobPath.of(List.of("resume", "item.bin"));
+        BlobPath blobPath = BlobPath.absolute("resume", "item.bin");
         byte[] blobData = BlobStoreTestUtils.createTestData(1536, 2024L);
         BlobStoreTestUtils.writeBlob(sourceStore, blobPath, blobData);
 

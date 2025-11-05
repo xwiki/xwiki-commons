@@ -72,11 +72,11 @@ class S3BlobStoreTest
 
     private static final String KEY_PREFIX = "prefix";
 
-    private static final BlobPath BLOB_PATH = BlobPath.of(List.of("dir", "file.txt"));
+    private static final BlobPath BLOB_PATH = BlobPath.absolute("dir", "file.txt");
 
-    private static final BlobPath SOURCE_PATH = BlobPath.of(List.of("source", "file.txt"));
+    private static final BlobPath SOURCE_PATH = BlobPath.absolute("source", "file.txt");
 
-    private static final BlobPath TARGET_PATH = BlobPath.of(List.of("target", "file.txt"));
+    private static final BlobPath TARGET_PATH = BlobPath.absolute("target", "file.txt");
 
     @InjectMockComponents
     private S3BlobStore store;
@@ -127,7 +127,7 @@ class S3BlobStoreTest
     @Test
     void getBlobCreatesS3BlobWithCorrectArguments()
     {
-        BlobPath path = BlobPath.of(List.of("my", "test", "file.dat"));
+        BlobPath path = BlobPath.absolute("my", "test", "file.dat");
 
         try (MockedConstruction<S3Blob> mockedBlob = mockConstruction(S3Blob.class, (mock, context) -> {
             assertEquals(path, context.arguments().get(0));
@@ -147,7 +147,7 @@ class S3BlobStoreTest
     @Test
     void getBlobWithRootPath()
     {
-        BlobPath rootPath = BlobPath.of(List.of("file.txt"));
+        BlobPath rootPath = BlobPath.absolute("file.txt");
 
         try (MockedConstruction<S3Blob> mockedBlob = mockConstruction(S3Blob.class, (mock, context) -> {
             assertEquals(rootPath, context.arguments().get(0));
@@ -206,7 +206,7 @@ class S3BlobStoreTest
     @Test
     void listBlobsUsesCorrectPrefix()
     {
-        BlobPath path = BlobPath.of(List.of("folder", "subfolder"));
+        BlobPath path = BlobPath.absolute("folder", "subfolder");
 
         try (MockedConstruction<S3BlobIterator> mockedIterator = mockConstruction(S3BlobIterator.class,
             (mock, context) -> {
@@ -230,7 +230,7 @@ class S3BlobStoreTest
     @Test
     void listBlobsWithRootPath()
     {
-        BlobPath rootPath = BlobPath.of(List.of());
+        BlobPath rootPath = BlobPath.absolute(List.of());
 
         try (MockedConstruction<S3BlobIterator> ignored = mockConstruction(S3BlobIterator.class,
             (mock, context) -> when(mock.hasNext()).thenReturn(false))) {
@@ -370,7 +370,7 @@ class S3BlobStoreTest
         try (MockedConstruction<S3BlobIterator> mockedIterator = mockConstruction(S3BlobIterator.class,
             (mock, context) -> when(mock.hasNext()).thenThrow(new RuntimeException("S3 connection failed")))) {
 
-            BlobPath path = BlobPath.of(List.of("error", "path"));
+            BlobPath path = BlobPath.absolute("error", "path");
 
             BlobStoreException thrown = assertThrows(BlobStoreException.class,
                 () -> this.store.isEmptyDirectory(path));

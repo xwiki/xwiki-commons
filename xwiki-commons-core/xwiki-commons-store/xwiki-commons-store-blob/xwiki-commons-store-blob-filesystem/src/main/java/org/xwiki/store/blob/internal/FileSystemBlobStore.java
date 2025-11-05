@@ -100,7 +100,7 @@ public class FileSystemBlobStore extends AbstractBlobStore<FileSystemBlobStorePr
         Path currentPath = this.basePath;
 
         // Append each segment of the BlobPath to the base path.
-        for (String segment : blobPath.getSegments()) {
+        for (String segment : blobPath.getNames()) {
             currentPath = currentPath.resolve(segment);
         }
 
@@ -136,12 +136,12 @@ public class FileSystemBlobStore extends AbstractBlobStore<FileSystemBlobStorePr
 
         Path relativePath = normalizedAbsolutePath.relativize(normalizedPath);
 
-        List<String> segments = new ArrayList<>(basePath.getSegments());
+        List<String> segments = new ArrayList<>(basePath.getNames());
         for (Path segment : relativePath) {
             segments.add(segment.toString());
         }
 
-        return new FileSystemBlob(BlobPath.of(segments), normalizedPath, this);
+        return new FileSystemBlob(BlobPath.absolute(segments), normalizedPath, this);
     }
 
     @Override

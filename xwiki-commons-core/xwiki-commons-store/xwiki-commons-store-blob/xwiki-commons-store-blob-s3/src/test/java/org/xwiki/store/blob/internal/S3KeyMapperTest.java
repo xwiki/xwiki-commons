@@ -47,19 +47,19 @@ class S3KeyMapperTest
 
     @ParameterizedTest
     @CsvSource({
-        ",path/to/blob,path/to/blob",
-        "'',path/to/blob,path/to/blob",
-        "'   ',path/to/blob,path/to/blob",
-        "my-prefix,path/to/blob,my-prefix/path/to/blob",
-        "my/nested/prefix,path/to/blob,my/nested/prefix/path/to/blob",
-        "prefix,blob,prefix/blob",
-        "prefix/,blob,prefix/blob",
-        "' //prefix// ',blob,prefix/blob"
+        ",/path/to/blob,path/to/blob",
+        "'',/path/to/blob,path/to/blob",
+        "'   ',/path/to/blob,path/to/blob",
+        "my-prefix,/path/to/blob,my-prefix/path/to/blob",
+        "my/nested/prefix,/path/to/blob,my/nested/prefix/path/to/blob",
+        "prefix,/blob,prefix/blob",
+        "prefix/,/blob,prefix/blob",
+        "' //prefix// ',/blob,prefix/blob"
     })
     void buildS3Key(String keyPrefix, String blobPathStr, String expectedS3Key)
     {
         S3KeyMapper mapper = new S3KeyMapper(keyPrefix);
-        BlobPath path = BlobPath.from(blobPathStr);
+        BlobPath path = BlobPath.parse(blobPathStr);
 
         String s3Key = mapper.buildS3Key(path);
 
@@ -68,16 +68,16 @@ class S3KeyMapperTest
 
     @ParameterizedTest
     @CsvSource({
-        "prefix,path/to,prefix/path/to/",
-        "prefix,path/to/,prefix/path/to/",
-        ",path/to,path/to/",
-        "prefix,'',prefix/",
-        "prefix/,blob/,prefix/blob/"
+        "prefix,/path/to,prefix/path/to/",
+        "prefix,/path/to/,prefix/path/to/",
+        ",/path/to,path/to/",
+        "prefix,/,prefix/",
+        "prefix/,/blob/,prefix/blob/"
     })
     void getS3KeyPrefix(String keyPrefix, String blobPathStr, String expectedPrefix)
     {
         S3KeyMapper mapper = new S3KeyMapper(keyPrefix);
-        BlobPath path = BlobPath.from(blobPathStr);
+        BlobPath path = BlobPath.parse(blobPathStr);
 
         String prefix = mapper.getS3KeyPrefix(path);
 
@@ -86,10 +86,10 @@ class S3KeyMapperTest
 
     @ParameterizedTest
     @CsvSource({
-        ",path/to/blob,path/to/blob",
-        "'',path/to/blob,path/to/blob",
-        "my-prefix,my-prefix/path/to/blob,path/to/blob",
-        "my/nested/prefix,my/nested/prefix/path/to/blob,path/to/blob"
+        ",path/to/blob,/path/to/blob",
+        "'',path/to/blob,/path/to/blob",
+        "my-prefix,my-prefix/path/to/blob,/path/to/blob",
+        "my/nested/prefix,my/nested/prefix/path/to/blob,/path/to/blob"
     })
     void s3KeyToBlobPathValid(String keyPrefix, String s3Key, String expectedBlobPath)
     {
@@ -133,7 +133,7 @@ class S3KeyMapperTest
     void s3KeyToBlobPathRoundTrip(String keyPrefix)
     {
         S3KeyMapper mapper = new S3KeyMapper(keyPrefix);
-        BlobPath originalPath = BlobPath.from("path/to/blob");
+        BlobPath originalPath = BlobPath.absolute("path", "to", "blob");
 
         String s3Key = mapper.buildS3Key(originalPath);
         BlobPath reconstructedPath = mapper.s3KeyToBlobPath(s3Key);

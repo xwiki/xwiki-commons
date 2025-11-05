@@ -101,7 +101,7 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
 
         if (migrationStoreHint != null && !migrationStoreHint.equals(storeHint)) {
             boolean migrationInProgress = this.blobStoreMigrator.isMigrationInProgress(blobStore);
-            boolean needsMigration = migrationInProgress || blobStore.isEmptyDirectory(BlobPath.ROOT);
+            boolean needsMigration = migrationInProgress || blobStore.isEmptyDirectory(BlobPath.root());
             if (needsMigration) {
                 BlobStore migrationStore = getBlobStore(name, migrationStoreHint);
                 this.blobStoreMigrator.migrate(blobStore, migrationStore);

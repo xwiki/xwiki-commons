@@ -106,7 +106,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     @Test
     void getBlobFilePath()
     {
-        BlobPath blobPath = BlobPath.of(List.of("dir1", "dir2", "file.txt"));
+        BlobPath blobPath = BlobPath.absolute("dir1", "dir2", "file.txt");
         Path expected = this.basePath.resolve("dir1").resolve("dir2").resolve("file.txt");
 
         Path actual = this.blobStore.getBlobFilePath(blobPath);
@@ -117,7 +117,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     @Test
     void getBlobFilePathWithSingleSegment()
     {
-        BlobPath blobPath = BlobPath.of(List.of("file.txt"));
+        BlobPath blobPath = BlobPath.absolute("file.txt");
         Path expected = this.basePath.resolve("file.txt");
 
         Path actual = this.blobStore.getBlobFilePath(blobPath);
@@ -128,7 +128,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     @Test
     void getBlob() throws BlobStoreException
     {
-        BlobPath blobPath = BlobPath.of(List.of("test.txt"));
+        BlobPath blobPath = BlobPath.absolute("test.txt");
 
         Blob blob = this.blobStore.getBlob(blobPath);
 
@@ -139,7 +139,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     @Test
     void listBlobsInNonExistentDirectory() throws BlobStoreException
     {
-        BlobPath path = BlobPath.of(List.of("nonexistent"));
+        BlobPath path = BlobPath.absolute("nonexistent");
 
         try (Stream<Blob> blobs = this.blobStore.listBlobs(path)) {
             assertEquals(0, blobs.count());
@@ -151,7 +151,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     {
         Path dir = this.basePath.resolve("empty");
         Files.createDirectories(dir);
-        BlobPath path = BlobPath.of(List.of("empty"));
+        BlobPath path = BlobPath.absolute("empty");
 
         try (Stream<Blob> blobs = this.blobStore.listBlobs(path)) {
             assertEquals(0, blobs.count());
@@ -170,7 +170,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         Files.createDirectories(subdir);
         Files.createFile(subdir.resolve("file3.txt"));
 
-        BlobPath path = BlobPath.of(List.of("testdir"));
+        BlobPath path = BlobPath.absolute("testdir");
 
         try (Stream<Blob> blobs = this.blobStore.listBlobs(path)) {
             List<Blob> blobList = blobs.toList();
@@ -181,14 +181,14 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
                 .map(blob -> blob.getPath().toString())
                 .sorted()
                 .toList();
-            assertEquals(List.of("testdir/file1.txt", "testdir/file2.txt", "testdir/subdir/file3.txt"), filenames);
+            assertEquals(List.of("/testdir/file1.txt", "/testdir/file2.txt", "/testdir/subdir/file3.txt"), filenames);
         }
     }
 
     @Test
     void copyBlobSameFile()
     {
-        BlobPath path = BlobPath.of(List.of("test.txt"));
+        BlobPath path = BlobPath.absolute("test.txt");
 
         BlobStoreException exception = assertThrows(BlobStoreException.class,
             () -> this.blobStore.copyBlob(path, path));
@@ -199,8 +199,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     @Test
     void copyBlobSourceNotFound()
     {
-        BlobPath sourcePath = BlobPath.of(List.of("nonexistent.txt"));
-        BlobPath targetPath = BlobPath.of(List.of("target.txt"));
+        BlobPath sourcePath = BlobPath.absolute("nonexistent.txt");
+        BlobPath targetPath = BlobPath.absolute("target.txt");
 
         BlobNotFoundException blobNotFoundException = assertThrows(BlobNotFoundException.class,
             () -> this.blobStore.copyBlob(sourcePath, targetPath));
@@ -209,26 +209,27 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
 
     @ParameterizedTest
     @CsvSource({
-        "'file.txt', 'copy_of_file.txt'",
-        "'dir1/dir2/file.txt', 'dir1/dir2/copy_of_file.txt'",
-        "'dir1/file.txt', 'dir1/copy_of_file.txt'"
+        "'/file.txt', '/copy_of_file.txt'",
+        "'/dir1/dir2/file.txt', '/dir1/dir2/copy_of_file.txt'",
+        "'/dir1/file.txt', '/dir1/copy_of_file.txt'"
     })
     void copyBlobSuccess(String source, String target) throws IOException, BlobStoreException
     {
-        // Create source file
-        Path sourceFile = this.basePath.resolve(source);
+        // Create source file, remove the leading '/' for file system path.
+        Path sourceFile = this.basePath.resolve(source.substring(1));
         Files.createDirectories(sourceFile.getParent());
         Files.createFile(sourceFile);
         Files.writeString(sourceFile, "test content");
 
-        BlobPath sourcePath = BlobPath.from(source);
-        BlobPath targetPath = BlobPath.from(target);
+        BlobPath sourcePath = BlobPath.parse(source);
+        BlobPath targetPath = BlobPath.parse(target);
 
         Blob result = this.blobStore.copyBlob(sourcePath, targetPath);
 
-        // Verify both files exist
+        // Verify both files exist.
         assertTrue(Files.exists(sourceFile));
-        Path targetFile = this.basePath.resolve(target);
+        // Remove the leading '/' for file system path.
+        Path targetFile = this.basePath.resolve(target.substring(1));
         assertTrue(Files.exists(targetFile));
 
         // Verify content
@@ -245,8 +246,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         Files.createFile(sourceFile);
         Files.createFile(targetFile);
 
-        BlobPath sourcePath = BlobPath.of(List.of("source.txt"));
-        BlobPath targetPath = BlobPath.of(List.of("target.txt"));
+        BlobPath sourcePath = BlobPath.absolute("source.txt");
+        BlobPath targetPath = BlobPath.absolute("target.txt");
 
         assertThrows(BlobAlreadyExistsException.class,
             () -> this.blobStore.copyBlob(sourcePath, targetPath));
@@ -262,8 +263,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         Files.createFile(targetFile);
         Files.writeString(targetFile, "original");
 
-        BlobPath sourcePath = BlobPath.of(List.of("source.txt"));
-        BlobPath targetPath = BlobPath.of(List.of("target.txt"));
+        BlobPath sourcePath = BlobPath.absolute("source.txt");
+        BlobPath targetPath = BlobPath.absolute("target.txt");
 
         Blob result = this.blobStore.copyBlob(sourcePath, targetPath, BlobWriteMode.REPLACE_EXISTING);
 
@@ -281,8 +282,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         Files.createFile(targetFile);
         Files.writeString(targetFile, "original");
 
-        BlobPath sourcePath = BlobPath.of(List.of("source.txt"));
-        BlobPath targetPath = BlobPath.of(List.of("target.txt"));
+        BlobPath sourcePath = BlobPath.absolute("source.txt");
+        BlobPath targetPath = BlobPath.absolute("target.txt");
 
         BlobAlreadyExistsException exception = assertThrows(BlobAlreadyExistsException.class,
             () -> this.blobStore.copyBlob(sourcePath, targetPath, BlobWriteMode.CREATE_NEW));
@@ -304,8 +305,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         Path targetDir = this.basePath.resolve("backup/docs");
         Files.createDirectories(targetDir);
 
-        BlobPath sourcePath = BlobPath.of(List.of("docs", "manual.pdf"));
-        BlobPath targetPath = BlobPath.of(List.of("backup", "docs", "manual.pdf"));
+        BlobPath sourcePath = BlobPath.absolute("docs", "manual.pdf");
+        BlobPath targetPath = BlobPath.absolute("backup", "docs", "manual.pdf");
 
         Blob result = this.blobStore.copyBlob(sourcePath, targetPath);
 
@@ -324,8 +325,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         Files.createFile(sourceFile);
         Files.writeString(sourceFile, "test content");
 
-        BlobPath sourcePath = BlobPath.of(List.of("source.txt"));
-        BlobPath targetPath = BlobPath.of(List.of("target.txt"));
+        BlobPath sourcePath = BlobPath.absolute("source.txt");
+        BlobPath targetPath = BlobPath.absolute("target.txt");
 
         FileSystemBlobStoreProperties sourceProps = new FileSystemBlobStoreProperties();
         sourceProps.setRootDirectory(this.basePath);
@@ -343,8 +344,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     @Test
     void copyBlobFromDifferentStore() throws Exception
     {
-        BlobPath sourcePath = BlobPath.of(List.of("source.txt"));
-        BlobPath targetPath = BlobPath.of(List.of("target.txt"));
+        BlobPath sourcePath = BlobPath.absolute("source.txt");
+        BlobPath targetPath = BlobPath.absolute("target.txt");
         String expectedContent = "test content for copy operation";
 
         when(this.mockSourceStore.getBlob(sourcePath)).thenReturn(this.mockSourceBlob);
@@ -362,21 +363,22 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
 
     @ParameterizedTest
     @CsvSource({
-        "'temp/file1.txt', 'archive/file1.txt', 'Temporary content 1'",
-        "'data/logs/app.log', 'backup/logs/2023/app.log', 'Log entry: Application started'",
-        "'images/photos/vacation.jpg', 'gallery/2023/vacation.jpg', 'JPEG binary data'"
+        "'/temp/file1.txt', '/archive/file1.txt', 'Temporary content 1'",
+        "'/data/logs/app.log', '/backup/logs/2023/app.log', 'Log entry: Application started'",
+        "'/images/photos/vacation.jpg', '/gallery/2023/vacation.jpg', 'JPEG binary data'"
     })
     void moveBlobWithNestedDirectories(String sourcePath, String targetPath, String content)
         throws IOException, BlobStoreException
     {
         // Create source file with nested directory structure
-        BlobPath source = BlobPath.from(sourcePath);
-        Path sourceFile = this.basePath.resolve(sourcePath);
+        BlobPath source = BlobPath.parse(sourcePath);
+        // Remove the leading '/' for file system path.
+        Path sourceFile = this.basePath.resolve(sourcePath.substring(1));
         Files.createDirectories(sourceFile.getParent());
         Files.createFile(sourceFile);
         Files.writeString(sourceFile, content);
 
-        BlobPath target = BlobPath.from(targetPath);
+        BlobPath target = BlobPath.parse(targetPath);
 
         Blob result = this.blobStore.moveBlob(source, target);
 
@@ -384,7 +386,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         assertFalse(Files.exists(sourceFile), "Source file should be deleted: " + sourcePath);
 
         // Verify target file exists and has correct content
-        Path targetFile = this.basePath.resolve(targetPath);
+        // Remove the leading '/' for file system path.
+        Path targetFile = this.basePath.resolve(targetPath.substring(1));
         assertTrue(Files.exists(targetFile), "Target file should exist: " + targetPath);
         assertEquals(content, Files.readString(targetFile), "Content should match");
 
@@ -411,8 +414,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         }
 
         // Move one file - directories should not be cleaned up yet
-        BlobPath sourcePath1 = BlobPath.of(List.of("temp", "data", "file1.txt"));
-        BlobPath targetPath1 = BlobPath.of(List.of("archive", "file1.txt"));
+        BlobPath sourcePath1 = BlobPath.absolute("temp", "data", "file1.txt");
+        BlobPath targetPath1 = BlobPath.absolute("archive", "file1.txt");
 
         this.blobStore.moveBlob(sourcePath1, targetPath1);
 
@@ -427,8 +430,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         assertTrue(Files.exists(this.basePath.resolve("temp")));
 
         // Move second file from data directory
-        BlobPath sourcePath2 = BlobPath.of(List.of("temp", "data", "file2.txt"));
-        BlobPath targetPath2 = BlobPath.of(List.of("archive", "file2.txt"));
+        BlobPath sourcePath2 = BlobPath.absolute("temp", "data", "file2.txt");
+        BlobPath targetPath2 = BlobPath.absolute("archive", "file2.txt");
 
         this.blobStore.moveBlob(sourcePath2, targetPath2);
 
@@ -443,7 +446,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     {
         Path dir = this.basePath.resolve("empty");
         Files.createDirectories(dir);
-        BlobPath path = BlobPath.of(List.of("empty"));
+        BlobPath path = BlobPath.absolute("empty");
 
         assertTrue(this.blobStore.isEmptyDirectory(path));
     }
@@ -454,7 +457,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         Path dir = this.basePath.resolve("nonempty");
         Files.createDirectories(dir);
         Files.createFile(dir.resolve("file.txt"));
-        BlobPath path = BlobPath.of(List.of("nonempty"));
+        BlobPath path = BlobPath.absolute("nonempty");
 
         assertFalse(this.blobStore.isEmptyDirectory(path));
     }
@@ -465,7 +468,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         // Create nested empty directories
         Path dir = this.basePath.resolve("parent/child/grandchild");
         Files.createDirectories(dir);
-        BlobPath path = BlobPath.of(List.of("parent"));
+        BlobPath path = BlobPath.absolute("parent");
 
         // Directory with only empty subdirectories should be considered empty
         assertTrue(this.blobStore.isEmptyDirectory(path));
@@ -474,7 +477,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     @Test
     void moveBlobSameSourceAndTarget()
     {
-        BlobPath path = BlobPath.of(List.of("test.txt"));
+        BlobPath path = BlobPath.absolute("test.txt");
 
         BlobStoreException exception = assertThrows(BlobStoreException.class,
             () -> this.blobStore.moveBlob(path, path));
@@ -485,8 +488,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     @Test
     void moveBlobSourceNotFound()
     {
-        BlobPath sourcePath = BlobPath.of(List.of("nonexistent", "file.txt"));
-        BlobPath targetPath = BlobPath.of(List.of("target", "target.txt"));
+        BlobPath sourcePath = BlobPath.absolute("nonexistent", "file.txt");
+        BlobPath targetPath = BlobPath.absolute("target", "target.txt");
 
         BlobNotFoundException exception = assertThrows(BlobNotFoundException.class,
             () -> this.blobStore.moveBlob(sourcePath, targetPath));
@@ -507,8 +510,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         Files.createFile(sourceFile);
         Files.createFile(targetFile);
 
-        BlobPath sourcePath = BlobPath.of(List.of("docs", "source.txt"));
-        BlobPath targetPath = BlobPath.of(List.of("backup", "target.txt"));
+        BlobPath sourcePath = BlobPath.absolute("docs", "source.txt");
+        BlobPath targetPath = BlobPath.absolute("backup", "target.txt");
 
         assertThrows(BlobAlreadyExistsException.class,
             () -> this.blobStore.moveBlob(sourcePath, targetPath));
@@ -527,8 +530,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         Files.writeString(sourceFile, "updated");
         Files.writeString(targetFile, "original");
 
-        BlobPath sourcePath = BlobPath.of(List.of("docs", "source.txt"));
-        BlobPath targetPath = BlobPath.of(List.of("backup", "target.txt"));
+        BlobPath sourcePath = BlobPath.absolute("docs", "source.txt");
+        BlobPath targetPath = BlobPath.absolute("backup", "target.txt");
 
         Blob result = this.blobStore.moveBlob(sourcePath, targetPath, BlobWriteMode.REPLACE_EXISTING);
 
@@ -540,8 +543,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     @Test
     void moveBlobFromDifferentStore() throws Exception
     {
-        BlobPath sourcePath = BlobPath.of(List.of("source.txt"));
-        BlobPath targetPath = BlobPath.of(List.of("target.txt"));
+        BlobPath sourcePath = BlobPath.absolute("source.txt");
+        BlobPath targetPath = BlobPath.absolute("target.txt");
         String expectedContent = "test content for move operation";
 
         when(this.mockSourceStore.getBlob(sourcePath)).thenReturn(this.mockSourceBlob);
@@ -566,8 +569,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         Path targetFile = this.basePath.resolve("target.txt");
         Files.createFile(targetFile);
 
-        BlobPath sourcePath = BlobPath.of(List.of("source.txt"));
-        BlobPath targetPath = BlobPath.of(List.of("target.txt"));
+        BlobPath sourcePath = BlobPath.absolute("source.txt");
+        BlobPath targetPath = BlobPath.absolute("target.txt");
 
         when(this.mockSourceStore.getBlob(sourcePath)).thenReturn(this.mockSourceBlob);
         when(this.mockSourceBlob.getStream()).thenReturn(new ByteArrayInputStream("content".getBytes()));
@@ -594,14 +597,14 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         FileSystemBlobStore sourceStore = new FileSystemBlobStore("source-store", sourceStoreProps);
 
         // Create source file in the source store
-        BlobPath sourcePath = BlobPath.of(List.of("documents", "file.txt"));
+        BlobPath sourcePath = BlobPath.absolute("documents", "file.txt");
         Path sourceFile = sourceBasePath.resolve("documents/file.txt");
         Files.createDirectories(sourceFile.getParent());
         Files.createFile(sourceFile);
         String expectedContent = "Content from different FileSystemBlobStore";
         Files.writeString(sourceFile, expectedContent);
 
-        BlobPath targetPath = BlobPath.of(List.of("moved", "file.txt"));
+        BlobPath targetPath = BlobPath.absolute("moved", "file.txt");
 
         Blob result = this.blobStore.moveBlob(sourceStore, sourcePath, targetPath);
 
@@ -626,7 +629,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         Path file = dir.resolve("test.txt");
         Files.createFile(file);
 
-        BlobPath blobPath = BlobPath.of(List.of("dir1", "dir2", "test.txt"));
+        BlobPath blobPath = BlobPath.absolute("dir1", "dir2", "test.txt");
 
         this.blobStore.deleteBlob(blobPath);
 
@@ -641,7 +644,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     @Test
     void deleteBlobNonExistent()
     {
-        BlobPath blobPath = BlobPath.of(List.of("nonexistent.txt"));
+        BlobPath blobPath = BlobPath.absolute("nonexistent.txt");
 
         assertDoesNotThrow(() -> this.blobStore.deleteBlob(blobPath));
     }
@@ -655,7 +658,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         Files.createFile(dir.resolve("file1.txt"));
         Files.createFile(dir.resolve("file2.txt"));
 
-        BlobPath blobPath = BlobPath.of(List.of("testdir"));
+        BlobPath blobPath = BlobPath.absolute("testdir");
 
         this.blobStore.deleteBlobs(blobPath);
 
@@ -666,7 +669,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     @Test
     void deleteBlobsNonExistentDirectory()
     {
-        BlobPath blobPath = BlobPath.of(List.of("nonexistent"));
+        BlobPath blobPath = BlobPath.absolute("nonexistent");
 
         // Should not throw exception
         assertDoesNotThrow(() -> this.blobStore.deleteBlobs(blobPath));
@@ -760,8 +763,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     @Test
     void moveBlobRetriesOnNoSuchFileExceptionForParentDirectory() throws BlobStoreException
     {
-        BlobPath sourcePath = BlobPath.of(List.of("source.txt"));
-        BlobPath targetPath = BlobPath.of(List.of("nested", "dir", "target.txt"));
+        BlobPath sourcePath = BlobPath.absolute("source.txt");
+        BlobPath targetPath = BlobPath.absolute("nested", "dir", "target.txt");
         Path absoluteSourcePath = this.basePath.resolve("source.txt");
         Path absoluteTargetPath = this.basePath.resolve("nested/dir/target.txt");
 
@@ -790,8 +793,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     @Test
     void moveBlobFailsAfterMaxRetries()
     {
-        BlobPath sourcePath = BlobPath.of(List.of("source.txt"));
-        BlobPath targetPath = BlobPath.of(List.of("nested", "target.txt"));
+        BlobPath sourcePath = BlobPath.absolute("source.txt");
+        BlobPath targetPath = BlobPath.absolute("nested", "target.txt");
 
         try (MockedStatic<Files> filesMock = mockStatic(Files.class);
              MockedStatic<PathUtils> pathUtilsMock = mockStatic(PathUtils.class))
@@ -818,8 +821,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     @Test
     void moveBlobWithIOExceptionDuringMoveTriggersCleanup()
     {
-        BlobPath sourcePath = BlobPath.of(List.of("source.txt"));
-        BlobPath targetPath = BlobPath.of(List.of("nested", "target.txt"));
+        BlobPath sourcePath = BlobPath.absolute("source.txt");
+        BlobPath targetPath = BlobPath.absolute("nested", "target.txt");
         Path absoluteTargetPath = this.basePath.resolve("nested/target.txt");
 
         try (MockedStatic<Files> filesMock = mockStatic(Files.class);
