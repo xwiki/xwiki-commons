@@ -34,6 +34,8 @@ import java.util.OptionalLong;
 import java.util.Set;
 
 import org.apache.commons.io.input.BoundedInputStream;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.store.blob.Blob;
 import org.xwiki.store.blob.BlobAlreadyExistsException;
 import org.xwiki.store.blob.BlobNotFoundException;
@@ -168,5 +170,25 @@ public class FileSystemBlob extends AbstractBlob<FileSystemBlobStore>
             channel.close();
             throw e;
         }
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof FileSystemBlob that)) {
+            return false;
+        }
+
+        return new EqualsBuilder().append(this.absolutePath, that.absolutePath).isEquals();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder(17, 37).append(this.absolutePath).toHashCode();
     }
 }

@@ -24,6 +24,8 @@ import java.io.OutputStream;
 import java.util.OptionalLong;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.store.blob.Blob;
 import org.xwiki.store.blob.BlobNotFoundException;
 import org.xwiki.store.blob.BlobOption;
@@ -151,5 +153,27 @@ public class S3Blob extends AbstractBlob<S3BlobStore>
             return "bytes=%d-%d".formatted(option.getStartOffset(), endOffset.getAsLong());
         }
         return "bytes=%d-".formatted(option.getStartOffset());
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof S3Blob s3Blob)) {
+            return false;
+        }
+
+        return new EqualsBuilder().append(this.bucketName, s3Blob.bucketName)
+            .append(this.s3Key, s3Blob.s3Key)
+            .isEquals();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder(17, 37).append(this.bucketName).append(this.s3Key).toHashCode();
     }
 }

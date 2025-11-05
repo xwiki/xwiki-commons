@@ -50,6 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -292,5 +293,29 @@ class FileSystemBlobTest
         try (InputStream result = this.blob.getStream(BlobRangeOption.from(7))) {
             assertArrayEquals("789".getBytes(StandardCharsets.UTF_8), result.readAllBytes());
         }
+    }
+
+    @Test
+    void equalsAndHashCode()
+    {
+        FileSystemBlob sameBlob = new FileSystemBlob(this.blobPath, this.absolutePath, this.store);
+        FileSystemBlob differentBlobPath = new FileSystemBlob(BlobPath.absolute("different"), this.absolutePath,
+            this.store);
+        FileSystemBlob differentAbsolutePath = new FileSystemBlob(this.blobPath,
+            this.tempDir.toPath().resolve("different.dat"), this.store);
+        FileSystemBlob differentStore = new FileSystemBlob(this.blobPath, this.absolutePath,
+            mock(FileSystemBlobStore.class));
+
+        assertEquals(this.blob, sameBlob);
+        assertEquals(this.blob.hashCode(), sameBlob.hashCode());
+
+        assertEquals(this.blob, differentBlobPath);
+        assertEquals(this.blob.hashCode(), differentBlobPath.hashCode());
+
+        assertNotEquals(this.blob, differentAbsolutePath);
+        assertNotEquals(this.blob.hashCode(), differentAbsolutePath.hashCode());
+
+        assertEquals(this.blob, differentStore);
+        assertEquals(this.blob.hashCode(), differentStore.hashCode());
     }
 }

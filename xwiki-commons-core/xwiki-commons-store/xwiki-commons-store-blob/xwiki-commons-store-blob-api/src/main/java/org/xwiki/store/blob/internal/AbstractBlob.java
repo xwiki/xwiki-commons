@@ -29,6 +29,7 @@ import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
 import org.xwiki.store.blob.BlobOption;
+import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * Abstract base class for {@link Blob} implementations.
@@ -75,5 +76,14 @@ public abstract class AbstractBlob<T extends BlobStore> implements Blob
         } finally {
             IOUtils.closeQuietly(inputStream);
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return new XWikiToStringBuilder(this)
+            .append("blobStore", this.blobStore)
+            .append("blobPath", this.blobPath)
+            .toString();
     }
 }

@@ -20,6 +20,7 @@
 package org.xwiki.store.blob;
 
 import org.xwiki.stability.Unstable;
+import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * Abstract base class for {@link BlobStore} implementations.
@@ -68,5 +69,14 @@ public abstract class AbstractBlobStore<T extends BlobStoreProperties> implement
     public T getProperties()
     {
         return this.properties;
+    }
+
+    @Override
+    public String toString()
+    {
+        return new XWikiToStringBuilder(this)
+            .append("name", this.name)
+            .append("hint", this.hint)
+            .toString();
     }
 }

@@ -52,6 +52,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -246,5 +247,27 @@ class S3BlobTest
         when(this.s3Client.getObject(any(GetObjectRequest.class))).thenThrow(exception);
 
         assertThrows(BlobStoreException.class, () -> this.blob.getStream());
+    }
+
+    @Test
+    void equalsAndHashCode()
+    {
+        S3Blob sameBlob = new S3Blob(BLOB_PATH, BUCKET, KEY, this.store, this.s3Client);
+        S3Blob onlySameBucketKey = new S3Blob(BlobPath.absolute("other", "blob.txt"), BUCKET, KEY, mock(),
+            mock());
+        S3Blob differentBucketBlob = new S3Blob(BLOB_PATH, "other-bucket", KEY, this.store, this.s3Client);
+        S3Blob differentKeyBlob = new S3Blob(BLOB_PATH, BUCKET, "other-key", this.store, this.s3Client);
+
+        assertEquals(this.blob, sameBlob);
+        assertEquals(this.blob.hashCode(), sameBlob.hashCode());
+
+        assertEquals(this.blob, onlySameBucketKey);
+        assertEquals(this.blob.hashCode(), onlySameBucketKey.hashCode());
+
+        assertNotEquals(this.blob, differentBucketBlob);
+        assertNotEquals(this.blob.hashCode(), differentBucketBlob.hashCode());
+
+        assertNotEquals(this.blob, differentKeyBlob);
+        assertNotEquals(this.blob.hashCode(), differentKeyBlob.hashCode());
     }
 }
