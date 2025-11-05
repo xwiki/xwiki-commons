@@ -19,6 +19,9 @@
  */
 package org.xwiki.store.blob.internal;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -114,8 +117,13 @@ class S3KeyMapper
         }
 
         try {
-            // Add the leading separator back for parsing as absolute path.
-            return BlobPath.parse(PATH_SEPARATOR + pathStr);
+            String[] names = StringUtils.split(pathStr, PATH_SEPARATOR);
+            List<String> namesList = Arrays.asList(names);
+            // Manually validate names as we don't want to interpret ".." or "." here.
+            if (!namesList.stream().allMatch(BlobPath::isValidName)) {
+                throw new IllegalArgumentException("Invalid blob path names in S3 key: " + s3Key);
+            }
+            return BlobPath.absolute(namesList);
         } catch (IllegalArgumentException e) {
             LOGGER.warn("Invalid blob path from S3 key: {}", s3Key, e);
             return null;

@@ -315,6 +315,19 @@ class BlobPathTest
             sorted.stream().map(BlobPath::toString).toList());
     }
 
+    @ParameterizedTest
+    @CsvSource({
+        "file.txt, true",
+        "., false",
+        ".., false",
+        "dir/file, false",
+        "'', false"
+    })
+    void isValidNameMatchesExpectations(String name, boolean expected)
+    {
+        assertEquals(expected, BlobPath.isValidName(name));
+    }
+
     @Test
     void constructorsNormalizeDotSegments()
     {

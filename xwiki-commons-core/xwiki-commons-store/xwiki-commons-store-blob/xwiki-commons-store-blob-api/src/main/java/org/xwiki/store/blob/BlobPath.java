@@ -479,6 +479,21 @@ public final class BlobPath implements Comparable<BlobPath>, Iterable<BlobPath>
         return endsWith(parse(other));
     }
 
+    /**
+     * @param name the name to validate
+     * @return {@code true} if the provided name is safe for use in an absolute {@link BlobPath}
+     */
+    public static boolean isValidName(String name)
+    {
+        if (name == null || name.isEmpty()) {
+            return false;
+        }
+        if (name.indexOf('/') >= 0 || name.indexOf('\\') >= 0) {
+            return false;
+        }
+        return !name.equals(SAME_DIRECTORY) && !name.equals(RELATIVE_UP);
+    }
+
     private static List<String> buildNames(String first, String[] more, boolean absolute)
     {
         List<String> names = new ArrayList<>(more.length + 1);
