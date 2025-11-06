@@ -57,5 +57,4 @@ public class DefaultStreamProviderInputSource extends AbstractInputStreamInputSo
             throw new IOException("Failed to open stream", e);
         }
     }
-
 }
