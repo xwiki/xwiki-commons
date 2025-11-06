@@ -125,7 +125,7 @@ public class BlobStoreMigrator
     private void migrateContent(String storeName, BlobStore targetStore, BlobStore sourceStore)
         throws BlobStoreException
     {
-        try (Stream<Blob> blobs = sourceStore.listBlobs(BlobPath.root())) {
+        try (Stream<Blob> blobs = sourceStore.listDescendants(BlobPath.root())) {
             for (Blob sourceBlob : (Iterable<Blob>) blobs::iterator) {
                 BlobPath path = sourceBlob.getPath();
                 moveBlob(path, sourceStore, targetStore);

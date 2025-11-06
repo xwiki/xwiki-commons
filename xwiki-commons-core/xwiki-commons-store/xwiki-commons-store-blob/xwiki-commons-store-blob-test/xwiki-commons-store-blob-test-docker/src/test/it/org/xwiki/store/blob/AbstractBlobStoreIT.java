@@ -75,7 +75,7 @@ abstract class AbstractBlobStoreIT
     void cleanup() throws Exception
     {
         for (BlobStore store : this.createdStores) {
-            store.deleteBlobs(BlobPath.root());
+            store.deleteDescendants(BlobPath.root());
         }
         this.createdStores.clear();
     }
@@ -125,18 +125,18 @@ abstract class AbstractBlobStoreIT
     }
 
     @Test
-    void listBlobsEmpty() throws Exception
+    void listDescendantsEmpty() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testListBlobsEmpty");
         BlobPath path = BlobPath.absolute("empty");
 
-        try (Stream<Blob> blobs = store.listBlobs(path)) {
+        try (Stream<Blob> blobs = store.listDescendants(path)) {
             assertEquals(0, blobs.count());
         }
     }
 
     @Test
-    void listBlobsWithNestedPaths() throws Exception
+    void listDescendantsWithNestedPaths() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testListBlobsWithNestedPaths");
         byte[] data = BlobStoreTestUtils.createTestData(100);
@@ -148,12 +148,12 @@ abstract class AbstractBlobStoreIT
         BlobStoreTestUtils.writeBlob(store, BlobPath.absolute("dir2", "file4.dat"), data);
 
         // List all under dir1
-        try (Stream<Blob> blobs = store.listBlobs(BlobPath.absolute("dir1"))) {
+        try (Stream<Blob> blobs = store.listDescendants(BlobPath.absolute("dir1"))) {
             assertEquals(3, blobs.count());
         }
 
         // List all under root
-        try (Stream<Blob> blobs = store.listBlobs(BlobPath.absolute(List.of()))) {
+        try (Stream<Blob> blobs = store.listDescendants(BlobPath.absolute(List.of()))) {
             assertEquals(4, blobs.count());
         }
     }
@@ -283,18 +283,18 @@ abstract class AbstractBlobStoreIT
     }
 
     @Test
-    void isEmptyDirectory() throws Exception
+    void hasDescendants() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testIsEmptyDirectory");
         BlobPath emptyPath = BlobPath.absolute("empty");
         BlobPath nonEmptyPath = BlobPath.absolute("nonempty");
 
-        assertTrue(store.isEmptyDirectory(emptyPath));
+        assertFalse(store.hasDescendants(emptyPath));
 
         BlobStoreTestUtils.writeBlob(store, BlobPath.absolute("nonempty", "file.dat"),
             BlobStoreTestUtils.createTestData(100));
 
-        assertFalse(store.isEmptyDirectory(nonEmptyPath));
+        assertTrue(store.hasDescendants(nonEmptyPath));
     }
 
     @Test
@@ -312,7 +312,7 @@ abstract class AbstractBlobStoreIT
     }
 
     @Test
-    void deleteBlobs() throws Exception
+    void deleteDescendants() throws Exception
     {
         BlobStore store = getOrCreateBlobStore("testDeleteBlobs");
         byte[] data = BlobStoreTestUtils.createTestData(100);
@@ -322,9 +322,9 @@ abstract class AbstractBlobStoreIT
         BlobStoreTestUtils.writeBlob(store, BlobPath.absolute("deleteDir", "subdir", "file3.dat"), data);
 
         BlobPath dirPath = BlobPath.absolute("deleteDir");
-        store.deleteBlobs(dirPath);
+        store.deleteDescendants(dirPath);
 
-        try (Stream<Blob> blobs = store.listBlobs(dirPath)) {
+        try (Stream<Blob> blobs = store.listDescendants(dirPath)) {
             assertEquals(0, blobs.count());
         }
     }
@@ -423,14 +423,14 @@ abstract class AbstractBlobStoreIT
 
         BlobStoreTestUtils.createManyBlobs(store, prefix, count);
 
-        try (Stream<Blob> blobs = store.listBlobs(BlobPath.absolute(prefix))) {
+        try (Stream<Blob> blobs = store.listDescendants(BlobPath.absolute(prefix))) {
             assertEquals(count, blobs.count());
         }
 
         BlobPath dirPath = BlobPath.absolute(prefix);
-        store.deleteBlobs(dirPath);
+        store.deleteDescendants(dirPath);
 
-        try (Stream<Blob> blobs = store.listBlobs(dirPath)) {
+        try (Stream<Blob> blobs = store.listDescendants(dirPath)) {
             assertEquals(0, blobs.count());
         }
     }

@@ -99,7 +99,7 @@ class BlobStoreMigratorTest
         BlobPath blobPath = BlobPath.parse("/documents/file.txt");
         Blob sourceBlob = mockBlob(blobPath);
 
-        when(this.sourceStore.listBlobs(BlobPath.root())).thenReturn(Stream.of(sourceBlob));
+        when(this.sourceStore.listDescendants(BlobPath.root())).thenReturn(Stream.of(sourceBlob));
 
         this.migrator.migrate(this.targetStore, this.sourceStore);
 
@@ -118,7 +118,7 @@ class BlobStoreMigratorTest
     {
         doThrow(new BlobAlreadyExistsException(MARKER_PATH)).when(this.markerBlob)
             .writeFromStream(any(InputStream.class), eq(BlobWriteMode.CREATE_NEW));
-        when(this.sourceStore.listBlobs(BlobPath.root())).thenReturn(Stream.empty());
+        when(this.sourceStore.listDescendants(BlobPath.root())).thenReturn(Stream.empty());
 
         assertDoesNotThrow(() -> this.migrator.migrate(this.targetStore, this.sourceStore));
 
@@ -134,7 +134,7 @@ class BlobStoreMigratorTest
     {
         BlobPath blobPath = BlobPath.parse("/documents/file.txt");
         Blob sourceBlob = mockBlob(blobPath);
-        when(this.sourceStore.listBlobs(BlobPath.root())).thenReturn(Stream.of(sourceBlob));
+        when(this.sourceStore.listDescendants(BlobPath.root())).thenReturn(Stream.of(sourceBlob));
         doThrow(new BlobStoreException("move failed")).when(this.targetStore)
             .moveBlob(this.sourceStore, blobPath, blobPath, BlobWriteMode.REPLACE_EXISTING);
 
@@ -159,7 +159,7 @@ class BlobStoreMigratorTest
         Blob sourceBlob1 = mockBlob(blobPath1);
         Blob sourceBlob2 = mockBlob(blobPath2);
 
-        when(this.sourceStore.listBlobs(BlobPath.root())).thenReturn(Stream.of(sourceBlob1, sourceBlob2));
+        when(this.sourceStore.listDescendants(BlobPath.root())).thenReturn(Stream.of(sourceBlob1, sourceBlob2));
 
         // First blob disappears during migration
         doThrow(new BlobNotFoundException(blobPath1)).when(this.targetStore)
@@ -180,7 +180,7 @@ class BlobStoreMigratorTest
     @Test
     void migrateFailsWhenMarkerCannotBeDeleted() throws Exception
     {
-        when(this.sourceStore.listBlobs(BlobPath.root())).thenReturn(Stream.empty());
+        when(this.sourceStore.listDescendants(BlobPath.root())).thenReturn(Stream.empty());
         doThrow(new BlobStoreException("marker deletion failed")).when(this.targetStore).deleteBlob(MARKER_PATH);
 
         BlobStoreException exception = assertThrows(BlobStoreException.class,
@@ -207,7 +207,7 @@ class BlobStoreMigratorTest
 
         assertThat(exception.getMessage(), containsString("Failed to create migration marker"));
         assertThat(exception.getMessage(), containsString("for store [testStore]"));
-        verify(this.sourceStore, never()).listBlobs(any());
+        verify(this.sourceStore, never()).listDescendants(any());
     }
 
     @ParameterizedTest

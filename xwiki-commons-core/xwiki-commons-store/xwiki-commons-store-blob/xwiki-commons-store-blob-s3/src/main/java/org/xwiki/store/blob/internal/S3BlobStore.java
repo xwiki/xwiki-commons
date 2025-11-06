@@ -86,7 +86,7 @@ public class S3BlobStore extends AbstractBlobStore<S3BlobStoreProperties>
     }
 
     @Override
-    public Stream<Blob> listBlobs(BlobPath path)
+    public Stream<Blob> listDescendants(BlobPath path)
     {
         String prefix = this.keyMapper.getS3KeyPrefix(path);
 
@@ -126,16 +126,16 @@ public class S3BlobStore extends AbstractBlobStore<S3BlobStoreProperties>
     }
 
     @Override
-    public boolean isEmptyDirectory(BlobPath path) throws BlobStoreException
+    public boolean hasDescendants(BlobPath path) throws BlobStoreException
     {
         try {
             // Fetch with a page size of 1 as we only ever request the first element
-            return !new S3BlobIterator(this.keyMapper.getS3KeyPrefix(path), this.bucketName, 1,
+            return new S3BlobIterator(this.keyMapper.getS3KeyPrefix(path), this.bucketName, 1,
                 this.clientManager.getS3Client(), this).hasNext();
         } catch (Exception e) {
             // The code doesn't throw any checked exceptions as the iterator cannot throw them, but we catch any
             // runtime exceptions to make them nicer to handle for the caller
-            throw new BlobStoreException("Failed to check if directory is empty: " + path, e);
+            throw new BlobStoreException("Failed to check if the given prefix has descendants: " + path, e);
         }
     }
 
@@ -146,9 +146,9 @@ public class S3BlobStore extends AbstractBlobStore<S3BlobStoreProperties>
     }
 
     @Override
-    public void deleteBlobs(BlobPath path) throws BlobStoreException
+    public void deleteDescendants(BlobPath path) throws BlobStoreException
     {
-        try (Stream<Blob> blobs = listBlobs(path)) {
+        try (Stream<Blob> blobs = listDescendants(path)) {
             this.deleteOperations.deleteBlobs(this, blobs);
         }
     }

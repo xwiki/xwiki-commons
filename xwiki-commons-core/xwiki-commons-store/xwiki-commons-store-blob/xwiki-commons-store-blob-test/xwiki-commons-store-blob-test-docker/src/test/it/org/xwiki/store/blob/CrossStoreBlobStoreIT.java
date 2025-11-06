@@ -134,12 +134,12 @@ class CrossStoreBlobStoreIT
     {
         // Cleanup filesystem
         if (this.filesystemStore != null) {
-            this.filesystemStore.deleteBlobs(BlobPath.root());
+            this.filesystemStore.deleteDescendants(BlobPath.root());
         }
 
         // Cleanup S3
         if (this.s3Store != null) {
-            this.s3Store.deleteBlobs(BlobPath.root());
+            this.s3Store.deleteDescendants(BlobPath.root());
         }
     }
 
@@ -321,14 +321,14 @@ class CrossStoreBlobStoreIT
         BlobStoreTestUtils.assertBlobEquals(targetStore, blobTwo, blobTwoData);
 
         // Verify that the source store is empty now. For better assertion messages, we collect the remaining blobs.
-        try (Stream<Blob> remainingBlobs = sourceStore.listBlobs(BlobPath.root())) {
+        try (Stream<Blob> remainingBlobs = sourceStore.listDescendants(BlobPath.root())) {
             List<BlobPath> remainingPaths = remainingBlobs.map(Blob::getPath).toList();
             assertThat("The source store should be emtpy after migration", remainingPaths, is(empty()));
         }
 
         // List all blobs in the target store and compare to the expected two blobs to ensure no migration marker
         // remains.
-        try (Stream<Blob> blobs = targetStore.listBlobs(BlobPath.root())) {
+        try (Stream<Blob> blobs = targetStore.listDescendants(BlobPath.root())) {
             List<BlobPath> actualPaths = blobs.map(Blob::getPath).toList();
             assertThat(actualPaths, containsInAnyOrder(blobOne, blobTwo));
         }

@@ -69,7 +69,7 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id$
  */
-@SuppressWarnings("checkstyle:MultipleStringLiterals")
+@SuppressWarnings({ "checkstyle:MultipleStringLiterals", "checkstyle:ClassFanOutComplexity" })
 @ExtendWith({ XWikiTempDirExtension.class, MockitoExtension.class })
 class FileSystemBlobStoreTest extends XWikiTempDirExtension
 {
@@ -137,29 +137,29 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     }
 
     @Test
-    void listBlobsInNonExistentDirectory() throws BlobStoreException
+    void listDescendantsInNonexistentPath() throws BlobStoreException
     {
         BlobPath path = BlobPath.absolute("nonexistent");
 
-        try (Stream<Blob> blobs = this.blobStore.listBlobs(path)) {
+        try (Stream<Blob> blobs = this.blobStore.listDescendants(path)) {
             assertEquals(0, blobs.count());
         }
     }
 
     @Test
-    void listBlobsInEmptyDirectory() throws IOException, BlobStoreException
+    void listDescendantsInEmptyPath() throws IOException, BlobStoreException
     {
         Path dir = this.basePath.resolve("empty");
         Files.createDirectories(dir);
         BlobPath path = BlobPath.absolute("empty");
 
-        try (Stream<Blob> blobs = this.blobStore.listBlobs(path)) {
+        try (Stream<Blob> blobs = this.blobStore.listDescendants(path)) {
             assertEquals(0, blobs.count());
         }
     }
 
     @Test
-    void listBlobsWithFiles() throws IOException, BlobStoreException
+    void listDescendantsWithFiles() throws IOException, BlobStoreException
     {
         Path dir = this.basePath.resolve("testdir");
         Files.createDirectories(dir);
@@ -172,7 +172,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
 
         BlobPath path = BlobPath.absolute("testdir");
 
-        try (Stream<Blob> blobs = this.blobStore.listBlobs(path)) {
+        try (Stream<Blob> blobs = this.blobStore.listDescendants(path)) {
             List<Blob> blobList = blobs.toList();
             assertEquals(3, blobList.size());
 
@@ -358,7 +358,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         verify(this.mockSourceBlob).getStream();
         // Verify that no delete method was called on the source store (this is copy, not move)
         verify(this.mockSourceStore, never()).deleteBlob(any());
-        verify(this.mockSourceStore, never()).deleteBlobs(any());
+        verify(this.mockSourceStore, never()).deleteDescendants(any());
     }
 
     @ParameterizedTest
@@ -442,28 +442,28 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     }
 
     @Test
-    void isEmptyDirectoryTrue() throws IOException, BlobStoreException
+    void hasDescendantsWithEmptyDirectory() throws IOException, BlobStoreException
     {
         Path dir = this.basePath.resolve("empty");
         Files.createDirectories(dir);
         BlobPath path = BlobPath.absolute("empty");
 
-        assertTrue(this.blobStore.isEmptyDirectory(path));
+        assertFalse(this.blobStore.hasDescendants(path));
     }
 
     @Test
-    void isEmptyDirectoryFalse() throws IOException, BlobStoreException
+    void hasDescendantsWithExistingChild() throws IOException, BlobStoreException
     {
         Path dir = this.basePath.resolve("nonempty");
         Files.createDirectories(dir);
         Files.createFile(dir.resolve("file.txt"));
         BlobPath path = BlobPath.absolute("nonempty");
 
-        assertFalse(this.blobStore.isEmptyDirectory(path));
+        assertTrue(this.blobStore.hasDescendants(path));
     }
 
     @Test
-    void isEmptyDirectoryWithNestedEmptyDirectories() throws IOException, BlobStoreException
+    void hasDescendantsWithNestedEmptyDirectories() throws IOException, BlobStoreException
     {
         // Create nested empty directories
         Path dir = this.basePath.resolve("parent/child/grandchild");
@@ -471,7 +471,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         BlobPath path = BlobPath.absolute("parent");
 
         // Directory with only empty subdirectories should be considered empty
-        assertTrue(this.blobStore.isEmptyDirectory(path));
+        assertFalse(this.blobStore.hasDescendants(path));
     }
 
     @Test
@@ -650,7 +650,7 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
     }
 
     @Test
-    void deleteBlobs() throws IOException, BlobStoreException
+    void deleteDescendants() throws IOException, BlobStoreException
     {
         // Create directory with files
         Path dir = this.basePath.resolve("testdir");
@@ -660,19 +660,19 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
 
         BlobPath blobPath = BlobPath.absolute("testdir");
 
-        this.blobStore.deleteBlobs(blobPath);
+        this.blobStore.deleteDescendants(blobPath);
 
         // Verify directory and all files are deleted
         assertFalse(Files.exists(dir));
     }
 
     @Test
-    void deleteBlobsNonExistentDirectory()
+    void deleteDescendantsNonexistentPath()
     {
         BlobPath blobPath = BlobPath.absolute("nonexistent");
 
         // Should not throw exception
-        assertDoesNotThrow(() -> this.blobStore.deleteBlobs(blobPath));
+        assertDoesNotThrow(() -> this.blobStore.deleteDescendants(blobPath));
     }
 
     @Test

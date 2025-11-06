@@ -43,7 +43,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -163,12 +162,12 @@ class S3BlobStoreTest
     }
 
     @Test
-    void listBlobsReturnsEmptyStream()
+    void listDescendantsReturnsEmptyStream()
     {
         try (MockedConstruction<S3BlobIterator> mockedIterator = mockConstruction(S3BlobIterator.class,
             (mock, context) -> when(mock.hasNext()).thenReturn(false))) {
 
-            Stream<Blob> blobs = this.store.listBlobs(BLOB_PATH);
+            Stream<Blob> blobs = this.store.listDescendants(BLOB_PATH);
             List<Blob> blobList = blobs.toList();
 
             assertEquals(0, blobList.size());
@@ -191,7 +190,7 @@ class S3BlobStoreTest
                 }).when(mock).forEachRemaining(any());
             })) {
 
-            Stream<Blob> blobs = this.store.listBlobs(BLOB_PATH);
+            Stream<Blob> blobs = this.store.listDescendants(BLOB_PATH);
             List<Blob> blobList = blobs.toList();
 
             // Verify the iterator was actually used.
@@ -204,7 +203,7 @@ class S3BlobStoreTest
     }
 
     @Test
-    void listBlobsUsesCorrectPrefix()
+    void listDescendantsUsesCorrectPrefix()
     {
         BlobPath path = BlobPath.absolute("folder", "subfolder");
 
@@ -219,7 +218,7 @@ class S3BlobStoreTest
                 assertEquals(this.store, context.arguments().get(4));
             })) {
 
-            try (Stream<Blob> blobs = this.store.listBlobs(path)) {
+            try (Stream<Blob> blobs = this.store.listDescendants(path)) {
                 assertEquals(0, blobs.count());
             }
 
@@ -228,14 +227,14 @@ class S3BlobStoreTest
     }
 
     @Test
-    void listBlobsWithRootPath()
+    void listDescendantsWithRootPath()
     {
         BlobPath rootPath = BlobPath.absolute(List.of());
 
         try (MockedConstruction<S3BlobIterator> ignored = mockConstruction(S3BlobIterator.class,
             (mock, context) -> when(mock.hasNext()).thenReturn(false))) {
 
-            try (Stream<Blob> blobs = this.store.listBlobs(rootPath)) {
+            try (Stream<Blob> blobs = this.store.listDescendants(rootPath)) {
                 assertEquals(0, blobs.count());
             }
         }
@@ -335,7 +334,7 @@ class S3BlobStoreTest
     }
 
     @Test
-    void isEmptyDirectoryWhenEmpty() throws BlobStoreException
+    void hasDescendantsReturnsFalseWhenEmpty() throws BlobStoreException
     {
         try (MockedConstruction<S3BlobIterator> mockedIterator = mockConstruction(S3BlobIterator.class,
             (mock, context) -> {
@@ -344,7 +343,7 @@ class S3BlobStoreTest
                 assertEquals(1, context.arguments().get(2));
             })) {
 
-            boolean result = this.store.isEmptyDirectory(BLOB_PATH);
+            boolean result = !this.store.hasDescendants(BLOB_PATH);
 
             assertTrue(result);
             assertEquals(1, mockedIterator.constructed().size());
@@ -352,20 +351,18 @@ class S3BlobStoreTest
     }
 
     @Test
-    void isEmptyDirectoryWhenNotEmpty() throws BlobStoreException
+    void hasDescendantsReturnsTrueWhenNotEmpty() throws BlobStoreException
     {
         try (MockedConstruction<S3BlobIterator> mockedIterator = mockConstruction(S3BlobIterator.class,
             (mock, context) -> when(mock.hasNext()).thenReturn(true))) {
 
-            boolean result = this.store.isEmptyDirectory(BLOB_PATH);
-
-            assertFalse(result);
+            assertTrue(this.store.hasDescendants(BLOB_PATH));
             assertEquals(1, mockedIterator.constructed().size());
         }
     }
 
     @Test
-    void isEmptyDirectoryWrapsRuntimeException()
+    void hasDescendantsWrapsRuntimeException()
     {
         try (MockedConstruction<S3BlobIterator> mockedIterator = mockConstruction(S3BlobIterator.class,
             (mock, context) -> when(mock.hasNext()).thenThrow(new RuntimeException("S3 connection failed")))) {
@@ -373,9 +370,9 @@ class S3BlobStoreTest
             BlobPath path = BlobPath.absolute("error", "path");
 
             BlobStoreException thrown = assertThrows(BlobStoreException.class,
-                () -> this.store.isEmptyDirectory(path));
+                () -> this.store.hasDescendants(path));
 
-            assertThat(thrown.getMessage(), containsString("Failed to check if directory is empty"));
+            assertThat(thrown.getMessage(), containsString("Failed to check if the given prefix has descendants"));
             assertThat(thrown.getMessage(), containsString("error/path"));
             assertEquals(RuntimeException.class, thrown.getCause().getClass());
             assertEquals("S3 connection failed", thrown.getCause().getMessage());
@@ -384,15 +381,15 @@ class S3BlobStoreTest
     }
 
     @Test
-    void isEmptyDirectoryWrapsIllegalStateException()
+    void hasDescendantsWrapsIllegalStateException()
     {
         try (MockedConstruction<S3BlobIterator> mockedIterator = mockConstruction(S3BlobIterator.class,
             (mock, context) -> when(mock.hasNext()).thenThrow(new IllegalStateException("Invalid state")))) {
 
             BlobStoreException thrown = assertThrows(BlobStoreException.class,
-                () -> this.store.isEmptyDirectory(BLOB_PATH));
+                () -> this.store.hasDescendants(BLOB_PATH));
 
-            assertThat(thrown.getMessage(), containsString("Failed to check if directory is empty"));
+            assertThat(thrown.getMessage(), containsString("Failed to check if the given prefix has descendants"));
             assertEquals(IllegalStateException.class, thrown.getCause().getClass());
             assertEquals(1, mockedIterator.constructed().size());
         }
@@ -420,7 +417,7 @@ class S3BlobStoreTest
     }
 
     @Test
-    void deleteBlobsListsAndDeletes() throws BlobStoreException
+    void deleteDescendantsListsAndDeletes() throws BlobStoreException
     {
         Blob blob1 = mock();
         Blob blob2 = mock();
@@ -431,7 +428,7 @@ class S3BlobStoreTest
                 when(mock.next()).thenReturn(blob1, blob2);
             })) {
 
-            this.store.deleteBlobs(BLOB_PATH);
+            this.store.deleteDescendants(BLOB_PATH);
 
             verify(this.deleteOperations).deleteBlobs(eq(this.store), any());
             assertEquals(1, mockedIterator.constructed().size());
@@ -439,12 +436,12 @@ class S3BlobStoreTest
     }
 
     @Test
-    void deleteBlobsClosesStream() throws BlobStoreException
+    void deleteDescendantsClosesStream() throws BlobStoreException
     {
         try (MockedConstruction<S3BlobIterator> mockedIterator = mockConstruction(S3BlobIterator.class,
             (mock, context) -> when(mock.hasNext()).thenReturn(false))) {
 
-            this.store.deleteBlobs(BLOB_PATH);
+            this.store.deleteDescendants(BLOB_PATH);
 
             // Verify that the stream is properly closed by using try-with-resources
             // If the stream wasn't closed, this would potentially leak resources
@@ -454,12 +451,12 @@ class S3BlobStoreTest
     }
 
     @Test
-    void deleteBlobsWithEmptyDirectory() throws BlobStoreException
+    void deleteDescendantsWithNoBlobs() throws BlobStoreException
     {
         try (MockedConstruction<S3BlobIterator> mockedIterator = mockConstruction(S3BlobIterator.class,
             (mock, context) -> when(mock.hasNext()).thenReturn(false))) {
 
-            this.store.deleteBlobs(BLOB_PATH);
+            this.store.deleteDescendants(BLOB_PATH);
 
             verify(this.deleteOperations).deleteBlobs(eq(this.store), any());
             assertEquals(1, mockedIterator.constructed().size());

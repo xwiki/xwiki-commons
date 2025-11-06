@@ -57,13 +57,14 @@ public interface BlobStore
     Blob getBlob(BlobPath path) throws BlobStoreException;
 
     /**
-     * List all blobs under the given path. The caller must close the returned stream after use.
+     * List all descendant blobs under the given path prefix. The returned stream includes blobs at every depth below
+     * the provided path. The caller must close the returned stream after use.
      *
      * @param path the path prefix to search under
-     * @return an iterator over all blobs under the given path
+     * @return a stream of the blobs under the given path
      * @throws BlobStoreException if the listing operation fails
      */
-    Stream<Blob> listBlobs(BlobPath path) throws BlobStoreException;
+    Stream<Blob> listDescendants(BlobPath path) throws BlobStoreException;
 
     /**
      * Copy a blob from one path to another within this store.
@@ -134,24 +135,22 @@ public interface BlobStore
     void deleteBlob(BlobPath path) throws BlobStoreException;
 
     /**
-     * Delete all blobs under the given path.
+     * Delete all descendant blobs under the given path prefix.
      *
      * @param path the path prefix to delete under
      * @throws BlobStoreException if the deletion fails
      */
-    void deleteBlobs(BlobPath path) throws BlobStoreException;
+    void deleteDescendants(BlobPath path) throws BlobStoreException;
 
     /**
-     * Check if a directory is empty (i.e., contains no blobs).
+     * Check if there is at least one descendant blob under the given path prefix.
      *
-     * <p>Only child blobs under the given path prefix are considered. If there is a blob
-     * with the exact same path as the directory being checked, it is not counted
-     * when determining if the directory is empty. This maintains consistency with
-     * {@link #listBlobs(BlobPath)} which lists only child blobs under the path prefix.</p>
+     * <p>Only blobs located under the given path prefix are considered. A blob with the exact same path is not counted,
+     * maintaining consistency with {@link #listDescendants(BlobPath)} which only lists blobs under the prefix.</p>
      *
      * @param path the path of the directory to check
-     * @return true if the directory is empty, false otherwise
+     * @return true if at least one descendant blob exists, false otherwise
      * @throws BlobStoreException if the check operation fails
      */
-    boolean isEmptyDirectory(BlobPath path) throws BlobStoreException;
+    boolean hasDescendants(BlobPath path) throws BlobStoreException;
 }

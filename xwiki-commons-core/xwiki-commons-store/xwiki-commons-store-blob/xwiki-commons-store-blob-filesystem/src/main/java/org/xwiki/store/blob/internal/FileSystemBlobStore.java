@@ -108,7 +108,7 @@ public class FileSystemBlobStore extends AbstractBlobStore<FileSystemBlobStorePr
     }
 
     @Override
-    public Stream<Blob> listBlobs(BlobPath path) throws BlobStoreException
+    public Stream<Blob> listDescendants(BlobPath path) throws BlobStoreException
     {
         Path absolutePath = getBlobFilePath(path);
         if (!Files.exists(absolutePath) || !Files.isDirectory(absolutePath)) {
@@ -218,10 +218,10 @@ public class FileSystemBlobStore extends AbstractBlobStore<FileSystemBlobStorePr
     }
 
     @Override
-    public boolean isEmptyDirectory(BlobPath path) throws BlobStoreException
+    public boolean hasDescendants(BlobPath path) throws BlobStoreException
     {
-        try (Stream<Blob> stream = listBlobs(path)) {
-            return stream.findFirst().isEmpty();
+        try (Stream<Blob> stream = listDescendants(path)) {
+            return stream.findFirst().isPresent();
         }
     }
 
@@ -313,7 +313,7 @@ public class FileSystemBlobStore extends AbstractBlobStore<FileSystemBlobStorePr
     }
 
     @Override
-    public void deleteBlobs(BlobPath path) throws BlobStoreException
+    public void deleteDescendants(BlobPath path) throws BlobStoreException
     {
         try {
             Path absolutePath = getBlobFilePath(path);
