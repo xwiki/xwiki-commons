@@ -123,33 +123,38 @@ public final class BlobPath implements Comparable<BlobPath>, Iterable<BlobPath>
     }
 
     /**
-     * Create an absolute path from validated names. Dot-segments ("." and "..") are allowed and will be normalized
-     * immediately.
+     * Create an absolute path from validated names. Dot-segments ("." and "..") are not allowed for absolute paths
+     * and will cause an {@link IllegalArgumentException}.
+     * No normalization is performed for absolute paths.
      *
      * @param first the first name
      * @param more additional names
      * @return an absolute {@link BlobPath}
-     * @throws IllegalArgumentException if normalization would go above root
+     * @throws IllegalArgumentException if a provided name is "." or "..", null/empty, or contains a separator
      */
     public static BlobPath absolute(String first, String... more)
     {
-        List<String> normalized = buildNames(first, more, true);
-        return normalized.isEmpty() ? ROOT_INSTANCE : new BlobPath(true, normalized);
+        List<String> names = buildNames(first, more);
+        // Disallow dot segments for absolute paths
+        validateNames(names, false);
+        return names.isEmpty() ? ROOT_INSTANCE : new BlobPath(true, names);
     }
 
     /**
-     * Create an absolute path from the given names. Dot-segments ("." and "..") are allowed and will be normalized
-     * immediately.
+     * Create an absolute path from the given names. Dot-segments ("." and "..") are not allowed for absolute paths
+     * and will cause an {@link IllegalArgumentException}.
+     * No normalization is performed for absolute paths.
      *
      * @param names the names to use
      * @return an absolute {@link BlobPath}
-     * @throws IllegalArgumentException if normalization would go above root
+     * @throws IllegalArgumentException if a provided name is "." or "..", null/empty, or contains a separator
      */
     public static BlobPath absolute(Iterable<String> names)
     {
         Objects.requireNonNull(names, NAMES_CANNOT_BE_NULL);
-        List<String> normalized = buildNames(names, true);
-        return normalized.isEmpty() ? ROOT_INSTANCE : new BlobPath(true, normalized);
+        List<String> list = buildNames(names);
+        validateNames(list, false);
+        return list.isEmpty() ? ROOT_INSTANCE : new BlobPath(true, list);
     }
 
     /**
@@ -169,7 +174,9 @@ public final class BlobPath implements Comparable<BlobPath>, Iterable<BlobPath>
      */
     public static BlobPath relative(String first, String... more)
     {
-        List<String> normalized = buildNames(first, more, false);
+        List<String> names = buildNames(first, more);
+        validateNames(names, true);
+        List<String> normalized = normalize(names, false);
         return normalized.isEmpty() ? EMPTY_RELATIVE : new BlobPath(false, normalized);
     }
 
@@ -183,18 +190,22 @@ public final class BlobPath implements Comparable<BlobPath>, Iterable<BlobPath>
     public static BlobPath relative(Iterable<String> names)
     {
         Objects.requireNonNull(names, NAMES_CANNOT_BE_NULL);
-        List<String> normalized = buildNames(names, false);
+        List<String> list = buildNames(names);
+        validateNames(list, true);
+        List<String> normalized = normalize(list, false);
         return normalized.isEmpty() ? EMPTY_RELATIVE : new BlobPath(false, normalized);
     }
 
     /**
      * Parse a slash-delimited path string into a {@link BlobPath}. Paths starting with {@code '/'} are treated as
-     * absolute, otherwise the path is relative. Dot-segments ("." and "..") are allowed and will be normalized
-     * immediately.
+     * absolute, otherwise the path is relative.
+     * For absolute paths, dot-segments ("." and "..") are disallowed and no normalization is performed.
+     * For relative paths, dot-segments are allowed and will be normalized immediately.
      *
      * @param path the path to parse
      * @return the parsed {@link BlobPath}
-     * @throws IllegalArgumentException if normalization would go above root
+     * @throws IllegalArgumentException if an absolute path contains "." or "..", or if normalization for a relative
+     * path would go above root
      */
     public static BlobPath parse(CharSequence path)
     {
@@ -209,11 +220,11 @@ public final class BlobPath implements Comparable<BlobPath>, Iterable<BlobPath>
         String[] parts = StringUtils.split(value, SEPARATOR.charAt(0));
         List<String> names = parts == null ? List.of() : Arrays.asList(parts);
 
-        validateNames(names);
-        List<String> normalized = normalize(names, absolute);
+        validateNames(names, !absolute);
         if (absolute) {
-            return normalized.isEmpty() ? ROOT_INSTANCE : new BlobPath(true, normalized);
+            return names.isEmpty() ? ROOT_INSTANCE : new BlobPath(true, names);
         }
+        List<String> normalized = normalize(names, false);
         return normalized.isEmpty() ? EMPTY_RELATIVE : new BlobPath(false, normalized);
     }
 
@@ -479,47 +490,30 @@ public final class BlobPath implements Comparable<BlobPath>, Iterable<BlobPath>
         return endsWith(parse(other));
     }
 
-    /**
-     * @param name the name to validate
-     * @return {@code true} if the provided name is safe for use in an absolute {@link BlobPath}
-     */
-    public static boolean isValidName(String name)
-    {
-        if (name == null || name.isEmpty()) {
-            return false;
-        }
-        if (name.indexOf('/') >= 0 || name.indexOf('\\') >= 0) {
-            return false;
-        }
-        return !name.equals(SAME_DIRECTORY) && !name.equals(RELATIVE_UP);
-    }
-
-    private static List<String> buildNames(String first, String[] more, boolean absolute)
+    private static List<String> buildNames(String first, String[] more)
     {
         List<String> names = new ArrayList<>(more.length + 1);
         names.add(first);
         names.addAll(Arrays.asList(more));
-        validateNames(names);
-        return normalize(names, absolute);
+        return names;
     }
 
-    private static List<String> buildNames(Iterable<String> sources, boolean absolute)
+    private static List<String> buildNames(Iterable<String> sources)
     {
         Objects.requireNonNull(sources, NAMES_CANNOT_BE_NULL);
         List<String> names = new ArrayList<>();
         sources.forEach(names::add);
-        validateNames(names);
-        return normalize(names, absolute);
+        return names;
     }
 
-    private static void validateNames(List<String> names)
+    private static void validateNames(List<String> names, boolean allowDotSegments)
     {
         for (int i = 0; i < names.size(); i++) {
-            validateName(names.get(i), i);
+            validateName(names.get(i), i, allowDotSegments);
         }
     }
 
-    private static void validateName(String name, int index)
+    private static void validateName(String name, int index, boolean allowDotSegments)
     {
         if (name == null) {
             throw new IllegalArgumentException("Name at index %d must not be null".formatted(index));
@@ -530,6 +524,10 @@ public final class BlobPath implements Comparable<BlobPath>, Iterable<BlobPath>
         if (name.indexOf('/') >= 0 || name.indexOf('\\') >= 0) {
             throw new IllegalArgumentException(
                 "Name at index %d contains an illegal separator: %s".formatted(index, name));
+        }
+        if (!allowDotSegments && (SAME_DIRECTORY.equals(name) || RELATIVE_UP.equals(name))) {
+            throw new IllegalArgumentException(
+                "Name at index %d must not be '.' or '..' for absolute paths".formatted(index));
         }
     }
 

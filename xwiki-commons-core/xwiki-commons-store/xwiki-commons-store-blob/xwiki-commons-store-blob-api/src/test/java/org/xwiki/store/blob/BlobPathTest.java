@@ -88,7 +88,7 @@ class BlobPathTest
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"", "..", "seg/ment", "seg\\ment"})
+    @ValueSource(strings = {"", "..", "seg/ment", "seg\\ment", "."})
     void absoluteRejectsInvalidNames(String name)
     {
         assertThrows(IllegalArgumentException.class, () -> BlobPath.absolute(name));
@@ -131,7 +131,7 @@ class BlobPathTest
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/..", "/../a/b"})
+    @ValueSource(strings = {"/..", "/../a/b", "/./a"})
     void parseRejectsInvalidAbsolutePaths(String source)
     {
         assertThrows(IllegalArgumentException.class, () -> BlobPath.parse(source));
@@ -315,35 +315,23 @@ class BlobPathTest
             sorted.stream().map(BlobPath::toString).toList());
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "file.txt, true",
-        "., false",
-        ".., false",
-        "dir/file, false",
-        "'', false"
-    })
-    void isValidNameMatchesExpectations(String name, boolean expected)
-    {
-        assertEquals(expected, BlobPath.isValidName(name));
-    }
-
     @Test
     void constructorsNormalizeDotSegments()
     {
-        // Absolute: "/a/./b/.." -> "/a"
-        BlobPath abs = BlobPath.absolute("a", ".", "b", "..", ".");
-        assertEquals("/a", abs.toString());
-        assertIterableEquals(List.of("a"), abs.getNames());
+        // Absolute: dot segments are disallowed
+        assertThrows(IllegalArgumentException.class, () -> BlobPath.absolute("a", ".", "b", "..", "."));
         // Relative: "..", ".", "a", "..", "b" -> "../b"
         BlobPath rel = BlobPath.relative("..", ".", "a", "..", "b");
         assertEquals("../b", rel.toString());
         assertIterableEquals(List.of("..", "b"), rel.getNames());
     }
+
     @Test
     void parseNormalizesDotSegments()
     {
-        assertEquals("/a", BlobPath.parse("/a/./b/..").toString());
+        // Absolute with dot segments is invalid
+        assertThrows(IllegalArgumentException.class, () -> BlobPath.parse("/a/./b/.."));
+        // Relative is still normalized
         assertEquals("../b", BlobPath.parse(".././a/../b").toString());
     }
 }
