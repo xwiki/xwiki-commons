@@ -30,7 +30,6 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
 import org.xwiki.store.blob.BlobStoreFactory;
-import org.xwiki.store.blob.BlobStoreProperties;
 import org.xwiki.store.blob.BlobStorePropertiesBuilder;
 import org.xwiki.store.blob.S3BlobStoreProperties;
 
@@ -48,7 +47,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 @Component
 @Singleton
 @Named("s3")
-public class S3BlobStoreFactory implements BlobStoreFactory
+public class S3BlobStoreFactory implements BlobStoreFactory<S3BlobStoreProperties>
 {
     @Inject
     private Logger logger;
@@ -69,7 +68,7 @@ public class S3BlobStoreFactory implements BlobStoreFactory
     }
 
     @Override
-    public Class<? extends BlobStoreProperties> getPropertiesClass()
+    public Class<S3BlobStoreProperties> getPropertiesClass()
     {
         return S3BlobStoreProperties.class;
     }
@@ -101,20 +100,15 @@ public class S3BlobStoreFactory implements BlobStoreFactory
     }
 
     @Override
-    public BlobStore create(String name, BlobStoreProperties properties) throws BlobStoreException
+    public BlobStore create(String name, S3BlobStoreProperties properties) throws BlobStoreException
     {
-        if (!(properties instanceof S3BlobStoreProperties s3Properties)) {
-            throw new BlobStoreException("Invalid properties type for S3 blob store factory: "
-                + properties.getClass().getName());
-        }
-
         // Validate bucket access before creating the store.
-        validateBucketAccess(s3Properties.getBucket());
+        validateBucketAccess(properties.getBucket());
 
         S3BlobStore store = this.blobStoreProvider.get();
-        store.initialize(name, s3Properties);
+        store.initialize(name, properties);
 
-        this.logger.info("Created S3 blob store [{}] for bucket [{}]", name, s3Properties.getBucket());
+        this.logger.info("Created S3 blob store [{}] for bucket [{}]", name, properties.getBucket());
 
         return store;
     }

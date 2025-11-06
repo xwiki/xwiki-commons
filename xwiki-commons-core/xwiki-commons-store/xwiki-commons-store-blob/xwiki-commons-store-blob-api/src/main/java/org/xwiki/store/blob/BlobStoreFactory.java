@@ -19,18 +19,21 @@
  */
 package org.xwiki.store.blob;
 
-import org.xwiki.component.annotation.Role;
+import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.stability.Unstable;
 
 /**
  * Factory for creating BlobStore instances.
  *
+ * @param <T> the type of BlobStoreProperties used by this factory
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Role
+// We need to use the deprecated @ComponentRole annotation here as otherwise the component cannot be easily looked up.
+@SuppressWarnings("deprecation")
+@ComponentRole
 @Unstable
-public interface BlobStoreFactory
+public interface BlobStoreFactory<T extends BlobStoreProperties>
 {
     /**
      * @return the hint this factory supports (e.g., "filesystem", "s3")
@@ -55,10 +58,10 @@ public interface BlobStoreFactory
      * @return a BlobStore instance
      * @throws BlobStoreException if the properties are invalid or creation fails
      */
-    BlobStore create(String name, BlobStoreProperties properties) throws BlobStoreException;
+    BlobStore create(String name, T properties) throws BlobStoreException;
 
     /**
      * @return the properties class used by this factory
      */
-    Class<? extends BlobStoreProperties> getPropertiesClass();
+    Class<T> getPropertiesClass();
 }

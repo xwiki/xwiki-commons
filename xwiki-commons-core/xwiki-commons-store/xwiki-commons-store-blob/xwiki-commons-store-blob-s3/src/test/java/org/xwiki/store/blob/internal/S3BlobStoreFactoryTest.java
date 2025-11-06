@@ -29,10 +29,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.xwiki.component.manager.ComponentManager;
-
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
-import org.xwiki.store.blob.BlobStoreProperties;
 import org.xwiki.store.blob.BlobStorePropertiesBuilder;
 import org.xwiki.store.blob.S3BlobStoreProperties;
 import org.xwiki.test.LogLevel;
@@ -276,18 +274,5 @@ class S3BlobStoreFactoryTest
             () -> this.factory.create(NAME, properties));
 
         assertThat(exception.getMessage(), containsString("Unexpected error while validating S3 bucket access"));
-    }
-
-    @Test
-    void createWithWrongPropertiesType()
-    {
-        // Create properties of wrong type.
-        BlobStoreProperties wrongProperties = mock(BlobStoreProperties.class);
-
-        BlobStoreException exception = assertThrows(BlobStoreException.class,
-            () -> this.factory.create(NAME, wrongProperties));
-
-        assertEquals("Invalid properties type for S3 blob store factory: " + wrongProperties.getClass().getName(),
-            exception.getMessage());
     }
 }

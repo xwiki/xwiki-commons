@@ -111,9 +111,10 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
         return blobStore;
     }
 
-    private BlobStore getBlobStore(String name, String storeHint) throws ComponentLookupException, BlobStoreException
+    private <T extends BlobStoreProperties> BlobStore getBlobStore(String name, String storeHint)
+        throws ComponentLookupException, BlobStoreException
     {
-        BlobStoreFactory factory = this.componentManager.getInstance(BlobStoreFactory.class, storeHint);
+        BlobStoreFactory<T> factory = this.componentManager.getInstance(BlobStoreFactory.class, storeHint);
 
         BlobStorePropertiesBuilder propertiesBuilder = factory.newPropertiesBuilder(name);
 
@@ -124,8 +125,8 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
         }
 
         // Create properties bean and populate it using BeanManager.
-        Class<? extends BlobStoreProperties> propertiesClass = factory.getPropertiesClass();
-        BlobStoreProperties properties;
+        Class<T> propertiesClass = factory.getPropertiesClass();
+        T properties;
         try {
             properties = propertiesClass.getDeclaredConstructor().newInstance();
             this.beanManager.populate(properties, propertiesBuilder.getAllProperties());

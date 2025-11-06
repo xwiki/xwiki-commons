@@ -28,21 +28,16 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.xwiki.environment.Environment;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
-import org.xwiki.store.blob.BlobStoreException;
-import org.xwiki.store.blob.BlobStoreProperties;
 import org.xwiki.store.blob.BlobStorePropertiesBuilder;
 import org.xwiki.store.blob.FileSystemBlobStoreProperties;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -109,18 +104,5 @@ class FileSystemBlobStoreFactoryTest
         assertEquals("test-store", blobStore.getName());
         assertEquals("filesystem", blobStore.getHint());
         assertEquals(rootDir, ((FileSystemBlobStore) blobStore).getBlobFilePath(BlobPath.root()));
-    }
-
-    @Test
-    void createWithWrongPropertiesType()
-    {
-        // Create properties of wrong type.
-        BlobStoreProperties wrongProperties = mock();
-
-        BlobStoreException blobStoreException =
-            assertThrows(BlobStoreException.class, () -> this.factory.create("test", wrongProperties));
-
-        assertThat(blobStoreException.getMessage(),
-            containsString("Invalid properties type for filesystem blob store factory"));
     }
 }

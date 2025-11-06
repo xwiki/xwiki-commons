@@ -31,7 +31,6 @@ import org.xwiki.environment.Environment;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
 import org.xwiki.store.blob.BlobStoreFactory;
-import org.xwiki.store.blob.BlobStoreProperties;
 import org.xwiki.store.blob.BlobStorePropertiesBuilder;
 import org.xwiki.store.blob.FileSystemBlobStoreProperties;
 
@@ -44,7 +43,7 @@ import org.xwiki.store.blob.FileSystemBlobStoreProperties;
 @Component
 @Singleton
 @Named("filesystem")
-public class FileSystemBlobStoreFactory implements BlobStoreFactory
+public class FileSystemBlobStoreFactory implements BlobStoreFactory<FileSystemBlobStoreProperties>
 {
     @Inject
     private Environment environment;
@@ -56,7 +55,7 @@ public class FileSystemBlobStoreFactory implements BlobStoreFactory
     }
 
     @Override
-    public Class<? extends BlobStoreProperties> getPropertiesClass()
+    public Class<FileSystemBlobStoreProperties> getPropertiesClass()
     {
         return FileSystemBlobStoreProperties.class;
     }
@@ -75,13 +74,8 @@ public class FileSystemBlobStoreFactory implements BlobStoreFactory
     }
 
     @Override
-    public BlobStore create(String name, BlobStoreProperties properties) throws BlobStoreException
+    public BlobStore create(String name, FileSystemBlobStoreProperties properties) throws BlobStoreException
     {
-        if (!(properties instanceof FileSystemBlobStoreProperties fileSystemProperties)) {
-            throw new BlobStoreException("Invalid properties type for filesystem blob store factory: "
-                + properties.getClass().getName());
-        }
-
-        return new FileSystemBlobStore(name, fileSystemProperties);
+        return new FileSystemBlobStore(name, properties);
     }
 }
