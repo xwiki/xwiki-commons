@@ -54,9 +54,6 @@ public class S3BlobStore extends AbstractBlobStore<S3BlobStoreProperties>
     @Inject
     private S3ClientManager clientManager;
 
-    @Inject
-    private S3BlobStoreConfiguration configuration;
-
     private S3KeyMapper keyMapper;
 
     @Inject
