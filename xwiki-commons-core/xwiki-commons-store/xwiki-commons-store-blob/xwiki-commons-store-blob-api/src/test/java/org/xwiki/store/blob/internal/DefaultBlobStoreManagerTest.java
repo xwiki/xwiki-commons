@@ -19,7 +19,6 @@
  */
 package org.xwiki.store.blob.internal;
 
-import jakarta.inject.Named;
 import jakarta.validation.constraints.NotNull;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -60,7 +59,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -115,23 +113,44 @@ class DefaultBlobStoreManagerTest
     @MockComponent
     private BlobStoreMigrator blobStoreMigrator;
 
-    @MockComponent
-    @Named("file")
-    private BlobStoreFactory fileFactory;
+    private BlobStoreFactory<ExtendedBlobStoreProperties> fileFactory;
 
     @RegisterExtension
     private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
-    /**
-     * Helper method to register and configure a migration factory.
-     */
-    private BlobStoreFactory registerMigrationFactory(String type, BlobStore migrationStore) throws Exception
+    // Define interfaces with explicitly set type parameters so they can be detected at runtime.
+    private interface ExtendedBlobStoreFactory extends BlobStoreFactory<ExtendedBlobStoreProperties>
     {
-        BlobStoreFactory factory = this.componentManager.registerMockComponent(BlobStoreFactory.class, type);
+    }
+
+    private interface ValidatingBlobStoreFactory extends BlobStoreFactory<ValidatingBlobStoreProperties>
+    {
+    }
+
+    private <T extends BlobStoreProperties> void registerMockFactory(String type,
+        BlobStore blobStore, BlobStoreFactory<T> factory) throws Exception
+    {
+        this.componentManager.registerComponent(BlobStoreFactory.class, type, factory);
         when(factory.newPropertiesBuilder(any())).thenAnswer(
             inv -> new BlobStorePropertiesBuilder(inv.getArgument(0), type));
-        when(factory.create(any(), any())).thenReturn(migrationStore);
-        doReturn(ExtendedBlobStoreProperties.class).when(factory).getPropertiesClass();
+        when(factory.create(any(), any())).thenReturn(blobStore);
+        when(factory.getType()).thenReturn(type);
+    }
+
+
+    private BlobStoreFactory<ExtendedBlobStoreProperties> registerExtendedBlobStoreFactory(String type,
+        BlobStore blobStore) throws Exception
+    {
+        ExtendedBlobStoreFactory factory = mock();
+        registerMockFactory(type, blobStore, factory);
+        return factory;
+    }
+
+    private BlobStoreFactory<ValidatingBlobStoreProperties> registerValidatingBlobStoreFactory(String type,
+        BlobStore blobStore) throws Exception
+    {
+        ValidatingBlobStoreFactory factory = mock();
+        registerMockFactory(type, blobStore, factory);
         return factory;
     }
 
@@ -146,12 +165,8 @@ class DefaultBlobStoreManagerTest
     @BeforeEach
     void setup() throws Exception
     {
+        this.fileFactory = registerExtendedBlobStoreFactory(FILE_TYPE, this.testStore);
         when(this.configuration.getStoreType()).thenReturn(FILE_TYPE);
-        when(this.fileFactory.newPropertiesBuilder(any())).thenAnswer(
-            inv -> new BlobStorePropertiesBuilder(inv.getArgument(0), FILE_TYPE));
-        when(this.fileFactory.create(any(), any())).thenReturn(this.testStore);
-        doReturn(ExtendedBlobStoreProperties.class).when(this.fileFactory).getPropertiesClass();
-        when(this.blobStoreMigrator.isMigrationInProgress(any())).thenReturn(false);
     }
 
     @Test
@@ -172,7 +187,8 @@ class DefaultBlobStoreManagerTest
     void getBlobStoreWithMigrationWhenCurrentStoreIsEmpty() throws Exception
     {
         when(this.configuration.getMigrationStoreType()).thenReturn(S3_TYPE);
-        BlobStoreFactory s3Factory = registerMigrationFactory(S3_TYPE, this.migrationStore);
+        BlobStoreFactory<ExtendedBlobStoreProperties> s3Factory =
+            registerExtendedBlobStoreFactory(S3_TYPE, this.migrationStore);
 
         when(this.testStore.hasDescendants(BlobPath.root())).thenReturn(false);
 
@@ -192,7 +208,8 @@ class DefaultBlobStoreManagerTest
     void getBlobStoreWithMigrationWhenCurrentStoreIsNotEmpty() throws Exception
     {
         when(this.configuration.getMigrationStoreType()).thenReturn(S3_TYPE);
-        BlobStoreFactory s3Factory = registerMigrationFactory(S3_TYPE, this.migrationStore);
+        BlobStoreFactory<ExtendedBlobStoreProperties> s3Factory =
+            registerExtendedBlobStoreFactory(S3_TYPE, this.migrationStore);
 
         when(this.testStore.hasDescendants(BlobPath.root())).thenReturn(true);
 
@@ -209,7 +226,8 @@ class DefaultBlobStoreManagerTest
     void getBlobStoreResumesMigrationWhenMarkerPresent() throws Exception
     {
         when(this.configuration.getMigrationStoreType()).thenReturn(S3_TYPE);
-        BlobStoreFactory s3Factory = registerMigrationFactory(S3_TYPE, this.migrationStore);
+        BlobStoreFactory<ExtendedBlobStoreProperties> s3Factory =
+            registerExtendedBlobStoreFactory(S3_TYPE, this.migrationStore);
 
         when(this.testStore.hasDescendants(BlobPath.root())).thenReturn(true);
         when(this.blobStoreMigrator.isMigrationInProgress(this.testStore)).thenReturn(true);
@@ -289,7 +307,7 @@ class DefaultBlobStoreManagerTest
     void getBlobStoreWithMigrationThrowsExceptionWhenMigrationFails() throws Exception
     {
         when(this.configuration.getMigrationStoreType()).thenReturn(S3_TYPE);
-        registerMigrationFactory(S3_TYPE, this.migrationStore);
+        registerExtendedBlobStoreFactory(S3_TYPE, this.migrationStore);
 
         when(this.testStore.hasDescendants(BlobPath.root())).thenReturn(false);
         doThrow(new BlobStoreException("Migration failed"))
@@ -322,19 +340,15 @@ class DefaultBlobStoreManagerTest
     {
         DisposableBlobStore disposableStore1 = mock();
         when(disposableStore1.getName()).thenReturn("store1");
-        
 
         DisposableBlobStore disposableStore2 = mock();
         when(disposableStore2.getName()).thenReturn("store2");
-        
 
         when(this.fileFactory.create(eq("store1"), any())).thenReturn(disposableStore1);
         when(this.fileFactory.create(eq("store2"), any())).thenReturn(disposableStore2);
 
         ComponentLifecycleException expectedCause = new ComponentLifecycleException("Dispose failed for store1");
-        // We explicitly dispose the component first, then the test setup will dispose the component again. In the
-        // second case, don't throw an exception to allow the test to complete without errors.
-        doThrow(expectedCause).doNothing().when(disposableStore1).dispose();
+        doThrow(expectedCause).when(disposableStore1).dispose();
 
         this.blobStoreManager.getBlobStore("store1");
         this.blobStoreManager.getBlobStore("store2");
@@ -357,65 +371,10 @@ class DefaultBlobStoreManagerTest
     }
 
     @Test
-    void getBlobStorePopulatesPropertiesFromBuilder() throws Exception
-    {
-        BlobStoreFactory mockFactory = mock();
-        when(mockFactory.newPropertiesBuilder(any())).thenAnswer(
-            inv -> new BlobStorePropertiesBuilder(inv.getArgument(0), "filesystem"));
-        doReturn(ExtendedBlobStoreProperties.class).when(mockFactory).getPropertiesClass();
-        BlobStore mockStore = mock();
-        when(mockStore.getName()).thenReturn(TEST_STORE);
-        when(mockStore.getType()).thenReturn("filesystem");
-        when(mockFactory.create(any(), any())).thenReturn(mockStore);
-        this.componentManager.registerComponent(BlobStoreFactory.class, FILE_TYPE, mockFactory);
-
-        BlobStore result = this.blobStoreManager.getBlobStore(TEST_STORE);
-
-        ArgumentCaptor<BlobStoreProperties> propertiesCaptor = ArgumentCaptor.forClass(BlobStoreProperties.class);
-        verify(mockFactory).create(eq(TEST_STORE), propertiesCaptor.capture());
-
-        assertEquals(TEST_STORE, result.getName());
-        assertEquals(TEST_STORE, result.getName());
-        assertEquals("filesystem", result.getType());
-    }
-
-    @Test
-    void getBlobStorePopulatesCustomPropertiesFromCustomizer() throws Exception
-    {
-        BlobStoreFactory mockFactory = mock();
-        when(mockFactory.newPropertiesBuilder(any())).thenAnswer(
-            inv -> new BlobStorePropertiesBuilder(inv.getArgument(0), "filesystem"));
-        doReturn(ExtendedBlobStoreProperties.class).when(mockFactory).getPropertiesClass();
-        when(mockFactory.create(any(), any())).thenReturn(mock());
-        this.componentManager.registerComponent(BlobStoreFactory.class, FILE_TYPE, mockFactory);
-
-        BlobStorePropertiesCustomizer customizer = registerCustomizer("customizer");
-        doAnswer(inv -> {
-            BlobStorePropertiesBuilder builder = inv.getArgument(0);
-            builder.set("customOption", "customValue");
-            return null;
-        }).when(customizer).customize(any());
-
-        this.blobStoreManager.getBlobStore(TEST_STORE);
-
-        ArgumentCaptor<BlobStoreProperties> propertiesCaptor = ArgumentCaptor.forClass(BlobStoreProperties.class);
-        verify(mockFactory).create(eq(TEST_STORE), propertiesCaptor.capture());
-
-        BlobStoreProperties capturedProperties = propertiesCaptor.getValue();
-        assertInstanceOf(ExtendedBlobStoreProperties.class, capturedProperties);
-        ExtendedBlobStoreProperties extendedProps = (ExtendedBlobStoreProperties) capturedProperties;
-        assertEquals("customValue", extendedProps.getCustomOption());
-    }
-
-    @Test
     void getBlobStoreThrowsExceptionWhenMandatoryPropertyMissing() throws Exception
     {
-        BlobStoreFactory mockFactory = mock();
-        when(mockFactory.newPropertiesBuilder(any())).thenAnswer(
-            inv -> new BlobStorePropertiesBuilder(inv.getArgument(0), "filesystem"));
-        doReturn(ValidatingBlobStoreProperties.class).when(mockFactory).getPropertiesClass();
-        when(mockFactory.create(any(), any())).thenReturn(mock());
-        this.componentManager.registerComponent(BlobStoreFactory.class, FILE_TYPE, mockFactory);
+        when(this.configuration.getStoreType()).thenReturn("validating");
+        registerValidatingBlobStoreFactory("validating", this.testStore);
 
         // Don't set the mandatory property via customizer
         BlobStoreException exception = assertThrows(BlobStoreException.class,
@@ -427,12 +386,9 @@ class DefaultBlobStoreManagerTest
     @Test
     void getBlobStoreSucceedsWhenMandatoryPropertySetByCustomizer() throws Exception
     {
-        BlobStoreFactory mockFactory = mock();
-        when(mockFactory.newPropertiesBuilder(any())).thenAnswer(
-            inv -> new BlobStorePropertiesBuilder(inv.getArgument(0), "filesystem"));
-        doReturn(ValidatingBlobStoreProperties.class).when(mockFactory).getPropertiesClass();
-        when(mockFactory.create(any(), any())).thenReturn(mock());
-        this.componentManager.registerComponent(BlobStoreFactory.class, FILE_TYPE, mockFactory);
+        when(this.configuration.getStoreType()).thenReturn("validating");
+        BlobStoreFactory<ValidatingBlobStoreProperties> mockFactory =
+            registerValidatingBlobStoreFactory("validating", this.testStore);
 
         BlobStorePropertiesCustomizer customizer = registerCustomizer("customizer");
         doAnswer(inv -> {
@@ -443,13 +399,12 @@ class DefaultBlobStoreManagerTest
 
         this.blobStoreManager.getBlobStore(TEST_STORE);
 
-        ArgumentCaptor<BlobStoreProperties> propertiesCaptor = ArgumentCaptor.forClass(BlobStoreProperties.class);
+        ArgumentCaptor<ValidatingBlobStoreProperties> propertiesCaptor = ArgumentCaptor.captor();
         verify(mockFactory).create(eq(TEST_STORE), propertiesCaptor.capture());
 
-        BlobStoreProperties capturedProperties = propertiesCaptor.getValue();
+        ValidatingBlobStoreProperties capturedProperties = propertiesCaptor.getValue();
         assertInstanceOf(ValidatingBlobStoreProperties.class, capturedProperties);
-        ValidatingBlobStoreProperties validatingProps = (ValidatingBlobStoreProperties) capturedProperties;
-        assertEquals("requiredValue", validatingProps.getMandatoryField());
+        assertEquals("requiredValue", capturedProperties.getMandatoryField());
     }
 
     // Helper interface to create a mock that implements both BlobStore and Disposable

@@ -68,12 +68,6 @@ public class S3BlobStoreFactory implements BlobStoreFactory<S3BlobStorePropertie
     }
 
     @Override
-    public Class<S3BlobStoreProperties> getPropertiesClass()
-    {
-        return S3BlobStoreProperties.class;
-    }
-
-    @Override
     public BlobStorePropertiesBuilder newPropertiesBuilder(String name)
     {
         BlobStorePropertiesBuilder builder = new BlobStorePropertiesBuilder(name, getType());

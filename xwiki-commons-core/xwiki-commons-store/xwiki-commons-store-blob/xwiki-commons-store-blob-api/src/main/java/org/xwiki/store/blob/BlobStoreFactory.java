@@ -59,9 +59,4 @@ public interface BlobStoreFactory<T extends BlobStoreProperties>
      * @throws BlobStoreException if the properties are invalid or creation fails
      */
     BlobStore create(String name, T properties) throws BlobStoreException;
-
-    /**
-     * @return the properties class used by this factory
-     */
-    Class<T> getPropertiesClass();
 }

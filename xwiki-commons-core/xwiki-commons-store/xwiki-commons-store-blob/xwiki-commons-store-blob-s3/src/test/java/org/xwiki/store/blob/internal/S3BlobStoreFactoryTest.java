@@ -109,12 +109,6 @@ class S3BlobStoreFactoryTest
     }
 
     @Test
-    void getPropertiesClass()
-    {
-        assertEquals(S3BlobStoreProperties.class, this.factory.getPropertiesClass());
-    }
-
-    @Test
     void getType()
     {
         assertEquals(TYPE, this.factory.getType());

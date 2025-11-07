@@ -55,12 +55,6 @@ class FileSystemBlobStoreFactoryTest
     @MockComponent
     private Environment environment;
 
-    @Test
-    void getPropertiesClass()
-    {
-        assertEquals(FileSystemBlobStoreProperties.class, this.factory.getPropertiesClass());
-    }
-
     @ParameterizedTest
     @CsvSource({
         "testStore, /tmp/xwiki/testStore",

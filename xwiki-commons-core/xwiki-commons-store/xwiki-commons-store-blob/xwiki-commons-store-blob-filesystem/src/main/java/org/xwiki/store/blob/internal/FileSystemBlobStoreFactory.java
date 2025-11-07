@@ -55,12 +55,6 @@ public class FileSystemBlobStoreFactory implements BlobStoreFactory<FileSystemBl
     }
 
     @Override
-    public Class<FileSystemBlobStoreProperties> getPropertiesClass()
-    {
-        return FileSystemBlobStoreProperties.class;
-    }
-
-    @Override
     public BlobStorePropertiesBuilder newPropertiesBuilder(String name) throws BlobStoreException
     {
         Objects.requireNonNull(name, "Blob store name cannot be null");

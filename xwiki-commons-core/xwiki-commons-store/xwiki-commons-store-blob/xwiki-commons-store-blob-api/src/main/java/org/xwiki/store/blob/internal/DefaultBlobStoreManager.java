@@ -19,6 +19,8 @@
  */
 package org.xwiki.store.blob.internal;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,6 +36,7 @@ import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Disposable;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.properties.BeanManager;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
@@ -116,25 +119,37 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
     {
         BlobStoreFactory<T> factory = this.componentManager.getInstance(BlobStoreFactory.class, storeType);
 
-        BlobStorePropertiesBuilder propertiesBuilder = factory.newPropertiesBuilder(name);
+        Type genericType = ReflectionUtils.resolveType(BlobStoreFactory.class, factory.getClass());
+        if (genericType instanceof ParameterizedType parameterizedType) {
+            Type[] typeArguments = parameterizedType.getActualTypeArguments();
+            if (typeArguments.length == 1) {
+                @SuppressWarnings("unchecked")
+                Class<T> propertiesClass = (Class<T>) typeArguments[0];
 
-        // Apply customizers.
-        for (BlobStorePropertiesCustomizer customizer : this.componentManager
-            .<BlobStorePropertiesCustomizer>getInstanceList(BlobStorePropertiesCustomizer.class)) {
-            customizer.customize(propertiesBuilder);
+                BlobStorePropertiesBuilder propertiesBuilder = factory.newPropertiesBuilder(name);
+
+                // Apply customizers.
+                for (BlobStorePropertiesCustomizer customizer : this.componentManager
+                    .<BlobStorePropertiesCustomizer>getInstanceList(BlobStorePropertiesCustomizer.class)) {
+                    customizer.customize(propertiesBuilder);
+                }
+
+                T properties;
+                try {
+                    properties = propertiesClass.getDeclaredConstructor().newInstance();
+                    this.beanManager.populate(properties, propertiesBuilder.getAllProperties());
+                } catch (Exception e) {
+                    throw new BlobStoreException(
+                        "Failed to populate blob store properties for store [%s]".formatted(name), e);
+                }
+
+                return factory.create(name, properties);
+
+            }
         }
 
-        // Create properties bean and populate it using BeanManager.
-        Class<T> propertiesClass = factory.getPropertiesClass();
-        T properties;
-        try {
-            properties = propertiesClass.getDeclaredConstructor().newInstance();
-            this.beanManager.populate(properties, propertiesBuilder.getAllProperties());
-        } catch (Exception e) {
-            throw new BlobStoreException("Failed to populate blob store properties for store [" + name + "]", e);
-        }
-
-        return factory.create(name, properties);
+        throw new BlobStoreException(
+            "Failed to determine blob store properties type for store type [%s]".formatted(storeType));
     }
 
     @Override
@@ -150,5 +165,6 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
                 }
             }
         }
+        this.blobStores.clear();
     }
 }
