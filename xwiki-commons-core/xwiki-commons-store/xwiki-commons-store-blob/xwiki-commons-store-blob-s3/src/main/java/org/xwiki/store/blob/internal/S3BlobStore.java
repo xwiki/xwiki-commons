@@ -65,7 +65,7 @@ public class S3BlobStore extends AbstractBlobStore<S3BlobStoreProperties>
     /**
      * Initialize this blob store, must be called before performing any other operations.
      *
-     * @param name the unique name of this blob store
+     * @param name the name of this blob store
      * @param properties the typed properties of this blob store
      */
     public void initialize(String name, S3BlobStoreProperties properties)

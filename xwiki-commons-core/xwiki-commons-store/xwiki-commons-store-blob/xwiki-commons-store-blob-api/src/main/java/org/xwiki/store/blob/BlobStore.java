@@ -33,7 +33,7 @@ import org.xwiki.stability.Unstable;
 public interface BlobStore
 {
     /**
-     * @return the unique name of this blob store
+     * @return the name of this blob store
      */
     String getName();
 

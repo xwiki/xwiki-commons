@@ -53,7 +53,7 @@ public interface BlobStoreFactory<T extends BlobStoreProperties>
     /**
      * Create a BlobStore from the given name and properties.
      *
-     * @param name the unique name for this blob store
+     * @param name the name for this blob store
      * @param properties the populated properties bean to use
      * @return a BlobStore instance
      * @throws BlobStoreException if the properties are invalid or creation fails
