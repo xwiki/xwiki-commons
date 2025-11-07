@@ -74,14 +74,15 @@ public interface Blob extends StreamProvider
     /**
      * Write the content of the given InputStream to this blob. The given InputStream will be closed by this method.
      *
+     * <p>For some implementations, this method could be more efficient than copying the InputStream to the OutputStream
+     * {@link #getOutputStream(BlobOption...)}, so this method should be preferred if possible.</p>
+     *
      * @param inputStream the InputStream to read data from
      * @param options the options to use when writing to this blob
      * @throws BlobAlreadyExistsException if the blob already exists and {@link BlobWriteMode#CREATE_NEW} is among the
      *     given options
      * @throws BlobStoreException if the InputStream cannot be read or the blob cannot be written, for example because
      * its name is invalid.
-     * @todo Recommend this method over {@link #getOutputStream(BlobOption...)} once this is actually more than
-     * IOUtils#copy - or remove it, otherwise.
      */
     void writeFromStream(InputStream inputStream, BlobOption... options) throws BlobStoreException;
 
