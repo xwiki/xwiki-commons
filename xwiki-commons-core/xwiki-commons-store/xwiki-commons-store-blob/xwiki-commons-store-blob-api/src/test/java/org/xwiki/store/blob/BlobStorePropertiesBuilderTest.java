@@ -48,10 +48,10 @@ class BlobStorePropertiesBuilderTest
     }
 
     @Test
-    void constructorShouldSetNameAndHint()
+    void constructorShouldSetNameAndType()
     {
         assertEquals("testStore", this.builder.getName());
-        assertEquals("file", this.builder.getHint());
+        assertEquals("file", this.builder.getType());
     }
 
     @Test
@@ -111,7 +111,7 @@ class BlobStorePropertiesBuilderTest
 
         Map<String, Object> options = this.builder.getAllProperties();
 
-        // Only custom properties, not name and hint
+        // Only custom properties, not name and type
         assertEquals(2, options.size());
         assertEquals("value1", options.get("prop1"));
         assertEquals(42, options.get("prop2"));

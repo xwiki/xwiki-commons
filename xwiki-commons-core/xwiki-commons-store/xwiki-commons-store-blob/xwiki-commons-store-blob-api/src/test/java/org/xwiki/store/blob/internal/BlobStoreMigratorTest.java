@@ -88,9 +88,9 @@ class BlobStoreMigratorTest
         when(this.targetStore.getBlob(MARKER_PATH)).thenReturn(this.markerBlob);
 
         lenient().when(this.targetStore.getName()).thenReturn(STORE_NAME);
-        lenient().when(this.targetStore.getHint()).thenReturn("s3");
+        lenient().when(this.targetStore.getType()).thenReturn("s3");
         lenient().when(this.sourceStore.getName()).thenReturn(STORE_NAME);
-        lenient().when(this.sourceStore.getHint()).thenReturn("filesystem");
+        lenient().when(this.sourceStore.getType()).thenReturn("filesystem");
     }
 
     @Test

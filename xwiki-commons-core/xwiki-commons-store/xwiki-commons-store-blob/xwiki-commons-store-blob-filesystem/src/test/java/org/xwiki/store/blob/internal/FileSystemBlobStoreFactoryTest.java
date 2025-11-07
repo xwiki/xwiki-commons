@@ -75,7 +75,7 @@ class FileSystemBlobStoreFactoryTest
         BlobStorePropertiesBuilder builder = this.factory.newPropertiesBuilder(storeName);
 
         assertEquals(storeName, builder.getName());
-        assertEquals(this.factory.getHint(), builder.getHint());
+        assertEquals(this.factory.getType(), builder.getType());
         Path rootDir = (Path) builder.get(FileSystemBlobStoreProperties.ROOT_DIRECTORY).orElseThrow();
         assertEquals(Path.of(expectedPath), rootDir);
     }
@@ -102,7 +102,7 @@ class FileSystemBlobStoreFactoryTest
         assertNotNull(blobStore);
         assertInstanceOf(FileSystemBlobStore.class, blobStore);
         assertEquals("test-store", blobStore.getName());
-        assertEquals("filesystem", blobStore.getHint());
+        assertEquals("filesystem", blobStore.getType());
         assertEquals(rootDir, ((FileSystemBlobStore) blobStore).getBlobFilePath(BlobPath.root()));
     }
 }

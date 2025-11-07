@@ -115,9 +115,9 @@ class S3BlobStoreFactoryTest
     }
 
     @Test
-    void getHint()
+    void getType()
     {
-        assertEquals(TYPE, this.factory.getHint());
+        assertEquals(TYPE, this.factory.getType());
     }
 
     @Test
@@ -132,7 +132,7 @@ class S3BlobStoreFactoryTest
 
         assertNotNull(builder);
         assertEquals(NAME, builder.getName());
-        assertEquals(TYPE, builder.getHint());
+        assertEquals(TYPE, builder.getType());
         assertEquals(BUCKET, builder.get(S3BlobStoreProperties.BUCKET).orElse(null));
         assertEquals(PREFIX + "/" + NAME, builder.get(S3BlobStoreProperties.KEY_PREFIX).orElse(null));
         assertEquals(VALID_MULTIPART_UPLOAD_SIZE,

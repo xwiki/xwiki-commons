@@ -49,7 +49,7 @@ public class FileSystemBlobStoreFactory implements BlobStoreFactory<FileSystemBl
     private Environment environment;
 
     @Override
-    public String getHint()
+    public String getType()
     {
         return "filesystem";
     }
@@ -64,7 +64,7 @@ public class FileSystemBlobStoreFactory implements BlobStoreFactory<FileSystemBl
     public BlobStorePropertiesBuilder newPropertiesBuilder(String name) throws BlobStoreException
     {
         Objects.requireNonNull(name, "Blob store name cannot be null");
-        BlobStorePropertiesBuilder builder = new BlobStorePropertiesBuilder(name, getHint());
+        BlobStorePropertiesBuilder builder = new BlobStorePropertiesBuilder(name, getType());
 
         // Default base path: $permanentDir/<name>
         Path basePath = this.environment.getPermanentDirectory().toPath().resolve(name);

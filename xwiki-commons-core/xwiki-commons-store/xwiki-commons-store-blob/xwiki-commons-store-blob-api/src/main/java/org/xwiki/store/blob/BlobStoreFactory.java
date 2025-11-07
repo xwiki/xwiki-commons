@@ -36,9 +36,9 @@ import org.xwiki.stability.Unstable;
 public interface BlobStoreFactory<T extends BlobStoreProperties>
 {
     /**
-     * @return the hint this factory supports (e.g., "filesystem", "s3")
+     * @return the type of {@link BlobStore} this factory supports (e.g., "filesystem", "s3")
      */
-    String getHint();
+    String getType();
 
     /**
      * Create a new properties builder pre-initialized with defaults for the given store name.

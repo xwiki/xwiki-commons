@@ -85,9 +85,9 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings({ "checkstyle:MultipleStringLiterals", "checkstyle:ClassFanOutComplexity" })
 class DefaultBlobStoreManagerTest
 {
-    private static final String FILE_HINT = "file";
+    private static final String FILE_TYPE = "file";
 
-    private static final String S3_HINT = "s3";
+    private static final String S3_TYPE = "s3";
 
     private static final String TEST_STORE = "testStore";
 
@@ -125,11 +125,11 @@ class DefaultBlobStoreManagerTest
     /**
      * Helper method to register and configure a migration factory.
      */
-    private BlobStoreFactory registerMigrationFactory(String hint, BlobStore migrationStore) throws Exception
+    private BlobStoreFactory registerMigrationFactory(String type, BlobStore migrationStore) throws Exception
     {
-        BlobStoreFactory factory = this.componentManager.registerMockComponent(BlobStoreFactory.class, hint);
+        BlobStoreFactory factory = this.componentManager.registerMockComponent(BlobStoreFactory.class, type);
         when(factory.newPropertiesBuilder(any())).thenAnswer(
-            inv -> new BlobStorePropertiesBuilder(inv.getArgument(0), hint));
+            inv -> new BlobStorePropertiesBuilder(inv.getArgument(0), type));
         when(factory.create(any(), any())).thenReturn(migrationStore);
         doReturn(ExtendedBlobStoreProperties.class).when(factory).getPropertiesClass();
         return factory;
@@ -138,17 +138,17 @@ class DefaultBlobStoreManagerTest
     /**
      * Helper method to register a customizer.
      */
-    private BlobStorePropertiesCustomizer registerCustomizer(String hint) throws Exception
+    private BlobStorePropertiesCustomizer registerCustomizer(String type) throws Exception
     {
-        return this.componentManager.registerMockComponent(BlobStorePropertiesCustomizer.class, hint);
+        return this.componentManager.registerMockComponent(BlobStorePropertiesCustomizer.class, type);
     }
 
     @BeforeEach
     void setup() throws Exception
     {
-        when(this.configuration.getStoreHint()).thenReturn(FILE_HINT);
+        when(this.configuration.getStoreType()).thenReturn(FILE_TYPE);
         when(this.fileFactory.newPropertiesBuilder(any())).thenAnswer(
-            inv -> new BlobStorePropertiesBuilder(inv.getArgument(0), FILE_HINT));
+            inv -> new BlobStorePropertiesBuilder(inv.getArgument(0), FILE_TYPE));
         when(this.fileFactory.create(any(), any())).thenReturn(this.testStore);
         doReturn(ExtendedBlobStoreProperties.class).when(this.fileFactory).getPropertiesClass();
         when(this.blobStoreMigrator.isMigrationInProgress(any())).thenReturn(false);
@@ -171,8 +171,8 @@ class DefaultBlobStoreManagerTest
     @Test
     void getBlobStoreWithMigrationWhenCurrentStoreIsEmpty() throws Exception
     {
-        when(this.configuration.getMigrationStoreHint()).thenReturn(S3_HINT);
-        BlobStoreFactory s3Factory = registerMigrationFactory(S3_HINT, this.migrationStore);
+        when(this.configuration.getMigrationStoreType()).thenReturn(S3_TYPE);
+        BlobStoreFactory s3Factory = registerMigrationFactory(S3_TYPE, this.migrationStore);
 
         when(this.testStore.hasDescendants(BlobPath.root())).thenReturn(false);
 
@@ -182,7 +182,7 @@ class DefaultBlobStoreManagerTest
         verify(this.blobStoreMigrator).isMigrationInProgress(this.testStore);
         verify(this.testStore).hasDescendants(BlobPath.root());
         verify(this.blobStoreMigrator).migrate(this.testStore, this.migrationStore);
-        verify(this.configuration).getMigrationStoreHint();
+        verify(this.configuration).getMigrationStoreType();
         // Verify both factories were called exactly once
         verify(this.fileFactory, times(1)).create(any(), any());
         verify(s3Factory, times(1)).create(any(), any());
@@ -191,8 +191,8 @@ class DefaultBlobStoreManagerTest
     @Test
     void getBlobStoreWithMigrationWhenCurrentStoreIsNotEmpty() throws Exception
     {
-        when(this.configuration.getMigrationStoreHint()).thenReturn(S3_HINT);
-        BlobStoreFactory s3Factory = registerMigrationFactory(S3_HINT, this.migrationStore);
+        when(this.configuration.getMigrationStoreType()).thenReturn(S3_TYPE);
+        BlobStoreFactory s3Factory = registerMigrationFactory(S3_TYPE, this.migrationStore);
 
         when(this.testStore.hasDescendants(BlobPath.root())).thenReturn(true);
 
@@ -208,8 +208,8 @@ class DefaultBlobStoreManagerTest
     @Test
     void getBlobStoreResumesMigrationWhenMarkerPresent() throws Exception
     {
-        when(this.configuration.getMigrationStoreHint()).thenReturn(S3_HINT);
-        BlobStoreFactory s3Factory = registerMigrationFactory(S3_HINT, this.migrationStore);
+        when(this.configuration.getMigrationStoreType()).thenReturn(S3_TYPE);
+        BlobStoreFactory s3Factory = registerMigrationFactory(S3_TYPE, this.migrationStore);
 
         when(this.testStore.hasDescendants(BlobPath.root())).thenReturn(true);
         when(this.blobStoreMigrator.isMigrationInProgress(this.testStore)).thenReturn(true);
@@ -225,9 +225,9 @@ class DefaultBlobStoreManagerTest
     }
 
     @Test
-    void getBlobStoreWithSameStoreAndMigrationHint() throws Exception
+    void getBlobStoreWithSameStoreAndMigrationType() throws Exception
     {
-        when(this.configuration.getMigrationStoreHint()).thenReturn(FILE_HINT);
+        when(this.configuration.getMigrationStoreType()).thenReturn(FILE_TYPE);
 
         BlobStore result = this.blobStoreManager.getBlobStore(TEST_STORE);
 
@@ -237,14 +237,14 @@ class DefaultBlobStoreManagerTest
     }
 
     @Test
-    void getBlobStoreWhenNoMigrationHint() throws Exception
+    void getBlobStoreWhenNoMigrationType() throws Exception
     {
-        when(this.configuration.getMigrationStoreHint()).thenReturn(null);
+        when(this.configuration.getMigrationStoreType()).thenReturn(null);
 
         BlobStore result = this.blobStoreManager.getBlobStore(TEST_STORE);
 
         assertSame(this.testStore, result);
-        verify(this.configuration).getMigrationStoreHint();
+        verify(this.configuration).getMigrationStoreType();
         verify(this.testStore, never()).hasDescendants(any());
         verifyNoInteractions(this.blobStoreMigrator);
     }
@@ -252,7 +252,7 @@ class DefaultBlobStoreManagerTest
     @Test
     void getBlobStoreThrowsComponentLookupException()
     {
-        when(this.configuration.getStoreHint()).thenReturn("foo");
+        when(this.configuration.getStoreType()).thenReturn("foo");
         // No factory registered for "foo"
 
         BlobStoreException exception = assertThrows(BlobStoreException.class,
@@ -288,8 +288,8 @@ class DefaultBlobStoreManagerTest
     @Test
     void getBlobStoreWithMigrationThrowsExceptionWhenMigrationFails() throws Exception
     {
-        when(this.configuration.getMigrationStoreHint()).thenReturn(S3_HINT);
-        registerMigrationFactory(S3_HINT, this.migrationStore);
+        when(this.configuration.getMigrationStoreType()).thenReturn(S3_TYPE);
+        registerMigrationFactory(S3_TYPE, this.migrationStore);
 
         when(this.testStore.hasDescendants(BlobPath.root())).thenReturn(false);
         doThrow(new BlobStoreException("Migration failed"))
@@ -365,9 +365,9 @@ class DefaultBlobStoreManagerTest
         doReturn(ExtendedBlobStoreProperties.class).when(mockFactory).getPropertiesClass();
         BlobStore mockStore = mock();
         when(mockStore.getName()).thenReturn(TEST_STORE);
-        when(mockStore.getHint()).thenReturn("filesystem");
+        when(mockStore.getType()).thenReturn("filesystem");
         when(mockFactory.create(any(), any())).thenReturn(mockStore);
-        this.componentManager.registerComponent(BlobStoreFactory.class, FILE_HINT, mockFactory);
+        this.componentManager.registerComponent(BlobStoreFactory.class, FILE_TYPE, mockFactory);
 
         BlobStore result = this.blobStoreManager.getBlobStore(TEST_STORE);
 
@@ -376,7 +376,7 @@ class DefaultBlobStoreManagerTest
 
         assertEquals(TEST_STORE, result.getName());
         assertEquals(TEST_STORE, result.getName());
-        assertEquals("filesystem", result.getHint());
+        assertEquals("filesystem", result.getType());
     }
 
     @Test
@@ -387,7 +387,7 @@ class DefaultBlobStoreManagerTest
             inv -> new BlobStorePropertiesBuilder(inv.getArgument(0), "filesystem"));
         doReturn(ExtendedBlobStoreProperties.class).when(mockFactory).getPropertiesClass();
         when(mockFactory.create(any(), any())).thenReturn(mock());
-        this.componentManager.registerComponent(BlobStoreFactory.class, FILE_HINT, mockFactory);
+        this.componentManager.registerComponent(BlobStoreFactory.class, FILE_TYPE, mockFactory);
 
         BlobStorePropertiesCustomizer customizer = registerCustomizer("customizer");
         doAnswer(inv -> {
@@ -415,7 +415,7 @@ class DefaultBlobStoreManagerTest
             inv -> new BlobStorePropertiesBuilder(inv.getArgument(0), "filesystem"));
         doReturn(ValidatingBlobStoreProperties.class).when(mockFactory).getPropertiesClass();
         when(mockFactory.create(any(), any())).thenReturn(mock());
-        this.componentManager.registerComponent(BlobStoreFactory.class, FILE_HINT, mockFactory);
+        this.componentManager.registerComponent(BlobStoreFactory.class, FILE_TYPE, mockFactory);
 
         // Don't set the mandatory property via customizer
         BlobStoreException exception = assertThrows(BlobStoreException.class,
@@ -432,7 +432,7 @@ class DefaultBlobStoreManagerTest
             inv -> new BlobStorePropertiesBuilder(inv.getArgument(0), "filesystem"));
         doReturn(ValidatingBlobStoreProperties.class).when(mockFactory).getPropertiesClass();
         when(mockFactory.create(any(), any())).thenReturn(mock());
-        this.componentManager.registerComponent(BlobStoreFactory.class, FILE_HINT, mockFactory);
+        this.componentManager.registerComponent(BlobStoreFactory.class, FILE_TYPE, mockFactory);
 
         BlobStorePropertiesCustomizer customizer = registerCustomizer("customizer");
         doAnswer(inv -> {

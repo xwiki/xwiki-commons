@@ -38,9 +38,9 @@ public interface BlobStore
     String getName();
 
     /**
-     * @return the hint of this blob store (e.g., "filesystem", "s3")
+     * @return the type of this blob store (e.g., "filesystem", "s3")
      */
-    String getHint();
+    String getType();
 
     /**
      * @return the properties used to create this store

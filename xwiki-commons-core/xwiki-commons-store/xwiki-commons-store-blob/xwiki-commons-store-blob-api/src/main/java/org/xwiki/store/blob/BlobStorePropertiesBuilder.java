@@ -27,8 +27,8 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Mutable properties map used to build a typed properties bean for creating a BlobStore.
- * Holds the store name, hint, and implementation-specific options keyed by property id.
- * The name and hint are stored separately from the options map and are immutable after construction.
+ * Holds the store name, type, and implementation-specific options keyed by property id.
+ * The name and type are stored separately from the options map and are immutable after construction.
  *
  * @version $Id$
  * @since 17.10.0RC1
@@ -38,20 +38,20 @@ public final class BlobStorePropertiesBuilder
 {
     private final String name;
 
-    private final String hint;
+    private final String type;
 
     private final Map<String, Object> options = new HashMap<>();
 
     /**
-     * Create a new builder with the specified name and hint.
+     * Create a new builder with the specified name and type.
      *
      * @param name the store name
-     * @param hint the store hint (factory hint, e.g., "filesystem", "s3")
+     * @param type the type of the blob store (e.g., "filesystem", "s3")
      */
-    public BlobStorePropertiesBuilder(String name, String hint)
+    public BlobStorePropertiesBuilder(String name, String type)
     {
         this.name = name;
-        this.hint = hint;
+        this.type = type;
     }
 
     /**
@@ -63,11 +63,11 @@ public final class BlobStorePropertiesBuilder
     }
 
     /**
-     * @return the store hint (factory hint)
+     * @return the store type
      */
-    public String getHint()
+    public String getType()
     {
-        return this.hint;
+        return this.type;
     }
 
     /**
@@ -107,7 +107,7 @@ public final class BlobStorePropertiesBuilder
     }
 
     /**
-     * @return a view of all properties keyed by property id (excludes name and hint)
+     * @return a view of all properties keyed by property id (excludes name and type)
      */
     public Map<String, Object> getAllProperties()
     {

@@ -37,28 +37,28 @@ import org.xwiki.configuration.ConfigurationSource;
 @Singleton
 public class BlobStoreConfiguration
 {
-    private static final String FILESYSTEM_STORE_HINT = "filesystem";
+    private static final String FILESYSTEM_STORE_TYPE = "filesystem";
 
     @Inject
     @Named("restricted")
     private Provider<ConfigurationSource> configurationSourceProvider;
 
     /**
-     * @return the hint for the blob store type to use, e.g., "filesystem" or "s3". This is used to determine which blob
-     *     store manager to use when creating a new blob store.
+     * @return the type of the blob store type to use, e.g., "filesystem" or "s3". This is used to determine which blob
+     *     store factory to use when creating a new blob store.
      */
-    public String getStoreHint()
+    public String getStoreType()
     {
-        return this.configurationSourceProvider.get().getProperty("store.blobStoreHint", FILESYSTEM_STORE_HINT);
+        return this.configurationSourceProvider.get().getProperty("store.blobStoreType", FILESYSTEM_STORE_TYPE);
     }
 
     /**
-     * @return the hint for the blob store from which data should be migrated when there is no data in the current blob
+     * @return the type of the blob store from which data should be migrated when there is no data in the current blob
      *    store. This can be used, e.g., to migrate from the filesystem blob store to an S3 blob store.
      */
-    public String getMigrationStoreHint()
+    public String getMigrationStoreType()
     {
         return this.configurationSourceProvider.get()
-            .getProperty("store.blobMigrationStoreHint", FILESYSTEM_STORE_HINT);
+            .getProperty("store.blobMigrationStoreType", FILESYSTEM_STORE_TYPE);
     }
 }

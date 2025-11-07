@@ -62,7 +62,7 @@ public class S3BlobStoreFactory implements BlobStoreFactory<S3BlobStorePropertie
     private Provider<S3BlobStore> blobStoreProvider;
 
     @Override
-    public String getHint()
+    public String getType()
     {
         return "s3";
     }
@@ -76,7 +76,7 @@ public class S3BlobStoreFactory implements BlobStoreFactory<S3BlobStorePropertie
     @Override
     public BlobStorePropertiesBuilder newPropertiesBuilder(String name)
     {
-        BlobStorePropertiesBuilder builder = new BlobStorePropertiesBuilder(name, getHint());
+        BlobStorePropertiesBuilder builder = new BlobStorePropertiesBuilder(name, getType());
 
         // Initialize from configuration.
         String bucket = this.configuration.getS3BucketName();

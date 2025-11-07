@@ -34,22 +34,22 @@ public abstract class AbstractBlobStore<T extends BlobStoreProperties> implement
 {
     protected String name;
 
-    protected String hint;
+    protected String type;
 
     protected T properties;
 
     /**
-     * Initialize this blob store with the given name, hint, and properties.
+     * Initialize this blob store with the given name, type, and properties.
      * Must be called before performing any other operations.
      *
      * @param name the name of this blob store
-     * @param hint the hint of this blob store implementation
+     * @param type the type of this blob store implementation
      * @param properties the typed properties for this blob store
      */
-    protected void initialize(String name, String hint, T properties)
+    protected void initialize(String name, String type, T properties)
     {
         this.name = name;
-        this.hint = hint;
+        this.type = type;
         this.properties = properties;
     }
 
@@ -60,9 +60,9 @@ public abstract class AbstractBlobStore<T extends BlobStoreProperties> implement
     }
 
     @Override
-    public String getHint()
+    public String getType()
     {
-        return this.hint;
+        return this.type;
     }
 
     @Override
@@ -76,7 +76,7 @@ public abstract class AbstractBlobStore<T extends BlobStoreProperties> implement
     {
         return new XWikiToStringBuilder(this)
             .append("name", this.name)
-            .append("hint", this.hint)
+            .append("type", this.type)
             .toString();
     }
 }

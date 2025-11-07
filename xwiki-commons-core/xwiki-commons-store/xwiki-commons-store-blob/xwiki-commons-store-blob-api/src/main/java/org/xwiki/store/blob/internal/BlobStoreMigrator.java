@@ -70,7 +70,7 @@ public class BlobStoreMigrator
         try {
             writeMarker(markerBlob, storeName, sourceStore, targetStore);
             this.logger.info("Starting blob store migration for [{}] (source: [{}], target: [{}]).",
-                storeName, sourceStore.getHint(), targetStore.getHint());
+                storeName, sourceStore.getType(), targetStore.getType());
         } catch (BlobAlreadyExistsException e) {
             this.logger.info("Detected existing migration marker [{}]; resuming migration of blob store [{}].",
                 markerPath, storeName);
@@ -112,7 +112,7 @@ public class BlobStoreMigrator
             Source Store: %s
             Target Store: %s
             Started At: %s
-            """.formatted(storeName, sourceStore.getHint(), targetStore.getHint(), Instant.now());
+            """.formatted(storeName, sourceStore.getType(), targetStore.getType(), Instant.now());
 
         try (ByteArrayInputStream stream =
             new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8))) {
@@ -134,7 +134,7 @@ public class BlobStoreMigrator
             throw e;
         } catch (Exception e) {
             throw new BlobStoreException("Failed to list blobs from migration store [%s] during migration of [%s]"
-                .formatted(sourceStore.getHint(), storeName), e);
+                .formatted(sourceStore.getType(), storeName), e);
         }
     }
 
@@ -151,7 +151,7 @@ public class BlobStoreMigrator
                 ("Failed to move blob [%s] while migrating [%s] from [%s] to [%s]. "
                     + "Fix the issue or delete the source blob to unblock the migration."
                     + "The migration will be resumed on the next attempt.")
-                    .formatted(path, targetStore.getName(), sourceStore.getHint(), targetStore.getHint()), e);
+                    .formatted(path, targetStore.getName(), sourceStore.getType(), targetStore.getType()), e);
         }
     }
 }

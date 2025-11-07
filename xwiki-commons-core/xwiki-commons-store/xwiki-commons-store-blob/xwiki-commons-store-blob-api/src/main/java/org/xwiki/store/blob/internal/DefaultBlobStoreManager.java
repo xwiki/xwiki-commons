@@ -46,7 +46,7 @@ import org.xwiki.store.blob.BlobStorePropertiesCustomizer;
 
 /**
  * Default implementation of {@link BlobStoreManager} that retrieves blob stores based on the name and the
- * configured store hint.
+ * configured store type.
  *
  * @version $Id$
  * @since 17.10.0RC1
@@ -95,15 +95,15 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
 
     private BlobStore getAndMaybeMigrateStore(String name) throws ComponentLookupException, BlobStoreException
     {
-        String storeHint = this.configuration.getStoreHint();
-        String migrationStoreHint = this.configuration.getMigrationStoreHint();
-        BlobStore blobStore = getBlobStore(name, storeHint);
+        String storeType = this.configuration.getStoreType();
+        String migrationStoreType = this.configuration.getMigrationStoreType();
+        BlobStore blobStore = getBlobStore(name, storeType);
 
-        if (migrationStoreHint != null && !migrationStoreHint.equals(storeHint)) {
+        if (migrationStoreType != null && !migrationStoreType.equals(storeType)) {
             boolean migrationInProgress = this.blobStoreMigrator.isMigrationInProgress(blobStore);
             boolean needsMigration = migrationInProgress || !blobStore.hasDescendants(BlobPath.root());
             if (needsMigration) {
-                BlobStore migrationStore = getBlobStore(name, migrationStoreHint);
+                BlobStore migrationStore = getBlobStore(name, migrationStoreType);
                 this.blobStoreMigrator.migrate(blobStore, migrationStore);
             }
         }
@@ -111,10 +111,10 @@ public class DefaultBlobStoreManager implements BlobStoreManager, Disposable
         return blobStore;
     }
 
-    private <T extends BlobStoreProperties> BlobStore getBlobStore(String name, String storeHint)
+    private <T extends BlobStoreProperties> BlobStore getBlobStore(String name, String storeType)
         throws ComponentLookupException, BlobStoreException
     {
-        BlobStoreFactory<T> factory = this.componentManager.getInstance(BlobStoreFactory.class, storeHint);
+        BlobStoreFactory<T> factory = this.componentManager.getInstance(BlobStoreFactory.class, storeType);
 
         BlobStorePropertiesBuilder propertiesBuilder = factory.newPropertiesBuilder(name);
 
