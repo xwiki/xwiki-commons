@@ -1314,7 +1314,7 @@
       <dependency>
         <groupId>org.glassfish.expressly</groupId>
         <artifactId>expressly</artifactId>
-        <version>5.0.0</version>
+        <version>6.0.0</version>
         <!-- The implementation of Expression Language is supposed to come with the application server -->
         <scope>provided</scope>
       </dependency>
