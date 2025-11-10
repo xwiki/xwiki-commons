@@ -49,7 +49,7 @@ public class JavascriptImportmapParser
     public Map<String, WebjarDescriptor> parse(String importMapJSON) throws JavascriptImportmapException
     {
         Map<String, WebjarDescriptor> extensionImportMap;
-        Object parsedJSON = null;
+        Object parsedJSON;
         try {
             parsedJSON = OBJECT_MAPPER.readValue(importMapJSON, Object.class);
         } catch (JsonProcessingException e) {

@@ -147,18 +147,18 @@
               </rules>
             </configuration>
           </execution>
-<!--          <execution>-->
-<!--            <id>enforce-valid-javascript-importmap</id>-->
-<!--            <goals>-->
-<!--              <goal>enforce</goal>-->
-<!--            </goals>-->
-<!--            <configuration>-->
-<!--              <skip>${xwiki.enforcer.valid-importmap.skip}</skip>-->
-<!--              <rules>-->
-<!--                <javascriptImportMapCheck />-->
-<!--              </rules>-->
-<!--            </configuration>-->
-<!--          </execution>-->
+          <execution>
+            <id>enforce-valid-javascript-importmap</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.valid-importmap.skip}</skip>
+              <rules>
+                <javascriptImportMapCheck />
+              </rules>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <!-- Configure revapi to use a common configuration -->
