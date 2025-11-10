@@ -16,7 +16,7 @@ import org.xwiki.webjars.WebjarDescriptor;
 import static org.xwiki.javascript.importmap.internal.parser.JavascriptImportmapParser.JAVASCRIPT_IMPORTMAP_PROPERTY;
 
 /**
- * Verify if the {@code "xwiki.javascript.modules.importmap"} property is wellformed.
+ * Verify if the {@link JavascriptImportmapParser#JAVASCRIPT_IMPORTMAP_PROPERTY} property is well-formed.
  *
  * @version $Id$
  * @since 17.10.0RC1
