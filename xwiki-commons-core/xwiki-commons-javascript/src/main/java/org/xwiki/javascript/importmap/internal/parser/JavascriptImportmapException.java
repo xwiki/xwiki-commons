@@ -19,13 +19,27 @@
  */
 package org.xwiki.javascript.importmap.internal.parser;
 
+/**
+ * Javascript importmap related exception.
+ *
+ * @version $Id$
+ * @since 17.10.0RC1
+ */
 public class JavascriptImportmapException extends Exception
 {
+    /**
+     * @param message the detail message
+     */
     public JavascriptImportmapException(String message)
     {
         super(message);
     }
 
+    /**
+     *
+     * @param message the detail message
+     * @param cause the cause
+     */
     public JavascriptImportmapException(String message, Throwable cause)
     {
         super(message, cause);
