@@ -37,6 +37,11 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
  */
 public class JavascriptImportmapParser
 {
+    /**
+     * Javascript Import map property name.
+     */
+    public static final String JAVASCRIPT_IMPORTMAP_PROPERTY = "xwiki.extension.javascript.modules.importmap";
+
     private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().build();
 
     /**

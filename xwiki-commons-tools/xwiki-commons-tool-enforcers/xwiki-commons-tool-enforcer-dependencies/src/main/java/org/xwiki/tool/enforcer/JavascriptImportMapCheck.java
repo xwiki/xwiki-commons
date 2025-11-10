@@ -10,6 +10,8 @@ import org.xwiki.javascript.importmap.internal.parser.JavascriptImportmapExcepti
 import org.xwiki.javascript.importmap.internal.parser.JavascriptImportmapParser;
 import org.xwiki.webjars.WebjarDescriptor;
 
+import static org.xwiki.javascript.importmap.internal.parser.JavascriptImportmapParser.JAVASCRIPT_IMPORTMAP_PROPERTY;
+
 /**
  * Verify if the {@code "xwiki.javascript.modules.importmap"} property is wellformed.
  *
@@ -19,13 +21,11 @@ import org.xwiki.webjars.WebjarDescriptor;
 @Named("javascriptImportMapCheck")
 public class JavascriptImportMapCheck extends AbstractPomCheck
 {
-    private static final String XWIKI_JAVASCRIPT_MODULES_IMPORTMAP = "xwiki.javascript.modules.importmap";
-
     @Override
     public void execute() throws EnforcerRuleException
     {
         Model model = getResolvedModel();
-        var property = model.getProperties().getProperty(XWIKI_JAVASCRIPT_MODULES_IMPORTMAP);
+        var property = model.getProperties().getProperty(JAVASCRIPT_IMPORTMAP_PROPERTY);
         if (property == null) {
             return;
         }
@@ -39,7 +39,7 @@ public class JavascriptImportMapCheck extends AbstractPomCheck
             }
         } catch (JavascriptImportmapException e) {
             throw new EnforcerRuleException(
-                "Failed to parse the [%s] property".formatted(XWIKI_JAVASCRIPT_MODULES_IMPORTMAP), e);
+                "Failed to parse the [%s] property".formatted(JAVASCRIPT_IMPORTMAP_PROPERTY), e);
         }
     }
 }
