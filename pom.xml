@@ -106,6 +106,9 @@
     <jmock.version>2.13.1</jmock.version>
     <mockito.version>5.20.0</mockito.version>
 
+    <!-- Testcontainers for integration tests -->
+    <testcontainers.version>1.21.3</testcontainers.version>
+
     <!-- Byte Buddy -->
     <bytebuddy.version>1.17.8</bytebuddy.version>
 
@@ -137,6 +140,9 @@
 
     <!-- JAXB -->
     <jaxb.tools.version>2.0.15</jaxb.tools.version>
+
+    <!-- AWS SDK -->
+    <aws.java.sdk.version>2.37.4</aws.java.sdk.version>
 
     <!-- By default, Checkstyle, Backward compatibility check, Enforcer, License plugins, etc., are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
@@ -1468,6 +1474,12 @@
         <artifactId>error_prone_annotations</artifactId>
         <version>2.44.0</version>
       </dependency>
+      <!-- Used by Infinispan and S3. -->
+      <dependency>
+        <groupId>org.reactivestreams</groupId>
+        <artifactId>reactive-streams</artifactId>
+        <version>1.0.4</version>
+      </dependency>
       <!-- The maven remote resource plugin is also used as dependency -->
       <dependency>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1502,6 +1514,13 @@
         <groupId>jakarta.enterprise</groupId>
         <artifactId>jakarta.enterprise.cdi-api</artifactId>
         <version>2.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>${aws.java.sdk.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

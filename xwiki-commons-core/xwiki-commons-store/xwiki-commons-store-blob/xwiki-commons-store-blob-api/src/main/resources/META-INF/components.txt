@@ -1,0 +1,3 @@
+org.xwiki.store.blob.internal.BlobStoreConfiguration
+org.xwiki.store.blob.internal.BlobStoreMigrator
+org.xwiki.store.blob.internal.DefaultBlobStoreManager

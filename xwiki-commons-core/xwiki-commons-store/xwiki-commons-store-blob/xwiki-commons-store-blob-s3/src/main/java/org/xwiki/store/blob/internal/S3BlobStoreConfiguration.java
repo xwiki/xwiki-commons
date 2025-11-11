@@ -1,0 +1,179 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+package org.xwiki.store.blob.internal;
+
+import java.time.Duration;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.configuration.ConfigurationSource;
+
+/**
+ * Configuration for the S3-based Blob Store.
+ *
+ * @version $Id$
+ * @since 17.10.0RC1
+ */
+@Component(roles = S3BlobStoreConfiguration.class)
+@Singleton
+public class S3BlobStoreConfiguration
+{
+    @Inject
+    @Named("restricted")
+    private Provider<ConfigurationSource> configurationSourceProvider;
+
+    /**
+     * @return the name of the S3 bucket where blobs will be stored
+     */
+    public String getS3BucketName()
+    {
+        return this.configurationSourceProvider.get().getProperty("store.s3.bucketName");
+    }
+
+    /**
+     * @return the AWS region where the S3 bucket is located (defaults to "us-east-1")
+     */
+    public String getS3Region()
+    {
+        return this.configurationSourceProvider.get().getProperty("store.s3.region", "us-east-1");
+    }
+
+    /**
+     * @return the AWS access key for authenticating with S3
+     */
+    public String getS3AccessKey()
+    {
+        return this.configurationSourceProvider.get().getProperty("store.s3.accessKey");
+    }
+
+    /**
+     * @return the AWS secret key for authenticating with S3
+     */
+    public String getS3SecretKey()
+    {
+        return this.configurationSourceProvider.get().getProperty("store.s3.secretKey");
+    }
+
+    /**
+     * @return the S3 endpoint URL when using a custom S3-compatible service
+     */
+    public String getS3Endpoint()
+    {
+        return this.configurationSourceProvider.get().getProperty("store.s3.endpoint");
+    }
+
+    /**
+     * @return whether to use path-style access for S3 URLs (defaults to false)
+     */
+    public boolean isS3PathStyleAccess()
+    {
+        return this.configurationSourceProvider.get().getProperty("store.s3.pathStyleAccess", false);
+    }
+
+    /**
+     * @return the maximum number of concurrent connections to S3 (defaults to 50)
+     */
+    public int getS3MaxConnections()
+    {
+        return this.configurationSourceProvider.get().getProperty("store.s3.maxConnections", 50);
+    }
+
+    /**
+     * @return the connection timeout for S3 requests (defaults to 10 seconds)
+     */
+    public Duration getS3ConnectionTimeout()
+    {
+        return Duration.ofSeconds(this.configurationSourceProvider.get().getProperty("store.s3.connectionTimeout", 10));
+    }
+
+    /**
+     * @return the socket timeout for S3 requests (defaults to 50 seconds)
+     */
+    public Duration getS3SocketTimeout()
+    {
+        return Duration.ofSeconds(this.configurationSourceProvider.get().getProperty("store.s3.socketTimeout", 50));
+    }
+
+    /**
+     * @return the request timeout for S3 requests (defaults to 300 seconds)
+     */
+    public Duration getS3RequestTimeout()
+    {
+        return Duration.ofSeconds(this.configurationSourceProvider.get().getProperty("store.s3.requestTimeout", 300));
+    }
+
+    /**
+     * @return the maximum number of retries for failed S3 requests (defaults to 3)
+     */
+    public int getS3MaxRetries()
+    {
+        return this.configurationSourceProvider.get().getProperty("store.s3.maxRetries", 3);
+    }
+
+    /**
+     * @return the key prefix to prepend to all S3 object keys (defaults to "")
+     */
+    public String getS3KeyPrefix()
+    {
+        return this.configurationSourceProvider.get().getProperty("store.s3.keyPrefix", "");
+    }
+
+    /**
+     * Returns the configured multipart upload part size in bytes. Defaults to 5 MB if not configured. Uploads above
+     * this size will use multipart upload with parts of this size.
+     *
+     * @return the part size in bytes
+     */
+    public long getS3MultipartPartUploadSizeBytes()
+    {
+        int sizeMB = this.configurationSourceProvider.get().getProperty("store.s3.multipartPartUploadSizeMB", 5);
+
+        return convertToBytesAndLimitPartSize(sizeMB);
+    }
+
+    /**
+     * Returns the configured multipart copy size threshold in bytes. Defaults to 512 MB if not configured.
+     * Objects larger than this threshold will use multipart copy operations with parts of this size.
+     * If the size is smaller than {@link #getS3MultipartPartUploadSizeBytes()}, it will be increased to match it.
+     *
+     * @return the copy size threshold in bytes
+     */
+    public long getS3MultipartCopySizeBytes()
+    {
+        int sizeMB = this.configurationSourceProvider.get().getProperty("store.s3.multipartCopySizeMB", 512);
+
+        long copyBytes = convertToBytesAndLimitPartSize(sizeMB);
+
+        // Ensure the copy part size is at least the upload part size so that copying an object won't require more
+        // parts than uploading the same object.
+        long uploadPartSize = getS3MultipartPartUploadSizeBytes();
+        return Math.max(copyBytes, uploadPartSize);
+    }
+
+    private static long convertToBytesAndLimitPartSize(int sizeMB)
+    {
+        return Math.max(Math.min(sizeMB * 1024L * 1024L, S3MultipartUploadHelper.MAX_PART_SIZE),
+            S3MultipartUploadHelper.MIN_PART_SIZE);
+    }
+}
