@@ -32,20 +32,14 @@
   <packaging>jar</packaging>
   <description>Storage API for accessing data in a storage backend</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.76</xwiki.jacoco.instructionRatio>
+    <!-- No tests for simple interface and exception type. -->
+    <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-component-api</artifactId>
+      <artifactId>xwiki-commons-stability</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <!-- Testing dependencies -->
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-tool-test-simple</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
