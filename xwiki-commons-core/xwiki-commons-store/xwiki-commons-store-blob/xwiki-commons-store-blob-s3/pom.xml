@@ -30,9 +30,16 @@
   <artifactId>xwiki-commons-store-blob-s3</artifactId>
   <name>XWiki Commons - Store - Blob - S3</name>
   <packaging>jar</packaging>
-  <description>Blog storage implementation based on S3-compatible object storage.</description>
+  <description>Blob storage implementation based on S3-compatible object storage.</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.92</xwiki.jacoco.instructionRatio>
+
+    <!-- Name to display in the Extension Manager -->
+    <xwiki.extension.name>S3 Blob Store</xwiki.extension.name>
+    <!-- Category to display in the Extension Manager -->
+    <xwiki.extension.category>api</xwiki.extension.category>
+    <!-- Blob stores need to be installed in the root namespace. -->
+    <xwiki.extension.namespaces>{root}</xwiki.extension.namespaces>
   </properties>
   <dependencies>
     <dependency>

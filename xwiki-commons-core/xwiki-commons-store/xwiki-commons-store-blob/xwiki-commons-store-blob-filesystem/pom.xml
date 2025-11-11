@@ -33,6 +33,13 @@
   <description>Blob storage implementation based on the local filesystem.</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.94</xwiki.jacoco.instructionRatio>
+
+    <!-- Name to display in the Extension Manager -->
+    <xwiki.extension.name>Filesystem Blob Store</xwiki.extension.name>
+    <!-- Category to display in the Extension Manager -->
+    <xwiki.extension.category>api</xwiki.extension.category>
+    <!-- Blob stores need to be installed in the root namespace. -->
+    <xwiki.extension.namespaces>{root}</xwiki.extension.namespaces>
   </properties>
   <dependencies>
     <dependency>
