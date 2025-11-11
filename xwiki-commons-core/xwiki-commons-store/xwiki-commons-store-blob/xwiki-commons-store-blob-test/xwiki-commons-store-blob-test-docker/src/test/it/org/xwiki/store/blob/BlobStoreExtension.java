@@ -21,6 +21,7 @@ package org.xwiki.store.blob;
 
 import java.lang.reflect.Field;
 import java.net.URI;
+import java.time.Duration;
 import java.util.Optional;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
@@ -256,9 +257,9 @@ public class BlobStoreExtension implements BeforeAllCallback, AfterAllCallback, 
 
                 // Connection settings
                 when(configuration.getS3MaxConnections()).thenReturn(50);
-                when(configuration.getS3ConnectionTimeout()).thenReturn(10000);
-                when(configuration.getS3SocketTimeout()).thenReturn(50000);
-                when(configuration.getS3RequestTimeout()).thenReturn(300000);
+                when(configuration.getS3ConnectionTimeout()).thenReturn(Duration.ofSeconds(10));
+                when(configuration.getS3SocketTimeout()).thenReturn(Duration.ofSeconds(50));
+                when(configuration.getS3RequestTimeout()).thenReturn(Duration.ofSeconds(300));
                 when(configuration.getS3MaxRetries()).thenReturn(3);
                 when(configuration.getS3KeyPrefix()).thenReturn("");
             }

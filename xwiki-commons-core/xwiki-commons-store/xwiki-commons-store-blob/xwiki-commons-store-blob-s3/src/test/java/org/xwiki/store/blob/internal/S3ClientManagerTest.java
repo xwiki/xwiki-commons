@@ -21,6 +21,7 @@ package org.xwiki.store.blob.internal;
 
 import java.net.URI;
 import java.net.URL;
+import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -72,9 +73,9 @@ class S3ClientManagerTest
         when(this.configuration.getS3Endpoint()).thenReturn("https://s3.amazonaws.com");
         when(this.configuration.isS3PathStyleAccess()).thenReturn(true);
         when(this.configuration.getS3MaxConnections()).thenReturn(50);
-        when(this.configuration.getS3ConnectionTimeout()).thenReturn(5000);
-        when(this.configuration.getS3SocketTimeout()).thenReturn(10000);
-        when(this.configuration.getS3RequestTimeout()).thenReturn(15000);
+        when(this.configuration.getS3ConnectionTimeout()).thenReturn(Duration.ofSeconds(5));
+        when(this.configuration.getS3SocketTimeout()).thenReturn(Duration.ofSeconds(10));
+        when(this.configuration.getS3RequestTimeout()).thenReturn(Duration.ofSeconds(15));
         when(this.configuration.getS3MaxRetries()).thenReturn(3);
     }
 
@@ -90,9 +91,9 @@ class S3ClientManagerTest
         when(this.configuration.getS3Endpoint()).thenReturn("");
         when(this.configuration.isS3PathStyleAccess()).thenReturn(false);
         when(this.configuration.getS3MaxConnections()).thenReturn(10);
-        when(this.configuration.getS3ConnectionTimeout()).thenReturn(3000);
-        when(this.configuration.getS3SocketTimeout()).thenReturn(5000);
-        when(this.configuration.getS3RequestTimeout()).thenReturn(10000);
+        when(this.configuration.getS3ConnectionTimeout()).thenReturn(Duration.ofSeconds(3));
+        when(this.configuration.getS3SocketTimeout()).thenReturn(Duration.ofSeconds(50));
+        when(this.configuration.getS3RequestTimeout()).thenReturn(Duration.ofSeconds(10));
         when(this.configuration.getS3MaxRetries()).thenReturn(2);
     }
 
@@ -190,7 +191,7 @@ class S3ClientManagerTest
 
         // Verify request timeout
         assertTrue(clientConfig.overrideConfiguration().apiCallTimeout().isPresent());
-        assertEquals(10000, clientConfig.overrideConfiguration().apiCallTimeout().get().toMillis());
+        assertEquals(10, clientConfig.overrideConfiguration().apiCallTimeout().get().toSeconds());
 
         assertEquals("Using default AWS credentials provider chain", this.logCapture.getMessage(0));
         assertEquals("S3 client initialized successfully", this.logCapture.getMessage(1));

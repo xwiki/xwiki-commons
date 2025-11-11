@@ -20,7 +20,6 @@
 package org.xwiki.store.blob.internal;
 
 import java.net.URI;
-import java.time.Duration;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -126,14 +125,14 @@ public class S3ClientManager implements Initializable, Disposable
         // Configure HTTP client with connection pooling
         this.httpClient = ApacheHttpClient.builder()
             .maxConnections(this.configuration.getS3MaxConnections())
-            .connectionTimeout(Duration.ofMillis(this.configuration.getS3ConnectionTimeout()))
-            .socketTimeout(Duration.ofMillis(this.configuration.getS3SocketTimeout()))
+            .connectionTimeout(this.configuration.getS3ConnectionTimeout())
+            .socketTimeout(this.configuration.getS3SocketTimeout())
             .build();
         builder.httpClient(this.httpClient);
 
         // Configure timeouts and retry strategy
         builder.overrideConfiguration(c -> c
-            .apiCallTimeout(Duration.ofMillis(this.configuration.getS3RequestTimeout()))
+            .apiCallTimeout(this.configuration.getS3RequestTimeout())
             .retryStrategy(retryStrategy -> retryStrategy.maxAttempts(this.configuration.getS3MaxRetries())));
 
         return builder.build();

@@ -19,6 +19,8 @@
  */
 package org.xwiki.store.blob.internal;
 
+import java.time.Duration;
+
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Provider;
@@ -98,27 +100,27 @@ public class S3BlobStoreConfiguration
     }
 
     /**
-     * @return the connection timeout in milliseconds for S3 requests (defaults to 10000)
+     * @return the connection timeout for S3 requests (defaults to 10 seconds)
      */
-    public int getS3ConnectionTimeout()
+    public Duration getS3ConnectionTimeout()
     {
-        return this.configurationSourceProvider.get().getProperty("store.s3.connectionTimeout", 10000);
+        return Duration.ofSeconds(this.configurationSourceProvider.get().getProperty("store.s3.connectionTimeout", 10));
     }
 
     /**
-     * @return the socket timeout in milliseconds for S3 requests (defaults to 50000)
+     * @return the socket timeout for S3 requests (defaults to 50 seconds)
      */
-    public int getS3SocketTimeout()
+    public Duration getS3SocketTimeout()
     {
-        return this.configurationSourceProvider.get().getProperty("store.s3.socketTimeout", 50000);
+        return Duration.ofSeconds(this.configurationSourceProvider.get().getProperty("store.s3.socketTimeout", 50));
     }
 
     /**
-     * @return the request timeout in milliseconds for S3 requests (defaults to 300000)
+     * @return the request timeout for S3 requests (defaults to 300 seconds)
      */
-    public int getS3RequestTimeout()
+    public Duration getS3RequestTimeout()
     {
-        return this.configurationSourceProvider.get().getProperty("store.s3.requestTimeout", 300000);
+        return Duration.ofSeconds(this.configurationSourceProvider.get().getProperty("store.s3.requestTimeout", 300));
     }
 
     /**
