@@ -103,11 +103,8 @@ public class UnstableAnnotationCheck extends AbstractCheck
             case TokenTypes.CLASS_DEF:
             case TokenTypes.INTERFACE_DEF:
             case TokenTypes.ENUM_DEF:
-            case TokenTypes.ENUM_CONSTANT_DEF:
             case TokenTypes.RECORD_DEF:
             case TokenTypes.ANNOTATION_DEF:
-            case TokenTypes.ANNOTATION_FIELD_DEF:
-            case TokenTypes.COMPACT_CTOR_DEF:
                 this.classOrInterfaceorEnumName = ast.findFirstToken(TokenTypes.IDENT).getText();
                 break;
         }
