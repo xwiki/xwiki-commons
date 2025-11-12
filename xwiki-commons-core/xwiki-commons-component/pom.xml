@@ -38,5 +38,9 @@
     <module>xwiki-commons-component-default</module>
     <module>xwiki-commons-component-observation</module>
   </modules>
+
+  <scm>
+    <tag>stable-17.10.x</tag>
+  </scm>
 </project>
        

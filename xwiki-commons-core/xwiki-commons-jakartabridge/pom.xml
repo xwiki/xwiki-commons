@@ -38,4 +38,8 @@
     <module>xwiki-commons-jakartabridge-common</module>
     <module>xwiki-commons-jakartabridge-servlet</module>
   </modules>
+
+  <scm>
+    <tag>stable-17.10.x</tag>
+  </scm>
 </project>

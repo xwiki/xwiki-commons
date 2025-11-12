@@ -33,4 +33,8 @@
   <modules>
     <module>xwiki-commons-filter-stream-xml</module>
   </modules>
+
+  <scm>
+    <tag>stable-17.10.x</tag>
+  </scm>
 </project>

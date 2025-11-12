@@ -36,4 +36,8 @@
     <module>xwiki-commons-tool-spoon-checks</module>
     <module>xwiki-commons-tool-spoon-tests</module>
   </modules>
+
+  <scm>
+    <tag>stable-17.10.x</tag>
+  </scm>
 </project>

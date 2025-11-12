@@ -30,4 +30,8 @@
   <artifactId>xwiki-commons-stability</artifactId>
   <name>XWiki Commons - Stability</name>
   <description>Helper classes for controlling API stability</description>
+
+  <scm>
+    <tag>stable-17.10.x</tag>
+  </scm>
 </project>

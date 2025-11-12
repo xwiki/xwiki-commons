@@ -46,5 +46,9 @@
     <module>xwiki-commons-extension-handlers</module>
     <module>xwiki-commons-extension-repositories</module>
   </modules>
+
+  <scm>
+    <tag>stable-17.10.x</tag>
+  </scm>
 </project>
 

@@ -50,5 +50,9 @@
   <modules>
     <module>xwiki-commons-extension-handler-jar</module>
   </modules>
+
+  <scm>
+    <tag>stable-17.10.x</tag>
+  </scm>
 </project>
        

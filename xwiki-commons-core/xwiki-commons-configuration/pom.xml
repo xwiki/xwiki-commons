@@ -35,5 +35,9 @@
     <module>xwiki-commons-configuration-api</module>
     <module>xwiki-commons-configuration-default</module>
   </modules>
+
+  <scm>
+    <tag>stable-17.10.x</tag>
+  </scm>
 </project>
        

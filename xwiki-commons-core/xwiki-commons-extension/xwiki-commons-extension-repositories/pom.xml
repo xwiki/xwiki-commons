@@ -37,5 +37,9 @@
     <module>xwiki-commons-extension-repository-xwiki</module>
     <module>xwiki-commons-extension-repository-maven-snapshots</module>
   </modules>
+
+  <scm>
+    <tag>stable-17.10.x</tag>
+  </scm>
 </project>
        

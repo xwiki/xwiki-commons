@@ -43,4 +43,8 @@
     <module>xwiki-commons-blame-api</module>
     <module>xwiki-commons-blame-script</module>
   </modules>
+
+  <scm>
+    <tag>stable-17.10.x</tag>
+  </scm>
 </project>

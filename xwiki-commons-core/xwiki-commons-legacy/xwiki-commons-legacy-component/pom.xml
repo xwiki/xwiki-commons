@@ -35,4 +35,8 @@
     <module>xwiki-commons-legacy-component-api</module>
     <module>xwiki-commons-legacy-component-default</module>
   </modules>
+
+  <scm>
+    <tag>stable-17.10.x</tag>
+  </scm>
 </project>

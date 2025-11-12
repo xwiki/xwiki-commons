@@ -38,5 +38,9 @@
     <module>xwiki-commons-filter-events</module>
     <module>xwiki-commons-filter-streams</module>
   </modules>
+
+  <scm>
+    <tag>stable-17.10.x</tag>
+  </scm>
 </project>
        

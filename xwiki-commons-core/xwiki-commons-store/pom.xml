@@ -35,4 +35,8 @@
     <module>xwiki-commons-store-api</module>
     <module>xwiki-commons-store-blob</module>
   </modules>
+
+  <scm>
+    <tag>stable-17.10.x</tag>
+  </scm>
 </project>

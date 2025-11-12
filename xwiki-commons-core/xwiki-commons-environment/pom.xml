@@ -37,4 +37,8 @@
     <module>xwiki-commons-environment-standard</module>
     <module>xwiki-commons-environment-servlet</module>
   </modules>
+
+  <scm>
+    <tag>stable-17.10.x</tag>
+  </scm>
 </project>

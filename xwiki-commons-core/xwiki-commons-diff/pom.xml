@@ -46,4 +46,8 @@
     <module>xwiki-commons-diff-script</module>
     <module>xwiki-commons-diff-xml</module>
   </modules>
+
+  <scm>
+    <tag>stable-17.10.x</tag>
+  </scm>
 </project>
