@@ -56,9 +56,9 @@
     <!-- Should be kept in sync with https://dev.xwiki.org/xwiki/bin/view/Community/SupportStrategy/JavaSupportStrategy/ -->
     <!-- Note that we prefix the property name by "XWiki", since some code already use the java.version property (such
          as Spring Boot, see https://www.baeldung.com/maven-java-version), and we want to avoid any clash. -->
-    <xwiki.java.version>17</xwiki.java.version>
+    <xwiki.java.version>21</xwiki.java.version>
     <!-- The highest Java version officially supported by this version of XWiki -->
-    <xwiki.java.version.support>21</xwiki.java.version.support>
+    <xwiki.java.version.support>25</xwiki.java.version.support>
 
     <!-- Jakarta modules -->
     <jakarta.mail.version>1.6.8</jakarta.mail.version>
@@ -2227,6 +2227,17 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>properties</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
@@ -2354,8 +2365,9 @@
                  - Take a heap dump on low memory to diagnose issues
                  - Add add-opens directives to support tests using reflection and xwiki runtime code (or its deps)
                    requiring some features forbidden by default with Java 17+
+                 - Explicitly set Mockito as agent as Java 21+ does not allow library to attach themself anymore. See https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
             -->
-            <argLine>@{argLine} -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory} --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED</argLine>
+            <argLine>@{argLine} -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory} --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED -javaagent:"${org.mockito:mockito-core:jar}"</argLine>
           </configuration>
         </plugin>
         <plugin>
