@@ -22,15 +22,12 @@ package org.xwiki.extension;
 import java.util.List;
 import java.util.Set;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * How a specific extension is supported.
  * 
  * @version $Id$
  * @since 16.7.0RC1
  */
-@Unstable
 public interface ExtensionSupportPlans
 {
     /**

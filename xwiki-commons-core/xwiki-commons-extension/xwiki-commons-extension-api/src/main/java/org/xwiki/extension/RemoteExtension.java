@@ -19,8 +19,6 @@
  */
 package org.xwiki.extension;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * An extension that come from a remote extensions repository.
  * <p>
@@ -40,7 +38,6 @@ public interface RemoteExtension extends Extension
      * @see #getSupportPlans()
      * @since 16.8.0RC1
      */
-    @Unstable
     String FIELD_SUPPORT_PLANS = "supportplans";
 
     /**
@@ -63,7 +60,6 @@ public interface RemoteExtension extends Extension
      * @return the support plans
      * @since 16.8.0RC1
      */
-    @Unstable
     default ExtensionSupportPlans getSupportPlans()
     {
         return ExtensionSupportPlans.EMPTY;

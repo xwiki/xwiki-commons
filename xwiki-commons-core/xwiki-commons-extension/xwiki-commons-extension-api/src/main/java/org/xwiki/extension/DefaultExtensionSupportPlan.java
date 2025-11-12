@@ -25,7 +25,6 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.xwiki.stability.Unstable;
 import org.xwiki.text.XWikiToStringBuilder;
 
 /**
@@ -34,7 +33,6 @@ import org.xwiki.text.XWikiToStringBuilder;
  * @version $Id$
  * @since 16.7.0RC1
  */
-@Unstable
 public class DefaultExtensionSupportPlan implements ExtensionSupportPlan
 {
     /**
