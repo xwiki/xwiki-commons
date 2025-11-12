@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-extension</artifactId>
-    <version>17.10.0-SNAPSHOT</version>
+    <version>18.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-extension-repositories</artifactId>
   <name>XWiki Commons - Extension - Repository - Parent POM</name>
@@ -37,9 +37,5 @@
     <module>xwiki-commons-extension-repository-xwiki</module>
     <module>xwiki-commons-extension-repository-maven-snapshots</module>
   </modules>
-
-  <scm>
-    <tag>stable-17.10.x</tag>
-  </scm>
 </project>
        
