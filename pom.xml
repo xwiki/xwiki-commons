@@ -142,7 +142,7 @@
     <jaxb.tools.version>2.0.15</jaxb.tools.version>
 
     <!-- AWS SDK -->
-    <aws.java.sdk.version>2.38.3</aws.java.sdk.version>
+    <aws.java.sdk.version>2.38.4</aws.java.sdk.version>
 
     <!-- By default, Checkstyle, Backward compatibility check, Enforcer, License plugins, etc., are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
