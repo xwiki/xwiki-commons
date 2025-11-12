@@ -175,10 +175,25 @@ class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
         final String[] expected = {
             "27:1: The @Unstable annotation for [org.xwiki.tool.checkstyle.test.TestEnumWithUnstable] must be removed "
             + "since it's been there for more than a full development cycle (was introduced in [6.0] and current "
-            + "version is [8.1-SNAPSHOT])"
+            + "version is [8.1-SNAPSHOT])",
+            "37:5: The @Unstable annotation for [org.xwiki.tool.checkstyle.test.OTHER] must be removed since it's "
+                + "been there for more than a full development cycle (was introduced in [6.1.0] and "
+                + "current version is [8.1-SNAPSHOT])"
         };
 
         verify(this.checkConfig, getPath("TestEnumWithUnstable.java"), expected);
+    }
+
+    @Test
+    void checkWithUnstableAtRecordLevel() throws Exception
+    {
+        final String[] expected = {
+            "27:1: The @Unstable annotation for [org.xwiki.tool.checkstyle.test.TestRecordWithUnstable] must be "
+                + "removed since it's been there for more than a full development cycle (was introduced in [6.0.0] and "
+                + "current version is [8.1-SNAPSHOT])"
+        };
+
+        verify(this.checkConfig, getPath("TestRecordWithUnstable.java"), expected);
     }
 
     @Override

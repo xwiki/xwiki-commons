@@ -18,23 +18,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package org.xwiki.tool.checkstyle.test;
-
 import org.xwiki.stability.Unstable;
-
 /**
- * @since 6.0
+ * Some doc.
+ * @param foo foo
+ * @since 6.0.0
  */
 @Unstable
-public enum TestEnumWithUnstable
+public record TestRecordWithUnstable(String foo)
 {
-    ELEMENT,
-
-    /**
-     * Added recently.
-     *
-     * @since 6.1.0
-     */
-    @Unstable
-    OTHER,
-    BAR
 }
