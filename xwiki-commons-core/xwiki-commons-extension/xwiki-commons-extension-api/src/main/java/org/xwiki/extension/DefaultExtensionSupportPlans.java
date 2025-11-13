@@ -25,15 +25,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * The support plans associated with an extension.
  * 
  * @version $Id$
  * @since 16.7.0RC1
  */
-@Unstable
 public class DefaultExtensionSupportPlans implements ExtensionSupportPlans
 {
     /**

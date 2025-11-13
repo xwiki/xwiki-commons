@@ -21,7 +21,6 @@ package org.xwiki.extension;
 
 import org.xwiki.extension.rating.RatingExtension;
 import org.xwiki.extension.repository.ExtensionRepository;
-import org.xwiki.stability.Unstable;
 
 /**
  * Base class for {@link RatingExtension} implementations.
@@ -40,7 +39,6 @@ public abstract class AbstractRemoteExtension extends AbstractExtension implemen
      * @see #getSupportPlans()
      * @since 16.8.0RC1
      */
-    @Unstable
     protected ExtensionSupportPlans supportPlans = ExtensionSupportPlans.EMPTY;
 
     /**
@@ -89,7 +87,6 @@ public abstract class AbstractRemoteExtension extends AbstractExtension implemen
      * @param supportPlans the support plans
      * @since 16.8.0RC1
      */
-    @Unstable
     public void setSupportPlans(ExtensionSupportPlans supportPlans)
     {
         this.supportPlans = supportPlans;

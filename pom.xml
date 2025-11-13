@@ -24,7 +24,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>17.10.0-SNAPSHOT</version>
+  <version>18.0.0-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -46,7 +46,7 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>17.10.0-SNAPSHOT</commons.version>
+    <commons.version>18.0.0-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
@@ -56,9 +56,9 @@
     <!-- Should be kept in sync with https://dev.xwiki.org/xwiki/bin/view/Community/SupportStrategy/JavaSupportStrategy/ -->
     <!-- Note that we prefix the property name by "XWiki", since some code already use the java.version property (such
          as Spring Boot, see https://www.baeldung.com/maven-java-version), and we want to avoid any clash. -->
-    <xwiki.java.version>17</xwiki.java.version>
+    <xwiki.java.version>21</xwiki.java.version>
     <!-- The highest Java version officially supported by this version of XWiki -->
-    <xwiki.java.version.support>21</xwiki.java.version.support>
+    <xwiki.java.version.support>25</xwiki.java.version.support>
 
     <!-- Jakarta modules -->
     <jakarta.mail.version>1.6.8</jakarta.mail.version>
@@ -106,6 +106,9 @@
     <jmock.version>2.13.1</jmock.version>
     <mockito.version>5.20.0</mockito.version>
 
+    <!-- Testcontainers for integration tests -->
+    <testcontainers.version>1.21.3</testcontainers.version>
+
     <!-- Byte Buddy -->
     <bytebuddy.version>1.17.8</bytebuddy.version>
 
@@ -137,6 +140,9 @@
 
     <!-- JAXB -->
     <jaxb.tools.version>2.0.15</jaxb.tools.version>
+
+    <!-- AWS SDK -->
+    <aws.java.sdk.version>2.38.4</aws.java.sdk.version>
 
     <!-- By default, Checkstyle, Backward compatibility check, Enforcer, License plugins, etc., are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
@@ -271,7 +277,7 @@
     <javax.websocket.version>1.1</javax.websocket.version>
     <jakarta.websocket.version>2.0.0</jakarta.websocket.version>
 
-    <webdrivermanager.version>6.3.2</webdrivermanager.version>
+    <webdrivermanager.version>6.3.3</webdrivermanager.version>
 
     <!-- The recommended version of known extensions to use -->
     <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]
@@ -383,7 +389,7 @@
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.20.0</version>
+        <version>2.21.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -497,7 +503,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.19.0</version>
+        <version>1.20.0</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
@@ -973,12 +979,12 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-interpolation</artifactId>
-        <version>1.28</version>
+        <version>1.29</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-interactivity-api</artifactId>
-        <version>1.4</version>
+        <version>1.5.1</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -988,7 +994,7 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-archiver</artifactId>
-        <version>4.10.3</version>
+        <version>4.10.4</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -1445,7 +1451,7 @@
       <dependency>
         <groupId>org.jgroups</groupId>
         <artifactId>jgroups</artifactId>
-        <version>5.5.0.Final</version>
+        <version>5.5.1.Final</version>
       </dependency>
       <!-- Used by Solr and Infinispan -->
       <dependency>
@@ -1461,12 +1467,18 @@
       <dependency>
         <groupId>org.checkerframework</groupId>
         <artifactId>checker-qual</artifactId>
-        <version>3.51.1</version>
+        <version>3.52.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.errorprone</groupId>
         <artifactId>error_prone_annotations</artifactId>
-        <version>2.43.0</version>
+        <version>2.44.0</version>
+      </dependency>
+      <!-- Used by Infinispan and S3. -->
+      <dependency>
+        <groupId>org.reactivestreams</groupId>
+        <artifactId>reactive-streams</artifactId>
+        <version>1.0.4</version>
       </dependency>
       <!-- The maven remote resource plugin is also used as dependency -->
       <dependency>
@@ -1502,6 +1514,13 @@
         <groupId>jakarta.enterprise</groupId>
         <artifactId>jakarta.enterprise.cdi-api</artifactId>
         <version>2.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>${aws.java.sdk.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -2208,6 +2227,17 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>properties</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
@@ -2256,7 +2286,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.1.1</version>
+          <version>3.2.0</version>
           <configuration>
             <!-- By default the release plugin will execute the "clean" and "verify" goals but won't perform an
                  "install". This is causing problems since several modules will fail to build during release:prepare.
@@ -2335,8 +2365,9 @@
                  - Take a heap dump on low memory to diagnose issues
                  - Add add-opens directives to support tests using reflection and xwiki runtime code (or its deps)
                    requiring some features forbidden by default with Java 17+
+                 - Explicitly set Mockito as agent as Java 21+ does not allow library to attach themself anymore. See https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
             -->
-            <argLine>@{argLine} -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory} --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED</argLine>
+            <argLine>@{argLine} -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory} --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED -javaagent:"${org.mockito:mockito-core:jar}"</argLine>
           </configuration>
         </plugin>
         <plugin>
@@ -2572,7 +2603,7 @@
           <groupId>org.sonarsource.scanner.maven</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>5.2.0.4988</version>
+          <version>5.3.0.6276</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

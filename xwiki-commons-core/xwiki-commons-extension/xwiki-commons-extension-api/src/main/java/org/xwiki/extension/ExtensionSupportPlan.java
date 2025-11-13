@@ -21,15 +21,12 @@ package org.xwiki.extension;
 
 import java.net.URL;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * A support plan for an extension.
  * 
  * @version $Id$
  * @since 16.7.0RC1
  */
-@Unstable
 public interface ExtensionSupportPlan
 {
     /**

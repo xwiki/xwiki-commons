@@ -27,4 +27,14 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public enum TestEnumWithUnstable
 {
+    ELEMENT,
+
+    /**
+     * Added recently.
+     *
+     * @since 6.1.0
+     */
+    @Unstable
+    OTHER,
+    BAR
 }
