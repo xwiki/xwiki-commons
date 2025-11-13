@@ -22,6 +22,8 @@ package org.xwiki.webjars;
 import java.util.Map;
 import java.util.Objects;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * Contains all the information needed to describe a WebJar resource location.
  *
@@ -38,8 +40,9 @@ import java.util.Objects;
  *     requested resource has Velocity code that needs to be evaluated); besides these you can pass whatever parameters
  *     you like (they will be taken into account or not depending on the resource)
  * @version $Id$
- * @since 17.10.0RC1
+ * @since 18.0.0RC1
  */
+@Unstable
 public record WebjarDescriptor(String webjarId, String namespace, String path, Map<String, ?> params)
 {
     /**

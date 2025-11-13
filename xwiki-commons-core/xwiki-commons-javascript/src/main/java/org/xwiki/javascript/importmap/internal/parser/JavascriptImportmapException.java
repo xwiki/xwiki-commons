@@ -23,7 +23,7 @@ package org.xwiki.javascript.importmap.internal.parser;
  * Javascript importmap related exception.
  *
  * @version $Id$
- * @since 17.10.0RC1
+ * @since 18.0.0RC1
  */
 public class JavascriptImportmapException extends Exception
 {

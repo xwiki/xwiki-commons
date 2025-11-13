@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
  * Parse the importmap declaration format.
  *
  * @version $Id$
- * @since 17.10.0RC1
+ * @since 18.0.0RC1
  */
 public class JavascriptImportmapParser
 {
