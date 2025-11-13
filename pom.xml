@@ -174,6 +174,9 @@
     <xwiki.enforcer.enforce-no-old-xwiki-commons.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-no-old-xwiki-commons.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
     <xwiki.enforcer.enforce-java.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-java.skip>
+    <xwiki.enforcer.enforce-apache-http5.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-apache-http5.skip>
+    <!-- Allow Apache HttpClient 3 as transitive dependency for now because it's needed in integration tests -->
+    <xwiki.enforcer.enforce-apache-http5.searchTransitive>false</xwiki.enforcer.enforce-apache-http5.searchTransitive>
     <xwiki.license.skip>false</xwiki.license.skip>
 
     <!-- Enable by default auto release on Jira -->
@@ -459,19 +462,6 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpasyncclient</artifactId>
         <version>4.1.5</version>
-      </dependency>
-      <!-- Old httpclient -->
-      <dependency>
-        <groupId>commons-httpclient</groupId>
-        <artifactId>commons-httpclient</artifactId>
-        <version>3.1</version>
-        <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -1783,6 +1773,25 @@
                   </message>
                   <excludes>
                     <exclude>commons-configuration:commons-configuration</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using Apache HTTP 5 and not 3 -->
+          <execution>
+            <id>enforce-apache-http5</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-apache-http5.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>${xwiki.enforcer.enforce-apache-http5.searchTransitive}</searchTransitive>
+                  <message>Best practice is to use Apache HTTPClient 5.x</message>
+                  <excludes>
+                    <exclude>commons-httpclient:commons-httpclient</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
