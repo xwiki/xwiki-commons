@@ -23,7 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.xwiki.webjars.WebjarDescriptor;
+import org.xwiki.webjars.WebjarPathDescriptor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,12 +48,13 @@ public class JavascriptImportmapParser
      * Parse an importmap declaration.
      *
      * @param importMapJSON the importmap declaration as a JSON string
-     * @return the resolve mapping of importmap module id and their corresponding {@link WebjarDescriptor} definitions
+     * @return the resolve mapping of importmap module id and their corresponding {@link WebjarPathDescriptor}
+     *     definitions
      * @throws JavascriptImportmapException in case of issue when parsing the provided JSON string
      */
-    public Map<String, WebjarDescriptor> parse(String importMapJSON) throws JavascriptImportmapException
+    public Map<String, WebjarPathDescriptor> parse(String importMapJSON) throws JavascriptImportmapException
     {
-        Map<String, WebjarDescriptor> extensionImportMap;
+        Map<String, WebjarPathDescriptor> extensionImportMap;
         Object parsedJSON;
         try {
             parsedJSON = OBJECT_MAPPER.readValue(importMapJSON, Object.class);
@@ -66,9 +67,9 @@ public class JavascriptImportmapParser
                 Object value = o.getValue();
                 var key = String.valueOf(o.getKey());
                 if (value instanceof Map valueMap) {
-                    WebjarDescriptor webjarDescriptor;
+                    WebjarPathDescriptor webjarPathDescriptor;
                     try {
-                        webjarDescriptor = new WebjarDescriptor(
+                        webjarPathDescriptor = new WebjarPathDescriptor(
                             (String) valueMap.get("webjarId"),
                             (String) valueMap.get("namespace"),
                             (String) valueMap.get("path"),
@@ -76,7 +77,7 @@ public class JavascriptImportmapParser
                     } catch (NullPointerException | IllegalArgumentException e) {
                         throw new JavascriptImportmapException("Malformed value for key [%s]".formatted(key), e);
                     }
-                    extensionImportMap.put(key, webjarDescriptor);
+                    extensionImportMap.put(key, webjarPathDescriptor);
                 } else {
                     extensionImportMap.put(key, parseValue(String.valueOf(value)));
                 }
@@ -85,14 +86,14 @@ public class JavascriptImportmapParser
         return extensionImportMap;
     }
 
-    private WebjarDescriptor parseValue(String value) throws JavascriptImportmapException
+    private WebjarPathDescriptor parseValue(String value) throws JavascriptImportmapException
     {
         var separator = "/";
         if (!value.contains(separator)) {
             throw new JavascriptImportmapException("Invalid importmap value: %s".formatted(value));
         }
         var split = value.split(separator, 2);
-        return new WebjarDescriptor(split[0], split[1]);
+        return new WebjarPathDescriptor(split[0], split[1]);
     }
 }
 

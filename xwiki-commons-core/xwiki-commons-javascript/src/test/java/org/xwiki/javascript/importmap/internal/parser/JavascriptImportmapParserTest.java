@@ -22,7 +22,7 @@ package org.xwiki.javascript.importmap.internal.parser;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-import org.xwiki.webjars.WebjarDescriptor;
+import org.xwiki.webjars.WebjarPathDescriptor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -59,8 +59,8 @@ class JavascriptImportmapParserTest
                 "moduleB": "org.xwiki.jsB/path2.js"
             }""");
         assertEquals(Map.of(
-            "moduleA", new WebjarDescriptor("org.xwiki.js", "path.js"),
-            "moduleB", new WebjarDescriptor("org.xwiki.jsB", "path2.js")
+            "moduleA", new WebjarPathDescriptor("org.xwiki.js", "path.js"),
+            "moduleB", new WebjarPathDescriptor("org.xwiki.jsB", "path2.js")
         ), parsed);
     }
 
@@ -87,7 +87,7 @@ class JavascriptImportmapParserTest
               }
             }""");
         assertEquals(Map.of(
-            "moduleA", new WebjarDescriptor("org.xwiki.js", "path.js", Map.of("key", "value"))
+            "moduleA", new WebjarPathDescriptor("org.xwiki.js", "path.js", Map.of("key", "value"))
         ), parsed);
     }
 
@@ -118,7 +118,7 @@ class JavascriptImportmapParserTest
               }
             }""");
         assertEquals(Map.of(
-            "moduleA", new WebjarDescriptor("org.xwiki.js", "s1","path.js")
+            "moduleA", new WebjarPathDescriptor("org.xwiki.js", "s1", "path.js")
         ), parsed);
     }
 
@@ -137,7 +137,7 @@ class JavascriptImportmapParserTest
               }
             }""");
         assertEquals(Map.of(
-            "moduleA", new WebjarDescriptor("org.xwiki.js", "s1", "path.js", Map.of("key", "value"))
+            "moduleA", new WebjarPathDescriptor("org.xwiki.js", "s1", "path.js", Map.of("key", "value"))
         ), parsed);
     }
 }

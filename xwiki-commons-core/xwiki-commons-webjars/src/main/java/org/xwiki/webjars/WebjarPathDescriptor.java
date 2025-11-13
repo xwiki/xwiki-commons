@@ -43,7 +43,7 @@ import org.xwiki.stability.Unstable;
  * @since 18.0.0RC1
  */
 @Unstable
-public record WebjarDescriptor(String webjarId, String namespace, String path, Map<String, ?> params)
+public record WebjarPathDescriptor(String webjarId, String namespace, String path, Map<String, ?> params)
 {
     /**
      *
@@ -61,7 +61,7 @@ public record WebjarDescriptor(String webjarId, String namespace, String path, M
      *     the requested resource has Velocity code that needs to be evaluated); besides these you can pass whatever
      *     parameters you like (they will be taken into account or not depending on the resource)
      */
-    public WebjarDescriptor
+    public WebjarPathDescriptor
     {
         Objects.requireNonNull(webjarId);
         if (webjarId.isBlank()) {
@@ -82,7 +82,7 @@ public record WebjarDescriptor(String webjarId, String namespace, String path, M
      * @param path the path within the WebJar, starting from the version folder (e.g. you should pass just
      *     {@code angular.js} if the actual path is {@code META-INF/resources/webjars/angular/2.1.11/angular.js})
      */
-    public WebjarDescriptor(String webjarId, String path)
+    public WebjarPathDescriptor(String webjarId, String path)
     {
         this(webjarId, null, path, null);
     }
@@ -99,7 +99,7 @@ public record WebjarDescriptor(String webjarId, String namespace, String path, M
      * @param path the path within the WebJar, starting from the version folder (e.g. you should pass just
      *     {@code angular.js} if the actual path is {@code META-INF/resources/webjars/angular/2.1.11/angular.js})
      */
-    public WebjarDescriptor(String webjarId, String namespace, String path)
+    public WebjarPathDescriptor(String webjarId, String namespace, String path)
     {
         this(webjarId, namespace, path, null);
     }
@@ -117,7 +117,7 @@ public record WebjarDescriptor(String webjarId, String namespace, String path, M
      *     the requested resource has Velocity code that needs to be evaluated); besides these you can pass whatever
      *     parameters you like (they will be taken into account or not depending on the resource)
      */
-    public WebjarDescriptor(String webjarId, String path, Map<String, ?> params)
+    public WebjarPathDescriptor(String webjarId, String path, Map<String, ?> params)
     {
         this(webjarId, null, path, params);
     }
