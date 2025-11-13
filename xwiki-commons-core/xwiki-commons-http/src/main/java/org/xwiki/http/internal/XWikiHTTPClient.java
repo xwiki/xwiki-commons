@@ -202,7 +202,8 @@ public class XWikiHTTPClient implements Closeable
     /**
      * @param request the request to get the context for
      * @param credentials the credentials to use for the request
-     * @return the context to use for the request
+     * @return the context to use for the request, or null if no authentication is needed (which cause the standard
+     *         HttpClient to use the default context)
      * @throws IOException when failing to get the URI of the request
      */
     public HttpClientContext getHttpClientContext(HttpRequest request, XWikiCredentials credentials) throws IOException
@@ -213,6 +214,7 @@ public class XWikiHTTPClient implements Closeable
                 finalCredentials = new UsernamePasswordCredentials(this.defaultCredentials.getUserName(),
                     this.defaultCredentials.getPassword().toCharArray());
             } else {
+                // The only point of the context is to hold the credentials so if we don't have any we return null.
                 return null;
             }
         } else {

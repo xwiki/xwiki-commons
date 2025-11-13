@@ -24,6 +24,7 @@ import java.io.IOException;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.net.URLCodec;
 import org.apache.hc.core5.net.PercentCodec;
+import org.xwiki.stability.Unstable;
 
 /**
  * Provide various helpers around URIs.
@@ -33,6 +34,7 @@ import org.apache.hc.core5.net.PercentCodec;
  * @since 17.4.8
  * @since 16.10.15
  */
+@Unstable
 public final class URIUtils
 {
     private static final URLCodec FORMENCODED_CODEC = new URLCodec();
