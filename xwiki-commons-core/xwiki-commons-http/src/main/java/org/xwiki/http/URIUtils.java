@@ -20,10 +20,12 @@
 package org.xwiki.http;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.BitSet;
 
 import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.codec.net.URLCodec;
-import org.apache.hc.core5.net.PercentCodec;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -37,10 +39,31 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public final class URIUtils
 {
-    private static final URLCodec FORMENCODED_CODEC = new URLCodec();
+    static final BitSet SAFE_PATH_SEGMENT = new BitSet(256);
 
-    // For retro compatibility reasons it's safer to use a decoder which convert + into white spaces
-    private static final PercentCodec URI_CODEC = new PercentCodec();
+    static final BitSet SAFE_PATH = new BitSet(256);
+
+    static {
+        for (int i = 'a'; i <= 'z'; i++) {
+            SAFE_PATH_SEGMENT.set(i);
+        }
+        for (int i = 'A'; i <= 'Z'; i++) {
+            SAFE_PATH_SEGMENT.set(i);
+        }
+        // numeric characters
+        for (int i = '0'; i <= '9'; i++) {
+            SAFE_PATH_SEGMENT.set(i);
+        }
+        SAFE_PATH_SEGMENT.set('-');
+        SAFE_PATH_SEGMENT.set('.');
+        SAFE_PATH_SEGMENT.set('_');
+        SAFE_PATH_SEGMENT.set('~');
+
+        SAFE_PATH.set('/');
+        SAFE_PATH.or(SAFE_PATH_SEGMENT);
+    }
+
+    private static final URLCodec FORMENCODED_CODEC = new URLCodec();
 
     private URIUtils()
     {
@@ -48,15 +71,40 @@ public final class URIUtils
     }
 
     /**
+     * Escape and encode a string regarded as the path component of an URI with UTF8 charset.
+     * <p>
+     * The difference between this method and {@link #encodePathSegment(String)} is that the path separators are kept
+     * unescaped.
+     * 
+     * @param decoded the string to escape according to URI path specification
+     * @return the UTF-8 escaped path element
+     */
+    public static String encodePath(String decoded)
+    {
+        if (decoded == null || decoded.isEmpty()) {
+            return decoded;
+        }
+
+        return StringUtils.newStringUtf8(URLCodec.encodeUrl(SAFE_PATH, decoded.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    /**
+     * Escape and encode a string regarded as the path component of an URI with UTF8 charset.
+     * <p>
+     * The difference between this method and {@link #encodePath(String)} is that the path separators is escaped.
+     * 
      * @param decoded the string to escape according to URI path specification
      * @return the UTF-8 escaped path element
      */
     public static String encodePathSegment(String decoded)
     {
-        return URI_CODEC.encode(decoded);
+        return StringUtils
+            .newStringUtf8(URLCodec.encodeUrl(SAFE_PATH_SEGMENT, decoded.getBytes(StandardCharsets.UTF_8)));
     }
 
     /**
+     * Decodes a URL safe string into its original form using UTF8 charset.
+     * 
      * @param encoded the encoded string to parse
      * @return the decoded version of the string
      * @throws IOException when failing to parse the path
@@ -64,7 +112,7 @@ public final class URIUtils
     public static String decode(String encoded) throws IOException
     {
         try {
-            return FORMENCODED_CODEC.decode(encoded);
+            return FORMENCODED_CODEC.decode(encoded, "utf8");
         } catch (DecoderException e) {
             throw new IOException("Failed to decode string [" + encoded + "]", e);
         }
