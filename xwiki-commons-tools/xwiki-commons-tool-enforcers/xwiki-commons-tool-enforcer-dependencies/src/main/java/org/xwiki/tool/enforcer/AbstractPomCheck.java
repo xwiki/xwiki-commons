@@ -39,7 +39,7 @@ import org.apache.maven.project.MavenProject;
 public abstract class AbstractPomCheck extends AbstractEnforcerRule
 {
     @Inject
-    private MavenProject project;
+    protected MavenProject project;
 
     /**
      * The Maven model as it's present in the project's {@code pom.xml} (non resolved).
