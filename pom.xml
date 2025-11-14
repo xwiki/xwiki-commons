@@ -107,7 +107,7 @@
     <mockito.version>5.20.0</mockito.version>
 
     <!-- Testcontainers for integration tests -->
-    <testcontainers.version>1.21.3</testcontainers.version>
+    <testcontainers.version>2.0.2</testcontainers.version>
 
     <!-- Byte Buddy -->
     <bytebuddy.version>1.18.1</bytebuddy.version>
