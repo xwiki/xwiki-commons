@@ -22,7 +22,6 @@ package org.xwiki.netflux.internal;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -86,14 +85,6 @@ public class Channel
     public Map<String, Bot> getBots()
     {
         return this.bots;
-    }
-
-    /**
-     * @return the list of users that are currently connected to this channel
-     */
-    public List<User> getConnectedUsers()
-    {
-        return this.users.values().stream().filter(user -> user.getSession() != null && user.isConnected()).toList();
     }
 
     /**
