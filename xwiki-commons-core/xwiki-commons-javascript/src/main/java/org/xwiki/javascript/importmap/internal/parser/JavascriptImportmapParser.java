@@ -96,4 +96,3 @@ public class JavascriptImportmapParser
         return new WebjarPathDescriptor(split[0], split[1]);
     }
 }
-
