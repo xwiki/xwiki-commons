@@ -50,6 +50,7 @@
     <module>xwiki-commons-extension</module>
     <module>xwiki-commons-filter</module>
     <module>xwiki-commons-groovy</module>
+    <module>xwiki-commons-http</module>
     <module>xwiki-commons-javascript</module>
     <module>xwiki-commons-job</module>
     <module>xwiki-commons-logging</module>
