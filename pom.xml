@@ -132,8 +132,8 @@
     <ivy.version>2.5.3</ivy.version>
 
     <!-- Closure compiler -->
-    <closure-compiler.version>v20250820</closure-compiler.version>
-    <closure-compiler-maven-plugin.version>2.32.0</closure-compiler-maven-plugin.version>
+    <closure-compiler.version>v20231112</closure-compiler.version>
+    <closure-compiler-maven-plugin.version>2.30.0</closure-compiler-maven-plugin.version>
 
     <!-- Maven Archetype -->
     <maven.archetype.version>3.4.1</maven.archetype.version>
@@ -1481,7 +1481,7 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>4.33.1</version>
+        <version>3.25.5</version>
       </dependency>
       <dependency>
         <groupId>org.infinispan.protostream</groupId>
