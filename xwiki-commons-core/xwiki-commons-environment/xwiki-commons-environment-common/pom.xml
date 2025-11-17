@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-environment</artifactId>
-    <version>17.10.0-SNAPSHOT</version>
+    <version>17.10.0-rc-1</version>
   </parent>
   <artifactId>xwiki-commons-environment-common</artifactId>
   <name>XWiki Commons - Environment - Common</name>
@@ -53,7 +53,7 @@
   </dependencies>
 
   <scm>
-    <tag>stable-17.10.x</tag>
+    <tag>xwiki-commons-17.10.0-rc-1</tag>
   </scm>
 </project>
        
