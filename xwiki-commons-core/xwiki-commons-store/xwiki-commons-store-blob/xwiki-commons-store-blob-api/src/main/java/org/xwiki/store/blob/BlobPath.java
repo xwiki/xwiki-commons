@@ -127,17 +127,16 @@ public final class BlobPath implements Comparable<BlobPath>, Iterable<BlobPath>
      * and will cause an {@link IllegalArgumentException}.
      * No normalization is performed for absolute paths.
      *
-     * @param first the first name
-     * @param more additional names
+     * @param names the names to use
      * @return an absolute {@link BlobPath}
      * @throws IllegalArgumentException if a provided name is "." or "..", null/empty, or contains a separator
      */
-    public static BlobPath absolute(String first, String... more)
+    public static BlobPath absolute(String... names)
     {
-        List<String> names = buildNames(first, more);
-        // Disallow dot segments for absolute paths
-        validateNames(names, false);
-        return names.isEmpty() ? ROOT_INSTANCE : new BlobPath(true, names);
+        List<String> nameList = names == null ? List.of() : Arrays.asList(names);
+        // Disallow dot segments for absolute paths.
+        validateNames(nameList, false);
+        return nameList.isEmpty() ? ROOT_INSTANCE : new BlobPath(true, nameList);
     }
 
     /**
@@ -152,31 +151,22 @@ public final class BlobPath implements Comparable<BlobPath>, Iterable<BlobPath>
     public static BlobPath absolute(Iterable<String> names)
     {
         Objects.requireNonNull(names, NAMES_CANNOT_BE_NULL);
-        List<String> list = buildNames(names);
-        validateNames(list, false);
-        return list.isEmpty() ? ROOT_INSTANCE : new BlobPath(true, list);
-    }
-
-    /**
-     * @return the empty relative path (equivalent to {@code "."})
-     */
-    public static BlobPath relative()
-    {
-        return EMPTY_RELATIVE;
+        List<String> nameList = buildNames(names);
+        validateNames(nameList, false);
+        return nameList.isEmpty() ? ROOT_INSTANCE : new BlobPath(true, nameList);
     }
 
     /**
      * Create a relative path from names. Dot-segments ("." and "..") are allowed and will be normalized immediately.
      *
-     * @param first the first name
-     * @param more additional names
+     * @param names the names to use
      * @return a relative {@link BlobPath}
      */
-    public static BlobPath relative(String first, String... more)
+    public static BlobPath relative(String... names)
     {
-        List<String> names = buildNames(first, more);
-        validateNames(names, true);
-        List<String> normalized = normalize(names, false);
+        List<String> nameList = names == null ? List.of() : Arrays.asList(names);
+        validateNames(nameList, true);
+        List<String> normalized = normalize(nameList, false);
         return normalized.isEmpty() ? EMPTY_RELATIVE : new BlobPath(false, normalized);
     }
 
@@ -190,9 +180,9 @@ public final class BlobPath implements Comparable<BlobPath>, Iterable<BlobPath>
     public static BlobPath relative(Iterable<String> names)
     {
         Objects.requireNonNull(names, NAMES_CANNOT_BE_NULL);
-        List<String> list = buildNames(names);
-        validateNames(list, true);
-        List<String> normalized = normalize(list, false);
+        List<String> nameList = buildNames(names);
+        validateNames(nameList, true);
+        List<String> normalized = normalize(nameList, false);
         return normalized.isEmpty() ? EMPTY_RELATIVE : new BlobPath(false, normalized);
     }
 
@@ -488,14 +478,6 @@ public final class BlobPath implements Comparable<BlobPath>, Iterable<BlobPath>
     {
         Objects.requireNonNull(other, OTHER_CANNOT_BE_NULL);
         return endsWith(parse(other));
-    }
-
-    private static List<String> buildNames(String first, String[] more)
-    {
-        List<String> names = new ArrayList<>(more.length + 1);
-        names.add(first);
-        names.addAll(Arrays.asList(more));
-        return names;
     }
 
     private static List<String> buildNames(Iterable<String> sources)
