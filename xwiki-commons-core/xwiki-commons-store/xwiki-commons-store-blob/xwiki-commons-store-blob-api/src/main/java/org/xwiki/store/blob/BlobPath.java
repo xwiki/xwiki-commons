@@ -104,8 +104,8 @@ public final class BlobPath implements Comparable<BlobPath>, Iterable<BlobPath>
         for (String seg : segments) {
             if (RELATIVE_UP.equals(seg)) {
                 // If we see "..", pop a name off the stack if possible.
-                if (!stack.isEmpty() && !stack.get(stack.size() - 1).equals(RELATIVE_UP)) {
-                    stack.remove(stack.size() - 1);
+                if (!stack.isEmpty() && !stack.getLast().equals(RELATIVE_UP)) {
+                    stack.removeLast();
                 } else if (absolute) {
                     // Cannot go above root.
                     throw new IllegalArgumentException("Cannot resolve path outside the root");
@@ -264,7 +264,7 @@ public final class BlobPath implements Comparable<BlobPath>, Iterable<BlobPath>
         if (this.names.isEmpty()) {
             return null;
         }
-        String name = this.names.get(this.names.size() - 1);
+        String name = this.names.getLast();
         return name.isEmpty() ? EMPTY_RELATIVE : new BlobPath(false, List.of(name));
     }
 
