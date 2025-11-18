@@ -59,6 +59,7 @@ class BlobPathTest
     static Stream<Arguments> absoluteFromNamesData()
     {
         return Stream.of(
+            Arguments.of(List.of(), "/"),
             Arguments.of(List.of("docs"), "/docs"),
             Arguments.of(List.of("docs", "file.txt"), "/docs/file.txt"),
             Arguments.of(List.of("nested", "dir", "file.bin"), "/nested/dir/file.bin")
@@ -69,7 +70,7 @@ class BlobPathTest
     @MethodSource("absoluteFromNamesData")
     void absoluteFromNames(List<String> names, String expectedString)
     {
-        BlobPath vararg = BlobPath.absolute(names.get(0), names.subList(1, names.size()).toArray(new String[0]));
+        BlobPath vararg = BlobPath.absolute(names.toArray(new String[0]));
         BlobPath iterable = BlobPath.absolute(names);
 
         assertEquals(expectedString, vararg.toString());
@@ -244,8 +245,9 @@ class BlobPathTest
     @Test
     void relativizeRejectsMixedAbsoluteness()
     {
-        assertThrows(IllegalArgumentException.class,
-            () -> BlobPath.absolute("a").relativize(BlobPath.relative("a")));
+        BlobPath base = BlobPath.absolute("a");
+        BlobPath relative = BlobPath.relative("a");
+        assertThrows(IllegalArgumentException.class, () -> base.relativize(relative));
     }
 
     @ParameterizedTest
