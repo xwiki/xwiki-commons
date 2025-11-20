@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.test.integration;
+package org.xwiki.filter.test.integration.junit5;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import java.util.TimeZone;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.filter.FilterException;
@@ -48,35 +48,51 @@ import org.xwiki.filter.output.OutputFilterStream;
 import org.xwiki.filter.output.OutputFilterStreamFactory;
 import org.xwiki.filter.output.OutputTarget;
 import org.xwiki.filter.output.StringWriterOutputTarget;
+import org.xwiki.filter.test.integration.ExpectTestConfiguration;
+import org.xwiki.filter.test.integration.InputTestConfiguration;
+import org.xwiki.filter.test.integration.TestConfiguration;
+import org.xwiki.filter.test.integration.TestDataParser;
 import org.xwiki.filter.test.internal.FileAssert;
 import org.xwiki.filter.utils.FilterStreamConstants;
 import org.xwiki.test.internal.MockConfigurationSource;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * A generic JUnit Test used by {@link FilterTestSuite} to parse some passed content and verify it matches some passed
+ * A generic JUnit Test used by {@link FilterTest} to parse some passed content and verify it matches some passed
  * expectation. The format of the input/expectation is specified in {@link TestDataParser}.
  * 
  * @version $Id$
- * @since 6.2M1
+ * @since 18.0.0RC1
  */
-public class FilterTest
+@SuppressWarnings("ClassFanOutComplexity")
+public class InternalFilterTest
 {
+    private static final String FILE_PREFIX = "file:";
+
+    private static final String SLASH = "/";
+
     private TestConfiguration configuration;
 
     private ComponentManager componentManager;
 
-    public FilterTest(TestConfiguration configuration, ComponentManager componentManager)
+    /**
+     * @param configuration the test configuration
+     * @param componentManager the component manager to use
+     */
+    public InternalFilterTest(TestConfiguration configuration, ComponentManager componentManager)
     {
         this.configuration = configuration;
         this.componentManager = componentManager;
     }
 
+    /**
+     * @throws Exception when failing to execute the test
+     */
     @Test
-    public void execute() throws Throwable
+    public void execute() throws Exception
     {
         TimeZone currentTimeZone = TimeZone.getDefault();
 
@@ -124,8 +140,8 @@ public class FilterTest
 
         String sourceString = TestDataParser.interpret(value);
 
-        if (sourceString.startsWith("file:")) {
-            sourceString = sourceString.substring("file:".length());
+        if (sourceString.startsWith(FILE_PREFIX)) {
+            sourceString = sourceString.substring(FILE_PREFIX.length());
         }
 
         File file = new File(sourceString);
@@ -137,9 +153,9 @@ public class FilterTest
         } else {
             // If not a file it's probably a resource
 
-            if (!sourceString.startsWith("/")) {
+            if (!sourceString.startsWith(SLASH)) {
                 sourceString =
-                    StringUtils.substringBeforeLast(testConfiguration.resourceName, "/") + '/' + sourceString;
+                    StringUtils.substringBeforeLast(testConfiguration.resourceName, SLASH) + SLASH + sourceString;
             }
 
             URL resource = getClass().getResource(sourceString);
@@ -161,6 +177,11 @@ public class FilterTest
         return source;
     }
 
+    private boolean isFileInputSource(FilterStreamPropertyDescriptor<?> propertyDescriptor)
+    {
+        return propertyDescriptor != null && propertyDescriptor.getType() == InputSource.class;
+    }
+
     private Map<String, Object> toInputConfiguration(InputFilterStreamFactory inputFactory,
         TestConfiguration testConfiguration, InputTestConfiguration inputTestConfiguration) throws FilterException
     {
@@ -169,9 +190,8 @@ public class FilterTest
             FilterStreamPropertyDescriptor<?> propertyDescriptor =
                 inputFactory.getDescriptor().getPropertyDescriptor(entry.getKey());
 
-            if (propertyDescriptor != null && propertyDescriptor.getType() == InputSource.class
-                && entry.getValue() != null
-                && (entry.getKey().startsWith("file:") || entry.getKey().indexOf(':') < 0)) {
+            if (isFileInputSource(propertyDescriptor) && entry.getValue() != null
+                && (entry.getKey().startsWith(FILE_PREFIX) || entry.getKey().indexOf(':') < 0)) {
                 inputConfiguration.put(entry.getKey(), getInputSource(testConfiguration, entry.getValue()));
             } else {
                 inputConfiguration.put(entry.getKey(), TestDataParser.interpret(entry.getValue()));
@@ -228,7 +248,7 @@ public class FilterTest
         }
     }
 
-    private void runTestInternal() throws Throwable
+    private void runTestInternal() throws Exception
     {
         // Expect
 
@@ -240,12 +260,10 @@ public class FilterTest
             this.configuration.inputConfiguration.typeId);
         Map<String, Object> outputConfiguration;
         try (InputFilterStream inputFilter = inputFactory.createInputFilterStream(
-            toInputConfiguration(inputFactory, this.configuration, this.configuration.inputConfiguration)))
-        {
+            toInputConfiguration(inputFactory, this.configuration, this.configuration.inputConfiguration))) {
             // Output
 
-            outputConfiguration =
-                toOutputConfiguration(this.configuration.expectConfiguration, expect);
+            outputConfiguration = toOutputConfiguration(this.configuration.expectConfiguration, expect);
             OutputFilterStreamFactory outputFactory = getComponentManager().getInstance(OutputFilterStreamFactory.class,
                 this.configuration.expectConfiguration.typeId);
             try (OutputFilterStream outputFilter = outputFactory.createOutputFilterStream(outputConfiguration)) {
@@ -281,6 +299,9 @@ public class FilterTest
         }
     }
 
+    /**
+     * @return the component manager
+     */
     public ComponentManager getComponentManager()
     {
         return this.componentManager;
