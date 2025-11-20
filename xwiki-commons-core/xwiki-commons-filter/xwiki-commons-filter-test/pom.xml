@@ -84,8 +84,6 @@
                 org/xwiki/filter/test/integration/TestDataGenerator.java,
                 org/xwiki/filter/test/integration/TestDataParser.java,
                 org/xwiki/filter/test/integration/TestResourceData.java,
-                org/xwiki/filter/test/integration/FilterTest.java,
-                org/xwiki/filter/test/integration/FilterTestSuite.java,
                 org/xwiki/filter/test/internal/DefaultFileAssertComparator.java,
                 org/xwiki/filter/test/internal/FileAssert.java,
                 org/xwiki/filter/test/internal/FileAssertComparator.java,
