@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-crypto</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>17.10.0</version>
+    <version>17.10.1-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-crypto-common</artifactId>
   <packaging>jar</packaging>
@@ -52,6 +52,6 @@
   </build>
 
   <scm>
-    <tag>xwiki-commons-17.10.0</tag>
+    <tag>stable-17.10.x</tag>
   </scm>
 </project>

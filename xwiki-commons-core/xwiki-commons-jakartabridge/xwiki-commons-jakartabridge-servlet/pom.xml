@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-jakartabridge</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>17.10.0</version>
+    <version>17.10.1-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-jakartabridge-servlet</artifactId>
   <name>XWiki Commons - Jakarta Bridge - Servlet</name>
@@ -74,6 +74,6 @@
   </build>
 
   <scm>
-    <tag>xwiki-commons-17.10.0</tag>
+    <tag>stable-17.10.x</tag>
   </scm>
 </project>
