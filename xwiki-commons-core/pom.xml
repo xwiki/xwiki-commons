@@ -228,17 +228,7 @@
               </differences>
             </revapi.differences>
             -->
-            <revapi.differences>
-              <differences>
-                <item>
-                  <ignore>true</ignore>
-                  <code>java.class.removed</code>
-                  <old>interface org.xwiki.job.JobManager</old>
-                  <justification>Not a breakage, the code was moved to a legacy module</justification>
-                  <criticality>allowed</criticality>
-                </item>
-              </differences>
-            </revapi.differences>
+            
           </analysisConfiguration>
         </configuration>
       </plugin>
