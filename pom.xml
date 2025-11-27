@@ -1498,7 +1498,7 @@
       <dependency>
         <groupId>org.infinispan.protostream</groupId>
         <artifactId>protostream</artifactId>
-        <version>5.0.15.Final</version>
+        <version>6.0.2</version>
       </dependency>
       <dependency>
         <groupId>org.infinispan</groupId>
