@@ -27,6 +27,8 @@ import jakarta.websocket.Session;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.xwiki.netflux.internal.event.NetfluxMessageUserEvent;
+import org.xwiki.observation.ObservationManager;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
@@ -54,13 +56,16 @@ class HistoryKeeperTest
     @MockComponent
     private MessageBuilder messageBuilder;
 
+    @MockComponent
+    private ObservationManager observation;
+
     @Mock
     Session session;
 
     @Mock
     Basic basicRemote;
 
-    private User user;
+    private LocalUser user;
 
     private Channel channel = new Channel("test");
 
@@ -68,7 +73,7 @@ class HistoryKeeperTest
     void beforeEach()
     {
         when(this.session.getBasicRemote()).thenReturn(this.basicRemote);
-        this.user = new User(this.session, "alice");
+        this.user = new LocalUser(this.session, "alice");
         when(this.channels.get("test")).thenReturn(this.channel);
     }
 
@@ -101,7 +106,7 @@ class HistoryKeeperTest
         when(this.messageBuilder.buildMessage(0, this.historyKeeper.getId(), this.user.getName(),
             "{\"state\":1, \"channel\":\"missing\"}")).thenReturn("end missing");
         this.historyKeeper.onUserMessage(this.user, List.of(0, "MSG", this.historyKeeper.getId(), "valid"));
-        verify(this.basicRemote).sendText("end missing");
+        verify(this.observation).notify(new NetfluxMessageUserEvent(this.user.getName(), "end missing"), null);
 
         // Get history message.
         when(this.messageBuilder.decode("valid")).thenReturn(List.of("GET_HISTORY", "test"));
@@ -111,9 +116,9 @@ class HistoryKeeperTest
 
         this.historyKeeper.onUserMessage(this.user, List.of(0, "MSG", this.historyKeeper.getId(), "valid"));
 
-        verify(this.basicRemote).sendText("first");
-        verify(this.basicRemote).sendText("second");
-        verify(this.basicRemote).sendText("end");
+        verify(this.observation).notify(new NetfluxMessageUserEvent(this.user.getName(), "first"), null);
+        verify(this.observation).notify(new NetfluxMessageUserEvent(this.user.getName(), "second"), null);
+        verify(this.observation).notify(new NetfluxMessageUserEvent(this.user.getName(), "end"), null);
     }
 
     @Test

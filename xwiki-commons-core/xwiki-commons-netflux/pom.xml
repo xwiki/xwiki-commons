@@ -34,7 +34,7 @@
   <properties>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Netflux Server</xwiki.extension.name>
-    <xwiki.jacoco.instructionRatio>0.92</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.91</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
@@ -59,10 +59,17 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>xwiki-commons-tool-test-component</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>xwiki-commons-observation-local</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

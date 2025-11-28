@@ -19,11 +19,6 @@
  */
 package org.xwiki.netflux.internal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,6 +26,11 @@ import java.util.Set;
 import jakarta.websocket.Session;
 
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link Channel}.
@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 class ChannelTest
 {
     @Test
-    void getConnectedUsers()
+    void getUsers()
     {
         long before = new Date().getTime();
         Channel channel = new Channel("test");
@@ -53,20 +53,18 @@ class ChannelTest
         assertTrue(channel.getMessages().isEmpty());
 
         assertEquals(0, channel.getUsers().size());
-        assertEquals(0, channel.getConnectedUsers().size());
 
-        Session session = mock(Session.class);
 
-        channel.getUsers().put("alice", new User(null, "alice"));
-        channel.getUsers().put("bob", new User(session, "bob"));
+        Session bobSession = mock(Session.class);
+        User bob = new LocalUser(bobSession, "bob");
+        channel.getUsers().put(bob.getName(), bob);
 
-        User carol = new User(session, "carol");
-        carol.setConnected(false);
-        channel.getUsers().put("carol", carol);
+        Session carolSession = mock(Session.class);
+        User carol = new LocalUser(carolSession, "carol");
+        channel.getUsers().put(carol.getName(), carol);
 
-        assertEquals(3, channel.getUsers().size());
-        assertEquals(1, channel.getConnectedUsers().size());
-        assertEquals("bob", channel.getConnectedUsers().iterator().next().getName());
+        assertEquals(2, channel.getUsers().size());
+        assertEquals("bob", channel.getUsers().values().iterator().next().getName());
     }
 
     @Test
