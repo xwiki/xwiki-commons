@@ -1513,6 +1513,13 @@
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-core</artifactId>
         <version>${infinispan.version}</version>
+        <exclusions>
+          <!-- Mistake in infinispan 15.2.x, fixed in 15.3+ -->
+          <exclusion>
+            <groupId>org.infinispan</groupId>
+            <artifactId>infinispan-commons-spi</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
