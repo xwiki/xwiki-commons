@@ -1518,7 +1518,7 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>3.25.5</version>
+        <version>4.33.1</version>
       </dependency>
       <dependency>
         <groupId>jakarta.enterprise</groupId>
