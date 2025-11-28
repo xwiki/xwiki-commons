@@ -20,7 +20,6 @@
 package org.xwiki.cache.infinispan.internal;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.Configuration;
@@ -54,11 +53,6 @@ public class InfinispanCache<T> extends AbstractCache<T>
      * The Infinispan cache.
      */
     private Cache<String, T> cache;
-
-    /**
-     * The state of the node before modification.
-     */
-    private Map<String, T> preEventData = new ConcurrentHashMap<>();
 
     /**
      * The Infinispan cache manager.
@@ -159,8 +153,12 @@ public class InfinispanCache<T> extends AbstractCache<T>
     @CacheEntryRemoved
     public void nodeRemoved(CacheEntryRemovedEvent<String, T> event)
     {
-        if (!event.isPre() && event.getOldValue() != null) {
-            cacheEntryRemoved(event.getKey(), event.getOldValue());
+        if (!event.isPre()) {
+            T oldValue = event.getOldValue();
+            if (oldValue != null) {
+                // Notify about the removed value
+                cacheEntryRemoved(event.getKey(), event.getOldValue());
+            }
         }
     }
 
@@ -173,7 +171,8 @@ public class InfinispanCache<T> extends AbstractCache<T>
         String key = event.getKey();
 
         if (!event.isPre()) {
-            cacheEntryInserted(key, event.getValue());
+            // Notify about the new value
+            cacheEntryAdded(key, event.getValue());
         }
     }
 
@@ -184,41 +183,45 @@ public class InfinispanCache<T> extends AbstractCache<T>
     public void nodeModified(CacheEntryModifiedEvent<String, T> event)
     {
         String key = event.getKey();
-        T value = event.getValue();
 
-        if (event.isPre()) {
-            if (value != null) {
-                this.preEventData.put(key, value);
+        if (!event.isPre()) {
+            // Dispose the old value
+            T oldValue = event.getOldValue();
+            if (oldValue != null) {
+                disposeCacheValue(oldValue);
             }
-        } else {
-            cacheEntryInserted(key, value);
 
-            this.preEventData.remove(key);
+            // Notify about the new value
+            cacheEntryModified(key, event.getNewValue());
         }
     }
 
     /**
-     * Dispatch data insertion event.
+     * Dispatch data remove event.
      * 
      * @param key the entry key.
      * @param value the entry value.
      */
-    private void cacheEntryInserted(String key, T value)
+    private void cacheEntryAdded(String key, T value)
     {
         InfinispanCacheEntryEvent<T> event =
             new InfinispanCacheEntryEvent<>(new InfinispanCacheEntry<>(this, key, value));
 
-        T previousValue = this.preEventData.get(key);
+        sendEntryAddedEvent(event);
+    }
 
-        if (previousValue != null) {
-            if (previousValue != value) {
-                disposeCacheValue(previousValue);
-            }
+    /**
+     * Dispatch data remove event.
+     * 
+     * @param key the entry key.
+     * @param value the entry value.
+     */
+    private void cacheEntryModified(String key, T value)
+    {
+        InfinispanCacheEntryEvent<T> event =
+            new InfinispanCacheEntryEvent<>(new InfinispanCacheEntry<>(this, key, value));
 
-            sendEntryModifiedEvent(event);
-        } else {
-            sendEntryAddedEvent(event);
-        }
+        sendEntryModifiedEvent(event);
     }
 
     /**
