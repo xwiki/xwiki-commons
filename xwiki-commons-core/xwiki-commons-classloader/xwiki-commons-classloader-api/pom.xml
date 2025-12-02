@@ -55,6 +55,11 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-observation-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Testing dependencies -->
     <dependency>

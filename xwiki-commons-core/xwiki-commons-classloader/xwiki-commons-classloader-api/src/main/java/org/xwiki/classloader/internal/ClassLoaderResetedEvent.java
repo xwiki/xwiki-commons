@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,12 +16,27 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.xwiki.classloader.internal;
 
-<!DOCTYPE suppressions PUBLIC
-    "-//Puppy Crawl//DTD Suppressions 1.0//EN"
-    "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
+import org.xwiki.observation.event.Event;
+import org.xwiki.stability.Unstable;
 
-<suppressions>
-  <suppress checks="ClassFanOutComplexity" files="JarExtensionJobFinishingListener.java"/>
-</suppressions>
+/**
+ * Event triggered whenever the class loaders needs to be dropped (e.g. after an extension is uninstalled).
+ *
+ * The {@code source} sent along with the event should be the namespace of the classloader.
+ *
+ * @version $Id$
+ * @since 17.1.0
+ * @since 18.0.0RC1
+ */
+@Unstable
+public class ClassLoaderResetedEvent implements Event
+{
+    @Override
+    public boolean matches(Object otherEvent)
+    {
+        return otherEvent instanceof ClassLoaderResetedEvent;
+    }
+}

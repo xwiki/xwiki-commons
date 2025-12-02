@@ -36,6 +36,7 @@ import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.xwiki.classloader.ClassLoaderManager;
+import org.xwiki.classloader.internal.ClassLoaderResetedEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
@@ -51,6 +52,7 @@ import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.job.event.JobFinishingEvent;
 import org.xwiki.job.event.JobStartedEvent;
 import org.xwiki.observation.EventListener;
+import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
 
 /**
@@ -119,6 +121,9 @@ public class JarExtensionJobFinishingListener implements EventListener
      */
     @Inject
     private Logger logger;
+
+    @Inject
+    private ObservationManager observationManager;
 
     @Override
     public String getName()
@@ -257,32 +262,31 @@ public class JarExtensionJobFinishingListener implements EventListener
         if (collection != null) {
             if (collection.rootNamespace) {
                 // Unload extensions
-                unloadJARsFromNamespace(null, null);
+                unloadJARsFromNamespace(null);
 
                 // Drop class loaders
                 this.jarExtensionClassLoader.dropURLClassLoaders();
 
                 initializeExtensions(null);
+                this.observationManager.notify(new ClassLoaderResetedEvent(), null);
             } else if (collection.namespaces != null) {
                 for (String namespace : collection.namespaces) {
                     // Unload extensions
-                    unloadJARsFromNamespace(namespace, null);
+                    unloadJARsFromNamespace(namespace);
 
                     // Drop class loader
                     this.jarExtensionClassLoader.dropURLClassLoader(namespace);
 
                     initializeExtensions(namespace);
+                    this.observationManager.notify(new ClassLoaderResetedEvent(), namespace);
                 }
             }
         }
     }
 
-    private void unloadJARsFromNamespace(String namespace, Map<String, Set<InstalledExtension>> unloadedExtensions)
+    private void unloadJARsFromNamespace(String namespace)
     {
-        Map<String, Set<InstalledExtension>> unloadedExtensionsMap = unloadedExtensions;
-        if (unloadedExtensionsMap == null) {
-            unloadedExtensionsMap = new HashMap<>();
-        }
+        Map<String, Set<InstalledExtension>> unloadedExtensionsMap = new HashMap<>();
 
         // Load extensions from local repository
         Collection<InstalledExtension> installedExtensions;
