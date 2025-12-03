@@ -68,6 +68,7 @@ public class ClassLoaderResetEvent implements Event
     public boolean matches(Object otherEvent)
     {
         return otherEvent instanceof ClassLoaderResetEvent classLoaderResetedEvent
-            && Objects.equals(namespace, classLoaderResetedEvent.namespace);
+            && (namespace == null
+            || Objects.equals(namespace, classLoaderResetedEvent.namespace));
     }
 }
