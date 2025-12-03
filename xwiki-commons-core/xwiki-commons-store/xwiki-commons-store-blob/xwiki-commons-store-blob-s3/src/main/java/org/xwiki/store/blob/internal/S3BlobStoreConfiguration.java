@@ -168,12 +168,12 @@ public class S3BlobStoreConfiguration
         // Ensure the copy part size is at least the upload part size so that copying an object won't require more
         // parts than uploading the same object.
         long uploadPartSize = getS3MultipartPartUploadSizeBytes();
-        return Math.max(copyBytes, uploadPartSize);
+        return Math.clamp(copyBytes, uploadPartSize, Long.MAX_VALUE);
     }
 
     private static long convertToBytesAndLimitPartSize(int sizeMB)
     {
-        return Math.max(Math.min(sizeMB * 1024L * 1024L, S3MultipartUploadHelper.MAX_PART_SIZE),
-            S3MultipartUploadHelper.MIN_PART_SIZE);
+        return Math.clamp(sizeMB * 1024L * 1024L,
+            S3MultipartUploadHelper.MIN_PART_SIZE, S3MultipartUploadHelper.MAX_PART_SIZE);
     }
 }
