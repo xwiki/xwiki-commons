@@ -56,8 +56,10 @@ public interface Bot
      *
      * @param sender the user who sent the message
      * @param message the message that was sent
+     * @since 17.10.1
+     * @since 18.0.0RC1
      */
-    default void onUserMessage(User sender, List<Object> message)
+    default void onUserMessage(LocalUser sender, List<Object> message)
     {
         // Do nothing by default
     }
