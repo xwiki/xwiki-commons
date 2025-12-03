@@ -110,7 +110,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
             type.equals(JarExtensionHandler.JAR)
                 || type.equals(JarExtensionHandler.WEBJAR)
                 || type.equals(JarExtensionHandler.WEBJAR_NODE)
-        );
+                );
     }
 
     /**
