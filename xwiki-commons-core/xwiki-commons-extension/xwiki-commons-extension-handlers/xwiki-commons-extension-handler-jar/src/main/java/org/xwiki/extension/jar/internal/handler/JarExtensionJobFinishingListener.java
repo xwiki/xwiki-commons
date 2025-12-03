@@ -36,7 +36,7 @@ import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.xwiki.classloader.ClassLoaderManager;
-import org.xwiki.classloader.internal.ClassLoaderResetedEvent;
+import org.xwiki.classloader.internal.ClassLoaderResetEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
@@ -64,6 +64,8 @@ import org.xwiki.observation.event.Event;
 @Component
 @Singleton
 @Named("JarExtensionJobFinishingListener")
+// Fan out of 21
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class JarExtensionJobFinishingListener implements EventListener
 {
     private static final class UninstalledExtensionCollection
@@ -268,7 +270,7 @@ public class JarExtensionJobFinishingListener implements EventListener
                 this.jarExtensionClassLoader.dropURLClassLoaders();
 
                 initializeExtensions(null);
-                this.observationManager.notify(new ClassLoaderResetedEvent(), null);
+                this.observationManager.notify(new ClassLoaderResetEvent(), null);
             } else if (collection.namespaces != null) {
                 for (String namespace : collection.namespaces) {
                     // Unload extensions
@@ -278,7 +280,7 @@ public class JarExtensionJobFinishingListener implements EventListener
                     this.jarExtensionClassLoader.dropURLClassLoader(namespace);
 
                     initializeExtensions(namespace);
-                    this.observationManager.notify(new ClassLoaderResetedEvent(), namespace);
+                    this.observationManager.notify(new ClassLoaderResetEvent(namespace), null);
                 }
             }
         }
