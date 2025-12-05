@@ -81,7 +81,7 @@
     <javax.servlet.version>3.1.0</javax.servlet.version>
     <!-- Websoket -->
     <javax.websocket.version>1.1</javax.websocket.version>
-    <jakarta.websocket.version>2.0.0</jakarta.websocket.version>
+    <jakarta.websocket.version>2.2.0</jakarta.websocket.version>
 
     <!-- Jakarta JSON Processing (JSON-P) implementation -->
     <parsson.version>1.1.7</parsson.version>
