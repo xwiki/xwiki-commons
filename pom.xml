@@ -60,12 +60,30 @@
     <!-- The highest Java version officially supported by this version of XWiki -->
     <xwiki.java.version.support>21</xwiki.java.version.support>
 
-    <!-- Javax/Jakarta modules -->
+    <!-- Javax/Jakarta APIs -->
+    <!-- Mail -->
     <jakarta.mail.version>1.6.8</jakarta.mail.version>
+    <!-- Activation -->
     <jakarta.activation.version>1.2.2</jakarta.activation.version>
-    <jakarta.transaction.version>2.0.1</jakarta.transaction.version>
+    <!-- Transaction (JTA) -->
     <javax.transaction.version>1.3</javax.transaction.version>
+    <jakarta.transaction.version>2.0.1</jakarta.transaction.version>
+    <!-- JSON Processing (JSON-P) -->
     <jakarta.json.version>2.1.3</jakarta.json.version>
+    <!-- XML Binding (JAX-B) -->
+    <javax.xml.bind.version>2.3.1</javax.xml.bind.version>
+    <jakarta.xml.bind.version>4.0.4</jakarta.xml.bind.version>
+    <!-- RESTful Web Services (JAX-RS) -->
+    <javax.ws.rs.version>2.1.1</javax.ws.rs.version>
+    <jakarta.ws.rs.version>4.0.0</jakarta.ws.rs.version>
+    <!-- Servlet -->
+    <jakarta.servlet.version>5.0.0</jakarta.servlet.version>
+    <javax.servlet.version>3.1.0</javax.servlet.version>
+    <!-- Websoket -->
+    <javax.websocket.version>1.1</javax.websocket.version>
+    <jakarta.websocket.version>2.0.0</jakarta.websocket.version>
+
+    <!-- Jakarta JSON Processing (JSON-P) implementation -->
     <parsson.version>1.1.7</parsson.version>
 
     <!-- Jackson -->
@@ -157,8 +175,8 @@
     <xwiki.enforcer.enforce-plugins.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-plugins.skip>
     <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}
     </xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
-    <xwiki.enforcer.enforce-glasshfish-jaxb.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glasshfish-jaxb.skip>
-    <xwiki.enforcer.enforce-jaxrs2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jaxrs2.skip>
+    <xwiki.enforcer.enforce-jakarta.xml.bind.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.xml.bind.skip>
+    <xwiki.enforcer.enforce-javax.ws.rs.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.ws.rs.skip>
     <xwiki.enforcer.enforce-open-json.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-open-json.skip>
     <xwiki.enforcer.enforce-glassfish-el.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glassfish-el.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
@@ -276,14 +294,6 @@
     <node.version>v24.11.0</node.version>
     <npm.version>11.6.2</npm.version>
     <pnpm.version>10.20.0</pnpm.version>
-
-    <!-- Servlet specifications -->
-    <javax.servlet.version>3.1.0</javax.servlet.version>
-    <jakarta.servlet.version>5.0.0</jakarta.servlet.version>
-
-    <!-- WebSocket specifications -->
-    <javax.websocket.version>1.1</javax.websocket.version>
-    <jakarta.websocket.version>2.0.0</jakarta.websocket.version>
 
     <webdrivermanager.version>6.3.3</webdrivermanager.version>
 
@@ -651,17 +661,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- JAXB -->
-      <dependency>
-        <groupId>jakarta.xml.bind</groupId>
-        <artifactId>jakarta.xml.bind-api</artifactId>
-        <version>2.3.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish.jaxb</groupId>
-        <artifactId>jaxb-runtime</artifactId>
-        <version>2.3.9</version>
-      </dependency>
+
       <!-- ICU -->
       <dependency>
         <groupId>com.ibm.icu</groupId>
@@ -746,13 +746,6 @@
         <groupId>com.fasterxml.jackson.module</groupId>
         <artifactId>jackson-module-jaxb-annotations</artifactId>
         <version>${jackson.version}</version>
-        <exclusions>
-          <!-- We use jakarta.xml.bind:jakarta.xml.bind-api -->
-          <exclusion>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.module</groupId>
@@ -785,11 +778,42 @@
         <version>2.5</version>
       </dependency>
 
+      <!-- JAXB -->
+      <!-- jakarta-->
+      <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>${jakarta.xml.bind.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>4.0.6</version>
+      </dependency>
+      <!-- javax-->
+      <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>${javax.xml.bind.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.xml.bind</groupId>
+        <artifactId>jaxb-impl</artifactId>
+        <version>2.3.9</version>
+      </dependency>
+
       <!-- JAX-RS -->
+      <!-- jakarta-->
       <dependency>
         <groupId>jakarta.ws.rs</groupId>
         <artifactId>jakarta.ws.rs-api</artifactId>
-        <version>2.1.6</version>
+        <version>${jakarta.ws.rs.version}</version>
+      </dependency>
+      <!-- javax-->
+      <dependency>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>javax.ws.rs-api</artifactId>
+        <version>${javax.ws.rs.version}</version>
       </dependency>
 
       <!-- JTA -->
@@ -1681,13 +1705,12 @@
               <goal>enforce</goal>
             </goals>
             <configuration>
-              <skip>${xwiki.enforcer.enforce-jaxb.skip}</skip>
+              <skip>${xwiki.enforcer.enforce-jakarta.xml.bind.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
-                  <message>XWiki uses jakarta.xml.bind:jakarta.xml.bind-api instead</message>
+                  <message>XWiki uses javax.xml.bind:jaxb-api instead</message>
                   <excludes>
-                    <exclude>javax.xml.bind:jaxb-api</exclude>
                     <exclude>org.jboss.spec.javax.xml.bind:jboss-jaxb-api_2.3_spec</exclude>
                   </excludes>
                 </bannedDependencies>
@@ -1700,11 +1723,11 @@
               <goal>enforce</goal>
             </goals>
             <configuration>
-              <skip>${xwiki.enforcer.enforce-jaxrs2.skip}</skip>
+              <skip>${xwiki.enforcer.enforce-javax.ws.rs.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
-                  <message>XWiki is using JAX-RS 2 (jakarta.ws.rs:jakarta.ws.rs-api) for now</message>
+                  <message>XWiki uses javax.ws.rs:javax.ws.rs-api instead</message>
                   <excludes>
                     <exclude>javax.ws.rs:jsr311-api</exclude>
                     <exclude>org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_2.1_spec</exclude>
