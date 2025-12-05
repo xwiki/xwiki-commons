@@ -802,7 +802,7 @@
       <dependency>
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-impl</artifactId>
-        <version>2.3.9</version>
+        <version>3.0.2</version>
       </dependency>
 
       <!-- JAX-RS -->
