@@ -179,8 +179,9 @@
     <xwiki.enforcer.enforce-plugins.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-plugins.skip>
     <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}
     </xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
-    <xwiki.enforcer.enforce-jakarta.xml.bind.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.xml.bind.skip>
-    <xwiki.enforcer.enforce-javax.ws.rs.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.ws.rs.skip>
+    <xwiki.enforcer.enforce-javax.xml.bind-runtime.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.xml.bind-runtime.skip>
+    <xwiki.enforcer.enforce-javax.xml.bind-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.xml.bind-api.skip>
+    <xwiki.enforcer.enforce-javax.ws.rs-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.ws.rs-api.skip>
     <xwiki.enforcer.enforce-open-json.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-open-json.skip>
     <xwiki.enforcer.enforce-glassfish-el.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glassfish-el.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
@@ -1699,12 +1700,12 @@
           </execution>
           <!-- Check that we're using the right JAXB artifacts -->
           <execution>
-            <id>enforce-glasshfish-jaxb</id>
+            <id>enforce-javax.xml.bind-runtime</id>
             <goals>
               <goal>enforce</goal>
             </goals>
             <configuration>
-              <skip>${xwiki.enforcer.enforce-glasshfish-jaxb.skip}</skip>
+              <skip>${xwiki.enforcer.enforce-javax.xml.bind-runtime.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
@@ -1718,12 +1719,12 @@
             </configuration>
           </execution>
           <execution>
-            <id>enforce-jakarta.xml.bind-api</id>
+            <id>enforce-javax.xml.bind-api</id>
             <goals>
               <goal>enforce</goal>
             </goals>
             <configuration>
-              <skip>${xwiki.enforcer.enforce-jakarta.xml.bind.skip}</skip>
+              <skip>${xwiki.enforcer.enforce-javax.xml.bind-api.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
@@ -1736,12 +1737,12 @@
             </configuration>
           </execution>
           <execution>
-            <id>enforce-jaxrs2</id>
+            <id>enforce-javax.ws.rs</id>
             <goals>
               <goal>enforce</goal>
             </goals>
             <configuration>
-              <skip>${xwiki.enforcer.enforce-javax.ws.rs.skip}</skip>
+              <skip>${xwiki.enforcer.enforce-javax.ws.rs-api.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
