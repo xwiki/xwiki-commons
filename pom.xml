@@ -785,6 +785,7 @@
         <groupId>jakarta.activation</groupId>
         <artifactId>jakarta.activation-api</artifactId>
         <version>${jakarta.activation.version}</version>
+        <!-- Embedded in com.sun.activation:jakarta.activation -->
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -797,6 +798,7 @@
         <groupId>javax.activation</groupId>
         <artifactId>javax.activation-api</artifactId>
         <version>${javax.activation.version}</version>
+        <!-- Embedded in com.sun.activation:javax.activation -->
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -822,6 +824,17 @@
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
         <version>2.3.9</version>
+        <exclusions>
+          <!-- Wrong id -->
+          <exclusion>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- RESTful Web Services (JAX-RS) -->
@@ -1394,6 +1407,13 @@
         <groupId>com.sun.mail</groupId>
         <artifactId>jakarta.mail</artifactId>
         <version>${jakarta.mail.version}</version>
+        <exclusions>
+          <!-- Wrong id -->
+          <exclusion>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- Diff tools used in commons for diff and blame -->
       <dependency>
