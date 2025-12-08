@@ -57,6 +57,11 @@
       <groupId>com.sun.mail</groupId>
       <artifactId>jakarta.mail</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>javax.activation-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <scm>

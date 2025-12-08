@@ -1382,6 +1382,13 @@
         <artifactId>jakarta.mail-api</artifactId>
         <version>${jakarta.mail.version}</version>
         <scope>provided</scope>
+        <exclusions>
+          <!-- Wrong id -->
+          <exclusion>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.sun.mail</groupId>
