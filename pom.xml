@@ -890,6 +890,11 @@
         <artifactId>failureaccess</artifactId>
         <version>${guava.failureaccess.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.jspecify</groupId>
+        <artifactId>jspecify</artifactId>
+        <version>1.0.0</version>
+      </dependency>
 
       <!-- Groovy engine. Used in both commons and platform -->
       <dependency>
