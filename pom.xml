@@ -812,11 +812,6 @@
         <artifactId>jakarta.xml.bind-api</artifactId>
         <version>${jakarta.xml.bind.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.glassfish.jaxb</groupId>
-        <artifactId>jaxb-runtime</artifactId>
-        <version>4.0.6</version>
-      </dependency>
       <!-- javax-->
       <dependency>
         <groupId>javax.xml.bind</groupId>
@@ -824,8 +819,8 @@
         <version>${javax.xml.bind.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-impl</artifactId>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
         <version>2.3.9</version>
       </dependency>
 
@@ -1709,7 +1704,6 @@
                   <excludes>
                     <exclude>com.sun.xml.bind:jaxb-impl</exclude>
                     <exclude>com.sun.xml.bind:jaxb-core</exclude>
-                    <exclude>org.glassfish.jaxb:jaxb-core</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
