@@ -62,7 +62,8 @@
 
     <!-- Javax/Jakarta APIs -->
     <!-- Mail -->
-    <javax.mail.version>1.6.8</javax.mail.version>
+    <javax.mail.version>1.6.2</javax.mail.version>
+    <jakarta.mail.version>2.1.5</jakarta.mail.version>
     <!-- Activation -->
     <javax.activation.version>1.2.0</javax.activation.version>
     <jakarta.activation.version>2.1.4</jakarta.activation.version>
@@ -917,25 +918,24 @@
       </dependency>
 
       <!-- Mail -->
-      <!-- javax -->
+      <!-- jakarta -->
       <dependency>
         <groupId>jakarta.mail</groupId>
         <artifactId>jakarta.mail-api</artifactId>
+        <version>${jakarta.mail.version}</version>
+      </dependency>
+      <!-- javax -->
+      <dependency>
+        <groupId>javax.mail</groupId>
+        <artifactId>javax.mail-api</artifactId>
         <version>${javax.mail.version}</version>
         <!-- Embedded in com.sun.mail:jakarta.mail -->
         <scope>provided</scope>
-        <exclusions>
-          <!-- Wrong id -->
-          <exclusion>
-            <groupId>jakarta.activation</groupId>
-            <artifactId>jakarta.activation-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.sun.mail</groupId>
         <artifactId>jakarta.mail</artifactId>
-        <version>${javax.mail.version}</version>
+        <version>1.6.8</version>
         <exclusions>
           <!-- Wrong id -->
           <exclusion>
@@ -1961,11 +1961,10 @@
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
                   <message>
-                    Javax Mail artifact id changed, the current one is jakarta.mail:jakarta.mail-api
+                    Use javax.mail:javax.mail-api instead.
                   </message>
                   <excludes>
                     <exclude>javax.mail:mailapi</exclude>
-                    <exclude>com.sun.mail:javax.mail-api</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
@@ -1982,7 +1981,7 @@
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
                   <message>
-                    Javax Mail artifact id changed, the current one is com.sun.mail:jakarta.mail
+                    Use com.sun.mail:jakarta.mail instead.
                   </message>
                   <excludes>
                     <exclude>javax.mail:mail</exclude>
