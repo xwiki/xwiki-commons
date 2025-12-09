@@ -62,7 +62,7 @@
 
     <!-- Javax/Jakarta APIs -->
     <!-- Mail -->
-    <javax.mail.version>1.6.8</javax.mail.version>
+    <javax.mail.version>2.1.5</javax.mail.version>
     <!-- Activation -->
     <javax.activation.version>1.2.0</javax.activation.version>
     <jakarta.activation.version>2.1.4</jakarta.activation.version>
