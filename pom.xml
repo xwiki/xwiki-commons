@@ -62,7 +62,7 @@
 
     <!-- Javax/Jakarta APIs -->
     <!-- Mail -->
-    <jakarta.mail.version>1.6.8</jakarta.mail.version>
+    <javax.mail.version>1.6.8</javax.mail.version>
     <!-- Activation -->
     <javax.activation.version>1.2.0</javax.activation.version>
     <jakarta.activation.version>2.1.4</jakarta.activation.version>
@@ -70,7 +70,7 @@
     <javax.transaction.version>1.3</javax.transaction.version>
     <jakarta.transaction.version>2.0.1</jakarta.transaction.version>
     <!-- JSON Processing (JSON-P) -->
-    <jakarta.json.version>2.1.3</jakarta.json.version>
+    <javax.json.version>2.1.3</javax.json.version>
     <!-- XML Binding (JAX-B) -->
     <javax.xml.bind.version>2.3.1</javax.xml.bind.version>
     <jakarta.xml.bind.version>4.0.4</jakarta.xml.bind.version>
@@ -83,11 +83,13 @@
     <!-- Websoket -->
     <javax.websocket.version>1.1</javax.websocket.version>
     <jakarta.websocket.version>2.0.0</jakarta.websocket.version>
+    <!-- Inject -->
+    <jakarta.inject.version>2.0.1</jakarta.inject.version>
 
-    <!-- Jakarta JSON Processing (JSON-P) implementation -->
+    <!-- Javax/Jakarta implementations -->
+    <!-- Javax JSON Processing (JSON-P) -->
     <parsson.version>1.1.7</parsson.version>
-
-    <!-- Jakarta Expression Language (EL) implementation -->
+    <!-- Javax Expression Language (EL) -->
     <expressly.version>5.0.0</expressly.version>
 
     <!-- Jackson -->
@@ -678,7 +680,7 @@
       <dependency>
         <groupId>jakarta.json</groupId>
         <artifactId>jakarta.json-api</artifactId>
-        <version>${jakarta.json.version}</version>
+        <version>${javax.json.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.parsson</groupId>
@@ -856,15 +858,96 @@
       </dependency>
 
       <!-- JTA -->
+      <!-- jakarta -->
       <dependency>
         <groupId>jakarta.transaction</groupId>
         <artifactId>jakarta.transaction-api</artifactId>
         <version>${jakarta.transaction.version}</version>
       </dependency>
+      <!-- javax -->
       <dependency>
         <groupId>javax.transaction</groupId>
         <artifactId>javax.transaction-api</artifactId>
         <version>${javax.transaction.version}</version>
+      </dependency>
+
+      <!-- Injection -->
+      <!-- jakarta -->
+      <dependency>
+        <groupId>jakarta.inject</groupId>
+        <artifactId>jakarta.inject-api</artifactId>
+        <version>${jakarta.inject.version}</version>
+      </dependency>
+
+      <!-- Servlet -->
+      <!-- jakarta -->
+      <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>${jakarta.servlet.version}</version>
+        <!-- It should always be provided as the API jar is provided by the Servlet Container in which XWiki is
+             deployed -->
+        <scope>provided</scope>
+      </dependency>
+      <!-- javax -->
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>${javax.servlet.version}</version>
+      </dependency>
+
+      <!-- WebSocket -->
+      <!-- jakarta -->
+      <dependency>
+        <groupId>jakarta.websocket</groupId>
+        <artifactId>jakarta.websocket-api</artifactId>
+        <version>${jakarta.websocket.version}</version>
+        <!-- It should always be provided as the API jar is provided by the Servlet Container in which XWiki is
+             deployed -->
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.websocket</groupId>
+        <artifactId>jakarta.websocket-client-api</artifactId>
+        <version>${jakarta.websocket.version}</version>
+        <!-- It should always be provided as the API jar is provided by the Servlet Container in which XWiki is
+             deployed -->
+        <scope>provided</scope>
+      </dependency>
+      <!-- javax -->
+      <dependency>
+        <groupId>javax.websocket</groupId>
+        <artifactId>javax.websocket-api</artifactId>
+        <version>${javax.websocket.version}</version>
+      </dependency>
+
+      <!-- Mail -->
+      <!-- javax -->
+      <dependency>
+        <groupId>jakarta.mail</groupId>
+        <artifactId>jakarta.mail-api</artifactId>
+        <version>${javax.mail.version}</version>
+        <!-- Embedded in com.sun.mail:jakarta.mail -->
+        <scope>provided</scope>
+        <exclusions>
+          <!-- Wrong id -->
+          <exclusion>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>jakarta.mail</artifactId>
+        <version>${javax.mail.version}</version>
+        <exclusions>
+          <!-- Wrong id -->
+          <exclusion>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- Bouncy Castle -->
@@ -1018,13 +1101,6 @@
         <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
         <version>3.30.2-GA</version>
-      </dependency>
-
-      <!-- Injection -->
-      <dependency>
-        <groupId>jakarta.inject</groupId>
-        <artifactId>jakarta.inject-api</artifactId>
-        <version>2.0.1</version>
       </dependency>
 
       <!-- Triggered by several Maven related projects (Doxia, Maven, Aether) as transitive dependency. We need
@@ -1324,37 +1400,6 @@
         <version>${bytebuddy.version}</version>
       </dependency>
 
-      <!-- Several modules depend on the servlet API -->
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>javax.servlet-api</artifactId>
-        <version>${javax.servlet.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>jakarta.servlet</groupId>
-        <artifactId>jakarta.servlet-api</artifactId>
-        <version>${jakarta.servlet.version}</version>
-        <!-- It should always be provided as the API jar is provided by the Servlet Container in which XWiki is
-             deployed -->
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>javax.websocket</groupId>
-        <artifactId>javax.websocket-api</artifactId>
-        <version>${javax.websocket.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>jakarta.websocket</groupId>
-        <artifactId>jakarta.websocket-api</artifactId>
-        <version>${jakarta.websocket.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>jakarta.websocket</groupId>
-        <artifactId>jakarta.websocket-client-api</artifactId>
-        <version>${jakarta.websocket.version}</version>
-        <scope>provided</scope>
-      </dependency>
       <!-- Needed for Legacy modules. The version needs to be in sync with the one used by the AspectJ plugin -->
       <dependency>
         <groupId>org.aspectj</groupId>
@@ -1393,32 +1438,6 @@
         <scope>provided</scope>
       </dependency>
 
-      <!-- Mail -->
-      <dependency>
-        <groupId>jakarta.mail</groupId>
-        <artifactId>jakarta.mail-api</artifactId>
-        <version>${jakarta.mail.version}</version>
-        <scope>provided</scope>
-        <exclusions>
-          <!-- Wrong id -->
-          <exclusion>
-            <groupId>jakarta.activation</groupId>
-            <artifactId>jakarta.activation-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.mail</groupId>
-        <artifactId>jakarta.mail</artifactId>
-        <version>${jakarta.mail.version}</version>
-        <exclusions>
-          <!-- Wrong id -->
-          <exclusion>
-            <groupId>com.sun.activation</groupId>
-            <artifactId>jakarta.activation</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
       <!-- Diff tools used in commons for diff and blame -->
       <dependency>
         <groupId>io.github.java-diff-utils</groupId>
