@@ -267,7 +267,7 @@
     <!-- Versions of Maven and Maven Resolver embedded in XWiki runtime
          (more recent than the one used during the build to benefit from bugfixes and improvements) -->
     <maven.runtime.version>3.9.11</maven.runtime.version>
-    <maven.resolver.runtime.version>1.9.24</maven.resolver.runtime.version>
+    <maven.resolver.runtime.version>1.9.25</maven.resolver.runtime.version>
 
     <!-- Minimum version of the actual Maven binary required to build -->
     <maven.minimum.version>${maven.build.version}</maven.minimum.version>
