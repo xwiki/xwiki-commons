@@ -876,11 +876,6 @@
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcmail-jdk18on</artifactId>
-        <version>${bouncycastle.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.bouncycastle</groupId>
         <artifactId>bcjmail-jdk18on</artifactId>
         <version>${bouncycastle.version}</version>
       </dependency>
@@ -2045,6 +2040,7 @@
                     <exclude>bouncycastle:bcmail-jdk14</exclude>
                     <exclude>bouncycastle:bcmail-jdk13</exclude>
                     <exclude>bouncycastle:bcmail-jdk12</exclude>
+                    <exclude>org.bouncycastle:bcmail-jdk18on</exclude>
                     <exclude>org.bouncycastle:bcmail-jdk15on</exclude>
                     <exclude>org.bouncycastle:bcmail-jdk16</exclude>
                     <exclude>org.bouncycastle:bcmail-jdk15</exclude>
