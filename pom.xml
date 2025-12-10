@@ -2868,6 +2868,11 @@
               <artifactId>closure-compiler</artifactId>
               <version>${closure-compiler.version}</version>
             </dependency>
+            <dependency>
+              <groupId>com.google.guava</groupId>
+              <artifactId>guava</artifactId>
+              <version>${guava.version}</version>
+            </dependency>
           </dependencies>
         </plugin>
         <!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven
