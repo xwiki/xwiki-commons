@@ -320,11 +320,11 @@ public class XARMojo extends AbstractXARMojo
 
         OutputFormat outputFormat = new OutputFormat("", true);
         outputFormat.setEncoding(this.encoding);
-        OutputStream out = new FileOutputStream(packageFile);
-        XMLWriter writer = new XMLWriter(out, outputFormat);
-        writer.write(toXML(files));
-        writer.close();
-        out.close();
+        try (OutputStream out = new FileOutputStream(packageFile)) {
+            try (XMLWriter writer = new XMLWriter(out, outputFormat)) {
+                writer.write(toXML(files));
+            }
+        }
     }
 
     /**
