@@ -961,6 +961,11 @@
         <artifactId>bcmail-jdk18on</artifactId>
         <version>${bouncycastle.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcjmail-jdk18on</artifactId>
+        <version>${bouncycastle.version}</version>
+      </dependency>
 
       <!-- Various project are using it to scan the classpath -->
       <dependency>
