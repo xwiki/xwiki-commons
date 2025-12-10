@@ -33,9 +33,6 @@
   <description>XWiki Commons - Extension - Handler - JAR</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.81</xwiki.jacoco.instructionRatio>
-    <!-- Too many dependencies required -->
-    <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml
-    </checkstyle.suppressions.location>
   </properties>
   <dependencies>
     <dependency>
@@ -79,26 +76,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <executions>
-          <execution>
-            <!-- Specify the "default" execution id so that the "blocker" one is always executed -->
-            <id>default</id>
-            <configuration>
-              <excludes>
-                org/xwiki/extension/jar/internal/handler/JarExtensionHandler.java
-              </excludes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-
   <scm>
     <tag>stable-17.10.x</tag>
   </scm>
