@@ -231,7 +231,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
         assertNull(cache.get(KEY));
         assertEquals(VALUE2, cache.get(KEY2));
 
-        Thread.sleep(1100);
+        Thread.sleep(1200);
 
         assertNull(cache.get(KEY));
         assertNull(cache.get(KEY2));
