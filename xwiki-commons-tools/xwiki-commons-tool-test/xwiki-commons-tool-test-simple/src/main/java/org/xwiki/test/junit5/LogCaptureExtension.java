@@ -248,6 +248,8 @@ public class LogCaptureExtension implements BeforeAllCallback, AfterAllCallback,
                 if (builder.length() > 0) {
                     builder.append('\n');
                 }
+                builder.append(getLogEvent(i).getLevel());
+                builder.append(": ");
                 builder.append(getMessage(i));
             }
         }
