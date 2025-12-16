@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.Session;
@@ -92,7 +93,7 @@ public class Netflux
     private ObservationManager observation;
 
     @Inject
-    private LocalUserFactory localUserFactory;
+    private Provider<LocalUserFactory> localUserFactoryProvider;
 
     @Inject
     private Logger logger;
@@ -165,7 +166,10 @@ public class Netflux
         LocalUser user = (LocalUser) session.getUserProperties().get(NETFLUX_USER);
         if (user == null) {
             // Register the user.
-            user = this.localUserFactory.createLocalUser(session);
+            user = this.localUserFactoryProvider.get().createLocalUser(session);
+
+            this.logger.error("Locale user: {}", user.getName());
+
             session.getUserProperties().put(NETFLUX_USER, user);
 
             registerUser(user);
