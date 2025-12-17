@@ -119,7 +119,7 @@ public class LogCaptureExtensionTest
 
         // Verify that uncaptured logs are caught and generate an exception
         assertEquals(1, summary.getFailures().size());
-        assertEquals("Following messages must be asserted: [uncaptured warn]",
+        assertEquals("Following messages must be asserted: [WARN: uncaptured warn]",
             summary.getFailures().get(0).getException().getMessage());
         assertEquals(2, summary.getTestsSucceededCount());
     }
@@ -131,9 +131,9 @@ public class LogCaptureExtensionTest
 
         // Verify that uncaptured logs are caught and generate an exception
         assertEquals(2, summary.getFailures().size());
-        assertEquals("Following messages must be asserted: [uncaptured warn]",
+        assertEquals("Following messages must be asserted: [WARN: uncaptured warn]",
             summary.getFailures().get(0).getException().getMessage());
-        assertEquals("Following messages must be asserted: [static warn before all not captured]",
+        assertEquals("Following messages must be asserted: [WARN: static warn before all not captured]",
             summary.getFailures().get(1).getException().getMessage());
         assertEquals(1, summary.getTestsSucceededCount());
     }
