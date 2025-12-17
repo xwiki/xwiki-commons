@@ -168,8 +168,6 @@ public class Netflux
             // Register the user.
             user = this.localUserFactoryProvider.get().createLocalUser(session);
 
-            this.logger.error("Locale user: {}", user.getName());
-
             session.getUserProperties().put(NETFLUX_USER, user);
 
             registerUser(user);
