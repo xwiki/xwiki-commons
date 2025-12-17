@@ -1888,7 +1888,7 @@
               </rules>
             </configuration>
           </execution>
-          <!-- Check that we're using commons-configuration3 and not commons-configuration -->
+          <!-- Check that we're using commons-configuration2 and not commons-configuration -->
           <execution>
             <id>enforce-commons-configuration2</id>
             <goals>
@@ -1898,10 +1898,8 @@
               <skip>${xwiki.enforcer.enforce-commons-configuration2.skip}</skip>
               <rules>
                 <bannedDependencies>
-                  <searchTransitive>false</searchTransitive>
-                  <message>
-                    Best practice is to use Commons Configuration 2.x
-                  </message>
+                  <searchTransitive>true</searchTransitive>
+                  <message>Use org.apache.commons:commons-configuration2 instead</message>
                   <excludes>
                     <exclude>commons-configuration:commons-configuration</exclude>
                   </excludes>
