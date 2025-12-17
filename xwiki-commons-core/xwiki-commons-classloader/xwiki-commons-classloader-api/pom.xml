@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-classloader</artifactId>
-    <version>17.10.1-SNAPSHOT</version>
+    <version>17.10.1</version>
   </parent>
   <artifactId>xwiki-commons-classloader-api</artifactId>
   <name>XWiki Commons - ClassLoader - API</name>
@@ -117,6 +117,6 @@
   </build>
 
   <scm>
-    <tag>stable-17.10.x</tag>
+    <tag>xwiki-commons-17.10.1</tag>
   </scm>
 </project>
