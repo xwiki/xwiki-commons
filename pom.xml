@@ -139,7 +139,7 @@
     <bytebuddy.version>1.18.2</bytebuddy.version>
 
     <!-- AspectJ -->
-    <aspectj.version>1.9.25</aspectj.version>
+    <aspectj.version>1.9.25.1</aspectj.version>
 
     <!-- Clover & Jacoco -->
     <clover.version>4.5.2</clover.version>
