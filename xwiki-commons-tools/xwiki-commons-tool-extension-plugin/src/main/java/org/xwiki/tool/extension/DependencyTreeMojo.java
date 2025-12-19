@@ -70,6 +70,9 @@ public class DependencyTreeMojo extends AbstractExtensionMojo
     @Parameter(defaultValue = "PROJECT", property = "entryPoint")
     private EntryPoint entryPoint;
 
+    @Parameter(property = "namespace")
+    private String namespace;
+
     @Override
     public void executeInternal() throws MojoExecutionException
     {
@@ -77,7 +80,8 @@ public class DependencyTreeMojo extends AbstractExtensionMojo
         List<ExtensionPlan> plans;
         if (this.entryPoint == EntryPoint.PROJECT) {
             plans = Collections.singletonList(this.extensionHelper.createInstallPlan(
-                this.extensionHelper.toArtifactModel(this.project.getArtifact(), this.project.getModel())));
+                this.extensionHelper.toArtifactModel(this.project.getArtifact(), this.project.getModel()),
+                this.namespace));
         } else {
             plans = this.extensionHelper.resolveDependencies(this.project,
                 this.entryPoint == EntryPoint.DEPENDENCIES_ISOLATED);

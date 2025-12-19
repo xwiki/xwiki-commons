@@ -112,6 +112,14 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     private List<ExtensionArtifact> coreExtensions;
 
     /**
+     * The flavors (and their dependencies) to resolve as installed extensions.
+     * 
+     * @since 18.0.0RC1
+     */
+    @Parameter(property = "installedFlavors")
+    private List<ExtensionDescription> installedFlavors;
+
+    /**
      * List of remote repositories to be used by the plugin to resolve dependencies.
      */
     @Parameter(property = "project.remoteArtifactRepositories")
@@ -144,9 +152,11 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     {
         initializeExtensionMojoHelper();
 
-        // We need to know which JAR extension we don't want to install (usually those that are already part of the
-        // WAR)
+        // Indicate the core extensions (resolved the Maven way) and their dependencies we don't want to install
         registerCoreExtensions();
+
+        // Indicate the other extensions (resolved the XWiki way) and their dependencies we don't want to install
+        registerInstalledFlavors();
 
         // Set recommended versions
         this.extensionHelper.getMavenBuildConfigurationSource().setProperty("extension.recommendedVersions",
@@ -212,6 +222,17 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
             }
 
             getLog().info("Done registering core extensions");
+        }
+    }
+
+    private void registerInstalledFlavors() throws MojoExecutionException
+    {
+        if (this.installedFlavors != null) {
+            getLog().info("Registering installed flavors...");
+
+            this.extensionHelper.registerInstalledFlavors(this.installedFlavors, "wiki:xwiki");
+
+            getLog().info("Done registering installed flavors");
         }
     }
 }
