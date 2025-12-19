@@ -133,7 +133,7 @@
     <mockito.version>5.21.0</mockito.version>
 
     <!-- Testcontainers for integration tests -->
-    <testcontainers.version>2.0.2</testcontainers.version>
+    <testcontainers.version>2.0.3</testcontainers.version>
 
     <!-- Byte Buddy -->
     <bytebuddy.version>1.18.3</bytebuddy.version>
