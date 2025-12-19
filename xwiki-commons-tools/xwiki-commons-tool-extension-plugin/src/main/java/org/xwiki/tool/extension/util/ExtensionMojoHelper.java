@@ -61,10 +61,13 @@ import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.MutableExtension;
 import org.xwiki.extension.internal.ExtensionUtils;
+import org.xwiki.extension.internal.InstallOnRootNamespaceExtensionRewriter;
 import org.xwiki.extension.internal.converter.ExtensionIdConverter;
+import org.xwiki.extension.jar.internal.handler.JarExtensionHandler;
 import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.internal.DependenciesJob;
 import org.xwiki.extension.job.internal.InstallJob;
+import org.xwiki.extension.job.internal.InstallPlanJob;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
@@ -108,6 +111,10 @@ public class ExtensionMojoHelper implements AutoCloseable
     @Inject
     @Named(DependenciesJob.JOBTYPE)
     private Provider<Job> dependeciesJobProvider;
+
+    @Inject
+    @Named(InstallPlanJob.JOBTYPE)
+    private Provider<Job> installPlanJobProvider;
 
     @Inject
     @Named(InstallJob.JOBTYPE)
@@ -402,12 +409,12 @@ public class ExtensionMojoHelper implements AutoCloseable
         }
     }
 
-    private ExtensionPlan createInstallPlan(InstallRequest installRequest)
+    private ExtensionPlan createInstallPlan(InstallRequest installRequest, boolean dependenciesOnly)
     {
         // Minimum job log
         installRequest.setVerbose(false);
 
-        Job installPlanJob = this.dependeciesJobProvider.get();
+        Job installPlanJob = dependenciesOnly ? this.dependeciesJobProvider.get() : this.installPlanJobProvider.get();
 
         installPlanJob.initialize(installRequest);
         installPlanJob.run();
@@ -415,15 +422,16 @@ public class ExtensionMojoHelper implements AutoCloseable
         return (ExtensionPlan) installPlanJob.getStatus();
     }
 
-    public ExtensionPlan createInstallPlan(ArtifactModel model) throws MojoExecutionException
+    public ExtensionPlan createInstallPlan(ArtifactModel model, String namespace) throws MojoExecutionException
     {
         Extension extension = toExtension(model);
 
         InstallRequest installRequest = new InstallRequest();
 
+        installRequest.addNamespace(namespace);
         installRequest.addExtension(extension);
 
-        ExtensionPlan status = createInstallPlan(installRequest);
+        ExtensionPlan status = createInstallPlan(installRequest, false);
         // Deal with errors
         if (status.getError() != null) {
             throw new MojoExecutionException(
@@ -445,7 +453,7 @@ public class ExtensionMojoHelper implements AutoCloseable
                 installRequest.addExtension(new ExtensionId(dependency.getGroupId() + ':' + dependency.getArtifactId(),
                     dependency.getVersion()));
 
-                ExtensionPlan status = createInstallPlan(installRequest);
+                ExtensionPlan status = createInstallPlan(installRequest, true);
                 // Deal with errors
                 if (status.getError() != null) {
                     throw new MojoExecutionException(
@@ -471,7 +479,7 @@ public class ExtensionMojoHelper implements AutoCloseable
                 new ExtensionId(dependency.getGroupId() + ':' + dependency.getArtifactId(), dependency.getVersion()));
         }
 
-        ExtensionPlan status = createInstallPlan(installRequest);
+        ExtensionPlan status = createInstallPlan(installRequest, true);
         // Deal with errors
         if (status.getError() != null) {
             throw new MojoExecutionException(
@@ -484,13 +492,57 @@ public class ExtensionMojoHelper implements AutoCloseable
     public InstalledExtension registerInstalledExtension(Artifact artifact, String namespace, boolean dependency,
         Map<String, Object> properties) throws MojoExecutionException
     {
-        LocalExtension localExtension = storeExtension(artifact);
+        Extension extension = getExtension(artifact);
+
+        return registerInstalledExtension(extension, namespace, dependency, properties);
+    }
+
+    public InstalledExtension registerInstalledExtension(Extension extension, String namespace, boolean dependency,
+        Map<String, Object> properties) throws MojoExecutionException
+    {
+        LocalExtension localExtension = storeExtension(extension);
 
         try {
             return getInstalledExtensionRepository().installExtension(localExtension, namespace, dependency,
                 properties);
         } catch (InstallException e) {
             throw new MojoExecutionException("Failed to install extension", e);
+        }
+    }
+
+    public void registerInstalledFlavors(List<ExtensionDescription> flavors, String namespace) throws MojoExecutionException
+    {
+        InstallRequest installRequest = new InstallRequest();
+
+        // Install on main wiki
+        installRequest.addNamespace(namespace);
+
+        // JAR dependencies of flavors are installed on root namespace
+        InstallOnRootNamespaceExtensionRewriter rewriter = new InstallOnRootNamespaceExtensionRewriter();
+        rewriter.installExtensionTypeOnRootNamespace(JarExtensionHandler.JAR);
+        rewriter.installExtensionTypeOnRootNamespace(JarExtensionHandler.WEBJAR);
+        rewriter.installExtensionTypeOnRootNamespace(JarExtensionHandler.WEBJAR_NODE);
+        installRequest.setRewriter(rewriter);
+
+        for (ExtensionDescription extensionDescription : flavors) {
+            installRequest.addExtension(new ExtensionId(extensionDescription.getId(), extensionDescription.getVersion()));
+        }
+
+        ExtensionPlan plan = createInstallPlan(installRequest, false);
+
+        // Deal with errors
+        if (plan.getError() != null) {
+            throw new MojoExecutionException(
+                "Failed to create an install plan for extensions [" + flavors + "]", plan.getError());
+        }
+
+        for (ExtensionPlanAction action : plan.getActions()) {
+            if (action.getAction() == Action.INSTALL) {
+                registerInstalledExtension(action.getExtension(), action.getNamespace(), false, Collections.emptyMap());
+            } else if (action.getAction() != Action.NONE) {
+                throw new MojoExecutionException(
+                    "Unexpected action [" + action + "] when registering installed extensions");
+            }
         }
     }
 
