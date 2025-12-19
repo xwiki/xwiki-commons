@@ -36,7 +36,7 @@ import org.xwiki.tool.extension.util.AbstractExtensionMojo;
  * @version $Id$
  * @since 9.4RC1
  */
-@Mojo(name = "xip", defaultPhase = LifecyclePhase.GENERATE_RESOURCES,
+@Mojo(name = "xip", defaultPhase = LifecyclePhase.PACKAGE,
     requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true, threadSafe = true)
 public class XIPMojo extends AbstractExtensionMojo
 {
