@@ -136,7 +136,7 @@
     <testcontainers.version>2.0.2</testcontainers.version>
 
     <!-- Byte Buddy -->
-    <bytebuddy.version>1.18.2</bytebuddy.version>
+    <bytebuddy.version>1.18.3</bytebuddy.version>
 
     <!-- AspectJ -->
     <aspectj.version>1.9.25</aspectj.version>
