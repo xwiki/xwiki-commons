@@ -138,7 +138,7 @@ public class DefaultAnnotatedContent<R, E> implements AnnotatedContent<R, E>
     /**
      * Resolve revision of line to current revision based on given previous content.
      *
-     * Thanks to Michael Schierl <schierlm%40gmx.de> for sharing this code on StackOverflow.
+     * Thanks to Michael Schierl &lt;schierlm%40gmx.de&gt; for sharing this code on StackOverflow.
      *
      * @param deltas the delta to apply to current content to move to previous revision.
      */
