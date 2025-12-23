@@ -197,7 +197,7 @@ class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     }
 
     @Override
-    protected String getPackageLocation()
+    public String getPackageLocation()
     {
         return "org/xwiki/tool/checkstyle/test/unstable";
     }
