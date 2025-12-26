@@ -60,7 +60,7 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
     /**
      * The cached extensions grouped by ids and ordered by version DESC.
      * <p>
-     * <extension id, extensions>
+     * &lt;extension id, extensions&gt;
      */
     protected Map<String, List<E>> extensionsVersions = new ConcurrentHashMap<>();
 

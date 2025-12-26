@@ -245,7 +245,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     private JobGroupPathLockTree lockTree;
 
     /**
-     * Map<groupname, group executor>.
+     * Map&lt;groupname, group executor&gt;.
      */
     private final Map<JobGroupPath, JobGroupExecutor> groupExecutors = new ConcurrentHashMap<>();
 
