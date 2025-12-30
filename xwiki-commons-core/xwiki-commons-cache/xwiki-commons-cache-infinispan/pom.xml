@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-cache</artifactId>
-    <version>17.10.2-SNAPSHOT</version>
+    <version>17.10.2</version>
   </parent>
   <artifactId>xwiki-commons-cache-infinispan</artifactId>
   <name>XWiki Commons - Cache - Infinispan</name>
@@ -61,6 +61,6 @@
   </dependencies>
 
   <scm>
-    <tag>stable-17.10.x</tag>
+    <tag>xwiki-commons-17.10.2</tag>
   </scm>
 </project>
