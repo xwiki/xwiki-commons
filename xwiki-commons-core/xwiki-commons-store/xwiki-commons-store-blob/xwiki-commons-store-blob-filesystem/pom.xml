@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-store-blob</artifactId>
-    <version>17.10.2</version>
+    <version>17.10.3-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-store-blob-filesystem</artifactId>
   <name>XWiki Commons - Store - Blob - Filesystem</name>
@@ -62,6 +62,6 @@
   </dependencies>
 
   <scm>
-    <tag>xwiki-commons-17.10.2</tag>
+    <tag>stable-17.10.x</tag>
   </scm>
 </project>
