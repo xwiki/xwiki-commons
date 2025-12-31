@@ -225,7 +225,7 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
         // Must not be an instance
         if (field.getType().isInterface()) {
             throw new Exception(String.format("The type of the field [%s] annotated with @%s cannot be an interface.",
-                InjectMockComponents.class.getSimpleName(), field.getName()));
+                field.getName(), InjectMockComponents.class.getSimpleName()));
         }
 
         // Find Component descriptors
@@ -253,7 +253,7 @@ public class MockitoComponentManagerExtension implements BeforeEachCallback, Aft
         // Must  be an instance
         if (!field.getType().isInterface()) {
             throw new Exception(String.format("The type of the field [%s] annotated with @%s must be an interface.",
-                Inject.class.getSimpleName(), field.getName()));
+                field.getName(), Inject.class.getSimpleName()));
         }
 
         Object component = (namedAnnotation == null) ? mcm.getInstance(field.getGenericType())
