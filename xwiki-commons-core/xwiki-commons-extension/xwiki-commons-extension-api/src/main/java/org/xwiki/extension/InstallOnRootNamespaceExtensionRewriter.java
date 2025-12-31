@@ -17,15 +17,14 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.internal;
+package org.xwiki.extension;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.xwiki.extension.Extension;
-import org.xwiki.extension.ExtensionRewriter;
+import org.xwiki.extension.internal.ExtensionUtils;
 import org.xwiki.extension.wrap.WrappingExtension;
 
 /**
@@ -33,7 +32,7 @@ import org.xwiki.extension.wrap.WrappingExtension;
  * 
  * @version $Id$
  * @since 18.0.0RC1
- * @since 17.10.2
+ * @since 17.10.3
  */
 public class InstallOnRootNamespaceExtensionRewriter implements ExtensionRewriter
 {
