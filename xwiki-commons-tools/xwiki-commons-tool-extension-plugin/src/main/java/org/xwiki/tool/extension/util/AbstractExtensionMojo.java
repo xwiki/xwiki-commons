@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
@@ -191,9 +192,7 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
 
     private void registerCoreExtensions() throws MojoExecutionException
     {
-        getLog().info(System.getProperty("coreExtensions"));
-
-        if (this.coreExtensions != null) {
+        if (CollectionUtils.isNotEmpty(this.coreExtensions)) {
             getLog().info("Registering core extensions...");
 
             Set<Artifact> coreArtifacts = this.extensionHelper.collectMavenArtifacts(this.coreExtensions);
@@ -228,7 +227,7 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
 
     private void registerInstalledFlavors() throws MojoExecutionException
     {
-        if (this.installedFlavors != null) {
+        if (CollectionUtils.isNotEmpty(this.installedFlavors)) {
             getLog().info("Registering installed flavors...");
 
             this.extensionHelper.registerInstalledFlavors(this.installedFlavors, "wiki:xwiki");
