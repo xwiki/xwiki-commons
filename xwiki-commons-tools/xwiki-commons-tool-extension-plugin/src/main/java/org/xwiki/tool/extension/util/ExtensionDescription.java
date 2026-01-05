@@ -25,7 +25,7 @@ import org.xwiki.extension.internal.converter.ExtensionIdConverter;
 /**
  * @version $Id$
  * @since 18.0.0RC1
- * @since 17.10.2
+ * @since 17.10.3
  */
 public class ExtensionDescription
 {

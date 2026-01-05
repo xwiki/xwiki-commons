@@ -116,7 +116,7 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
      * The flavors (and their dependencies) to resolve as installed extensions.
      * 
      * @since 18.0.0RC1
-     * @since 17.10.2
+     * @since 17.10.3
      */
     @Parameter(property = "installedFlavors")
     private List<ExtensionDescription> installedFlavors;
