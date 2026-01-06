@@ -24,7 +24,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>16.10.16-SNAPSHOT</version>
+  <version>16.10.16</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -302,7 +302,7 @@
          plugin executes before, the property is undefined and makes the tests fail. Thus, we define an empty property
          here to make sure it doesn't fail. See also https://issues.apache.org/jira/browse/SUREFIRE-1431
     -->
-    <argLine/>
+    <argLine />
 
   </properties>
   <licenses>
@@ -334,7 +334,7 @@
     <connection>scm:git:git://github.com/${xwiki.github.owner}/${xwiki.github.repository}.git</connection>
     <developerConnection>scm:git:git@github.com:${xwiki.github.owner}/${xwiki.github.repository}.git</developerConnection>
     <url>https://github.com/${xwiki.github.owner}/${xwiki.github.repository}/tree/master/</url>
-    <tag>HEAD</tag>
+    <tag>xwiki-commons-16.10.16</tag>
   </scm>
   <mailingLists>
     <mailingList>
@@ -2286,7 +2286,7 @@
             <configuration>
               <skip>${xwiki.enforcer.enforce-upper-bounds.skip}</skip>
               <rules>
-                <requireUpperBoundDeps/>
+                <requireUpperBoundDeps />
               </rules>
             </configuration>
           </execution>
@@ -2864,7 +2864,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore/>
+                    <ignore />
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -2879,7 +2879,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore/>
+                    <ignore />
                   </action>
                 </pluginExecution>
               </pluginExecutions>
@@ -3085,7 +3085,7 @@
                 <phase>generate-resources</phase>
                 <configuration>
                   <target>
-                    <mkdir dir="${project.build.directory}/apidocs"/>
+                    <mkdir dir="${project.build.directory}/apidocs" />
                   </target>
                 </configuration>
                 <goals>
@@ -3354,7 +3354,7 @@
                     <property>
                       <!-- Try to work around error: "[SEVERE]: bind() failed: Cannot assign requested address (99)" -->
                       <name>webdriver.chrome.whitelistedIps</name>
-                      <value/>
+                      <value />
                     </property>
                   </properties>
                 </configuration>
