@@ -119,7 +119,7 @@
 
     <!-- JUnit -->
     <junit.version>4.13.2</junit.version>
-    <junit5.version>5.14.1</junit5.version>
+    <junit5.version>5.14.2</junit5.version>
     <junit.platform.version>1.14.1</junit.platform.version>
     <junit.vintage.version>${junit5.version}</junit.vintage.version>
 
