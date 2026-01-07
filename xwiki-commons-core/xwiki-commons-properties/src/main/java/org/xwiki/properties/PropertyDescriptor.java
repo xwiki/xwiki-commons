@@ -22,6 +22,7 @@ package org.xwiki.properties;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.xwiki.stability.Unstable;
@@ -96,13 +97,6 @@ public interface PropertyDescriptor
      * @since 4.2M1
      */
     Field getField();
-    
-    /**
-     * This allows a wider use of edit templates for common properties.
-     * @return a map of key-value pairs used in the template used to render the property.
-     * @since 18.0.0
-     */
-    Map<String, String> getEditDisplayerParameters();
 
     /**
      * @return indicates if the property is deprecated.
@@ -159,5 +153,15 @@ public interface PropertyDescriptor
     default int getOrder()
     {
         return -1;
+    }
+
+    /**
+     * This allows a wider use of edit templates for common properties.
+     * @return a map of key-value pairs used in the template used to render the property.
+     * @since 18.0.0
+     */
+    default Map<String, String> getEditDisplayerParameters() 
+    {
+        return new HashMap<>();
     }
 }

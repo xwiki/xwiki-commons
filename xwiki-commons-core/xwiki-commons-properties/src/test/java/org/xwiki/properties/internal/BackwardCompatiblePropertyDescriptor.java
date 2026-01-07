@@ -22,7 +22,6 @@ package org.xwiki.properties.internal;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Map;
 
 import org.xwiki.properties.PropertyDescriptor;
 
@@ -108,10 +107,5 @@ public class BackwardCompatiblePropertyDescriptor implements PropertyDescriptor
     public Method getWriteMethod()
     {
         return propertyDescriptor.getWriteMethod();
-    }
-    @Override
-    public Map<String, String> getEditDisplayerParameters()
-    {
-        return propertyDescriptor.getEditDisplayerParameters();
     }
 }
