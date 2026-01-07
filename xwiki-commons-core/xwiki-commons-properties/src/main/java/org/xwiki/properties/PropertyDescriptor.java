@@ -156,7 +156,7 @@ public interface PropertyDescriptor
     }
 
     /**
-     * @return the key/value pairs used to fit the display of the same property type in multiple situations.
+     * @return the key/value pairs used so that one property type can be displayed slightly differently to fit its use.
      * @since 18.0.0
      */
     default Map<String, String> getDisplayOptions() 
