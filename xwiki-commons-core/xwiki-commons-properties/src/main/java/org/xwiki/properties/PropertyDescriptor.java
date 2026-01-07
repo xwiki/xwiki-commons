@@ -156,11 +156,10 @@ public interface PropertyDescriptor
     }
 
     /**
-     * This allows a wider use of edit templates for common properties.
-     * @return a map of key-value pairs used in the template used to render the property.
+     * @return the key/value pairs used to fit the display of the same property type in multiple situations.
      * @since 18.0.0
      */
-    default Map<String, String> getEditDisplayerParameters() 
+    default Map<String, String> getDisplayOptions() 
     {
         return new HashMap<>();
     }

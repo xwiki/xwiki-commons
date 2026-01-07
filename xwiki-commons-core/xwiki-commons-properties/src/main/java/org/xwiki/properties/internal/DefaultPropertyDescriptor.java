@@ -109,9 +109,9 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     private boolean displayHidden;
 
     /**
-     * @see #getEditDisplayerParameters()
+     * @see #getDisplayOptions()
      */
-    private Map<String, String> editDisplayerParameters;
+    private Map<String, String> displayOptions;
     
     /**
      * @see #getOrder()
@@ -373,18 +373,18 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     }
     
     @Override
-    public Map<String, String> getEditDisplayerParameters()
+    public Map<String, String> getDisplayOptions()
     {
-        return editDisplayerParameters;
+        return displayOptions;
     }
     
     /**
-     * @param editDisplayerParameters see {@link #getEditDisplayerParameters()}
+     * @param displayOptions see {@link #getDisplayOptions()}
      * @since 18.0.0
      */
-    public void setEditDisplayerParameters(Map<String, String> editDisplayerParameters)
+    public void setDisplayOptions(Map<String, String> displayOptions)
     {
-        this.editDisplayerParameters = editDisplayerParameters;
+        this.displayOptions = displayOptions;
     }
 
 }
