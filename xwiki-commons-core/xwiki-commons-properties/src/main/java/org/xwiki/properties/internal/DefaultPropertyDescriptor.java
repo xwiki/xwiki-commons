@@ -107,12 +107,12 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
      * @see #isDisplayHidden()
      */
     private boolean displayHidden;
+
     /**
      * @see #getEditDisplayerParameters()
      */
     private Map<String, String> editDisplayerParameters;
     
-
     /**
      * @see #getOrder()
      */
