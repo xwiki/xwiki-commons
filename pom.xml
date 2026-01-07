@@ -24,7 +24,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>17.4.8</version>
+  <version>17.4.9-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -335,7 +335,7 @@
     <connection>scm:git:git://github.com/${xwiki.github.owner}/${xwiki.github.repository}.git</connection>
     <developerConnection>scm:git:git@github.com:${xwiki.github.owner}/${xwiki.github.repository}.git</developerConnection>
     <url>https://github.com/${xwiki.github.owner}/${xwiki.github.repository}/tree/master/</url>
-    <tag>xwiki-commons-17.4.8</tag>
+    <tag>stable-17.4.x</tag>
   </scm>
   <mailingLists>
     <mailingList>
