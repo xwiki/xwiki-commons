@@ -88,6 +88,10 @@
     <jakarta.inject.version>2.0.1</jakarta.inject.version>
 
     <!-- Javax/Jakarta implementations -->
+    <!-- Mail -->
+    <angus-mail.version>2.0.5</angus-mail.version>
+    <!-- Activation -->
+    <angus-activation.version>2.0.3</angus-activation.version>
     <!-- Javax JSON Processing (JSON-P) -->
     <parsson.version>1.1.7</parsson.version>
     <!-- Javax Expression Language (EL) -->
@@ -183,21 +187,19 @@
     <xwiki.jacoco.skip>false</xwiki.jacoco.skip>
     <xwiki.enforcer.skip>false</xwiki.enforcer.skip>
     <xwiki.enforcer.enforce-plugins.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-plugins.skip>
-    <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}
-    </xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
+    <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
     <xwiki.enforcer.enforce-javax.xml.bind-runtime.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.xml.bind-runtime.skip>
     <xwiki.enforcer.enforce-javax.xml.bind-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.xml.bind-api.skip>
     <xwiki.enforcer.enforce-javax.ws.rs-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.ws.rs-api.skip>
     <xwiki.enforcer.enforce-open-json.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-open-json.skip>
     <xwiki.enforcer.enforce-glassfish-el.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glassfish-el.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
-    <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}
-    </xwiki.enforcer.enforce-commons-configuration2.skip>
-    <xwiki.enforcer.enforce-jakarta.activation.skip>${xwiki.enforcer.skip}
-    </xwiki.enforcer.enforce-jakarta.activation.skip>
+    <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
+    <xwiki.enforcer.enforce-javax.activation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.activation.skip>
+    <xwiki.enforcer.enforce-javax.mail-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.mail-api.skip>
+    <xwiki.enforcer.enforce-javax.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.mail.skip>
     <xwiki.enforcer.enforce-jakarta.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.mail.skip>
-    <xwiki.enforcer.enforce-jakarta.annotation-api.skip>${xwiki.enforcer.skip}
-    </xwiki.enforcer.enforce-jakarta.annotation-api.skip>
+    <xwiki.enforcer.enforce-jakarta.annotation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.annotation-api.skip>
     <xwiki.enforcer.enforce-inject.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-inject.skip>
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
     <xwiki.enforcer.enforce-jsr305.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jsr305.skip>
@@ -205,10 +207,8 @@
     <xwiki.enforcer.enforce-jakarta.validation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.validation-api.skip>
     <xwiki.enforcer.enforce-hibernate-validator.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-hibernate-validator.skip>
     <xwiki.enforcer.closure-compiler.skip>${xwiki.enforcer.skip}</xwiki.enforcer.closure-compiler.skip>
-    <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}
-    </xwiki.enforcer.enforce-javase-dependencies.skip>
-    <xwiki.enforcer.enforce-velocity-engine-core.skip>${xwiki.enforcer.skip}
-    </xwiki.enforcer.enforce-velocity-engine-core.skip>
+    <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
+    <xwiki.enforcer.enforce-velocity-engine-core.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-velocity-engine-core.skip>
     <xwiki.enforcer.enforce-asm.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-asm.skip>
     <xwiki.enforcer.enforce-cglib.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-cglib.skip>
     <xwiki.enforcer.enforce-jdom.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jdom.skip>
@@ -782,8 +782,12 @@
         <groupId>jakarta.activation</groupId>
         <artifactId>jakarta.activation-api</artifactId>
         <version>${jakarta.activation.version}</version>
-        <!-- Embedded in com.sun.activation:jakarta.activation -->
-        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.angus</groupId>
+        <artifactId>angus-activation</artifactId>
+        <version>${angus-activation.version}</version>
+        <scope>runtime</scope>
       </dependency>
       <!-- javax -->
       <dependency>
@@ -913,6 +917,12 @@
         <groupId>jakarta.mail</groupId>
         <artifactId>jakarta.mail-api</artifactId>
         <version>${jakarta.mail.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.angus</groupId>
+        <artifactId>angus-mail</artifactId>
+        <version>${angus-mail.version}</version>
+        <scope>runtime</scope>
       </dependency>
       <!-- javax -->
       <dependency>
@@ -1958,9 +1968,7 @@
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
-                  <message>
-                    Use com.sun.activation:javax.activation instead.
-                  </message>
+                  <message>Use com.sun.activation:javax.activation instead.</message>
                   <excludes>
                     <exclude>javax.activation:activation</exclude>
                     <exclude>com.sun.activation:jakarta.activation</exclude>
@@ -1969,9 +1977,26 @@
               </rules>
             </configuration>
           </execution>
-          <!-- Check that we're using latest version of Jakarta Mail -->
           <execution>
-            <id>enforce-jakarta.mail-api</id>
+            <id>enforce-javax.mail-api</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-javax.mail.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>Use javax.mail:javax.mail-api instead.</message>
+                  <excludes>
+                    <exclude>javax.mail:mailapi</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enforce-javax.mail</id>
             <goals>
               <goal>enforce</goal>
             </goals>
@@ -1980,11 +2005,10 @@
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
-                  <message>
-                    Use javax.mail:javax.mail-api instead.
-                  </message>
+                  <message>Use com.sun.mail:jakarta.mail instead.</message>
                   <excludes>
-                    <exclude>javax.mail:mailapi</exclude>
+                    <exclude>javax.mail:mail</exclude>
+                    <exclude>com.sun.mail:javax.mail</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
@@ -2000,18 +2024,14 @@
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
-                  <message>
-                    Use com.sun.mail:jakarta.mail instead.
-                  </message>
+                  <message>Use org.eclipse.angus:angus-mail instead.</message>
                   <excludes>
-                    <exclude>javax.mail:mail</exclude>
-                    <exclude>com.sun.mail:javax.mail</exclude>
+                    <exclude>org.eclipse.angus:jakarta-mail</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
             </configuration>
           </execution>
-          <!-- Check that we're using latest version of Jakarta Annotation -->
           <execution>
             <id>enforce-jakarta.annotation-api</id>
             <goals>
@@ -2022,9 +2042,7 @@
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
-                  <message>
-                    Javax Annotations artifact id changed, the current one is jakarta.annotation:jakarta.annotation-api
-                  </message>
+                  <message>Use jakarta.annotation:jakarta.annotation-api instead.</message>
                   <excludes>
                     <exclude>javax.annotation:jsr250-api</exclude>
                     <exclude>javax.annotation:javax.annotation-api</exclude>
