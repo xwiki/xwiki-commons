@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.PropertyGroupDescriptor;
@@ -106,6 +107,11 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
      * @see #isDisplayHidden()
      */
     private boolean displayHidden;
+    /**
+     * @see #getEditDisplayerParameters()
+     */
+    private Map<String, String> editDisplayerParameters;
+    
 
     /**
      * @see #getOrder()
@@ -365,4 +371,20 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     {
         this.order = order;
     }
+    
+    @Override
+    public Map<String, String> getEditDisplayerParameters()
+    {
+        return editDisplayerParameters;
+    }
+    
+    /**
+     * @param editDisplayerParameters see {@link #getEditDisplayerParameters()}
+     * @since 18.0.0
+     */
+    public void setEditDisplayerParameters(Map<String, String> editDisplayerParameters)
+    {
+        this.editDisplayerParameters = editDisplayerParameters;
+    }
+
 }
