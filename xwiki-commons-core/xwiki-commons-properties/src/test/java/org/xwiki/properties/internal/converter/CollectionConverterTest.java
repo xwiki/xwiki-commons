@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.util.DefaultParameterizedType;
@@ -103,8 +104,24 @@ class CollectionConverterTest
     {
         assertEquals(Arrays.asList(1, 2, 3), this.converterManager
             .convert(new DefaultParameterizedType(null, List.class, Integer.class), new String[] {"1", "2", "3"}));
+
+        assertEquals(Arrays.asList(1, 2, 3), this.converterManager
+            .convert(new DefaultParameterizedType(null, List.class,
+                TypeUtils.wildcardType().withUpperBounds(Integer.class).build()), new String[] {"1", "2", "3"}));
+
+        assertEquals(Arrays.asList("1", "2", "3"),
+            this.converterManager.convert(
+                new DefaultParameterizedType(null, List.class,
+                    TypeUtils.wildcardType().withUpperBounds(List.class.getTypeParameters()[0]).build()),
+                new String[] {"1", "2", "3"}));
     }
 
+    @Test
+    void convertTypeVariable()
+    {
+        assertEquals("value", this.converterManager.convert(List.class.getTypeParameters()[0], "value"));
+    }
+    
     @Test
     void convertFromList()
     {

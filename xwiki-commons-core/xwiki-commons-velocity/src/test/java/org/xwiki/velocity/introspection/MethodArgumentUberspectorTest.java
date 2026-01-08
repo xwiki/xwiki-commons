@@ -21,13 +21,16 @@ package org.xwiki.velocity.introspection;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.velocity.VelocityContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,6 +55,8 @@ import org.xwiki.velocity.internal.DefaultVelocityManager;
 import org.xwiki.velocity.internal.InternalVelocityEngine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 /**
@@ -171,6 +176,11 @@ class MethodArgumentUberspectorTest
         }
     }
 
+    public class IntegerList extends ArrayList<Integer>
+    {
+    	
+    }
+
     @BeforeEach
     void setUp() throws Exception
     {
@@ -178,6 +188,7 @@ class MethodArgumentUberspectorTest
         this.writer = new StringWriter();
         this.context = new VelocityContext();
         this.context.put("var", new ExtendingClass());
+        this.context.put("integerlist", new IntegerList());
     }
 
     @AfterEach
@@ -287,6 +298,20 @@ class MethodArgumentUberspectorTest
         this.engine.evaluate(this.context, this.writer, "template",
             new StringReader("$var.methodWithGeneric('en, fr')"));
         assertEquals("success", this.writer.toString());
+    }
+
+    @Test
+    void getMethodWithWildcardKnownGenericArgument() throws Exception
+    {
+        when(this.converterManager.convert(eq(
+            TypeUtils.parameterize(Collection.class, TypeUtils.wildcardType().withUpperBounds(Integer.class).build())),
+            any())).thenReturn(List.of(1, 2, 3));
+        this.engine.evaluate(this.context, this.writer, "template", new StringReader("""
+            #set ($myString = '1 2 3')
+            #set ($myArray = $myString.split(' '))
+            #set ($discard = $integerlist.addAll($myArray))
+            $integerlist $integerlist[0].class"""));
+        assertEquals("[1, 2, 3] class java.lang.Integer", this.writer.toString());
     }
 
     @Test

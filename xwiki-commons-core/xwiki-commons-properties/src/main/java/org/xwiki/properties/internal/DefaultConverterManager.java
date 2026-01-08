@@ -21,6 +21,7 @@ package org.xwiki.properties.internal;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Collection;
 
@@ -100,6 +101,11 @@ public class DefaultConverterManager implements ConverterManager
             } else {
                 return convert(upperBounds[0], value);
             }
+        }
+
+        // No converter can exist for a variable type
+        if (targetType instanceof TypeVariable) {
+            return (T) value;
         }
 
         // Convert
