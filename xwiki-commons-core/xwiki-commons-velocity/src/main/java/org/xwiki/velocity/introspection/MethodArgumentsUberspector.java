@@ -21,9 +21,12 @@ package org.xwiki.velocity.introspection;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -35,6 +38,7 @@ import org.apache.velocity.util.introspection.Info;
 import org.apache.velocity.util.introspection.VelMethod;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.velocity.internal.inrospection.WrappingVelMethod;
 
@@ -146,13 +150,40 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
             Method method = it.next();
 
             try {
-                return convertArguments(args, method.getGenericParameterTypes(), method.isVarArgs());
+                return convertArguments(args, resolveMethodParameterTypes(obj.getClass(), method), method.isVarArgs());
             } catch (Exception e) {
                 // Ignore and try the next method.
+                e.printStackTrace();
             }
         }
 
         return null;
+    }
+
+    private Type[] resolveMethodParameterTypes(Class<?> objectClass, Method method)
+    {
+        Type[] types = method.getGenericParameterTypes();
+        Type[] resolvedTypes = types;
+
+        Class<?> declaringClass = method.getDeclaringClass();
+
+        if (declaringClass.getTypeParameters().length > 0) {
+            ParameterizedType genericType =
+                (ParameterizedType) ReflectionUtils.resolveType(declaringClass, objectClass);
+
+            if (genericType != null) {
+                Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(genericType);
+
+                resolvedTypes = new Type[method.getGenericParameterTypes().length];
+                for (int i = 0; i < types.length; ++i) {
+                    resolvedTypes[i] = TypeUtils.unrollVariables(typeArguments, types[i]);
+                }
+
+                return resolvedTypes;
+            }
+        }
+
+        return resolvedTypes;
     }
 
     private boolean isSupported(Method method, String methodName, Object[] args)
@@ -267,7 +298,8 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
      * @param isVarArgs true if the method contains a varargs (ie the last parameter is a varargs)
      * @return a new array of arguments where some values have been converted to match the formal method parameter types
      */
-    private Object[] convertArguments(Object[] arguments, Type[] parameterTypes, boolean isVarArgs)
+    private Object[] convertArguments(Object[] arguments, Type[] parameterTypes,
+        boolean isVarArgs)
     {
         Object[] convertedArguments = Arrays.copyOf(arguments, arguments.length);
         for (int i = 0; i < arguments.length; i++) {
@@ -287,7 +319,7 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
 
         return convertedArguments;
     }
-
+    
     /**
      * Wrapper for a real VelMethod that converts the passed arguments to the real arguments expected by the method.
      *
