@@ -153,7 +153,6 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
                 return convertArguments(args, resolveMethodParameterTypes(obj.getClass(), method), method.isVarArgs());
             } catch (Exception e) {
                 // Ignore and try the next method.
-                e.printStackTrace();
             }
         }
 
