@@ -22,24 +22,26 @@ package org.xwiki.velocity.introspection;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.velocity.VelocityContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.xwiki.component.util.DefaultParameterizedType;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.logging.LoggerConfiguration;
-import org.xwiki.properties.ConverterManager;
+import org.xwiki.properties.internal.DefaultConverterManager;
+import org.xwiki.properties.internal.converter.CollectionConverter;
+import org.xwiki.properties.internal.converter.ConvertUtilsConverter;
+import org.xwiki.properties.internal.converter.EnumConverter;
+import org.xwiki.properties.internal.converter.ListConverter;
+import org.xwiki.properties.internal.converter.LocaleConverter;
 import org.xwiki.script.ScriptContextManager;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
@@ -55,8 +57,6 @@ import org.xwiki.velocity.internal.DefaultVelocityManager;
 import org.xwiki.velocity.internal.InternalVelocityEngine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 /**
@@ -71,16 +71,19 @@ import static org.mockito.Mockito.when;
     InternalVelocityEngine.class,
     DefaultVelocityConfiguration.class,
     DefaultVelocityContextFactory.class,
-    DefaultVelocityManager.class
+    DefaultVelocityManager.class,
+    DefaultConverterManager.class,
+    EnumConverter.class,
+    ConvertUtilsConverter.class,
+    ListConverter.class,
+    CollectionConverter.class,
+    LocaleConverter.class
 })
 // @formatter:on
 class MethodArgumentUberspectorTest
 {
     @InjectComponentManager
     MockitoComponentManager componentManager;
-
-    @MockComponent
-    private ConverterManager converterManager;
 
     @MockComponent
     private LoggerConfiguration loggerConfiguration;
@@ -101,6 +104,8 @@ class MethodArgumentUberspectorTest
     void setUpComponents() throws Exception
     {
         this.componentManager.registerMemoryConfigurationSource();
+
+        this.componentManager.registerComponent(ComponentManager.class, "context", this.componentManager);
 
         ExecutionContext executionContext = new ExecutionContext();
         Execution execution = this.componentManager.registerMockComponent(Execution.class);
@@ -124,20 +129,12 @@ class MethodArgumentUberspectorTest
     {
         public String method(List parameter)
         {
-            if (parameter.get(0).equals("converted")) {
-                return "success";
-            } else {
-                return "failure";
-            }
+            return "method list " + parameter;
         }
 
         public String methodWithGeneric(List<Locale> genericParameter)
         {
-            if (genericParameter.get(0) instanceof Locale) {
-                return "success";
-            } else {
-                return "failure";
-            }
+            return "methode list Locale " + genericParameter;
         }
 
         public String methodWithVararg(Integer param1, Double... params)
@@ -225,7 +222,6 @@ class MethodArgumentUberspectorTest
     @Test
     void getMethodWhenVarargsWithConversionAndNoVarargParamPassed() throws Exception
     {
-        when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
         this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.methodWithVararg('10')"));
         assertEquals("success", writer.toString());
     }
@@ -233,7 +229,6 @@ class MethodArgumentUberspectorTest
     @Test
     void getMethodWhenVarargsWithConversionAndOneVarargParamPassed() throws Exception
     {
-        when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
         this.engine.evaluate(this.context, this.writer, "template",
             new StringReader("$var.methodWithVararg('10', 10.0)"));
         assertEquals("success 10.0", writer.toString());
@@ -242,7 +237,6 @@ class MethodArgumentUberspectorTest
     @Test
     void getMethodWhenVarargsWithConversionAndTwoVarargParamsPassed() throws Exception
     {
-        when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
         this.engine.evaluate(this.context, this.writer, "template",
             new StringReader("$var.methodWithVararg('10', 10.0, 10.0)"));
         assertEquals("success 10.0 10.0", writer.toString());
@@ -251,8 +245,6 @@ class MethodArgumentUberspectorTest
     @Test
     void getMethodWhenVarargsWithConversionAndVarargParamPassedNeedingConversion() throws Exception
     {
-        when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
-        when(this.converterManager.convert(Double.class, "10.0")).thenReturn(10.0);
         this.engine.evaluate(this.context, this.writer, "template",
             new StringReader("$var.methodWithVararg('10', 10.0, '10.0')"));
         assertEquals("success 10.0 10.0", writer.toString());
@@ -264,9 +256,8 @@ class MethodArgumentUberspectorTest
     @Test
     void getMethodWhenAddingSameMethodNameToExtendingClassAndConversion() throws Exception
     {
-        when(this.converterManager.convert(List.class, "test")).thenReturn(Arrays.asList("converted"));
         this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.method('test')"));
-        assertEquals("success", this.writer.toString());
+        assertEquals("method list [test]", this.writer.toString());
     }
 
     @Test
@@ -280,7 +271,7 @@ class MethodArgumentUberspectorTest
     void getMethodWhenNoConversion() throws Exception
     {
         this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.method(['converted'])"));
-        assertEquals("success", this.writer.toString());
+        assertEquals("method list [converted]", this.writer.toString());
     }
 
     @Test
@@ -293,19 +284,14 @@ class MethodArgumentUberspectorTest
     @Test
     void getMethodWithGeneric() throws Exception
     {
-        when(this.converterManager.convert(new DefaultParameterizedType(null, List.class, Locale.class), "en, fr"))
-            .thenReturn(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
         this.engine.evaluate(this.context, this.writer, "template",
             new StringReader("$var.methodWithGeneric('en, fr')"));
-        assertEquals("success", this.writer.toString());
+        assertEquals("methode list Locale [en, fr]", this.writer.toString());
     }
 
     @Test
-    void getMethodWithWildcardKnownGenericArgument() throws Exception
+    void addAllWithWildcardKnownGenericArgument() throws Exception
     {
-        when(this.converterManager.convert(eq(
-            TypeUtils.parameterize(Collection.class, TypeUtils.wildcardType().withUpperBounds(Integer.class).build())),
-            any())).thenReturn(List.of(1, 2, 3));
         this.engine.evaluate(this.context, this.writer, "template", new StringReader("""
             #set ($myString = '1 2 3')
             #set ($myArray = $myString.split(' '))
@@ -315,10 +301,20 @@ class MethodArgumentUberspectorTest
     }
 
     @Test
+    void addAllWithWildcardUnnownGenericArgument() throws Exception
+    {
+        this.engine.evaluate(this.context, this.writer, "template", new StringReader("""
+            #set ($myList = [])
+            #set ($myString = '1 2 3')
+            #set ($myArray = $myString.split(' '))
+            #set ($discard = $myList.addAll($myArray))
+            $myList $myList[0].class"""));
+        assertEquals("[1, 2, 3] class java.lang.String", this.writer.toString());
+    }
+
+    @Test
     void getConflictingLowercaseMethod() throws Exception
     {
-        when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
-
         this.engine.evaluate(this.context, this.writer, "template",
             new StringReader("$var.conflictingcasemethod('10')"));
         assertEquals("conflictlowercase", this.writer.toString());
@@ -327,8 +323,6 @@ class MethodArgumentUberspectorTest
     @Test
     void getConflictingUppercaseMethod() throws Exception
     {
-        when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
-
         this.engine.evaluate(this.context, this.writer, "template",
             new StringReader("$var.conflictingCaseMethod('10')"));
         assertEquals("conflictuppercase", this.writer.toString());
@@ -337,8 +331,6 @@ class MethodArgumentUberspectorTest
     @Test
     void getConflictingMethodWithMatchingStringArguments() throws Exception
     {
-        when(this.converterManager.convert(String.class, true)).thenReturn("true");
-
         this.engine.evaluate(this.context, this.writer, "template",
             new StringReader("$var.conflictingMethod('test1', true)"));
         assertEquals("conflict1", this.writer.toString());
@@ -347,8 +339,6 @@ class MethodArgumentUberspectorTest
     @Test
     void getConflictingMethodWithMatchingIntegerArguments() throws Exception
     {
-        when(this.converterManager.convert(Integer.class, true)).thenReturn(1);
-
         this.engine.evaluate(this.context, this.writer, "template",
             new StringReader("$var.conflictingMethod(10, true)"));
         assertEquals("conflict2", this.writer.toString());
@@ -357,8 +347,6 @@ class MethodArgumentUberspectorTest
     @Test
     void getConflictingMethodWithMatchingIntArguments() throws Exception
     {
-        when(this.converterManager.convert(Integer.class, true)).thenReturn(1);
-
         this.engine.evaluate(this.context, this.writer, "template",
             new StringReader("#set($integer = 10)$var.conflictingMethod($integer.intValue(), true)"));
         assertEquals("conflict2", this.writer.toString());
@@ -367,8 +355,6 @@ class MethodArgumentUberspectorTest
     @Test
     void getConflictingMethodWithMatchingDoubleArguments() throws Exception
     {
-        when(this.converterManager.convert(Integer.class, 10.0D)).thenReturn(1);
-
         this.engine.evaluate(this.context, this.writer, "template",
             new StringReader("$var.conflictingMethod(10.0, 10.0)"));
         assertEquals("conflict2", this.writer.toString());
