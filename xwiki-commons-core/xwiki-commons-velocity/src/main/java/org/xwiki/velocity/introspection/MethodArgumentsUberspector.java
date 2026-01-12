@@ -21,7 +21,6 @@ package org.xwiki.velocity.introspection;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
@@ -38,7 +37,6 @@ import org.apache.velocity.util.introspection.Info;
 import org.apache.velocity.util.introspection.VelMethod;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.velocity.internal.inrospection.WrappingVelMethod;
 
@@ -153,6 +151,8 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
                 return convertArguments(args, resolveMethodParameterTypes(obj.getClass(), method), method.isVarArgs());
             } catch (Exception e) {
                 // Ignore and try the next method.
+                this.log.debug("Failed to convert method arguments to match method [{}]. Trying next method if any.",
+                    method, e);
             }
         }
 
@@ -166,20 +166,16 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
 
         Class<?> declaringClass = method.getDeclaringClass();
 
+        // Make sure to resolve type variables (if any) to actual types (when possible)
         if (declaringClass.getTypeParameters().length > 0) {
-            ParameterizedType genericType =
-                (ParameterizedType) ReflectionUtils.resolveType(declaringClass, objectClass);
+            Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(objectClass, declaringClass);
 
-            if (genericType != null) {
-                Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(genericType);
-
-                resolvedTypes = new Type[method.getGenericParameterTypes().length];
-                for (int i = 0; i < types.length; ++i) {
-                    resolvedTypes[i] = TypeUtils.unrollVariables(typeArguments, types[i]);
-                }
-
-                return resolvedTypes;
+            resolvedTypes = new Type[method.getGenericParameterTypes().length];
+            for (int i = 0; i < types.length; ++i) {
+                resolvedTypes[i] = TypeUtils.unrollVariables(typeArguments, types[i]);
             }
+
+            return resolvedTypes;
         }
 
         return resolvedTypes;

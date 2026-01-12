@@ -22,6 +22,7 @@ package org.xwiki.velocity.introspection;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -186,6 +187,7 @@ class MethodArgumentUberspectorTest
         this.context = new VelocityContext();
         this.context.put("var", new ExtendingClass());
         this.context.put("integerlist", new IntegerList());
+        this.context.put("linkedHashSet", new LinkedHashSet());
     }
 
     @AfterEach
@@ -309,6 +311,17 @@ class MethodArgumentUberspectorTest
             #set ($myArray = $myString.split(' '))
             #set ($discard = $myList.addAll($myArray))
             $myList $myList[0].class"""));
+        assertEquals("[1, 2, 3] class java.lang.String", this.writer.toString());
+    }
+
+    @Test
+    void addAllWithLinkedHashSetWildcardUnnownGenericArgument() throws Exception
+    {
+        this.engine.evaluate(this.context, this.writer, "template", new StringReader("""
+            #set ($myString = '1 2 3')
+            #set ($myArray = $myString.split(' '))
+            #set ($discard = $linkedHashSet.addAll($myArray))
+            $linkedHashSet $linkedHashSet.iterator().next().class"""));
         assertEquals("[1, 2, 3] class java.lang.String", this.writer.toString());
     }
 
