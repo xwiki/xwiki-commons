@@ -58,7 +58,7 @@
          as Spring Boot, see https://www.baeldung.com/maven-java-version), and we want to avoid any clash. -->
     <xwiki.java.version>17</xwiki.java.version>
     <!-- The highest Java version officially supported by this version of XWiki -->
-    <xwiki.java.version.support>21</xwiki.java.version.support>
+    <xwiki.java.version.support>25</xwiki.java.version.support>
 
     <!-- Javax/Jakarta APIs -->
     <!-- Mail -->
