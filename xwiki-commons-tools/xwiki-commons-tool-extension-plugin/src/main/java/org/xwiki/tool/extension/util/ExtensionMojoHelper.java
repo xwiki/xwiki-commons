@@ -499,7 +499,7 @@ public class ExtensionMojoHelper implements AutoCloseable
 
     /**
      * @since 18.0.0RC1
-     * @since 17.10.2
+     * @since 17.10.3
      */
     public InstalledExtension registerInstalledExtension(Extension extension, String namespace, boolean dependency,
         Map<String, Object> properties) throws MojoExecutionException
@@ -516,7 +516,7 @@ public class ExtensionMojoHelper implements AutoCloseable
 
     /**
      * @since 18.0.0RC1
-     * @since 17.10.2
+     * @since 17.10.3
      */
     public void registerInstalledFlavors(List<ExtensionDescription> flavors, String namespace) throws MojoExecutionException
     {
