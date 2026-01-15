@@ -134,6 +134,9 @@
     <!-- Docker -->
     <dockerJava.version>3.7.1</dockerJava.version>
 
+    <!-- OpenTelemetry -->
+    <opentelemetry.version>1.58.0</opentelemetry.version>
+
     <!-- Byte Buddy -->
     <bytebuddy.version>1.18.5</bytebuddy.version>
 
