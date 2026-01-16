@@ -85,6 +85,8 @@ class ClassLoaderUtilsTest
         assertSame(this.resouceURL, ClassLoaderUtils.getResource(this.classLoader, RESOURCE_NAME_BACK));
 
         assertThrows(IllegalArgumentException.class, () -> ClassLoaderUtils.getResource(this.classLoader, ".."));
+        assertThrows(IllegalArgumentException.class, () -> ClassLoaderUtils.getResource(this.classLoader, "/.."));
+        assertThrows(IllegalArgumentException.class, () -> ClassLoaderUtils.getResource(this.classLoader, "////.."));
         assertThrows(IllegalArgumentException.class, () -> ClassLoaderUtils.getResource(this.classLoader, "./.."));
         assertThrows(IllegalArgumentException.class,
             () -> ClassLoaderUtils.getResource(this.classLoader, "resource/../.."));
@@ -106,6 +108,10 @@ class ClassLoaderUtilsTest
 
         assertThrows(IllegalArgumentException.class,
             () -> ClassLoaderUtils.getResourceAsStream(this.classLoader, ".."));
+        assertThrows(IllegalArgumentException.class,
+            () -> ClassLoaderUtils.getResourceAsStream(this.classLoader, "/.."));
+        assertThrows(IllegalArgumentException.class,
+            () -> ClassLoaderUtils.getResourceAsStream(this.classLoader, "///.."));
         assertThrows(IllegalArgumentException.class,
             () -> ClassLoaderUtils.getResourceAsStream(this.classLoader, "./.."));
         assertThrows(IllegalArgumentException.class,
