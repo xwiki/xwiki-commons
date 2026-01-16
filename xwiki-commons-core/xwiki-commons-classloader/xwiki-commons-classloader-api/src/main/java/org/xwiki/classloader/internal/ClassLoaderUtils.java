@@ -47,20 +47,30 @@ public final class ClassLoaderUtils
             fullPath = resourcePath;
 
             // Prevent access to resources from other directories
-            // TODO: find or implement something closed to Servlet ClassLoader behavior to be as accurate as possible
-            // and be able to reuse the normalized result
-            Path normalizedResource = Paths.get(fullPath).normalize();
+            // TODO: find or implement something closer to Servlet ClassLoader behavior to be as accurate as possible
+            // and be able to reuse the normalized result. Not so easy since the various applications servers can use
+            // different logics.
+
+            // On Tomcat, all leading / have no effect, contrary to Paths#normalize()
+            int index = 0;
+            while (index < fullPath.length() && fullPath.charAt(index) == '/') {
+                ++index;
+            }
+            String normalizedPath = fullPath.substring(index);
+
+            Path normalizedResource = Paths.get(normalizedPath).normalize();
             if (normalizedResource.startsWith("../")) {
                 throw new IllegalArgumentException(String.format(
                     "The provided resource name [%s] is trying to navigate out of the mandatory root location",
-                    resourcePath));
+                    fullPath));
             }
         } else {
             fullPath = prefixPath + resourcePath;
 
             // Prevent access to resources from other directories
             // TODO: find or implement something closed to Servlet ClassLoader behavior to be as accurate as possible
-            // and be able to reuse the normalized result
+            // and be able to reuse the normalized result. Not so easy since the various applications servers can use
+            // different logics.
             Path normalizedResource = Paths.get(fullPath).normalize();
             if (!normalizedResource.startsWith(prefixPath)) {
                 throw new IllegalArgumentException(String.format(
