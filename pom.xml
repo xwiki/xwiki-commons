@@ -2609,7 +2609,7 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>aspectj-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.15.0</version>
+          <version>1.16.0</version>
           <configuration>
             <complianceLevel>${xwiki.java.version}</complianceLevel>
             <!-- Avoid surprises. If a module needs annotation processing, it can enable it easily -->
