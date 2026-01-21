@@ -92,4 +92,23 @@ public abstract class AbstractCancelableEvent extends AbstractFilterableEvent im
     {
         return this.reason;
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param otherEvent the occuring event matched against the current object
+     * @return false if the current event is canceled. Else return the value defined in
+     * {@link AbstractFilterableEvent#matches(Object)}.
+     *
+     * @since 10.9RC1
+     */
+    @Override
+    public boolean matches(Object otherEvent)
+    {
+        if (this.isCanceled()) {
+            return false;
+        }
+
+        return super.matches(otherEvent);
+    }
 }
