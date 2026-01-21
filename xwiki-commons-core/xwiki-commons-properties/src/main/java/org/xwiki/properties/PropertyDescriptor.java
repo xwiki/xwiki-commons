@@ -158,7 +158,7 @@ public interface PropertyDescriptor
      * Example: {"multiSelect": "true"} can be used on the XWiki Notifications Macro 'user' property 
      *          so that the picker generated when editing this property supports picking multiple values.
      * @return the key/value pairs used so that one property type can be displayed slightly differently to fit its use.
-     * @since 18.0.0
+     * @since 18.1.0
      */
     @Unstable
     default Map<String, String> getDisplayOptions() 

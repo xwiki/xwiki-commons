@@ -380,7 +380,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     
     /**
      * @param displayOptions see {@link #getDisplayOptions()}
-     * @since 18.0.0
+     * @since 18.1.0
      */
     public void setDisplayOptions(Map<String, String> displayOptions)
     {
