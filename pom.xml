@@ -95,7 +95,7 @@
     <!-- Javax JSON Processing (JSON-P) -->
     <parsson.version>1.1.7</parsson.version>
     <!-- Javax Expression Language (EL) -->
-    <expressly.version>5.0.0</expressly.version>
+    <expressly.version>6.0.0</expressly.version>
 
     <!-- Jackson -->
     <jackson.version>2.21.0</jackson.version>
