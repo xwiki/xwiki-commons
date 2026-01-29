@@ -28,7 +28,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.embed.EmbeddableComponentManager;
-import org.xwiki.component.internal.StackingComponentEventManager;
+import org.xwiki.component.internal.QueueComponentEventManager;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
@@ -249,9 +249,9 @@ public class TestComponentManager extends EmbeddableComponentManager
     {
         // Set component event manager if available
         if (hasComponent(ObservationManager.class)) {
-            StackingComponentEventManager eventManager = new StackingComponentEventManager();
+            QueueComponentEventManager eventManager = new QueueComponentEventManager();
             eventManager.setObservationManager(this.<ObservationManager>getInstance(ObservationManager.class));
-            eventManager.shouldStack(false);
+            eventManager.shouldQueue(false);
 
             setComponentEventManager(eventManager);
         }

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.xwiki.classloader.ClassLoaderManager;
-import org.xwiki.component.internal.StackingComponentEventManager;
+import org.xwiki.component.internal.QueueComponentEventManager;
 import org.xwiki.component.internal.multi.ComponentManagerManager;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -84,8 +84,8 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         this.componentManager.registerComponent(TestJarExtensionClassLoaderManager.class);
 
         // Make sure to fully enable ObservationManager to test EventListener live registration
-        StackingComponentEventManager componentEventManager = new StackingComponentEventManager();
-        componentEventManager.shouldStack(false);
+        QueueComponentEventManager componentEventManager = new QueueComponentEventManager();
+        componentEventManager.shouldQueue(false);
         this.componentManager.setComponentEventManager(componentEventManager);
 
         // Ignore warning log during setup
@@ -105,8 +105,8 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         this.jarExtensionClassLoader = this.componentManager.getInstance(ClassLoaderManager.class);
 
         // Make sure to fully enable ObservationManager to test EventListener live registration
-        StackingComponentEventManager componentEventManager =
-            (StackingComponentEventManager) this.componentManager.getComponentEventManager();
+        QueueComponentEventManager componentEventManager =
+            (QueueComponentEventManager) this.componentManager.getComponentEventManager();
         ObservationManager manager = this.componentManager.getInstance(ObservationManager.class);
         componentEventManager.setObservationManager(manager);
 

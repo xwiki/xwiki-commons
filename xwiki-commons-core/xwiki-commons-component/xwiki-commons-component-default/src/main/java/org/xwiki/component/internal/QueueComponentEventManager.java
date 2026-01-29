@@ -19,7 +19,8 @@
  */
 package org.xwiki.component.internal;
 
-import java.util.Stack;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.event.ComponentDescriptorAddedEvent;
@@ -30,14 +31,15 @@ import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
 
 /**
- * Allow stacking component events and flush them whenever the user of this class wants to. This is used for example at
+ * Allow retaining component events and flush them whenever the user of this class wants to. This is used for example at
  * application initialization time when we don't want to send events before the Application Context has been initialized
  * since components subscribing to these events may want to use the Application Context.
  *
  * @version $Id$
- * @since 2.0M1
+ * @since 18.1.0RC1
+ * @since 17.10.3
  */
-public class StackingComponentEventManager implements ComponentEventManager
+public class QueueComponentEventManager implements ComponentEventManager
 {
     /**
      * The wrapped observation manager.
@@ -45,14 +47,14 @@ public class StackingComponentEventManager implements ComponentEventManager
     private ObservationManager observationManager;
 
     /**
-     * The event stacked before been given the order to send them.
+     * The event queued before been given the order to send them.
      */
-    private Stack<ComponentEventEntry> events = new Stack<>();
+    private Queue<ComponentEventEntry> events = new LinkedList<>();
 
     /**
      * Indicate if event should be retained to directly sent.
      */
-    private boolean shouldStack = true;
+    private boolean shouldQueue = true;
 
     @Override
     public void notifyComponentRegistered(ComponentDescriptor<?> descriptor)
@@ -88,26 +90,25 @@ public class StackingComponentEventManager implements ComponentEventManager
     public synchronized void flushEvents()
     {
         while (!this.events.isEmpty()) {
-            ComponentEventEntry entry = this.events.pop();
+            ComponentEventEntry entry = this.events.poll();
             sendEvent(entry.event, entry.descriptor, entry.componentManager);
         }
     }
 
     /**
-     * @param shouldStack indicate if the events received should be stacked
+     * @param shouldQueue indicate if the events received should be retained
      */
-    public void shouldStack(boolean shouldStack)
+    public void shouldQueue(boolean shouldQueue)
     {
-        this.shouldStack = shouldStack;
+        this.shouldQueue = shouldQueue;
     }
 
     /**
-     * @return true if the events received should be stacked
-     * @since 12.2
+     * @return true if the events received should be retained
      */
-    public boolean isStacked()
+    public boolean isQueued()
     {
-        return this.shouldStack;
+        return this.shouldQueue;
     }
 
     /**
@@ -129,9 +130,9 @@ public class StackingComponentEventManager implements ComponentEventManager
     private void notifyComponentEvent(Event event, ComponentDescriptor<?> descriptor,
         ComponentManager componentManager)
     {
-        if (this.shouldStack) {
+        if (this.shouldQueue) {
             synchronized (this) {
-                this.events.push(new ComponentEventEntry(event, descriptor, componentManager));
+                this.events.add(new ComponentEventEntry(event, descriptor, componentManager));
             }
         } else {
             sendEvent(event, descriptor, componentManager);

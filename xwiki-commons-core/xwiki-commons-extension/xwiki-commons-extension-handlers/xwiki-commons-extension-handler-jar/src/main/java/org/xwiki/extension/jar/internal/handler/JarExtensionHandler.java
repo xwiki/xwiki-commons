@@ -36,7 +36,7 @@ import org.xwiki.classloader.NamespaceURLClassLoader;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.annotation.ComponentDeclaration;
-import org.xwiki.component.internal.StackingComponentEventManager;
+import org.xwiki.component.internal.QueueComponentEventManager;
 import org.xwiki.component.internal.multi.ComponentManagerManager;
 import org.xwiki.component.manager.ComponentEventManager;
 import org.xwiki.component.manager.ComponentManager;
@@ -245,33 +245,33 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
             ComponentEventManager componentEventManager = componentManager.getComponentEventManager();
 
             // Make sure to send events only when the extension is fully ready
-            StackingComponentEventManager stackingComponentEventManager;
-            if (componentEventManager instanceof StackingComponentEventManager) {
-                stackingComponentEventManager = (StackingComponentEventManager) componentEventManager;
-                if (stackingComponentEventManager.isStacked()) {
-                    // If already stacked don't do anything (and more importantly don't disabled stacking)
-                    stackingComponentEventManager = null;
+            QueueComponentEventManager queueComponentEventManager;
+            if (componentEventManager instanceof QueueComponentEventManager) {
+                queueComponentEventManager = (QueueComponentEventManager) componentEventManager;
+                if (queueComponentEventManager.isQueued()) {
+                    // If already stacked don't do anything (and more importantly don't disabled queueing)
+                    queueComponentEventManager = null;
                 } else {
-                    stackingComponentEventManager.shouldStack(true);
+                    queueComponentEventManager.shouldQueue(true);
                 }
             } else {
-                stackingComponentEventManager = new StackingComponentEventManager();
-                componentManager.setComponentEventManager(stackingComponentEventManager);
+                queueComponentEventManager = new QueueComponentEventManager();
+                componentManager.setComponentEventManager(queueComponentEventManager);
             }
 
             // Initialize the JAR
             try {
                 this.jarLoader.initialize(componentManager, classLoader, componentDeclarations);
             } finally {
-                if (stackingComponentEventManager != null) {
-                    if (componentEventManager != stackingComponentEventManager) {
+                if (queueComponentEventManager != null) {
+                    if (componentEventManager != queueComponentEventManager) {
                         componentManager.setComponentEventManager(componentEventManager);
                     }
 
-                    stackingComponentEventManager.setObservationManager(
+                    queueComponentEventManager.setObservationManager(
                         componentManager.<ObservationManager>getInstance(ObservationManager.class));
-                    stackingComponentEventManager.shouldStack(false);
-                    stackingComponentEventManager.flushEvents();
+                    queueComponentEventManager.shouldQueue(false);
+                    queueComponentEventManager.flushEvents();
                 }
             }
         } catch (Exception e) {

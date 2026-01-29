@@ -19,7 +19,7 @@
  */
 package org.xwiki.test.jmock;
 
-import org.xwiki.component.internal.StackingComponentEventManager;
+import org.xwiki.component.internal.QueueComponentEventManager;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextManager;
@@ -89,7 +89,7 @@ public class XWikiComponentInitializer
         if (this.componentManager == null) {
             MockingComponentManager ecm = new MockingComponentManager();
             ecm.initialize(this.getClass().getClassLoader());
-            ecm.setComponentEventManager(new StackingComponentEventManager());
+            ecm.setComponentEventManager(new QueueComponentEventManager());
             this.componentManager = ecm;
         }
 

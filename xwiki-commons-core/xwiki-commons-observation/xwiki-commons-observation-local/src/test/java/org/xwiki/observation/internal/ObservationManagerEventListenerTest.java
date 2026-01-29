@@ -24,7 +24,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
-import org.xwiki.component.internal.StackingComponentEventManager;
+import org.xwiki.component.internal.QueueComponentEventManager;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.manager.ComponentRepositoryException;
 import org.xwiki.observation.EventListener;
@@ -62,8 +62,8 @@ public class ObservationManagerEventListenerTest
     @BeforeEach
     public void setUp()
     {
-        StackingComponentEventManager componentEventManager = new StackingComponentEventManager();
-        componentEventManager.shouldStack(false);
+        QueueComponentEventManager componentEventManager = new QueueComponentEventManager();
+        componentEventManager.shouldQueue(false);
         componentEventManager.setObservationManager(this.manager);
         this.componentManager.setComponentEventManager(componentEventManager);
 
