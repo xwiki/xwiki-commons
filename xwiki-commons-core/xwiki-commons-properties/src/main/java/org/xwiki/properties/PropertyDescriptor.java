@@ -22,6 +22,7 @@ package org.xwiki.properties;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import org.xwiki.stability.Unstable;
 
@@ -151,5 +152,15 @@ public interface PropertyDescriptor
     default int getOrder()
     {
         return -1;
+    }
+
+    /**
+     * @return the key/value pairs used so that one property type can be displayed slightly differently to fit its use.
+     * @since 18.1.0
+     */
+    @Unstable
+    default Map<String, String> getDisplayOptions() 
+    {
+        return Map.of();
     }
 }
