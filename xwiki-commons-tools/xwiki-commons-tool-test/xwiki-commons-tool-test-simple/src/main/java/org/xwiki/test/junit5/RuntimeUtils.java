@@ -50,17 +50,16 @@ public final class RuntimeUtils
     public static String run(String command)
     {
         String result;
-        try {
+        try (var executor = Executors.newSingleThreadExecutor()) {
             StringBuilder output = new StringBuilder();
             output.append("Execution of '").append(command).append("':");
             ProcessBuilder builder = new ProcessBuilder();
             builder.command("sh", "-c", command);
             builder.directory(new File(System.getProperty("user.home")));
             Process process = builder.start();
-            StreamGobbler streamGobbler = new StreamGobbler(process.getInputStream(), (it) -> {
-                output.append('\n').append(it);
-            });
-            Executors.newSingleThreadExecutor().submit(streamGobbler);
+            StreamGobbler streamGobbler =
+                new StreamGobbler(process.getInputStream(), (it) -> output.append('\n').append(it));
+            executor.submit(streamGobbler);
             process.waitFor();
             result = output.toString();
         } catch (Throwable e) {
