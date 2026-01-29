@@ -21,6 +21,7 @@ package org.xwiki.component.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,19 +31,21 @@ import org.xwiki.component.event.ComponentDescriptorRemovedEvent;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.observation.ObservationManager;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.same;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
- * Test {@link StackingComponentEventManager}.
+ * Test {@link QueueComponentEventManager}.
  *
  * @version $Id$
  */
-public class StackingComponentEventManagerTest
+class QueueComponentEventManagerTest
 {
-    private StackingComponentEventManager eventManager;
+    private QueueComponentEventManager eventManager;
 
     private DefaultComponentDescriptor<CharSequence> descriptor1;
 
@@ -55,7 +58,7 @@ public class StackingComponentEventManagerTest
     @BeforeEach
     void setUp()
     {
-        this.eventManager = new StackingComponentEventManager();
+        this.eventManager = new QueueComponentEventManager();
 
         this.descriptor1 = new DefaultComponentDescriptor<>();
         this.descriptor1.setImplementation(String.class);
@@ -75,7 +78,7 @@ public class StackingComponentEventManagerTest
     @Test
     void flushEvents()
     {
-        this.eventManager.shouldStack(true);
+        this.eventManager.shouldQueue(true);
 
         this.eventManager.notifyComponentRegistered(this.descriptor1);
         this.eventManager.notifyComponentRegistered(this.descriptor1, this.componentManager);
@@ -87,13 +90,35 @@ public class StackingComponentEventManagerTest
         ComponentDescriptorRemovedEvent removedEvent =
             new ComponentDescriptorRemovedEvent(this.descriptor2.getRoleType(), this.descriptor2.getRoleHint());
 
+        List<Object[]> calls = new ArrayList<>();
+        doAnswer(invocation -> {
+            Object arg0 = invocation.getArgument(0);
+            Object arg1 = invocation.getArgument(1);
+            Object arg2 = invocation.getArgument(2);
+
+            calls.add(new Object[] {arg0, arg1, arg2});
+
+            return null;
+        }).when(this.observationManager).notify(any(), any(), any());
+
         this.eventManager.flushEvents();
 
-        verify(this.observationManager).notify(eq(addedEvent), same(this.componentManager),
-            same(this.descriptor1));
-        verify(this.observationManager).notify(eq(addedEvent), eq(null), same(this.descriptor1));
-        verify(this.observationManager).notify(eq(removedEvent), same(this.componentManager),
-            same(this.descriptor2));
-        verify(this.observationManager).notify(eq(removedEvent), eq(null), same(this.descriptor2));
+        assertEquals(4, calls.size());
+
+        assertEquals(addedEvent, calls.get(0)[0]);
+        assertNull(calls.get(0)[1]);
+        assertSame(this.descriptor1, calls.get(0)[2]);
+
+        assertEquals(addedEvent, calls.get(1)[0]);
+        assertSame(this.componentManager, calls.get(1)[1]);
+        assertSame(this.descriptor1, calls.get(1)[2]);
+
+        assertEquals(removedEvent, calls.get(2)[0]);
+        assertNull(calls.get(2)[1]);
+        assertSame(this.descriptor2, calls.get(2)[2]);
+
+        assertEquals(removedEvent, calls.get(3)[0]);
+        assertSame(this.componentManager, calls.get(3)[1]);
+        assertSame(this.descriptor2, calls.get(3)[2]);
     }
 }
