@@ -31,9 +31,9 @@ import org.xwiki.component.event.ComponentDescriptorRemovedEvent;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.observation.ObservationManager;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
