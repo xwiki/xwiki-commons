@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-extension-handlers</artifactId>
-    <version>17.10.3-SNAPSHOT</version>
+    <version>17.10.3</version>
   </parent>
   <artifactId>xwiki-commons-extension-handler-jar</artifactId>
   <name>XWiki Commons - Extension - Handler - JAR</name>
@@ -77,6 +77,6 @@
     </dependency>
   </dependencies>
   <scm>
-    <tag>stable-17.10.x</tag>
+    <tag>xwiki-commons-17.10.3</tag>
   </scm>
 </project>

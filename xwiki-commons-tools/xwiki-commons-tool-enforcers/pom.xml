@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-tool-pom</artifactId>
-    <version>17.10.3-SNAPSHOT</version>
+    <version>17.10.3</version>
     <relativePath>../xwiki-commons-tool-pom</relativePath>
   </parent>
   <artifactId>xwiki-commons-tool-enforcers</artifactId>
@@ -72,6 +72,6 @@
   </build>
 
   <scm>
-    <tag>stable-17.10.x</tag>
+    <tag>xwiki-commons-17.10.3</tag>
   </scm>
 </project>
