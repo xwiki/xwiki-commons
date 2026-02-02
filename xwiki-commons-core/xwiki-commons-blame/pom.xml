@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-core</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>17.10.3</version>
+    <version>17.10.4-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-blame</artifactId>
   <name>XWiki Commons - Blame</name>
@@ -45,6 +45,6 @@
   </modules>
 
   <scm>
-    <tag>xwiki-commons-17.10.3</tag>
+    <tag>stable-17.10.x</tag>
   </scm>
 </project>
