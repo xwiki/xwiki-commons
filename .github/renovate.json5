@@ -44,18 +44,6 @@
     {
       "matchPackagePrefixes": ["org.xwiki.commons:"],
       "enabled": false
-    },
-
-    // Maven Central contains an old (but very high in term of version) bad version of commons-collections:commons-collections so making sure we match the right ones
-    {
-      "matchPackageNames": ["commons-collections:commons-collections"],
-      "allowedVersions": "/^3\..*$/"
-    },
-
-    // Various dependencies we cannot update yet because of the move to jakarta package
-    {
-      "matchPackagePrefixes": ["ch.qos.logback"],
-      "allowedVersions": "/^1\.3\..*$/"
     }
   ]
 }
