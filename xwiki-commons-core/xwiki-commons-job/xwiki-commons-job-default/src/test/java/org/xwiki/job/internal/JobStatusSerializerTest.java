@@ -19,15 +19,20 @@
  */
 package org.xwiki.job.internal;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.junit5.XWikiTempDir;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.xstream.internal.SafeXStream;
@@ -48,13 +53,16 @@ class JobStatusSerializerTest
     @InjectMockComponents
     private JobStatusSerializer serializer;
 
-    private File testFile = new File("target/test/status.xml");
+    @XWikiTempDir
+    private File tempDir;
 
     private JobStatus writeRead(JobStatus status) throws IOException
     {
-        this.serializer.write(status, this.testFile);
+        File testFile = new File(this.tempDir, "status.xml");
 
-        return this.serializer.read(this.testFile);
+        this.serializer.write(status, testFile);
+
+        return this.serializer.read(testFile);
     }
 
     @Test
@@ -65,6 +73,19 @@ class JobStatusSerializerTest
         status = writeRead(status);
 
         assertEquals("type", status.getJobType());
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    void serializeUnserializeStream(boolean zip) throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>("type", new DefaultRequest(), null, null, null);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        this.serializer.write(status, outputStream, zip);
+        JobStatus readStatus = this.serializer.read(new ByteArrayInputStream(outputStream.toByteArray()), zip);
+
+        assertEquals("type", readStatus.getJobType());
     }
 
     @Test

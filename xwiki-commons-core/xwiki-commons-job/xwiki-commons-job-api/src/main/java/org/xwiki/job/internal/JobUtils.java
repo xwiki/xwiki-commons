@@ -41,7 +41,8 @@ public final class JobUtils
      */
     public static boolean isSerializable(JobStatus status)
     {
-        if (status.getRequest().getId() == null || !status.isSerialized()) {
+        if (status == null || status.getRequest() == null || status.getRequest().getId() == null
+            || !status.isSerialized()) {
             return false;
         }
 

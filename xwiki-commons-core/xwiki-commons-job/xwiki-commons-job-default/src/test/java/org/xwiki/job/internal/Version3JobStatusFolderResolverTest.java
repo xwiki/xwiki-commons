@@ -76,12 +76,16 @@ class Version3JobStatusFolderResolverTest
     void getFolderWithNullId()
     {
         assertEquals(this.baseDir, this.resolver.getFolder(null));
+
+        assertEquals(List.of("3"), this.resolver.getFolderSegments(null));
     }
 
     @Test
     void getFolderWithEmptyId()
     {
-        assertEquals(this.baseDir, this.resolver.getFolder(Collections.emptyList()));
+        assertEquals(this.baseDir, this.resolver.getFolder(List.of()));
+
+        assertEquals(List.of("3"), this.resolver.getFolderSegments(List.of()));
     }
 
     @Test
@@ -90,6 +94,8 @@ class Version3JobStatusFolderResolverTest
         List<String> idElements = Collections.singletonList(ELEMENT_1);
         File expected = getExpectedFolder(idElements);
         assertEquals(expected, this.resolver.getFolder(idElements));
+
+        assertEquals(List.of("3", ELEMENT_1), this.resolver.getFolderSegments(idElements));
     }
 
     @Test
@@ -98,6 +104,8 @@ class Version3JobStatusFolderResolverTest
         List<String> idElements = Arrays.asList(FIRST, SECOND, THIRD);
         File expected = getExpectedFolder(idElements);
         assertEquals(expected, this.resolver.getFolder(idElements));
+
+        assertEquals(List.of("3", FIRST, SECOND, THIRD), this.resolver.getFolderSegments(idElements));
     }
 
     @Test
@@ -106,6 +114,8 @@ class Version3JobStatusFolderResolverTest
         List<String> id = Arrays.asList(FIRST, null, THIRD);
         File expected = getExpectedFolder(List.of(FIRST, "&null", THIRD));
         assertEquals(expected, this.resolver.getFolder(id));
+
+        assertEquals(List.of("3", FIRST, "&null", THIRD), this.resolver.getFolderSegments(id));
     }
 
     @Test
@@ -117,6 +127,9 @@ class Version3JobStatusFolderResolverTest
         File expected = getExpectedFolder(List.of(element.substring(0, 250), element.substring(250)));
 
         assertEquals(expected, this.resolver.getFolder(id));
+
+        assertEquals(List.of("3", element.substring(0, 250), element.substring(250)),
+            this.resolver.getFolderSegments(id));
     }
 
     @ParameterizedTest
@@ -136,6 +149,8 @@ class Version3JobStatusFolderResolverTest
         List<String> id = Collections.singletonList(idElement);
         File expected = new File(this.baseDir, expectedEncodedElement);
         assertEquals(expected, this.resolver.getFolder(id));
+
+        assertEquals(List.of("3", expectedEncodedElement), this.resolver.getFolderSegments(id));
     }
 
     @Test
@@ -159,6 +174,10 @@ class Version3JobStatusFolderResolverTest
             assertFalse(StringUtils.contains(encodedElement, "*"));
             assertTrue(encodedElement.length() <= 255);
         }
+
+        // We collected the folder segments in reverse order, so we need to reverse them before comparing.
+        encodedElements.add("3");
+        assertEquals(encodedElements.reversed(), this.resolver.getFolderSegments(id));
     }
 
     private File getExpectedFolder(List<String> idElements)

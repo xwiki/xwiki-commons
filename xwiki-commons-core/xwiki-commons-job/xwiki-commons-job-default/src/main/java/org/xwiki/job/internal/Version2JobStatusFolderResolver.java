@@ -19,7 +19,8 @@
  */
 package org.xwiki.job.internal;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Priority;
 import javax.inject.Named;
@@ -42,9 +43,9 @@ import org.xwiki.component.annotation.Component;
 public class Version2JobStatusFolderResolver extends AbstractJobStatusFolderResolver
 {
     @Override
-    protected File addIDElement(String idElement, File folder)
+    protected List<String> encodeAndSplit(String idElement)
     {
-        File result = folder;
+        List<String> result = new ArrayList<>();
         // Cut each element if is it's bigger than 255 bytes (and not characters) since it's a very common
         // limit for a single element of the path among file systems
         // To be sure to deal with characters not taking more than 1 byte, we start by encoding it in base 64
@@ -52,11 +53,11 @@ public class Version2JobStatusFolderResolver extends AbstractJobStatusFolderReso
             : Base64.encodeBase64String(idElement.getBytes());
         if (encodedIdElement != null && encodedIdElement.length() > 255) {
             do {
-                result = new File(result, nullAwareURLEncode(encodedIdElement.substring(0, 255)));
+                result.add(nullAwareURLEncode(encodedIdElement.substring(0, 255)));
                 encodedIdElement = encodedIdElement.substring(255);
             } while (encodedIdElement.length() > 255);
         } else {
-            result = new File(result, nullAwareURLEncode(encodedIdElement));
+            result.add(nullAwareURLEncode(encodedIdElement));
         }
         return result;
     }
