@@ -19,7 +19,7 @@
  */
 package org.xwiki.job.internal;
 
-import java.io.File;
+import java.util.List;
 
 import javax.annotation.Priority;
 import javax.inject.Named;
@@ -41,8 +41,8 @@ import org.xwiki.component.annotation.Component;
 public class Version1JobStatusFolderResolver extends AbstractJobStatusFolderResolver
 {
     @Override
-    protected File addIDElement(String idElement, File folder)
+    protected List<String> encodeAndSplit(String idElement)
     {
-        return new File(folder, nullAwareURLEncode(idElement));
+        return List.of(nullAwareURLEncode(idElement));
     }
 }

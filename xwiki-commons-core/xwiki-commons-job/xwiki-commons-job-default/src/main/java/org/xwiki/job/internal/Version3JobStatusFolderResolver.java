@@ -19,7 +19,6 @@
  */
 package org.xwiki.job.internal;
 
-import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -69,23 +68,13 @@ public class Version3JobStatusFolderResolver extends AbstractJobStatusFolderReso
     }
 
     @Override
-    protected File getBaseFolder()
+    public List<String> getBaseFolderSegments()
     {
-        return new File(super.getBaseFolder(), "3");
+        return List.of("3");
     }
 
-    protected File addIDElement(String fullIdElement, File folder)
-    {
-        File result = folder;
-
-        for (String encodedPart : encodeAndSplit(fullIdElement)) {
-            result = new File(result, encodedPart);
-        }
-
-        return result;
-    }
-
-    private List<String> encodeAndSplit(String content)
+    @Override
+    protected List<String> encodeAndSplit(String content)
     {
         if (content == null) {
             return List.of(FOLDER_NULL);
