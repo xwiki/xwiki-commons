@@ -94,7 +94,6 @@
             <id>default</id>
             <configuration>
               <excludes>
-                **/AbstractModelConverter.java,
                 **/MavenUtils.java
               </excludes>
             </configuration>

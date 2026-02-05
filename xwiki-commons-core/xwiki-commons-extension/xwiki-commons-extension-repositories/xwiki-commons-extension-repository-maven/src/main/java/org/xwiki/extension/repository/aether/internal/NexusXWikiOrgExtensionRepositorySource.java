@@ -31,6 +31,7 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.ExtensionManagerConfiguration;
+import org.xwiki.extension.maven.internal.MavenUtils;
 import org.xwiki.extension.repository.AbstractExtensionRepositorySource;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
@@ -74,8 +75,11 @@ public class NexusXWikiOrgExtensionRepositorySource extends AbstractExtensionRep
 
         if (configuredRepositories == null) {
             try {
-                repositories.add(new DefaultExtensionRepositoryDescriptor("maven-xwiki", "maven",
-                    new URI("https://nexus.xwiki.org/nexus/content/groups/public")));
+                DefaultExtensionRepositoryDescriptor repository = new DefaultExtensionRepositoryDescriptor(
+                    "maven-xwiki", "maven", new URI("https://nexus.xwiki.org/nexus/content/groups/public"));
+                repository.putProperty(MavenUtils.REPOSITORY_PROPERTY_SNAPSHOT, "false");
+
+                repositories.add(repository);
             } catch (URISyntaxException e) {
                 // Should never happen
                 return Collections.emptyList();

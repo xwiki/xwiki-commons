@@ -17,13 +17,14 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.maven.internal.converter;
+package org.xwiki.extension.repository.maven.internal.converter;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -198,12 +199,22 @@ public class AbstractModelConverter<T> extends AbstractConverter<T>
             repositories = new ArrayList<>(mavenRepositories.size());
 
             for (Repository mavenRepository : mavenRepositories) {
-                // There is no point in remembering Maven central repository since all extension will have it
+                // There is no point in remembering Maven central repository since all extensions will have it
                 if (!StringUtils.equals(mavenRepository.getId(), "central")) {
                     try {
+                        Map<String, String> repositoryProperties = new HashMap<>();
+                        if (mavenRepository.getReleases() != null) {
+                            repositoryProperties.put(MavenUtils.REPOSITORY_PROPERTY_RELEASE,
+                                Boolean.toString(mavenRepository.getReleases().isEnabled()));
+                        }
+                        if (mavenRepository.getSnapshots() != null) {
+                            repositoryProperties.put(MavenUtils.REPOSITORY_PROPERTY_SNAPSHOT,
+                                Boolean.toString(mavenRepository.getSnapshots().isEnabled()));
+                        }
+
                         ExtensionRepositoryDescriptor repositoryDescriptor =
                             this.factory.getExtensionRepositoryDescriptor(mavenRepository.getId(), "maven",
-                                new URI(mavenRepository.getUrl()), null);
+                                new URI(mavenRepository.getUrl()), repositoryProperties);
 
                         repositories.add(repositoryDescriptor);
                     } catch (URISyntaxException e) {

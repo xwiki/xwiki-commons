@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.model.DistributionManagement;
@@ -192,6 +193,10 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     protected MavenArtifactHandlerManager mavenArtifactHandlerManager;
 
+    protected boolean releaseAllowed;
+
+    protected boolean snaphotAllowed;
+
     public AetherExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
         AetherExtensionRepositoryFactory repositoryFactory, RemoteRepository aetherRepository,
         PlexusContainer plexusContainer, ComponentManager componentManager) throws Exception
@@ -219,6 +224,18 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         this.mavenDescriptorReader = this.plexusContainer.lookup(ArtifactDescriptorReader.class);
         this.repositoryConnectorProvider = this.plexusContainer.lookup(RepositoryConnectorProvider.class);
         this.remoteRepositoryManager = this.plexusContainer.lookup(RemoteRepositoryManager.class);
+
+        this.releaseAllowed = isAllowed(repositoryDescriptor.getProperty(MavenUtils.REPOSITORY_PROPERTY_RELEASE));
+        this.snaphotAllowed = isAllowed(repositoryDescriptor.getProperty(MavenUtils.REPOSITORY_PROPERTY_SNAPSHOT));
+    }
+
+    private boolean isAllowed(String property)
+    {
+        if (StringUtils.isEmpty(property)) {
+            return true;
+        }
+
+        return BooleanUtils.toBoolean(property);
     }
 
     public RemoteRepository getRemoteRepository()
@@ -514,6 +531,11 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private AetherExtension resolveMaven(ExtensionDependency extensionDependency) throws ResolveException
     {
+        // Check if the passed version type is allowed
+        if (extensionDependency.getVersionConstraint().getRanges() == null) {
+            checkSnapshotSupport(extensionDependency.getVersionConstraint().getVersion());
+        }
+
         Artifact artifact;
         String targetMavenType;
 
@@ -546,8 +568,26 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return resolveMaven(artifact, targetMavenType);
     }
 
+    private void checkSnapshotSupport(Version version) throws ExtensionNotFoundException
+    {
+        if (version != null) {
+            boolean snapshotVersion = version.getType() == Version.Type.SNAPSHOT;
+
+            if (!this.releaseAllowed && !snapshotVersion) {
+                throw new ExtensionNotFoundException("Release versions are not allowed in this repository");
+            }
+
+            if (!this.snaphotAllowed && snapshotVersion) {
+                throw new ExtensionNotFoundException("Snapshot versions are not allowed in this repository");
+            }
+        }
+    }
+
     private AetherExtension resolveMaven(ExtensionId extensionId) throws ResolveException
     {
+        // Check if the passed version type is allowed
+        checkSnapshotSupport(extensionId.getVersion());
+
         Artifact artifact = AetherUtils.createArtifact(extensionId.getId(), extensionId.getVersion().getValue());
 
         return resolveMaven(artifact, null);

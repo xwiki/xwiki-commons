@@ -185,7 +185,8 @@
                 **/DefaultAetherConfiguration.java,
                 **/DefaultPlexusComponentManager.java,
                 **/PlexusComponentManager.java,
-                **/MavenExtensionScanner.java
+                **/MavenExtensionScanner.java,
+                **/AbstractModelConverter.java
               </excludes>
             </configuration>
           </execution>

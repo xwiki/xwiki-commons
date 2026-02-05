@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Named;
 
@@ -34,6 +35,7 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Exclusion;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Repository;
+import org.apache.maven.model.RepositoryPolicy;
 import org.junit.jupiter.api.Test;
 import org.xwiki.extension.DefaultExtensionComponent;
 import org.xwiki.extension.Extension;
@@ -41,6 +43,7 @@ import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionFeaturesInjector;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionPattern;
+import org.xwiki.extension.maven.internal.MavenUtils;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.properties.internal.DefaultConverterManager;
 import org.xwiki.test.annotation.AllComponents;
@@ -81,6 +84,14 @@ class ModelConverterTest
         when(this.featureProvider.getFeatures(any(Extension.class))).thenReturn(INJECTED_FEATURES);
     }
 
+    private RepositoryPolicy repositoryPolicy(boolean enabled)
+    {
+        RepositoryPolicy policy = new RepositoryPolicy();
+        policy.setEnabled(enabled);
+
+        return policy;
+    }
+    
     @Test
     void convertToExtension() throws SecurityException, URISyntaxException
     {
@@ -96,10 +107,24 @@ class ModelConverterTest
         model.addProperty(Extension.IKEYPREFIX + Extension.FIELD_COMPONENTS,
             "org.xwiki.contib.MyClassName<Generic1, Generic2>/hint\n"
                 + "org.xwiki.contib.MyClassName2<Generic12, Generic22>/hint2");
-        Repository repository = new Repository();
-        repository.setId("repository-id");
-        repository.setUrl("http://url");
-        model.addRepository(repository);
+        Repository repository0 = new Repository();
+        repository0.setId("repository-id0");
+        repository0.setUrl("http://url0");
+        repository0.setReleases(repositoryPolicy(true));
+        repository0.setSnapshots(repositoryPolicy(false));
+        model.addRepository(repository0);
+        Repository repository1 = new Repository();
+        repository1.setId("repository-id1");
+        repository1.setUrl("http://url1");
+        repository1.setReleases(repositoryPolicy(false));
+        repository1.setSnapshots(repositoryPolicy(true));
+        model.addRepository(repository1);
+        Repository repository2 = new Repository();
+        repository2.setId("repository-id2");
+        repository2.setUrl("http://url2");
+        repository2.setReleases(repositoryPolicy(true));
+        repository2.setSnapshots(repositoryPolicy(true));
+        model.addRepository(repository2);
         Dependency dependency = new Dependency();
         dependency.setGroupId("dgroupid");
         dependency.setArtifactId("dartifactId");
@@ -131,8 +156,16 @@ class ModelConverterTest
         assertEquals(Arrays.asList("namespace1", "namespace2", "{root}", "namespace3", "namespace4"),
             new ArrayList<>(extension.getAllowedNamespaces()));
         assertNull(extension.getProperty(Extension.IKEYPREFIX + Extension.FIELD_NAMESPACES));
-        assertEquals(
-            Arrays.asList(new DefaultExtensionRepositoryDescriptor("repository-id", "maven", new URI("http://url"))),
+        assertEquals(List.of(
+            new DefaultExtensionRepositoryDescriptor("repository-id0", "maven", new URI("http://url0"),
+                Map.of(MavenUtils.REPOSITORY_PROPERTY_RELEASE, "true", MavenUtils.REPOSITORY_PROPERTY_SNAPSHOT,
+                    "false")),
+            new DefaultExtensionRepositoryDescriptor("repository-id1", "maven", new URI("http://url1"),
+                Map.of(MavenUtils.REPOSITORY_PROPERTY_RELEASE, "false", MavenUtils.REPOSITORY_PROPERTY_SNAPSHOT,
+                    "true")),
+            new DefaultExtensionRepositoryDescriptor("repository-id2", "maven", new URI("http://url2"),
+                Map.of(MavenUtils.REPOSITORY_PROPERTY_RELEASE, "true", MavenUtils.REPOSITORY_PROPERTY_SNAPSHOT,
+                    "true"))),
             extension.getRepositories());
         assertEquals(1, extension.getDependencies().size());
         ExtensionDependency extensionDependency = extension.getDependencies().iterator().next();

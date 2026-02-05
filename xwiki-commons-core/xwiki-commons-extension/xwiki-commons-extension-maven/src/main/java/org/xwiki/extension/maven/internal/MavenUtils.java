@@ -81,12 +81,29 @@ public class MavenUtils
      * @since 12.2
      */
     public static final String WILDCARD = "*";
+
     /**
      * The name of the Model property containing the target file type.
      * 
      * @since 12.4RC1
      */
     public static final String MODEL_PROPERTY_TARGETTYPE = "xwiki.maven.type";
+
+    /**
+     * The name of the repository property indicating if it should be used for release versions.
+     * 
+     * @since 18.1.0RCA
+     * @since 17.10.4
+     */
+    public static final String REPOSITORY_PROPERTY_RELEASE = "maven.release";
+
+    /**
+     * The name of the repository property indicating if it should be used for snapshot versions.
+     * 
+     * @since 18.1.0RCA
+     * @since 17.10.4
+     */
+    public static final String REPOSITORY_PROPERTY_SNAPSHOT = "maven.snapshot";
 
     /**
      * Parse a Maven scm URL to generate a {@link ExtensionScmConnection}.

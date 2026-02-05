@@ -33,7 +33,6 @@ import org.xwiki.extension.Extension;
 import org.xwiki.extension.maven.ArtifactModel;
 import org.xwiki.extension.maven.internal.MavenExtension;
 import org.xwiki.extension.maven.internal.MavenUtils;
-import org.xwiki.extension.maven.internal.converter.AbstractModelConverter;
 import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.properties.converter.Converter;
 

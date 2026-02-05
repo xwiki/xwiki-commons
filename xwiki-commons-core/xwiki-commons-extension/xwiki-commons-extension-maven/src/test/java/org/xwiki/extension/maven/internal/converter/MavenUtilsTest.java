@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * 
  * @version $Id$
  */
-public class MavenUtilsTest
+class MavenUtilsTest
 {
     @Test
     void toXWikiExtensionIdentifier()
