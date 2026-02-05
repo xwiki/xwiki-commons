@@ -204,6 +204,9 @@ public class DefaultObservationManager implements ObservationManager
 
     private void addListenerInternal(EventListener eventListener, int priority)
     {
+        this.logger.debug("Adding listener [{}] with name [{}] and priority [{}]", eventListener.getClass().getName(),
+            eventListener.getName(), priority);
+
         Map<String, EventListener> listeners = getListenersByName();
 
         // Remove previous listener if any
@@ -252,6 +255,8 @@ public class DefaultObservationManager implements ObservationManager
     @Override
     public void removeListener(String listenerName)
     {
+        this.logger.debug("Removing listener with name [{}]", listenerName);
+
         getListenersByName().remove(listenerName);
         for (Map.Entry<Class<? extends Event>, PriorityEntries<RegisteredListener>> entry : this.listenersByEvent
             .entrySet()) {
