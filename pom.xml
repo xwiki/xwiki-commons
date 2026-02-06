@@ -304,7 +304,7 @@
     <!-- Versions of Node related tools -->
     <node.version>v24.11.0</node.version>
     <npm.version>11.6.2</npm.version>
-    <pnpm.version>10.20.0</pnpm.version>
+    <pnpm.version>10.28.2</pnpm.version>
 
     <webdrivermanager.version>6.3.3</webdrivermanager.version>
 
