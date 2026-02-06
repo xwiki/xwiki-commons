@@ -140,7 +140,7 @@
     <testcontainers.version>2.0.3</testcontainers.version>
 
     <!-- OpenTelemetry -->
-    <opentelemetry.version>1.58.0</opentelemetry.version>
+    <opentelemetry.version>1.59.0</opentelemetry.version>
 
     <!-- Byte Buddy -->
     <bytebuddy.version>1.18.4</bytebuddy.version>
