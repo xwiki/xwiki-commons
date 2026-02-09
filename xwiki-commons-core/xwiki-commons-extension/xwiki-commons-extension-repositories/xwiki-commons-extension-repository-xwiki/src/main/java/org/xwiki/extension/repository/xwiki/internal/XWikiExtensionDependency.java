@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import org.xwiki.extension.AbstractExtensionDependency;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.internal.ExtensionFactory;
+import org.xwiki.extension.internal.converter.ExtensionPatternConverter;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionRepository;
@@ -48,6 +49,11 @@ public class XWikiExtensionDependency extends AbstractExtensionDependency
     {
         super(restDependency.getId(), new DefaultVersionConstraint(restDependency.getConstraint()),
             restDependency.isOptional());
+
+        // Exclusions
+        for (String pattern : restDependency.getExclusions()) {
+            addExclusion(ExtensionPatternConverter.toExtensionPattern(pattern));
+        }
 
         // Make sure the dependency will be resolved in the extension repository first
         if (extensionRepository != null) {

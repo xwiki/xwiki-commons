@@ -41,6 +41,7 @@ import org.xwiki.extension.DefaultExtensionSupporter;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.internal.ExtensionFactory;
+import org.xwiki.extension.internal.converter.ExtensionPatternConverter;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionAuthor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency;
@@ -68,6 +69,18 @@ import static org.mockito.Mockito.mock;
  */
 class XWikiExtensionTest
 {
+    private org.xwiki.extension.ExtensionDependency extensionDependency(String id, String constraint, boolean optional,
+        String... exclusions)
+    {
+        DefaultExtensionDependency dependency =
+            new DefaultExtensionDependency(id, new DefaultVersionConstraint(constraint), optional);
+        for (String exclusion : exclusions) {
+            dependency.addExclusion(ExtensionPatternConverter.toExtensionPattern(exclusion));
+        }
+
+        return dependency;
+    }
+
     @Test
     void newXWikiExtension() throws URISyntaxException, MalformedURLException
     {
@@ -119,6 +132,7 @@ class XWikiExtensionTest
         dependency1.setConstraint("constraint1");
         dependency1.setId("dependency1");
         dependency1.setOptional(true);
+        dependency1.withExclusions("exclusion1.0", "exclusion1.1");
         ExtensionDependency dependency2 = new ExtensionDependency();
         dependency2.setConstraint("constraint2");
         dependency2.setId("dependency2");
@@ -142,6 +156,7 @@ class XWikiExtensionTest
         mdependency1.setConstraint("mconstraint1");
         mdependency1.setId("mdependency1");
         mdependency1.setOptional(true);
+        mdependency1.withExclusions("exclusion1.0", "exclusion1.1");
         ExtensionDependency mdependency2 = new ExtensionDependency();
         mdependency2.setConstraint("mconstraint2");
         mdependency2.setId("mdependency2");
@@ -194,8 +209,8 @@ class XWikiExtensionTest
             List.of(new DefaultExtensionComponent("role1", "hint1"), new DefaultExtensionComponent("role2", "hint2")),
             extension.getComponents());
         assertCollectionEquals(
-            List.of(new DefaultExtensionDependency("dependency1", new DefaultVersionConstraint("constraint1"), true),
-                new DefaultExtensionDependency("dependency2", new DefaultVersionConstraint("constraint2"), false)),
+            List.of(extensionDependency("dependency1", "constraint1", true, "exclusion1.0", "exclusion1.1"),
+                extensionDependency("dependency2", "constraint2", false)),
             extension.getDependencies());
         assertEquals("description", extension.getDescription());
         assertCollectionEquals(List.of(new org.xwiki.extension.ExtensionId("feature1", "fversion1"),
@@ -205,8 +220,8 @@ class XWikiExtensionTest
         assertCollectionEquals(List.of(new ExtensionLicense("license1", List.of("content1")),
             new ExtensionLicense("license2", List.of("content2"))), extension.getLicenses());
         assertCollectionEquals(
-            List.of(new DefaultExtensionDependency("mdependency1", new DefaultVersionConstraint("mconstraint1"), true),
-                new DefaultExtensionDependency("mdependency2", new DefaultVersionConstraint("mconstraint2"), false)),
+            List.of(extensionDependency("mdependency1", "mconstraint1", true, "exclusion1.0", "exclusion1.1"),
+                extensionDependency("mdependency2", "mconstraint2", false)),
             extension.getManagedDependencies());
         assertEquals("name", extension.getName());
         assertEquals(Map.of("key1", "value1", "key2", "value2"), extension.getProperties());

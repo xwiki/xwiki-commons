@@ -42,7 +42,7 @@ public class DefaultExtensionPattern extends AbstractExtensionPattern
     /**
      * Create new instance by cloning the provided one with different version constraint.
      *
-     * @param idPattern a regular expression matching all the ids to exclude
+     * @param idPattern a regular expression matching all the ids to exclude, null to match everything
      */
     public DefaultExtensionPattern(Pattern idPattern)
     {

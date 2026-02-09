@@ -127,6 +127,20 @@ public class ExtensionFactory
     }
 
     /**
+     * Store and return a weak reference equals to the passed {@link ExtensionAuthor}.
+     * 
+     * @param factory the factory to use or null
+     * @param idPattern a regular expression matching all the ids to exclude
+     * @return unique instance of {@link ExtensionPattern} equals to the passed one
+     * @since 18.0.1RC1
+     * @since 17.10.4
+     */
+    public static ExtensionPattern getExtensionPattern(ExtensionFactory factory, String idPattern)
+    {
+        return factory != null ? factory.getExtensionPattern(idPattern) : new DefaultExtensionPattern(idPattern);
+    }
+
+    /**
      * Store and return a weak reference equals to the passed {@link ExtensionDependency}.
      * 
      * @param dependency the {@link ExtensionDependency} to find
@@ -164,6 +178,29 @@ public class ExtensionFactory
     /**
      * @param idPattern a regular expression matching all the ids to exclude
      * @return unique instance of {@link ExtensionPattern} equals to the passed one
+     * @since 18.1.0RC1
+     * @since 17.10.4
+     */
+    public ExtensionPattern getExtensionPattern(String idPattern)
+    {
+        if (idPattern == null || idPattern.equals(".*")) {
+            return NULL_PATTERN;
+        }
+
+        ExtensionPattern pattern = this.patterns.get(idPattern);
+
+        if (pattern == null) {
+            pattern = new DefaultExtensionPattern(idPattern);
+
+            this.patterns.put(idPattern, pattern);
+        }
+
+        return pattern;
+    }
+
+    /**
+     * @param idPattern a regular expression matching all the ids to exclude
+     * @return unique instance of {@link ExtensionPattern} equals to the passed one
      * @since 12.2
      */
     public ExtensionPattern getExtensionPattern(Pattern idPattern)
@@ -172,17 +209,7 @@ public class ExtensionFactory
             return NULL_PATTERN;
         }
 
-        String key = idPattern.pattern();
-
-        ExtensionPattern pattern = this.patterns.get(key);
-
-        if (pattern == null) {
-            pattern = new DefaultExtensionPattern(idPattern);
-
-            this.patterns.put(key, pattern);
-        }
-
-        return pattern;
+        return getExtensionPattern(idPattern.pattern());
     }
 
     /**
