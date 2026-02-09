@@ -42,6 +42,8 @@ class ExtensionFactoryTest
     @Test
     void getExtensionPattern()
     {
-        assertEquals(new DefaultExtensionPattern((Pattern) null), this.factory.getExtensionPattern(null));
+        assertEquals(new DefaultExtensionPattern((Pattern) null), this.factory.getExtensionPattern((Pattern) null));
+        assertEquals(new DefaultExtensionPattern((Pattern) null), this.factory.getExtensionPattern((String) null));
+        assertEquals(new DefaultExtensionPattern((Pattern) null), this.factory.getExtensionPattern(".*"));
     }
 }

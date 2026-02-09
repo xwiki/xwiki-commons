@@ -37,7 +37,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -581,8 +580,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                 if (exclusion.getNodeName().equals(ELEMENT_EXTENIONPATTERN)) {
                     Node dependencyIdNode = getNode(exclusion, ELEMENT_ID);
 
-                    Pattern patternString =
-                        dependencyIdNode != null ? Pattern.compile(dependencyIdNode.getTextContent()) : null;
+                    String patternString =
+                        dependencyIdNode != null ? dependencyIdNode.getTextContent() : null;
 
                     exclusions.add(this.factory.getExtensionPattern(patternString));
                 }

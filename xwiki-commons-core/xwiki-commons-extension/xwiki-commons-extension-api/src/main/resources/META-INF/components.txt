@@ -12,6 +12,7 @@ org.xwiki.extension.internal.converter.ExtensionAuthorConverter
 org.xwiki.extension.internal.converter.ExtensionComponentConverter
 org.xwiki.extension.internal.converter.ExtensionConverter
 org.xwiki.extension.internal.converter.ExtensionIdConverter
+org.xwiki.extension.internal.converter.ExtensionPatternConverter
 org.xwiki.extension.internal.converter.ExtensionSupporterConverter
 org.xwiki.extension.internal.converter.ExtensionSupportPlanConverter
 org.xwiki.extension.internal.converter.VersionConverter
