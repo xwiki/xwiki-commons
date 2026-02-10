@@ -50,7 +50,7 @@ public interface PersistentJobStatusStore
      * @return the job status
      * @throws IOException when failing to load the job status
      */
-    JobStatus loadStatusWithLock(List<String> id) throws IOException;
+    JobStatus loadJobStatusWithLock(List<String> id) throws IOException;
 
     /**
      * Remove the job status from the persistent storage.
@@ -58,7 +58,7 @@ public interface PersistentJobStatusStore
      * @param id the id of the job
      * @throws IOException when failing to remove the job status
      */
-    void removeWithLock(List<String> id) throws IOException;
+    void removeJobStatusWithLock(List<String> id) throws IOException;
 
     /**
      * @param jobId the identifier of the job

@@ -335,13 +335,13 @@ public class DefaultPersistentJobStatusStore implements PersistentJobStatusStore
     }
 
     @Override
-    public synchronized JobStatus loadStatusWithLock(List<String> id) throws IOException
+    public synchronized JobStatus loadJobStatusWithLock(List<String> id) throws IOException
     {
         return loadStatus(getAndMoveJobFolder(id, true));
     }
 
     @Override
-    public void removeWithLock(List<String> id)
+    public void removeJobStatusWithLock(List<String> id)
     {
         // Delete the job status from all possible locations to ensure that when loading it again, it indeed
         // cannot be found anymore.

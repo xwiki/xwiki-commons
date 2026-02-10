@@ -129,11 +129,11 @@ class DefaultJobStatusStoreTest
         JobStatus status = mock();
 
         when(this.cache.get(ID_STRING)).thenReturn(null);
-        when(this.persistentJobStatusStore.loadStatusWithLock(ID)).thenReturn(status);
+        when(this.persistentJobStatusStore.loadJobStatusWithLock(ID)).thenReturn(status);
 
         assertThat(this.store.getJobStatus(ID), sameInstance(status));
 
-        verify(this.persistentJobStatusStore).loadStatusWithLock(ID);
+        verify(this.persistentJobStatusStore).loadJobStatusWithLock(ID);
         verify(this.cache).set(ID_STRING, status);
     }
 
@@ -154,7 +154,7 @@ class DefaultJobStatusStoreTest
     void getJobStatusWhenLoadFailsRemovesCacheAndLogs() throws Exception
     {
         when(this.cache.get(ID_STRING)).thenReturn(null);
-        when(this.persistentJobStatusStore.loadStatusWithLock(ID)).thenThrow(new IOException(ERROR));
+        when(this.persistentJobStatusStore.loadJobStatusWithLock(ID)).thenThrow(new IOException(ERROR));
 
         assertNull(this.store.getJobStatus(ID));
 
@@ -167,14 +167,14 @@ class DefaultJobStatusStoreTest
     {
         this.store.remove(ID);
 
-        verify(this.persistentJobStatusStore).removeWithLock(ID);
+        verify(this.persistentJobStatusStore).removeJobStatusWithLock(ID);
         verify(this.cache).remove(ID_STRING);
     }
 
     @Test
     void removeWhenPersistenceFailsKeepsCacheAndLogs() throws Exception
     {
-        doThrow(new IOException(ERROR)).when(this.persistentJobStatusStore).removeWithLock(ID);
+        doThrow(new IOException(ERROR)).when(this.persistentJobStatusStore).removeJobStatusWithLock(ID);
 
         this.store.remove(ID);
 
