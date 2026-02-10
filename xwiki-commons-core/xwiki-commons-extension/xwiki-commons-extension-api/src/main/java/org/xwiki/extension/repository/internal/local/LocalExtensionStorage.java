@@ -19,14 +19,10 @@
  */
 package org.xwiki.extension.repository.internal.local;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.DirectoryNotEmptyException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.stream.Stream;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -41,6 +37,10 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InvalidExtensionException;
 import org.xwiki.extension.internal.PathUtils;
 import org.xwiki.extension.repository.internal.ExtensionSerializer;
+import org.xwiki.store.blob.Blob;
+import org.xwiki.store.blob.BlobPath;
+import org.xwiki.store.blob.BlobStore;
+import org.xwiki.store.blob.BlobStoreException;
 
 /**
  * Manipulate the extension filesystem repository storage.
@@ -61,11 +61,6 @@ public class LocalExtensionStorage
     private static final String DESCRIPTOR_EXT = "xed";
 
     /**
-     * The extension of the descriptor files prefixed with dot.
-     */
-    private static final String DESCRIPTOR_SUFFIX = '.' + DESCRIPTOR_EXT;
-
-    /**
      * The repository.
      */
     private DefaultLocalExtensionRepository repository;
@@ -76,31 +71,33 @@ public class LocalExtensionStorage
     private ExtensionSerializer extensionSerializer;
 
     /**
-     * @see #getRootFolder()
+     * @see #getBlobStore()
      */
-    private File rootFolder;
+    private BlobStore store;
 
     /**
      * @param repository the repository
-     * @param rootFolder the repository folder
+     * @param store the blob store where the extension files are located
      * @param componentManager used to lookup needed components
      * @throws ComponentLookupException can't find ExtensionSerializer
+     * @since 18.2.0RC1
      */
-    public LocalExtensionStorage(DefaultLocalExtensionRepository repository, File rootFolder,
+    public LocalExtensionStorage(DefaultLocalExtensionRepository repository, BlobStore store,
         ComponentManager componentManager) throws ComponentLookupException
     {
         this.repository = repository;
-        this.rootFolder = rootFolder;
+        this.store = store;
 
         this.extensionSerializer = componentManager.getInstance(ExtensionSerializer.class);
     }
 
     /**
      * @return the repository folder
+     * @since 18.2.0RC1
      */
-    public File getRootFolder()
+    public BlobStore getBlobStore()
     {
-        return this.rootFolder;
+        return this.store;
     }
 
     /**
@@ -108,50 +105,28 @@ public class LocalExtensionStorage
      *
      * @throws IOException when failing to load extensions
      */
-    protected void loadExtensions() throws IOException
+    void loadExtensions() throws IOException
     {
         // Load local extension from repository
 
-        if (this.rootFolder.exists()) {
-            loadExtensions(this.rootFolder);
-        } else {
-            this.rootFolder.mkdirs();
-        }
-    }
-
-    /**
-     * @param folder the folder from where to load the extension
-     * @throws IOException when failing to load extensions
-     */
-    protected void loadExtensions(File folder) throws IOException
-    {
-        if (!this.rootFolder.exists()) {
-            throw new IOException("Directory does not exist: " + this.rootFolder);
+        Stream<Blob> blobStream;
+        try {
+            blobStream = this.store.listDescendants(BlobPath.root());
+        } catch (BlobStoreException e) {
+            throw new IOException("Failed to list blobs in local repository", e);
         }
 
-        if (!this.rootFolder.isDirectory()) {
-            throw new IOException("Not a directory: " + this.rootFolder);
-        }
-
-        File[] files = folder.listFiles();
-
-        if (files == null) {
-            throw new IOException("Could not list files: " + this.rootFolder);
-        }
-
-        for (File child : files) {
-            if (child.isDirectory()) {
-                loadExtensions(child);
-            } else if (child.getName().endsWith(DESCRIPTOR_SUFFIX)) {
+        blobStream.forEach(blob -> {
+            if (blob.getPath().getFileName().endsWith(DESCRIPTOR_EXT)) {
                 try {
-                    DefaultLocalExtension localExtension = loadDescriptor(child);
+                    DefaultLocalExtension localExtension = loadDescriptor(blob);
 
                     this.repository.addLocalExtension(localExtension);
                 } catch (Exception e) {
-                    LOGGER.warn("Failed to load extension from file [" + child + "] in local repository", e);
+                    LOGGER.warn("Failed to load extension from blob [" + blob.getPath() + "] in local repository", e);
                 }
             }
-        }
+        });
     }
 
     /**
@@ -161,12 +136,12 @@ public class LocalExtensionStorage
      * @return the extension descriptor
      * @throws InvalidExtensionException error when trying to load extension descriptor
      */
-    private DefaultLocalExtension loadDescriptor(File descriptor) throws InvalidExtensionException
+    private DefaultLocalExtension loadDescriptor(Blob descriptor) throws InvalidExtensionException
     {
-        FileInputStream fis;
+        InputStream fis;
         try {
-            fis = new FileInputStream(descriptor);
-        } catch (FileNotFoundException e) {
+            fis = descriptor.getStream();
+        } catch (BlobStoreException e) {
             throw new InvalidExtensionException("Failed to open descriptor for reading", e);
         }
 
@@ -174,19 +149,21 @@ public class LocalExtensionStorage
             DefaultLocalExtension localExtension =
                 this.extensionSerializer.loadLocalExtensionDescriptor(this.repository, fis);
 
-            localExtension.setDescriptorFile(descriptor);
+            localExtension.setDescriptorBlob(descriptor);
 
-            File extensionFile = getFile(descriptor, DESCRIPTOR_EXT, localExtension.getType());
-            if (extensionFile != null) {
-                localExtension.setFile(extensionFile);
+            BlobPath extensionPath = getBlobPath(descriptor.getPath(), DESCRIPTOR_EXT, localExtension.getType());
+            if (extensionPath != null) {
+                localExtension.setBlob(this.store.getBlob(extensionPath));
 
-                if (!localExtension.getFile().getFile().exists()) {
+                if (!localExtension.getFile().getBlob().exists()) {
                     throw new InvalidExtensionException("Failed to load local extension [" + descriptor + "]: ["
                         + localExtension.getFile() + "] file does not exist");
                 }
             }
 
             return localExtension;
+        } catch (BlobStoreException e) {
+            throw new InvalidExtensionException("Failed to open access the extension blob", e);
         } finally {
             try {
                 fis.close();
@@ -203,63 +180,48 @@ public class LocalExtensionStorage
      * @throws ParserConfigurationException error when trying to save the descriptor
      * @throws TransformerException error when trying to save the descriptor
      * @throws IOException error when trying to save the descriptor
+     * @throws BlobStoreException error when trying to save the descriptor
      */
     public void saveDescriptor(DefaultLocalExtension extension)
-        throws ParserConfigurationException, TransformerException, IOException
+        throws ParserConfigurationException, TransformerException, IOException, BlobStoreException
     {
-        File file = extension.getDescriptorFile();
+        Blob blob = extension.getDescriptorBlob();
 
-        if (file == null) {
-            file = getNewDescriptorFile(extension.getId());
-            extension.setDescriptorFile(file);
+        if (blob == null) {
+            blob = getNewDescriptorBlob(extension.getId());
+            extension.setDescriptorBlob(blob);
         }
 
-        // Make sure the folder exist
-        file.getParentFile().mkdirs();
-
-        FileOutputStream fos = new FileOutputStream(file);
-
-        try {
-            this.extensionSerializer.saveExtensionDescriptor(extension, fos);
-        } finally {
-            fos.close();
+        try (OutputStream os = blob.getOutputStream()) {
+            this.extensionSerializer.saveExtensionDescriptor(extension, os);
         }
     }
 
-    /**
-     * @param id the extension identifier
-     * @param type the extension type
-     * @return the file containing the extension
-     */
-    protected File getNewExtensionFile(ExtensionId id, String type)
+    Blob getNewExtensionBlob(ExtensionId id, String type) throws BlobStoreException
     {
-        return new File(getRootFolder(), getFilePath(id, type));
+        return this.store.getBlob(getBlobPath(id, type));
+    }
+
+    private Blob getNewDescriptorBlob(ExtensionId id) throws BlobStoreException
+    {
+        return this.store.getBlob(getBlobPath(id, DESCRIPTOR_EXT));
     }
 
     /**
-     * @param id the extension identifier
-     * @return the file containing the extension descriptor
-     */
-    private File getNewDescriptorFile(ExtensionId id)
-    {
-        return new File(getRootFolder(), getFilePath(id, DESCRIPTOR_EXT));
-    }
-
-    /**
-     * @param baseFile the extension file
+     * @param basePath the path to the extension file
      * @param baseType the type of the extension
      * @param type the type of the file to get
-     * @return the extension descriptor file
+     * @return the path to the extension descriptor
      */
-    private File getFile(File baseFile, String baseType, String type)
+    private BlobPath getBlobPath(BlobPath basePath, String baseType, String type)
     {
         if (StringUtils.isEmpty(type)) {
             return null;
         }
 
-        String baseName = getBaseName(baseFile.getName(), baseType);
+        String baseName = getBaseName(basePath.getFileName().toString(), baseType);
 
-        return new File(baseFile.getParent(), baseName + '.' + PathUtils.encode(type));
+        return basePath.getParent().resolve(baseName + '.' + PathUtils.encode(type));
     }
 
     /**
@@ -273,20 +235,19 @@ public class LocalExtensionStorage
     }
 
     /**
-     * Get file path in the local extension repository.
+     * Get blob path in the local extension repository.
      *
      * @param id the extension id
      * @param fileExtension the file extension
      * @return the encoded file path
      */
-    private String getFilePath(ExtensionId id, String fileExtension)
+    private BlobPath getBlobPath(ExtensionId id, String fileExtension)
     {
         String encodedId = PathUtils.encode(id.getId());
         String encodedVersion = PathUtils.encode(id.getVersion().toString());
         String encodedType = PathUtils.encode(fileExtension);
 
-        return encodedId + File.separator + encodedVersion + File.separator + encodedId + '-' + encodedVersion + '.'
-            + encodedType;
+        return BlobPath.absolute(encodedId, encodedVersion, encodedId + '-' + encodedVersion + '.' + encodedType);
     }
 
     /**
@@ -297,66 +258,38 @@ public class LocalExtensionStorage
      */
     public void removeExtension(DefaultLocalExtension extension) throws IOException
     {
-        File descriptorFile = extension.getDescriptorFile();
+        Blob descriptorBlob = extension.getDescriptorBlob();
 
-        if (descriptorFile == null) {
+        if (descriptorBlob == null) {
             throw new IOException(
                 String.format("Extension [%s] does not exist: descriptor file is null", extension.getId().getId()));
         }
 
         // Get extension file descriptor path
-        Path extensionDescriptorFilePath = descriptorFile.toPath();
+        BlobPath extensionDescriptorFilePath = descriptorBlob.getPath();
 
         // Delete the extension descriptor file
         try {
-            Files.delete(extensionDescriptorFilePath);
-        } catch (FileNotFoundException e) {
+            this.store.deleteBlob(extensionDescriptorFilePath);
+        } catch (BlobStoreException e) {
             LOGGER.warn(
-                "Couldn't delete the extension descriptor file [{}] when removing extension [{}], "
-                    + "because it doesn't exist. Root error: [{}]",
-                descriptorFile.getAbsolutePath(), extension.getId().getId(), ExceptionUtils.getRootCauseMessage(e));
+                "Couldn't delete the extension descriptor file [{}] when removing extension [{}]. Root error: [{}]",
+                extensionDescriptorFilePath.toString(), extension.getId().getId(),
+                ExceptionUtils.getRootCauseMessage(e));
         }
 
         DefaultLocalExtensionFile extensionFile = extension.getFile();
 
         if (extensionFile != null) {
+            BlobPath extensionFilePath = extensionFile.getBlob().getPath();
+
             // Delete the extension file
             try {
-                Files.delete(extensionFile.getFile().toPath());
-            } catch (FileNotFoundException e) {
-                LOGGER.warn("Extension file [{}] was not found while removing [{}] extension",
-                    extensionFile.getAbsolutePath(), extension.getId().getId());
+                this.store.deleteBlob(extensionFilePath);
+            } catch (BlobStoreException e) {
+                LOGGER.warn("Could not deleted the extension blob [{}] for extension [{}]. Root error: [{}]",
+                    extensionFilePath.toString(), extension.getId().getId(), ExceptionUtils.getRootCauseMessage(e));
             }
-        }
-
-        // Get the path to the folder that store the version of the extension being removed
-        Path extensionVersionFolderPath = extensionDescriptorFilePath.getParent();
-        try {
-            // Delete the extension version folder
-            Files.delete(extensionDescriptorFilePath);
-
-            // Try to delete the extension folder
-            deleteExtensionFolderIfEmpty(extensionVersionFolderPath.getParent());
-        } catch (DirectoryNotEmptyException e) {
-            LOGGER.warn("Extension version folder [{}] was not empty after removing the extension [{}]. Keeping it.",
-                extensionDescriptorFilePath, extension.getId().getId());
-        }
-    }
-
-    /**
-     * Try to delete the extension folder if empty (i.e. all versions have been removed)
-     *
-     * @param extensionFolderPath the path to the folder to delete
-     * @throws IOException error (other than empty) when deleting the extension folder
-     */
-    private static void deleteExtensionFolderIfEmpty(Path extensionFolderPath) throws IOException
-    {
-        try {
-            Files.delete(extensionFolderPath);
-        } catch (DirectoryNotEmptyException e) {
-            // Folder not being empty is a valid scenario if some version of the extension are still installed
-            LOGGER.debug("Extension folder [{}] was not empty after removing the extension. Keeping it.",
-                extensionFolderPath);
         }
     }
 }
