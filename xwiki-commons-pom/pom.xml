@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons</artifactId>
-    <version>18.1.0-SNAPSHOT</version>
+    <version>18.1.0-rc-1</version>
   </parent>
   <artifactId>xwiki-commons-pom</artifactId>
   <name>XWiki Commons - Root POM</name>
@@ -79,12 +79,12 @@
       <plugin>
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-tool-remote-resource-plugin</artifactId>
-        <version>18.1.0-SNAPSHOT</version>
+        <version>18.1.0-rc-1</version>
         <dependencies>
           <dependency>
             <groupId>org.xwiki.commons</groupId>
             <artifactId>xwiki-commons-tool-license-resources</artifactId>
-            <version>18.1.0-SNAPSHOT</version>
+            <version>18.1.0-rc-1</version>
           </dependency>
         </dependencies>
         <executions>
@@ -110,7 +110,7 @@
           <dependency>
             <groupId>org.xwiki.commons</groupId>
             <artifactId>xwiki-commons-tool-enforcer-dependencies</artifactId>
-            <version>18.1.0-SNAPSHOT</version>
+            <version>18.1.0-rc-1</version>
           </dependency>
         </dependencies>
         <executions>
@@ -156,7 +156,7 @@
           <dependency>
             <groupId>org.xwiki.commons</groupId>
             <artifactId>xwiki-commons-tool-verification-resources</artifactId>
-            <version>18.1.0-SNAPSHOT</version>
+            <version>18.1.0-rc-1</version>
           </dependency>
         </dependencies>
         <configuration>
@@ -261,7 +261,7 @@
           <dependency>
             <groupId>org.xwiki.commons</groupId>
             <artifactId>xwiki-commons-tool-spoon-checks</artifactId>
-            <version>18.1.0-SNAPSHOT</version>
+            <version>18.1.0-rc-1</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -277,7 +277,7 @@
             <dependency>
               <groupId>org.xwiki.commons</groupId>
               <artifactId>xwiki-commons-tool-verification-resources</artifactId>
-              <version>18.1.0-SNAPSHOT</version>
+              <version>18.1.0-rc-1</version>
             </dependency>
           </dependencies>
           <configuration>
@@ -362,7 +362,7 @@
             <dependency>
               <groupId>org.xwiki.commons</groupId>
               <artifactId>xwiki-commons-tool-verification-resources</artifactId>
-              <version>18.1.0-SNAPSHOT</version>
+              <version>18.1.0-rc-1</version>
             </dependency>
           </dependencies>
           <executions>
@@ -376,7 +376,7 @@
         <plugin>
           <groupId>org.xwiki.commons</groupId>
           <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
-          <version>18.1.0-SNAPSHOT</version>
+          <version>18.1.0-rc-1</version>
           <configuration>
             <!-- Add missing license headers by default -->
             <formatLicense>true</formatLicense>
@@ -399,7 +399,7 @@
             <dependency>
               <groupId>org.xwiki.commons</groupId>
               <artifactId>xwiki-commons-tool-archiver</artifactId>
-              <version>18.1.0-SNAPSHOT</version>
+              <version>18.1.0-rc-1</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -411,7 +411,7 @@
             <dependency>
               <groupId>org.xwiki.commons</groupId>
               <artifactId>xwiki-commons-tool-archiver</artifactId>
-              <version>18.1.0-SNAPSHOT</version>
+              <version>18.1.0-rc-1</version>
             </dependency>
           </dependencies>
         </plugin>
