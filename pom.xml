@@ -176,7 +176,7 @@
 
     <!-- Infinispan and Protostream -->
     <protostream.version>5.0.15.Final</protostream.version>
-    <infinispan.version>15.2.6.Final</infinispan.version>
+    <infinispan.version>16.1.0.Dev02</infinispan.version>
 
     <!-- AWS SDK -->
     <aws.java.sdk.version>2.41.23</aws.java.sdk.version>
