@@ -53,7 +53,7 @@ public class DefaultNamespaceValidator implements NamespaceValidator
     static {
         ROOT_NAMESPACES.add("{root}");
         ROOT_NAMESPACES.add("{}");
-    };
+    }
 
     @Inject
     @Named("context")
