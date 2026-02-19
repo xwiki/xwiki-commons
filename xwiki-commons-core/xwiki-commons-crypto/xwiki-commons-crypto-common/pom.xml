@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-crypto</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>16.10.17-SNAPSHOT</version>
+    <version>16.10.17</version>
   </parent>
   <artifactId>xwiki-commons-crypto-common</artifactId>
   <packaging>jar</packaging>
