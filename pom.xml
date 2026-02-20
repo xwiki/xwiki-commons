@@ -124,7 +124,7 @@
     <!-- JUnit -->
     <junit.version>4.13.2</junit.version>
     <junit5.version>5.14.3</junit5.version>
-    <junit.platform.version>1.14.3</junit.platform.version>
+    <junit.platform.version>6.0.3</junit.platform.version>
     <junit.vintage.version>${junit5.version}</junit.vintage.version>
 
     <!-- We are stuck with Surefire 2.22.2 because of a regression related to @RunWith-based tests.
