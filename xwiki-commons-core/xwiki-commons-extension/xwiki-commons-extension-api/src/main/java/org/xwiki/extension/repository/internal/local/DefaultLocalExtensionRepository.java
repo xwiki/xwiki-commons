@@ -22,6 +22,8 @@ package org.xwiki.extension.repository.internal.local;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -30,6 +32,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
@@ -46,6 +49,10 @@ import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepositoryException;
 import org.xwiki.extension.repository.internal.AbstractCachedExtensionRepository;
+import org.xwiki.store.blob.BlobPath;
+import org.xwiki.store.blob.BlobStore;
+import org.xwiki.store.blob.BlobStoreException;
+import org.xwiki.store.blob.BlobStoreManager;
 
 /**
  * Default implementation of {@link LocalExtensionRepository}.
@@ -59,18 +66,17 @@ import org.xwiki.extension.repository.internal.AbstractCachedExtensionRepository
 public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepository<DefaultLocalExtension>
     implements LocalExtensionRepository, Initializable
 {
+    /**
+     * The name of the blob store used to store local extensions.
+     */
+    public static final String STORE_NAME = "extension/repository";
+
     private static final String ID = "local";
 
     /**
      * Used to manipulate filesystem repository storage.
      */
     protected transient LocalExtensionStorage storage;
-
-    /**
-     * Used to get repository path.
-     */
-    @Inject
-    private transient ExtensionManagerConfiguration configuration;
 
     /**
      * The logger to log.
@@ -84,6 +90,9 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
     @Inject
     private transient ComponentManager componentManager;
 
+    @Inject
+    private transient BlobStoreManager blobStoreManager;
+
     /**
      * Make the repository ignore features.
      */
@@ -96,13 +105,17 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
     public void initialize() throws InitializationException
     {
         try {
-            this.storage =
-                new LocalExtensionStorage(this, this.configuration.getLocalRepository(), this.componentManager);
+            BlobStore blogStore = blobStoreManager.getBlobStore(STORE_NAME);
+
+            this.storage = new LocalExtensionStorage(this, blogStore, this.componentManager);
         } catch (ComponentLookupException e) {
             throw new InitializationException("Failed to intialize local extension storage", e);
         }
 
-        setDescriptor(new DefaultExtensionRepositoryDescriptor(ID, ID, this.storage.getRootFolder().toURI()));
+        // FIXME: would be nice to have some generic URI representation for a blob. That should not be too hard to
+        // implement.
+        URI storeURI = this.storage.getBlobStore().getBlob(BlobPath.root()).getPath().toURI();
+        setDescriptor(new DefaultExtensionRepositoryDescriptor(ID, ID, storeURI));
 
         try {
             this.storage.loadExtensions();
@@ -149,13 +162,14 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
      *
      * @param extension the extension to copy
      * @return the new local extension
+     * @throws BlobStoreException if any error occurs while creating the local extension blob
      */
-    private DefaultLocalExtension createExtension(Extension extension)
+    private DefaultLocalExtension createExtension(Extension extension) throws BlobStoreException
     {
         DefaultLocalExtension localExtension = new DefaultLocalExtension(this, extension);
 
         if (StringUtils.isNotEmpty(localExtension.getType())) {
-            localExtension.setFile(this.storage.getNewExtensionFile(localExtension.getId(), localExtension.getType()));
+            localExtension.setBlob(this.storage.getNewExtensionBlob(localExtension.getId(), localExtension.getType()));
         }
 
         return localExtension;
@@ -179,9 +193,11 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
                 // Store the extension file if any
                 DefaultLocalExtensionFile extensionFile = localExtension.getFile();
                 if (extensionFile != null) {
-                    File targetFile = localExtension.getFile().getFile();
-                    InputStream is = extension.getFile().openStream();
-                    FileUtils.copyInputStreamToFile(is, targetFile);
+                    try (OutputStream outputStream = localExtension.getFile().getBlob().getOutputStream()) {
+                        try (InputStream inputStream = extension.getFile().openStream()) {
+                            IOUtils.copy(inputStream, outputStream);
+                        }
+                    }
                 }
 
                 // Store the extension descriptor

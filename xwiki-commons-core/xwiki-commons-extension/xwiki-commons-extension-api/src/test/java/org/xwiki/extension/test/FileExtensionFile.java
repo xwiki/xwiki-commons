@@ -19,25 +19,54 @@
  */
 package org.xwiki.extension.test;
 
-import java.io.UnsupportedEncodingException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.apache.commons.lang3.StringUtils;
-import org.xwiki.extension.AbstractExtension;
-import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionFile;
+import org.xwiki.extension.LocalExtensionFile;
 
-public class FileExtension extends AbstractExtension
+/**
+ * A filesystem based implementation of {@link LocalExtensionFile}.
+ *
+ * @version $Id$
+ * @since 18.2.0RC1
+ */
+public class FileExtensionFile implements ExtensionFile
 {
-    FileExtension(FileExtensionRepository repository, Extension extension) throws UnsupportedEncodingException
-    {
-        super(repository, extension);
+    /**
+     * The filesystem file of the local extension.
+     */
+    private File file;
 
-        if (StringUtils.isNotEmpty(getType())) {
-            setFile(new FileExtensionFile(getFileExtensionRepository().getFile(getId(), getType())));
-        }
+    /**
+     * @param file the filesystem file of the local extension
+     */
+    public FileExtensionFile(File file)
+    {
+        this.file = file;
     }
 
-    private FileExtensionRepository getFileExtensionRepository()
+    /**
+     * @return the real file
+     */
+    public File getFile()
     {
-        return (FileExtensionRepository) getRepository();
+        return this.file;
+    }
+
+    // ExtensionFile
+
+    @Override
+    public long getLength()
+    {
+        return getFile().length();
+    }
+
+    @Override
+    public InputStream openStream() throws IOException
+    {
+        return new FileInputStream(getFile());
     }
 }
