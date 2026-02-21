@@ -130,7 +130,7 @@
     <!-- We are stuck with Surefire 2.22.2 because of a regression related to @RunWith-based tests.
          See https://jira.xwiki.org/browse/XCOMMONS-3201. -->
     <surefire.version>2.22.2</surefire.version>
-    <failsafe.version>3.5.4</failsafe.version>
+    <failsafe.version>3.5.5</failsafe.version>
 
     <!-- Mock libraries -->
     <jmock.version>2.13.1</jmock.version>
