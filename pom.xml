@@ -98,7 +98,7 @@
     <expressly.version>5.0.0</expressly.version>
 
     <!-- Jackson -->
-    <jackson.version>2.21.0</jackson.version>
+    <jackson.version>2.21.1</jackson.version>
     <jackson.databind.version>${jackson.version}</jackson.databind.version>
     <jackson.annotations.version>2.21</jackson.annotations.version>
 
