@@ -122,7 +122,7 @@ public class JobStatusSerializer
      * @param stream the stream to serialize the status to
      * @param zip whether to serialize the status as a ZIP file
      * @throws IOException when failing to serialize the status
-     * @since 18.1.0RC1
+     * @since 18.2.0RC1
      */
     public void write(JobStatus status, OutputStream stream, boolean zip) throws IOException
     {
@@ -144,7 +144,7 @@ public class JobStatusSerializer
      * @param zip {@code true} if the stream contains a ZIP file, {@code false} otherwise
      * @return the job status read from the stream
      * @throws IOException when failing to read the status
-     * @since 18.1.0RC1
+     * @since 18.2.0RC1
      */
     public JobStatus read(InputStream stream, boolean zip) throws IOException
     {

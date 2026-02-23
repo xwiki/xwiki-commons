@@ -30,7 +30,7 @@ import org.xwiki.logging.tail.LoggerTail;
  * Persistent storage for job statuses. Internal role that is used by {@link DefaultPersistentJobStatusStore}.
  *
  * @version $Id$
- * @since 18.1.0RC1
+ * @since 18.2.0RC1
  */
 @Role
 public interface PersistentJobStatusStore

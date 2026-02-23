@@ -50,7 +50,7 @@ import org.xwiki.logging.tail.LoggerTail;
  * Default implementation of {@link JobStatusStore}.
  *
  * @version $Id$
- * @since 18.1.0RC1
+ * @since 18.2.0RC1
  */
 @Component
 @Singleton
