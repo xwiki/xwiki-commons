@@ -129,11 +129,11 @@ class DefaultJobStatusStoreTest
         JobStatus status = mock();
 
         when(this.cache.get(ID_STRING)).thenReturn(null);
-        when(this.persistentJobStatusStore.loadJobStatusWithLock(ID)).thenReturn(status);
+        when(this.persistentJobStatusStore.loadJobStatus(ID)).thenReturn(status);
 
         assertThat(this.store.getJobStatus(ID), sameInstance(status));
 
-        verify(this.persistentJobStatusStore).loadJobStatusWithLock(ID);
+        verify(this.persistentJobStatusStore).loadJobStatus(ID);
         verify(this.cache).set(ID_STRING, status);
     }
 
@@ -154,7 +154,7 @@ class DefaultJobStatusStoreTest
     void getJobStatusWhenLoadFailsRemovesCacheAndLogs() throws Exception
     {
         when(this.cache.get(ID_STRING)).thenReturn(null);
-        when(this.persistentJobStatusStore.loadJobStatusWithLock(ID)).thenThrow(new IOException(ERROR));
+        when(this.persistentJobStatusStore.loadJobStatus(ID)).thenThrow(new IOException(ERROR));
 
         assertNull(this.store.getJobStatus(ID));
 
@@ -167,14 +167,14 @@ class DefaultJobStatusStoreTest
     {
         this.store.remove(ID);
 
-        verify(this.persistentJobStatusStore).removeJobStatusWithLock(ID);
+        verify(this.persistentJobStatusStore).removeJobStatus(ID);
         verify(this.cache).remove(ID_STRING);
     }
 
     @Test
     void removeWhenPersistenceFailsKeepsCacheAndLogs() throws Exception
     {
-        doThrow(new IOException(ERROR)).when(this.persistentJobStatusStore).removeJobStatusWithLock(ID);
+        doThrow(new IOException(ERROR)).when(this.persistentJobStatusStore).removeJobStatus(ID);
 
         this.store.remove(ID);
 
@@ -225,7 +225,7 @@ class DefaultJobStatusStoreTest
         this.store.store(status);
 
         verify(this.cache).set(ID_STRING, status);
-        verify(this.persistentJobStatusStore).saveJobStatusWithLock(status);
+        verify(this.persistentJobStatusStore).saveJobStatus(status);
     }
 
     @Test
@@ -249,7 +249,7 @@ class DefaultJobStatusStoreTest
 
         runnableCaptor.getValue().run();
 
-        verify(this.persistentJobStatusStore).saveJobStatusWithLock(status);
+        verify(this.persistentJobStatusStore).saveJobStatus(status);
     }
 
     @Test
@@ -261,7 +261,7 @@ class DefaultJobStatusStoreTest
 
         JobStatus status = new DefaultJobStatus<>(TYPE, request, null, null, null);
 
-        doThrow(new IOException(ERROR)).when(this.persistentJobStatusStore).saveJobStatusWithLock(status);
+        doThrow(new IOException(ERROR)).when(this.persistentJobStatusStore).saveJobStatus(status);
 
         this.store.store(status);
 

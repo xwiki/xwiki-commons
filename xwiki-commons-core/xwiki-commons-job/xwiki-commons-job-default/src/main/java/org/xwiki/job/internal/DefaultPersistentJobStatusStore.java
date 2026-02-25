@@ -283,7 +283,7 @@ public class DefaultPersistentJobStatusStore implements PersistentJobStatusStore
      * @param moveToCurrent if the job status should be moved from a previous to the current location
      * @return the folder where to store the job related informations
      */
-    private File getAndMoveJobFolder(List<String> id, boolean moveToCurrent)
+    private synchronized File getAndMoveJobFolder(List<String> id, boolean moveToCurrent)
     {
         JobStatusFolderResolver currentResolver = this.folderResolvers.get(0);
 
@@ -320,7 +320,7 @@ public class DefaultPersistentJobStatusStore implements PersistentJobStatusStore
      * @param status the job status to save
      */
     @Override
-    public void saveJobStatusWithLock(JobStatus status) throws IOException
+    public void saveJobStatus(JobStatus status) throws IOException
     {
         if (!JobUtils.isSerializable(status)) {
             return;
@@ -335,13 +335,13 @@ public class DefaultPersistentJobStatusStore implements PersistentJobStatusStore
     }
 
     @Override
-    public synchronized JobStatus loadJobStatusWithLock(List<String> id) throws IOException
+    public JobStatus loadJobStatus(List<String> id) throws IOException
     {
         return loadStatus(getAndMoveJobFolder(id, true));
     }
 
     @Override
-    public void removeJobStatusWithLock(List<String> id)
+    public synchronized void removeJobStatus(List<String> id)
     {
         // Delete the job status from all possible locations to ensure that when loading it again, it indeed
         // cannot be found anymore.

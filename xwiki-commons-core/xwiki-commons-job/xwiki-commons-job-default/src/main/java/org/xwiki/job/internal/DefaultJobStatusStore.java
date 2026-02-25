@@ -138,7 +138,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
                     this.readLock.lock();
 
                     try {
-                        status = this.persistentJobStatusStore.loadJobStatusWithLock(id);
+                        status = this.persistentJobStatusStore.loadJobStatus(id);
                         this.cache.set(idString, status);
                     } catch (Exception e) {
                         this.logger.warn("Failed to load job status for id {}", id, e);
@@ -174,7 +174,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         this.writeLock.lock();
 
         try {
-            this.persistentJobStatusStore.removeJobStatusWithLock(id);
+            this.persistentJobStatusStore.removeJobStatus(id);
 
             this.cache.remove(idString);
         } catch (IOException e) {
@@ -219,7 +219,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     {
         this.writeLock.lock();
         try {
-            this.persistentJobStatusStore.saveJobStatusWithLock(status);
+            this.persistentJobStatusStore.saveJobStatus(status);
         } catch (Exception e) {
             this.logger.warn("Failed to save job status for id {}", status.getRequest().getId(), e);
         } finally {

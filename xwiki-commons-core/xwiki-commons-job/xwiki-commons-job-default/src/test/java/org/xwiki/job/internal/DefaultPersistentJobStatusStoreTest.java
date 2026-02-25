@@ -302,7 +302,7 @@ class DefaultPersistentJobStatusStoreTest
 
     private <S extends JobStatus> S getStatus() throws IOException
     {
-        return (S) this.store.loadJobStatusWithLock(ID);
+        return (S) this.store.loadJobStatus(ID);
     }
 
     private <S extends JobStatus> S storeGet(S status) throws Exception
@@ -311,7 +311,7 @@ class DefaultPersistentJobStatusStoreTest
             abstractStatus.getLoggerTail().close();
         }
 
-        this.store.saveJobStatusWithLock(status);
+        this.store.saveJobStatus(status);
 
         return getStatus();
     }
@@ -319,7 +319,7 @@ class DefaultPersistentJobStatusStoreTest
     @Test
     void jobStatusAndLogMoved() throws IOException
     {
-        JobStatus status = this.store.loadJobStatusWithLock(List.of("correct", "location"));
+        JobStatus status = this.store.loadJobStatus(List.of("correct", "location"));
         assertNotNull(status);
         LogEvent lastLogEvent = status.getLogTail().getLastLogEvent();
         assertNotNull(lastLogEvent);
@@ -338,7 +338,7 @@ class DefaultPersistentJobStatusStoreTest
     @Test
     void getJobStatusWithNullId() throws IOException
     {
-        JobStatus jobStatus = this.store.loadJobStatusWithLock(null);
+        JobStatus jobStatus = this.store.loadJobStatus(null);
 
         assertNotNull(jobStatus);
         assertNull(jobStatus.getRequest().getId());
@@ -348,13 +348,13 @@ class DefaultPersistentJobStatusStoreTest
     @Test
     void getJobStatusWithMultipleId() throws IOException
     {
-        JobStatus jobStatus = this.store.loadJobStatusWithLock(Arrays.asList("id1", "id2"));
+        JobStatus jobStatus = this.store.loadJobStatus(Arrays.asList("id1", "id2"));
 
         assertNotNull(jobStatus);
         assertEquals(Arrays.asList("id1", "id2"), jobStatus.getRequest().getId());
         assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
 
-        JobStatus secondJobStatus = this.store.loadJobStatusWithLock(Arrays.asList("id1", "id2"));
+        JobStatus secondJobStatus = this.store.loadJobStatus(Arrays.asList("id1", "id2"));
         assertEquals(jobStatus.getRequest(), secondJobStatus.getRequest());
         assertEquals(jobStatus.getState(), secondJobStatus.getState());
         assertEquals(jobStatus.getJobType(), secondJobStatus.getJobType());
@@ -363,7 +363,7 @@ class DefaultPersistentJobStatusStoreTest
     @Test
     void getJobStatusInOldPlace() throws IOException
     {
-        JobStatus jobStatus = this.store.loadJobStatusWithLock(Arrays.asList("id1", "id2", "id3"));
+        JobStatus jobStatus = this.store.loadJobStatus(Arrays.asList("id1", "id2", "id3"));
 
         assertNotNull(jobStatus);
         assertEquals(Arrays.asList("id1", "id2", "id3"), jobStatus.getRequest().getId());
@@ -373,7 +373,7 @@ class DefaultPersistentJobStatusStoreTest
     @Test
     void getJobStatusInWrongPlaceAndWithInvalidLogArgument() throws IOException
     {
-        JobStatus jobStatus = this.store.loadJobStatusWithLock(Arrays.asList("invalidlogargument"));
+        JobStatus jobStatus = this.store.loadJobStatus(Arrays.asList("invalidlogargument"));
 
         assertNotNull(jobStatus);
         assertEquals(3, jobStatus.getLog().size());
@@ -382,14 +382,14 @@ class DefaultPersistentJobStatusStoreTest
     @Test
     void getJobStatusThatDoesNotExist() throws IOException
     {
-        JobStatus jobStatus = this.store.loadJobStatusWithLock(Arrays.asList("nostatus"));
+        JobStatus jobStatus = this.store.loadJobStatus(Arrays.asList("nostatus"));
 
         assertNull(jobStatus);
 
         JobStatusSerializer mockSerializer = mock(JobStatusSerializer.class);
         ReflectionUtils.setFieldValue(this.store, "serializer", mockSerializer);
 
-        jobStatus = this.store.loadJobStatusWithLock(Arrays.asList("nostatus"));
+        jobStatus = this.store.loadJobStatus(Arrays.asList("nostatus"));
         assertNull(jobStatus);
 
         verifyNoMoreInteractions(mockSerializer);
@@ -400,27 +400,27 @@ class DefaultPersistentJobStatusStoreTest
     {
         List<String> id = null;
 
-        JobStatus jobStatus = this.store.loadJobStatusWithLock(id);
+        JobStatus jobStatus = this.store.loadJobStatus(id);
 
         assertNotNull(jobStatus);
         assertNull(jobStatus.getRequest().getId());
         assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
 
-        this.store.removeJobStatusWithLock(id);
+        this.store.removeJobStatus(id);
 
-        assertNull(this.store.loadJobStatusWithLock(id));
+        assertNull(this.store.loadJobStatus(id));
     }
 
     @Test
     void removeNotExistingJobStatus() throws IOException
     {
-        this.store.removeJobStatusWithLock(Arrays.asList("notexist"));
+        this.store.removeJobStatus(Arrays.asList("notexist"));
     }
 
     @Test
     void storeNullJobStatus() throws IOException
     {
-        this.store.saveJobStatusWithLock(null);
+        this.store.saveJobStatus(null);
     }
 
     @Test
@@ -428,7 +428,7 @@ class DefaultPersistentJobStatusStoreTest
     {
         JobStatus jobStatus = new DefaultJobStatus("type", null, null, null, null);
 
-        this.store.saveJobStatusWithLock(jobStatus);
+        this.store.saveJobStatus(jobStatus);
     }
 
     @Test
@@ -436,7 +436,7 @@ class DefaultPersistentJobStatusStoreTest
     {
         JobStatus jobStatus = new DefaultJobStatus("type", new DefaultRequest(), null, null, null);
 
-        this.store.saveJobStatusWithLock(jobStatus);
+        this.store.saveJobStatus(jobStatus);
     }
 
     @Test
@@ -447,7 +447,7 @@ class DefaultPersistentJobStatusStoreTest
 
         JobStatus jobStatus = new DefaultJobStatus<>("type", request, null, null, null);
 
-        this.store.saveJobStatusWithLock(jobStatus);
+        this.store.saveJobStatus(jobStatus);
 
         String longAName = StringUtils.repeat('a', 250);
 
@@ -463,7 +463,7 @@ class DefaultPersistentJobStatusStoreTest
 
         JobStatus jobStatus = new DefaultJobStatus<>("type", request, null, null, null);
 
-        this.store.saveJobStatusWithLock(jobStatus);
+        this.store.saveJobStatus(jobStatus);
 
         assertTrue(new File(this.storeDirectory, "3/first/&null/second/status.xml.zip").exists());
     }
@@ -476,7 +476,7 @@ class DefaultPersistentJobStatusStoreTest
 
         JobStatus jobStatus = new DefaultJobStatus<>("type", request, null, null, null);
 
-        this.store.saveJobStatusWithLock(jobStatus);
+        this.store.saveJobStatus(jobStatus);
 
         assertTrue(new File(this.storeDirectory, "3/%2E%2E/%2E/%20.%2A%2E/status.xml.zip").exists());
     }
@@ -489,7 +489,7 @@ class DefaultPersistentJobStatusStoreTest
         request.setId(id);
         JobStatus jobStatus = new UnserializableJobStatus("type", request, null, null, null);
 
-        this.store.saveJobStatusWithLock(jobStatus);
+        this.store.saveJobStatus(jobStatus);
 
         // Verify that the status hasn't been serialized, indirectly verifying that isSerializable() has been called and
         // returned true.
@@ -505,7 +505,7 @@ class DefaultPersistentJobStatusStoreTest
         request.setStatusSerialized(false);
         JobStatus jobStatus = new DefaultJobStatus("type", request, null, null, null);
 
-        this.store.saveJobStatusWithLock(jobStatus);
+        this.store.saveJobStatus(jobStatus);
 
         // Verify that the status hasn't been serialized, indirectly verifying that isSerializable() has been called and
         // returned true.
@@ -521,9 +521,9 @@ class DefaultPersistentJobStatusStoreTest
         request.setId(id);
         JobStatus jobStatus = new DefaultJobStatus("type", request, null, null, null);
 
-        this.store.saveJobStatusWithLock(jobStatus);
+        this.store.saveJobStatus(jobStatus);
 
-        JobStatus loadedJobStatus = this.store.loadJobStatusWithLock(id);
+        JobStatus loadedJobStatus = this.store.loadJobStatus(id);
         assertEquals(jobStatus.getRequest(), loadedJobStatus.getRequest());
         assertEquals(jobStatus.getState(), loadedJobStatus.getState());
         assertEquals(jobStatus.getJobType(), loadedJobStatus.getJobType());

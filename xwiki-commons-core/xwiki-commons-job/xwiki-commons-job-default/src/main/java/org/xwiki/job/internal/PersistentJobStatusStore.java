@@ -37,30 +37,33 @@ public interface PersistentJobStatusStore
 {
     /**
      * Save the job status to the persistent storage.
-     * <p>This method must be called with the write lock acquired.</p>
+     *
      * @param status the job status to save
      * @throws IOException when failing to save the job status
      */
-    void saveJobStatusWithLock(JobStatus status) throws IOException;
+    void saveJobStatus(JobStatus status) throws IOException;
 
     /**
      * Load the job status from the persistent storage.
-     * <p>This method must be called with the read lock acquired.</p>
+     *
      * @param id the id of the job
      * @return the job status
      * @throws IOException when failing to load the job status
      */
-    JobStatus loadJobStatusWithLock(List<String> id) throws IOException;
+    JobStatus loadJobStatus(List<String> id) throws IOException;
 
     /**
      * Remove the job status from the persistent storage.
-     * <p>This method must be called with the write lock acquired.</p>
+     *
      * @param id the id of the job
      * @throws IOException when failing to remove the job status
      */
-    void removeJobStatusWithLock(List<String> id) throws IOException;
+    void removeJobStatus(List<String> id) throws IOException;
 
     /**
+     * Create a {@link LoggerTail} instance for the given job. If {@code readonly} is true, this allows accessing the
+     * existing job log, otherwise, a fresh log is created.
+     *
      * @param jobId the identifier of the job
      * @param readonly true of the log is readonly
      * @return the {@link LoggerTail} instance
