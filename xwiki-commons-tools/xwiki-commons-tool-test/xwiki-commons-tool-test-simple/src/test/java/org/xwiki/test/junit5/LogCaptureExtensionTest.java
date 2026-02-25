@@ -112,6 +112,60 @@ public class LogCaptureExtensionTest
         }
     }
 
+    public static class SampleSpecificLoggerTestCase
+    {
+        private static final Logger CAPTURED_LOGGER = LoggerFactory.getLogger("org.xwiki.test.captured.Class");
+
+        private static final Logger OTHER_LOGGER = LoggerFactory.getLogger("org.xwiki.test.other.Class");
+
+        @RegisterExtension
+        private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.DEBUG, "org.xwiki.test.captured");
+
+        @Test
+        void captureLogsFromSpecifiedLoggerOnly()
+        {
+            OTHER_LOGGER.debug("not captured debug");
+            CAPTURED_LOGGER.debug("captured debug");
+            assertEquals("captured debug", this.logCapture.getMessage(0));
+            assertEquals(1, this.logCapture.size());
+        }
+
+        @Test
+        void ignoreBelowConfiguredLevelOnSpecifiedLogger()
+        {
+            CAPTURED_LOGGER.trace("not captured trace");
+            assertEquals(0, this.logCapture.size());
+        }
+    }
+
+    public static class SampleSeveralLogCaptureExtensionTestCase
+    {
+        private static final Logger CAPTURED_LOGGER = LoggerFactory.getLogger("org.xwiki.test.captured.Class");
+
+        private static final Logger OTHER_LOGGER = LoggerFactory.getLogger("org.xwiki.test.other.Class");
+
+        @RegisterExtension
+        private LogCaptureExtension globalLogCapture = new LogCaptureExtension(LogLevel.WARN);
+
+        @RegisterExtension
+        private LogCaptureExtension localLogCapture = new LogCaptureExtension(LogLevel.INFO, "org.xwiki.test.captured");
+
+        @Test
+        void captureLogsFromAllLogCaptureExtensions()
+        {
+            String warningMessage = "Globally captured warning";
+            OTHER_LOGGER.warn(warningMessage);
+            String infoMessage = "Locally captured info";
+            CAPTURED_LOGGER.info(infoMessage);
+
+            assertEquals(infoMessage, this.localLogCapture.getMessage(0));
+            assertEquals(1, this.localLogCapture.size());
+
+            assertEquals(warningMessage, this.globalLogCapture.getMessage(0));
+            assertEquals(1, this.globalLogCapture.size());
+        }
+    }
+
     @Test
     void captureLogsWhenNotStatic()
     {
@@ -136,6 +190,24 @@ public class LogCaptureExtensionTest
         assertEquals("Following messages must be asserted: [WARN: static warn before all not captured]",
             summary.getFailures().get(1).getException().getMessage());
         assertEquals(1, summary.getTestsSucceededCount());
+    }
+
+    @Test
+    void captureLogsWhenSpecificLoggerIsConfigured()
+    {
+        TestExecutionSummary summary = executeJUnit(SampleSpecificLoggerTestCase.class);
+
+        assertEquals(2, summary.getTestsSucceededCount());
+        assertEquals(0, summary.getFailures().size());
+    }
+
+    @Test
+    void captureLogsFromSeveralLogCaptureExtensions()
+    {
+        TestExecutionSummary summary = executeJUnit(SampleSeveralLogCaptureExtensionTestCase.class);
+
+        assertEquals(1, summary.getTestsSucceededCount());
+        assertEquals(0, summary.getFailures().size());
     }
 
     private TestExecutionSummary executeJUnit(Class<?> testClass)
