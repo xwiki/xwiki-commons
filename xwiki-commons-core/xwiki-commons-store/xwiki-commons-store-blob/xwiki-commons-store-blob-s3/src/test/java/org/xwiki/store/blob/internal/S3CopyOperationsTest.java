@@ -82,8 +82,11 @@ class S3CopyOperationsTest
     @MockComponent
     private S3ClientManager clientManager;
 
+    // Capture debug logs only from our own package to avoid capturing debug logs of background threads that might
+    // still be running from previously executed tests and that would interfere with assertions on the logs in this
+    // test class.
     @RegisterExtension
-    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.DEBUG);
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.DEBUG, "org.xwiki.store.blob");
 
     @Mock
     private S3BlobStore sourceStore;
