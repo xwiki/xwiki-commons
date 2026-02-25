@@ -338,6 +338,8 @@
                   <!-- Since there's no comment syntax for Maven IT tests's goal.txt file we need to exclude it -->
                   <exclude>**/it/**/goals.txt</exclude>
                   <exclude>**/goal.txt</exclude>
+                  <!-- Adding the node_modules is not needed and slows down the license plugin. -->
+                  <exclude>**/node_modules/**</exclude>
                 </excludes>
               </licenseSet>
             </licenseSets>
