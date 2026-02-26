@@ -19,12 +19,12 @@
  */
 package org.xwiki.extension.repository.internal.local;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.xwiki.extension.LocalExtensionFile;
+import org.xwiki.store.blob.Blob;
+import org.xwiki.store.blob.BlobStoreException;
 
 /**
  * Default implementation of {@link LocalExtensionFile}.
@@ -35,24 +35,26 @@ import org.xwiki.extension.LocalExtensionFile;
 public class DefaultLocalExtensionFile implements LocalExtensionFile
 {
     /**
-     * The filesystem file of the local extension.
+     * The blob holding the local extension file.
      */
-    private File file;
+    private final Blob blob;
 
     /**
-     * @param file the filesystem file of the local extension
+     * @param blob the blob holding the local extension file
+     * @since 18.2.0RC1
      */
-    public DefaultLocalExtensionFile(File file)
+    public DefaultLocalExtensionFile(Blob blob)
     {
-        this.file = file;
+        this.blob = blob;
     }
 
     /**
-     * @return the real file
+     * @return the blob holding the local extension file
+     * @since 18.2.0RC1
      */
-    public File getFile()
+    public Blob getBlob()
     {
-        return this.file;
+        return this.blob;
     }
 
     // ExtensionFile
@@ -60,13 +62,21 @@ public class DefaultLocalExtensionFile implements LocalExtensionFile
     @Override
     public long getLength()
     {
-        return getFile().length();
+        try {
+            return getBlob().getSize();
+        } catch (BlobStoreException e) {
+            throw new RuntimeException("Failed to get the size of the blob [%s]".formatted(getBlob()), e);
+        }
     }
 
     @Override
     public InputStream openStream() throws IOException
     {
-        return new FileInputStream(getFile());
+        try {
+            return getBlob().getStream();
+        } catch (BlobStoreException e) {
+            throw new IOException("Failed to open the local extension file stream", e);
+        }
     }
 
     // LocalExtensionFile
@@ -74,12 +84,16 @@ public class DefaultLocalExtensionFile implements LocalExtensionFile
     @Override
     public String getAbsolutePath()
     {
-        return getFile().getAbsolutePath();
+        // FIXME: hardly the same meaning as before, but not sure what to do...
+        // At best we can hack something by going through FileSystemBlob probably, but there is nothing we can do when
+        // the blob store an anything else than filesystem
+        return getBlob().getPath().absolute().toString();
     }
 
     @Override
     public String getName()
     {
-        return getFile().getName();
+        // FIXME: is #toString really an API here ?
+        return getBlob().getPath().getFileName().toString();
     }
 }
