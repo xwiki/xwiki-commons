@@ -21,11 +21,13 @@ package org.xwiki.job.internal;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.Lock;
 
 import javax.inject.Inject;
 
@@ -33,6 +35,7 @@ import jakarta.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
@@ -46,6 +49,8 @@ import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.JobStatusStore;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.logging.tail.LoggerTail;
+
+import com.google.common.util.concurrent.Striped;
 
 /**
  * Default implementation of {@link JobStatusStore} that handles caching and locking. The actual storage is delegated to
@@ -76,12 +81,13 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
     private Cache<JobStatus> cache;
 
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private final Striped<Lock> locks = Striped.lock(16);
 
-    private final ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
-
-    private final ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
-
+    /**
+     * Tracks in-flight writes (both sync and async) to prevent stale reads from disk during the window between cache
+     * eviction and save completion.
+     */
+    private final ConcurrentMap<String, JobStatus> pendingWrites = new ConcurrentHashMap<>();
 
     class JobStatusSerializerRunnable implements Runnable
     {
@@ -129,29 +135,40 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         JobStatus status = this.cache.get(idString);
 
         if (status == null) {
-            synchronized (this.cache) {
-                // Check again to avoid reading the same status twice. All reading happens inside the synchronized
-                // block.
+            Lock lock = this.locks.get(idString);
+            lock.lock();
+            try {
+                // Check again to avoid reading the same status twice. All reading happens inside the lock.
                 status = this.cache.get(idString);
 
                 if (status == null) {
-                    this.readLock.lock();
-
-                    try {
-                        status = this.persistentJobStatusStore.loadJobStatus(id);
+                    // Check pending writes before loading from disk to avoid reading stale data during the
+                    // window between cache eviction and save completion.
+                    status = this.pendingWrites.get(idString);
+                    if (status != null) {
                         this.cache.set(idString, status);
-                    } catch (Exception e) {
-                        this.logger.warn("Failed to load job status for id {}", id, e);
+                    } else {
+                        try {
+                            status = this.persistentJobStatusStore.loadJobStatus(id);
+                            this.cache.set(idString, computeCacheValue(status));
+                        } catch (Exception e) {
+                            this.logger.warn("Failed to load job status for id {}", id, e);
 
-                        this.cache.remove(idString);
-                    } finally {
-                        this.readLock.unlock();
+                            this.cache.remove(idString);
+                        }
                     }
                 }
+            } finally {
+                lock.unlock();
             }
         }
 
         return status == NOSTATUS ? null : status;
+    }
+
+    private static @NonNull JobStatus computeCacheValue(JobStatus status)
+    {
+        return status != null ? status : NOSTATUS;
     }
 
     @Override
@@ -171,7 +188,8 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     {
         String idString = toUniqueString(id);
 
-        this.writeLock.lock();
+        Lock lock = this.locks.get(idString);
+        lock.lock();
 
         try {
             this.persistentJobStatusStore.removeJobStatus(id);
@@ -180,7 +198,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         } catch (IOException e) {
             this.logger.warn("Failed to remove job status for id {}", id, e);
         } finally {
-            this.writeLock.unlock();
+            lock.unlock();
         }
     }
 
@@ -199,13 +217,26 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     {
         if (status != null && status.getRequest() != null && status.getRequest().getId() != null) {
             String id = toUniqueString(status.getRequest().getId());
+            boolean serializable = JobUtils.isSerializable(status);
 
-            this.logger.debug("Store status [{}] in cache", id);
+            Lock lock = this.locks.get(id);
+            lock.lock();
+            try {
+                this.logger.debug("Store status [{}] in cache", id);
 
-            this.cache.set(id, status);
+                this.cache.set(id, status);
+
+                // Track pending writes for serializable statuses to prevent stale reads from disk during the
+                // window between cache eviction and save completion.
+                if (serializable) {
+                    this.pendingWrites.put(id, status);
+                }
+            } finally {
+                lock.unlock();
+            }
 
             // Only store Serializable job status on the file system
-            if (JobUtils.isSerializable(status)) {
+            if (serializable) {
                 if (async) {
                     this.executorService.execute(new JobStatusSerializerRunnable(status));
                 } else {
@@ -217,13 +248,17 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
     protected void saveJobStatus(JobStatus status)
     {
-        this.writeLock.lock();
+        String id = toUniqueString(status.getRequest().getId());
+        Lock lock = this.locks.get(id);
+        lock.lock();
         try {
             this.persistentJobStatusStore.saveJobStatus(status);
         } catch (Exception e) {
             this.logger.warn("Failed to save job status for id {}", status.getRequest().getId(), e);
         } finally {
-            this.writeLock.unlock();
+            // Use two-arg remove to only clear our own entry, not one from a newer store() call.
+            this.pendingWrites.remove(id, status);
+            lock.unlock();
         }
     }
 }

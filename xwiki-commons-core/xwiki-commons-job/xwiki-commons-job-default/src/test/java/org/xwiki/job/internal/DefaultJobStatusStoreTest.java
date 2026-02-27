@@ -44,12 +44,13 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -117,7 +118,7 @@ class DefaultJobStatusStoreTest
 
         when(this.cache.get(ID_STRING)).thenReturn(status);
 
-        assertThat(this.store.getJobStatus(ID), sameInstance(status));
+        assertSame(status, this.store.getJobStatus(ID));
 
         verify(this.cache).get(ID_STRING);
         verifyNoInteractions(this.persistentJobStatusStore);
@@ -131,7 +132,7 @@ class DefaultJobStatusStoreTest
         when(this.cache.get(ID_STRING)).thenReturn(null);
         when(this.persistentJobStatusStore.loadJobStatus(ID)).thenReturn(status);
 
-        assertThat(this.store.getJobStatus(ID), sameInstance(status));
+        assertSame(status, this.store.getJobStatus(ID));
 
         verify(this.persistentJobStatusStore).loadJobStatus(ID);
         verify(this.cache).set(ID_STRING, status);
@@ -144,7 +145,7 @@ class DefaultJobStatusStoreTest
 
         when(this.cache.get(ID_STRING)).thenReturn(null, status);
 
-        assertThat(this.store.getJobStatus(ID), sameInstance(status));
+        assertSame(status, this.store.getJobStatus(ID));
 
         verify(this.cache, times(2)).get(ID_STRING);
         verifyNoInteractions(this.persistentJobStatusStore);
@@ -160,6 +161,46 @@ class DefaultJobStatusStoreTest
 
         verify(this.cache).remove(ID_STRING);
         assertEquals("Failed to load job status for id [id1, id2]", logCapture.getMessage(0));
+    }
+
+    @Test
+    void getJobStatusWhenLoadReturnsNullCachesSentinel() throws Exception
+    {
+        when(this.cache.get(ID_STRING)).thenReturn(null);
+        when(this.persistentJobStatusStore.loadJobStatus(ID)).thenReturn(null);
+
+        assertNull(this.store.getJobStatus(ID));
+
+        verify(this.persistentJobStatusStore).loadJobStatus(ID);
+
+        // Verify a non-null sentinel was cached to avoid repeated disk reads for missing statuses.
+        ArgumentCaptor<JobStatus> captor = ArgumentCaptor.captor();
+        verify(this.cache).set(eq(ID_STRING), captor.capture());
+        assertNotNull(captor.getValue());
+    }
+
+    @Test
+    void getJobStatusWhenPendingWriteExists() throws Exception
+    {
+        ExecutorService executor = mock();
+        ReflectionUtils.setFieldValue(this.store, "executorService", executor);
+
+        DefaultRequest request = new DefaultRequest();
+        request.setId(ID);
+        request.setStatusSerialized(true);
+
+        JobStatus status = new DefaultJobStatus<>(TYPE, request, null, null, null);
+
+        // Store async to create a pending write (executor mock won't actually run the task).
+        this.store.storeAsync(status);
+
+        // Simulate cache eviction by making get() return null.
+        when(this.cache.get(ID_STRING)).thenReturn(null);
+
+        // getJobStatus should find the pending write instead of loading from disk.
+        assertSame(status, this.store.getJobStatus(ID));
+
+        verify(this.persistentJobStatusStore, never()).loadJobStatus(any());
     }
 
     @Test
@@ -276,7 +317,7 @@ class DefaultJobStatusStoreTest
         when(this.persistentJobStatusStore.createLoggerTail(ID, readonly)).thenReturn(loggerTail);
 
         try (LoggerTail actual = this.store.createLoggerTail(ID, readonly)) {
-            assertThat(actual, sameInstance(loggerTail));
+            assertSame(loggerTail, actual);
         }
 
         verify(this.persistentJobStatusStore).createLoggerTail(ID, readonly);
