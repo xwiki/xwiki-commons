@@ -132,7 +132,7 @@
 
     <!-- Mock libraries -->
     <jmock.version>2.13.1</jmock.version>
-    <mockito.version>5.21.0</mockito.version>
+    <mockito.version>5.22.0</mockito.version>
 
     <!-- Testcontainers for integration tests -->
     <testcontainers.version>2.0.3</testcontainers.version>
