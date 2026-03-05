@@ -30,7 +30,7 @@ import jakarta.inject.Named;
 import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.namespace.NamespaceNotAllowedException;
@@ -79,7 +79,7 @@ public class DefaultNamespaceValidator implements NamespaceValidator
     private boolean isAllowed(String allowedNamespace, String namespace)
     {
         // Check if it's the same namespace
-        if (StringUtils.equals(allowedNamespace, namespace)) {
+        if (Strings.CS.equals(allowedNamespace, namespace)) {
             return true;
         }
 
