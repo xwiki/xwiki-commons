@@ -19,7 +19,6 @@
  */
 package org.xwiki.velocity.tools;
 
-import org.apache.commons.lang3.Strings;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -144,12 +143,12 @@ class StringToolTest
     @Test
     void endsWith()
     {
-        assertTrue(Strings.CS.endsWith(null, null));
-        assertFalse(Strings.CS.endsWith(null, "def"));
-        assertFalse(Strings.CS.endsWith("abcdef", null));
-        assertTrue(Strings.CS.endsWith("abcdef", "def"));
-        assertFalse(Strings.CS.endsWith("ABCDEF", "def"));
-        assertTrue(Strings.CS.endsWith("ABCDEF", ""));
+        assertTrue(StringTool.endsWith(null, null));
+        assertFalse(StringTool.endsWith(null, "def"));
+        assertFalse(StringTool.endsWith("abcdef", null));
+        assertTrue(StringTool.endsWith("abcdef", "def"));
+        assertFalse(StringTool.endsWith("ABCDEF", "def"));
+        assertTrue(StringTool.endsWith("ABCDEF", ""));
     }
 
     @Test
@@ -177,11 +176,11 @@ class StringToolTest
     @Test
     void equals()
     {
-        assertTrue(Strings.CS.equals(null, null));
-        assertFalse(Strings.CS.equals(null, "abc"));
-        assertFalse(Strings.CS.equals("abc", null));
-        assertTrue(Strings.CS.equals("abc", "abc"));
-        assertFalse(Strings.CS.equals("abc", "ABC"));
+        assertTrue(StringTool.equals(null, null));
+        assertFalse(StringTool.equals(null, "abc"));
+        assertFalse(StringTool.equals("abc", null));
+        assertTrue(StringTool.equals("abc", "abc"));
+        assertFalse(StringTool.equals("abc", "ABC"));
     }
 
     @Test
@@ -472,11 +471,11 @@ class StringToolTest
     @Test
     void startsWith()
     {
-        assertTrue(Strings.CS.startsWith(null, null));
-        assertFalse(Strings.CS.startsWith(null, "abc"));
-        assertFalse(Strings.CS.startsWith("abcdef", null));
-        assertTrue(Strings.CS.startsWith("abcdef", "abc"));
-        assertFalse(Strings.CS.startsWith("ABCDEF", "abc"));
+        assertTrue(StringTool.startsWith(null, null));
+        assertFalse(StringTool.startsWith(null, "abc"));
+        assertFalse(StringTool.startsWith("abcdef", null));
+        assertTrue(StringTool.startsWith("abcdef", "abc"));
+        assertFalse(StringTool.startsWith("ABCDEF", "abc"));
     }
 
     @Test
