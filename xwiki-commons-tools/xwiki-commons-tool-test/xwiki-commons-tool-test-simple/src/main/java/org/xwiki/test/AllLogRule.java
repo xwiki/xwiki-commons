@@ -107,7 +107,7 @@ public class AllLogRule implements TestRule
         /**
          * Setup Logback capturing.
          */
-        private void before() throws Throwable
+        private void before()
         {
             initializeLoggers();
             listAppender.start();
@@ -116,7 +116,7 @@ public class AllLogRule implements TestRule
         /**
          * Stop Logback capturing.
          */
-        private void after(boolean verify) throws Throwable
+        private void after(boolean verify) throws Exception
         {
             listAppender.stop();
             uninitializeLogger(verify);
