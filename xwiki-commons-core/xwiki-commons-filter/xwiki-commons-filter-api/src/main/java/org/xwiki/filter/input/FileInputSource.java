@@ -27,5 +27,8 @@ import java.io.File;
  */
 public interface FileInputSource extends InputSource
 {
-    public File getFile();
+    /**
+     * @return the input file.
+     */
+    File getFile();
 }

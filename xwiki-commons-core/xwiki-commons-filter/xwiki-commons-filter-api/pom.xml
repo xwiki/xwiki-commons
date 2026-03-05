@@ -89,13 +89,6 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <excludes>
-            org/xwiki/filter/input/BeanInputFilterStreamFactory.java,
-            org/xwiki/filter/input/BeanInputFilterStream.java,
-            org/xwiki/filter/input/FileInputSource.java,
-            org/xwiki/filter/input/InputSource.java,
-            org/xwiki/filter/input/InputStreamInputSource.java,
-            org/xwiki/filter/input/InputFilterStream.java,
-            org/xwiki/filter/input/InputFilterStreamFactory.java,
             org/xwiki/filter/input/ReaderInputSource.java,
             org/xwiki/filter/input/URLInputSource.java,
             org/xwiki/filter/input/DefaultByteArrayInputSource.java,

@@ -32,5 +32,10 @@ import org.xwiki.filter.FilterStreamFactory;
 @Role
 public interface InputFilterStreamFactory extends FilterStreamFactory
 {
+    /**
+     * @param properties the properties to control {@link InputFilterStream} behavior
+     * @return a new {@link InputFilterStream}
+     * @throws FilterException when failing to create a {@link InputFilterStream}
+     */
     InputFilterStream createInputFilterStream(Map<String, Object> properties) throws FilterException;
 }

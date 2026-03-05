@@ -22,10 +22,16 @@ package org.xwiki.filter.input;
 import org.xwiki.filter.FilterException;
 
 /**
+ * @param <P> the type of the properties bean
  * @version $Id$
  * @since 6.2M1
  */
 public interface BeanInputFilterStreamFactory<P> extends InputFilterStreamFactory
 {
+    /**
+     * @param properties the properties to control {@link InputFilterStream} behavior
+     * @return a new {@link InputFilterStream}
+     * @throws FilterException when failing to create a {@link InputFilterStream}
+     */
     BeanInputFilterStream<P> createInputFilterStream(P properties) throws FilterException;
 }
