@@ -34,7 +34,6 @@ import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
-import org.xwiki.text.StringUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -156,8 +155,8 @@ class Version3JobStatusFolderResolverTest
         for (String encodedElement : encodedElements) {
             assertFalse(Strings.CS.startsWith(encodedElement, "."));
             assertFalse(Strings.CS.endsWith(encodedElement, "."));
-            assertFalse(StringUtils.contains(encodedElement, "/"));
-            assertFalse(StringUtils.contains(encodedElement, "*"));
+            assertFalse(Strings.CS.contains(encodedElement, "/"));
+            assertFalse(Strings.CS.contains(encodedElement, "*"));
             assertTrue(encodedElement.length() <= 255);
         }
     }
