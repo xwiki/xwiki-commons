@@ -180,13 +180,8 @@
 
     <!--module name="FinalParameters"/-->
 
-    <!-- Avoid finalizers (this will not find violations that contain linebreaks) -->
-    <module name="RegexpSinglelineJava">
-      <property name="format" value="((public)|(protected))\s+void\s+finalize\(\s*\)"/>
-      <property name="message" value="Avoid finalizers"/>
-      <property name="ignoreComments" value="true"/>
-    </module>
-
+    <module name="NoFinalizer"/>
+    
     <module name="HiddenField">
       <property name="tokens" value="VARIABLE_DEF"/>
     </module>
