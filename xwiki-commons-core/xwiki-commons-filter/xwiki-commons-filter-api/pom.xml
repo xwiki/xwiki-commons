@@ -89,8 +89,6 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <excludes>
-            org/xwiki/filter/AbstractBeanFilterStreamFactory.java,
-            org/xwiki/filter/AbstractFilterStreamFactory.java,
             org/xwiki/filter/descriptor/DefaultFilterStreamBeanDescriptor.java,
             org/xwiki/filter/descriptor/DefaultFilterStreamBeanParameterDescriptor.java,
             org/xwiki/filter/descriptor/FilterStreamDescriptor.java,
