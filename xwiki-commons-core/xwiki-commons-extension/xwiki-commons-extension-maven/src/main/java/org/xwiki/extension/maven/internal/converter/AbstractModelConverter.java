@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -299,7 +300,7 @@ public class AbstractModelConverter<T> extends AbstractConverter<T>
 
     private String getPropertyString(Properties properties, String propertyName, boolean delete, String def)
     {
-        return StringUtils.defaultString(getProperty(properties, propertyName, delete), def);
+        return Objects.toString(getProperty(properties, propertyName, delete), def);
     }
 
     // TODO: download custom licenses content
