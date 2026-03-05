@@ -144,12 +144,12 @@ class StringToolTest
     @Test
     void endsWith()
     {
-        assertTrue(StringTool.endsWith(null, null));
-        assertFalse(StringTool.endsWith(null, "def"));
-        assertFalse(StringTool.endsWith("abcdef", null));
-        assertTrue(StringTool.endsWith("abcdef", "def"));
-        assertFalse(StringTool.endsWith("ABCDEF", "def"));
-        assertTrue(StringTool.endsWith("ABCDEF", ""));
+        assertTrue(Strings.CS.endsWith(null, null));
+        assertFalse(Strings.CS.endsWith(null, "def"));
+        assertFalse(Strings.CS.endsWith("abcdef", null));
+        assertTrue(Strings.CS.endsWith("abcdef", "def"));
+        assertFalse(Strings.CS.endsWith("ABCDEF", "def"));
+        assertTrue(Strings.CS.endsWith("ABCDEF", ""));
     }
 
     @Test
