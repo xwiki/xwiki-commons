@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.Strings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -153,7 +154,7 @@ class Version3JobStatusFolderResolverTest
         }
 
         for (String encodedElement : encodedElements) {
-            assertFalse(StringUtils.startsWith(encodedElement, "."));
+            assertFalse(Strings.CS.startsWith(encodedElement, "."));
             assertFalse(StringUtils.endsWith(encodedElement, "."));
             assertFalse(StringUtils.contains(encodedElement, "/"));
             assertFalse(StringUtils.contains(encodedElement, "*"));

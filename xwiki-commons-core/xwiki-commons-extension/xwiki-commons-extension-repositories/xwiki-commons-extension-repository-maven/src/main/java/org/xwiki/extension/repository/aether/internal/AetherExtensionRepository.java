@@ -37,6 +37,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Model;
@@ -285,7 +286,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         // stored as a map in the session configuration properties.
         Map<String, String> sessionHttpHeaders = new HashMap<>();
         for (Map.Entry<String, String> property : getDescriptor().getProperties().entrySet()) {
-            if (StringUtils.startsWith(property.getKey(), "http.headers.")) {
+            if (Strings.CS.startsWith(property.getKey(), "http.headers.")) {
                 String headerName = StringUtils.split(property.getKey(), ".", 3)[2];
                 sessionHttpHeaders.put(headerName, property.getValue());
             }

@@ -472,11 +472,11 @@ class StringToolTest
     @Test
     void startsWith()
     {
-        assertTrue(StringTool.startsWith(null, null));
-        assertFalse(StringTool.startsWith(null, "abc"));
-        assertFalse(StringTool.startsWith("abcdef", null));
-        assertTrue(StringTool.startsWith("abcdef", "abc"));
-        assertFalse(StringTool.startsWith("ABCDEF", "abc"));
+        assertTrue(Strings.CS.startsWith(null, null));
+        assertFalse(Strings.CS.startsWith(null, "abc"));
+        assertFalse(Strings.CS.startsWith("abcdef", null));
+        assertTrue(Strings.CS.startsWith("abcdef", "abc"));
+        assertFalse(Strings.CS.startsWith("ABCDEF", "abc"));
     }
 
     @Test
