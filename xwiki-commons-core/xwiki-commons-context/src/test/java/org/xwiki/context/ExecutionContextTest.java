@@ -118,7 +118,11 @@ class ExecutionContextTest
     void removeUnexistingProperty()
     {
         ExecutionContext context = new ExecutionContext();
-        context.removeProperty("doesnotexist");
+        String key = "doesnotexist";
+        assertFalse(context.hasProperty(key));
+        assertTrue(context.getProperties().isEmpty());
+        context.removeProperty(key);
+        assertTrue(context.getProperties().isEmpty());
     }
 
     @Test
@@ -139,7 +143,7 @@ class ExecutionContextTest
         context.setProperty("key", "value");
 
         ExecutionContext.DeclarationBuilder db = context.newProperty("key");
-        assertThrows(PropertyAlreadyExistsException.class, () -> db.declare());
+        assertThrows(PropertyAlreadyExistsException.class, db::declare);
     }
 
     @Test
