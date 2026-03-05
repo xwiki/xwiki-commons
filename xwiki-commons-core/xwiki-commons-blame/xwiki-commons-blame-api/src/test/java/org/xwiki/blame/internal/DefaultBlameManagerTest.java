@@ -39,12 +39,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ComponentTest
-public class DefaultBlameManagerTest
+class DefaultBlameManagerTest
 {
     /**
      * Small class simulating revision metadata;
      */
-    class Revision
+    static class Revision
     {
         private final String rev;
 
@@ -77,7 +77,7 @@ public class DefaultBlameManagerTest
         Revision rev2 = new Revision("rev2");
         Revision rev3 = new Revision("rev3");
 
-        AnnotatedContent<Revision, String> annotatedContent = blameManager.blame(null, rev3, Arrays.asList(
+        AnnotatedContent<Revision, String> annotatedContent = this.blameManager.blame(null, rev3, Arrays.asList(
             "Jackdaws love my big sphinx of quartz.",
             "Cozy lummox gives smart squid who asks for job pen.",
             "The quick red fox",
@@ -87,7 +87,7 @@ public class DefaultBlameManagerTest
         assertThat(annotatedContent.isEntirelyAnnotated(), is(false));
         assertThat(annotatedContent.getOldestRevision(), sameInstance(rev3));
 
-        annotatedContent = blameManager.blame(annotatedContent,
+        annotatedContent = this.blameManager.blame(annotatedContent,
             rev2, Arrays.asList(
                 "Cozy lummox gives smart squid who asks for job pen.",
                 "The quick red fox",
@@ -96,7 +96,7 @@ public class DefaultBlameManagerTest
         assertThat(annotatedContent.isEntirelyAnnotated(), is(false));
         assertThat(annotatedContent.getOldestRevision(), sameInstance(rev2));
 
-        annotatedContent = blameManager.blame(annotatedContent,
+        annotatedContent = this.blameManager.blame(annotatedContent,
             rev1, Arrays.asList(
                 "Cozy lummox gives smart squid who asks for job pen.",
                 "The quick brown fox",
@@ -105,7 +105,7 @@ public class DefaultBlameManagerTest
         assertThat(annotatedContent.isEntirelyAnnotated(), is(false));
         assertThat(annotatedContent.getOldestRevision(), sameInstance(rev1));
 
-        annotatedContent = blameManager.blame(annotatedContent, null, null);
+        annotatedContent = this.blameManager.blame(annotatedContent, null, null);
 
         assertThat(annotatedContent.isEntirelyAnnotated(), is(true));
         assertThat(annotatedContent.getOldestRevision(), nullValue());
@@ -138,9 +138,7 @@ public class DefaultBlameManagerTest
         assertThat(annotatedElement.getRevision(), sameInstance(rev3));
 
         assertThat(iter.hasNext(), is(false));
-        Throwable exception = assertThrows(NoSuchElementException.class, () -> {
-            iter.next();
-        });
+        Throwable exception = assertThrows(NoSuchElementException.class, iter::next);
         assertEquals("No more annotated content", exception.getMessage());
     }
 }
