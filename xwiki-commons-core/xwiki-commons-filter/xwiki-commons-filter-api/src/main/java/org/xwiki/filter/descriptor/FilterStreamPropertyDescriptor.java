@@ -23,6 +23,7 @@ import java.lang.reflect.Type;
 
 /**
  * Defines a filter property.
+ * @param <T> the type of value of the property.
  *
  * @version $Id$
  * @since 6.2M1

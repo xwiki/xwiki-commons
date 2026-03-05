@@ -25,6 +25,7 @@ import org.xwiki.properties.PropertyDescriptor;
 
 /**
  * The default implementation of {@link FilterStreamPropertyDescriptor}.
+ * @param <T> the type of value of the property.
  *
  * @version $Id$
  * @since 6.2M1
