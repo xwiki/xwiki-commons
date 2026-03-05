@@ -31,6 +31,12 @@ import org.xwiki.configuration.internal.MemoryConfigurationSource;
  */
 public class MockConfigurationSource extends MemoryConfigurationSource
 {
+    /**
+     * Create a component descriptor for this {@link ConfigurationSource} implementation.
+     * 
+     * @param roleHint the role hint of the component to register
+     * @return the component descriptor to register
+     */
     public static DefaultComponentDescriptor<ConfigurationSource> getDescriptor(String roleHint)
     {
         DefaultComponentDescriptor<ConfigurationSource> descriptor = new DefaultComponentDescriptor<>();
