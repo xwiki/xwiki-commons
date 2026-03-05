@@ -19,6 +19,7 @@
  */
 package org.xwiki.velocity.tools;
 
+import org.apache.commons.lang3.Strings;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -176,11 +177,11 @@ class StringToolTest
     @Test
     void equals()
     {
-        assertTrue(StringTool.equals(null, null));
-        assertFalse(StringTool.equals(null, "abc"));
-        assertFalse(StringTool.equals("abc", null));
-        assertTrue(StringTool.equals("abc", "abc"));
-        assertFalse(StringTool.equals("abc", "ABC"));
+        assertTrue(Strings.CS.equals(null, null));
+        assertFalse(Strings.CS.equals(null, "abc"));
+        assertFalse(Strings.CS.equals("abc", null));
+        assertTrue(Strings.CS.equals("abc", "abc"));
+        assertFalse(Strings.CS.equals("abc", "ABC"));
     }
 
     @Test

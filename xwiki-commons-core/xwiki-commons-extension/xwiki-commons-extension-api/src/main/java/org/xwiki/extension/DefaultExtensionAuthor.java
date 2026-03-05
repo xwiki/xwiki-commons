@@ -23,7 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
@@ -106,7 +106,7 @@ public class DefaultExtensionAuthor implements ExtensionAuthor
         if (obj instanceof ExtensionAuthor) {
             ExtensionAuthor otherAuthor = (ExtensionAuthor) obj;
 
-            return StringUtils.equals(this.name, otherAuthor.getName())
+            return Strings.CS.equals(this.name, otherAuthor.getName())
                 && Objects.equals(getURLString(), otherAuthor.getURLString());
         } else {
             return false;

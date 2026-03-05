@@ -21,7 +21,7 @@ package org.xwiki.extension;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 /**
  * License of an extension.
@@ -83,7 +83,7 @@ public class ExtensionLicense
         if (obj instanceof ExtensionLicense) {
             ExtensionLicense license = (ExtensionLicense) obj;
             // No need to take care of the content, if it's the same name, it's the same license
-            return StringUtils.equals(getName(), license.getName());
+            return Strings.CS.equals(getName(), license.getName());
         }
 
         return false;

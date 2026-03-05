@@ -21,7 +21,7 @@ package org.xwiki.extension;
 
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.xwiki.text.XWikiToStringBuilder;
@@ -80,7 +80,7 @@ public abstract class AbstractExtensionScm implements ExtensionScm
 
         if (obj instanceof ExtensionScm) {
             ExtensionScm scm = (ExtensionScm) obj;
-            return StringUtils.equals(this.url, scm.getUrl()) && Objects.equals(this.connection, scm.getConnection())
+            return Strings.CS.equals(this.url, scm.getUrl()) && Objects.equals(this.connection, scm.getConnection())
                 && Objects.equals(this.developerConnection, scm.getDeveloperConnection());
         }
 

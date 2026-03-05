@@ -22,6 +22,7 @@ package org.xwiki.extension;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
@@ -98,8 +99,8 @@ public class DefaultExtensionComponent implements ExtensionComponent
         if (obj instanceof ExtensionComponent) {
             ExtensionComponent otherAuthor = (ExtensionComponent) obj;
 
-            return StringUtils.equals(getRoleType(), otherAuthor.getRoleType())
-                && StringUtils.equals(getRoleHint(), otherAuthor.getRoleHint());
+            return Strings.CS.equals(getRoleType(), otherAuthor.getRoleType())
+                && Strings.CS.equals(getRoleHint(), otherAuthor.getRoleHint());
         } else {
             return false;
         }
