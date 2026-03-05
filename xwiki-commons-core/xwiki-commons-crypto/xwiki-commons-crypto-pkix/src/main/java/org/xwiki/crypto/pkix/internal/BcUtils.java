@@ -52,6 +52,7 @@ import org.xwiki.crypto.signer.Signer;
  * @version $Id$
  * @since 5.4
  */
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public final class BcUtils
 {
     private BcUtils()
