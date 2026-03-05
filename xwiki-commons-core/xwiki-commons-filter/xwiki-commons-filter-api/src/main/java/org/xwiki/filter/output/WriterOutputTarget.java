@@ -27,5 +27,8 @@ import java.io.Writer;
  */
 public interface WriterOutputTarget extends OutputTarget
 {
+    /**
+     * @return the target writer.
+     */
     Writer getWriter();
 }

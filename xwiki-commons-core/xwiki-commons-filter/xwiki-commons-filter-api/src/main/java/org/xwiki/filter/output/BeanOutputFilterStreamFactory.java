@@ -22,6 +22,7 @@ package org.xwiki.filter.output;
 import org.xwiki.filter.FilterException;
 
 /**
+ * @param <P> the type of the properties bean
  * @version $Id$
  * @since 6.2M1
  */

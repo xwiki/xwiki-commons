@@ -27,5 +27,8 @@ import java.io.File;
  */
 public interface FileOutputTarget extends OutputTarget
 {
+    /**
+     * @return the target file.
+     */
     File getFile();
 }

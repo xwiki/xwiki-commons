@@ -28,5 +28,9 @@ import java.io.OutputStream;
  */
 public interface OutputStreamOutputTarget extends OutputTarget
 {
+    /**
+     * @return the output stream target.
+     * @throws IOException in case of problem to get the output stream.
+     */
     OutputStream getOutputStream() throws IOException;
 }
