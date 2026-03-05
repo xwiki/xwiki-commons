@@ -31,8 +31,8 @@ import org.xwiki.component.manager.ComponentLookupException;
 import static org.mockito.Mockito.mock;
 
 /**
- * Unit tests for Components should extend this class instead of using {@link MockitoComponentManagerRule} or
- * {@link org.xwiki.test.ComponentManagerRule} which should only be used for integration tests.
+ * Unit tests for Components should extend this class instead of using {@link MockitoComponentManagerRule} which should only 
+ * be used for integration tests.
  * <p>
  * To use this class, define a JUnit {@code @Rule} and pass the component implementation class that you wish to have
  * mocked for you. Then in your test code, do a lookup of your component under test and you'll get a component instance

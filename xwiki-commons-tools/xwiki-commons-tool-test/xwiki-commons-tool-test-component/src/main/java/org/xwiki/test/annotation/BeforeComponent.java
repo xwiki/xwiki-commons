@@ -28,8 +28,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Calls methods annotated with this annotation before Component registration in
- * {@link org.xwiki.test.ComponentManagerRule}.
+ * Calls methods annotated with this annotation before Component registration.
  *
  * @version $Id$
  * @since 4.3.1
