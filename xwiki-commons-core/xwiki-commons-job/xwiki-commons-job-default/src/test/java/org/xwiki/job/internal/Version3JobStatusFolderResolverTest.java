@@ -155,7 +155,7 @@ class Version3JobStatusFolderResolverTest
 
         for (String encodedElement : encodedElements) {
             assertFalse(Strings.CS.startsWith(encodedElement, "."));
-            assertFalse(StringUtils.endsWith(encodedElement, "."));
+            assertFalse(Strings.CS.endsWith(encodedElement, "."));
             assertFalse(StringUtils.contains(encodedElement, "/"));
             assertFalse(StringUtils.contains(encodedElement, "*"));
             assertTrue(encodedElement.length() <= 255);
