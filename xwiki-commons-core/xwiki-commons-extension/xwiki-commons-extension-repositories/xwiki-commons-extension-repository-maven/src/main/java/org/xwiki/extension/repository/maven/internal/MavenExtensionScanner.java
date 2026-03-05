@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -368,7 +369,7 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
         dependency.setGroupId(matcher.group(1));
         dependency.setArtifactId(matcher.group(2));
         if (matcher.group(4) != null) {
-            dependency.setClassifier(StringUtils.defaultString(matcher.group(4), ""));
+            dependency.setClassifier(Objects.toString(matcher.group(4), ""));
         }
 
         dependency.setVersion(version);
