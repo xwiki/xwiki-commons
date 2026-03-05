@@ -32,11 +32,18 @@ public abstract class AbstractBeanOutputFilterStream<P> implements BeanOutputFil
 
     protected Object filter;
 
+    /**
+     * Default empty constructor.
+     */
     public AbstractBeanOutputFilterStream()
     {
-
     }
 
+    /**
+     * Default constructor setting the properties.
+     * @param properties the properties to be set.
+     * @throws FilterException in case of problem when setting the properties.
+     */
     public AbstractBeanOutputFilterStream(P properties) throws FilterException
     {
         setProperties(properties);

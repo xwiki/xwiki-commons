@@ -32,12 +32,19 @@ public class DefaultWriterOutputTarget implements WriterOutputTarget
 
     private final boolean close;
 
+    /**
+     * Default constructor for writer that should never be closed.
+     * @param writer the wrapping writer to use.
+     */
     public DefaultWriterOutputTarget(Writer writer)
     {
         this(writer, false);
     }
 
     /**
+     * Default constructor.
+     * @param writer the wrapping writer to use
+     * @param close {@code false} if the writer should never be closed.
      * @since 9.0RC1
      */
     public DefaultWriterOutputTarget(Writer writer, boolean close)

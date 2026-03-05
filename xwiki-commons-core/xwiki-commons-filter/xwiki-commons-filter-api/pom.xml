@@ -118,14 +118,7 @@
             org/xwiki/filter/output/OutputStreamOutputTarget.java,
             org/xwiki/filter/output/OutputTarget.java,
             org/xwiki/filter/output/OutputFilterStream.java,
-            org/xwiki/filter/output/WriterOutputTarget.java,
-            org/xwiki/filter/output/AbstractBeanOutputFilterStream.java,
-            org/xwiki/filter/output/AbstractBeanOutputFilterStreamFactory.java,
-            org/xwiki/filter/output/ByteArrayOutputTarget.java,
-            org/xwiki/filter/output/DefaultFileOutputTarget.java,
-            org/xwiki/filter//output/DefaultOutputStreamOutputTarget.java,
-            org/xwiki/filter/output/DefaultWriterOutputTarget.java,
-            org/xwiki/filter/utils/FilterStreamConstants.java
+            org/xwiki/filter/output/WriterOutputTarget.java
           </excludes>
         </configuration>
       </plugin>
