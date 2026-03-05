@@ -92,7 +92,7 @@ class FindEntropyForSecureRandomProvider
     @BeforeEach
     void configure() throws Exception
     {
-        dsaGenerator = this.componentManager.getInstance(KeyPairGenerator.class, "DSA");;
+        dsaGenerator = this.componentManager.getInstance(KeyPairGenerator.class, "DSA");
         dsaParameterGenerator = this.componentManager.getInstance(KeyParametersGenerator.class, "DSA");
     }
 
