@@ -38,16 +38,18 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
  *
  * @version $Id$
  */
-public class FailingTestDebuggingTestExecutionListenerTest
+class FailingTestDebuggingTestExecutionListenerTest
 {
     @RegisterExtension
-    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO);
+    private static final LogCaptureExtension LOGCAPTURE = new LogCaptureExtension(LogLevel.INFO);
 
-    public static class SampleTestCase
+    static class SampleTestCase
     {
         @Test
+        @SuppressWarnings("java:S2699")
         void failingTest()
         {
+            // Throw an exception to verify that get information about failing tests.
             throw new RuntimeException("error");
         }
 
@@ -70,11 +72,11 @@ public class FailingTestDebuggingTestExecutionListenerTest
             assertEquals(1, summary.getFailures().size());
             assertEquals(1, summary.getTestsSucceededCount());
             assertEquals("error",
-                summary.getFailures().get(0).getException().getMessage());
-            assertEquals("---- Start of environment debugging information", this.logCapture.getMessage(0));
+                summary.getFailures().getFirst().getException().getMessage());
+            assertEquals("---- Start of environment debugging information", LOGCAPTURE.getMessage(0));
             assertEquals("---- End of environment debugging information",
-                this.logCapture.getMessage(this.logCapture.size() - 1));
-            this.logCapture.ignoreAllMessages();
+                LOGCAPTURE.getMessage(LOGCAPTURE.size() - 1));
+            LOGCAPTURE.ignoreAllMessages();
         } finally {
             System.setProperty("inCI", "false");
         }
