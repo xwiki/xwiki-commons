@@ -107,7 +107,7 @@
     <mockito.version>5.14.2</mockito.version>
 
     <!-- OpenTelemetry -->
-    <opentelemetry.version>1.59.0</opentelemetry.version>
+    <opentelemetry.version>1.60.1</opentelemetry.version>
 
     <!-- Byte Buddy -->
     <bytebuddy.version>1.18.3</bytebuddy.version>
