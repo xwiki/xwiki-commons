@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
  * Abstraction that represents an Environment (Java SE, Servlet, Portlet, etc) and provides API to access
@@ -52,15 +53,43 @@ public interface Environment
     File getPermanentDirectory();
 
     /**
-     * @param resourceName the full name of the resource to access (eg "/somefile.properties")
+     * @param resourcePath the full path of the resource to access (eg "/somefile.properties")
      * @return the resource location as a {@link URL} or null if not found
      */
-    URL getResource(String resourceName);
+    URL getResource(String resourcePath);
 
     /**
-     * @param resourceName the full name of the resource to access (eg "/somefile.properties")
+     * @param resourcePath the full path of the resource to access (eg "/somefile.properties")
      * @return the resource location as an {@link InputStream} or <code>null</code> if no resource exists at the
      *         specified name
      */
-    InputStream getResourceAsStream(String resourceName);
+    InputStream getResourceAsStream(String resourcePath);
+
+    /**
+     * @param prefixPath the resource folder from where to search for the resource
+     * @param resourcePath the path of the resource to access, relative to the prefix
+     * @return the resource location as a {@link URL}, or null if no resource with the provided path could be found (or
+     *         if the resource path is trying to access a resource outside of the specified prefix)
+     * @since 17.10.5
+     * @since 18.2.0RC1
+     */
+    @Unstable
+    default URL getResource(String prefixPath, String resourcePath)
+    {
+        return getResource(prefixPath + resourcePath);
+    }
+
+    /**
+     * @param prefixPath the resource folder from where to search for the resource
+     * @param resourcePath the path of the resource to access, relative to the prefix
+     * @return the resource content as an {@link InputStream}, or null if no resource with the provided path could be
+     *         found (or if the resource path is trying to access a resource outside of the specified prefix)
+     * @since 17.10.5
+     * @since 18.2.0RC1
+     */
+    @Unstable
+    default InputStream getResourceAsStream(String prefixPath, String resourcePath)
+    {
+        return getResourceAsStream(prefixPath + resourcePath);
+    }
 }
