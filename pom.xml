@@ -215,8 +215,6 @@
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
     <xwiki.enforcer.enforce-java.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-java.skip>
     <xwiki.enforcer.enforce-apache-http5.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-apache-http5.skip>
-    <!-- Allow Apache HttpClient 3 as transitive dependency for now because it's needed in integration tests -->
-    <xwiki.enforcer.enforce-apache-http5.searchTransitive>false</xwiki.enforcer.enforce-apache-http5.searchTransitive>
     <xwiki.license.skip>false</xwiki.license.skip>
 
     <!-- Enable by default auto release on Jira -->
@@ -1960,7 +1958,7 @@
               <skip>${xwiki.enforcer.enforce-apache-http5.skip}</skip>
               <rules>
                 <bannedDependencies>
-                  <searchTransitive>${xwiki.enforcer.enforce-apache-http5.searchTransitive}</searchTransitive>
+                  <searchTransitive>true</searchTransitive>
                   <message>Best practice is to use Apache HTTPClient 5.x</message>
                   <excludes>
                     <exclude>commons-httpclient:commons-httpclient</exclude>
