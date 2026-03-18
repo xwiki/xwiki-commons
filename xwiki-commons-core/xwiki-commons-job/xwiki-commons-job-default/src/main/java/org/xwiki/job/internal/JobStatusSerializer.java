@@ -22,6 +22,7 @@ package org.xwiki.job.internal;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
@@ -33,7 +34,6 @@ import java.nio.file.StandardCopyOption;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
@@ -61,6 +61,8 @@ public class JobStatusSerializer
 
     private static final String ZIP_EXTENSION = "zip";
 
+    private static final String STATUS_FILE_NAME = "status.xml";
+
     /**
      * Used to serialize and unserialize status.
      */
@@ -82,14 +84,14 @@ public class JobStatusSerializer
         File tempFile = File.createTempFile(file.getName(), ".tmp", parent);
 
         try (OutputStream stream = getOutputStream(tempFile, isZip(file))) {
-            if (stream instanceof ArchiveOutputStream) {
-                ((ArchiveOutputStream) stream).putArchiveEntry(new ZipArchiveEntry("status.xml"));
+            if (stream instanceof ZipArchiveOutputStream archiveOutputStream) {
+                archiveOutputStream.putArchiveEntry(new ZipArchiveEntry(STATUS_FILE_NAME));
             }
 
             write(status, stream);
 
-            if (stream instanceof ArchiveOutputStream) {
-                ((ArchiveOutputStream) stream).closeArchiveEntry();
+            if (stream instanceof ZipArchiveOutputStream archiveOutputStream) {
+                archiveOutputStream.closeArchiveEntry();
             }
         }
 
@@ -110,6 +112,52 @@ public class JobStatusSerializer
                     throw e;
                 }
             }
+        }
+    }
+
+    /**
+     * Serialize a job status to an output stream.
+     *
+     * @param status the status to serialize
+     * @param stream the stream to serialize the status to
+     * @param zip whether to serialize the status as a ZIP file
+     * @throws IOException when failing to serialize the status
+     * @since 18.2.0RC1
+     */
+    public void write(JobStatus status, OutputStream stream, boolean zip) throws IOException
+    {
+        if (zip) {
+            ZipArchiveOutputStream archiveOutputStream = new ZipArchiveOutputStream(stream);
+            archiveOutputStream.putArchiveEntry(new ZipArchiveEntry(STATUS_FILE_NAME));
+            write(status, archiveOutputStream);
+            archiveOutputStream.closeArchiveEntry();
+            archiveOutputStream.finish();
+        } else {
+            write(status, stream);
+        }
+    }
+
+    /**
+     * Reads a job status from the given stream.
+     *
+     * @param stream the stream to read from
+     * @param zip {@code true} if the stream contains a ZIP file, {@code false} otherwise
+     * @return the job status read from the stream
+     * @throws IOException when failing to read the status
+     * @since 18.2.0RC1
+     */
+    public JobStatus read(InputStream stream, boolean zip) throws IOException
+    {
+        if (zip) {
+            try (ZipArchiveInputStream archiveInputStream = new ZipArchiveInputStream(stream)) {
+                ZipArchiveEntry entry = archiveInputStream.getNextEntry();
+                if (entry == null) {
+                    throw new IOException("Missing entry in the status zip file");
+                }
+                return (JobStatus) this.xstream.fromXML(archiveInputStream);
+            }
+        } else {
+            return (JobStatus) this.xstream.fromXML(stream);
         }
     }
 
@@ -145,14 +193,7 @@ public class JobStatusSerializer
     public JobStatus read(File file) throws IOException
     {
         if (isZip(file)) {
-            try (ZipArchiveInputStream stream = new ZipArchiveInputStream(new FileInputStream(file))) {
-                ZipArchiveEntry entry = stream.getNextZipEntry();
-                if (entry == null) {
-                    throw new IOException("Missing entry in the status zip file");
-                }
-
-                return (JobStatus) this.xstream.fromXML(stream);
-            }
+            return read(new FileInputStream(file), true);
         } else {
             return (JobStatus) this.xstream.fromXML(file);
         }
