@@ -379,7 +379,7 @@ public class ServletEnvironment extends AbstractEnvironment
         try {
             realPath = getJakartaServletContext().getRealPath(normalizePath(resourcePath));
             if (resourcePath.endsWith(SLASH)) {
-                // Make sure the real path reflect the fact that the resource if a directory
+                // Make sure the real path reflect the fact that the resource is a directory
                 realPath = withTrailingSlash(realPath);
             }
         } catch (IllegalArgumentException e) {
