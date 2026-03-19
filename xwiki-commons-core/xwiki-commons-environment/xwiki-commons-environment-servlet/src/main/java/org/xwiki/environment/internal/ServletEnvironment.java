@@ -60,16 +60,22 @@ public class ServletEnvironment extends AbstractEnvironment
     /**
      * The expected path of the file used to test how the Servlet container handles URL encoded characters in resource
      * paths.
+     * @since 18.2.0RC1
+     * @since 17.10.5
      */
     static final String ENCODED_RESOURCE_PATH = "/WEB-INF/resourcecheck/a%61b";
 
     /**
      * The expected content of the file aab.
+     * @since 18.2.0RC1
+     * @since 17.10.5
      */
     static final String DECODED_RESOURCE_CONTENT = "aab";
 
     /**
      * The expected content of the file a%61b.
+     * @since 18.2.0RC1
+     * @since 17.10.5
      */
     static final String ENCODED_RESOURCE_CONTENT = "a%61b";
 
