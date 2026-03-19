@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
@@ -34,6 +36,7 @@ import org.xwiki.stability.Unstable;
  * @since 3.5M1
  */
 @Role
+@NullMarked
 public interface Environment
 {
     /**
@@ -42,6 +45,7 @@ public interface Environment
      *
      * @return a {@link File} object pointing to a directory that the application can use for storing temporary files
      */
+    @Nullable
     File getTemporaryDirectory();
 
     /**
@@ -50,12 +54,14 @@ public interface Environment
      *
      * @return a {@link File} object pointing to the root folder of the permanent directory
      */
+    @Nullable
     File getPermanentDirectory();
 
     /**
      * @param resourcePath the full path of the resource to access (eg "/somefile.properties")
      * @return the resource location as a {@link URL} or null if not found
      */
+    @Nullable
     URL getResource(String resourcePath);
 
     /**
@@ -63,6 +69,7 @@ public interface Environment
      * @return the resource location as an {@link InputStream} or <code>null</code> if no resource exists at the
      *         specified name
      */
+    @Nullable
     InputStream getResourceAsStream(String resourcePath);
 
     /**
@@ -74,6 +81,7 @@ public interface Environment
      * @since 18.2.0RC1
      */
     @Unstable
+    @Nullable
     default URL getResource(String prefixPath, String resourcePath)
     {
         return getResource(prefixPath + resourcePath);
@@ -88,6 +96,7 @@ public interface Environment
      * @since 18.2.0RC1
      */
     @Unstable
+    @Nullable
     default InputStream getResourceAsStream(String prefixPath, String resourcePath)
     {
         return getResourceAsStream(prefixPath + resourcePath);
