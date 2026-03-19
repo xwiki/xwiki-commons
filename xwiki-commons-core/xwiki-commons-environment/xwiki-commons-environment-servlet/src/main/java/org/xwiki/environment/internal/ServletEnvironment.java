@@ -320,7 +320,7 @@ public class ServletEnvironment extends AbstractEnvironment
 
     private String withLeadingSlash(String path)
     {
-        if (path != null && (path.isEmpty() || path.charAt(0) != '/')) {
+        if (path != null && !Strings.CS.startsWith(path, SLASH)) {
             return SLASH + path;
         }
 
@@ -329,16 +329,12 @@ public class ServletEnvironment extends AbstractEnvironment
 
     private String withoutLeadingSlash(String path)
     {
-        if (path != null && (!path.isEmpty() && path.charAt(0) == '/')) {
-            return path.substring(1);
-        }
-
-        return path;
+        return Strings.CS.removeStart(path, SLASH);
     }
 
     private String withTrailingSlash(String path)
     {
-        if (path != null && (path.isEmpty() || path.charAt(path.length() - 1) != '/')) {
+        if (path != null && !Strings.CS.endsWith(path, SLASH)) {
             return path + SLASH;
         }
 
