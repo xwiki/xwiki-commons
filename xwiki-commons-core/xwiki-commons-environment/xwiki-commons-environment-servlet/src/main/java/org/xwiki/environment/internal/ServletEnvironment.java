@@ -57,10 +57,20 @@ import org.xwiki.jakartabridge.servlet.JakartaServletBridge;
 @Singleton
 public class ServletEnvironment extends AbstractEnvironment
 {
+    /**
+     * The expected path of the file used to test how the Servlet container handles URL encoded characters in resource
+     * paths.
+     */
     static final String ENCODED_RESOURCE_PATH = "/WEB-INF/resourcecheck/a%61b";
 
+    /**
+     * The expected content of the file aab.
+     */
     static final String DECODED_RESOURCE_CONTENT = "aab";
 
+    /**
+     * The expected content of the file a%61b.
+     */
     static final String ENCODED_RESOURCE_CONTENT = "a%61b";
 
     private static final String LOGGER_INVALID_RESOURCE_PATH =
