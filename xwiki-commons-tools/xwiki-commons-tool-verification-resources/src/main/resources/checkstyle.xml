@@ -39,8 +39,8 @@
     <property name="fileExtensions" value="sh"/>
   </module>
 
-  <!-- We'd like to use this one but there's no option to exclude our internal packages
-  <module name="PackageHtml"/>
+  <!-- We'd like to use this one but there's no option to exclude our internal packages.
+  <module name="JavadocPackage"/>
   -->
 
   <!-- No @author tags -->
