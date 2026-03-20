@@ -49,10 +49,6 @@
     <property name="message" value="No @author tag allowed"/>
   </module>
 
-  <!-- We cannot use this rule as it fails on our license headers, considering them as copy-pastes!
-  <module name="StrictDuplicateCode"/>
-  -->
-
   <!--  We actually have a lot of incomplete translations so we can't really afford this rule
   <module name="Translation"/>
    -->
