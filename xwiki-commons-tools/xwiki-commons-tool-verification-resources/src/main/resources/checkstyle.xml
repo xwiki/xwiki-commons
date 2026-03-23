@@ -25,6 +25,17 @@
   </module>
   -->
 
+  <!-- We'd like to use this one but there's no option to exclude our internal packages.
+  <module name="JavadocPackage"/>
+  -->
+
+  <module name="LineLength">
+    <!-- @(\w+\.)+\w+::\w+\( stands for JSNI method calls: @my.package.MyClass::myMethod() -->
+    <property name="ignorePattern" value="(@version|@see|@link|^import|@(\w+\.)+\w+::\w+\()"/>
+    <property name="max" value="120"/>
+    <property name="fileExtensions" value="java"/>
+  </module>
+
   <module name="NewlineAtEndOfFile">
     <property name="fileExtensions" value="java, xml, js, css, vm"/>
   </module>
@@ -39,26 +50,17 @@
     <property name="fileExtensions" value="sh"/>
   </module>
 
-  <!-- We'd like to use this one but there's no option to exclude our internal packages.
-  <module name="JavadocPackage"/>
-  -->
-
   <!-- No @author tags -->
   <module name="RegexpSingleline">
     <property name="format" value="@author"/>
     <property name="message" value="No @author tag allowed"/>
   </module>
 
+  <module name="SuppressWarningsFilter" />
+
   <!--  We actually have a lot of incomplete translations so we can't really afford this rule
   <module name="Translation"/>
    -->
-
-  <module name="LineLength">
-    <!-- @(\w+\.)+\w+::\w+\( stands for JSNI method calls: @my.package.MyClass::myMethod() -->
-    <property name="ignorePattern" value="(@version|@see|@link|^import|@(\w+\.)+\w+::\w+\()"/>
-    <property name="max" value="120"/>
-    <property name="fileExtensions" value="java"/>
-  </module>
 
   <!--
      ======================================================================================
@@ -66,20 +68,6 @@
      ======================================================================================
   -->
   <module name="TreeWalker">
-
-    <module name="SuppressWarningsHolder" />
-
-    <module name="SuppressWithNearbyCommentFilter">
-      <property name="commentFormat" value="CHECKSTYLE:(\w+)"/>
-      <property name="checkFormat" value="$1"/>
-      <property name="influenceFormat" value="1"/>
-    </module>
-
-    <module name="SuppressWithNearbyCommentFilter">
-      <property name="commentFormat" value="CHECKSTYLE:(\w+)\((\d+)\)"/>
-      <property name="checkFormat" value="$1"/>
-      <property name="influenceFormat" value="$2"/>
-    </module>
 
     <!-- Note: for some checks we have defined a warning severity instead of the default error
          severity. This is because we'd like to make the build fail on error for those checks
@@ -176,8 +164,6 @@
 
     <!--module name="FinalParameters"/-->
 
-    <module name="NoFinalizer"/>
-    
     <module name="HiddenField">
       <property name="tokens" value="VARIABLE_DEF"/>
     </module>
@@ -218,9 +204,6 @@
     <module name="JavadocMethod">
       <property name="accessModifiers" value="public"/>
     </module>
-
-    <module name="MissingJavadocMethod"/>
-    <module name="MissingJavadocType"/>
 
     <module name="JavadocStyle">
       <!-- Disabled since it's buggy, see
@@ -264,6 +247,9 @@
 
     <!--module name="MissingCtor"/-->
 
+    <module name="MissingJavadocMethod"/>
+    <module name="MissingJavadocType"/>
+
     <module name="MissingSwitchDefault"/>
 
     <module name="ModifiedControlVariable"/>
@@ -285,6 +271,8 @@
     </module>
 
     <module name="NestedTryDepth"/>
+
+    <module name="NoFinalizer"/>
 
     <module name="NoWhitespaceAfter">
       <property name="tokens" value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS"/>
@@ -353,6 +341,20 @@
 
     <module name="SuperFinalize"/>
 
+    <module name="SuppressWarningsHolder" />
+
+    <module name="SuppressWithNearbyCommentFilter">
+      <property name="commentFormat" value="CHECKSTYLE:(\w+)"/>
+      <property name="checkFormat" value="$1"/>
+      <property name="influenceFormat" value="1"/>
+    </module>
+
+    <module name="SuppressWithNearbyCommentFilter">
+      <property name="commentFormat" value="CHECKSTYLE:(\w+)\((\d+)\)"/>
+      <property name="checkFormat" value="$1"/>
+      <property name="influenceFormat" value="$2"/>
+    </module>
+
     <!--module name="ThrowsCount"-->
 
     <module name="TodoComment">
@@ -395,5 +397,4 @@
 
   </module>
 
-  <module name="SuppressWarningsFilter" />
 </module>
