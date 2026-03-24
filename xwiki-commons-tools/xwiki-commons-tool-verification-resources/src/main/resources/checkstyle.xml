@@ -415,9 +415,13 @@
       <property name="excludedClasses" value=".*Main$"/>
     </module>
 
-    <!--module name="UnnecessaryParentheses"/-->
+    <!-- Having extra parenthesis can make the code easier to read
+    <module name="UnnecessaryParentheses"/>
+    -->
 
     <module name="UnusedImports"/>
+
+    <module name="UnusedLocalVariable"/>
 
     <module name="UpperEll"/>
 
