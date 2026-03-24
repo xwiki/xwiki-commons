@@ -29,7 +29,6 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.platform.commons.util.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.xwiki.test.LogLevel;
@@ -75,6 +74,8 @@ public class LogCaptureExtension implements BeforeAllCallback, AfterAllCallback,
 
     private Level previousLevel;
 
+    private boolean previousAdditive;
+
     private int assertionPosition;
 
     private boolean isInitializedInBeforeAll;
@@ -89,7 +90,14 @@ public class LogCaptureExtension implements BeforeAllCallback, AfterAllCallback,
     }
 
     /**
-     * Captures all logs from the specified logger.
+     * Captures logs from the specified logger only, without propagating them to parent loggers.
+     * <p>
+     * Setting a {@code loggerName} intentionally isolates the logger from the rest of the logging hierarchy
+     * (i.e., it sets Logback's additivity to {@code false}). This is the key property that makes this constructor
+     * useful: it allows capturing logs at a fine-grained level (e.g., DEBUG) in a specific package without
+     * enabling that level globally or leaking those logs to a global {@link LogCaptureExtension}. As a consequence,
+     * logs emitted by the specified logger will <strong>not</strong> appear in a global
+     * {@link LogCaptureExtension} registered in the same test class.
      *
      * @param level the logging level from which to start capturing logs (for example, if {@link LogLevel#INFO} then
      *              INFO, WARN, ERROR, etc. are captured too).
@@ -242,7 +250,7 @@ public class LogCaptureExtension implements BeforeAllCallback, AfterAllCallback,
     {
         String name = this.loggerName;
 
-        if (StringUtils.isBlank(name)) {
+        if (name == null || name.isBlank()) {
             // Reinitialize completely Logback
             LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
             context.reset();
@@ -253,13 +261,14 @@ public class LogCaptureExtension implements BeforeAllCallback, AfterAllCallback,
         Logger logger = (Logger) LoggerFactory.getLogger(name);
         logger.addAppender(this.listAppender);
         this.previousLevel = logger.getLevel();
+        this.previousAdditive = logger.isAdditive();
         logger.setLevel(this.level.getLevel());
         logger.setAdditive(false);
     }
 
     private void uninitializeLogger() throws Exception
     {
-        if (StringUtils.isBlank(this.loggerName)) {
+        if (this.loggerName == null || this.loggerName.isBlank()) {
             // Reinitialize Logback (by reading its config from the logback-test.xml file in the classpath)
             LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
             context.reset();
@@ -270,7 +279,7 @@ public class LogCaptureExtension implements BeforeAllCallback, AfterAllCallback,
             Logger logger = (Logger) LoggerFactory.getLogger(this.loggerName);
             logger.detachAppender(this.listAppender);
             logger.setLevel(this.previousLevel);
-            logger.setAdditive(true);
+            logger.setAdditive(this.previousAdditive);
         }
     }
 
