@@ -1,9 +1,30 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
 <!DOCTYPE module PUBLIC
   "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
   "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
-<!-- Checkstyle properties for XWiki projects. Note that checks that should always executed and never be excluded
+<!-- Checkstyle properties for XWiki projects. Note that checks that should always execute and never be excluded
      should be moved to checkstyle-blocker.xml -->
 <module name="Checker">
 
@@ -18,14 +39,14 @@
   <module name="FileTabCharacter"/>
 
   <!-- We don't use Checkstyle's facility to check license headers since it's too limited for our needs.
-       Instead we use http://code.google.com/p/maven-license-plugin/
+       Instead, we use http://code.google.com/p/maven-license-plugin/
   <module name="Header">
     <property name="headerFile" value="${checkstyle.header.file}"/>
     <property name="ignoreLines" value="4,5,6,7"/>
   </module>
   -->
 
-  <!-- We'd like to use this one but there's no option to exclude our internal packages.
+  <!-- We'd like to use this one, but there's no option to exclude our internal packages.
   <module name="JavadocPackage"/>
   -->
 
@@ -58,7 +79,7 @@
 
   <module name="SuppressWarningsFilter" />
 
-  <!--  We actually have a lot of incomplete translations so we can't really afford this rule
+  <!--  We actually have a lot of incomplete translations, so we can't really afford this rule
   <module name="Translation"/>
    -->
 
@@ -69,8 +90,8 @@
   -->
   <module name="TreeWalker">
 
-    <!-- Note: for some checks we have defined a warning severity instead of the default error
-         severity. This is because we'd like to make the build fail on error for those checks
+    <!-- Note: for some checks we have defined a "warning" severity instead of the default error
+         severity. This is because we'd like to make the build fail on error for those checks,
          but there are errors to fix first -->
 
     <module name="AbstractClassName">
@@ -93,8 +114,8 @@
 
     <module name="BooleanExpressionComplexity"/>
 
-    <!-- This is a good metric but checkstyle doesn't allow to remove JDK's base classes
-         from the new count thus making this check unusable IMO
+    <!-- This is a good metric, but checkstyle doesn't allow to remove JDK's base classes from the count, thus making
+         this check unusable IMO
     <module name="ClassDataAbstractionCoupling"/>
     -->
 
@@ -318,8 +339,8 @@
 
     <!--module name="RequiredRegexp"/-->
 
-    <!-- Increasing the maximum number of allowed return statements, as otherwise
-         the code will simply use workarounds to hide the same amount of exit points. -->
+    <!-- Increasing the maximum number of allowed return statements, as otherwise developers will simply use workarounds
+         to hide the same number of exit points. -->
     <module name="ReturnCount">
       <property name="max" value="5"/>
       <property name="maxForVoid" value="5"/>
