@@ -77,7 +77,7 @@
     <property name="message" value="No @author tag allowed"/>
   </module>
 
-  <module name="SuppressWarningsFilter" />
+  <module name="SuppressWarningsFilter"/>
 
   <!--  We actually have a lot of incomplete translations, so we can't really afford this rule
   <module name="Translation"/>
@@ -102,7 +102,7 @@
 
     <module name="AnonInnerLength"/>
 
-    <!--module name="ArrayTrailingComma"/-->
+    <module name="ArrayTrailingComma"/>
 
     <module name="ArrayTypeStyle"/>
 
@@ -165,6 +165,8 @@
       <property name="option" value="text"/>
     </module>
 
+    <module name="EmptyCatchBlock"/>
+
     <module name="EmptyForInitializerPad"/>
 
     <module name="EmptyForIteratorPad"/>
@@ -193,6 +195,8 @@
 
     <!--module name="IllegalCatch"/-->
 
+    <module name="IllegalIdentifierName"/>
+
     <module name="IllegalImport"/>
 
     <module name="IllegalInstantiation">
@@ -220,7 +224,11 @@
 
     <module name="InnerAssignment"/>
 
-    <!--module name="InterfaceIsType"/-->
+    <module name="InterfaceIsType"/>
+
+    <module name="InvalidJavadocPosition"/>
+
+    <module name="JavadocBlockTagLocation"/>
 
     <module name="JavadocMethod">
       <property name="accessModifiers" value="public"/>
@@ -242,6 +250,8 @@
     </module>
 
     <module name="JavaNCSS"/>
+
+    <module name="LambdaParameterName"/>
 
     <module name="LeftCurly">
       <property name="option" value="nl"/>
@@ -295,13 +305,19 @@
 
     <module name="NoFinalizer"/>
 
+    <module name="NoLineWrap"/>
+
     <module name="NoWhitespaceAfter">
       <property name="tokens" value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS"/>
     </module>
 
     <module name="NoWhitespaceBefore"/>
 
+    <module name="NoWhitespaceBeforeCaseDefaultColon"/>
+
     <module name="NPathComplexity"/>
+
+    <module name="OneStatementPerLine"/>
 
     <module name="OperatorWrap"/>
 
@@ -333,9 +349,7 @@
 
     <!--module name="RegexpHeader"/-->
 
-    <!--module name="RequireThis">
-      <property name="checkMethods" value="false"/>
-    </module-->
+    <module name="RequireThis"/>
 
     <!--module name="RequiredRegexp"/-->
 
@@ -362,7 +376,7 @@
 
     <module name="SuperFinalize"/>
 
-    <module name="SuppressWarningsHolder" />
+    <module name="SuppressWarningsHolder"/>
 
     <module name="SuppressWithNearbyCommentFilter">
       <property name="commentFormat" value="CHECKSTYLE:(\w+)"/>
@@ -376,7 +390,7 @@
       <property name="influenceFormat" value="$2"/>
     </module>
 
-    <!--module name="ThrowsCount"-->
+    <module name="ThrowsCount"/>
 
     <module name="TodoComment">
       <property name="severity" value="warning"/>

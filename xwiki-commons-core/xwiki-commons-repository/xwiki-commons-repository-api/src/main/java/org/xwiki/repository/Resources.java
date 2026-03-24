@@ -25,6 +25,8 @@ package org.xwiki.repository;
  * @version $Id$
  * @since 4.2M1
  */
+// Old interface not describing a type, hard to remove for backward-compatibility reasons.
+@SuppressWarnings("checkstyle:InterfaceIsType")
 public interface Resources
 {
     /**
@@ -49,9 +51,6 @@ public interface Resources
 
     /**
      * Entry point of XWiki Repository protocol.
-     */
-    /**
-     * 
      */
     String ENTRYPOINT = "/repository";
 

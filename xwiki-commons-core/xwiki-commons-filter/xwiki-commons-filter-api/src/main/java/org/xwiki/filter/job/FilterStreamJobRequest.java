@@ -27,6 +27,8 @@ import org.xwiki.job.Request;
  * @version $Id$
  * @since 6.2M1
  */
+// Old interface not describing a type, hard to remove for backward-compatibility reasons.
+@SuppressWarnings("checkstyle:InterfaceIsType")
 public interface FilterStreamJobRequest extends Request
 {
     /**

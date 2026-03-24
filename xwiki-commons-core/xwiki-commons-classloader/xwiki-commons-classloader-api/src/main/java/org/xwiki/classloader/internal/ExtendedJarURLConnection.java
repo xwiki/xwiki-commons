@@ -121,6 +121,8 @@ public class ExtendedJarURLConnection extends JarURLConnection
                     try {
                         this.jarFile.close();
                     } catch (Exception e) {
+                        // An I/O error happened when closing.
+                        // TODO: Shouldn't we add some log to indicate that something unexpected happened?
                     }
 
                     throw new FileNotFoundException(
