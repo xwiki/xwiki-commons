@@ -106,7 +106,11 @@
 
     <module name="ArrayTypeStyle"/>
 
-    <!--module name="AvoidInlineConditionals"/-->
+    <module name="AvoidDoubleBraceInitialization"/>
+
+    <!-- We use the ternary operator and don't find it that hard to read.
+    <module name="AvoidInlineConditionals"/>
+    -->
 
     <module name="AvoidNestedBlocks"/>
 
