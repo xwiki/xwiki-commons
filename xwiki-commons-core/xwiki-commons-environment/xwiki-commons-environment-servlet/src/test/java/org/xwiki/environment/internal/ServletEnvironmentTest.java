@@ -46,7 +46,9 @@ import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheControl;
+import org.xwiki.cache.CacheException;
 import org.xwiki.cache.CacheManager;
+import org.xwiki.cache.internal.MapCache;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.environment.internal.ServletEnvironment.ResourceCacheEntry;
 import org.xwiki.test.junit5.LogCaptureExtension;
@@ -326,11 +328,12 @@ class ServletEnvironmentTest
             assertEquals(cached ? cachedURL : expectedURL, this.environment.getResource(resourceName));
 
             // Only the last call should have accessed the cache. If the cache didn't return the value, it should
-            // have been stored.
-            verify(this.cache).get(resourceName);
+            // have been stored. Plus setting the cache also check if an entry has been added in the meantime.
             if (cached) {
+                verify(this.cache).get(resourceName);
                 verify(this.cache, never()).set(any(), any());
             } else {
+                verify(this.cache, times(2)).get(resourceName);
                 verify(this.cache).set(resourceName, new ResourceCacheEntry(Optional.of(expectedURL), null));
             }
             verify(servletContext, times(cached ? 2 : 3)).getResource(resourceName);
@@ -349,6 +352,32 @@ class ServletEnvironmentTest
     {
         return isGetResource ? this.environment.getResource(prefixPath, resourcePath)
             : this.environment.getResourceAsStream(prefixPath, resourcePath);
+    }
+
+    @Test
+    void getNotExistingResource()
+    {
+        ServletContext servletContext = mock(ServletContext.class);
+        this.environment.setServletContext(servletContext);
+
+        assertNull(this.environment.getResource("prefix", "resource"));
+        assertNull(this.environment.getResource("prefix", "resource2"));
+    }
+
+    @Test
+    void getNotExistingResourceWithRealPathEnabledAndCache() throws CacheException
+    {
+        MapCache<ResourceCacheEntry> testCache = new MapCache<>();
+        when(this.cacheManager.<ResourceCacheEntry>createNewCache(any())).thenReturn(testCache);
+        this.environment.initializeCache();
+        when(this.cacheControl.isCacheReadAllowed()).thenReturn(true);
+
+        ServletContext servletContext = mock(ServletContext.class);
+        when(servletContext.getRealPath("/")).thenReturn("/real/path");
+        this.environment.setServletContext(servletContext);
+
+        assertNull(this.environment.getResource("prefix", "resource"));
+        assertNull(this.environment.getResource("prefix", "resource2"));
     }
 
     @ParameterizedTest

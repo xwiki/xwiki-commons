@@ -60,21 +60,21 @@ public class ServletEnvironment extends AbstractEnvironment
     /**
      * The expected path of the file used to test how the Servlet container handles URL encoded characters in resource
      * paths.
-     * @since 18.2.0RC1
+     * @since 18.2.0
      * @since 17.10.5
      */
     static final String ENCODED_RESOURCE_PATH = "/WEB-INF/resourcecheck/a%61b";
 
     /**
      * The expected content of the file aab.
-     * @since 18.2.0RC1
+     * @since 18.2.0
      * @since 17.10.5
      */
     static final String DECODED_RESOURCE_CONTENT = "aab";
 
     /**
      * The expected content of the file a%61b.
-     * @since 18.2.0RC1
+     * @since 18.2.0
      * @since 17.10.5
      */
     static final String ENCODED_RESOURCE_CONTENT = "a%61b";
@@ -288,10 +288,10 @@ public class ServletEnvironment extends AbstractEnvironment
         return null;
     }
 
-    private void setResourceURLToCache(String resourcePath, URL url, ResourceCacheEntry existingCacheEntry)
+    private void setResourceURLToCache(String resourcePath, URL url)
     {
         if (this.resourceURLCache != null) {
-            ResourceCacheEntry cacheEntry = existingCacheEntry;
+            ResourceCacheEntry cacheEntry = getResourceCacheEntry(resourcePath);
 
             if (cacheEntry == null) {
                 cacheEntry = new ResourceCacheEntry();
@@ -303,10 +303,10 @@ public class ServletEnvironment extends AbstractEnvironment
         }
     }
 
-    private void setResourceRealPathToCache(String resourcePath, String realPath, ResourceCacheEntry existingCacheEntry)
+    private void setResourceRealPathToCache(String resourcePath, String realPath)
     {
         if (this.resourceURLCache != null) {
-            ResourceCacheEntry cacheEntry = existingCacheEntry;
+            ResourceCacheEntry cacheEntry = getResourceCacheEntry(resourcePath);
 
             if (cacheEntry == null) {
                 cacheEntry = new ResourceCacheEntry();
@@ -367,7 +367,7 @@ public class ServletEnvironment extends AbstractEnvironment
         // Search in the cache if we already know the real path for this resource
         ResourceCacheEntry cacheEntry = getResourceCacheEntry(resourcePath);
         if (cacheEntry != null && cacheEntry.realPath != null) {
-            return cacheEntry.realPath.get();
+            return cacheEntry.realPath.orElse(null);
         }
 
         // Get the real path from the Servlet context
@@ -395,7 +395,7 @@ public class ServletEnvironment extends AbstractEnvironment
         }
 
         // Remember the real path
-        setResourceRealPathToCache(resourcePath, realPath, cacheEntry);
+        setResourceRealPathToCache(resourcePath, realPath);
 
         return realPath;
     }
@@ -508,7 +508,7 @@ public class ServletEnvironment extends AbstractEnvironment
         }
 
         // Remember the URL in the cache
-        setResourceURLToCache(normalizedFullPath, url, cacheEntry);
+        setResourceURLToCache(normalizedFullPath, url);
 
         return url;
     }

@@ -78,7 +78,7 @@ public interface Environment
      * @return the resource location as a {@link URL}, or null if no resource with the provided path could be found (or
      *         if the resource path is trying to access a resource outside of the specified prefix)
      * @since 17.10.5
-     * @since 18.2.0RC1
+     * @since 18.2.0
      */
     @Unstable
     @Nullable
@@ -93,7 +93,7 @@ public interface Environment
      * @return the resource content as an {@link InputStream}, or null if no resource with the provided path could be
      *         found (or if the resource path is trying to access a resource outside of the specified prefix)
      * @since 17.10.5
-     * @since 18.2.0RC1
+     * @since 18.2.0
      */
     @Unstable
     @Nullable
