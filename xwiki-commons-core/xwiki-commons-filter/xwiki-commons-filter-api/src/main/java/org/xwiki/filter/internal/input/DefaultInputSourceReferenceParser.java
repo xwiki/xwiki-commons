@@ -66,17 +66,17 @@ public class DefaultInputSourceReferenceParser implements InputSourceReferencePa
             String prefix = reference.substring(0, index);
             String value = reference.substring(index + 1);
 
-            if (prefix.equals("url")) {
+            if ("url".equals(prefix)) {
                 try {
                     inputSource = new DefaultURLInputSource(new URL(value));
                 } catch (Exception e) {
                     throw new ConversionException("Failed to create input source for URL [" + reference + "]", e);
                 }
-            } else if (prefix.equals("file")) {
+            } else if ("file".equals(prefix)) {
                 inputSource = new DefaultFileInputSource(new File(value));
-            } else if (prefix.equals("string")) {
+            } else if ("string".equals(prefix)) {
                 inputSource = new StringInputSource(value);
-            } else if (prefix.equals("resource")) {
+            } else if ("resource".equals(prefix)) {
                 ClassLoader classloader = Thread.currentThread().getContextClassLoader();
                 URL resource = classloader.getResource(value);
                 inputSource = new DefaultURLInputSource(resource);

@@ -216,7 +216,7 @@ public class Netflux
              * to the selected channel
              */
             onCommandLeave(user, seq, obj);
-        } else if (cmd.equals("PING")) {
+        } else if ("PING".equals(cmd)) {
             /*
              * PING: - Send an ACK
              */

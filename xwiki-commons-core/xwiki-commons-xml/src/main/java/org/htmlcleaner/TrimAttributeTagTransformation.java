@@ -60,7 +60,7 @@ public class TrimAttributeTagTransformation extends TagTransformation
 
             // we don't want to trim spaces for input value attribute
             // this is the only reason of this class existence.
-            if (!(getSourceTag().equals("input") && attrName.equals("value"))) {
+            if (!("input".equals(getSourceTag()) && "value".equals(attrName))) {
                 result.put(attrName, attrValue.trim());
             }
         }

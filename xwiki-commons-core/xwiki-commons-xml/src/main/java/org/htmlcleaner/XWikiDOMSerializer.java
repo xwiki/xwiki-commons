@@ -102,7 +102,7 @@ public class XWikiDOMSerializer extends DomSerializer
             // While the qualified name is "HTML" for some DocTypes, we want the actual document root name to be "html".
             // See bug #116
             //
-            if (qualifiedName.equals("HTML")) {
+            if ("HTML".equals(qualifiedName)) {
                 qualifiedName = HTML_QUALIFIED_NAME;
             }
             document = impl.createDocument(rootNode.getNamespaceURIOnPath(""), qualifiedName, documentType);
@@ -148,7 +148,7 @@ public class XWikiDOMSerializer extends DomSerializer
                 //
                 // Flag the attribute as an ID attribute if appropriate. Thanks to Chris173
                 //
-                if (attrName.equalsIgnoreCase("id")) {
+                if ("id".equalsIgnoreCase(attrName)) {
                     document.getDocumentElement().setIdAttribute(attrName, true);
                 }
             }
