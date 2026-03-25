@@ -512,7 +512,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
                 return previousVersionConstraint.merge(existingNode.versionConstraint);
             } catch (IncompatibleVersionConstraintException e) {
                 throw new InstallException("Dependency [" + extensionDependency
-                    + "] is incompatible with current constaint [" + existingNode.versionConstraint + "]", e);
+                    + "] is incompatible with current constraint [" + existingNode.versionConstraint + "]", e);
             }
         } else {
             throw new InstallException("Dependency [" + extensionDependency + "] incompatible with extension ["
@@ -573,7 +573,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
                         versionConstraint, true, namespace);
                 }
             } catch (IncompatibleVersionConstraintException e) {
-                throw new InstallException("Provided depency is incompatible with already installed extensions", e);
+                throw new InstallException("Provided dependency is incompatible with already installed extensions", e);
             } catch (ResolveException e) {
                 throw new InstallException("Failed to resolve backward dependencies", e);
             }
@@ -1370,7 +1370,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
         // Make sure the dependency constraint is matching the new extension feature
         if (newFeature == null || !dependency.getVersionConstraint().isCompatible(newFeature.getVersion())) {
             throw new IncompatibleVersionConstraintException(String.format(
-                "Replacing extension [%s] with [%s] would break backward dependency with extension [%s] having as constaint [%s]",
+                "Replacing extension [%s] with [%s] would break backward dependency with extension [%s] having as constraint [%s]",
                 replacedExtension.getId(), newExtension.getId(), backwardDependency.getId(), dependency));
         }
     }
