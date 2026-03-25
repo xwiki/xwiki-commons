@@ -126,6 +126,8 @@ public class ServletEnvironment extends AbstractEnvironment
 
         private Optional<String> realPath;
 
+        // As we store Optional<URL> in the cache, we can have null Optional which is unavoidable.
+        @SuppressWarnings("java:S2789")
         ResourceCacheEntry()
         {
             this.url = null;
