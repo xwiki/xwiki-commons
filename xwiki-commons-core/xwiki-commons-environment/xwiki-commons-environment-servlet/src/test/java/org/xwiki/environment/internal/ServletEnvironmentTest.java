@@ -21,7 +21,9 @@ package org.xwiki.environment.internal;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -31,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import jakarta.servlet.ServletContext;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.jupiter.api.AfterEach;
@@ -43,8 +46,11 @@ import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheControl;
+import org.xwiki.cache.CacheException;
 import org.xwiki.cache.CacheManager;
+import org.xwiki.cache.internal.MapCache;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.environment.internal.ServletEnvironment.ResourceCacheEntry;
 import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
@@ -54,6 +60,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -69,7 +76,7 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  * @since 3.5M1
  */
-@SuppressWarnings({ "checkstyle:ClassFanOutComplexity", "checkstyle:MultipleStringLiterals" })
+@SuppressWarnings({"checkstyle:ClassFanOutComplexity", "checkstyle:MultipleStringLiterals"})
 @ComponentTest
 class ServletEnvironmentTest
 {
@@ -81,7 +88,7 @@ class ServletEnvironmentTest
     private CacheManager cacheManager;
 
     @Mock
-    private Cache<Optional<URL>> cache;
+    private Cache<ResourceCacheEntry> cache;
 
     @MockComponent
     private CacheControl cacheControl;
@@ -93,7 +100,7 @@ class ServletEnvironmentTest
     private LogCaptureExtension logCapture = new LogCaptureExtension();
 
     @BeforeEach
-    public void setUp() throws Exception
+    void beforeEach() throws Exception
     {
         this.servletTmpDir = new File(System.getProperty("java.io.tmpdir"), "ServletEnvironmentTest-tmpDir");
         this.systemTmpDir = new File(System.getProperty("java.io.tmpdir"), "xwiki-temp");
@@ -102,7 +109,7 @@ class ServletEnvironmentTest
     }
 
     @AfterEach
-    public void tearDown() throws Exception
+    void afterEach()
     {
         FileUtils.deleteQuietly(this.servletTmpDir);
     }
@@ -118,22 +125,22 @@ class ServletEnvironmentTest
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = { true, false })
+    @ValueSource(booleans = {true, false})
     void getResourceOk(boolean initializeCache) throws Exception
     {
         ServletContext servletContext = mock(ServletContext.class);
         this.environment.setServletContext(servletContext);
         String resourceName = "/test";
-        when(servletContext.getResource(resourceName)).thenReturn(new URL("file:/path/../test"));
+        when(servletContext.getResource(resourceName)).thenReturn(new URI("file:/path/../test").toURL());
         if (initializeCache) {
             this.environment.initializeCache();
         }
 
-        URL expectedURL = new URL("file:/test");
+        URL expectedURL = new URI("file:/test").toURL();
         assertEquals(expectedURL, this.environment.getResource(resourceName));
         verify(servletContext).getResource(resourceName);
         if (initializeCache) {
-            verify(this.cache).set(resourceName, Optional.of(expectedURL));
+            verify(this.cache).set(resourceName, new ResourceCacheEntry(Optional.of(expectedURL), null));
             // As cache control returns false, the cache shouldn't be read.
             verify(this.cache, never()).get(any());
         } else {
@@ -142,7 +149,45 @@ class ServletEnvironmentTest
     }
 
     @Test
-    void getResourceAsStreamOk() throws Exception
+    void getResourceWithURLEncodedCharactersDecodingApplicationServer() throws MalformedURLException
+    {
+        ServletContext servletContext = mock(ServletContext.class);
+        when(servletContext.getResourceAsStream(ServletEnvironment.ENCODED_RESOURCE_PATH))
+            .thenReturn(IOUtils.toInputStream(ServletEnvironment.DECODED_RESOURCE_CONTENT, StandardCharsets.UTF_8));
+        this.environment.setServletContext(servletContext);
+
+        this.environment.getResource("a%61b");
+
+        verify(servletContext).getResource("/a%2561b");
+    }
+
+    @Test
+    void getResourceWithURLEncodedCharactersWhenSpecsApplicationServer() throws MalformedURLException
+    {
+        ServletContext servletContext = mock(ServletContext.class);
+        when(servletContext.getResourceAsStream(ServletEnvironment.ENCODED_RESOURCE_PATH))
+            .thenReturn(IOUtils.toInputStream(ServletEnvironment.ENCODED_RESOURCE_CONTENT, StandardCharsets.UTF_8));
+        this.environment.setServletContext(servletContext);
+
+        this.environment.getResource("a%61b");
+
+        verify(servletContext).getResource("/a%61b");
+    }
+
+    @Test
+    void getResourceWithURLEncodedCharactersWhenUnknownApplicationServer() throws MalformedURLException
+    {
+        ServletContext servletContext = mock(ServletContext.class);
+        when(servletContext.getResourceAsStream(ServletEnvironment.ENCODED_RESOURCE_PATH)).thenReturn(null);
+        this.environment.setServletContext(servletContext);
+
+        this.environment.getResource("a%61b");
+
+        verify(servletContext).getResource("/a%61b");
+    }
+
+    @Test
+    void getResourceAsStreamOk()
     {
         ServletContext servletContext = mock(ServletContext.class);
         this.environment.setServletContext(servletContext);
@@ -154,19 +199,19 @@ class ServletEnvironmentTest
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = { true, false })
+    @ValueSource(booleans = {true, false})
     void getResourceNotExisting(boolean initializeCache)
     {
         ServletContext servletContext = mock();
         this.environment.setServletContext(servletContext);
-        String resourceName = "unknown resource";
+        String resourceName = "/unknown resource";
         if (initializeCache) {
             this.environment.initializeCache();
         }
 
         assertNull(this.environment.getResource(resourceName));
         if (initializeCache) {
-            verify(this.cache).set(resourceName, Optional.empty());
+            verify(this.cache).set(resourceName, new ResourceCacheEntry(Optional.empty(), null));
             // As cache control returns false, the cache shouldn't be read.
             verify(this.cache, never()).get(any());
         } else {
@@ -175,21 +220,21 @@ class ServletEnvironmentTest
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = { true, false })
+    @ValueSource(booleans = {true, false})
     void getResourceWhenMalformedURLException(boolean initializeCache) throws Exception
     {
         ServletContext servletContext = mock(ServletContext.class);
-        String resourceName = "bad resource";
+        String resourceName = "/bad resource";
         when(servletContext.getResource(resourceName)).thenThrow(new MalformedURLException("invalid url"));
         this.environment.setServletContext(servletContext);
         if (initializeCache) {
             this.environment.initializeCache();
         }
         assertNull(this.environment.getResource(resourceName));
-        assertEquals("Error getting resource [bad resource] because of invalid path format. Reason: [invalid url]",
+        assertEquals("Error getting resource [/bad resource] because of invalid path format. Reason: [invalid url]",
             logCapture.getMessage(0));
         if (initializeCache) {
-            verify(this.cache).set(resourceName, Optional.empty());
+            verify(this.cache).set(resourceName, new ResourceCacheEntry(Optional.empty(), null));
             // As cache control returns false, the cache shouldn't be read.
             verify(this.cache, never()).get(any());
         } else {
@@ -200,10 +245,10 @@ class ServletEnvironmentTest
     @Test
     void getResourceNotExistingFromCache()
     {
-        String resourceName = "unknown resource";
+        String resourceName = "/unknown resource";
         this.environment.initializeCache();
         when(this.cacheControl.isCacheReadAllowed()).thenReturn(true);
-        when(this.cache.get(resourceName)).thenReturn(Optional.empty());
+        when(this.cache.get(resourceName)).thenReturn(new ResourceCacheEntry(Optional.empty(), null));
         assertNull(this.environment.getResource(resourceName));
         verify(this.cache).get(resourceName);
         verify(this.cache, never()).set(any(), any());
@@ -212,30 +257,30 @@ class ServletEnvironmentTest
     @Test
     void getResourceExistingFromCache()
     {
-        String resourceName = "known resource";
+        String resourceName = "/known resource";
         URL expectedURL = mock(URL.class);
         this.environment.initializeCache();
         when(this.cacheControl.isCacheReadAllowed()).thenReturn(true);
-        when(this.cache.get(resourceName)).thenReturn(Optional.of(expectedURL));
+        when(this.cache.get(resourceName)).thenReturn(new ResourceCacheEntry(Optional.of(expectedURL), null));
         assertEquals(expectedURL, this.environment.getResource(resourceName));
         verify(this.cache).get(resourceName);
         verify(this.cache, never()).set(any(), any());
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = { true, false })
+    @ValueSource(booleans = {true, false})
     void getResourceWithRecursiveCallInCacheInitialization(boolean cached) throws Exception
     {
         ServletContext servletContext = mock(ServletContext.class);
         String resourceName = "/resource";
-        when(servletContext.getResource(resourceName)).thenReturn(new URL("file:/path/../resource"));
+        when(servletContext.getResource(resourceName)).thenReturn(new URI("file:/path/../resource").toURL());
         this.environment.setServletContext(servletContext);
 
         when(this.cacheControl.isCacheReadAllowed()).thenReturn(true);
 
         URL cachedURL = mock();
         if (cached) {
-            when(this.cache.get(resourceName)).thenReturn(Optional.of(cachedURL));
+            when(this.cache.get(resourceName)).thenReturn(new ResourceCacheEntry(Optional.of(cachedURL), null));
         }
 
         // Two futures to synchronize the background thread that creates the cache.
@@ -257,17 +302,16 @@ class ServletEnvironmentTest
         ExecutorService executor = Executors.newFixedThreadPool(1);
 
         try {
-            CompletableFuture<Void> initializeCall =
-                CompletableFuture.supplyAsync(() -> {
-                    this.environment.initializeCache();
-                    return null;
-                }, executor);
+            CompletableFuture<Void> initializeCall = CompletableFuture.supplyAsync(() -> {
+                this.environment.initializeCache();
+                return null;
+            }, executor);
 
             // Wait for the background thread to arrive in the cache creation call (but don't wait forever just to be
             // safe).
             arrivedInCreateCacheFuture.get(20, TimeUnit.SECONDS);
 
-            URL expectedURL = new URL("file:/resource");
+            URL expectedURL = new URI("file:/resource").toURL();
             // Ensure that the cache creation doesn't block getting the resource URL.
             assertEquals(expectedURL, this.environment.getResource(resourceName));
 
@@ -278,23 +322,128 @@ class ServletEnvironmentTest
             initializeCall.get(20, TimeUnit.SECONDS);
 
             // Assert that the recursive call got the URL.
-            assertEquals(expectedURL, recursiveURL.getValue());
+            assertEquals(expectedURL, recursiveURL.get());
 
             // Assert that we now get the cached URL.
             assertEquals(cached ? cachedURL : expectedURL, this.environment.getResource(resourceName));
 
             // Only the last call should have accessed the cache. If the cache didn't return the value, it should
-            // have been stored.
-            verify(this.cache).get(resourceName);
+            // have been stored. Plus setting the cache also check if an entry has been added in the meantime.
             if (cached) {
+                verify(this.cache).get(resourceName);
                 verify(this.cache, never()).set(any(), any());
             } else {
-                verify(this.cache).set(resourceName, Optional.of(expectedURL));
+                verify(this.cache, times(2)).get(resourceName);
+                verify(this.cache).set(resourceName, new ResourceCacheEntry(Optional.of(expectedURL), null));
             }
             verify(servletContext, times(cached ? 2 : 3)).getResource(resourceName);
         } finally {
             executor.shutdownNow();
         }
+    }
+
+    private Object getResource(String resourcePath, boolean isGetResource)
+    {
+        return isGetResource ? this.environment.getResource(resourcePath)
+            : this.environment.getResourceAsStream(resourcePath);
+    }
+
+    private Object getResource(String prefixPath, String resourcePath, boolean isGetResource)
+    {
+        return isGetResource ? this.environment.getResource(prefixPath, resourcePath)
+            : this.environment.getResourceAsStream(prefixPath, resourcePath);
+    }
+
+    @Test
+    void getNotExistingResource()
+    {
+        ServletContext servletContext = mock(ServletContext.class);
+        this.environment.setServletContext(servletContext);
+
+        assertNull(this.environment.getResource("prefix", "resource"));
+        assertNull(this.environment.getResource("prefix", "resource2"));
+    }
+
+    @Test
+    void getNotExistingResourceWithRealPathEnabledAndCache() throws CacheException
+    {
+        MapCache<ResourceCacheEntry> testCache = new MapCache<>();
+        when(this.cacheManager.<ResourceCacheEntry>createNewCache(any())).thenReturn(testCache);
+        this.environment.initializeCache();
+        when(this.cacheControl.isCacheReadAllowed()).thenReturn(true);
+
+        ServletContext servletContext = mock(ServletContext.class);
+        when(servletContext.getRealPath("/")).thenReturn("/real/path");
+        this.environment.setServletContext(servletContext);
+
+        assertNull(this.environment.getResource("prefix", "resource"));
+        assertNull(this.environment.getResource("prefix", "resource2"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void getResourceWithPathTraversalWithoutRealPathSupport(boolean isGetResource) throws Exception
+    {
+        ServletContext servletContext = mock(ServletContext.class);
+        this.environment.setServletContext(servletContext);
+        verify(servletContext, times(1)).getResourceAsStream(any());
+
+        assertNull(getResource("../resource", isGetResource));
+        assertEquals("The path [/../resource] is trying to access a resource outside of the resource root.",
+            this.logCapture.getMessage(0));
+
+        assertNull(getResource("../prefix", "resource", isGetResource));
+        assertEquals("The path [/../prefix/] is trying to access a resource outside of the resource root.",
+            this.logCapture.getMessage(1));
+
+        assertNull(getResource("/prefix/", "../resource", isGetResource));
+        assertEquals(
+            "The path [/prefix/../resource] is trying to access a resource outside of the specified prefix [/prefix/].",
+            this.logCapture.getMessage(2));
+
+        // Make sure we stopped before asking for the actual resource (getResourceAsStream is called once in the init)
+        verify(servletContext, never()).getResource(any());
+        verify(servletContext, times(1)).getResourceAsStream(any());
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void getResourceWithPathTraversalWithRealPathSupport(boolean isGetResource) throws Exception
+    {
+        ServletContext servletContext = mock(ServletContext.class);
+        when(servletContext.getRealPath("/")).thenReturn("/real/path");
+        this.environment.setServletContext(servletContext);
+        this.environment.initializeCache();
+        verify(servletContext, times(1)).getResourceAsStream(any());
+
+        assertNull(getResource("invalidpath", isGetResource));
+
+        when(servletContext.getRealPath("/../resource")).thenReturn("/real/resource");
+        assertNull(getResource("../resource", isGetResource));
+        assertEquals("The path [/../resource] is trying to access a resource outside of the resource root.",
+            this.logCapture.getMessage(0));
+        verify(this.cache).set("/../resource", new ResourceCacheEntry(null, Optional.empty()));
+
+        when(servletContext.getRealPath("/../prefix/")).thenReturn("/real/prefix");
+        assertNull(getResource("../prefix", "resource", isGetResource));
+        assertEquals("The path [/../prefix/] is trying to access a resource outside of the resource root.",
+            this.logCapture.getMessage(1));
+        verify(this.cache).set("/../prefix/", new ResourceCacheEntry(null, Optional.empty()));
+
+        when(servletContext.getRealPath("/prefix/")).thenReturn("/real/path/prefix");
+        when(servletContext.getRealPath("/prefix/../resource")).thenReturn("/real/path/resource");
+        assertNull(getResource("/prefix/", "../resource", isGetResource));
+        assertEquals(
+            "The path [/prefix/../resource] is trying to access a resource outside of the specified prefix [/prefix/].",
+            this.logCapture.getMessage(2));
+        verify(this.cache).set("/prefix/", new ResourceCacheEntry(null, Optional.of("/real/path/prefix/")));
+        verify(this.cache).set("/prefix/../resource", new ResourceCacheEntry(null, Optional.of("/real/path/resource")));
+
+        // Make sure we don't cache the root real path
+        verify(this.cache, never()).set(eq("/"), any());
+        // Make sure we stopped before asking for the actual resource
+        verify(servletContext, never()).getResource(any());
+        verify(servletContext, times(1)).getResourceAsStream(any());
     }
 
     @Test
@@ -377,8 +526,7 @@ class ServletEnvironmentTest
         ServletContext servletContext = mock(ServletContext.class);
         this.environment.setServletContext(servletContext);
 
-        assertEquals(this.systemTmpDir.getCanonicalFile(),
-            this.environment.getTemporaryDirectory().getCanonicalFile());
+        assertEquals(this.systemTmpDir.getCanonicalFile(), this.environment.getTemporaryDirectory().getCanonicalFile());
 
         // Verify that servletContext.getAttribute was called (and that we returned null - this happens because we
         // didn't set any stubbing on servletContext and null is the default returned by Mockito).
