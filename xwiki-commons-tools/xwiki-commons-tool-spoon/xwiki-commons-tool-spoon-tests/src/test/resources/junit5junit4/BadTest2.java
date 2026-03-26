@@ -19,25 +19,20 @@
  */
 package org.xwiki.tool.spoon.junit5junit4;
 
-import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.Assert.assertTrue;
 
 /**
- * Test class for {@code JUnit5Junit4Processor}.
+ * Test class for {@link JUnit5JUnit4ProcessorTest}, containing a mix of JUnit4 and JUnit5 annotations.
  *
  * @version $Id$
  */
-public class BadTest1
+public class BadTest2
 {
-    @BeforeEach
-    void setup()
-    {
-        // Empty
-    }
-
     @Test
-    public void test()
+    void test()
     {
-        // Empty
+        assertTrue(true);
     }
 }
