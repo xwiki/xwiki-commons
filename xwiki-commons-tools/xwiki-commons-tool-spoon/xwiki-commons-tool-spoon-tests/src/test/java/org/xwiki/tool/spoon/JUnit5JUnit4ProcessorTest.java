@@ -47,9 +47,10 @@ class JUnit5JUnit4ProcessorTest
         launcher.addProcessor(processor);
 
         Throwable exception = assertThrows(SpoonException.class, launcher::run);
-        assertThat(exception.getMessage(), matchesPattern("\\QThe following errors were found:\\E\n"
-            + "\\Q- There's a mix of JUnit4 and JUnit5 APIs at \\E(.*BadTest1.*)\n"
-            + "\\Q- There's a mix of JUnit4 and JUnit5 APIs at \\E(.*BadTest2.*)\n"
-        ));
+        assertThat(exception.getMessage(), matchesPattern("""
+            \\QThe following errors were found:\\E
+            \\Q- There's a mix of JUnit4 and JUnit5 APIs at \\E(.*BadTest1.*)
+            \\Q- There's a mix of JUnit4 and JUnit5 APIs at \\E(.*BadTest2.*)
+            """));
     }
 }
