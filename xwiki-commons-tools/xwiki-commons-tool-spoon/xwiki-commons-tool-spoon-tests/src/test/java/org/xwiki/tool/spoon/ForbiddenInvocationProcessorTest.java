@@ -45,7 +45,7 @@ class ForbiddenInvocationProcessorTest
         Launcher launcher = new Launcher();
         launcher.getEnvironment().setNoClasspath(true);
         launcher.setArgs(new String[] {"--output-type", "nooutput"});
-        launcher.addInputResource("./src/test/resources/forbidden/");
+        launcher.addInputResource("./src/test/resources/org/xwiki/tool/spoon/forbidden/");
 
         ForbiddenInvocationProcessor processor = new ForbiddenInvocationProcessor();
         Set<String> methods = Set.of("java.io.File#deleteOnExit", "java.net.URL#equals",

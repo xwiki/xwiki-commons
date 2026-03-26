@@ -41,7 +41,7 @@ class JUnit5JUnit4ProcessorTest
         Launcher launcher = new Launcher();
         launcher.getEnvironment().setNoClasspath(true);
         launcher.setArgs(new String[] {"--output-type", "nooutput" });
-        launcher.addInputResource("./src/test/resources/junit5junit4/");
+        launcher.addInputResource("./src/test/resources/org/xwiki/tool/spoon/junit5junit4/");
 
         JUnit5JUnit4Processor processor = new JUnit5JUnit4Processor();
         launcher.addProcessor(processor);
