@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  *
  * @version $Id$
  */
-public class ForbiddenInvocationProcessorTest
+class ForbiddenInvocationProcessorTest
 {
     @Test
     void process()
@@ -45,7 +45,7 @@ public class ForbiddenInvocationProcessorTest
         Launcher launcher = new Launcher();
         launcher.getEnvironment().setNoClasspath(true);
         launcher.setArgs(new String[] {"--output-type", "nooutput"});
-        launcher.addInputResource("./src/test/java/org/xwiki/tool/spoon/forbidden/");
+        launcher.addInputResource("./src/test/resources/forbidden/");
 
         ForbiddenInvocationProcessor processor = new ForbiddenInvocationProcessor();
         Set<String> methods = Set.of("java.io.File#deleteOnExit", "java.net.URL#equals",
@@ -57,12 +57,12 @@ public class ForbiddenInvocationProcessorTest
 
         launcher.addProcessor(processor);
 
-        Throwable exception = assertThrows(SpoonException.class, () -> {
-            launcher.run();
-        });
-        assertThat(exception.getMessage(), matchesPattern("\\QThe following errors were found:\\E\n"
-            + "\\Q- Forbidden call to [java.io.File#deleteOnExit()] at \\E(.*)\n"
-            + "\\Q- Forbidden call to [java.net.URL#equals(java.lang.Object)] at \\E(.*)\n"
-            + "\\Q- Forbidden call to [java.io.File#createTempFile(java.lang.String,java.lang.String)] at \\E(.*)\n"));
+        Throwable exception = assertThrows(SpoonException.class, launcher::run);
+        assertThat(exception.getMessage(), matchesPattern("""
+            \\QThe following errors were found:\\E
+            \\Q- Forbidden call to [java.io.File#deleteOnExit()] at \\E(.*)
+            \\Q- Forbidden call to [java.net.URL#equals(java.lang.Object)] at \\E(.*)
+            \\Q- Forbidden call to [java.io.File#createTempFile(java.lang.String,java.lang.String)] at \\E(.*)
+            """));
     }
 }

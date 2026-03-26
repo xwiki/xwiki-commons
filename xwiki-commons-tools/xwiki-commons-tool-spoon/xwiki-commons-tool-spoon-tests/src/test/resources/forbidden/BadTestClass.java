@@ -23,10 +23,8 @@ import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;
 
-import org.xwiki.tool.spoon.ForbiddenInvocationProcessorTest;
-
 /**
- * Test class for {@link ForbiddenInvocationProcessorTest}.
+ * Test class for {@code ForbiddenInvocationProcessorTest}.
  *
  * @version $Id$
  */

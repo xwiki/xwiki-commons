@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 
 /**
- * Test class for {@link JUnit5JUnit4ProcessorTest}, containing a mix of JUnit4 and JUnit5 annotations.
+ * Test class for {@code JUnit5JUnit4ProcessorTest}, containing a mix of JUnit4 and JUnit5 annotations.
  *
  * @version $Id$
  */

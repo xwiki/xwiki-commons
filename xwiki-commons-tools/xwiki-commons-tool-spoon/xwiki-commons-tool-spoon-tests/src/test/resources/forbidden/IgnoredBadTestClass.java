@@ -22,10 +22,8 @@ package org.xwiki.tool.spoon.forbidden;
 import java.io.File;
 import java.net.URL;
 
-import org.xwiki.tool.spoon.ForbiddenInvocationProcessorTest;
-
 /**
- * Test class for {@link ForbiddenInvocationProcessorTest}.
+ * Test class for {@code ForbiddenInvocationProcessorTest}.
  *
  * @version $Id$
  */

@@ -19,7 +19,7 @@
  */
 package org.xwiki.tool.spoon;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @version $Id$
  * @since 12.4RC1
  */
-public class InjectAnnotationProcessorTest
+class InjectAnnotationProcessorTest
 {
     @Test
     void process()
@@ -51,20 +51,19 @@ public class InjectAnnotationProcessorTest
         InjectAnnotationProcessor processor = new InjectAnnotationProcessor();
         ProcessorProperties properties = new ProcessorPropertiesImpl();
         properties.set("excludedFieldTypes",
-            Arrays.asList("org.xwiki.tool.spoon.inject.ComponentUsageOk$ImplementationClass"));
+            List.of("org.xwiki.tool.spoon.inject.ComponentUsageOk$ImplementationClass"));
         processor.initProperties(properties);
 
         launcher.addProcessor(processor);
 
-        Throwable exception = assertThrows(SpoonException.class, () -> {
-            launcher.run();
-        });
-        assertThat(exception.getMessage(), matchesPattern("\\QThe following errors were found:\\E\n"
-            + "\\Q- You must inject a component role. Got [org.xwiki.tool.spoon.inject.ComponentImplementation] at "
-                + "\\E(.*ComponentUsageWrong.*)\n"
-            + "\\Q- You must inject a component role. Got [org.xwiki.tool.spoon.inject.ComponentAndInterface2] at "
-                + "\\E(.*ComponentUsageWrong.*)\n"
-            + "\\Q- Only fields should use the @Inject annotation. Problem at \\E(.*InjectWrongLocation.*)\n"
-        ));
+        Throwable exception = assertThrows(SpoonException.class, launcher::run);
+        assertThat(exception.getMessage(), matchesPattern("""
+            \\QThe following errors were found:\\E
+            \\Q- You must inject a component role. Got [org.xwiki.tool.spoon.inject.ComponentImplementation] at \
+            \\E(.*ComponentUsageWrong.*)
+            \\Q- You must inject a component role. Got [org.xwiki.tool.spoon.inject.ComponentAndInterface2] at \
+            \\E(.*ComponentUsageWrong.*)
+            \\Q- Only fields should use the @Inject annotation. Problem at \\E(.*InjectWrongLocation.*)
+            """));
     }
 }

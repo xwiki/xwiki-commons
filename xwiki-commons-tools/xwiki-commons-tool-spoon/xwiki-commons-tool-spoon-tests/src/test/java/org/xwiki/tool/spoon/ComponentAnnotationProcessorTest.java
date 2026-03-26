@@ -35,33 +35,37 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  *
  * @version $Id$
  */
-public class ComponentAnnotationProcessorTest
+class ComponentAnnotationProcessorTest
 {
     @Test
     void process()
     {
-        Throwable exception = assertThrows(SpoonException.class, () -> run());
-        assertThat(exception.getMessage(), matchesPattern("\\QThe following errors were found:\\E\n"
-            + "\\Q- Missing final blank line in [\\E.*\\Q]. Last character is [n].\\E\n"
-            + "\\Q- Component [org.xwiki.tool.spoon.component.ComponentAnnotationWithOverrideAndDeclared] is "
-                + "registered several times in [\\E.*\\Q]\\E\n"
-            + "\\Q- Component class [org.xwiki.tool.spoon.component.ComponentAnnotationWithoutSingletonOrInstantation"
-                + "StrategyAndDeclared] must have either one of [javax.inject.Singleton, jakarta.inject.Singleton] or the "
-                + "[org.xwiki.component.annotation.InstantiationStrategy] annotation defined on it.\\E\n"
-            + "\\Q- Component [org.xwiki.tool.spoon.component.ComponentAnnotationWithoutStaticRegistrationAndDeclared] "
-                + "is declared in [\\E.*\\Q] but it is also declared with a \"staticRegistration\" parameter with a "
-                + "[false] value, e.g. \"@Component(staticRegistration = false\". You need to fix that!\\E\n"
-            + "\\Q- Component class [org.xwiki.tool.spoon.component.ComponentAnnotationWithoutStaticRegistrationAnd"
-                + "Declared] must have either one of [javax.inject.Singleton, jakarta.inject.Singleton] or the "
-                + "[org.xwiki.component.annotation.InstantiationStrategy] annotation defined on it.\\E\n"
-            + "\\Q- Component [some.component.class.NotInThisModule1] is declared in [\\E.*\\Q] but it's missing a "
-                + "@Component declaration or its source code wasn't found in the current Maven module\\E\n"
-            + "\\Q- Component [some.component.class.NotInThisModule2] is declared in [\\E.*\\Q] but it's missing a "
-                + "@Component declaration or its source code wasn't found in the current Maven module\\E\n"
-            + "\\Q- Component [org.xwiki.tool.spoon.component.ComponentDeclaredButMissingComponentAnnotation] is "
-                + "declared in [\\E.*\\Q] but it's missing a @Component declaration or its source code wasn't found "
-                + "in the current Maven module\\E\n"
-        ));
+        Throwable exception = assertThrows(SpoonException.class, this::run);
+        assertThat(exception.getMessage(), matchesPattern("""
+            \\QThe following errors were found:\\E
+            \\Q- Missing final blank line in [\\E.*\\Q]. Last character is [n].\\E
+            \\Q- Component [org.xwiki.tool.spoon.component.ComponentAnnotationWithOverrideAndDeclared] is \
+            registered several times in [\\E.*\\Q]\\E
+            \\Q- Component class [org.xwiki.tool.spoon.component\
+            .ComponentAnnotationWithoutSingletonOrInstantationStrategyAndDeclared] must have either one of \
+            [javax.inject.Singleton, jakarta.inject.Singleton] or the \
+            [org.xwiki.component.annotation.InstantiationStrategy] annotation defined on it.\\E
+            \\Q- Component [org.xwiki.tool.spoon.component\
+            .ComponentAnnotationWithoutStaticRegistrationAndDeclared] is declared in [\\E.*\\Q] but it is \
+            also declared with a "staticRegistration" parameter with a [false] value, \
+            e.g. "@Component(staticRegistration = false". You need to fix that!\\E
+            \\Q- Component class [org.xwiki.tool.spoon.component\
+            .ComponentAnnotationWithoutStaticRegistrationAndDeclared] must have either one of \
+            [javax.inject.Singleton, jakarta.inject.Singleton] or the \
+            [org.xwiki.component.annotation.InstantiationStrategy] annotation defined on it.\\E
+            \\Q- Component [some.component.class.NotInThisModule1] is declared in [\\E.*\\Q] but it's \
+            missing a @Component declaration or its source code wasn't found in the current Maven module\\E
+            \\Q- Component [some.component.class.NotInThisModule2] is declared in [\\E.*\\Q] but it's \
+            missing a @Component declaration or its source code wasn't found in the current Maven module\\E
+            \\Q- Component [org.xwiki.tool.spoon.component.ComponentDeclaredButMissingComponentAnnotation] \
+            is declared in [\\E.*\\Q] but it's missing a @Component declaration or its source code wasn't \
+            found in the current Maven module\\E
+            """));
     }
 
     private void run()
