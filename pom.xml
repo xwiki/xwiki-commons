@@ -136,6 +136,8 @@
 
     <!-- Testcontainers for integration tests -->
     <testcontainers.version>2.0.4</testcontainers.version>
+    <!-- Docker -->
+    <dockerJava.version>3.7.1</dockerJava.version>
 
     <!-- OpenTelemetry -->
     <opentelemetry.version>1.60.1</opentelemetry.version>
@@ -1642,6 +1644,33 @@
             <artifactId>infinispan-commons-spi</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+
+      <!-- Docker -->
+      <dependency>
+        <groupId>com.github.docker-java</groupId>
+        <artifactId>docker-java-api</artifactId>
+        <version>${dockerJava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.docker-java</groupId>
+        <artifactId>docker-java</artifactId>
+        <version>${dockerJava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.docker-java</groupId>
+        <artifactId>docker-java-core</artifactId>
+        <version>${dockerJava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.docker-java</groupId>
+        <artifactId>docker-java-transport-httpclient5</artifactId>
+        <version>${dockerJava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.docker-java</groupId>
+        <artifactId>docker-java-transport-zerodep</artifactId>
+        <version>${dockerJava.version}</version>
       </dependency>
 
       <dependency>
