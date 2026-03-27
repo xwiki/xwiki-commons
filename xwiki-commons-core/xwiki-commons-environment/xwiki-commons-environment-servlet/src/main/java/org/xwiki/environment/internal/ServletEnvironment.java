@@ -28,6 +28,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -60,6 +61,7 @@ public class ServletEnvironment extends AbstractEnvironment
     /**
      * The expected path of the file used to test how the Servlet container handles URL encoded characters in resource
      * paths.
+     * 
      * @since 18.2.0
      * @since 17.10.5
      */
@@ -67,6 +69,7 @@ public class ServletEnvironment extends AbstractEnvironment
 
     /**
      * The expected content of the file aab.
+     * 
      * @since 18.2.0
      * @since 17.10.5
      */
@@ -74,6 +77,7 @@ public class ServletEnvironment extends AbstractEnvironment
 
     /**
      * The expected content of the file a%61b.
+     * 
      * @since 18.2.0
      * @since 17.10.5
      */
@@ -575,5 +579,39 @@ public class ServletEnvironment extends AbstractEnvironment
         }
 
         return tmpDirectory;
+    }
+
+    @Override
+    public Date getResourceLastModified(String resourcePath)
+    {
+        return getResourceLastModified(ROOT_PATH, resourcePath);
+    }
+
+    @Override
+    public Date getResourceLastModified(String prefixPath, String resourcePath)
+    {
+        if (this.realPathSupported) {
+            String normalizedPrefixPath = normalizePrefixPath(prefixPath);
+            String normalizedResourcePath = normalizeResourcePath(resourcePath);
+            String normalizedFullPath = normalizedPrefixPath + normalizedResourcePath;
+
+            if (isValid(normalizedPrefixPath, normalizedFullPath)) {
+                return getRealPPathLastModified(getRealPath(normalizedFullPath));
+            }
+        }
+
+        return null;
+    }
+
+    private Date getRealPPathLastModified(String realPath)
+    {
+        if (realPath != null) {
+            File resourceFile = new File(realPath);
+            if (resourceFile.exists()) {
+                return new Date(resourceFile.lastModified());
+            }
+        }
+
+        return null;
     }
 }
