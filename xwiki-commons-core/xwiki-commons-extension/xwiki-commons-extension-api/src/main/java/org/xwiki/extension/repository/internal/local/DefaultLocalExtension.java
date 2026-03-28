@@ -19,12 +19,11 @@
  */
 package org.xwiki.extension.repository.internal.local;
 
-import java.io.File;
-
 import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.LocalExtension;
+import org.xwiki.store.blob.Blob;
 
 /**
  * Default implementation of {@link LocalExtension}.
@@ -35,9 +34,9 @@ import org.xwiki.extension.LocalExtension;
 public class DefaultLocalExtension extends AbstractExtension implements LocalExtension
 {
     /**
-     * @see #getDescriptorFile()
+     * @see #getDescriptorBlob()
      */
-    private File descriptorFile;
+    private Blob descriptorBlob;
 
     /**
      * @param repository the repository where this extension comes from
@@ -63,27 +62,28 @@ public class DefaultLocalExtension extends AbstractExtension implements LocalExt
     /**
      * @return the file containing the extension description
      */
-    public File getDescriptorFile()
+    public Blob getDescriptorBlob()
     {
-        return this.descriptorFile;
+        return this.descriptorBlob;
     }
 
     /**
-     * @param descriptorFile file containing the extension description
+     * @param descriptorBlob file containing the extension description
      */
-    public void setDescriptorFile(File descriptorFile)
+    public void setDescriptorBlob(Blob descriptorBlob)
     {
-        this.descriptorFile = descriptorFile;
+        this.descriptorBlob = descriptorBlob;
     }
 
     /**
-     * @param file the extension file in the filesystem
+     * @param blob the extension file in the filesystem
      * @see #getFile()
+     * @since 18.2.0RC1
      */
-    public void setFile(File file)
+    public void setBlob(Blob blob)
     {
-        setFile(new DefaultLocalExtensionFile(file));
-        putProperty(PKEY_FILE, file);
+        setFile(new DefaultLocalExtensionFile(blob));
+        putProperty(PKEY_FILE, this.file);
     }
 
     // LocalExtension
