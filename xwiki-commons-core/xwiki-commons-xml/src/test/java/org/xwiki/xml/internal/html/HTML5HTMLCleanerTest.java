@@ -36,8 +36,10 @@ import org.xwiki.xml.html.HTMLCleanerConfiguration;
  */
 class HTML5HTMLCleanerTest extends DefaultHTMLCleanerTest
 {
-    public static final String HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        + "<!DOCTYPE html>\n";
+    public static final String HEADER = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html>
+        """;
 
     private static final String HEADER_FULL = HEADER + "<html><head></head><body>";
 

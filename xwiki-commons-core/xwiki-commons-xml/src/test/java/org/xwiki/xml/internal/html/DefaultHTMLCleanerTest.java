@@ -57,9 +57,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DefaultHTMLCleanerComponentList
 public class DefaultHTMLCleanerTest
 {
-    public static final String HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
-        + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n";
+    public static final String HEADER = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+        """;
 
     private static final String HEADER_FULL = HEADER + "<html><head></head><body>";
 
@@ -227,14 +228,23 @@ public class DefaultHTMLCleanerTest
         assertHTML("<script type=\"text/javascript\">/*<![CDATA[*/\nalert(\"Hello World\")\n/*]]>*/</script>",
             "<script type=\"text/javascript\">/*<![CDATA[*/\nalert(\"Hello World\")\n/*]]>*/</script>");
 
-        assertHTML("<script type=\"text/javascript\">/*<![CDATA[*/\n\n" + "function escapeForXML(origtext) {\n"
-            + "   return origtext.replace(/\\&/g,'&'+'amp;').replace(/</g,'&'+'lt;')\n"
-            + "       .replace(/>/g,'&'+'gt;').replace(/\'/g,'&'+'apos;').replace(/\"/g,'&'+'quot;');" + "}\n\n/*]]>*/"
-            + "</script>", "<script type=\"text/javascript\">\n" + "/*<![CDATA[*/\n"
-            + "function escapeForXML(origtext) {\n"
-            + "   return origtext.replace(/\\&/g,'&'+'amp;').replace(/</g,'&'+'lt;')\n"
-            + "       .replace(/>/g,'&'+'gt;').replace(/\'/g,'&'+'apos;').replace(/\"/g,'&'+'quot;');" + "}\n"
-            + "/*]]>*/\n" + "</script>");
+        assertHTML("""
+            <script type="text/javascript">/*<![CDATA[*/
+
+            function escapeForXML(origtext) {
+               return origtext.replace(/\\&/g,'&'+'amp;').replace(/</g,'&'+'lt;')
+                   .replace(/>/g,'&'+'gt;').replace(/'/g,'&'+'apos;').replace(/"/g,'&'+'quot;');}
+
+            /*]]>*/</script>\
+            """, """
+            <script type="text/javascript">
+            /*<![CDATA[*/
+            function escapeForXML(origtext) {
+               return origtext.replace(/\\&/g,'&'+'amp;').replace(/</g,'&'+'lt;')
+                   .replace(/>/g,'&'+'gt;').replace(/'/g,'&'+'apos;').replace(/"/g,'&'+'quot;');}
+            /*]]>*/
+            </script>\
+            """);
 
         assertHTML("<script>/*<![CDATA[*/\n<>\n/*]]>*/</script>", "<script>&lt;&gt;</script>");
         assertHTML("<script>/*<![CDATA[*/\n<>\n/*]]>*/</script>", "<script><></script>");
@@ -396,10 +406,13 @@ public class DefaultHTMLCleanerTest
     @Test
     void cleanSVGTags() throws Exception
     {
-        String input =
-            "<p>before</p>\n" + "<p><svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
-                + "<circle cx=\"100\" cy=\"50\" fill=\"red\" r=\"40\" stroke=\"black\" stroke-width=\"2\"></circle>\n"
-                + "</svg></p>\n" + "<p>after</p>\n";
+        String input = """
+            <p>before</p>
+            <p><svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+            <circle cx="100" cy="50" fill="red" r="40" stroke="black" stroke-width="2"></circle>
+            </svg></p>
+            <p>after</p>
+            """;
         assertHTML(input, getHeaderFull() + input + FOOTER);
     }
 
@@ -413,18 +426,19 @@ public class DefaultHTMLCleanerTest
     void cleanTitleWithNamespace()
     {
         // Test with TITLE in HEAD
-        String input =
-            "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en\">"
-                + "<head>\n"
-                + "    <title>Title test</title>\n"
-                + "  </head>"
-                + "<body>\n"
-                + "    <p>before</p>\n"
-                + "    <p><svg xmlns=\"http://www.w3.org/2000/svg\" height=\"300\" width=\"500\">\n"
-                + "      <g>\n"
-                + "        <title>SVG Title Demo example</title>\n"
-                + "        <rect height=\"50\" style=\"fill:none; stroke:blue; stroke-width:1px\" width=\"200\" x=\"10\" "
-                + "y=\"10\"></rect>\n" + "      </g>\n" + "    </svg></p>\n" + "    <p>after</p>\n";
+        String input = """
+            <html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head>
+                <title>Title test</title>
+              </head><body>
+                <p>before</p>
+                <p><svg xmlns="http://www.w3.org/2000/svg" height="300" width="500">
+                  <g>
+                    <title>SVG Title Demo example</title>
+                    <rect height="50" style="fill:none; stroke:blue; stroke-width:1px" width="200" x="10" y="10"></rect>
+                  </g>
+                </svg></p>
+                <p>after</p>
+            """;
         assertEquals(getHeader() + input + FOOTER,
             HTMLUtils.toString(clean(input)));
     }
