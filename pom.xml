@@ -213,6 +213,9 @@
     <xwiki.enforcer.enforce-cglib.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-cglib.skip>
     <xwiki.enforcer.enforce-jdom.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jdom.skip>
     <xwiki.enforcer.apache-groovy.skip>${xwiki.enforcer.skip}</xwiki.enforcer.apache-groovy.skip>
+    <xwiki.enforcer.enforce-jdom2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jdom2.skip>
+    <xwiki.enforcer.enforce-aopalliance.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-aopalliance.skip>
+    <xwiki.enforcer.enforce-jakarta.activation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.activation.skip>
     <xwiki.enforcer.enforce-no-old-xwiki-commons.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-no-old-xwiki-commons.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
     <xwiki.enforcer.enforce-java.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-java.skip>
