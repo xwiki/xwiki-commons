@@ -241,6 +241,18 @@
                 </item>
               </differences>
             </revapi.differences>
+            <revapi.differences>
+              <justification>The constant is still declared, but through an aspect in legacy.</justification>
+              <criticality>allowed</criticality>
+              <differences>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.field.noLongerConstant</code>
+                  <old>field org.xwiki.component.annotation.ComponentAnnotationLoader.COMPONENT_OVERRIDE_LIST</old>
+                  <new>field org.xwiki.component.annotation.ComponentAnnotationLoader.COMPONENT_OVERRIDE_LIST</new>
+                </item>
+              </differences>
+            </revapi.differences>
           </analysisConfiguration>
         </configuration>
       </plugin>

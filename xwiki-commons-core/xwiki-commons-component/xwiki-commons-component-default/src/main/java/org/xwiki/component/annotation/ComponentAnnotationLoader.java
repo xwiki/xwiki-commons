@@ -65,15 +65,6 @@ public class ComponentAnnotationLoader
     public static final String COMPONENT_LIST = "META-INF/components.txt";
 
     /**
-     * Location in the classloader of the file specifying which component implementation to use when several components
-     * with the same role/hint are found.
-     *
-     * @deprecated starting with 3.3M1 use the notion of priorities instead (see {@link ComponentDeclaration}).
-     */
-    @Deprecated
-    public static final String COMPONENT_OVERRIDE_LIST = "META-INF/component-overrides.txt";
-
-    /**
      * The encoding used to parse component list files.
      */
     private static final String COMPONENT_LIST_ENCODING = "UTF-8";
@@ -100,21 +91,6 @@ public class ComponentAnnotationLoader
         try {
             // Find all declared components by retrieving the list defined in COMPONENT_LIST.
             List<ComponentDeclaration> componentDeclarations = getDeclaredComponents(classLoader, COMPONENT_LIST);
-
-            // Find all the Component overrides and adds them to the bottom of the list as component declarations with
-            // the highest priority of 0. This is purely for backward compatibility since the override files is now
-            // deprecated.
-            List<ComponentDeclaration> componentOverrideDeclarations =
-                getDeclaredComponents(classLoader, COMPONENT_OVERRIDE_LIST);
-            for (ComponentDeclaration componentOverrideDeclaration : componentOverrideDeclarations) {
-                // Since the old way to declare an override was to define it in both a component.txt and a
-                // component-overrides.txt file we first need to remove the override component declaration stored in
-                // componentDeclarations.
-                componentDeclarations.remove(componentOverrideDeclaration);
-                // Add it to the end of the list with the highest priority.
-                componentDeclarations.add(new ComponentDeclaration(componentOverrideDeclaration
-                    .getImplementationClassName(), 0));
-            }
 
             initialize(manager, classLoader, componentDeclarations);
         } catch (Exception e) {
@@ -559,26 +535,11 @@ public class ComponentAnnotationLoader
         ZipInputStream zis = new ZipInputStream(jarFile);
 
         List<ComponentDeclaration> componentDeclarations = null;
-        List<ComponentDeclaration> componentOverrideDeclarations = null;
 
         for (ZipEntry entry = zis.getNextEntry(); entry != null
-            && (componentDeclarations == null || componentOverrideDeclarations == null); entry = zis.getNextEntry()) {
+            && (componentDeclarations == null); entry = zis.getNextEntry()) {
             if (entry.getName().equals(ComponentAnnotationLoader.COMPONENT_LIST)) {
                 componentDeclarations = getDeclaredComponents(zis);
-            } else if (entry.getName().equals(ComponentAnnotationLoader.COMPONENT_OVERRIDE_LIST)) {
-                componentOverrideDeclarations = getDeclaredComponents(zis);
-            }
-        }
-
-        // Merge all overrides found with a priority of 0. This is purely for backward compatibility since the
-        // override files is now deprecated.
-        if (componentOverrideDeclarations != null) {
-            if (componentDeclarations == null) {
-                componentDeclarations = new ArrayList<>();
-            }
-            for (ComponentDeclaration componentOverrideDeclaration : componentOverrideDeclarations) {
-                componentDeclarations.add(new ComponentDeclaration(componentOverrideDeclaration
-                    .getImplementationClassName(), 0));
             }
         }
 
