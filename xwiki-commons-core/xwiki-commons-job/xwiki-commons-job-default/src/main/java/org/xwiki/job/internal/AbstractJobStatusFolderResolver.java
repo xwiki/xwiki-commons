@@ -22,6 +22,7 @@ package org.xwiki.job.internal;
 import java.io.File;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -51,16 +52,27 @@ public abstract class AbstractJobStatusFolderResolver implements JobStatusFolder
     @Override
     public File getFolder(List<String> id)
     {
-        File folder = getBaseFolder();
+        File folder = this.configuration.getStorage();
 
-        if (id != null) {
-            // Create a different folder for each element
-            for (String fullIdElement : id) {
-                folder = addIDElement(fullIdElement, folder);
-            }
+        for (String pathSegment : getFolderSegments(id)) {
+            folder = new File(folder, pathSegment);
         }
 
         return folder;
+    }
+
+    @Override
+    public List<String> getFolderSegments(List<String> jobID)
+    {
+        List<String> result = new ArrayList<>(getBaseFolderSegments());
+
+        if (jobID != null) {
+            for (String idElement : jobID) {
+                result.addAll(encodeAndSplit(idElement));
+            }
+        }
+
+        return result;
     }
 
     protected String nullAwareURLEncode(String value)
@@ -76,10 +88,17 @@ public abstract class AbstractJobStatusFolderResolver implements JobStatusFolder
         return encoded;
     }
 
-    protected File getBaseFolder()
+    /**
+     * @return the base folder segments for the job status folder, override to provide a custom base folder
+     */
+    protected List<String> getBaseFolderSegments()
     {
-        return this.configuration.getStorage();
+        return List.of();
     }
 
-    protected abstract File addIDElement(String idElement, File folder);
+    /**
+     * @param idElement the id element to encode and split
+     * @return the encoded and split id element
+     */
+    protected abstract List<String> encodeAndSplit(String idElement);
 }
