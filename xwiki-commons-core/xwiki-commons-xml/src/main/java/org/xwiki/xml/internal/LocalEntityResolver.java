@@ -84,8 +84,8 @@ import org.xml.sax.ext.LexicalHandler;
  * Be sure to use a properly configured, recent version of your parser.
  * </p>
  *
- * @author Carlos Amengual
  * @version $Id$
+ * @author Carlos Amengual
  */
 public class LocalEntityResolver implements EntityResolver2
 {

@@ -57,9 +57,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Integration tests on {@link DefaultUnifiedDiffDisplayer} that performs check by reading on files,
  * performs merge and diff using {@link DefaultDiffManager} and checks the result of the unified diff.
  *
+ * @version $Id$
  * @since 12.3RC1
  * @since 11.10.5
- * @version $Id$
  */
 @ComponentTest
 @ComponentList(DefaultDiffManager.class)

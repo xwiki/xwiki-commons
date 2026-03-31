@@ -39,8 +39,8 @@ import java.util.zip.GZIPInputStream;
 /**
  * User agent utility methods.
  *
- * @author Carlos Amengual
  * @version $Id$
+ * @author Carlos Amengual
  */
 public class AgentUtil
 {

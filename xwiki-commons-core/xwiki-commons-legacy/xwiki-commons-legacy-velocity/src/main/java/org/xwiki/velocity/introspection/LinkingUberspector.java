@@ -55,9 +55,9 @@ import org.apache.velocity.util.introspection.VelPropertySet;
  * as the only entry in the array.
  * </p>
  *
- * @since 1.5RC1
  * @see ChainingUberspector
  * @version $Id$
+ * @since 1.5RC1
  * @deprecated since 8.0M1; chaining uberspectors is much more powerful, this class was never more than a proof of
  *             concept
  */

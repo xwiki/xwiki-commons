@@ -31,8 +31,8 @@ import org.xwiki.text.XWikiToStringBuilder;
 /**
  * Default implementation of {@link ComponentDescriptor}.
  *
- * @version $Id$
  * @param <T> the type of the component role
+ * @version $Id$
  * @since 1.7M1
  */
 public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> implements ComponentDescriptor<T>
@@ -168,8 +168,8 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     }
 
     /**
-     * @see #getRoleTypePriority()
      * @param roleTypePriority the priority of the component to order components sharing same type
+     * @see #getRoleTypePriority()
      * @since 15.4RC1
      */
     public void setRoleTypePriority(int roleTypePriority)
@@ -184,8 +184,8 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     }
 
     /**
-     * @see #getRoleHintPriority()
      * @param roleHintPriority the priority of the component to order components sharing same type and hint
+     * @see #getRoleHintPriority()
      * @since 15.4RC1
      */
     public void setRoleHintPriority(int roleHintPriority)

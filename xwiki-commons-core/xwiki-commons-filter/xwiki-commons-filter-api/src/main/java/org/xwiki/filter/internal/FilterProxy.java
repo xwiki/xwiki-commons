@@ -73,6 +73,7 @@ public final class FilterProxy implements InvocationHandler
      * @param descriptor the descriptor of the filter
      * @param method the event method called
      * @param args the arguments of the called method
+     * @throws FilterException if the execution of the event failed
      * @exception IllegalAccessException if this <code>Method</code> object enforces Java language access control and
      *                the underlying method is inaccessible.
      * @exception IllegalArgumentException if the method is an instance method and the specified object argument is not
@@ -81,7 +82,6 @@ public final class FilterProxy implements InvocationHandler
      *                conversion for primitive arguments fails; or if, after possible unwrapping, a parameter value
      *                cannot be converted to the corresponding formal parameter type by a method invocation conversion.
      * @exception InvocationTargetException if the underlying method throws an exception.
-     * @throws FilterException if the execution of the event failed
      */
     public static void invoke(Object filter, FilterDescriptor descriptor, Method method, Object[] args)
         throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, FilterException

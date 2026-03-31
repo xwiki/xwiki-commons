@@ -62,9 +62,9 @@ import org.apache.velocity.tools.config.DefaultKey;
  * 
  * <p>XWiki: copy/pasted from Velocity 1.7 to maintain retro compatibility</p>
  *
- * @author <a href="mailto:shinobu@ieee.org">Shinobu Kawai</a>
  * @version $Id$
  * @since VelocityTools 1.2
+ * @author <a href="mailto:shinobu@ieee.org">Shinobu Kawai</a>
  */
 @Deprecated
 @DefaultKey("lists")

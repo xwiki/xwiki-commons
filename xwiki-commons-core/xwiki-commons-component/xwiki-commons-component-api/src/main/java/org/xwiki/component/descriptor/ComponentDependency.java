@@ -22,8 +22,8 @@ package org.xwiki.component.descriptor;
 /**
  * Represents a component dependency.
  *
- * @version $Id$
  * @param <T> the type of the component role
+ * @version $Id$
  * @since 1.7M1
  */
 public interface ComponentDependency<T> extends ComponentRole<T>

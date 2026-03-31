@@ -39,9 +39,9 @@ import org.xwiki.component.util.ReflectionUtils;
 /**
  * Constructs a Component Descriptor out of a class definition that contains Annotations.
  *
+ * @see ComponentAnnotationLoader
  * @version $Id$
  * @since 1.8.1
- * @see ComponentAnnotationLoader
  */
 public class ComponentDescriptorFactory
 {
@@ -59,8 +59,8 @@ public class ComponentDescriptorFactory
      *
      * @param componentClass the component implementation class
      * @param componentRoleClass the component role class
-     * @return the component descriptors with resolved component dependencies
      * @param <T> the described class type
+     * @return the component descriptors with resolved component dependencies
      * @deprecated since 4.0M1 use {@link #createComponentDescriptors(Class, Type)} instead
      */
     @Deprecated

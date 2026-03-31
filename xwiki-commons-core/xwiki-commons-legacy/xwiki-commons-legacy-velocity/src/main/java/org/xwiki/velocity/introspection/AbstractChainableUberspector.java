@@ -23,9 +23,9 @@ package org.xwiki.velocity.introspection;
  * Default implementation of a {@link ChainableUberspector chainable uberspector} that forwards all calls to the wrapped
  * uberspector (when that is possible). It should be used as the base class for all chainable uberspectors.
  *
+ * @see ChainableUberspector
  * @version $Id$
  * @since 1.5M1
- * @see ChainableUberspector
  * @deprecated since 8.0M1; this is now part of the official Velocity library, use
  *             {@link org.apache.velocity.util.introspection.AbstractChainableUberspector} instead
  */

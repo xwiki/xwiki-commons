@@ -55,8 +55,8 @@ import org.xwiki.velocity.internal.inrospection.WrappingVelMethod;
  * <p>
  * Also handle Optional return values and unwraps them.
  *
- * @since 4.1M2
  * @version $Id$
+ * @since 4.1M2
  */
 // TODO: Implement TypeConversionHandler instead
 public class MethodArgumentsUberspector extends AbstractChainableUberspector implements RuntimeServicesAware

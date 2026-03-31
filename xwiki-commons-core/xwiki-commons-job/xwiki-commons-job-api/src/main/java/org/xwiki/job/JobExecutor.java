@@ -28,9 +28,9 @@ import org.xwiki.stability.Unstable;
  * By default Jobs are either executed asynchronously whenever there is a free thread in the pool. Jobs can implement
  * {@link GroupedJob} to make sure they con't be executed at the same time than the jobs from the same groups.
  *
- * @version $Id$
  * @see GroupedJob
  * @see Job
+ * @version $Id$
  * @since 6.1M2
  */
 @Role

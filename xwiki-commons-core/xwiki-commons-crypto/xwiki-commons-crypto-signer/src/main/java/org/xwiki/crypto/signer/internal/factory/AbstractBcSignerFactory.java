@@ -35,14 +35,14 @@ import org.xwiki.crypto.signer.internal.BcSigner;
 public abstract class AbstractBcSignerFactory extends AbstractSignerFactory implements BcSignerFactory
 {
     /**
-     * @return a new native bouncy castle instance of a signer.
      * @param parameters cipher parameters.
+     * @return a new native bouncy castle instance of a signer.
      */
     protected abstract org.bouncycastle.crypto.Signer getSignerInstance(AsymmetricCipherParameters parameters);
 
     /**
-     * @return a new native bouncy castle instance of a signer.
      * @param parameters cipher parameters.
+     * @return a new native bouncy castle instance of a signer.
      */
     protected abstract AlgorithmIdentifier getSignerAlgorithmIdentifier(AsymmetricCipherParameters parameters);
 

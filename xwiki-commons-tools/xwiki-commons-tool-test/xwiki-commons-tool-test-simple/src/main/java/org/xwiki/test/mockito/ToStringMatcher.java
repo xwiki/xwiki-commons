@@ -25,12 +25,12 @@ import org.mockito.ArgumentMatcher;
 
 /**
  * Matches arguments by comparing their {@link Object#toString()} values.
- * 
- * @version $Id$
+ *
  * @param <T> the type of the matched argument
+ * @version $Id$
+ * @since 17.10.4
  * @since 18.1.0RC1
  * @since 18.0.1
- * @since 17.10.4
  */
 public class ToStringMatcher<T> implements ArgumentMatcher<T>
 {

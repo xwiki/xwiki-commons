@@ -35,10 +35,10 @@ import org.xwiki.observation.event.Event;
 /**
  * Initializes the Servlet Environment Cache when the application starts.
  *
+ * @version $Id$
  * @since 17.5.0
  * @since 17.4.1
  * @since 16.10.9
- * @version $Id$
  */
 @Component
 @Singleton

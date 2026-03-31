@@ -43,8 +43,8 @@ public interface ExecutionContextManager
     /**
      * Perform deep cloning of Execution Context properties.
      *
-     * @return the cloned Execution Context
      * @param context the execution context to clone
+     * @return the cloned Execution Context
      * @throws ExecutionContextException if the Execution Context failed to be cloned for any reason
      */
     ExecutionContext clone(ExecutionContext context) throws ExecutionContextException;

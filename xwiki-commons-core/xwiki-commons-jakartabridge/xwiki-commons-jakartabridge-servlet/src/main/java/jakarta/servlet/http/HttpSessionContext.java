@@ -22,27 +22,27 @@ package jakarta.servlet.http;
 import java.util.Enumeration;
 
 /**
- * @version $Id$
- * @deprecated deleted in Servlet 6
  * @see HttpSession
  * @see HttpSessionBindingEvent
  * @see HttpSessionBindingListener
+ * @version $Id$
+ * @deprecated deleted in Servlet 6
  */
 public interface HttpSessionContext
 {
     /**
-     * @deprecated As of Java Servlet API 2.1 with no replacement. This method must return null and will be removed in a
-     *             future version of this API.
      * @param sessionId the id of the session to be returned
      * @return null in all cases
+     * @deprecated As of Java Servlet API 2.1 with no replacement. This method must return null and will be removed in a
+     *             future version of this API.
      */
     @Deprecated
     HttpSession getSession(String sessionId);
 
     /**
+     * @return null
      * @deprecated As of Java Servlet API 2.1 with no replacement. This method must return an empty
      *             <code>Enumeration</code> and will be removed in a future version of this API.
-     * @return null
      */
     @Deprecated
     Enumeration<String> getIds();

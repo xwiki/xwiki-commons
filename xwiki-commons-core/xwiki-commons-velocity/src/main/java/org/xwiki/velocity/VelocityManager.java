@@ -30,8 +30,8 @@ import org.xwiki.component.annotation.Role;
 /**
  * Provides access to the main XWiki Velocity objects.
  *
- * @since 1.5M2
  * @version $Id$
+ * @since 1.5M2
  */
 @Role
 public interface VelocityManager

@@ -25,8 +25,8 @@ import org.xwiki.cache.CacheEntry;
  * Base object used to contains informations when sending cache entry events.
  * 
  * @param <T> the class of the data stored in the cache.
- * @version $Id$
  * @see CacheEntryListener
+ * @version $Id$
  */
 public interface CacheEntryEvent<T> extends CacheEvent<T>
 {

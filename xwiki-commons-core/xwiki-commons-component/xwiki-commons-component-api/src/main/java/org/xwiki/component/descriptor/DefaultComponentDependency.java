@@ -37,8 +37,8 @@ import org.xwiki.component.util.ReflectionUtils;
 /**
  * Default implementation of {@link ComponentDependency}.
  *
- * @version $Id$
  * @param <T> the type of the component role
+ * @version $Id$
  * @since 1.7M1
  */
 public class DefaultComponentDependency<T> extends DefaultComponentRole<T> implements ComponentDependency<T>

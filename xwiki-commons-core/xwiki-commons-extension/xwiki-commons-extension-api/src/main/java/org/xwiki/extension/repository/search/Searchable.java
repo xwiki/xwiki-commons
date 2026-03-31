@@ -25,9 +25,9 @@ import org.xwiki.extension.repository.result.IterableResult;
 /**
  * A repository can implements it to provide basic search capabilities.
  *
+ * @see AdvancedSearchable
  * @version $Id$
  * @since 4.0M1
- * @see AdvancedSearchable
  */
 public interface Searchable
 {

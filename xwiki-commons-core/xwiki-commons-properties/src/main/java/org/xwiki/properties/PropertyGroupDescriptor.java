@@ -80,8 +80,8 @@ public class PropertyGroupDescriptor
     }
 
     /**
-     * @since 17.2.0RC1
      * @param mandatory indicate if the feature of this property is mandatory
+     * @since 17.2.0RC1
      */
     @Unstable
     public void setFeatureMandatory(boolean mandatory)
@@ -90,8 +90,8 @@ public class PropertyGroupDescriptor
     }
 
     /**
-     * @since 17.2.0RC1
      * @return whether the feature upheld by this property is mandatory
+     * @since 17.2.0RC1
      */
     @Unstable
     public boolean isFeatureMandatory()

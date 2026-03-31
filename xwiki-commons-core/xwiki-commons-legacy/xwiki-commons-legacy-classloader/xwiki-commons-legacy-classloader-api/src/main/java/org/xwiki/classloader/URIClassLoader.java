@@ -282,8 +282,8 @@ public class URIClassLoader extends ExtendedURLClassLoader
      * Returns an Enumeration of URLs representing all of the resources having the specified name.
      *
      * @param name the resource name
-     * @exception IOException if an I/O exception occurs
      * @return an <code>Enumeration</code> of <code>URL</code>s
+     * @exception IOException if an I/O exception occurs
      */
     @Override
     public Enumeration<URL> findResources(final String name) throws IOException

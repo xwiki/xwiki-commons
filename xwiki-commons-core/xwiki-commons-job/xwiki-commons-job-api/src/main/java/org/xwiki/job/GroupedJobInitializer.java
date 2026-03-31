@@ -28,8 +28,8 @@ import org.xwiki.component.annotation.Role;
  * {@link JobGroupPath}, so if no initializer is found with the exact path, the closest one matching the path hierarchy
  * will be used.
  *
- * @since 12.5RC1
  * @version $Id$
+ * @since 12.5RC1
  */
 @Role
 public interface GroupedJobInitializer
