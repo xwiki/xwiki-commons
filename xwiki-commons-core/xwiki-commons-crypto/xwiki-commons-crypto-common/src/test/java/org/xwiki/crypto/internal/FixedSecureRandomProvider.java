@@ -35,9 +35,9 @@ import org.xwiki.component.phase.Initializable;
 public class FixedSecureRandomProvider implements Provider<SecureRandom>, Initializable
 {
     /**
-     * The random data below has been generated using {@link FindEntropyForSecureRandomProvider}. The purpose of this
-     * static random data is to avoid relying on the entropy of the underlying test machine, since this could be very
-     * long if the entropy is too low, and this increase over time if multiple tests are run in a raw.
+     * The random data below has been generated using {@link FindEntropyForSecureRandomProviderTest}. The purpose of
+     * this static random data is to avoid relying on the entropy of the underlying test machine, since this could be
+     * very long if the entropy is too low, and this increase over time if multiple tests are run in a raw.
      */
     private static final byte[] RANDOM_DATA = Base64.decode(StringUtils.join(new String[] {
         "q8Nv/4yjHkB9jQ3DmWFfAbfGaPs00ROEBd+DktAt+FkTHx+Ic4WwnQmH5aHPITLd9Jm1f3iNrXhGZ8m5DSdphjT+KV4e0YJ7A4Gx",
