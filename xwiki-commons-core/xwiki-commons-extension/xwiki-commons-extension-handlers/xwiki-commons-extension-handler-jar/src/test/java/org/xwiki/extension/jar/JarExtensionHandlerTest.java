@@ -54,6 +54,7 @@ import packagefile.jarextension.TestComponent;
 import packagefile.jarextensionwithdeps.DefaultTestComponentWithDeps;
 import packagefile.jarextensionwithdeps.TestComponentWithDeps;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -238,7 +239,7 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         Type loadedRole = getLoadedType(role, extensionLoader);
         // Ensure the loaded role does not came from the application classloader (a check to validate the test)
-        assertFalse(loadedRole.equals(role));
+        assertNotEquals(loadedRole, role);
 
         if (namespace != null) {
             try {
@@ -305,7 +306,6 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
      * manager does not provide an implementation.
      *
      * @param role the role expected to not be provide
-     * @throws Exception on error
      */
     private void checkJarExtensionUnavailability(Type role)
     {
@@ -318,7 +318,6 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
      *
      * @param role      the role expected to not be provided
      * @param namespace the namespace where the extension is not expected to be installed
-     * @throws Exception on error
      */
     private void checkJarExtensionUnavailability(Type role, String namespace)
     {
@@ -1051,7 +1050,7 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     {
         ExtensionId extensionId = new ExtensionId("invalidextensiononnamespace", "version");
 
-        uninstall(extensionId, "namespaceofinvalidextension");
+        assertDoesNotThrow(() -> uninstall(extensionId, "namespaceofinvalidextension"));
     }
 
     @Test
@@ -1059,7 +1058,7 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     {
         ExtensionId extensionId = new ExtensionId("invalidextensiononroot", "version");
 
-        uninstall(extensionId);
+        assertDoesNotThrow(() -> uninstall(extensionId));
     }
 
     @Test
