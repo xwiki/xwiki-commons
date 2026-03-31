@@ -282,12 +282,8 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
 
     private List<ComponentDeclaration> getDeclaredComponents(LocalExtensionFile jarFile) throws IOException
     {
-        InputStream is = jarFile.openStream();
-
-        try {
+        try (InputStream is = jarFile.openStream()) {
             return this.jarLoader.getDeclaredComponentsFromJAR(is);
-        } finally {
-            is.close();
         }
     }
 
