@@ -64,6 +64,7 @@ import org.xwiki.test.mockito.MockitoComponentManager;
 import org.xwiki.xstream.internal.SafeXStream;
 import org.xwiki.xstream.internal.XStreamUtils;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -424,29 +425,27 @@ class DefaultJobStatusStoreTest
     @Test
     void removeNotExistingJobStatus()
     {
-        this.store.remove(Arrays.asList("notexist"));
+        assertDoesNotThrow(() -> this.store.remove(List.of("notexist")));
     }
 
     @Test
     void storeNullJobStatus()
     {
-        this.store.store(null);
+        assertDoesNotThrow(() ->this.store.store(null));
     }
 
     @Test
     void storeJobStatusWithNullRequest()
     {
-        JobStatus jobStatus = new DefaultJobStatus("type", null, null, null, null);
-
-        this.store.store(jobStatus);
+        JobStatus jobStatus = new DefaultJobStatus<>("type", null, null, null, null);
+        assertDoesNotThrow(() -> this.store.store(jobStatus));
     }
 
     @Test
     void storeJobStatusWithNullId()
     {
-        JobStatus jobStatus = new DefaultJobStatus("type", new DefaultRequest(), null, null, null);
-
-        this.store.store(jobStatus);
+        JobStatus jobStatus = new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
+        assertDoesNotThrow(() -> this.store.store(jobStatus));
     }
 
     @Test
