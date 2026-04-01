@@ -59,7 +59,7 @@ public class S3BlobOutputStream extends OutputStream
     {
         ByteArrayOutputStreamWithInputStream()
         {
-            super();
+            // Nothing to do.
         }
 
         public InputStream toInputStream()

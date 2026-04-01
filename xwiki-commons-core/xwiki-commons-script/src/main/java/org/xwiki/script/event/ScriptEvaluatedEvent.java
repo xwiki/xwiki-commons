@@ -46,7 +46,7 @@ public class ScriptEvaluatedEvent extends AbstractFilterableEvent
      */
     public ScriptEvaluatedEvent()
     {
-        super();
+        // Nothing to do.
     }
 
     /**

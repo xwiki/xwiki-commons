@@ -108,7 +108,6 @@ public final class HTMLUtils
          */
         XWikiXMLOutputProcessor(boolean omitDocType)
         {
-            super();
             this.omitDocType = omitDocType;
         }
 

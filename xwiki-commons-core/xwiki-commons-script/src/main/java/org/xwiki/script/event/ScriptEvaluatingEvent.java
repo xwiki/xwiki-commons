@@ -46,7 +46,7 @@ public class ScriptEvaluatingEvent extends AbstractCancelableEvent
      */
     public ScriptEvaluatingEvent()
     {
-        super();
+        // Nothing to do.
     }
 
     /**

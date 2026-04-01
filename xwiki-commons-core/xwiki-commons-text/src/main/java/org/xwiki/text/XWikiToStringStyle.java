@@ -45,7 +45,6 @@ public class XWikiToStringStyle extends StandardToStringStyle
      */
     public XWikiToStringStyle()
     {
-        super();
         setUseClassName(false);
         setUseIdentityHashCode(false);
         setContentStart("");
