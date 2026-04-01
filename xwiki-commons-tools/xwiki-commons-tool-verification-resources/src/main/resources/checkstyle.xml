@@ -114,6 +114,8 @@
 
     <module name="AvoidNestedBlocks"/>
 
+    <module name="AvoidNoArgumentSuperConstructorCall"/>
+
     <module name="AvoidStarImport"/>
 
     <module name="BooleanExpressionComplexity"/>
