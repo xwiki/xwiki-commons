@@ -76,8 +76,11 @@ class S3MultipartUploadHelperTest
     @Mock
     private BlobPath blobPath;
 
+    // Capture debug logs only from our own package to avoid capturing debug logs of background threads that might
+    // still be running from previously executed tests and that would interfere with assertions on the logs in this
+    // test class.
     @RegisterExtension
-    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.DEBUG);
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.DEBUG, "org.xwiki.store.blob");
 
     @BeforeEach
     void setUp()
