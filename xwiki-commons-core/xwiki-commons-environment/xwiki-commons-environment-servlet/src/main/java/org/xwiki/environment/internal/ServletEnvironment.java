@@ -28,7 +28,9 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -86,11 +88,11 @@ public class ServletEnvironment extends AbstractEnvironment
     private static final String LOGGER_INVALID_RESOURCE_PATH =
         "Error getting resource [{}] because of invalid path format. Reason: [{}]";
 
-    private static final String LOGGER_PATH_TRAVERSAL =
-        "The path [{}] is trying to access a resource outside of the specified prefix [{}].";
-
     private static final String LOGGER_PATH_TRAVERSAL_ROOT =
-        "The path [{}] is trying to access a resource outside of the resource root.";
+        "The resource path [{}] is trying to access a resource outside of the resource root.";
+
+    private static final String LOGGER_PATH_TRAVERSAL_PREFIX =
+        "The resource path [{}] is trying to access a resource outside of the specified prefix [{}].";
 
     private static final String SLASH = "/";
 
@@ -116,6 +118,9 @@ public class ServletEnvironment extends AbstractEnvironment
     @Inject
     private CacheControl cacheControl;
 
+    @Inject
+    private ServletEnvironmentConfiguration configuration;
+
     private Cache<ResourceCacheEntry> resourceURLCache;
 
     private boolean servletDecodeURL;
@@ -123,6 +128,8 @@ public class ServletEnvironment extends AbstractEnvironment
     private boolean realPathSupported;
 
     private String rootRealPath;
+
+    private List<String> allowedRealPaths;
 
     static final class ResourceCacheEntry
     {
@@ -226,11 +233,18 @@ public class ServletEnvironment extends AbstractEnvironment
         // Check once if the real path is supported by the Servlet context so that we know if we can rely on it later to
         // check for path traversal attempts
         this.rootRealPath = getRealPathWithFolderSupport(ROOT_PATH);
-        this.realPathSupported = this.rootRealPath != null;
-
-        this.logger.debug("Real path support: [{}]", this.realPathSupported);
         if (this.rootRealPath != null) {
-            this.logger.debug("Root real path: [{}]", this.rootRealPath);
+            this.realPathSupported = true;
+
+            this.logger.debug("Root real path: [{}]", rootRealPath);
+
+            this.allowedRealPaths = new ArrayList<>();
+            // Remember the root real path as we are going to use it to check all resources
+            this.allowedRealPaths.add(rootRealPath);
+            // Add allowed real paths from configuration
+            this.allowedRealPaths.addAll(this.configuration.getAllowedRealPaths());
+        } else {
+            this.logger.debug("Real path not supported");
         }
     }
 
@@ -399,8 +413,8 @@ public class ServletEnvironment extends AbstractEnvironment
         }
 
         // Make sure the resource real path is inside the root real path
-        if (realPath != null && !Strings.CS.startsWith(realPath, this.rootRealPath)) {
-            warnPathTraversalRoot(resourcePath);
+        if (realPath != null && !isRealPathInsideAllowedRoots(realPath)) {
+            warnPathTraversalRootRealPath(resourcePath, realPath);
 
             // Make the real path invalid
             realPath = null;
@@ -410,6 +424,17 @@ public class ServletEnvironment extends AbstractEnvironment
         setResourceRealPathToCache(resourcePath, realPath);
 
         return realPath;
+    }
+
+    private boolean isRealPathInsideAllowedRoots(String realPath)
+    {
+        for (String allowedRealPath : this.allowedRealPaths) {
+            if (Strings.CS.startsWith(realPath, allowedRealPath)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private String getRealPathWithFolderSupport(String resourcePath)
@@ -438,18 +463,19 @@ public class ServletEnvironment extends AbstractEnvironment
         return realPath;
     }
 
-    private void warnPathTraversal(String normalizedPrefixPath, String normalizedFullPath)
-    {
-        if (normalizedPrefixPath.equals(ROOT_PATH)) {
-            warnPathTraversalRoot(normalizedFullPath);
-        } else {
-            this.logger.warn(LOGGER_PATH_TRAVERSAL, normalizedFullPath, normalizedPrefixPath);
-        }
-    }
-
-    private void warnPathTraversalRoot(String normalizedFullPath)
+    private void warnPathTraversalRootPathNorm(String normalizedFullPath)
     {
         this.logger.warn(LOGGER_PATH_TRAVERSAL_ROOT, normalizedFullPath);
+    }
+
+    private void warnPathTraversalRootRealPath(String resourcePath, String realPath)
+    {
+        this.logger.warn(
+            LOGGER_PATH_TRAVERSAL_ROOT + " It's expected to be located inside one of the allowed real locations {},"
+                + " but its real location is [{}]."
+                + " If this should actually be an allowed location, you can add it to the property "
+                + "'environment.servlet.allowedRealPaths' in the configuration file 'xwiki.properties'.",
+            resourcePath, this.allowedRealPaths, realPath);
     }
 
     private boolean isValidRealPath(String normalizedPrefixPath, String normalizedFullPath)
@@ -469,9 +495,16 @@ public class ServletEnvironment extends AbstractEnvironment
             return false;
         }
 
+        // Make full real path is inside the prefix real path
         if (!Strings.CS.startsWith(realFullPath, realPrefixPath)) {
-            // Make full real path is not inside the prefix real path
-            warnPathTraversal(normalizedPrefixPath, normalizedFullPath);
+            if (normalizedPrefixPath.equals(ROOT_PATH)) {
+                warnPathTraversalRootRealPath(normalizedFullPath, realFullPath);
+            } else {
+                this.logger.warn(
+                    LOGGER_PATH_TRAVERSAL_PREFIX
+                        + " It's expected to be inside the prefix real location [{}], but its real location is [{}].",
+                    normalizedFullPath, normalizedPrefixPath, realPrefixPath, realFullPath);
+            }
 
             return false;
         }
@@ -491,7 +524,7 @@ public class ServletEnvironment extends AbstractEnvironment
         // Make sure the prefix path is valid
         Path prefixPath = Paths.get(VIRTUAL_ROOT_PATH_PREFIX + normalizedPrefixPath).normalize();
         if (!prefixPath.startsWith(rootPath)) {
-            warnPathTraversalRoot(normalizedPrefixPath);
+            warnPathTraversalRootPathNorm(normalizedPrefixPath);
 
             return false;
         }
@@ -499,7 +532,11 @@ public class ServletEnvironment extends AbstractEnvironment
         // Make sure the full path is valid
         Path fullPath = Paths.get(VIRTUAL_ROOT_PATH_PREFIX + normalizedFullPath).normalize();
         if (!fullPath.startsWith(prefixPath)) {
-            warnPathTraversal(normalizedPrefixPath, normalizedFullPath);
+            if (normalizedPrefixPath.equals(ROOT_PATH)) {
+                warnPathTraversalRootPathNorm(normalizedFullPath);
+            } else {
+                this.logger.warn(LOGGER_PATH_TRAVERSAL_PREFIX, normalizedFullPath, normalizedPrefixPath);
+            }
 
             return false;
         }

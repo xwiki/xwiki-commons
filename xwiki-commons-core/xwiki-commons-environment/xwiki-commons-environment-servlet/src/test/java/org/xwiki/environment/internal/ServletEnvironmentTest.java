@@ -24,11 +24,14 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Named;
 
 import jakarta.servlet.ServletContext;
 
@@ -50,7 +53,9 @@ import org.xwiki.cache.CacheException;
 import org.xwiki.cache.CacheManager;
 import org.xwiki.cache.internal.MapCache;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.environment.internal.ServletEnvironment.ResourceCacheEntry;
+import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
@@ -78,6 +83,7 @@ import static org.mockito.Mockito.when;
  */
 @SuppressWarnings({"checkstyle:ClassFanOutComplexity", "checkstyle:MultipleStringLiterals"})
 @ComponentTest
+@ComponentList(ServletEnvironmentConfiguration.class)
 class ServletEnvironmentTest
 {
     private File servletTmpDir;
@@ -89,6 +95,10 @@ class ServletEnvironmentTest
 
     @Mock
     private Cache<ResourceCacheEntry> cache;
+
+    @MockComponent
+    @Named("restricted")
+    private ConfigurationSource configurationSource;
 
     @MockComponent
     private CacheControl cacheControl;
@@ -106,6 +116,8 @@ class ServletEnvironmentTest
         this.systemTmpDir = new File(System.getProperty("java.io.tmpdir"), "xwiki-temp");
 
         doReturn(this.cache).when(this.cacheManager).createNewCache(any());
+        when(this.configurationSource.getProperty("environment.servlet.allowedRealPaths", List.of("/etc/xwiki/")))
+            .thenReturn(List.of("/etc/xwiki/"));
     }
 
     @AfterEach
@@ -389,16 +401,16 @@ class ServletEnvironmentTest
         verify(servletContext, times(1)).getResourceAsStream(any());
 
         assertNull(getResource("../resource", isGetResource));
-        assertEquals("The path [/../resource] is trying to access a resource outside of the resource root.",
+        assertEquals("The resource path [/../resource] is trying to access a resource outside of the resource root.",
             this.logCapture.getMessage(0));
 
         assertNull(getResource("../prefix", "resource", isGetResource));
-        assertEquals("The path [/../prefix/] is trying to access a resource outside of the resource root.",
+        assertEquals("The resource path [/../prefix/] is trying to access a resource outside of the resource root.",
             this.logCapture.getMessage(1));
 
         assertNull(getResource("/prefix/", "../resource", isGetResource));
         assertEquals(
-            "The path [/prefix/../resource] is trying to access a resource outside of the specified prefix [/prefix/].",
+            "The resource path [/prefix/../resource] is trying to access a resource outside of the specified prefix [/prefix/].",
             this.logCapture.getMessage(2));
 
         // Make sure we stopped before asking for the actual resource (getResourceAsStream is called once in the init)
@@ -420,13 +432,15 @@ class ServletEnvironmentTest
 
         when(servletContext.getRealPath("/../resource")).thenReturn("/real/resource");
         assertNull(getResource("../resource", isGetResource));
-        assertEquals("The path [/../resource] is trying to access a resource outside of the resource root.",
+        assertEquals(
+            "The resource path [/../resource] is trying to access a resource outside of the resource root. It's expected to be located inside one of the allowed real locations [/real/path/, /etc/xwiki/], but its real location is [/real/resource]. If this should actually be an allowed location, you can add it to the property 'environment.servlet.allowedRealPaths' in the configuration file 'xwiki.properties'.",
             this.logCapture.getMessage(0));
         verify(this.cache).set("/../resource", new ResourceCacheEntry(null, Optional.empty()));
 
         when(servletContext.getRealPath("/../prefix/")).thenReturn("/real/prefix");
         assertNull(getResource("../prefix", "resource", isGetResource));
-        assertEquals("The path [/../prefix/] is trying to access a resource outside of the resource root.",
+        assertEquals(
+            "The resource path [/../prefix/] is trying to access a resource outside of the resource root. It's expected to be located inside one of the allowed real locations [/real/path/, /etc/xwiki/], but its real location is [/real/prefix/]. If this should actually be an allowed location, you can add it to the property 'environment.servlet.allowedRealPaths' in the configuration file 'xwiki.properties'.",
             this.logCapture.getMessage(1));
         verify(this.cache).set("/../prefix/", new ResourceCacheEntry(null, Optional.empty()));
 
@@ -434,7 +448,7 @@ class ServletEnvironmentTest
         when(servletContext.getRealPath("/prefix/../resource")).thenReturn("/real/path/resource");
         assertNull(getResource("/prefix/", "../resource", isGetResource));
         assertEquals(
-            "The path [/prefix/../resource] is trying to access a resource outside of the specified prefix [/prefix/].",
+            "The resource path [/prefix/../resource] is trying to access a resource outside of the specified prefix [/prefix/]. It's expected to be inside the prefix real location [/real/path/prefix/], but its real location is [/real/path/resource].",
             this.logCapture.getMessage(2));
         verify(this.cache).set("/prefix/", new ResourceCacheEntry(null, Optional.of("/real/path/prefix/")));
         verify(this.cache).set("/prefix/../resource", new ResourceCacheEntry(null, Optional.of("/real/path/resource")));
