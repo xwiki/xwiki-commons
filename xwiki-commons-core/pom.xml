@@ -226,19 +226,7 @@
               </differences>
             </revapi.differences>
             -->
-            <revapi.differences>
-              <justification>This is just documentation, no behavior change</justification>
-              <criticality>allowed</criticality>
-              <differences>
-                <item>
-                  <ignore>true</ignore>
-                  <code>java.annotation.added</code>
-                  <old>interface org.xwiki.environment.Environment</old>
-                  <new>interface org.xwiki.environment.Environment</new>
-                  <annotation>@org.jspecify.annotations.NullMarked</annotation>
-                </item>
-              </differences>
-            </revapi.differences>
+            
           </analysisConfiguration>
         </configuration>
       </plugin>
