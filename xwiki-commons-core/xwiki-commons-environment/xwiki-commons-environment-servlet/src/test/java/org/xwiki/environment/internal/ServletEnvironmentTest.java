@@ -461,6 +461,24 @@ class ServletEnvironmentTest
     }
 
     @Test
+    void getResourceWithPathTraversalWithRealPathSupport() throws Exception
+    {
+        ServletContext servletContext = mock(ServletContext.class);
+        when(servletContext.getRealPath("/")).thenReturn("/real/path");
+        this.environment.setServletContext(servletContext);
+        this.environment.initializeCache();
+        verify(servletContext, times(1)).getResourceAsStream(any());
+
+        when(servletContext.getResource("/resource")).thenReturn(new URI("file:/real/path/resource").toURL());
+
+        when(servletContext.getRealPath("/resource")).thenReturn("/real/path/resource");
+        assertEquals("file:/real/path/resource", this.environment.getResource("/resource").toString());
+
+        when(servletContext.getRealPath("/resource")).thenReturn("/etc/xwiki/resource");
+        assertEquals("file:/real/path/resource", this.environment.getResource("/resource").toString());
+    }
+
+    @Test
     void getPermanentDirectoryWhenSetWithAPI() throws Exception
     {
         File permanentDirectory = new File("/permanent");
