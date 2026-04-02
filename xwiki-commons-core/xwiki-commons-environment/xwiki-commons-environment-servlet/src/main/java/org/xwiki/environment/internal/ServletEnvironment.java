@@ -495,18 +495,22 @@ public class ServletEnvironment extends AbstractEnvironment
             return false;
         }
 
-        // Make full real path is inside the prefix real path
-        if (!Strings.CS.startsWith(realFullPath, realPrefixPath)) {
-            if (normalizedPrefixPath.equals(ROOT_PATH)) {
-                warnPathTraversalRootRealPath(normalizedFullPath, realFullPath);
-            } else {
-                this.logger.warn(
-                    LOGGER_PATH_TRAVERSAL_PREFIX
+        if (realPrefixPath == this.rootRealPath) {
+            // Make sure the full real path is inside one of the allowed locations
+            return isRealPathInsideAllowedRoots(realFullPath);
+        } else {
+            // Make sure full real path is inside the prefix real path
+            if (!Strings.CS.startsWith(realFullPath, realPrefixPath)) {
+                if (normalizedPrefixPath.equals(ROOT_PATH)) {
+                    warnPathTraversalRootRealPath(normalizedFullPath, realFullPath);
+                } else {
+                    this.logger.warn(LOGGER_PATH_TRAVERSAL_PREFIX
                         + " It's expected to be inside the prefix real location [{}], but its real location is [{}].",
-                    normalizedFullPath, normalizedPrefixPath, realPrefixPath, realFullPath);
-            }
+                        normalizedFullPath, normalizedPrefixPath, realPrefixPath, realFullPath);
+                }
 
-            return false;
+                return false;
+            }
         }
 
         return true;
