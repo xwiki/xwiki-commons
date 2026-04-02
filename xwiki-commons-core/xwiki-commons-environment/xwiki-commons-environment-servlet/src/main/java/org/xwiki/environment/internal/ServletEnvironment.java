@@ -225,8 +225,13 @@ public class ServletEnvironment extends AbstractEnvironment
 
         // Check once if the real path is supported by the Servlet context so that we know if we can rely on it later to
         // check for path traversal attempts
-        this.rootRealPath = withTrailingSlash(getJakartaServletContext().getRealPath(ROOT_PATH));
+        this.rootRealPath = getRealPathWithFolderSupport(ROOT_PATH);
         this.realPathSupported = this.rootRealPath != null;
+
+        this.logger.debug("Real path support: [{}]", this.realPathSupported);
+        if (this.rootRealPath != null) {
+            this.logger.debug("Root real path: [{}]", this.rootRealPath);
+        }
     }
 
     private String getResourceAsStreamContent(String path)
@@ -379,11 +384,12 @@ public class ServletEnvironment extends AbstractEnvironment
         // Get the real path from the Servlet context
         String realPath = null;
         try {
-            realPath = getJakartaServletContext().getRealPath(normalizePath(resourcePath));
-            if (resourcePath.endsWith(SLASH)) {
-                // Make sure the real path reflect the fact that the resource is a directory
-                realPath = withTrailingSlash(realPath);
-            }
+            String normalizePath = normalizePath(resourcePath);
+
+            this.logger.debug("Trying to get the real path for resource [{}] (normalized from [{}])", normalizePath,
+                resourcePath);
+
+            realPath = getRealPathWithFolderSupport(normalizePath);
         } catch (IllegalArgumentException e) {
             // Some application servers (like Tomcat) already have a protection for paths trying to go out of the root
             // resource and will throw an IllegalArgumentException in that case. In our case we are just interested in
@@ -406,6 +412,32 @@ public class ServletEnvironment extends AbstractEnvironment
         return realPath;
     }
 
+    private String getRealPathWithFolderSupport(String resourcePath)
+    {
+        String realPath = getJakartaServletContext().getRealPath(resourcePath);
+
+        this.logger.debug("  -> {}", realPath);
+
+        if (realPath != null) {
+            if (resourcePath.endsWith(SLASH)) {
+                // Make sure the real path reflect the fact that the resource is a directory
+
+                // But it seems that Jetty sometimes happen a / at the end of the real path on Windows, which does not
+                // really make sense...
+                if (Strings.CS.endsWith(resourcePath, SLASH) && File.separatorChar != '/') {
+                    realPath = Strings.CS.removeEnd(realPath, SLASH);
+                    realPath += File.separatorChar;
+                } else {
+                    realPath = Strings.CS.appendIfMissing(realPath, File.separator);
+                }
+            }
+
+            this.logger.debug("    -> {}", realPath);
+        }
+
+        return realPath;
+    }
+
     private void warnPathTraversal(String normalizedPrefixPath, String normalizedFullPath)
     {
         if (normalizedPrefixPath.equals(ROOT_PATH)) {
@@ -422,6 +454,9 @@ public class ServletEnvironment extends AbstractEnvironment
 
     private boolean isValidRealPath(String normalizedPrefixPath, String normalizedFullPath)
     {
+        this.logger.debug("Checking real path for prefix [{}] and full path [{}]", normalizedPrefixPath,
+            normalizedFullPath);
+
         // Get prefix real path
         String realPrefixPath = getRealPath(normalizedPrefixPath);
         if (realPrefixPath == null) {
@@ -446,6 +481,9 @@ public class ServletEnvironment extends AbstractEnvironment
 
     private boolean isValidPathNormalization(String normalizedPrefixPath, String normalizedFullPath)
     {
+        this.logger.debug("Checking path normalization for prefix [{}] and full path [{}]", normalizedPrefixPath,
+            normalizedFullPath);
+
         // Use a non empty path as root path (instead of "/") as otherwise it's not possible to properly check for
         // path traversal attempts.
         Path rootPath = Paths.get(withTrailingSlash(VIRTUAL_ROOT_PATH)).toAbsolutePath().normalize();
@@ -535,7 +573,13 @@ public class ServletEnvironment extends AbstractEnvironment
         // Check for path traversal attempts to access resources outside of the specified prefix
         if (isValid(normalizedPrefixPath, normalizedFullPath)) {
             // Get the resource
-            return getJakartaServletContext().getResourceAsStream(normalizePath(normalizedFullPath));
+            normalizedFullPath = normalizePath(normalizedFullPath);
+
+            this.logger.debug(
+                "Trying to get the resource as stream for [{}] (normalized from prefix [{}] and resource [{}])",
+                normalizedFullPath, prefixPath, resourcePath);
+
+            return getJakartaServletContext().getResourceAsStream(normalizedFullPath);
         }
 
         return null;
@@ -546,7 +590,12 @@ public class ServletEnvironment extends AbstractEnvironment
         URL url;
 
         try {
-            url = getJakartaServletContext().getResource(normalizePath(resourcePath));
+            String normalizedResourcePath = normalizePath(resourcePath);
+
+            this.logger.debug("Trying to get the resource URL for [{}] (normalized from [{}])", normalizedResourcePath,
+                resourcePath);
+
+            url = getJakartaServletContext().getResource(normalizedResourcePath);
 
             // ensure to normalize the URI, we don't want relative path.
             if (url != null) {
@@ -596,14 +645,14 @@ public class ServletEnvironment extends AbstractEnvironment
             String normalizedFullPath = normalizedPrefixPath + normalizedResourcePath;
 
             if (isValid(normalizedPrefixPath, normalizedFullPath)) {
-                return getRealPPathLastModified(getRealPath(normalizedFullPath));
+                return getRealPathLastModified(getRealPath(normalizedFullPath));
             }
         }
 
         return null;
     }
 
-    private Date getRealPPathLastModified(String realPath)
+    private Date getRealPathLastModified(String realPath)
     {
         if (realPath != null) {
             File resourceFile = new File(realPath);
