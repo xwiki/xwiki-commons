@@ -42,6 +42,8 @@ public interface ExtensionManagerConfiguration
     int DEFAULT_INDEX_INTERVAL = 60 * 60;
 
     /**
+     * The local folder where to store the extensions. Only taken into account when use filesystem blob stored.
+     * 
      * @return the folder containing the local extensions
      * @see org.xwiki.extension.repository.LocalExtensionRepository
      */
