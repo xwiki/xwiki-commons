@@ -438,11 +438,12 @@ class ServletEnvironmentTest
         verify(this.cache).set("/../resource", new ResourceCacheEntry(null, Optional.empty()));
 
         when(servletContext.getRealPath("/../prefix/")).thenReturn("/real/prefix");
+        when(servletContext.getRealPath("/../prefix/resource")).thenReturn("/real/prefix/resource");
         assertNull(getResource("../prefix", "resource", isGetResource));
         assertEquals(
-            "The resource path [/../prefix/] is trying to access a resource outside of the resource root. It's expected to be located inside one of the allowed real locations [/real/path/, /etc/xwiki/], but its real location is [/real/prefix/]. If this should actually be an allowed location, you can add it to the property 'environment.servlet.allowedRealPaths' in the configuration file 'xwiki.properties'.",
+            "The resource path [/../prefix/resource] is trying to access a resource outside of the resource root. It's expected to be located inside one of the allowed real locations [/real/path/, /etc/xwiki/], but its real location is [/real/prefix/resource]. If this should actually be an allowed location, you can add it to the property 'environment.servlet.allowedRealPaths' in the configuration file 'xwiki.properties'.",
             this.logCapture.getMessage(1));
-        verify(this.cache).set("/../prefix/", new ResourceCacheEntry(null, Optional.empty()));
+        verify(this.cache).set("/../prefix/resource", new ResourceCacheEntry(null, Optional.empty()));
 
         when(servletContext.getRealPath("/prefix/")).thenReturn("/real/path/prefix");
         when(servletContext.getRealPath("/prefix/../resource")).thenReturn("/real/path/resource");
