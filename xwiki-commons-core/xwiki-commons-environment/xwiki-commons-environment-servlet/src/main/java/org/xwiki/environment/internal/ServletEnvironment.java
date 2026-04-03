@@ -385,7 +385,7 @@ public class ServletEnvironment extends AbstractEnvironment
     private String getRealPath(String resourcePath)
     {
         // Check if the resource path is the root path
-        if (ROOT_PATH.equals(resourcePath)) {
+        if (isRootResourcePath(resourcePath)) {
             return this.rootRealPath;
         }
 
@@ -478,16 +478,15 @@ public class ServletEnvironment extends AbstractEnvironment
             resourcePath, this.allowedRealPaths, realPath);
     }
 
+    private boolean isRootResourcePath(String normalizedPrefixPath)
+    {
+        return ROOT_PATH.equals(normalizedPrefixPath);
+    }
+
     private boolean isValidRealPath(String normalizedPrefixPath, String normalizedFullPath)
     {
         this.logger.debug("Checking real path for prefix [{}] and full path [{}]", normalizedPrefixPath,
             normalizedFullPath);
-
-        // Get prefix real path
-        String realPrefixPath = getRealPath(normalizedPrefixPath);
-        if (realPrefixPath == null) {
-            return false;
-        }
 
         // Get full real path
         String realFullPath = getRealPath(normalizedFullPath);
@@ -495,10 +494,16 @@ public class ServletEnvironment extends AbstractEnvironment
             return false;
         }
 
-        if (realPrefixPath == this.rootRealPath) {
+        if (isRootResourcePath(normalizedPrefixPath)) {
             // Make sure the full real path is inside one of the allowed locations
             return isRealPathInsideAllowedRoots(realFullPath);
         } else {
+            // Get prefix real path
+            String realPrefixPath = getRealPath(normalizedPrefixPath);
+            if (realPrefixPath == null) {
+                return false;
+            }
+
             // Make sure full real path is inside the prefix real path
             if (!Strings.CS.startsWith(realFullPath, realPrefixPath)) {
                 if (normalizedPrefixPath.equals(ROOT_PATH)) {
