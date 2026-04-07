@@ -1,3 +1,4 @@
+org.xwiki.environment.internal.DefaultFileSystemProvider
 org.xwiki.environment.internal.ServletEnvironment
 org.xwiki.environment.internal.ServletEnvironmentCacheInitializer
 org.xwiki.environment.internal.ServletEnvironmentConfiguration
