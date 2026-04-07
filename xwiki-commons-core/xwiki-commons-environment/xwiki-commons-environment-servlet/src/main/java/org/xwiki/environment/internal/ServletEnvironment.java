@@ -26,6 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -34,9 +35,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 import jakarta.servlet.ServletContext;
 
 import org.apache.commons.io.IOUtils;
@@ -120,6 +121,9 @@ public class ServletEnvironment extends AbstractEnvironment
 
     @Inject
     private ServletEnvironmentConfiguration configuration;
+
+    @Inject
+    private Provider<FileSystem> fileSystemProvider;
 
     private Cache<ResourceCacheEntry> resourceURLCache;
 
@@ -445,16 +449,14 @@ public class ServletEnvironment extends AbstractEnvironment
 
         if (realPath != null) {
             if (resourcePath.endsWith(SLASH)) {
-                // Make sure the real path reflect the fact that the resource is a directory
+                // The specified resource is a directory.
+                String fileSeparator = this.fileSystemProvider.get().getSeparator();
 
-                // But it seems that Jetty sometimes happen a / at the end of the real path on Windows, which does not
-                // really make sense...
-                if (Strings.CS.endsWith(resourcePath, SLASH) && File.separatorChar != '/') {
-                    realPath = Strings.CS.removeEnd(realPath, SLASH);
-                    realPath += File.separatorChar;
-                } else {
-                    realPath = Strings.CS.appendIfMissing(realPath, File.separator);
-                }
+                // Jetty adds sometimes a / at the end of the real path on Windows, which does not really make sense...
+                realPath = Strings.CS.removeEnd(realPath, SLASH);
+
+                // Make sure the real path reflects the fact that the resource is a directory.
+                realPath = Strings.CS.appendIfMissing(realPath, fileSeparator);
             }
 
             this.logger.debug("    -> {}", realPath);

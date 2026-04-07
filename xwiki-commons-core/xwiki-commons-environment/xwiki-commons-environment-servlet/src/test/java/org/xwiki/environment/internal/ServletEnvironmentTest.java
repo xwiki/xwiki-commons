@@ -24,6 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -33,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
 
+import jakarta.inject.Provider;
 import jakarta.servlet.ServletContext;
 
 import org.apache.commons.io.FileUtils;
@@ -44,6 +46,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.slf4j.Logger;
@@ -103,6 +106,12 @@ class ServletEnvironmentTest
     @MockComponent
     private CacheControl cacheControl;
 
+    @MockComponent
+    private Provider<FileSystem> fileSystemProvider;
+
+    @Mock
+    private FileSystem fileSystem;
+
     @InjectMockComponents
     private ServletEnvironment environment;
 
@@ -118,6 +127,10 @@ class ServletEnvironmentTest
         doReturn(this.cache).when(this.cacheManager).createNewCache(any());
         when(this.configurationSource.getProperty("environment.servlet.allowedRealPaths", List.of("/etc/xwiki/")))
             .thenReturn(List.of("/etc/xwiki/"));
+
+        when(this.fileSystemProvider.get()).thenReturn(this.fileSystem);
+        // Default to the system file separator, but it can be overridden in specific tests if needed.
+        when(this.fileSystem.getSeparator()).thenReturn(File.separator);
     }
 
     @AfterEach
@@ -477,6 +490,68 @@ class ServletEnvironmentTest
 
         when(servletContext.getRealPath("/resource")).thenReturn("/etc/xwiki/resource");
         assertEquals("file:/real/path/resource", this.environment.getResource("/resource").toString());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        //
+        // Unix paths
+        //
+        // Without ending separator.
+        "/real/path, /real/path/, /real/path/resource",
+        // With ending separator.
+        "/real/path/, /real/path/, /real/path/resource",
+        //
+        // Windows paths
+        //
+        // Without ending separator.
+        "D:\\Win 10 Backup\\LUCRU_D\\TOMCAT_HOME 11.0.20 - 17.10.6 PostgreSQL\\webapps\\xwiki, "
+            + "D:\\Win 10 Backup\\LUCRU_D\\TOMCAT_HOME 11.0.20 - 17.10.6 PostgreSQL\\webapps\\xwiki\\, "
+            + "D:\\Win 10 Backup\\LUCRU_D\\TOMCAT_HOME 11.0.20 - 17.10.6 PostgreSQL\\webapps\\xwiki\\resource",
+        // With ending separator.
+        "D:\\Win 10 Backup\\LUCRU_D\\TOMCAT_HOME 11.0.20 - 17.10.6 PostgreSQL\\webapps\\xwiki\\, "
+            + "D:\\Win 10 Backup\\LUCRU_D\\TOMCAT_HOME 11.0.20 - 17.10.6 PostgreSQL\\webapps\\xwiki\\, "
+            + "D:\\Win 10 Backup\\LUCRU_D\\TOMCAT_HOME 11.0.20 - 17.10.6 PostgreSQL\\webapps\\xwiki\\resource\\",
+        // Jetty sometimes adds a / at the end of the real path on Windows.
+        // Without ending separator.
+        "D:\\Win 10 Backup\\LUCRU_D\\TOMCAT_HOME 11.0.20 - 17.10.6 PostgreSQL\\webapps\\xwiki/, "
+            + "D:\\Win 10 Backup\\LUCRU_D\\TOMCAT_HOME 11.0.20 - 17.10.6 PostgreSQL\\webapps\\xwiki\\, "
+            + "D:\\Win 10 Backup\\LUCRU_D\\TOMCAT_HOME 11.0.20 - 17.10.6 PostgreSQL\\webapps\\xwiki\\resource/",
+        // With ending separator.
+        "D:\\Win 10 Backup\\LUCRU_D\\TOMCAT_HOME 11.0.20 - 17.10.6 PostgreSQL\\webapps\\xwiki\\/, "
+            + "D:\\Win 10 Backup\\LUCRU_D\\TOMCAT_HOME 11.0.20 - 17.10.6 PostgreSQL\\webapps\\xwiki\\, "
+            + "D:\\Win 10 Backup\\LUCRU_D\\TOMCAT_HOME 11.0.20 - 17.10.6 PostgreSQL\\webapps\\xwiki\\resource\\/"})
+    void getResourceWithPathTraversalWithRealPathSupport(String rootRealPath, String expectedRootRealPath,
+        String resourceRealPath) throws Exception
+    {
+        String fileSeparator = rootRealPath.contains("\\") ? "\\" : "/";
+        when(this.fileSystem.getSeparator()).thenReturn(fileSeparator);
+
+        ServletContext servletContext = mock(ServletContext.class);
+        when(servletContext.getRealPath("/")).thenReturn(rootRealPath);
+        this.environment.setServletContext(servletContext);
+        this.environment.initializeCache();
+        verify(servletContext, times(1)).getResourceAsStream(any());
+
+        String resourceURI = "file:/resource/uri";
+        when(servletContext.getResource("/resource")).thenReturn(new URI(resourceURI).toURL());
+
+        // Verify with a resource located in the XWiki WAR.
+        when(servletContext.getRealPath("/resource")).thenReturn(resourceRealPath);
+        assertEquals(resourceURI, this.environment.getResource("/resource").toString());
+
+        // Verify with a resource located outside of the XWiki WAR, in one of the allowed real paths.
+        when(servletContext.getRealPath("/resource")).thenReturn("/etc/xwiki/resource");
+        assertEquals(resourceURI, this.environment.getResource("/resource").toString());
+
+        // Verify with a resource located outside of the allowed real paths.
+        when(servletContext.getRealPath("/resource")).thenReturn("/outside/resource");
+        assertNull(this.environment.getResource("/resource"));
+        assertEquals(String.format("The resource path [/resource] is trying to access a resource outside of the"
+            + " resource root. It's expected to be located inside one of the allowed real locations [%s, /etc/xwiki/],"
+            + " but its real location is [/outside/resource]. If this should actually be an allowed location,"
+            + " you can add it to the property 'environment.servlet.allowedRealPaths' in the configuration file"
+            + " 'xwiki.properties'.", expectedRootRealPath), this.logCapture.getMessage(0));
     }
 
     @Test
