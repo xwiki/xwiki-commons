@@ -310,7 +310,7 @@ public class LocalExtensionStorage
         // Delete the extension descriptor file
         try {
             Files.delete(extensionDescriptorFilePath);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             LOGGER.warn(
                 "Couldn't delete the extension descriptor file [{}] when removing extension [{}], "
                     + "because it doesn't exist. Root error: [{}]",
@@ -323,7 +323,7 @@ public class LocalExtensionStorage
             // Delete the extension file
             try {
                 Files.delete(extensionFile.getFile().toPath());
-            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
                 LOGGER.warn("Extension file [{}] was not found while removing [{}] extension",
                     extensionFile.getAbsolutePath(), extension.getId().getId());
             }
@@ -333,13 +333,13 @@ public class LocalExtensionStorage
         Path extensionVersionFolderPath = extensionDescriptorFilePath.getParent();
         try {
             // Delete the extension version folder
-            Files.delete(extensionDescriptorFilePath);
+            Files.delete(extensionVersionFolderPath);
 
             // Try to delete the extension folder
             deleteExtensionFolderIfEmpty(extensionVersionFolderPath.getParent());
         } catch (DirectoryNotEmptyException e) {
             LOGGER.warn("Extension version folder [{}] was not empty after removing the extension [{}]. Keeping it.",
-                extensionDescriptorFilePath, extension.getId().getId());
+                extensionVersionFolderPath, extension.getId().getId());
         }
     }
 
