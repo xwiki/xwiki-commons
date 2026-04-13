@@ -38,6 +38,7 @@ import java.io.PrintStream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 import static org.xwiki.test.junit5.FailingTestDebuggingTestExecutionListener.START_MESSAGE;
 import static org.xwiki.test.junit5.FailingTestDebuggingTestExecutionListener.STOP_MESSAGE;
@@ -47,9 +48,9 @@ import static org.xwiki.test.junit5.FailingTestDebuggingTestExecutionListener.ST
  *
  * @version $Id$
  */
-public class CaptureConsoleExtensionTest
+class CaptureConsoleExtensionTest
 {
-    public static class SampleTestCase
+    static class SampleTestCase
     {
         private static final Logger LOGGER = LoggerFactory.getLogger(SampleTestCase.class);
 
@@ -71,12 +72,14 @@ public class CaptureConsoleExtensionTest
         void outputToConsole()
         {
             LOGGER.info("In test");
+            assertTrue(true);
         }
 
         @Test
         @Order(2)
         void dontOutputToConsole()
         {
+            assertTrue(true);
         }
 
         @Test
@@ -87,6 +90,7 @@ public class CaptureConsoleExtensionTest
             LOGGER.info("whatever");
             LOGGER.info(STOP_MESSAGE);
             LOGGER.info("after");
+            assertTrue(true);
         }
     }
 
@@ -94,10 +98,10 @@ public class CaptureConsoleExtensionTest
     void verifyTestExecutionListener()
     {
         PrintStream savedOut = System.out;
-        try {
+        try (PrintStream newOut = new PrintStream(new ByteArrayOutputStream())) {
             // Capture output since the CaptureConsoleExtension is automatically enabled and would fail
             // this test since it outputs things to stdout!
-            System.setOut(new PrintStream(new ByteArrayOutputStream()));
+            System.setOut(newOut);
 
             // Programmatically launch Jupiter Engine with our CaptureConsoleExtension registered in it.
             // Also register a SummaryGeneratingListener to capture the test output so that we can assert it.
@@ -127,30 +131,28 @@ public class CaptureConsoleExtensionTest
         } else {
             assertEquals(4, summary.getFailures().size());
             // Test outputToConsole() has 2 errors: one from the beforeEach and one from itself
-            assertThat(summary.getFailures().get(0).getException().getMessage(), matchesPattern(
-                "There should be no content output to the console by the test! Instead we got \\[.* \\[main\\] "
-                    + "INFO  o\\.x\\.t\\.j\\.CaptureConsoleExtensionTest\\$SampleTestCase - In beforeEach\n"
-                    + ".* \\[main\\] "
-                    + "INFO  o\\.x\\.t\\.j\\.CaptureConsoleExtensionTest\\$SampleTestCase - In test\n"
-                    + "\\]"
-            ));
-            assertThat(summary.getFailures().get(1).getException().getMessage(), matchesPattern(
-                "There should be no content output to the console by the test! Instead we got \\[.* \\[main\\] "
-                    + "INFO  o\\.x\\.t\\.j\\.CaptureConsoleExtensionTest\\$SampleTestCase - In beforeEach\n"
-                    + "\\]"
-            ));
-            assertThat(summary.getFailures().get(2).getException().getMessage(), matchesPattern(
-                "There should be no content output to the console by the test! Instead we got \\[.* \\[main\\] "
-                    + "INFO  o\\.x\\.t\\.j\\.CaptureConsoleExtensionTest\\$SampleTestCase - In beforeEach\n"
-                    + ".* \\[main\\] "
-                    + "INFO  o\\.x\\.t\\.j\\.CaptureConsoleExtensionTest\\$SampleTestCase - after\n"
-                    + "\\]"
-            ));
-            assertThat(summary.getFailures().get(3).getException().getMessage(), matchesPattern(
-                "There should be no content output to the console by the test! Instead we got \\[.* \\[main\\] "
-                    + "INFO  o\\.x\\.t\\.j\\.CaptureConsoleExtensionTest\\$SampleTestCase - In beforeAll\n"
-                    + "\\]"
-            ));
+            assertThat(summary.getFailures().get(0).getException().getMessage(), matchesPattern("""
+                There should be no content output to the console by the test! Instead we got \\[.* \\[main\\] \
+                INFO  o\\.x\\.t\\.j\\.CaptureConsoleExtensionTest\\$SampleTestCase - In beforeEach
+                .* \\[main\\] INFO  o\\.x\\.t\\.j\\.CaptureConsoleExtensionTest\\$SampleTestCase - In test
+                \\]\
+                """));
+            assertThat(summary.getFailures().get(1).getException().getMessage(), matchesPattern("""
+                There should be no content output to the console by the test! Instead we got \\[.* \\[main\\] \
+                INFO  o\\.x\\.t\\.j\\.CaptureConsoleExtensionTest\\$SampleTestCase - In beforeEach
+                \\]\
+                """));
+            assertThat(summary.getFailures().get(2).getException().getMessage(), matchesPattern("""
+                There should be no content output to the console by the test! Instead we got \\[.* \\[main\\] \
+                INFO  o\\.x\\.t\\.j\\.CaptureConsoleExtensionTest\\$SampleTestCase - In beforeEach
+                .* \\[main\\] INFO  o\\.x\\.t\\.j\\.CaptureConsoleExtensionTest\\$SampleTestCase - after
+                \\]\
+                """));
+            assertThat(summary.getFailures().get(3).getException().getMessage(), matchesPattern("""
+                There should be no content output to the console by the test! Instead we got \\[.* \\[main\\] \
+                INFO  o\\.x\\.t\\.j\\.CaptureConsoleExtensionTest\\$SampleTestCase - In beforeAll
+                \\]\
+                """));
         }
     }
 }

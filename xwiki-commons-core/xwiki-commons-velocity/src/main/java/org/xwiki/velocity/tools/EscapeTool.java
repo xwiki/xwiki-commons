@@ -307,7 +307,7 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
             }
             // The previous call will convert " " into "+" (and "+" into "%2B") so we need to convert "+" into "%20"
             // It's ok since %20 is allowed in both the URL path and the query string (and anchor).
-            encodedURL = encodedURL.replaceAll("\\+", "%20");
+            encodedURL = encodedURL.replace("+", "%20");
         }
         return encodedURL;
     }

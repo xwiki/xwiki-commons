@@ -27,10 +27,10 @@ import org.xwiki.component.annotation.Role;
 /**
  * Marks WebSocket end-points that are implemented as XWiki components.
  * 
- * @version $Id$
- * @since 13.7RC1
  * @see ServerEndpoint
  * @see Endpoint
+ * @version $Id$
+ * @since 13.7RC1
  */
 @Role
 public interface EndpointComponent

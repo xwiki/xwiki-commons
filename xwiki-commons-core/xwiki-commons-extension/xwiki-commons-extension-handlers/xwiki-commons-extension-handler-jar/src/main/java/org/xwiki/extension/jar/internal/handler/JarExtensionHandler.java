@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.xwiki.classloader.ClassLoaderManager;
 import org.xwiki.classloader.NamespaceURLClassLoader;
 import org.xwiki.component.annotation.Component;
@@ -211,7 +212,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
 
             // There might be no classloading matching the passed namespace when installing a new JAR at the same time
             // than an upgrade on root
-            if (classLoader != null && StringUtils.equals(namespace, classLoader.getNamespace())) {
+            if (classLoader != null && Strings.CS.equals(namespace, classLoader.getNamespace())) {
                 // unregister components
                 try {
                     unloadComponents(installedExtension.getFile(), classLoader, namespace);
@@ -281,12 +282,8 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
 
     private List<ComponentDeclaration> getDeclaredComponents(LocalExtensionFile jarFile) throws IOException
     {
-        InputStream is = jarFile.openStream();
-
-        try {
+        try (InputStream is = jarFile.openStream()) {
             return this.jarLoader.getDeclaredComponentsFromJAR(is);
-        } finally {
-            is.close();
         }
     }
 

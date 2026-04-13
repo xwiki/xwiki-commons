@@ -99,8 +99,8 @@ public interface ComponentManager
      * Since 15.4RC1, the resulting list is sorted according to components priority.
      *
      * @param role the type of the components role
-     * @return the components
      * @param <T> the type of the components role
+     * @return the components
      * @throws ComponentLookupException if any error happen during component search
      * @since 4.0RC1
      */
@@ -115,8 +115,8 @@ public interface ComponentManager
      * lower level, like the role interface.
      *
      * @param role the type of the components role
-     * @return the components
      * @param <T> the type of the components role
+     * @return the components
      * @throws ComponentLookupException if any error happen during component search
      * @since 4.0M1
      */

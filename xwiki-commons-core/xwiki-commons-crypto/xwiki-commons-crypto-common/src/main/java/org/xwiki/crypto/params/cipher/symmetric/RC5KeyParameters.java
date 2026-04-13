@@ -31,19 +31,19 @@ package org.xwiki.crypto.params.cipher.symmetric;
  */
 public class RC5KeyParameters extends KeyParameter
 {
-    private static final int ROUNDS = 12;
+    private static final int DEFAULT_ROUNDS = 12;
 
     private final int rounds;
 
     /**
-     * Initialize parameters with a default number of rounds set to {@value #ROUNDS}.
+     * Initialize parameters with a default number of rounds set to {@value #DEFAULT_ROUNDS}.
      *
      * @param key the key.
      */
     public RC5KeyParameters(byte[] key)
     {
         super(key);
-        this.rounds = ROUNDS;
+        this.rounds = DEFAULT_ROUNDS;
     }
 
     /**

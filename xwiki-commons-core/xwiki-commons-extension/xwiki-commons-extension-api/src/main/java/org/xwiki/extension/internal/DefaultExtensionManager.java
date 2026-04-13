@@ -195,7 +195,7 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
     public ExtensionRepository getRepository(String repositoryId)
     {
         // Try index
-        if (repositoryId.equals("index")) {
+        if ("index".equals(repositoryId)) {
             return this.indexRepositoryProvider.get();
         }
 

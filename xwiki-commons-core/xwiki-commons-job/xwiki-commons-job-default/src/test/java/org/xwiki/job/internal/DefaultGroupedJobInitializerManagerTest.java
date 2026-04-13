@@ -49,8 +49,8 @@ import static org.mockito.Mockito.when;
 /**
  * Tests for {@link DefaultGroupedJobInitializerManager}.
  *
- * @since 12.5RC1
  * @version $Id$
+ * @since 12.5RC1
  */
 @ComponentTest
 public class DefaultGroupedJobInitializerManagerTest

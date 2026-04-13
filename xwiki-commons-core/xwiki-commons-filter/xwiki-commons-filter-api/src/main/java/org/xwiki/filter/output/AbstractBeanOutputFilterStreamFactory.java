@@ -38,6 +38,7 @@ import org.xwiki.filter.type.FilterStreamType;
 
 /**
  * @param <P> the type of the class containing the parameters of the filter
+ * @param <F> this type is not used anymore but kept for backward compatibility reason.
  * @version $Id$
  * @since 6.2M1
  */
@@ -49,6 +50,10 @@ public abstract class AbstractBeanOutputFilterStreamFactory<P, F> extends Abstra
 
     private List<Class<?>> filerInterfaces;
 
+    /**
+     * Default constructor.
+     * @param type the type of filter stream to create.
+     */
     public AbstractBeanOutputFilterStreamFactory(FilterStreamType type)
     {
         super(type);

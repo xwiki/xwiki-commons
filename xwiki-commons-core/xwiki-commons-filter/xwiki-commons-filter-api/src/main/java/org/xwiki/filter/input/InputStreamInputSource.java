@@ -28,5 +28,9 @@ import java.io.InputStream;
  */
 public interface InputStreamInputSource extends InputSource
 {
+    /**
+     * @return the stream used as input source
+     * @throws IOException in case of problem for reading the stream
+     */
     InputStream getInputStream() throws IOException;
 }

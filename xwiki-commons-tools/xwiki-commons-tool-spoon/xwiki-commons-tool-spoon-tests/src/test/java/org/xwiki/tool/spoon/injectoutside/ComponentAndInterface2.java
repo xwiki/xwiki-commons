@@ -23,7 +23,7 @@ import org.xwiki.component.annotation.Component;
 
 /**
  * Defines a component that is not in the analyzed Spoon sources for the
- * {@link org.xwiki.tool.spoon.InjectAnnotationProcessorTest} test (the analyzed sources are in the {@code inject}
+ * {@code InjectAnnotationProcessorTest} test (the analyzed sources are in the {@code inject}
  * package).
  */
 @Component(roles = ComponentAndInterface2.class)

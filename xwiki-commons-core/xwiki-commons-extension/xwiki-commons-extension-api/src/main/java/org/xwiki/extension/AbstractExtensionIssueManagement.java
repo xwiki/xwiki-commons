@@ -19,7 +19,7 @@
  */
 package org.xwiki.extension;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.xwiki.text.XWikiToStringBuilder;
@@ -73,8 +73,8 @@ public abstract class AbstractExtensionIssueManagement implements ExtensionIssue
 
         if (obj instanceof ExtensionIssueManagement) {
             ExtensionIssueManagement issueManagement = (ExtensionIssueManagement) obj;
-            return StringUtils.equals(this.system, issueManagement.getSystem())
-                && StringUtils.equals(this.url, issueManagement.getURL());
+            return Strings.CS.equals(this.system, issueManagement.getSystem())
+                && Strings.CS.equals(this.url, issueManagement.getURL());
         }
 
         return false;

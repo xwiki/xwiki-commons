@@ -30,8 +30,8 @@ import org.xwiki.observation.event.filter.EventFilter;
  * source and {@code org.xwiki.rendering.macro.script.ScriptMacroParameters} as data.
  * </p>
  *
- * @version $Id$
  * @see ScriptEvaluatedEvent
+ * @version $Id$
  * @since 2.6RC2
  */
 public class ScriptEvaluatingEvent extends AbstractCancelableEvent
@@ -46,7 +46,7 @@ public class ScriptEvaluatingEvent extends AbstractCancelableEvent
      */
     public ScriptEvaluatingEvent()
     {
-        super();
+        // Nothing to do.
     }
 
     /**

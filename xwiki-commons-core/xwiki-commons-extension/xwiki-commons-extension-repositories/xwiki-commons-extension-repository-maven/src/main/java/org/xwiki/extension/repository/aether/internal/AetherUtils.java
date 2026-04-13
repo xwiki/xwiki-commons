@@ -19,10 +19,10 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.xwiki.extension.ExtensionId;
@@ -47,7 +47,7 @@ public final class AetherUtils
                 "Bad id " + id + ", expected format is <groupId>:<artifactId>[:<classifier>]");
         }
 
-        return new DefaultArtifact(matcher.group(1), matcher.group(2), StringUtils.defaultString(matcher.group(4), ""),
+        return new DefaultArtifact(matcher.group(1), matcher.group(2), Objects.toString(matcher.group(4), ""),
             "jar", version);
     }
 

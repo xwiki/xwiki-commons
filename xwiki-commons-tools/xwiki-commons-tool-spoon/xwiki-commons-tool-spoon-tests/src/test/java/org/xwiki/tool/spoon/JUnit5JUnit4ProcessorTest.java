@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  *
  * @version $Id$
  */
-public class JUnit5Junit4ProcessorTest
+class JUnit5JUnit4ProcessorTest
 {
     @Test
     void process()
@@ -41,17 +41,16 @@ public class JUnit5Junit4ProcessorTest
         Launcher launcher = new Launcher();
         launcher.getEnvironment().setNoClasspath(true);
         launcher.setArgs(new String[] {"--output-type", "nooutput" });
-        launcher.addInputResource("./src/test/java/org/xwiki/tool/spoon/junit5junit4/");
+        launcher.addInputResource("./src/test/resources/org/xwiki/tool/spoon/junit5junit4/");
 
         JUnit5JUnit4Processor processor = new JUnit5JUnit4Processor();
         launcher.addProcessor(processor);
 
-        Throwable exception = assertThrows(SpoonException.class, () -> {
-            launcher.run();
-        });
-        assertThat(exception.getMessage(), matchesPattern("\\QThe following errors were found:\\E\n"
-            + "\\Q- There's a mix of JUnit4 and JUnit5 APIs at \\E(.*BadTest1.*)\n"
-            + "\\Q- There's a mix of JUnit4 and JUnit5 APIs at \\E(.*BadTest2.*)\n"
-        ));
+        Throwable exception = assertThrows(SpoonException.class, launcher::run);
+        assertThat(exception.getMessage(), matchesPattern("""
+            \\QThe following errors were found:\\E
+            \\Q- There's a mix of JUnit4 and JUnit5 APIs at \\E(.*BadTest1.*)
+            \\Q- There's a mix of JUnit4 and JUnit5 APIs at \\E(.*BadTest2.*)
+            """));
     }
 }

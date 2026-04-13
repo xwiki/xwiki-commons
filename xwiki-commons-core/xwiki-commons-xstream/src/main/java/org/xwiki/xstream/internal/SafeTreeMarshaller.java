@@ -43,13 +43,13 @@ public class SafeTreeMarshaller extends ReferenceByXPathMarshaller
     private final XStreamUtils utils;
 
     /**
-     * @see ReferenceByXPathMarshaller#ReferenceByXPathMarshaller(HierarchicalStreamWriter, ConverterLookup, Mapper,
-     *      int)
      * @param writer the writer
      * @param converterLookup the converter lookup
      * @param mapper the mapper
      * @param mode the marshalling mode
      * @param utils the utils
+     * @see ReferenceByXPathMarshaller#ReferenceByXPathMarshaller(HierarchicalStreamWriter, ConverterLookup, Mapper,
+     *      int)
      */
     public SafeTreeMarshaller(HierarchicalStreamWriter writer, ConverterLookup converterLookup, Mapper mapper, int mode,
         XStreamUtils utils)

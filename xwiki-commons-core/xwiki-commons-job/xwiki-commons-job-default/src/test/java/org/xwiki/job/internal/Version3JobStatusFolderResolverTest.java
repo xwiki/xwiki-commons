@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.Strings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,7 +34,6 @@ import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
-import org.xwiki.text.StringUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -168,10 +168,10 @@ class Version3JobStatusFolderResolverTest
         }
 
         for (String encodedElement : encodedElements) {
-            assertFalse(StringUtils.startsWith(encodedElement, "."));
-            assertFalse(StringUtils.endsWith(encodedElement, "."));
-            assertFalse(StringUtils.contains(encodedElement, "/"));
-            assertFalse(StringUtils.contains(encodedElement, "*"));
+            assertFalse(Strings.CS.startsWith(encodedElement, "."));
+            assertFalse(Strings.CS.endsWith(encodedElement, "."));
+            assertFalse(Strings.CS.contains(encodedElement, "/"));
+            assertFalse(Strings.CS.contains(encodedElement, "*"));
             assertTrue(encodedElement.length() <= 255);
         }
 

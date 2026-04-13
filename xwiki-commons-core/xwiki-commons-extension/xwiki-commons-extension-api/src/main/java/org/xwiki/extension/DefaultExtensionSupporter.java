@@ -22,7 +22,7 @@ package org.xwiki.extension;
 import java.net.URL;
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.xwiki.text.XWikiToStringBuilder;
@@ -79,7 +79,7 @@ public class DefaultExtensionSupporter implements ExtensionSupporter
         if (obj instanceof ExtensionSupporter) {
             ExtensionSupporter otherSupporter = (ExtensionSupporter) obj;
 
-            return StringUtils.equals(this.name, otherSupporter.getName())
+            return Strings.CS.equals(this.name, otherSupporter.getName())
                 && Objects.equals(Objects.toString(getURL()), Objects.toString(otherSupporter.getURL()));
         } else {
             return false;

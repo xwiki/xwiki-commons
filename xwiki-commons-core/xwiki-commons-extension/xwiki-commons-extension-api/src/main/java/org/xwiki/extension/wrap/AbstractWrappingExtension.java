@@ -108,7 +108,7 @@ public abstract class AbstractWrappingExtension<E extends Extension> extends Abs
     public Collection<ExtensionId> getExtensionFeatures()
     {
         if (this.overwrites.containsKey(Extension.FIELD_EXTENSIONFEATURES)) {
-            return ObjectUtils.defaultIfNull(
+            return ObjectUtils.getIfNull(
                 (Collection<ExtensionId>) this.overwrites.get(Extension.FIELD_EXTENSIONFEATURES),
                 Collections.emptyList());
         }

@@ -51,9 +51,11 @@ public class LocalEntityResolverTest
         SAXParser parser = parserFactory.newSAXParser();
         XMLReader xmlReader = parser.getXMLReader();
         xmlReader.setEntityResolver(new LocalEntityResolver());
-        String input = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"file:///etc/passwd\"> ]>\n"
-            + "<p>&xxe;</p>";
+        String input = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE foo [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
+            <p>&xxe;</p>\
+            """;
         InputSource source = new InputSource(new ByteArrayInputStream(input.getBytes()));
 
         Throwable exception = assertThrows(SAXException.class, () -> xmlReader.parse(source));

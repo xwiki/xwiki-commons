@@ -133,7 +133,6 @@ public class ExtractHandler extends DefaultHandler
      */
     public ExtractHandler(int start, int length) throws SAXException
     {
-        super();
         if (start < 0) {
             throw new SAXException("Start must be greater than or equal to 0");
         }

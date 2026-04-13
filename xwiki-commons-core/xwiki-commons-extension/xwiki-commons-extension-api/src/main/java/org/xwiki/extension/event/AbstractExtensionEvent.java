@@ -19,7 +19,7 @@
  */
 package org.xwiki.extension.event;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.xwiki.extension.ExtensionId;
 
 /**
@@ -123,7 +123,7 @@ public abstract class AbstractExtensionEvent implements ExtensionEvent
      */
     private boolean matchesNamespace(String namespace)
     {
-        return this.noNamespace || StringUtils.equals(this.namespace, namespace);
+        return this.noNamespace || Strings.CS.equals(this.namespace, namespace);
     }
 
 }

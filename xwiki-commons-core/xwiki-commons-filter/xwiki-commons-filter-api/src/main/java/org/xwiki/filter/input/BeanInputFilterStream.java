@@ -30,5 +30,10 @@ import org.xwiki.filter.FilterException;
 @Role
 public interface BeanInputFilterStream<P> extends InputFilterStream
 {
+    /**
+     * Define the properties to be used by the filter.
+     * @param properties the properties to use.
+     * @throws FilterException in case of problem when setting the properties.
+     */
     void setProperties(P properties) throws FilterException;
 }

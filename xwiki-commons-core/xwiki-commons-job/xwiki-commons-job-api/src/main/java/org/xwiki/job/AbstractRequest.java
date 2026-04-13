@@ -156,8 +156,8 @@ public abstract class AbstractRequest implements Request
 
     /**
      * @param key the name of the property
-     * @return the previous value associated to the passed key
      * @param <T> the type of the value
+     * @return the previous value associated to the passed key
      * @since 4.2M2
      */
     public <T> T removeProperty(String key)

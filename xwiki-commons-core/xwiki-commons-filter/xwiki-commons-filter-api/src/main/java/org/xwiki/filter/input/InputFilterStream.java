@@ -29,5 +29,10 @@ import org.xwiki.filter.FilterException;
  */
 public interface InputFilterStream extends Closeable
 {
+    /**
+     * Read and filter values.
+     * @param filter the filter to use when reading.
+     * @throws FilterException in case of problem when performing filter operations.
+     */
     void read(Object filter) throws FilterException;
 }

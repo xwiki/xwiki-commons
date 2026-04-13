@@ -29,5 +29,10 @@ import org.xwiki.filter.FilterException;
  */
 public interface OutputFilterStream extends Closeable
 {
+    /**
+     * Initialize and returns a filter to be used.
+     * @return a filter ready to be used.
+     * @throws FilterException in case of problem during the initialization.
+     */
     Object getFilter() throws FilterException;
 }

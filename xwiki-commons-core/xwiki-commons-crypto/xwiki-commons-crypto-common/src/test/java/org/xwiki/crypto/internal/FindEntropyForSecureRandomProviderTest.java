@@ -30,6 +30,7 @@ import javax.inject.Provider;
 import org.bouncycastle.crypto.prng.FixedSecureRandom;
 import org.bouncycastle.util.encoders.Base64;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.crypto.KeyPairGenerator;
@@ -51,22 +52,18 @@ import org.xwiki.test.mockito.MockitoComponentManager;
 
 /**
  * THIS IS NOT A TEST, BUT A TOOL.
- *
- * This test is a tool for determining a good entropy source of reasonable size to feed the
- * {@link FixedSecureRandom} generator for the RSA and DSA generator tests.
- *
- * To execute, run the following line on a machine with the best possible random generator:
- *
- *     mvn -Dtest=FindEntropyForSecureRandomProvider -Dxwiki.surefire.captureconsole.skip test
- *
- * Depending on the quality of your entropy, you may need to run this tools several time (not in a raw)
- * before getting a truly reasonable sized result.
- *
- * PS: This Class name does not end with Test, so the maven surefire plugin will not run it during normal test run.
- * However, your IDE may do, you should be careful. Putting @Ignore is not an option since maven will not
- * allow running it from the command-line.
+ * <p>
+ * This test is a tool for determining a good entropy source of reasonable size to feed the {@link FixedSecureRandom}
+ * generator for the RSA and DSA generator tests.
+ * <p>
+ * To execute, run it in your IDE or remove the {@code Disabled} annotation and run it with the following line on a
+ * machine with the best possible random generator:
+ * <p>
+ * mvn -Dtest=FindEntropyForSecureRandomProvider -Dxwiki.surefire.captureconsole.skip test
+ * <p>
+ * Depending on the quality of your entropy, you may need to run this tool several times (not in a raw) before getting a
+ * truly reasonable sized result.
  */
-// @formatter:off
 @ComponentTest
 @ComponentList({
     BcRSAKeyFactory.class,
@@ -77,8 +74,8 @@ import org.xwiki.test.mockito.MockitoComponentManager;
     BcSHA1DigestFactory.class,
     BcSHA224DigestFactory.class
 })
-// @formatter:on
-class FindEntropyForSecureRandomProvider
+@Disabled("This is not a test, but a tool")
+class FindEntropyForSecureRandomProviderTest
 {
     @InjectMockComponents
     private BcRSAKeyPairGenerator rsaGenerator;
@@ -87,12 +84,13 @@ class FindEntropyForSecureRandomProvider
     private MockitoComponentManager componentManager;
 
     private KeyPairGenerator dsaGenerator;
+
     private KeyParametersGenerator dsaParameterGenerator;
 
     @BeforeEach
     void configure() throws Exception
     {
-        dsaGenerator = this.componentManager.getInstance(KeyPairGenerator.class, "DSA");;
+        dsaGenerator = this.componentManager.getInstance(KeyPairGenerator.class, "DSA");
         dsaParameterGenerator = this.componentManager.getInstance(KeyParametersGenerator.class, "DSA");
     }
 
@@ -107,7 +105,7 @@ class FindEntropyForSecureRandomProvider
         boolean succeed = false;
         byte[] rndSource = null;
         long maxsize = 4096;
-        while(!succeed) {
+        while (!succeed) {
             rndprov.setRandomSource(rnd);
             rsaGenerator.generate();
             rsaGenerator.generate();
@@ -115,7 +113,7 @@ class FindEntropyForSecureRandomProvider
                 int rejectCount = 0;
                 while (rejectCount < 10 && rnd.counter > maxsize) {
                     rejectCount++;
-                    System.out.println(String.format("Rejected %d > %d", rnd.counter, maxsize));
+                    System.out.printf("Rejected %d > %d%n", rnd.counter, maxsize);
                     rnd = new RecordingSecureRandom();
                     rndprov.setRandomSource(rnd);
                     rsaGenerator.generate();
@@ -127,7 +125,7 @@ class FindEntropyForSecureRandomProvider
             }
             rndSource = rnd.baos.toByteArray();
 
-            System.out.print(String.format("Testing %d candidate", rndSource.length));
+            System.out.printf("Testing %d candidate", rndSource.length);
             succeed = true;
             try {
                 System.out.print(" - RSAstrength");
@@ -154,7 +152,8 @@ class FindEntropyForSecureRandomProvider
 
                 System.out.print(" - FIPS186_3");
                 rndprov.setRandomSource(new FixedSecureRandom(rndSource));
-                dsaGenerator.generate(dsaParameterGenerator.generate(new DSAKeyParametersGenerationParameters(256, 28, 1)));
+                dsaGenerator.generate(
+                    dsaParameterGenerator.generate(new DSAKeyParametersGenerationParameters(256, 28, 1)));
             } catch (ArrayIndexOutOfBoundsException e) {
                 System.out.println(" - Failed");
                 succeed = false;
@@ -175,7 +174,8 @@ class FindEntropyForSecureRandomProvider
 
         public ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        protected void internalNextByte(byte[] bytes) {
+        protected void internalNextByte(byte[] bytes)
+        {
             super.nextBytes(bytes);
         }
 
@@ -191,7 +191,8 @@ class FindEntropyForSecureRandomProvider
             }
         }
 
-        protected byte[] internalGeneratedSeed(int i) {
+        protected byte[] internalGeneratedSeed(int i)
+        {
             return super.generateSeed(i);
         }
 

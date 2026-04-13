@@ -373,9 +373,11 @@ class XMLUtilsTest
     void transformWithReaderUsedInStreamSource()
     {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><p>hello</p>";
-        String xslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
-            + "<xsl:output method=\"text\"/>\n"
-            + "</xsl:stylesheet>";
+        String xslt = """
+            <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+            <xsl:output method="text"/>
+            </xsl:stylesheet>\
+            """;
         String result = XMLUtils.transform(
             // Use a StringReader to test that it works (other tests use an InputStream)
             new StreamSource(new StringReader(xml)), new StreamSource(new StringReader(xslt)));
@@ -385,13 +387,17 @@ class XMLUtilsTest
     @Test
     void transformFailsWhenXXEFileAttackUsingStreamSource()
     {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"file:///etc/passwd\"> ]>\n"
-            + "\n"
-            + "<p>&xxe;</p>";
-        String xslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
-            + "<xsl:output method=\"text\"/>\n"
-            + "</xsl:stylesheet>";
+        String xml = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE foo [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
+
+            <p>&xxe;</p>\
+            """;
+        String xslt = """
+            <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+            <xsl:output method="text"/>
+            </xsl:stylesheet>\
+            """;
 
         assertNull(XMLUtils.transform(new StreamSource(
             new ByteArrayInputStream(xml.getBytes())), new StreamSource(new ByteArrayInputStream(xslt.getBytes()))));
@@ -406,13 +412,17 @@ class XMLUtilsTest
     @Test
     void transformFailsWhenXXEFileAttackUsingNotSafeSAXSource() throws Exception
     {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"file:///etc/passwd\"> ]>\n"
-            + "\n"
-            + "<p>&xxe;</p>";
-        String xslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
-            + "<xsl:output method=\"text\"/>\n"
-            + "</xsl:stylesheet>";
+        String xml = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE foo [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
+
+            <p>&xxe;</p>\
+            """;
+        String xslt = """
+            <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+            <xsl:output method="text"/>
+            </xsl:stylesheet>\
+            """;
 
         // The next lines creates a voluntarily unsafe SAXParserFactory and XMLReader, to ensure that
         // XMLUtils.transform() will still protect the user when the SaxSource passed to it is unsafe.
@@ -433,13 +443,17 @@ class XMLUtilsTest
     @Test
     void transformWhenLocalEntityUsed()
     {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<!DOCTYPE foo [ <!ENTITY myentity \"my entity value\" > ]>\n"
-            + "\n"
-            + "<p>&myentity;</p>";
-        String xslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
-            + "<xsl:output method=\"text\"/>\n"
-            + "</xsl:stylesheet>";
+        String xml = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE foo [ <!ENTITY myentity "my entity value" > ]>
+
+            <p>&myentity;</p>\
+            """;
+        String xslt = """
+            <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+            <xsl:output method="text"/>
+            </xsl:stylesheet>\
+            """;
 
         assertEquals("my entity value", XMLUtils.transform(new StreamSource(
             new ByteArrayInputStream(xml.getBytes())), new StreamSource(new ByteArrayInputStream(xslt.getBytes()))));
@@ -448,14 +462,18 @@ class XMLUtilsTest
     @Test
     void transformWhenExternalWellKnownEntityUsed()
     {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n"
-            + "   \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
-            + "\n"
-            + "<p>&dollar;</p>";
-        String xslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
-            + "<xsl:output method=\"text\"/>\n"
-            + "</xsl:stylesheet>";
+        String xml = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+            <p>&dollar;</p>\
+            """;
+        String xslt = """
+            <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+            <xsl:output method="text"/>
+            </xsl:stylesheet>\
+            """;
 
         assertEquals("$", XMLUtils.transform(new StreamSource(
             new ByteArrayInputStream(xml.getBytes())), new StreamSource(new ByteArrayInputStream(xslt.getBytes()))));
@@ -464,13 +482,17 @@ class XMLUtilsTest
     @Test
     void transformWhenJARDecompressionBomb()
     {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<!DOCTYPE doc PUBLIC \"-//W3C//DTD FOO 1.0//EN\" \"jar:http://www.example.com/evil.jar!/file.dtd\">\n"
-            + "\n"
-            + "<p>&amp;</p>";
-        String xslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
-            + "<xsl:output method=\"text\"/>\n"
-            + "</xsl:stylesheet>";
+        String xml = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE doc PUBLIC "-//W3C//DTD FOO 1.0//EN" "jar:http://www.example.com/evil.jar!/file.dtd">
+
+            <p>&amp;</p>\
+            """;
+        String xslt = """
+            <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+            <xsl:output method="text"/>
+            </xsl:stylesheet>\
+            """;
 
         assertNull(XMLUtils.transform(new StreamSource(
             new ByteArrayInputStream(xml.getBytes())), new StreamSource(new ByteArrayInputStream(xslt.getBytes()))));
@@ -485,22 +507,26 @@ class XMLUtilsTest
     @Test
     void transformAvoidXMLBomb()
     {
-        String xml = "<?xml version=\"1.0\"?>\n"
-            + "<!DOCTYPE lolz [\n"
-            + "  <!ENTITY lol \"lol\">\n"
-            + "  <!ENTITY lol2 \"&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;\">\n"
-            + "  <!ENTITY lol3 \"&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;\">\n"
-            + "  <!ENTITY lol4 \"&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;\">\n"
-            + "  <!ENTITY lol5 \"&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;\">\n"
-            + "  <!ENTITY lol6 \"&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;\">\n"
-            + "  <!ENTITY lol7 \"&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;\">\n"
-            + "  <!ENTITY lol8 \"&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;\">\n"
-            + "  <!ENTITY lol9 \"&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;\">\n"
-            + "]>\n"
-            + "<lolz>&lol9;</lolz>";
-        String xslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
-            + "<xsl:output method=\"text\"/>\n"
-            + "</xsl:stylesheet>";
+        String xml = """
+            <?xml version="1.0"?>
+            <!DOCTYPE lolz [
+              <!ENTITY lol "lol">
+              <!ENTITY lol2 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;">
+              <!ENTITY lol3 "&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;">
+              <!ENTITY lol4 "&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;">
+              <!ENTITY lol5 "&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;">
+              <!ENTITY lol6 "&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;">
+              <!ENTITY lol7 "&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;">
+              <!ENTITY lol8 "&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;">
+              <!ENTITY lol9 "&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;">
+            ]>
+            <lolz>&lol9;</lolz>\
+            """;
+        String xslt = """
+            <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+            <xsl:output method="text"/>
+            </xsl:stylesheet>\
+            """;
 
         assertNull(XMLUtils.transform(new StreamSource(
             new ByteArrayInputStream(xml.getBytes())), new StreamSource(new ByteArrayInputStream(xslt.getBytes()))));
@@ -568,42 +594,51 @@ class XMLUtilsTest
     @Test
     void formatXMLContent() throws Exception
     {
-        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<root>\n"
-            + "  <item>item1</item>\n"
-            + "  <item>item2</item>\n"
-            + "</root>\n", XMLUtils.formatXMLContent("<root><item>item1</item><item>item2</item></root>"));
+        assertEquals("""
+            <?xml version="1.0" encoding="UTF-8"?>
+            <root>
+              <item>item1</item>
+              <item>item2</item>
+            </root>
+            """, XMLUtils.formatXMLContent("<root><item>item1</item><item>item2</item></root>"));
     }
 
     @Test
     void formatXMLContentPreventsXXEFileAttack() throws Exception
     {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"file:///etc/passwd\"> ]>\n"
-            + "\n"
-            + "<p>&xxe;</p>";
+        String xml = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE foo [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
 
-        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<!DOCTYPE foo [\n"
-            + "<!ENTITY xxe SYSTEM 'file:///etc/passwd'>\n"
-            + "]>\n"
-            + "<p />\n", XMLUtils.formatXMLContent(xml));
+            <p>&xxe;</p>\
+            """;
+
+        assertEquals("""
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE foo [
+            <!ENTITY xxe SYSTEM 'file:///etc/passwd'>
+            ]>
+            <p />
+            """, XMLUtils.formatXMLContent(xml));
     }
 
     @Test
     @Disabled("Enable when https://jira.xwiki.org/browse/XCOMMONS-2570 is fixed")
     void formatXMLContentWhenExternalWellKnownEntityUsed() throws Exception
     {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n"
-            + "   \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
-            + "\n"
-            + "<p>&dollar;</p>";
+        String xml = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\""
-            + " \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
-            + "<p>&dollar;</p>\n", XMLUtils.formatXMLContent(xml));
+            <p>&dollar;</p>\
+            """;
+
+        assertEquals("""
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+            <p>&dollar;</p>
+            """, XMLUtils.formatXMLContent(xml));
     }
 
     @Test

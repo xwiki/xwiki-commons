@@ -32,6 +32,10 @@ public class DefaultFileOutputTarget extends AbstractOutputStreamOutputTarget im
 {
     private File file;
 
+    /**
+     * Default constructor.
+     * @param file the file where to write the stream.
+     */
     public DefaultFileOutputTarget(File file)
     {
         this.file = file;

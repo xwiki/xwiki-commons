@@ -65,7 +65,7 @@ public class DefaultCacheControl implements CacheControl
     {
         ExecutionContext context = this.execution.getContext();
 
-        return context != null ? (T) ObjectUtils.defaultIfNull(context.getProperty(key), def) : def;
+        return context != null ? (T) ObjectUtils.getIfNull(context.getProperty(key), def) : def;
     }
 
     @Override

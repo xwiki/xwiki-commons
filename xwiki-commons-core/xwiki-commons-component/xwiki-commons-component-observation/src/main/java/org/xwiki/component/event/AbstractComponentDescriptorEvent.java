@@ -22,7 +22,7 @@ package org.xwiki.component.event;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.component.util.ReflectionUtils;
 
@@ -136,7 +136,7 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
 
         if (obj != null && obj.getClass() == getClass()) {
             return Objects.equals(getRoleType(), ((ComponentDescriptorEvent) obj).getRoleType())
-                && StringUtils.equals(getRoleHint(), ((ComponentDescriptorEvent) obj).getRoleHint());
+                && Strings.CS.equals(getRoleHint(), ((ComponentDescriptorEvent) obj).getRoleHint());
         }
 
         return false;

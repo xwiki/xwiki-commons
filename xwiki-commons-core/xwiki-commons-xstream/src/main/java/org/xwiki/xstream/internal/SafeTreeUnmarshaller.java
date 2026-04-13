@@ -42,12 +42,12 @@ public class SafeTreeUnmarshaller extends ReferenceByXPathUnmarshaller
     private static final Logger LOGGER = LoggerFactory.getLogger(SafeTreeUnmarshaller.class);
 
     /**
-     * @see com.thoughtworks.xstream.core.TreeUnmarshaller#TreeUnmarshaller(Object, HierarchicalStreamReader,
-     *      ConverterLookup, Mapper)
      * @param root the root object
      * @param reader the reader
      * @param converterLookup the converter lookup
      * @param mapper the mapper
+     * @see com.thoughtworks.xstream.core.TreeUnmarshaller#TreeUnmarshaller(Object, HierarchicalStreamReader,
+     *      ConverterLookup, Mapper)
      */
     public SafeTreeUnmarshaller(Object root, HierarchicalStreamReader reader, ConverterLookup converterLookup,
         Mapper mapper)

@@ -44,8 +44,8 @@ public @interface PropertyFeature
     String value();
 
     /**
-     * @since 17.2.0RC1
      * @return whether the feature described in this annotation is mandatory.
+     * @since 17.2.0RC1
      */
     @Unstable
     boolean mandatory() default false;

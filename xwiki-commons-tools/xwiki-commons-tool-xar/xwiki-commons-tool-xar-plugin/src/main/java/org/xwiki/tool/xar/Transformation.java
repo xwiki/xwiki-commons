@@ -142,7 +142,7 @@ public class Transformation
     {
         if (action == Action.INSERT_ATTACHMENT_CONTENT) {
             return "/xwikidoc/attachment[filename/text()='"
-                    + content.getName().replaceAll("'", "\\'") + "']";
+                    + content.getName().replace("'", "\\'") + "']";
         } else {
             return this.xpath;
         }

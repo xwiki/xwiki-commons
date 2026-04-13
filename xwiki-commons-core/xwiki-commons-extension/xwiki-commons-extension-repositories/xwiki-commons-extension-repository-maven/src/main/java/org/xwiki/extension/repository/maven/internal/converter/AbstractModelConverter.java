@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -35,6 +36,7 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Developer;
 import org.apache.maven.model.Exclusion;
@@ -200,7 +202,7 @@ public class AbstractModelConverter<T> extends AbstractConverter<T>
 
             for (Repository mavenRepository : mavenRepositories) {
                 // There is no point in remembering Maven central repository since all extensions will have it
-                if (!StringUtils.equals(mavenRepository.getId(), "central")) {
+                if (!Strings.CS.equals(mavenRepository.getId(), "central")) {
                     try {
                         Map<String, String> repositoryProperties = new HashMap<>();
                         if (mavenRepository.getReleases() != null) {
@@ -310,7 +312,7 @@ public class AbstractModelConverter<T> extends AbstractConverter<T>
 
     private String getPropertyString(Properties properties, String propertyName, boolean delete, String def)
     {
-        return StringUtils.defaultString(getProperty(properties, propertyName, delete), def);
+        return Objects.toString(getProperty(properties, propertyName, delete), def);
     }
 
     // TODO: download custom licenses content

@@ -43,6 +43,10 @@ public class ByteArrayOutputTarget extends AbstractOutputStreamOutputTarget
         // Useless
     }
 
+    /**
+     * @return the stream byte array or an empty array.
+     * @see ByteArrayOutputStream#toByteArray()
+     */
     public byte[] toByteArray()
     {
         return this.outputStream != null ? ((ByteArrayOutputStream) this.outputStream).toByteArray()

@@ -45,8 +45,8 @@ import org.xwiki.job.JobManagerConfiguration;
 /**
  * A component dedicated to find the appropriate {@link GroupedJobInitializer} based on a {@link JobGroupPath}.
  *
- * @since 12.5RC1
  * @version $Id$
+ * @since 12.5RC1
  */
 @Component
 @Singleton

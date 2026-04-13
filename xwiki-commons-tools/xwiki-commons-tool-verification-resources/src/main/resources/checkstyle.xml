@@ -1,9 +1,30 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
 <!DOCTYPE module PUBLIC
   "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
   "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
-<!-- Checkstyle properties for XWiki projects. Note that checks that should always executed and never be excluded
+<!-- Checkstyle properties for XWiki projects. Note that checks that should always execute and never be excluded
      should be moved to checkstyle-blocker.xml -->
 <module name="Checker">
 
@@ -18,12 +39,23 @@
   <module name="FileTabCharacter"/>
 
   <!-- We don't use Checkstyle's facility to check license headers since it's too limited for our needs.
-       Instead we use http://code.google.com/p/maven-license-plugin/
+       Instead, we use http://code.google.com/p/maven-license-plugin/
   <module name="Header">
     <property name="headerFile" value="${checkstyle.header.file}"/>
     <property name="ignoreLines" value="4,5,6,7"/>
   </module>
   -->
+
+  <!-- We'd like to use this one, but there's no option to exclude our internal packages.
+  <module name="JavadocPackage"/>
+  -->
+
+  <module name="LineLength">
+    <!-- @(\w+\.)+\w+::\w+\( stands for JSNI method calls: @my.package.MyClass::myMethod() -->
+    <property name="ignorePattern" value="(@version|@see|@link|^import|@(\w+\.)+\w+::\w+\()"/>
+    <property name="max" value="120"/>
+    <property name="fileExtensions" value="java"/>
+  </module>
 
   <module name="NewlineAtEndOfFile">
     <property name="fileExtensions" value="java, xml, js, css, vm"/>
@@ -39,30 +71,17 @@
     <property name="fileExtensions" value="sh"/>
   </module>
 
-  <!-- We'd like to use this one but there's no option to exclude our internal packages
-  <module name="PackageHtml"/>
-  -->
-
   <!-- No @author tags -->
   <module name="RegexpSingleline">
     <property name="format" value="@author"/>
     <property name="message" value="No @author tag allowed"/>
   </module>
 
-  <!-- We cannot use this rule as it fails on our license headers, considering them as copy-pastes!
-  <module name="StrictDuplicateCode"/>
-  -->
+  <module name="SuppressWarningsFilter"/>
 
-  <!--  We actually have a lot of incomplete translations so we can't really afford this rule
+  <!--  We actually have a lot of incomplete translations, so we can't really afford this rule
   <module name="Translation"/>
    -->
-
-  <module name="LineLength">
-    <!-- @(\w+\.)+\w+::\w+\( stands for JSNI method calls: @my.package.MyClass::myMethod() -->
-    <property name="ignorePattern" value="(@version|@see|@link|^import|@(\w+\.)+\w+::\w+\()"/>
-    <property name="max" value="120"/>
-    <property name="fileExtensions" value="java"/>
-  </module>
 
   <!--
      ======================================================================================
@@ -71,22 +90,8 @@
   -->
   <module name="TreeWalker">
 
-    <module name="SuppressWarningsHolder" />
-
-    <module name="SuppressWithNearbyCommentFilter">
-      <property name="commentFormat" value="CHECKSTYLE:(\w+)"/>
-      <property name="checkFormat" value="$1"/>
-      <property name="influenceFormat" value="1"/>
-    </module>
-
-    <module name="SuppressWithNearbyCommentFilter">
-      <property name="commentFormat" value="CHECKSTYLE:(\w+)\((\d+)\)"/>
-      <property name="checkFormat" value="$1"/>
-      <property name="influenceFormat" value="$2"/>
-    </module>
-
-    <!-- Note: for some checks we have defined a warning severity instead of the default error
-         severity. This is because we'd like to make the build fail on error for those checks
+    <!-- Note: for some checks we have defined a "warning" severity instead of the default error
+         severity. This is because we'd like to make the build fail on error for those checks,
          but there are errors to fix first -->
 
     <module name="AbstractClassName">
@@ -97,20 +102,26 @@
 
     <module name="AnonInnerLength"/>
 
-    <!--module name="ArrayTrailingComma"/-->
+    <module name="ArrayTrailingComma"/>
 
     <module name="ArrayTypeStyle"/>
 
-    <!--module name="AvoidInlineConditionals"/-->
+    <module name="AvoidDoubleBraceInitialization"/>
+
+    <!-- We use the ternary operator and don't find it that hard to read.
+    <module name="AvoidInlineConditionals"/>
+    -->
 
     <module name="AvoidNestedBlocks"/>
+
+    <module name="AvoidNoArgumentSuperConstructorCall"/>
 
     <module name="AvoidStarImport"/>
 
     <module name="BooleanExpressionComplexity"/>
 
-    <!-- This is a good metric but checkstyle doesn't allow to remove JDK's base classes
-         from the new count thus making this check unusable IMO
+    <!-- This is a good metric, but checkstyle doesn't allow to remove JDK's base classes from the count, thus making
+         this check unusable IMO
     <module name="ClassDataAbstractionCoupling"/>
     -->
 
@@ -160,6 +171,8 @@
       <property name="option" value="text"/>
     </module>
 
+    <module name="EmptyCatchBlock"/>
+
     <module name="EmptyForInitializerPad"/>
 
     <module name="EmptyForIteratorPad"/>
@@ -167,6 +180,8 @@
     <module name="EmptyStatement"/>
 
     <module name="EqualsHashCode"/>
+
+    <module name="EqualsAvoidNull"/>
 
     <module name="ExecutableStatementCount"/>
 
@@ -180,13 +195,6 @@
 
     <!--module name="FinalParameters"/-->
 
-    <!-- Avoid finalizers (this will not find violations that contain linebreaks) -->
-    <module name="RegexpSinglelineJava">
-      <property name="format" value="((public)|(protected))\s+void\s+finalize\(\s*\)"/>
-      <property name="message" value="Avoid finalizers"/>
-      <property name="ignoreComments" value="true"/>
-    </module>
-
     <module name="HiddenField">
       <property name="tokens" value="VARIABLE_DEF"/>
     </module>
@@ -194,6 +202,8 @@
     <module name="HideUtilityClassConstructor"/>
 
     <!--module name="IllegalCatch"/-->
+
+    <module name="IllegalIdentifierName"/>
 
     <module name="IllegalImport"/>
 
@@ -222,14 +232,15 @@
 
     <module name="InnerAssignment"/>
 
-    <!--module name="InterfaceIsType"/-->
+    <module name="InterfaceIsType"/>
+
+    <module name="InvalidJavadocPosition"/>
+
+    <module name="JavadocBlockTagLocation"/>
 
     <module name="JavadocMethod">
       <property name="accessModifiers" value="public"/>
     </module>
-
-    <module name="MissingJavadocMethod"/>
-    <module name="MissingJavadocType"/>
 
     <module name="JavadocStyle">
       <!-- Disabled since it's buggy, see
@@ -247,6 +258,8 @@
     </module>
 
     <module name="JavaNCSS"/>
+
+    <module name="LambdaParameterName"/>
 
     <module name="LeftCurly">
       <property name="option" value="nl"/>
@@ -273,6 +286,9 @@
 
     <!--module name="MissingCtor"/-->
 
+    <module name="MissingJavadocMethod"/>
+    <module name="MissingJavadocType"/>
+
     <module name="MissingSwitchDefault"/>
 
     <module name="ModifiedControlVariable"/>
@@ -295,13 +311,23 @@
 
     <module name="NestedTryDepth"/>
 
+    <module name="NoFinalizer"/>
+
+    <module name="NoLineWrap"/>
+
     <module name="NoWhitespaceAfter">
       <property name="tokens" value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS"/>
     </module>
 
     <module name="NoWhitespaceBefore"/>
 
+    <module name="NoWhitespaceBeforeCaseDefaultColon"/>
+
     <module name="NPathComplexity"/>
+
+    <module name="OneStatementPerLine"/>
+
+    <module name="OneTopLevelClass"/>
 
     <module name="OperatorWrap"/>
 
@@ -333,14 +359,12 @@
 
     <!--module name="RegexpHeader"/-->
 
-    <!--module name="RequireThis">
-      <property name="checkMethods" value="false"/>
-    </module-->
+    <module name="RequireThis"/>
 
     <!--module name="RequiredRegexp"/-->
 
-    <!-- Increasing the maximum number of allowed return statements, as otherwise
-         the code will simply use workarounds to hide the same amount of exit points. -->
+    <!-- Increasing the maximum number of allowed return statements, as otherwise developers will simply use workarounds
+         to hide the same number of exit points. -->
     <module name="ReturnCount">
       <property name="max" value="5"/>
       <property name="maxForVoid" value="5"/>
@@ -362,7 +386,21 @@
 
     <module name="SuperFinalize"/>
 
-    <!--module name="ThrowsCount"-->
+    <module name="SuppressWarningsHolder"/>
+
+    <module name="SuppressWithNearbyCommentFilter">
+      <property name="commentFormat" value="CHECKSTYLE:(\w+)"/>
+      <property name="checkFormat" value="$1"/>
+      <property name="influenceFormat" value="1"/>
+    </module>
+
+    <module name="SuppressWithNearbyCommentFilter">
+      <property name="commentFormat" value="CHECKSTYLE:(\w+)\((\d+)\)"/>
+      <property name="checkFormat" value="$1"/>
+      <property name="influenceFormat" value="$2"/>
+    </module>
+
+    <module name="ThrowsCount"/>
 
     <module name="TodoComment">
       <property name="severity" value="warning"/>
@@ -387,9 +425,13 @@
       <property name="excludedClasses" value=".*Main$"/>
     </module>
 
-    <!--module name="UnnecessaryParentheses"/-->
+    <!-- Having extra parenthesis can make the code easier to read
+    <module name="UnnecessaryParentheses"/>
+    -->
 
     <module name="UnusedImports"/>
+
+    <module name="UnusedLocalVariable"/>
 
     <module name="UpperEll"/>
 
@@ -404,5 +446,4 @@
 
   </module>
 
-  <module name="SuppressWarningsFilter" />
 </module>

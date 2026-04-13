@@ -51,10 +51,10 @@ import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -87,7 +87,7 @@ class MockitoComponentManagerExtensionTest
             @Test
             void test2()
             {
-                // Verify that parent test has had its fields initialized
+                // Verify that the parent test has had its fields initialized
                 assertNotNull(componentRole1);
                 assertNotNull(this.componentRole2);
             }
@@ -157,7 +157,7 @@ class MockitoComponentManagerExtensionTest
         {
             // Verify that we can get a Mockito CM injected when the type is ComponentManager
             assertNotNull(componentManager);
-            assertTrue(componentManager instanceof MockitoComponentManager);
+            assertInstanceOf(MockitoComponentManager.class, componentManager);
         }
     }
 
@@ -229,6 +229,7 @@ class MockitoComponentManagerExtensionTest
         }
 
         @Test
+        @SuppressWarnings("java:S125")
         void test() throws Exception
         {
             // Verify that a standard mock has been created for the list by Mockito (i.e. for a non-component class)
@@ -361,7 +362,7 @@ class MockitoComponentManagerExtensionTest
         execute(CMDoesntLeakBetweenTestTestCase.class);
     }
 
-    private void execute(Class testClass)
+    private void execute(Class<?> testClass)
     {
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
             .selectors(selectClass(testClass))
@@ -371,8 +372,8 @@ class MockitoComponentManagerExtensionTest
         launcher.execute(request, summaryListener);
 
         TestExecutionSummary summary = summaryListener.getSummary();
-        String message = summary.getFailures().size() > 0
-            ? ExceptionUtils.getStackTrace(summary.getFailures().get(0).getException()) : "";
+        String message = !summary.getFailures().isEmpty()
+            ? ExceptionUtils.getStackTrace(summary.getFailures().getFirst().getException()) : "";
         assertEquals(0, summary.getFailures().size(), message);
     }
 }

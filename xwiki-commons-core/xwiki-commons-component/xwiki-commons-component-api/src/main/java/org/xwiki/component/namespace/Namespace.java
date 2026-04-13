@@ -19,7 +19,7 @@
  */
 package org.xwiki.component.namespace;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
@@ -80,8 +80,8 @@ public class Namespace
         }
 
         if (other instanceof Namespace) {
-            return StringUtils.equals(this.type, ((Namespace) other).getType())
-                && StringUtils.equals(this.value, ((Namespace) other).getValue());
+            return Strings.CS.equals(this.type, ((Namespace) other).getType())
+                && Strings.CS.equals(this.value, ((Namespace) other).getValue());
         }
 
         return false;

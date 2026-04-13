@@ -64,8 +64,8 @@ public interface CompatibilityComponentManager
      * Find all the components implementing the provided role.
      *
      * @param role the class of the components role
-     * @return the components
      * @param <T> the type of the components role
+     * @return the components
      * @throws ComponentLookupException if any error happen during component search
      * @deprecated since 4.0M1 use {@code #getInstanceList(java.lang.reflect.Type)} instead
      */
@@ -76,8 +76,8 @@ public interface CompatibilityComponentManager
      * Find all the components implementing the provided role and organize then in a {@link java.util.Map} with role hint as key.
      *
      * @param role the class of the components role
-     * @return the components
      * @param <T> the type of the components role
+     * @return the components
      * @throws ComponentLookupException if any error happen during component search
      * @deprecated since 4.0M1 use {@code #getInstanceMap(java.lang.reflect.Type)} instead
      */

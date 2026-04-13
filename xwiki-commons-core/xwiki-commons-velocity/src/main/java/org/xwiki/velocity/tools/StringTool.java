@@ -176,11 +176,11 @@ public class StringTool extends StringUtils
      * StringTool.compare("ab", "abc")  < 0
      * }</pre>
      *
-     * @see #compare(String, String, boolean)
-     * @see String#compareTo(String)
      * @param str1  the String to compare from
      * @param str2  the String to compare to
      * @return &lt; 0, 0, &gt; 0, if {@code str1} is respectively less, equal or greater than {@code str2}
+     * @see #compare(String, String, boolean)
+     * @see String#compareTo(String)
      */
     public static int compare(final String str1, final String str2)
     {
@@ -216,12 +216,12 @@ public class StringTool extends StringUtils
      * StringTool.compareIgnoreCase("ab", "ABC")  < 0
      * }</pre>
      *
-     * @see #compareIgnoreCase(String, String, boolean)
-     * @see String#compareToIgnoreCase(String)
      * @param str1  the String to compare from
      * @param str2  the String to compare to
      * @return &lt; 0, 0, &gt; 0, if {@code str1} is respectively less, equal ou greater than {@code str2},
      *          ignoring case differences.
+     * @see #compareIgnoreCase(String, String, boolean)
+     * @see String#compareToIgnoreCase(String)
      */
     public static int compareIgnoreCase(final String str1, final String str2)
     {
@@ -355,11 +355,11 @@ public class StringTool extends StringUtils
      * StringTool.endsWith("ABCDEF", "")    = true
      * </pre>
      *
-     * @see String#endsWith(String)
      * @param str  the CharSequence to check, may be null
      * @param suffix the suffix to find, may be null
      * @return {@code true} if the CharSequence ends with the suffix, case-sensitive, or
      *  both {@code null}
+     * @see String#endsWith(String)
      */
     public static boolean endsWith(final CharSequence str, final CharSequence suffix)
     {
@@ -382,9 +382,9 @@ public class StringTool extends StringUtils
      *
      * @param sequence  the CharSequence to check, may be null
      * @param searchStrings the case-sensitive CharSequences to find, may be empty or contain {@code null}
-     * @see #endsWith(CharSequence, CharSequence)
      * @return {@code true} if the input {@code sequence} is {@code null} AND no {@code searchStrings} are provided, or
      *   the input {@code sequence} ends in any of the provided case-sensitive {@code searchStrings}.
+     * @see #endsWith(CharSequence, CharSequence)
      */
     public static boolean endsWithAny(final CharSequence sequence, final CharSequence... searchStrings)
     {
@@ -406,11 +406,11 @@ public class StringTool extends StringUtils
      * StringTool.endsWithIgnoreCase("ABCDEF", "cde") = false
      * </pre>
      *
-     * @see String#endsWith(String)
      * @param str  the CharSequence to check, may be null
      * @param suffix the suffix to find, may be null
      * @return {@code true} if the CharSequence ends with the suffix, case-insensitive, or
      *  both {@code null}
+     * @see String#endsWith(String)
      */
     public static boolean endsWithIgnoreCase(final CharSequence str, final CharSequence suffix)
     {
@@ -1034,12 +1034,12 @@ public class StringTool extends StringUtils
      * StringTool.replace("aba", "a", "z")   = "zbz"
      * </pre>
      *
-     * @see #replace(String text, String searchString, String replacement, int max)
      * @param text  text to search and replace in, may be null
      * @param searchString  the String to search for, may be null
      * @param replacement  the String to replace it with, may be null
      * @return the text with any replacements processed,
      *  {@code null} if null String input
+     * @see #replace(String text, String searchString, String replacement, int max)
      */
     public static String replace(final String text, final String searchString, final String replacement)
     {
@@ -1095,12 +1095,12 @@ public class StringTool extends StringUtils
      * StringTool.replaceIgnoreCase("aba", "A", "z")   = "zbz"
      * </pre>
      *
-     * @see #replaceIgnoreCase(String text, String searchString, String replacement, int max)
      * @param text  text to search and replace in, may be null
      * @param searchString  the String to search for (case-insensitive), may be null
      * @param replacement  the String to replace it with, may be null
      * @return the text with any replacements processed,
      *  {@code null} if null String input
+     * @see #replaceIgnoreCase(String text, String searchString, String replacement, int max)
      */
     public static String replaceIgnoreCase(final String text, final String searchString, final String replacement)
     {
@@ -1157,12 +1157,12 @@ public class StringTool extends StringUtils
      * StringTool.replaceOnce("aba", "a", "z")   = "zba"
      * </pre>
      *
-     * @see #replace(String text, String searchString, String replacement, int max)
      * @param text  text to search and replace in, may be null
      * @param searchString  the String to search for, may be null
      * @param replacement  the String to replace with, may be null
      * @return the text with any replacements processed,
      *  {@code null} if null String input
+     * @see #replace(String text, String searchString, String replacement, int max)
      */
     public static String replaceOnce(final String text, final String searchString, final String replacement)
     {
@@ -1186,12 +1186,12 @@ public class StringTool extends StringUtils
      * StringTool.replaceOnceIgnoreCase("FoOFoofoo", "foo", "") = "Foofoo"
      * </pre>
      *
-     * @see #replaceIgnoreCase(String text, String searchString, String replacement, int max)
      * @param text  text to search and replace in, may be null
      * @param searchString  the String to search for (case-insensitive), may be null
      * @param replacement  the String to replace with, may be null
      * @return the text with any replacements processed,
      *  {@code null} if null String input
+     * @see #replaceIgnoreCase(String text, String searchString, String replacement, int max)
      */
     public static String replaceOnceIgnoreCase(final String text, final String searchString, final String replacement)
     {
@@ -1212,11 +1212,11 @@ public class StringTool extends StringUtils
      * StringTool.startsWith("ABCDEF", "abc") = false
      * </pre>
      *
-     * @see String#startsWith(String)
      * @param str  the CharSequence to check, may be null
      * @param prefix the prefix to find, may be null
      * @return {@code true} if the CharSequence starts with the prefix, case-sensitive, or
      *  both {@code null}
+     * @see String#startsWith(String)
      */
     public static boolean startsWith(final CharSequence str, final CharSequence prefix)
     {
@@ -1239,9 +1239,9 @@ public class StringTool extends StringUtils
      *
      * @param sequence the CharSequence to check, may be null
      * @param searchStrings the case-sensitive CharSequence prefixes, may be empty or contain {@code null}
-     * @see #startsWith(CharSequence, CharSequence)
      * @return {@code true} if the input {@code sequence} is {@code null} AND no {@code searchStrings} are provided, or
      *   the input {@code sequence} begins with any of the provided case-sensitive {@code searchStrings}.
+     * @see #startsWith(CharSequence, CharSequence)
      */
     public static boolean startsWithAny(final CharSequence sequence, final CharSequence... searchStrings)
     {
@@ -1262,11 +1262,11 @@ public class StringTool extends StringUtils
      * StringTool.startsWithIgnoreCase("ABCDEF", "abc") = true
      * </pre>
      *
-     * @see String#startsWith(String)
      * @param str  the CharSequence to check, may be null
      * @param prefix the prefix to find, may be null
      * @return {@code true} if the CharSequence starts with the prefix, case-insensitive, or
      *  both {@code null}
+     * @see String#startsWith(String)
      */
     public static boolean startsWithIgnoreCase(final CharSequence str, final CharSequence prefix)
     {

@@ -70,8 +70,8 @@ public final class RepositoryUtils
      * @param offset the offset where to start returning elements
      * @param nb the number of maximum element to return
      * @param extensions the extension collection to search in
-     * @return the search result
      * @param <E> the type of element in the {@link Collection}
+     * @return the search result
      */
     public static <E extends Extension> CollectionIterableResult<E> searchInCollection(String pattern, int offset,
         int nb, Collection<E> extensions)
@@ -85,9 +85,9 @@ public final class RepositoryUtils
      * @param nb the number of maximum element to return
      * @param extensions the extension collection to search in
      * @param forceUnique make sure returned elements are unique
+     * @param <E> the type of element in the {@link Collection}
      * @return the search result
      * @since 6.4.1
-     * @param <E> the type of element in the {@link Collection}
      */
     public static <E extends Extension> CollectionIterableResult<E> searchInCollection(String pattern, int offset,
         int nb, Collection<E> extensions, boolean forceUnique)
@@ -104,9 +104,9 @@ public final class RepositoryUtils
      * @param query the query
      * @param extensions the extension collection to search in
      * @param forceUnique make sure returned elements are unique
+     * @param <E> the type of element in the {@link Collection}
      * @return the search result
      * @since 7.0M2
-     * @param <E> the type of element in the {@link Collection}
      */
     public static <E extends Extension> CollectionIterableResult<E> searchInCollection(ExtensionQuery query,
         Collection<E> extensions, boolean forceUnique)
@@ -131,8 +131,8 @@ public final class RepositoryUtils
      * @param offset the offset where to start returning elements
      * @param nb the number of maximum element to return
      * @param elements the element collection to search in
-     * @return the result to limit
      * @param <E> the type of element in the {@link Collection}
+     * @return the result to limit
      */
     public static <E> CollectionIterableResult<E> getIterableResult(int offset, int nb, Collection<E> elements)
     {
@@ -154,8 +154,8 @@ public final class RepositoryUtils
      * @param offset the offset where to start returning elements
      * @param nb the number of maximum element to return
      * @param elements the element collection to search in
-     * @return the result to limit
      * @param <E> the type of element in the {@link List}
+     * @return the result to limit
      */
     private static <E> CollectionIterableResult<E> getIterableResultFromList(int offset, int nb, List<E> elements)
     {
@@ -182,9 +182,9 @@ public final class RepositoryUtils
      * @param filters the filters
      * @param extensions the extension collection to search in
      * @param forceUnique make sure returned elements are unique
+     * @param <E> the type of element in the {@link Collection}
      * @return the filtered list of extensions
      * @since 7.0M2
-     * @param <E> the type of element in the {@link Collection}
      */
     private static <E extends Extension> List<E> filter(String pattern, Collection<Filter> filters,
         Collection<E> extensions, boolean forceUnique)
@@ -363,9 +363,9 @@ public final class RepositoryUtils
      * 
      * @param previousSearchResult all the previous search results
      * @param result the new search result to append
+     * @param <E> the type of element in the {@link Collection}
      * @return the new aggregated search result
      * @since 8.1M1
-     * @param <E> the type of element in the {@link Collection}
      */
     public static <E extends Extension> IterableResult<E> appendSearchResults(IterableResult<E> previousSearchResult,
         IterableResult<E> result)

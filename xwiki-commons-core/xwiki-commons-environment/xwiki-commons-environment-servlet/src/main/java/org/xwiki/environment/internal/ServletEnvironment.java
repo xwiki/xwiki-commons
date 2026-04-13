@@ -25,13 +25,23 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 import jakarta.servlet.ServletContext;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheControl;
@@ -52,6 +62,48 @@ import org.xwiki.jakartabridge.servlet.JakartaServletBridge;
 public class ServletEnvironment extends AbstractEnvironment
 {
     /**
+     * The expected path of the file used to test how the Servlet container handles URL encoded characters in resource
+     * paths.
+     * 
+     * @since 18.2.0
+     * @since 17.10.5
+     */
+    static final String ENCODED_RESOURCE_PATH = "/WEB-INF/resourcecheck/a%61b";
+
+    /**
+     * The expected content of the file aab.
+     * 
+     * @since 18.2.0
+     * @since 17.10.5
+     */
+    static final String DECODED_RESOURCE_CONTENT = "aab";
+
+    /**
+     * The expected content of the file a%61b.
+     * 
+     * @since 18.2.0
+     * @since 17.10.5
+     */
+    static final String ENCODED_RESOURCE_CONTENT = "a%61b";
+
+    private static final String LOGGER_INVALID_RESOURCE_PATH =
+        "Error getting resource [{}] because of invalid path format. Reason: [{}]";
+
+    private static final String LOGGER_PATH_TRAVERSAL_ROOT =
+        "The resource path [{}] is trying to access a resource outside of the resource root.";
+
+    private static final String LOGGER_PATH_TRAVERSAL_PREFIX =
+        "The resource path [{}] is trying to access a resource outside of the specified prefix [{}].";
+
+    private static final String SLASH = "/";
+
+    private static final String ROOT_PATH = SLASH;
+
+    private static final String VIRTUAL_ROOT_PATH_PREFIX = "/root";
+
+    private static final String VIRTUAL_ROOT_PATH = VIRTUAL_ROOT_PATH_PREFIX + SLASH;
+
+    /**
      * @see #getJakartaServletContext()
      */
     private ServletContext jakartaServletContext;
@@ -67,13 +119,75 @@ public class ServletEnvironment extends AbstractEnvironment
     @Inject
     private CacheControl cacheControl;
 
-    private Cache<Optional<URL>> resourceURLCache;
+    @Inject
+    private ServletEnvironmentConfiguration configuration;
+
+    @Inject
+    private Provider<FileSystem> fileSystemProvider;
+
+    private Cache<ResourceCacheEntry> resourceURLCache;
+
+    private boolean servletDecodeURL;
+
+    private boolean realPathSupported;
+
+    private String rootRealPath;
+
+    private List<String> allowedRealPaths;
+
+    static final class ResourceCacheEntry
+    {
+        private Optional<URL> url;
+
+        private Optional<String> realPath;
+
+        // As we store Optional<URL> in the cache, we can have null Optional which is unavoidable.
+        @SuppressWarnings("java:S2789")
+        ResourceCacheEntry()
+        {
+            this.url = null;
+            this.realPath = null;
+        }
+
+        ResourceCacheEntry(Optional<URL> url, Optional<String> resourceRealPath)
+        {
+            this.url = url;
+            this.realPath = resourceRealPath;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj) {
+                return true;
+            }
+
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+
+            ResourceCacheEntry other = (ResourceCacheEntry) obj;
+            return Objects.equals(this.url, other.url) && Objects.equals(this.realPath, other.realPath);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(this.url, this.realPath);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "ResourceCacheEntry{url=" + this.url + ", realPath=" + this.realPath + "}";
+        }
+    }
 
     /**
      * Initialize the cache for resource URLs. This method is called by {@link ServletEnvironmentCacheInitializer} when
      * the application is started to ensure that the cache is initialized only once the cache builder is available. The
-     * cache builder depends on loading resources from this component, so we can't initialize the cache when it is
-     * first requested.
+     * cache builder depends on loading resources from this component, so we can't initialize the cache when it is first
+     * requested.
      *
      * @since 17.5.0
      * @since 17.4.1
@@ -86,8 +200,8 @@ public class ServletEnvironment extends AbstractEnvironment
                 // The cache manager can't be injected directly as it depends on this component, so it is
                 // important to only request it once this component has been initialized.
                 CacheManager cacheManager = this.componentManager.getInstance(CacheManager.class);
-                this.resourceURLCache = cacheManager.createNewCache(
-                    new LRUCacheConfiguration("environment.servlet.resourceURLCache", 10000));
+                this.resourceURLCache = cacheManager
+                    .createNewCache(new LRUCacheConfiguration("environment.servlet.resourceURLCache", 10000));
             } catch (Exception e) {
                 this.logger.error("Failed to initialize the resource URL cache.", e);
             }
@@ -100,7 +214,8 @@ public class ServletEnvironment extends AbstractEnvironment
     public void setServletContext(javax.servlet.ServletContext servletContext)
     {
         this.javaxServletContext = servletContext;
-        this.jakartaServletContext = JakartaServletBridge.toJakarta(servletContext);
+
+        setServletContext(JakartaServletBridge.toJakarta(servletContext));
     }
 
     /**
@@ -109,6 +224,47 @@ public class ServletEnvironment extends AbstractEnvironment
     public void setServletContext(ServletContext servletContext)
     {
         this.jakartaServletContext = servletContext;
+
+        // Various application servers have different behaviors when it comes to resource path interpretation. We are
+        // trying to deduce what is the current behavior so that we can add workaround for wrong ones and always have a
+        // consistent behavior
+        // This only works with the WAR contains a prepared set of file to check it (like it is the case in the XWiki
+        // WAR, for example). If not, fallback on the default behavior, which is to assume that the Servlet container
+        // does not decode URL encoded characters (as it should, according to specifications).
+        String content = getResourceAsStreamContent(ENCODED_RESOURCE_PATH);
+        this.servletDecodeURL = content != null && Strings.CS.equals(content, DECODED_RESOURCE_CONTENT);
+
+        // Check once if the real path is supported by the Servlet context so that we know if we can rely on it later to
+        // check for path traversal attempts
+        this.rootRealPath = getRealPathWithFolderSupport(ROOT_PATH);
+        if (this.rootRealPath != null) {
+            this.realPathSupported = true;
+
+            this.logger.debug("Root real path: [{}]", rootRealPath);
+
+            this.allowedRealPaths = new ArrayList<>();
+            // Remember the root real path as we are going to use it to check all resources
+            this.allowedRealPaths.add(rootRealPath);
+            // Add allowed real paths from configuration
+            this.allowedRealPaths.addAll(this.configuration.getAllowedRealPaths());
+        } else {
+            this.logger.debug("Real path not supported");
+        }
+    }
+
+    private String getResourceAsStreamContent(String path)
+    {
+        try (InputStream is = getJakartaServletContext().getResourceAsStream(path)) {
+            if (is != null) {
+                return IOUtils.toString(is, StandardCharsets.UTF_8);
+            }
+        } catch (IOException e) {
+            this.logger.warn(
+                "Unable to read test resource to determine the servlet URL decoding behavior. Reason: [{}]",
+                ExceptionUtils.getRootCauseMessage(e));
+        }
+
+        return null;
     }
 
     /**
@@ -139,52 +295,368 @@ public class ServletEnvironment extends AbstractEnvironment
         return this.jakartaServletContext;
     }
 
-    @Override
-    public InputStream getResourceAsStream(String resourceName)
+    private String normalizePath(String path)
     {
-        return getJakartaServletContext().getResourceAsStream(resourceName);
+        // Some application servers decode URL encoded characters when looking for resources, which contradict Servlet
+        // specifications
+        String protectedPath = path;
+        if (this.servletDecodeURL) {
+            // The application server decodes URL encoded characters, so we need to double encode them
+            protectedPath = path.replace("%", "%25");
+        }
+
+        return protectedPath;
     }
 
-    @Override
-    // As we store Optional<URL> in the cache, the cache can return null for the Optional which is unavoidable.
-    @SuppressWarnings("java:S2789")
-    public URL getResource(String resourceName)
+    private ResourceCacheEntry getResourceCacheEntry(String resourcePath)
     {
         if (this.resourceURLCache != null && this.cacheControl.isCacheReadAllowed()) {
-            Optional<URL> cachedURL = this.resourceURLCache.get(resourceName);
+            return this.resourceURLCache.get(resourcePath);
+        }
 
-            if (cachedURL != null) {
-                return cachedURL.orElse(null);
+        return null;
+    }
+
+    private void setResourceURLToCache(String resourcePath, URL url)
+    {
+        if (this.resourceURLCache != null) {
+            ResourceCacheEntry cacheEntry = getResourceCacheEntry(resourcePath);
+
+            if (cacheEntry == null) {
+                cacheEntry = new ResourceCacheEntry();
+            }
+
+            cacheEntry.url = Optional.ofNullable(url);
+
+            this.resourceURLCache.set(resourcePath, cacheEntry);
+        }
+    }
+
+    private void setResourceRealPathToCache(String resourcePath, String realPath)
+    {
+        if (this.resourceURLCache != null) {
+            ResourceCacheEntry cacheEntry = getResourceCacheEntry(resourcePath);
+
+            if (cacheEntry == null) {
+                cacheEntry = new ResourceCacheEntry();
+            }
+
+            cacheEntry.realPath = Optional.ofNullable(realPath);
+
+            this.resourceURLCache.set(resourcePath, cacheEntry);
+        }
+    }
+
+    private String withLeadingSlash(String path)
+    {
+        if (path != null && !Strings.CS.startsWith(path, SLASH)) {
+            return SLASH + path;
+        }
+
+        return path;
+    }
+
+    private String withoutLeadingSlash(String path)
+    {
+        return Strings.CS.removeStart(path, SLASH);
+    }
+
+    private String withTrailingSlash(String path)
+    {
+        if (path != null && !Strings.CS.endsWith(path, SLASH)) {
+            return path + SLASH;
+        }
+
+        return path;
+    }
+
+    private String normalizePrefixPath(String prefixPath)
+    {
+        if (Strings.CS.equals(prefixPath, ROOT_PATH)) {
+            return prefixPath;
+        }
+
+        return withLeadingSlash(withTrailingSlash(prefixPath));
+    }
+
+    private String normalizeResourcePath(String resourcePath)
+    {
+        return withoutLeadingSlash(resourcePath);
+    }
+
+    // As we store Optional<URL> in the cache, we can have null Optional which is unavoidable.
+    @SuppressWarnings("java:S2789")
+    private String getRealPath(String resourcePath)
+    {
+        // Check if the resource path is the root path
+        if (isRootResourcePath(resourcePath)) {
+            return this.rootRealPath;
+        }
+
+        // Search in the cache if we already know the real path for this resource
+        ResourceCacheEntry cacheEntry = getResourceCacheEntry(resourcePath);
+        if (cacheEntry != null && cacheEntry.realPath != null) {
+            return cacheEntry.realPath.orElse(null);
+        }
+
+        // Get the real path from the Servlet context
+        String realPath = null;
+        try {
+            String normalizePath = normalizePath(resourcePath);
+
+            this.logger.debug("Trying to get the real path for resource [{}] (normalized from [{}])", normalizePath,
+                resourcePath);
+
+            realPath = getRealPathWithFolderSupport(normalizePath);
+        } catch (IllegalArgumentException e) {
+            // Some application servers (like Tomcat) already have a protection for paths trying to go out of the root
+            // resource and will throw an IllegalArgumentException in that case. In our case we are just interested in
+            // the fact that it's invalid (null) and we want to remember it in the cache.
+
+            this.logger.warn("Failed to get the real path for [{}]", resourcePath, e);
+        }
+
+        // Make sure the resource real path is inside the root real path
+        if (realPath != null && !isRealPathInsideAllowedRoots(realPath)) {
+            warnPathTraversalRootRealPath(resourcePath, realPath);
+
+            // Make the real path invalid
+            realPath = null;
+        }
+
+        // Remember the real path
+        setResourceRealPathToCache(resourcePath, realPath);
+
+        return realPath;
+    }
+
+    private boolean isRealPathInsideAllowedRoots(String realPath)
+    {
+        for (String allowedRealPath : this.allowedRealPaths) {
+            if (Strings.CS.startsWith(realPath, allowedRealPath)) {
+                return true;
             }
         }
 
-        URL url = getResourceInternal(resourceName);
+        return false;
+    }
 
-        if (this.resourceURLCache != null) {
-            this.resourceURLCache.set(resourceName, Optional.ofNullable(url));
+    private String getRealPathWithFolderSupport(String resourcePath)
+    {
+        String realPath = getJakartaServletContext().getRealPath(resourcePath);
+
+        this.logger.debug("  -> {}", realPath);
+
+        if (realPath != null) {
+            if (resourcePath.endsWith(SLASH)) {
+                // The specified resource is a directory.
+                String fileSeparator = this.fileSystemProvider.get().getSeparator();
+
+                // Jetty adds sometimes a / at the end of the real path on Windows, which does not really make sense...
+                realPath = Strings.CS.removeEnd(realPath, SLASH);
+
+                // Make sure the real path reflects the fact that the resource is a directory.
+                realPath = Strings.CS.appendIfMissing(realPath, fileSeparator);
+            }
+
+            this.logger.debug("    -> {}", realPath);
         }
+
+        return realPath;
+    }
+
+    private void warnPathTraversalRootPathNorm(String normalizedFullPath)
+    {
+        this.logger.warn(LOGGER_PATH_TRAVERSAL_ROOT, normalizedFullPath);
+    }
+
+    private void warnPathTraversalRootRealPath(String resourcePath, String realPath)
+    {
+        this.logger.warn(
+            LOGGER_PATH_TRAVERSAL_ROOT + " It's expected to be located inside one of the allowed real locations {},"
+                + " but its real location is [{}]."
+                + " If this should actually be an allowed location, you can add it to the property "
+                + "'environment.servlet.allowedRealPaths' in the configuration file 'xwiki.properties'.",
+            resourcePath, this.allowedRealPaths, realPath);
+    }
+
+    private boolean isRootResourcePath(String normalizedPrefixPath)
+    {
+        return ROOT_PATH.equals(normalizedPrefixPath);
+    }
+
+    private boolean isValidRealPath(String normalizedPrefixPath, String normalizedFullPath)
+    {
+        this.logger.debug("Checking real path for prefix [{}] and full path [{}]", normalizedPrefixPath,
+            normalizedFullPath);
+
+        // Get full real path
+        String realFullPath = getRealPath(normalizedFullPath);
+        if (realFullPath == null) {
+            return false;
+        }
+
+        if (isRootResourcePath(normalizedPrefixPath)) {
+            // Make sure the full real path is inside one of the allowed locations
+            return isRealPathInsideAllowedRoots(realFullPath);
+        } else {
+            // Get prefix real path
+            String realPrefixPath = getRealPath(normalizedPrefixPath);
+            if (realPrefixPath == null) {
+                return false;
+            }
+
+            // Make sure full real path is inside the prefix real path
+            if (!Strings.CS.startsWith(realFullPath, realPrefixPath)) {
+                if (normalizedPrefixPath.equals(ROOT_PATH)) {
+                    warnPathTraversalRootRealPath(normalizedFullPath, realFullPath);
+                } else {
+                    this.logger.warn(LOGGER_PATH_TRAVERSAL_PREFIX
+                        + " It's expected to be inside the prefix real location [{}], but its real location is [{}].",
+                        normalizedFullPath, normalizedPrefixPath, realPrefixPath, realFullPath);
+                }
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isValidPathNormalization(String normalizedPrefixPath, String normalizedFullPath)
+    {
+        this.logger.debug("Checking path normalization for prefix [{}] and full path [{}]", normalizedPrefixPath,
+            normalizedFullPath);
+
+        // Use a non empty path as root path (instead of "/") as otherwise it's not possible to properly check for
+        // path traversal attempts.
+        Path rootPath = Paths.get(withTrailingSlash(VIRTUAL_ROOT_PATH)).toAbsolutePath().normalize();
+
+        // Make sure the prefix path is valid
+        Path prefixPath = Paths.get(VIRTUAL_ROOT_PATH_PREFIX + normalizedPrefixPath).normalize();
+        if (!prefixPath.startsWith(rootPath)) {
+            warnPathTraversalRootPathNorm(normalizedPrefixPath);
+
+            return false;
+        }
+
+        // Make sure the full path is valid
+        Path fullPath = Paths.get(VIRTUAL_ROOT_PATH_PREFIX + normalizedFullPath).normalize();
+        if (!fullPath.startsWith(prefixPath)) {
+            if (normalizedPrefixPath.equals(ROOT_PATH)) {
+                warnPathTraversalRootPathNorm(normalizedFullPath);
+            } else {
+                this.logger.warn(LOGGER_PATH_TRAVERSAL_PREFIX, normalizedFullPath, normalizedPrefixPath);
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isValid(String normalizedPrefixPath, String normalizedFullPath)
+    {
+        // Relies on the real path to check for path traversal attempts first as it's more reliable than trying to do it
+        // with Path normalization, but if it's not supported then try with Path normalization and hope for the best.
+        // It's not perfect but at least it will cover most cases and it's better than nothing. Real path is slower
+        // than Path normalization, but it should be cached so it should not have a big impact on performance.
+        if (this.realPathSupported) {
+            return isValidRealPath(normalizedPrefixPath, normalizedFullPath);
+        }
+
+        // If real path is not supported, try with Path normalization
+        return isValidPathNormalization(normalizedPrefixPath, normalizedFullPath);
+    }
+
+    @Override
+    public URL getResource(String resourcePath)
+    {
+        return getResource(ROOT_PATH, resourcePath);
+    }
+
+    // As we store Optional<URL> in the cache, we can have null Optional which is unavoidable.
+    @SuppressWarnings("java:S2789")
+    @Override
+    public URL getResource(String prefixPath, String resourcePath)
+    {
+        String normalizedPrefixPath = normalizePrefixPath(prefixPath);
+        String normalizedResourcePath = normalizeResourcePath(resourcePath);
+        String normalizedFullPath = normalizedPrefixPath + normalizedResourcePath;
+
+        // Check the cache
+        ResourceCacheEntry cacheEntry = getResourceCacheEntry(normalizedFullPath);
+        if (cacheEntry != null && cacheEntry.url != null) {
+            // The resource URL is already in the cache, return it
+            return cacheEntry.url.orElse(null);
+        }
+
+        URL url = null;
+
+        // Check for path traversal attempts (to access resources outside of the specified prefix or outside the root)
+        if (isValid(normalizedPrefixPath, normalizedFullPath)) {
+            // Get the resource URL
+            url = getResourceInternal(normalizedFullPath);
+        }
+
+        // Remember the URL in the cache
+        setResourceURLToCache(normalizedFullPath, url);
 
         return url;
     }
 
-    private URL getResourceInternal(String resourceName)
+    @Override
+    public InputStream getResourceAsStream(String resourcePath)
+    {
+        return getResourceAsStream(ROOT_PATH, resourcePath);
+    }
+
+    @Override
+    public InputStream getResourceAsStream(String prefixPath, String resourcePath)
+    {
+        String normalizedPrefixPath = normalizePrefixPath(prefixPath);
+        String normalizedResourcePath = normalizeResourcePath(resourcePath);
+        String normalizedFullPath = normalizedPrefixPath + normalizedResourcePath;
+
+        // Check for path traversal attempts to access resources outside of the specified prefix
+        if (isValid(normalizedPrefixPath, normalizedFullPath)) {
+            // Get the resource
+            normalizedFullPath = normalizePath(normalizedFullPath);
+
+            this.logger.debug(
+                "Trying to get the resource as stream for [{}] (normalized from prefix [{}] and resource [{}])",
+                normalizedFullPath, prefixPath, resourcePath);
+
+            return getJakartaServletContext().getResourceAsStream(normalizedFullPath);
+        }
+
+        return null;
+    }
+
+    private URL getResourceInternal(String resourcePath)
     {
         URL url;
+
         try {
-            url = getJakartaServletContext().getResource(resourceName);
+            String normalizedResourcePath = normalizePath(resourcePath);
+
+            this.logger.debug("Trying to get the resource URL for [{}] (normalized from [{}])", normalizedResourcePath,
+                resourcePath);
+
+            url = getJakartaServletContext().getResource(normalizedResourcePath);
 
             // ensure to normalize the URI, we don't want relative path.
             if (url != null) {
                 url = url.toURI().normalize().toURL();
             }
             // We're catching IllegalArgumentException which might be thrown by Tomcat when trying to resolve path such
-            // as
-            // `templates/../..`
+            // as `templates/../..`
         } catch (MalformedURLException | URISyntaxException | IllegalArgumentException e) {
+            this.logger.warn(LOGGER_INVALID_RESOURCE_PATH, resourcePath, e.getMessage());
+
             url = null;
-            this.logger.warn("Error getting resource [{}] because of invalid path format. Reason: [{}]", resourceName,
-                e.getMessage());
         }
+
         return url;
     }
 
@@ -192,6 +664,7 @@ public class ServletEnvironment extends AbstractEnvironment
     protected String getTemporaryDirectoryName()
     {
         final String tmpDirectory = super.getTemporaryDirectoryName();
+
         try {
             if (tmpDirectory == null) {
                 File tempDir = (File) getJakartaServletContext().getAttribute(ServletContext.TEMPDIR);
@@ -201,6 +674,41 @@ public class ServletEnvironment extends AbstractEnvironment
             this.logger.warn("Unable to get Servlet temporary directory due to error [{}], "
                 + "falling back on the default System temporary directory.", ExceptionUtils.getMessage(e));
         }
+
         return tmpDirectory;
+    }
+
+    @Override
+    public Date getResourceLastModified(String resourcePath)
+    {
+        return getResourceLastModified(ROOT_PATH, resourcePath);
+    }
+
+    @Override
+    public Date getResourceLastModified(String prefixPath, String resourcePath)
+    {
+        if (this.realPathSupported) {
+            String normalizedPrefixPath = normalizePrefixPath(prefixPath);
+            String normalizedResourcePath = normalizeResourcePath(resourcePath);
+            String normalizedFullPath = normalizedPrefixPath + normalizedResourcePath;
+
+            if (isValid(normalizedPrefixPath, normalizedFullPath)) {
+                return getRealPathLastModified(getRealPath(normalizedFullPath));
+            }
+        }
+
+        return null;
+    }
+
+    private Date getRealPathLastModified(String realPath)
+    {
+        if (realPath != null) {
+            File resourceFile = new File(realPath);
+            if (resourceFile.exists()) {
+                return new Date(resourceFile.lastModified());
+            }
+        }
+
+        return null;
     }
 }

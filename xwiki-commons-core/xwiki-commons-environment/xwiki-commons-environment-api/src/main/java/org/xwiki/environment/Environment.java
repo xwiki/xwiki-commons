@@ -22,8 +22,12 @@ package org.xwiki.environment;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Date;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.xwiki.component.annotation.Role;
+import org.xwiki.stability.Unstable;
 
 /**
  * Abstraction that represents an Environment (Java SE, Servlet, Portlet, etc) and provides API to access
@@ -33,6 +37,7 @@ import org.xwiki.component.annotation.Role;
  * @since 3.5M1
  */
 @Role
+@NullMarked
 public interface Environment
 {
     /**
@@ -41,6 +46,7 @@ public interface Environment
      *
      * @return a {@link File} object pointing to a directory that the application can use for storing temporary files
      */
+    @Nullable
     File getTemporaryDirectory();
 
     /**
@@ -49,18 +55,79 @@ public interface Environment
      *
      * @return a {@link File} object pointing to the root folder of the permanent directory
      */
+    @Nullable
     File getPermanentDirectory();
 
     /**
-     * @param resourceName the full name of the resource to access (eg "/somefile.properties")
+     * @param resourcePath the full path of the resource to access (eg "/somefile.properties")
      * @return the resource location as a {@link URL} or null if not found
      */
-    URL getResource(String resourceName);
+    @Nullable
+    URL getResource(String resourcePath);
 
     /**
-     * @param resourceName the full name of the resource to access (eg "/somefile.properties")
+     * @param prefixPath the resource folder from where to search for the resource
+     * @param resourcePath the path of the resource to access, relative to the prefix
+     * @return the resource location as a {@link URL}, or null if no resource with the provided path could be found (or
+     *         if the resource path is trying to access a resource outside of the specified prefix)
+     * @since 17.10.5
+     * @since 18.2.0
+     */
+    @Unstable
+    @Nullable
+    default URL getResource(String prefixPath, String resourcePath)
+    {
+        return getResource(prefixPath + resourcePath);
+    }
+
+    /**
+     * @param resourcePath the full path of the resource to access (eg "/somefile.properties")
      * @return the resource location as an {@link InputStream} or <code>null</code> if no resource exists at the
      *         specified name
      */
-    InputStream getResourceAsStream(String resourceName);
+    @Nullable
+    InputStream getResourceAsStream(String resourcePath);
+
+    /**
+     * @param prefixPath the resource folder from where to search for the resource
+     * @param resourcePath the path of the resource to access, relative to the prefix
+     * @return the resource content as an {@link InputStream}, or null if no resource with the provided path could be
+     *         found (or if the resource path is trying to access a resource outside of the specified prefix)
+     * @since 17.10.5
+     * @since 18.2.0
+     */
+    @Unstable
+    @Nullable
+    default InputStream getResourceAsStream(String prefixPath, String resourcePath)
+    {
+        return getResourceAsStream(prefixPath + resourcePath);
+    }
+
+    /**
+     * @param resourcePath the full path of the resource to access (eg "/somefile.properties")
+     * @return the date of last modification of the resource file, or null if the resource does not exist or the date
+     *         cannot be found
+     * @since 17.10.5
+     * @since 18.2.0
+     */
+    @Nullable
+    default Date getResourceLastModified(String resourcePath)
+    {
+        return null;
+    }
+
+    /**
+     * @param prefixPath the resource folder from where to search for the resource
+     * @param resourcePath the path of the resource to access, relative to the prefix
+     * @return the date of last modification of the resource file, or null if the resource does not exist (or if the
+     *         resource path is trying to access a resource outside of the specified prefix) or the date cannot be found
+     * @since 17.10.5
+     * @since 18.2.0
+     */
+    @Unstable
+    @Nullable
+    default Date getResourceLastModified(String prefixPath, String resourcePath)
+    {
+        return getResourceLastModified(prefixPath + resourcePath);
+    }
 }

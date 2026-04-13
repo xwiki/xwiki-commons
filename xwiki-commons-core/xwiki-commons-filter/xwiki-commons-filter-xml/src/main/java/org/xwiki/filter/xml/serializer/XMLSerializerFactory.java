@@ -39,8 +39,8 @@ public interface XMLSerializerFactory
      * @param filterInterface the interface of the filter that will receive the events
      * @param xmlResult the StAX event writer
      * @param configuration the configuration of the serializer
-     * @return the listener to send events to
      * @param <T> the type of the event listener
+     * @return the listener to send events to
      * @throws FactoryConfigurationError if no instance of XMLOutputFactory can be found
      * @throws XMLStreamException if the passed result is not supported
      */
@@ -51,8 +51,8 @@ public interface XMLSerializerFactory
      * @param filterInterfaces the interfaces of the filter that will receive the events
      * @param xmlResult the StAX event writer
      * @param configuration the configuration of the serializer
-     * @return the listener to send events to
      * @param <T> the type of the event listener
+     * @return the listener to send events to
      * @throws FactoryConfigurationError if no instance of XMLOutputFactory can be found
      * @throws XMLStreamException if the passed result is not supported
      * @since 5.3M1

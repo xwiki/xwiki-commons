@@ -17,7 +17,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.xwiki.test.junit5;
 
 import org.junit.jupiter.api.AfterAll;
@@ -37,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.xwiki.test.LogLevel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
 /**
@@ -44,9 +44,9 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
  *
  * @version $Id$
  */
-public class LogCaptureExtensionTest
+class LogCaptureExtensionTest
 {
-    public static class SampleTestCase
+    static class SampleTestCase
     {
         private static final Logger LOGGER = LoggerFactory.getLogger(SampleTestCase.class);
 
@@ -58,6 +58,7 @@ public class LogCaptureExtensionTest
         void testWhenNotCaptured()
         {
             LOGGER.warn("uncaptured warn");
+            assertTrue(true);
         }
 
         @Test
@@ -73,15 +74,16 @@ public class LogCaptureExtensionTest
         void testWhenLoggerLevelNotCaptured()
         {
             LOGGER.info(("info ignored and not captured"));
+            assertTrue(true);
         }
     }
 
-    public static class SampleStaticTestCase
+    static class SampleStaticTestCase
     {
         private static final Logger LOGGER = LoggerFactory.getLogger(SampleTestCase.class);
 
         @RegisterExtension
-        private static LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
+        private static final LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
         @BeforeAll
         static void beforeAll()
@@ -95,6 +97,7 @@ public class LogCaptureExtensionTest
         void testWhenNotCaptured()
         {
             LOGGER.warn("uncaptured warn");
+            assertTrue(true);
         }
 
         @Test
@@ -120,7 +123,7 @@ public class LogCaptureExtensionTest
         // Verify that uncaptured logs are caught and generate an exception
         assertEquals(1, summary.getFailures().size());
         assertEquals("Following messages must be asserted: [WARN: uncaptured warn]",
-            summary.getFailures().get(0).getException().getMessage());
+            summary.getFailures().getFirst().getException().getMessage());
         assertEquals(2, summary.getTestsSucceededCount());
     }
 
@@ -143,8 +146,8 @@ public class LogCaptureExtensionTest
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
             .selectors(selectClass(testClass))
             .build();
-        // Do not auto load TestExecutionListener since that would load our
-        // FailingTestDebuggingTestExecutionListener which would print things in the console since we test test
+        // Do not autoload TestExecutionListener since that would load our
+        // "FailingTestDebuggingTestExecutionListener", which would print things in the console since we test
         // failures in this test class, and in turn it would fail the test since we verify what's printed in the
         // console...
         LauncherConfig config = LauncherConfig.builder().enableTestExecutionListenerAutoRegistration(false).build();

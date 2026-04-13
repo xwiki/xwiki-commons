@@ -36,8 +36,8 @@ import org.xwiki.velocity.XWikiVelocityException;
  * of the current request.
  *
  * @see org.xwiki.context.ExecutionContextInitializer
- * @since 1.5M1
  * @version $Id$
+ * @since 1.5M1
  */
 @Component
 @Named("velocity")

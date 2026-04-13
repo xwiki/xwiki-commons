@@ -77,7 +77,7 @@ public class BcPBES2AesCipherFactory extends AbstractBcPBES2CipherFactory
     protected PasswordBasedCipher getPasswordBasedCipher(boolean forEncryption, final KeyDerivationFunction kdf,
         SymmetricCipherParameters params)
     {
-        /** Overwrite the key length with itself, since the key length will be encoded in the algorithm identifier */
+        // Overwrite the key length with itself, since the key length will be encoded in the algorithm identifier
         kdf.overrideKeySize(kdf.getKeySize());
 
         return new AbstractBcPBES2Cipher(getCipherFactory().getInstance(forEncryption, params), kdf, params)

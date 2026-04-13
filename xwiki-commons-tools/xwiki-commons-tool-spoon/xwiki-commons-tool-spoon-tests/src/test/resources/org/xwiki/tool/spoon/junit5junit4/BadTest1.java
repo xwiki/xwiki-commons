@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,13 +16,28 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.xwiki.tool.spoon.junit5junit4;
 
-<!DOCTYPE suppressions PUBLIC
-     "-//Puppy Crawl//DTD Suppressions 1.0//EN"
-     "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
+import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 
-<suppressions>
-  <!-- This method is supposed to return HashSet, that the type it's handling... -->
-  <suppress checks="IllegalType" files="HashSetConverter.java" />
-</suppressions>
+/**
+ * Test class for {@code JUnit5JUnit4ProcessorTest}, containing a mix of JUnit4 and JUnit5 annotations.
+ *
+ * @version $Id$
+ */
+public class BadTest1
+{
+    @BeforeEach
+    void setup()
+    {
+        // Empty
+    }
+
+    @Test
+    public void test()
+    {
+        // Empty
+    }
+}

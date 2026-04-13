@@ -25,14 +25,14 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-environment</artifactId>
-    <version>18.2.0-SNAPSHOT</version>
+    <version>18.3.0-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-environment-servlet</artifactId>
   <name>XWiki Commons - Environment - Servlet</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Environment - Servlet</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.65</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.83</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>

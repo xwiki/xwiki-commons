@@ -19,7 +19,7 @@
  */
 package org.xwiki.extension;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
@@ -92,8 +92,8 @@ public abstract class AbstractExtensionScmConnection implements ExtensionScmConn
 
         if (obj instanceof ExtensionScmConnection) {
             ExtensionScmConnection connection = (ExtensionScmConnection) obj;
-            return StringUtils.equals(this.system, connection.getSystem())
-                && StringUtils.equals(this.path, connection.getPath());
+            return Strings.CS.equals(this.system, connection.getSystem())
+                && Strings.CS.equals(this.path, connection.getPath());
         }
 
         return false;

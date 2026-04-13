@@ -253,12 +253,15 @@ class DefaultVelocityManagerTest
         list.add(null);
         list.add("3");
         context.put("list", list);
-        assertEvaluate("true${foo}\n1=1 2= 3=3 ",
-            "#set($foo = true)${foo}#set($foo = $null)${foo}\n" + "#foreach($i in $list)${foreach.count}=$!{i} #end",
-            DEFAULT_TEMPLATE_NAME, context);
+        assertEvaluate("true${foo}\n1=1 2= 3=3 ", """
+            #set($foo = true)${foo}#set($foo = $null)${foo}
+            #foreach($i in $list)${foreach.count}=$!{i} #end\
+            """, DEFAULT_TEMPLATE_NAME, context);
 
-        String content =
-            "#set($foo = true)${foo}#set($foo = $null)${foo}\n" + "#foreach($i in $list)${foreach.count}=$!{i} #end";
+        String content = """
+            #set($foo = true)${foo}#set($foo = $null)${foo}
+            #foreach($i in $list)${foreach.count}=$!{i} #end\
+            """;
 
         assertEvaluate("true${foo}\n1=1 2= 3=3 ", content, DEFAULT_TEMPLATE_NAME, context);
     }

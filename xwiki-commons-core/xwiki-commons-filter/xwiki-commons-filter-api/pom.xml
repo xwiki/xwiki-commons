@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-filter</artifactId>
-    <version>18.2.0-SNAPSHOT</version>
+    <version>18.3.0-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-filter-api</artifactId>
   <name>XWiki Commons - Filter - API</name>
@@ -89,19 +89,6 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <excludes>
-            org/xwiki/filter/AbstractBeanFilterStreamFactory.java,
-            org/xwiki/filter/AbstractFilterStreamFactory.java,
-            org/xwiki/filter/descriptor/DefaultFilterStreamBeanDescriptor.java,
-            org/xwiki/filter/descriptor/DefaultFilterStreamBeanParameterDescriptor.java,
-            org/xwiki/filter/descriptor/FilterStreamDescriptor.java,
-            org/xwiki/filter/descriptor/FilterStreamPropertyDescriptor.java,
-            org/xwiki/filter/input/BeanInputFilterStreamFactory.java,
-            org/xwiki/filter/input/BeanInputFilterStream.java,
-            org/xwiki/filter/input/FileInputSource.java,
-            org/xwiki/filter/input/InputSource.java,
-            org/xwiki/filter/input/InputStreamInputSource.java,
-            org/xwiki/filter/input/InputFilterStream.java,
-            org/xwiki/filter/input/InputFilterStreamFactory.java,
             org/xwiki/filter/input/ReaderInputSource.java,
             org/xwiki/filter/input/URLInputSource.java,
             org/xwiki/filter/input/DefaultByteArrayInputSource.java,
@@ -117,21 +104,7 @@
             org/xwiki/filter/internal/FilterProxy.java,
             org/xwiki/filter/internal/input/InputSourceConverter.java,
             org/xwiki/filter/internal/output/OutputTargetConverter.java,
-            org/xwiki/filter/internal/utils/AllFilterInvocationHandler.java,
-            org/xwiki/filter/output/BeanOutputFilterStreamFactory.java,
-            org/xwiki/filter/output/BeanOutputFilterStream.java,
-            org/xwiki/filter/output/FileOutputTarget.java,
-            org/xwiki/filter/output/OutputStreamOutputTarget.java,
-            org/xwiki/filter/output/OutputTarget.java,
-            org/xwiki/filter/output/OutputFilterStream.java,
-            org/xwiki/filter/output/WriterOutputTarget.java,
-            org/xwiki/filter/output/AbstractBeanOutputFilterStream.java,
-            org/xwiki/filter/output/AbstractBeanOutputFilterStreamFactory.java,
-            org/xwiki/filter/output/ByteArrayOutputTarget.java,
-            org/xwiki/filter/output/DefaultFileOutputTarget.java,
-            org/xwiki/filter//output/DefaultOutputStreamOutputTarget.java,
-            org/xwiki/filter/output/DefaultWriterOutputTarget.java,
-            org/xwiki/filter/utils/FilterStreamConstants.java
+            org/xwiki/filter/internal/utils/AllFilterInvocationHandler.java
           </excludes>
         </configuration>
       </plugin>

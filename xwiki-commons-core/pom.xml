@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-pom</artifactId>
-    <version>18.2.0-SNAPSHOT</version>
+    <version>18.3.0-SNAPSHOT</version>
     <relativePath>../xwiki-commons-pom</relativePath>
   </parent>
   <artifactId>xwiki-commons-core</artifactId>
@@ -228,23 +228,7 @@
               </differences>
             </revapi.differences>
             -->
-            <revapi.differences>
-              <justification>Not a breakage from API point of view</justification>
-              <criticality>allowed</criticality>
-              <differences>
-                <item>
-                  <ignore>true</ignore>
-                  <code>java.annotation.attributeValueChanged</code>
-                  <old>class org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency</old>
-                  <new>class org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency</new>
-                  <annotationType>javax.xml.bind.annotation.XmlType</annotationType>
-                  <attribute>propOrder</attribute>
-                  <oldValue>{"id", "constraint", "optional", "repositories"}</oldValue>
-                  <newValue>{"id", "constraint", "exclusions", "optional", "repositories"}</newValue>
-                  <justification>ADD YOUR EXPLANATION FOR THE NECESSITY OF THIS CHANGE</justification>
-                </item>
-              </differences>
-            </revapi.differences>
+            
           </analysisConfiguration>
         </configuration>
       </plugin>

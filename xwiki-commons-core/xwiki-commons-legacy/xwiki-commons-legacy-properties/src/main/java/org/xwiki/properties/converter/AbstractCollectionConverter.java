@@ -29,7 +29,7 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.xwiki.properties.ConverterManager;
 
 /**
@@ -220,7 +220,7 @@ public abstract class AbstractCollectionConverter extends AbstractConverter
             String elementString = getConverterManager().convert(String.class, element);
 
             if (elementString != null) {
-                boolean containsDelimiter = StringUtils.contains(elementString, getDelimiters());
+                boolean containsDelimiter = Strings.CS.contains(elementString, getDelimiters());
 
                 if (containsDelimiter) {
                     sb.append(QUOTESTRING);

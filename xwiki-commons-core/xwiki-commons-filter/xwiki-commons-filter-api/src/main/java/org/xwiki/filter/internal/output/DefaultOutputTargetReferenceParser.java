@@ -64,7 +64,7 @@ public class DefaultOutputTargetReferenceParser implements OutputTargetReference
             String value = reference.substring(index + 1);
 
             // TODO: use some OutputTargetParser instead to make it extensible
-            if (prefix.equals("file")) {
+            if ("file".equals(prefix)) {
                 outputTarget = new DefaultFileOutputTarget(new File(value));
             } else {
                 ComponentManager componentManager = this.contextComponentManagerProvider.get();

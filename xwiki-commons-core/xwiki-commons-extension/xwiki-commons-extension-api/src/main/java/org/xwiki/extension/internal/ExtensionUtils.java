@@ -29,9 +29,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
@@ -186,7 +186,7 @@ public final class ExtensionUtils
      */
     public static String importProperty(MutableExtension extension, String propertySuffix, String def)
     {
-        return StringUtils.defaultString(importProperty(extension, propertySuffix), def);
+        return Objects.toString(importProperty(extension, propertySuffix), def);
     }
 
     /**

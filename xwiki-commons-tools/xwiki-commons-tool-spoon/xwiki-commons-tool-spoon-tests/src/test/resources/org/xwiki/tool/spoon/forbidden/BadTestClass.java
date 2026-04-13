@@ -17,27 +17,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.tool.spoon.junit5junit4;
+package org.xwiki.tool.spoon.forbidden;
 
-import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
+import java.io.File;
+import java.net.URL;
+import java.nio.file.Files;
 
 /**
- * Test class for {@code JUnit5Junit4Processor}.
+ * Test class for {@code ForbiddenInvocationProcessorTest}.
  *
  * @version $Id$
  */
-public class BadTest1
+public class BadTestClass
 {
-    @BeforeEach
-    void setup()
+    public void method() throws Exception
     {
-        // Empty
-    }
-
-    @Test
-    public void test()
-    {
-        // Empty
+        File file = new File("whatever");
+        file.deleteOnExit();
+        URL url = new URL("whatever");
+        url.equals(url);
+        File.createTempFile("prefix", "suffix");
+        File.createTempFile("prefix", "suffix", new File("target/"));
+        Files.createTempDirectory("prefix");
     }
 }

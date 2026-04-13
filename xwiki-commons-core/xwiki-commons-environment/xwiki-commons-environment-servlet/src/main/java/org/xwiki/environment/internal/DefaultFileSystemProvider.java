@@ -17,29 +17,31 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.tool.spoon.forbidden;
+package org.xwiki.environment.internal;
 
-import java.io.File;
-import java.net.URL;
-import java.nio.file.Files;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 
-import org.xwiki.tool.spoon.ForbiddenInvocationProcessorTest;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
 
 /**
- * Test class for {@link ForbiddenInvocationProcessorTest}.
+ * Default {@link FileSystem} provider.
  *
  * @version $Id$
+ * @since 17.10.7
+ * @since 18.2.1
+ * @since 18.3.0RC1
  */
-public class BadTestClass
+@Component
+@Singleton
+public class DefaultFileSystemProvider implements Provider<FileSystem>
 {
-    public void method() throws Exception
+    @Override
+    public FileSystem get()
     {
-        File file = new File("whatever");
-        file.deleteOnExit();
-        URL url = new URL("whatever");
-        url.equals(url);
-        File.createTempFile("prefix", "suffix");
-        File.createTempFile("prefix", "suffix", new File("target/"));
-        Files.createTempDirectory("prefix");
+        return FileSystems.getDefault();
     }
 }

@@ -35,6 +35,10 @@ public abstract class AbstractJavaxToJakartaWrapper<T> implements JavaxToJakarta
      */
     protected AbstractJavaxToJakartaWrapper(T wrapped)
     {
+        if (wrapped == null) {
+            throw new IllegalArgumentException("Wrapped object cannot be null");
+        }
+
         this.jakarta = wrapped;
     }
 

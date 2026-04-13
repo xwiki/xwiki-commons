@@ -60,8 +60,6 @@ public class XWikiHTML5TagProvider extends Html5TagProvider
      */
     public XWikiHTML5TagProvider()
     {
-        super();
-
         // Allow missing phrasing content tags where HTML5TagProvider explicitly allows phrasing content.
         // Note: unfortunately, we cannot iterate over the tags, otherwise we could have avoided copying this list of
         // tags that have phrasing children set.

@@ -116,7 +116,7 @@ class ExecutionContextPropertyTest
         context.newProperty(key).cloneValue().initial(value).declare();
 
         ExecutionContextProperty ecp = fetch(context, key);
-        Throwable exception = assertThrows(IllegalStateException.class, () -> ecp.clone());
+        Throwable exception = assertThrows(IllegalStateException.class, ecp::clone);
         assertEquals("cloneValue attribute was set on property [test], but the value had class "
             + "[org.xwiki.context.ExecutionContextPropertyTest$TestNonpublicClone] which has no public clone method",
             exception.getMessage());
@@ -130,7 +130,7 @@ class ExecutionContextPropertyTest
         final String key = "test";
 
         ExecutionContext.DeclarationBuilder db = context.newProperty(key).nonNull().initial(null);
-        Throwable exception = assertThrows(IllegalArgumentException.class, () -> db.declare());
+        Throwable exception = assertThrows(IllegalArgumentException.class, db::declare);
         assertEquals("The property [test] may not be null!", exception.getMessage());
     }
 
@@ -144,7 +144,10 @@ class ExecutionContextPropertyTest
         context.newProperty(key).type(SomeClass.class).declare();
 
         context.setProperty(key, new SomeClass());
-        context.setProperty(key, new SomeSubClass());
+        SomeSubClass someSubClass = new SomeSubClass();
+        context.setProperty(key, someSubClass);
+
+        assertEquals(Map.of(key, someSubClass), context.getProperties());
     }
 
     @Test

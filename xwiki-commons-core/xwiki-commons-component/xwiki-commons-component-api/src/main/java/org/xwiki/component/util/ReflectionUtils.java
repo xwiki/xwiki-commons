@@ -499,7 +499,7 @@ public final class ReflectionUtils
      */
     public static Type unserializeType(String serializedType, ClassLoader classLoader) throws ClassNotFoundException
     {
-        String sType = serializedType.replaceAll(" ", "");
+        String sType = serializedType.replace(" ", "");
         Type type = null;
 
         // A real parser could be used here but it would probably be overkill.

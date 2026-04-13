@@ -19,9 +19,6 @@
  */
 package org.xwiki.test.mockito;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +26,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import jakarta.inject.Provider;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
@@ -40,7 +39,8 @@ import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.util.ReflectionUtils;
 
-import jakarta.inject.Provider;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * See javadoc for {@link MockitoComponentMockingRule}.
@@ -227,20 +227,7 @@ public class MockitoComponentMocker<T>
         Collection<ComponentDependency<?>> dependencyDescriptors = descriptor.getComponentDependencies();
         for (ComponentDependency<?> dependencyDescriptor : dependencyDescriptors) {
             Class<?> roleTypeClass = ReflectionUtils.getTypeClass(dependencyDescriptor.getRoleType());
-            // Only register a mock if it isn't:
-            // - Already registered
-            // - An explicit exception specified by the user
-            // - A logger
-            // - A collection of components, we want to keep them as Java collections. Those collections are later
-            // filled by the component manager with available components. Developers can register mocked components
-            // in an override of #setupDependencies().
-            // TODO: Handle multiple roles/hints.
-            if (!this.excludedComponentRoleDependencies.contains(roleTypeClass) && Logger.class != roleTypeClass
-                && !roleTypeClass.isAssignableFrom(List.class) && !roleTypeClass.isAssignableFrom(Map.class)
-                && ComponentDescriptor.class != roleTypeClass
-                && !this.componentManager.hasComponent(dependencyDescriptor.getRoleType(),
-                    dependencyDescriptor.getRoleHint()))
-            {
+            if (shouldMock(dependencyDescriptor, roleTypeClass)) {
                 DefaultComponentDescriptor cd = new DefaultComponentDescriptor<>();
 
                 cd.setRoleType(dependencyDescriptor.getRoleType());
@@ -253,7 +240,7 @@ public class MockitoComponentMocker<T>
 
                 Object dependencyMock = mock(roleTypeClass, dependencyDescriptor.getName());
 
-                if (javax.inject.Provider.class == roleTypeClass || Provider.class == roleTypeClass) {
+                if (isProvider(roleTypeClass)) {
                     Type providedType = ReflectionUtils.getLastTypeGenericArgument(dependencyDescriptor.getRoleType());
                     Class providedClass = ReflectionUtils.getTypeClass(providedType);
 
@@ -283,5 +270,54 @@ public class MockitoComponentMocker<T>
                 this.componentManager.registerComponent(cd, dependencyMock);
             }
         }
+    }
+
+    /**
+     * Checking if the dependency should be mocked. Only register a mock if it isn't:
+     * <ul>
+     * <li>Excluded</li>
+     * <li>Already registered</li>
+     * <li>Not really a component injection (logger, component collection, component descriptor or provider)</li>
+     * </ul>
+     */
+    // TODO: Handle multiple roles/hints.
+    private boolean shouldMock(ComponentDependency<?> dependencyDescriptor, Class<?> roleTypeClass)
+    {
+        return !this.excludedComponentRoleDependencies.contains(roleTypeClass)
+            && !isComponentRegistered(dependencyDescriptor) && !isNoComponent(roleTypeClass);
+    }
+
+    private boolean isComponentRegistered(ComponentDependency<?> dependencyDescriptor)
+    {
+        return this.componentManager.hasComponent(dependencyDescriptor.getRoleType(),
+            dependencyDescriptor.getRoleHint());
+    }
+
+    /**
+     * Indicate if the inject is not really a component and thus shouldn't be mocked.
+     * <p>
+     * This is the case for:
+     * <ul>
+     * <li>A logger</li>
+     * <li>A collection of components, we want to keep them as Java collections. Those collections are later filled by
+     * the component manager with available components. Developers can register mocked components in an override of
+     * #setupDependencies()</li>
+     * <li>A component descriptor</li>
+     * </ul>
+     */
+    private boolean isNoComponent(Class<?> roleTypeClass)
+    {
+        return Logger.class == roleTypeClass || isComponentCollection(roleTypeClass)
+            || ComponentDescriptor.class == roleTypeClass;
+    }
+
+    private boolean isComponentCollection(Class<?> roleTypeClass)
+    {
+        return roleTypeClass.isAssignableFrom(List.class) && !roleTypeClass.isAssignableFrom(Map.class);
+    }
+
+    private boolean isProvider(Class<?> roleTypeClass)
+    {
+        return javax.inject.Provider.class == roleTypeClass || Provider.class == roleTypeClass;
     }
 }
