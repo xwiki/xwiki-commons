@@ -309,7 +309,7 @@
     <npm.version>11.11.0</npm.version>
     <pnpm.version>10.32.0</pnpm.version>
 
-    <webdrivermanager.version>6.3.3</webdrivermanager.version>
+    <webdrivermanager.version>6.3.4</webdrivermanager.version>
 
     <!-- The recommended version of known extensions to use -->
     <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]
