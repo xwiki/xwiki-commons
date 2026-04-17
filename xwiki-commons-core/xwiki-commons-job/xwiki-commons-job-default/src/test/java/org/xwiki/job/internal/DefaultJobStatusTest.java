@@ -22,7 +22,10 @@ package org.xwiki.job.internal;
 import java.util.Arrays;
 import java.util.Date;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.MDC;
+import org.xwiki.job.JobLogMDC;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.xwiki.job.DefaultJobStatus;
@@ -49,6 +52,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -61,6 +65,12 @@ public class DefaultJobStatusTest
     private ObservationManager observationManager = mock(ObservationManager.class);
 
     private LoggerManager loggerManager = mock(LoggerManager.class);
+
+    @AfterEach
+    void afterEach()
+    {
+        MDC.clear();
+    }
 
     @Test
     void subJobQuestionIsForwardedToParent() throws Exception
@@ -273,5 +283,134 @@ public class DefaultJobStatusTest
         assertSame(loggerTail, jobStatus.getLogTail());
         assertNotSame(loggerTail, jobStatus.getLog());
         assertNotSame(jobStatus.getLog(), jobStatus.getLog());
+    }
+
+    @Test
+    void startListeningTagsLogsWithMdc()
+    {
+        DefaultRequest request = new DefaultRequest();
+        request.setId(Arrays.asList("Parent Job", "Space/Slash"));
+
+        DefaultJobStatus<DefaultRequest> jobStatus =
+            new DefaultJobStatus<>("type", request, null, this.observationManager, this.loggerManager);
+        jobStatus.setLoggerTail(mock(LoggerTail.class));
+
+        jobStatus.startListening();
+
+        assertEquals("true", MDC.get(JobLogMDC.KEY_JOB));
+        assertEquals("type", MDC.get(JobLogMDC.KEY_JOB_TYPE));
+        assertEquals("true", MDC.get(JobLogMDC.KEY_JOB_ISOLATED));
+        assertEquals("Parent Job/Space/Slash", MDC.get(JobLogMDC.KEY_JOB_ID));
+        assertEquals(JobLogMDC.toCleanId(request.getId()), MDC.get(JobLogMDC.KEY_JOB_CLEAN_ID));
+
+        jobStatus.stopListening();
+
+        assertNull(MDC.get(JobLogMDC.KEY_JOB));
+        assertNull(MDC.get(JobLogMDC.KEY_JOB_TYPE));
+        assertNull(MDC.get(JobLogMDC.KEY_JOB_ISOLATED));
+        assertNull(MDC.get(JobLogMDC.KEY_JOB_ID));
+        assertNull(MDC.get(JobLogMDC.KEY_JOB_CLEAN_ID));
+    }
+
+    @Test
+    void isolatedSubJobTemporarilyMutesParentLogCapture()
+    {
+        DefaultRequest parentRequest = new DefaultRequest();
+        parentRequest.setId(Arrays.asList("parent"));
+
+        DefaultJobStatus<DefaultRequest> parentStatus = spy(
+            new DefaultJobStatus<>("parentType", parentRequest, null, this.observationManager, this.loggerManager));
+        parentStatus.setLoggerTail(mock(LoggerTail.class));
+        parentStatus.startListening();
+
+        DefaultRequest childRequest = new DefaultRequest();
+        childRequest.setId(Arrays.asList("child"));
+        childRequest.setStatusLogIsolated(true);
+
+        DefaultJobStatus<DefaultRequest> childStatus =
+            new DefaultJobStatus<>("childType", childRequest, parentStatus, this.observationManager, this.loggerManager);
+        childStatus.setLoggerTail(mock(LoggerTail.class));
+
+        childStatus.startListening();
+
+        verify(parentStatus).ignoreLogs(true);
+        assertEquals("childType", MDC.get(JobLogMDC.KEY_JOB_TYPE));
+        assertEquals("true", MDC.get(JobLogMDC.KEY_JOB_ISOLATED));
+        assertEquals(JobLogMDC.toCleanId(childRequest.getId()), MDC.get(JobLogMDC.KEY_JOB_CLEAN_ID));
+
+        childStatus.stopListening();
+
+        verify(parentStatus).ignoreLogs(false);
+        assertEquals("parentType", MDC.get(JobLogMDC.KEY_JOB_TYPE));
+        assertEquals("true", MDC.get(JobLogMDC.KEY_JOB_ISOLATED));
+        assertEquals(JobLogMDC.toCleanId(parentRequest.getId()), MDC.get(JobLogMDC.KEY_JOB_CLEAN_ID));
+
+        parentStatus.stopListening();
+    }
+
+    @Test
+    void nonIsolatedSubJobKeepsParentLogRoutingContext()
+    {
+        DefaultRequest parentRequest = new DefaultRequest();
+        parentRequest.setId(Arrays.asList("parent"));
+
+        DefaultJobStatus<DefaultRequest> parentStatus = spy(
+            new DefaultJobStatus<>("parentType", parentRequest, null, this.observationManager, this.loggerManager));
+        parentStatus.setLoggerTail(mock(LoggerTail.class));
+        parentStatus.startListening();
+
+        String parentCleanJobId = MDC.get(JobLogMDC.KEY_JOB_CLEAN_ID);
+
+        DefaultRequest childRequest = new DefaultRequest();
+        childRequest.setId(Arrays.asList("child"));
+        childRequest.setStatusLogIsolated(false);
+
+        DefaultJobStatus<DefaultRequest> childStatus =
+            new DefaultJobStatus<>("childType", childRequest, parentStatus, this.observationManager, this.loggerManager);
+        childStatus.setLoggerTail(mock(LoggerTail.class));
+
+        childStatus.startListening();
+
+        verify(parentStatus, never()).ignoreLogs(true);
+        assertEquals("childType", MDC.get(JobLogMDC.KEY_JOB_TYPE));
+        assertEquals("false", MDC.get(JobLogMDC.KEY_JOB_ISOLATED));
+        assertEquals("child", MDC.get(JobLogMDC.KEY_JOB_ID));
+        assertEquals(parentCleanJobId, MDC.get(JobLogMDC.KEY_JOB_CLEAN_ID));
+
+        childStatus.stopListening();
+
+        assertEquals(parentCleanJobId, MDC.get(JobLogMDC.KEY_JOB_CLEAN_ID));
+
+        parentStatus.stopListening();
+    }
+
+    @Test
+    void nonIsolatedSubJobWithoutIdKeepsParentJobId()
+    {
+        DefaultRequest parentRequest = new DefaultRequest();
+        parentRequest.setId(Arrays.asList("parent"));
+
+        DefaultJobStatus<DefaultRequest> parentStatus = spy(
+            new DefaultJobStatus<>("parentType", parentRequest, null, this.observationManager, this.loggerManager));
+        parentStatus.setLoggerTail(mock(LoggerTail.class));
+        parentStatus.startListening();
+
+        String parentJobId = MDC.get(JobLogMDC.KEY_JOB_ID);
+        String parentCleanJobId = MDC.get(JobLogMDC.KEY_JOB_CLEAN_ID);
+
+        DefaultRequest childRequest = new DefaultRequest();
+        childRequest.setStatusLogIsolated(false);
+
+        DefaultJobStatus<DefaultRequest> childStatus =
+            new DefaultJobStatus<>("childType", childRequest, parentStatus, this.observationManager, this.loggerManager);
+        childStatus.setLoggerTail(mock(LoggerTail.class));
+
+        childStatus.startListening();
+
+        assertEquals(parentJobId, MDC.get(JobLogMDC.KEY_JOB_ID));
+        assertEquals(parentCleanJobId, MDC.get(JobLogMDC.KEY_JOB_CLEAN_ID));
+
+        childStatus.stopListening();
+        parentStatus.stopListening();
     }
 }
