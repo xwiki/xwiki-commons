@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-import javax.annotation.Priority;
-import javax.inject.Named;
+import jakarta.annotation.Priority;
+import jakarta.inject.Named;
 
 import jakarta.inject.Singleton;
 

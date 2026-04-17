@@ -21,9 +21,9 @@ package org.xwiki.job.internal;
 
 import java.io.File;
 
-import javax.annotation.Priority;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.annotation.Priority;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 import org.apache.commons.codec.binary.Base64;
 import org.xwiki.component.annotation.Component;
