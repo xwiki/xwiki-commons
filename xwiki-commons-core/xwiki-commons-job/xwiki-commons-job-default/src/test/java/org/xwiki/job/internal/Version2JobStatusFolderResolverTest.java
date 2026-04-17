@@ -84,12 +84,16 @@ class Version2JobStatusFolderResolverTest
     void getFolderWithNullId()
     {
         assertEquals(this.storageDir, this.resolver.getFolder(null));
+
+        assertEquals(List.of(), this.resolver.getFolderSegments(null));
     }
 
     @Test
     void getFolderWithEmptyId()
     {
         assertEquals(this.storageDir, this.resolver.getFolder(Collections.emptyList()));
+
+        assertEquals(List.of(), this.resolver.getFolderSegments(Collections.emptyList()));
     }
 
     @Test
@@ -112,6 +116,8 @@ class Version2JobStatusFolderResolverTest
         String encodedThird = encodeComponent(THIRD);
         File expected = new File(new File(new File(this.storageDir, encodedFirst), "&null"), encodedThird);
         assertEquals(expected, this.resolver.getFolder(id));
+
+        assertEquals(List.of(encodedFirst, "&null", encodedThird), this.resolver.getFolderSegments(id));
     }
 
     @Test
@@ -129,6 +135,8 @@ class Version2JobStatusFolderResolverTest
         List<String> id = List.of(element);
 
         assertEquals(expected, this.resolver.getFolder(id));
+
+        assertEquals(encodedElements, this.resolver.getFolderSegments(id));
     }
 
     @Test
@@ -155,6 +163,11 @@ class Version2JobStatusFolderResolverTest
             expected = new File(expected, encodeComponent(element));
         }
         assertEquals(expected, this.resolver.getFolder(idElements));
+
+        List<String> encodedElements = idElements.stream()
+            .map(Version2JobStatusFolderResolverTest::encodeComponent)
+            .toList();
+        assertEquals(encodedElements, this.resolver.getFolderSegments(idElements));
     }
 
     private static String encodeComponent(String component)

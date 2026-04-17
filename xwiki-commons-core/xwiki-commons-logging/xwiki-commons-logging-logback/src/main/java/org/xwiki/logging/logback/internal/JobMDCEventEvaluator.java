@@ -17,32 +17,28 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.job.internal;
+package org.xwiki.logging.logback.internal;
 
-import java.util.List;
+import java.util.Map;
 
-import jakarta.annotation.Priority;
-import jakarta.inject.Named;
-import jakarta.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.boolex.EvaluationException;
+import ch.qos.logback.core.boolex.EventEvaluatorBase;
 
 /**
- * URL-encoding based {@link JobStatusFolderResolver} that implements the encoding used before XWiki 16.10.x.
+ * Accepts log events that belong to a job routing context and provide a clean job identifier for file routing.
  *
  * @version $Id$
- * @since 17.2.0RC1
- * @since 16.10.6
+ * @since 18.3.0RC1
  */
-@Component
-@Singleton
-@Named("version1")
-@Priority(10000)
-public class Version1JobStatusFolderResolver extends AbstractJobStatusFolderResolver
+public class JobMDCEventEvaluator extends EventEvaluatorBase<ILoggingEvent>
 {
     @Override
-    protected List<String> encodeAndSplit(String idElement)
+    public boolean evaluate(ILoggingEvent event) throws NullPointerException, EvaluationException
     {
-        return List.of(nullAwareURLEncode(idElement));
+        Map<String, String> mdc = event.getMDCPropertyMap();
+        String cleanJobId = mdc.get("jobCleanId");
+
+        return "true".equals(mdc.get("job")) && cleanJobId != null && !cleanJobId.isBlank();
     }
 }

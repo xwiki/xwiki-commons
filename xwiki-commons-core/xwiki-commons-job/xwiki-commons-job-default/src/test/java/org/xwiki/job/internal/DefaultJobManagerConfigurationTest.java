@@ -21,10 +21,14 @@ package org.xwiki.job.internal;
 
 import java.io.File;
 
+import jakarta.inject.Named;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.environment.Environment;
-import org.xwiki.test.annotation.AfterComponent;
+import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
@@ -38,12 +42,15 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  */
 @ComponentTest
-public class DefaultJobManagerConfigurationTest
+class DefaultJobManagerConfigurationTest
 {
+    private static final String JOB_LOG_DIRECTORY_PROPERTY = DefaultJobManagerConfiguration.PROPERTY_JOB_LOG_DIRECTORY;
+
     @InjectMockComponents
     private DefaultJobManagerConfiguration configuration;
 
     @MockComponent
+    @Named("restricted")
     private ConfigurationSource configurationSource;
 
     @MockComponent
@@ -53,10 +60,24 @@ public class DefaultJobManagerConfigurationTest
 
     private File directory = new File("directory");
 
-    @AfterComponent
-    public void aftercomponents()
+    private String previousJobLogDirectoryProperty;
+
+    @BeforeComponent
+    void beforeComponent()
     {
+        this.previousJobLogDirectoryProperty = System.getProperty(JOB_LOG_DIRECTORY_PROPERTY);
+        System.clearProperty(JOB_LOG_DIRECTORY_PROPERTY);
         when(this.environment.getPermanentDirectory()).thenReturn(this.permDir);
+    }
+
+    @AfterEach
+    void afterEach()
+    {
+        if (this.previousJobLogDirectoryProperty != null) {
+            System.setProperty(JOB_LOG_DIRECTORY_PROPERTY, this.previousJobLogDirectoryProperty);
+        } else {
+            System.clearProperty(JOB_LOG_DIRECTORY_PROPERTY);
+        }
     }
 
     @Test
@@ -65,6 +86,8 @@ public class DefaultJobManagerConfigurationTest
         when(this.configurationSource.getProperty("job.statusFolder")).thenReturn(this.directory.toString());
 
         assertEquals(this.directory.getAbsoluteFile(), this.configuration.getStorage().getAbsoluteFile());
+        assertEquals(new File(this.permDir, "logs/jobs").getAbsolutePath(),
+            System.getProperty(JOB_LOG_DIRECTORY_PROPERTY));
     }
 
     @Test
@@ -72,5 +95,40 @@ public class DefaultJobManagerConfigurationTest
     {
         assertEquals(new File(this.permDir, "jobs/status/").getAbsoluteFile(),
             this.configuration.getStorage().getAbsoluteFile());
+        assertEquals(new File(this.permDir, "logs/jobs").getAbsolutePath(),
+            System.getProperty(JOB_LOG_DIRECTORY_PROPERTY));
+    }
+
+    @Test
+    void keepConfiguredJobLogDirectory() throws InitializationException
+    {
+        System.setProperty(JOB_LOG_DIRECTORY_PROPERTY, "/tmp/custom-job-logs");
+
+        this.configuration.initialize();
+
+        assertEquals("/tmp/custom-job-logs", System.getProperty(JOB_LOG_DIRECTORY_PROPERTY));
+    }
+
+    @Test
+    void useConfiguredJobLogDirectoryWhenSystemPropertyMissing() throws InitializationException
+    {
+        when(this.configurationSource.getProperty("job.logFolder")).thenReturn("configured-job-logs");
+        System.clearProperty(JOB_LOG_DIRECTORY_PROPERTY);
+
+        this.configuration.initialize();
+
+        assertEquals(new File("configured-job-logs").getAbsolutePath(),
+            System.getProperty(JOB_LOG_DIRECTORY_PROPERTY));
+    }
+
+    @Test
+    void preferSystemPropertyOverConfiguredJobLogDirectory() throws InitializationException
+    {
+        when(this.configurationSource.getProperty("job.logFolder")).thenReturn("configured-job-logs");
+        System.setProperty(JOB_LOG_DIRECTORY_PROPERTY, "/tmp/custom-job-logs");
+
+        this.configuration.initialize();
+
+        assertEquals("/tmp/custom-job-logs", System.getProperty(JOB_LOG_DIRECTORY_PROPERTY));
     }
 }

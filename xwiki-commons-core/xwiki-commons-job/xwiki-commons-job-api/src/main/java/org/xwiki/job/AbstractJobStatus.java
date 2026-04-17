@@ -20,12 +20,15 @@
 package org.xwiki.job;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import org.slf4j.MDC;
 import org.xwiki.job.event.status.CancelableJobStatus;
 import org.xwiki.job.event.status.JobProgress;
 import org.xwiki.job.event.status.JobStatus;
@@ -55,11 +58,6 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
      * Used register itself to receive logging and progress related events.
      */
     private final transient ObservationManager observationManager;
-
-    /**
-     * Used to isolate job related log.
-     */
-    private final transient LoggerManager loggerManager;
 
     /**
      * Used to lock #ask().
@@ -93,6 +91,8 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
      * Used to listen to all the log produced during job execution.
      */
     private transient LoggerListener logListener;
+
+    private transient Map<String, String> previousLogMDCValues;
 
     /**
      * The question.
@@ -135,7 +135,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
     private Date endDate;
 
     /**
-     * Indicate if Job log should be grabbed.
+     * Indicate if the job should use a dedicated log routing context.
      */
     private boolean isolated = true;
 
@@ -152,6 +152,8 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
     private boolean serialized = true;
 
     private long questionEnd = -1;
+
+    private transient int ignoredLogs;
 
     /**
      * @param request the request provided when started the job
@@ -187,7 +189,6 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
         this.isolated = parentJobStatus == null;
 
         this.observationManager = observationManager;
-        this.loggerManager = loggerManager;
     }
 
     /**
@@ -198,13 +199,13 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
         // Register progress listener
         this.observationManager.addListener(new WrappedThreadEventListener(this.progress));
 
-        // Isolate log for the job status
+        // Capture logs for the job status while letting logback handle regular outputs as usual.
         this.logListener = new LoggerListener(LoggerListener.class.getName() + '_' + hashCode(), getLoggerTail());
         if (isIsolated()) {
-            this.loggerManager.pushLogListener(this.logListener);
-        } else {
-            this.observationManager.addListener(new WrappedThreadEventListener(this.logListener));
+            setAncestorLogsIgnored(true);
         }
+        putLogMDC();
+        this.observationManager.addListener(new WrappedThreadEventListener(this.logListener));
     }
 
     /**
@@ -213,7 +214,15 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
      */
     public void ignoreLogs(boolean ignore)
     {
-        this.logListener.setIgnore(ignore);
+        if (ignore) {
+            this.ignoredLogs++;
+        } else if (this.ignoredLogs > 0) {
+            this.ignoredLogs--;
+        }
+
+        if (this.logListener != null) {
+            this.logListener.setIgnore(this.ignoredLogs > 0);
+        }
     }
 
     /**
@@ -221,21 +230,24 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
      */
     public void stopListening()
     {
-        if (isIsolated()) {
-            this.loggerManager.popLogListener();
-        } else {
-            this.observationManager.removeListener(this.logListener.getName());
-        }
-        this.observationManager.removeListener(this.progress.getName());
-
-        // Make sure the progress is closed
-        this.progress.getRootStep().finish();
-
-        // Make sure the logger is closed
         try {
-            this.loggerTail.close();
-        } catch (Exception e) {
-            // TODO: We should probably log a warning for this even if it's not a big deal
+            this.observationManager.removeListener(this.logListener.getName());
+            if (isIsolated()) {
+                setAncestorLogsIgnored(false);
+            }
+            this.observationManager.removeListener(this.progress.getName());
+
+            // Make sure the progress is closed
+            this.progress.getRootStep().finish();
+
+            // Make sure the logger is closed
+            try {
+                this.loggerTail.close();
+            } catch (Exception e) {
+                // TODO: We should probably log a warning for this even if it's not a big deal
+            }
+        } finally {
+            restoreLogMDC();
         }
     }
 
@@ -448,7 +460,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
     }
 
     /**
-     * @param isolated true if the job log should be grabbed
+     * @param isolated true if the job should use a dedicated log routing context
      */
     public void setIsolated(boolean isolated)
     {
@@ -551,5 +563,100 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
     {
         return getLogTail().getLogEvents(level).stream().filter(log -> log.getLevel() == level)
             .collect(Collectors.toList());
+    }
+
+    private AbstractJobStatus<?> getParentAbstractJobStatus()
+    {
+        JobStatus parentStatus = getParentJobStatus();
+
+        return parentStatus instanceof AbstractJobStatus<?> abstractJobStatus ? abstractJobStatus : null;
+    }
+
+    /**
+     * Mute ancestor job-status listeners while an isolated subjob runs so that their persisted status logs don't
+     * duplicate the subjob's entries. This only affects the job-status capture listeners; logback appenders still
+     * receive the events and can route them using MDC.
+     *
+     * @param ignore {@code true} to mute ancestor job-status listeners, {@code false} to restore them
+     */
+    private void setAncestorLogsIgnored(boolean ignore)
+    {
+        for (AbstractJobStatus<?> parentStatus = getParentAbstractJobStatus(); parentStatus != null;
+            parentStatus = parentStatus.getParentAbstractJobStatus())
+        {
+            parentStatus.ignoreLogs(ignore);
+        }
+    }
+
+    private void putLogMDC()
+    {
+        this.previousLogMDCValues = new HashMap<>();
+
+        rememberLogMDCValue(JobLogMDC.KEY_JOB);
+        rememberLogMDCValue(JobLogMDC.KEY_JOB_TYPE);
+        rememberLogMDCValue(JobLogMDC.KEY_JOB_ISOLATED);
+        rememberLogMDCValue(JobLogMDC.KEY_JOB_ID);
+        rememberLogMDCValue(JobLogMDC.KEY_JOB_CLEAN_ID);
+
+        MDC.put(JobLogMDC.KEY_JOB, Boolean.TRUE.toString());
+        putOrRemoveLogMDC(JobLogMDC.KEY_JOB_TYPE, getJobType());
+        MDC.put(JobLogMDC.KEY_JOB_ISOLATED, Boolean.toString(isIsolated()));
+        putOrKeepPreviousLogMDC(JobLogMDC.KEY_JOB_ID, JobLogMDC.toId(getRequest().getId()));
+
+        String cleanJobId = JobLogMDC.toCleanId(getRequest().getId());
+        if (isIsolated() && cleanJobId != null) {
+            MDC.put(JobLogMDC.KEY_JOB_CLEAN_ID, cleanJobId);
+        } else if (this.previousLogMDCValues.get(JobLogMDC.KEY_JOB_CLEAN_ID) == null) {
+            MDC.remove(JobLogMDC.KEY_JOB_CLEAN_ID);
+        }
+    }
+
+    private void rememberLogMDCValue(String key)
+    {
+        this.previousLogMDCValues.put(key, MDC.get(key));
+    }
+
+    private void putOrRemoveLogMDC(String key, String value)
+    {
+        if (value != null) {
+            MDC.put(key, value);
+        } else {
+            MDC.remove(key);
+        }
+    }
+
+    private void putOrKeepPreviousLogMDC(String key, String value)
+    {
+        if (value != null) {
+            MDC.put(key, value);
+        } else if (this.previousLogMDCValues.get(key) == null) {
+            MDC.remove(key);
+        }
+    }
+
+    private void restoreLogMDC()
+    {
+        if (this.previousLogMDCValues == null) {
+            return;
+        }
+
+        restoreLogMDCValue(JobLogMDC.KEY_JOB);
+        restoreLogMDCValue(JobLogMDC.KEY_JOB_TYPE);
+        restoreLogMDCValue(JobLogMDC.KEY_JOB_ISOLATED);
+        restoreLogMDCValue(JobLogMDC.KEY_JOB_ID);
+        restoreLogMDCValue(JobLogMDC.KEY_JOB_CLEAN_ID);
+
+        this.previousLogMDCValues = null;
+    }
+
+    private void restoreLogMDCValue(String key)
+    {
+        String value = this.previousLogMDCValues.get(key);
+
+        if (value != null) {
+            MDC.put(key, value);
+        } else {
+            MDC.remove(key);
+        }
     }
 }
