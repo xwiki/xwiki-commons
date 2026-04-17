@@ -199,7 +199,7 @@
     <xwiki.enforcer.enforce-javax.mail-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.mail-api.skip>
     <xwiki.enforcer.enforce-javax.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.mail.skip>
     <xwiki.enforcer.enforce-jakarta.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.mail.skip>
-    <xwiki.enforcer.enforce-jakarta.annotation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jakarta.annotation-api.skip>
+    <xwiki.enforcer.enforce-javax.annotation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.annotation-api.skip>
     <xwiki.enforcer.enforce-inject.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-inject.skip>
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
     <xwiki.enforcer.enforce-jsr305.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jsr305.skip>
@@ -599,11 +599,17 @@
       </dependency>
 
       <!-- Annotations -->
-      <!-- javax -->
+      <!-- jakarta -->
       <dependency>
         <groupId>jakarta.annotation</groupId>
         <artifactId>jakarta.annotation-api</artifactId>
-        <version>1.3.5</version>
+        <version>3.0.0</version>
+      </dependency>
+      <!-- javax -->
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>1.3.2</version>
       </dependency>
 
       <!-- JSON Processing -->
@@ -2076,19 +2082,18 @@
             </configuration>
           </execution>
           <execution>
-            <id>enforce-jakarta.annotation-api</id>
+            <id>enforce-javax.annotation-api</id>
             <goals>
               <goal>enforce</goal>
             </goals>
             <configuration>
-              <skip>${xwiki.enforcer.enforce-jakarta.annotation-api.skip}</skip>
+              <skip>${xwiki.enforcer.enforce-javax.annotation-api.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
-                  <message>Use jakarta.annotation:jakarta.annotation-api instead.</message>
+                  <message>Use javax.annotation:javax.annotation-api instead.</message>
                   <excludes>
                     <exclude>javax.annotation:jsr250-api</exclude>
-                    <exclude>javax.annotation:javax.annotation-api</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>

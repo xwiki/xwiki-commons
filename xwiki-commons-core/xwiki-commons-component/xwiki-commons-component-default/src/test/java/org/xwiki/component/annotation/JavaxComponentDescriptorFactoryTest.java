@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Priority;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -138,8 +139,16 @@ public class JavaxComponentDescriptorFactoryTest
     {
     }
 
+    @Component(staticRegistration = false)
+    @Singleton
+    @Priority(42)
+    public class RoleImplWithPriority implements NonGenericRole
+    {
+
+    }
+
     @Test
-    void tcreateComponentDescriptor()
+    void createComponentDescriptor()
     {
         assertComponentDescriptor(RoleImpl.class, "default");
     }
@@ -199,7 +208,9 @@ public class JavaxComponentDescriptorFactoryTest
         assertSame(componentClass, descriptor.getImplementation());
         assertSame(ExtendedRole.class, descriptor.getRole());
         assertSame(ExtendedRole.class, descriptor.getRoleType());
+        assertEquals(1000, descriptor.getRoleTypePriority());
         assertEquals("default", descriptor.getRoleHint());
+        assertEquals(1000, descriptor.getRoleHintPriority());
         assertEquals(ComponentInstantiationStrategy.SINGLETON, descriptor.getInstantiationStrategy());
 
         Collection<ComponentDependency<?>> deps = descriptor.getComponentDependencies();
@@ -265,5 +276,16 @@ public class JavaxComponentDescriptorFactoryTest
         assertEquals("default", dep.getRoleHint());
         assertSame(Map.class, dep.getMappingType());
         assertEquals("mapRoles", dep.getName());
+    }
+
+    @Test
+    void roleTypePriority()
+    {
+        ComponentDescriptorFactory factory = new ComponentDescriptorFactory();
+        List<ComponentDescriptor<NonGenericRole>> descriptors;
+
+        descriptors = factory.createComponentDescriptors(RoleImplWithPriority.class, NonGenericRole.class);
+        assertEquals(1, descriptors.size());
+        assertEquals(42, descriptors.get(0).getRoleTypePriority());
     }
 }

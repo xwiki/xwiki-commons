@@ -61,9 +61,7 @@ public class ComponentDescriptorFactory
      * @param componentRoleClass the component role class
      * @param <T> the described class type
      * @return the component descriptors with resolved component dependencies
-     * @deprecated since 4.0M1 use {@link #createComponentDescriptors(Class, Type)} instead
      */
-    @Deprecated
     public <T> List<ComponentDescriptor<T>> createComponentDescriptors(Class<? extends T> componentClass,
         Class<?> componentRoleClass)
     {
@@ -132,13 +130,20 @@ public class ComponentDescriptorFactory
             }
         }
 
-        // Role type priority
-        Priority roleTypePriorityAnnotation = componentClass.getAnnotation(Priority.class);
         int roleTypePriority;
-        if (roleTypePriorityAnnotation != null) {
-            roleTypePriority = roleTypePriorityAnnotation.value();
+        // Jakarta role type priority
+        jakarta.annotation.Priority jakartaRoleTypePriorityAnnotation =
+            componentClass.getAnnotation(jakarta.annotation.Priority.class);
+        if (jakartaRoleTypePriorityAnnotation != null) {
+            roleTypePriority = jakartaRoleTypePriorityAnnotation.value();
         } else {
-            roleTypePriority = ComponentDescriptor.DEFAULT_PRIORITY;
+            // Javax role type priority
+            Priority javaxRoleTypePriorityAnnotation = componentClass.getAnnotation(Priority.class);
+            if (javaxRoleTypePriorityAnnotation != null) {
+                roleTypePriority = javaxRoleTypePriorityAnnotation.value();
+            } else {
+                roleTypePriority = ComponentDescriptor.DEFAULT_PRIORITY;
+            }
         }
 
         // Create the descriptors
