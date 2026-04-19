@@ -174,7 +174,7 @@ public interface JobStatus
     }
 
     /**
-     * @return true if the log should be isolated from standard output
+     * @return true if the job should use a dedicated log routing context instead of sharing its parent's context
      * @since 10.0
      */
     default boolean isIsolated()

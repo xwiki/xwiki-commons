@@ -21,11 +21,14 @@ package org.xwiki.job.internal;
 
 import java.io.File;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.environment.Environment;
 import org.xwiki.job.JobManagerConfiguration;
@@ -38,8 +41,12 @@ import org.xwiki.job.JobManagerConfiguration;
  */
 @Component
 @Singleton
-public class DefaultJobManagerConfiguration implements JobManagerConfiguration
+public class DefaultJobManagerConfiguration implements JobManagerConfiguration, Initializable
 {
+    static final String PROPERTY_JOB_LOG_DIRECTORY = "xwiki.job.log.dir";
+
+    private static final String PROPERTY_JOB_LOG_FOLDER = "job.logFolder";
+
     /**
      * Used to get permanent directory.
      */
@@ -50,6 +57,7 @@ public class DefaultJobManagerConfiguration implements JobManagerConfiguration
      * The configuration.
      */
     @Inject
+    @Named("restricted")
     private Provider<ConfigurationSource> configuration;
 
     // Cache
@@ -58,6 +66,12 @@ public class DefaultJobManagerConfiguration implements JobManagerConfiguration
      * @see DefaultJobManagerConfiguration#getStorage()
      */
     private File store;
+
+    @Override
+    public void initialize() throws InitializationException
+    {
+        initializeJobLogDirectory();
+    }
 
     /**
      * @return job manager home folder
@@ -105,5 +119,27 @@ public class DefaultJobManagerConfiguration implements JobManagerConfiguration
     public long getGroupedJobThreadKeepAliveTime()
     {
         return this.configuration.get().getProperty("job.groupedJobThreadKeepAliveTime", 60000L);
+    }
+
+    private void initializeJobLogDirectory()
+    {
+        String configuredLogDirectory = System.getProperty(PROPERTY_JOB_LOG_DIRECTORY);
+
+        if (configuredLogDirectory != null && !configuredLogDirectory.isBlank()) {
+            System.setProperty(PROPERTY_JOB_LOG_DIRECTORY, new File(configuredLogDirectory).getAbsolutePath());
+            return;
+        }
+
+        configuredLogDirectory = this.configuration.get().getProperty(PROPERTY_JOB_LOG_FOLDER);
+        if (configuredLogDirectory != null && !configuredLogDirectory.isBlank()) {
+            System.setProperty(PROPERTY_JOB_LOG_DIRECTORY, new File(configuredLogDirectory).getAbsolutePath());
+            return;
+        }
+
+        File permanentDirectory = this.environment.getPermanentDirectory();
+        if (permanentDirectory != null) {
+            System.setProperty(PROPERTY_JOB_LOG_DIRECTORY,
+                new File(permanentDirectory, "logs/jobs/").getAbsolutePath());
+        }
     }
 }

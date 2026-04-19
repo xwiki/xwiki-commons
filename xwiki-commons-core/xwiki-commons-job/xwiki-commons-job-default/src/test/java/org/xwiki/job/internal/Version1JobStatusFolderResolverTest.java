@@ -21,7 +21,6 @@ package org.xwiki.job.internal;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -61,28 +60,36 @@ class Version1JobStatusFolderResolverTest
     void getFolderWithNullId()
     {
         assertEquals(this.storageDir, this.resolver.getFolder(null));
+
+        assertEquals(List.of(), this.resolver.getFolderSegments(null));
     }
 
     @Test
     void getFolderWithEmptyId()
     {
-        assertEquals(this.storageDir, this.resolver.getFolder(Collections.emptyList()));
+        assertEquals(this.storageDir, this.resolver.getFolder(List.of()));
+
+        assertEquals(List.of(), this.resolver.getFolderSegments(List.of()));
     }
 
     @Test
     void getFolderWithSingleElementId()
     {
-        List<String> id = Collections.singletonList("element");
+        List<String> id = List.of("element");
         File expected = new File(this.storageDir, "element");
         assertEquals(expected, this.resolver.getFolder(id));
+
+        assertEquals(id, this.resolver.getFolderSegments(id));
     }
 
     @Test
     void getFolderWithMultipleElementId()
     {
-        List<String> id = Arrays.asList("first", "second", "third");
+        List<String> id = List.of("first", "second", "third");
         File expected = new File(new File(new File(this.storageDir, "first"), "second"), "third");
         assertEquals(expected, this.resolver.getFolder(id));
+
+        assertEquals(id, this.resolver.getFolderSegments(id));
     }
 
     @Test
@@ -91,21 +98,27 @@ class Version1JobStatusFolderResolverTest
         List<String> id = Arrays.asList("first", null, "third");
         File expected = new File(new File(new File(this.storageDir, "first"), "&null"), "third");
         assertEquals(expected, this.resolver.getFolder(id));
+
+        assertEquals(List.of("first", "&null", "third"), this.resolver.getFolderSegments(id));
     }
 
     @Test
     void getFolderWithSpecialCharactersInId()
     {
-        List<String> id = Arrays.asList("a/b", "c?d", "e&f");
+        List<String> id = List.of("a/b", "c?d", "e&f");
         File expected = new File(new File(new File(this.storageDir, "a%2Fb"), "c%3Fd"), "e%26f");
         assertEquals(expected, this.resolver.getFolder(id));
+
+        assertEquals(List.of("a%2Fb", "c%3Fd", "e%26f"), this.resolver.getFolderSegments(id));
     }
 
     @Test
     void getFolderWithSpacesInId()
     {
-        List<String> id = Collections.singletonList("element with spaces");
+        List<String> id = List.of("element with spaces");
         File expected = new File(this.storageDir, "element+with+spaces");
         assertEquals(expected, this.resolver.getFolder(id));
+
+        assertEquals(List.of("element+with+spaces"), this.resolver.getFolderSegments(id));
     }
 }
