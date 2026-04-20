@@ -193,27 +193,27 @@ class JakartaComponentAnnotationLoaderTest
     @SuppressWarnings({"rawtypes", "unchecked"})
     void priorities() throws Exception
     {
-        ComponentManager componentManager = mock(ComponentManager.class);
+        ComponentManager componentManager = mock();
 
         DefaultComponentDescriptor descriptor1 =
-            (DefaultComponentDescriptor) this.loader.getComponentsDescriptors(DeprecatedOverrideRole.class).get(0);
+            (DefaultComponentDescriptor) this.loader.getComponentsDescriptors(DeprecatedOverrideRole.class).getFirst();
         descriptor1.setRoleHintPriority(0);
-        ComponentDescriptor descriptor2 = this.loader.getComponentsDescriptors(RootComponentManager.class).get(0);
+        ComponentDescriptor descriptor2 = this.loader.getComponentsDescriptors(RootComponentManager.class).getFirst();
         DefaultComponentDescriptor descriptor3 =
-            (DefaultComponentDescriptor) this.loader.getComponentsDescriptors(OverrideRole.class).get(0);
+            (DefaultComponentDescriptor) this.loader.getComponentsDescriptors(OverrideRole.class).getFirst();
         descriptor3.setRoleHintPriority(500);
         ComponentDescriptor descriptor4 =
-            this.loader.getComponentsDescriptors(EmbeddableComponentManagerFactory.class).get(0);
-        this.loader.getComponentsDescriptors(DefaultComponentManagerManager.class).get(0);
-        this.loader.getComponentsDescriptors(ContextComponentManagerProvider.class).get(0);
-        this.loader.getComponentsDescriptors(DefaultNamespaceValidator.class).get(0);
+            this.loader.getComponentsDescriptors(EmbeddableComponentManagerFactory.class).getFirst();
+        this.loader.getComponentsDescriptors(DefaultComponentManagerManager.class).getFirst();
+        this.loader.getComponentsDescriptors(ContextComponentManagerProvider.class).getFirst();
+        this.loader.getComponentsDescriptors(DefaultNamespaceValidator.class).getFirst();
 
-        this.loader.getComponentsDescriptors(TestProvider1.class).get(0);
-        this.loader.getComponentsDescriptors(TestProvider12.class).get(0);
-        this.loader.getComponentsDescriptors(TestProvider2.class).get(0);
-        this.loader.getComponentsDescriptors(TestComponentWithProviders.class).get(0);
-        this.loader.getComponentsDescriptors(TestProviderWithExceptionInInitialize.class).get(0);
-        this.loader.getComponentsDescriptors(TestComponentWithProviderInException.class).get(0);
+        this.loader.getComponentsDescriptors(TestProvider1.class).getFirst();
+        this.loader.getComponentsDescriptors(TestProvider12.class).getFirst();
+        this.loader.getComponentsDescriptors(TestProvider2.class).getFirst();
+        this.loader.getComponentsDescriptors(TestComponentWithProviders.class).getFirst();
+        this.loader.getComponentsDescriptors(TestProviderWithExceptionInInitialize.class).getFirst();
+        this.loader.getComponentsDescriptors(TestComponentWithProviderInException.class).getFirst();
 
         this.loader.initialize(componentManager, this.getClass().getClassLoader());
 

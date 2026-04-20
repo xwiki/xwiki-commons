@@ -78,7 +78,7 @@ class CachedDocumentBuilderProviderTest
     void getAvailableDocumentBuilderWithExistingBuilderReturnsSame() throws Exception
     {
         ExecutionContext econtext = new ExecutionContext();
-        DocumentBuilder mockBuilder = mock(DocumentBuilder.class);
+        DocumentBuilder mockBuilder = mock();
         econtext.setProperty(DocumentBuilder.class.getName(), mockBuilder);
         when(this.execution.getContext()).thenReturn(econtext);
 
