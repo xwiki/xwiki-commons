@@ -393,7 +393,7 @@ class DefaultJobProgressTest
         this.observation.notify(new StartStepProgressEvent(), source11, null);
 
         assertEquals(1, this.progress.getRootStep().getChildren().size());
-        assertEquals(1, this.progress.getRootStep().getChildren().get(0).getChildren().size());
+        assertEquals(1, this.progress.getRootStep().getChildren().getFirst().getChildren().size());
 
         // Close the step
         this.observation.notify(new EndStepProgressEvent(), source11, null);
@@ -402,7 +402,7 @@ class DefaultJobProgressTest
         this.observation.notify(new StartStepProgressEvent(), source12, null);
 
         assertEquals(1, this.progress.getRootStep().getChildren().size());
-        assertEquals(2, this.progress.getRootStep().getChildren().get(0).getChildren().size());
+        assertEquals(2, this.progress.getRootStep().getChildren().getFirst().getChildren().size());
 
         // Close the step
         this.observation.notify(new EndStepProgressEvent(), source12, null);
@@ -432,9 +432,8 @@ class DefaultJobProgressTest
         DefaultJobProgressStep step = this.progress.getCurrentStep();
         step.finish();
 
-        Throwable exception = assertThrows(UnsupportedOperationException.class, () -> {
-            step.addStep(mock(Message.class), mock(Object.class));
-        });
+        Throwable exception = assertThrows(UnsupportedOperationException.class,
+            () -> step.addStep(mock(Message.class), mock(Object.class)));
         assertEquals("Step is closed", exception.getMessage());
     }
 }

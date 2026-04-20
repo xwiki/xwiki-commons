@@ -64,7 +64,7 @@ class DefaultJobStatusTest
     @Test
     void subJobQuestionIsForwardedToParent() throws Exception
     {
-        JobStatus parentJobStatus = mock(JobStatus.class);
+        JobStatus parentJobStatus = mock();
         DefaultJobStatus<DefaultRequest> jobStatus = new DefaultJobStatus<>("type", new DefaultRequest(),
             parentJobStatus, this.observationManager, this.loggerManager);
 
@@ -260,7 +260,7 @@ class DefaultJobStatusTest
 
         jobStatus = new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
 
-        loggerTail = mock(LoggerTail.class);
+        loggerTail = mock();
 
         jobStatus.setLoggerTail(loggerTail);
 

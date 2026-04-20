@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  */
 @ComponentTest
-public class DefaultJobContextTest
+class DefaultJobContextTest
 {
     @InjectMockComponents
     private DefaultJobContext context;
@@ -54,10 +54,10 @@ public class DefaultJobContextTest
     }
 
     @Test
-    void pushpop()
+    void pushPop()
     {
-        Job job1 = mock(Job.class);
-        Job job2 = mock(Job.class);
+        Job job1 = mock();
+        Job job2 = mock();
 
         assertNull(this.context.getCurrentJob());
 

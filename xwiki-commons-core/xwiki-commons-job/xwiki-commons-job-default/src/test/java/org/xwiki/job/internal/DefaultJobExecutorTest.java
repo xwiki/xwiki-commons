@@ -68,7 +68,7 @@ class DefaultJobExecutorTest
     private JobManagerConfiguration jobManagerConfiguration;
 
     @BeforeEach
-    public void setup()
+    void setup()
     {
         // We use a very short keep alive time.
         when(this.jobManagerConfiguration.getGroupedJobThreadKeepAliveTime()).thenReturn(1L);
@@ -114,7 +114,7 @@ class DefaultJobExecutorTest
     @Test
     void matchingGroupPathAreBlocked()
     {
-        GroupedJobInitializer groupedJobInitializer = mock(GroupedJobInitializer.class);
+        GroupedJobInitializer groupedJobInitializer = mock();
         when(groupedJobInitializer.getPoolSize()).thenReturn(1);
         when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
         when(this.groupedJobInitializerManager.getGroupedJobInitializer(any())).thenReturn(groupedJobInitializer);
@@ -196,7 +196,7 @@ class DefaultJobExecutorTest
         //   - A2
         //   - AB3
 
-        GroupedJobInitializer groupedJobInitializer = mock(GroupedJobInitializer.class);
+        GroupedJobInitializer groupedJobInitializer = mock();
         when(groupedJobInitializer.getPoolSize()).thenReturn(1);
         when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
 
@@ -204,7 +204,7 @@ class DefaultJobExecutorTest
         when(this.groupedJobInitializerManager.getGroupedJobInitializer(eq(jobGroupPathA)))
             .thenReturn(groupedJobInitializer);
 
-        groupedJobInitializer = mock(GroupedJobInitializer.class);
+        groupedJobInitializer = mock();
         when(groupedJobInitializer.getPoolSize()).thenReturn(2);
         when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
 
@@ -314,7 +314,7 @@ class DefaultJobExecutorTest
         //   - A1 && A2
         //   - AB3
 
-        GroupedJobInitializer groupedJobInitializer = mock(GroupedJobInitializer.class);
+        GroupedJobInitializer groupedJobInitializer = mock();
         when(groupedJobInitializer.getPoolSize()).thenReturn(2);
         when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
 
@@ -322,7 +322,7 @@ class DefaultJobExecutorTest
         when(this.groupedJobInitializerManager.getGroupedJobInitializer(eq(jobGroupPathA)))
             .thenReturn(groupedJobInitializer);
 
-        groupedJobInitializer = mock(GroupedJobInitializer.class);
+        groupedJobInitializer = mock();
         when(groupedJobInitializer.getPoolSize()).thenReturn(2);
         when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
 
