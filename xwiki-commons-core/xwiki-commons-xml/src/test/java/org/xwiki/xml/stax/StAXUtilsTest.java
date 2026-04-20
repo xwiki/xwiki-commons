@@ -41,10 +41,11 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link StAXUtils}.
@@ -52,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * @version $Id$
  * @since 5.2M1
  */
-public class StAXUtilsTest
+class StAXUtilsTest
 {
     @Test
     void getXMLStreamReader() throws XMLStreamException
@@ -74,13 +75,13 @@ public class StAXUtilsTest
     @Test
     void getXMLStreamWriter() throws XMLStreamException
     {
-        assertNotNull(StAXUtils.getXMLStreamWriter(new StAXResult(Mockito.mock(XMLEventWriter.class))));
-        assertNotNull(StAXUtils.getXMLStreamWriter(new StAXResult(Mockito.mock(XMLStreamWriter.class))));
+        assertNotNull(StAXUtils.getXMLStreamWriter(new StAXResult(mock(XMLEventWriter.class))));
+        assertNotNull(StAXUtils.getXMLStreamWriter(new StAXResult(mock(XMLStreamWriter.class))));
         assertNotNull(StAXUtils.getXMLStreamWriter(new StreamResult(new StringWriter())));
     }
 
     @Test
-    void getXMLStreamWriterWithSAXREsult() throws TransformerConfigurationException, XMLStreamException
+    void getXMLStreamWriterWithSAXResult() throws TransformerConfigurationException, XMLStreamException
     {
         TransformerFactory tf = TransformerFactory.newInstance();
         if (!tf.getFeature(SAXTransformerFactory.FEATURE)) {
@@ -109,29 +110,29 @@ public class StAXUtilsTest
 
     private XMLStreamReader mockXMLStreamReader()
     {
-        XMLStreamReader xmlStreamReader = Mockito.mock(XMLStreamReader.class);
+        XMLStreamReader xmlStreamReader = mock();
 
-        Mockito.when(xmlStreamReader.getEventType()).thenReturn(XMLStreamConstants.START_DOCUMENT);
+        when(xmlStreamReader.getEventType()).thenReturn(XMLStreamConstants.START_DOCUMENT);
 
-        Location location = Mockito.mock(Location.class);
+        Location location = mock();
 
-        Mockito.when(xmlStreamReader.getLocation()).thenReturn(location);
+        when(xmlStreamReader.getLocation()).thenReturn(location);
 
         return xmlStreamReader;
     }
 
     private XMLEventReader mockXMLEventReader() throws XMLStreamException
     {
-        XMLEventReader xmlEventReader = Mockito.mock(XMLEventReader.class);
+        XMLEventReader xmlEventReader = mock();
 
-        XMLEvent event = Mockito.mock(XMLEvent.class);
-        Mockito.when(event.getEventType()).thenReturn(XMLStreamConstants.START_DOCUMENT);
+        XMLEvent event = mock();
+        when(event.getEventType()).thenReturn(XMLStreamConstants.START_DOCUMENT);
 
-        Mockito.when(xmlEventReader.peek()).thenReturn(event);
+        when(xmlEventReader.peek()).thenReturn(event);
 
-        Location location = Mockito.mock(Location.class);
+        Location location = mock();
 
-        Mockito.when(event.getLocation()).thenReturn(location);
+        when(event.getLocation()).thenReturn(location);
 
         return xmlEventReader;
     }
