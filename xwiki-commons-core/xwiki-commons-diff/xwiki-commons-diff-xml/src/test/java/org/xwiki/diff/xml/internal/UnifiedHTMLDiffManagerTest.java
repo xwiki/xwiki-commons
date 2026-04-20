@@ -24,6 +24,7 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
@@ -33,7 +34,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -94,19 +94,14 @@ class UnifiedHTMLDiffManagerTest
         this.images.put("bob.png", "data:image/png;base64,DCBA");
         this.images.put("images/bob.png", "data:image/png;base64,DCBA");
 
-        when(this.dataURIConverter.convert(any(String.class))).thenAnswer(new Answer<String>()
-        {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable
-            {
-                return images.getOrDefault(invocation.getArgument(0), invocation.getArgument(0));
-            }
-        });
+        when(this.dataURIConverter.convert(any(String.class))).thenAnswer(
+            (Answer<String>) invocation -> images.getOrDefault(invocation.getArgument(0),
+                invocation.getArgument(0)));
     }
 
     @ParameterizedTest
     @MethodSource("getTestFiles")
-    public void verifyHTMLDiffMarker(File testFile) throws Exception
+    void verifyHTMLDiffMarker(File testFile) throws Exception
     {
         Map<String, String> testData = getTestData(testFile);
         if (testData.containsKey("expected-marker")) {
@@ -119,7 +114,7 @@ class UnifiedHTMLDiffManagerTest
 
     @ParameterizedTest
     @MethodSource("getTestFiles")
-    public void verifyHTMLDiffMarkerWithWordSplitter(File testFile) throws Exception
+    void verifyHTMLDiffMarkerWithWordSplitter(File testFile) throws Exception
     {
         Map<String, String> testData = getTestData(testFile);
         if (testData.containsKey("expected-marker-word")) {
@@ -134,12 +129,12 @@ class UnifiedHTMLDiffManagerTest
     @Test
     void verifyXMLDiffFiltersThrowingExceptions() throws Exception
     {
-        XMLDiffFilter alice = mock(XMLDiffFilter.class, "alice");
+        XMLDiffFilter alice = mock("alice");
         doThrow(new RuntimeException("before alice failed!")).when(alice).before(any(Document.class));
         doThrow(new RuntimeException("after alice failed!")).when(alice).after(any(Document.class));
 
-        XMLDiffFilter bob = mock(XMLDiffFilter.class, "bob");
-        this.config.getFilters().add(0, alice);
+        XMLDiffFilter bob = mock("bob");
+        this.config.getFilters().addFirst(alice);
         this.config.getFilters().add(bob);
 
         this.unifiedHTMLDiffManager.diff("<p>one</p>", "<p>two</p>", this.config);
@@ -154,7 +149,7 @@ class UnifiedHTMLDiffManagerTest
 
     @ParameterizedTest
     @MethodSource("getTestFiles")
-    public void verifyHTMLDiffPruner(File testFile) throws Exception
+    void verifyHTMLDiffPruner(File testFile) throws Exception
     {
         Map<String, String> testData = getTestData(testFile);
         if (testData.containsKey("expected-pruner")) {
@@ -164,10 +159,10 @@ class UnifiedHTMLDiffManagerTest
         }
     }
 
-    public static Stream<File> getTestFiles() throws Exception
+    public static Stream<File> getTestFiles()
     {
         File inputFolder = new File("src/test/resources/html");
-        return Stream.of(inputFolder.listFiles(file -> file.getName().endsWith(".test")));
+        return Stream.of(Objects.requireNonNull(inputFolder.listFiles(file -> file.getName().endsWith(".test"))));
     }
 
     private Map<String, String> getTestData(File file) throws Exception

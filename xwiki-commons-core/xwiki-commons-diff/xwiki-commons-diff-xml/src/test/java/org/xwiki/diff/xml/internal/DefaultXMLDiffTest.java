@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @version $Id$
  */
 @ComponentTest
-public class DefaultXMLDiffTest
+class DefaultXMLDiffTest
 {
     @InjectMockComponents
     private DefaultXMLDiff defaultXMLDiff;
@@ -56,7 +56,7 @@ public class DefaultXMLDiffTest
     private Document document;
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
         DOMImplementationLS lsImpl =
             (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS 3.0");
@@ -75,7 +75,7 @@ public class DefaultXMLDiffTest
         Patch<?> patch = patches.get(null);
         assertEquals(1, patch.size());
 
-        Delta<?> delta = patch.get(0);
+        Delta<?> delta = patch.getFirst();
         assertEquals(Delta.Type.INSERT, delta.getType());
         assertEquals(Collections.emptyList(), delta.getPrevious().getElements());
         assertEquals(Collections.singletonList(text), delta.getNext().getElements());
@@ -91,7 +91,7 @@ public class DefaultXMLDiffTest
         Patch<?> patch = patches.get(null);
         assertEquals(1, patch.size());
 
-        Delta<?> delta = patch.get(0);
+        Delta<?> delta = patch.getFirst();
         assertEquals(Delta.Type.DELETE, delta.getType());
         assertEquals(Collections.singletonList(text), delta.getPrevious().getElements());
         assertEquals(Collections.emptyList(), delta.getNext().getElements());
@@ -108,7 +108,7 @@ public class DefaultXMLDiffTest
         Patch<?> patch = patches.get(null);
         assertEquals(1, patch.size());
 
-        Delta<?> delta = patch.get(0);
+        Delta<?> delta = patch.getFirst();
         assertEquals(Delta.Type.CHANGE, delta.getType());
         assertEquals(Collections.singletonList(child), delta.getPrevious().getElements());
         assertEquals(Collections.singletonList(text), delta.getNext().getElements());
