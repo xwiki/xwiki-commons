@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.DefaultRequest;
@@ -56,11 +55,11 @@ import static org.mockito.Mockito.verify;
  *
  * @version $Id$
  */
-public class DefaultJobStatusTest
+class DefaultJobStatusTest
 {
-    private ObservationManager observationManager = mock(ObservationManager.class);
+    private ObservationManager observationManager = mock();
 
-    private LoggerManager loggerManager = mock(LoggerManager.class);
+    private LoggerManager loggerManager = mock();
 
     @Test
     void subJobQuestionIsForwardedToParent() throws Exception
@@ -110,15 +109,10 @@ public class DefaultJobStatusTest
             new DefaultJobStatus<>("type", request, null, this.observationManager, this.loggerManager);
 
         QuestionAskedEvent questionAsked = new QuestionAskedEvent(String.class.getName(), request.getId());
-        doAnswer(new Answer<Void>()
-        {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable
-            {
-                QuestionAskedEvent event = (QuestionAskedEvent) invocation.getArguments()[0];
-                event.answered();
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            QuestionAskedEvent event = (QuestionAskedEvent) invocation.getArguments()[0];
+            event.answered();
+            return null;
         }).when(this.observationManager).notify(questionAsked, jobStatus);
 
         jobStatus.ask("What's up?");
@@ -128,7 +122,7 @@ public class DefaultJobStatusTest
     }
 
     @Test
-    void defaultogQueue()
+    void defaultLogQueue()
     {
         DefaultJobStatus<DefaultRequest> jobStatus =
             new DefaultJobStatus<>("type", new DefaultRequest(), null, null, null);
@@ -148,7 +142,7 @@ public class DefaultJobStatusTest
         jobStatus.getLog().trace("message");
 
         assertEquals(1, jobStatus.getLog(LogLevel.TRACE).size());
-        assertEquals("message", jobStatus.getLog(LogLevel.TRACE).get(0).getMessage());
+        assertEquals("message", jobStatus.getLog(LogLevel.TRACE).getFirst().getMessage());
     }
 
     @Test

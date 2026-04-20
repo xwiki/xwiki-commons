@@ -20,6 +20,7 @@
 package org.xwiki.job.internal;
 
 import java.io.File;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -29,7 +30,6 @@ import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.xwiki.cache.CacheManager;
@@ -99,7 +99,7 @@ import static org.mockito.Mockito.when;
 // @formatter:on
 class DefaultJobStatusStoreTest
 {
-    private static final List<String> ID = Arrays.asList("test");
+    private static final List<String> ID = List.of("test");
 
     private static final String STATUS_XML_ZIP = "status.xml.zip";
 
@@ -126,6 +126,7 @@ class DefaultJobStatusStoreTest
 
     private static class SerializableImplementationProvider implements Provider<String>, java.io.Serializable
     {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -276,17 +277,13 @@ class DefaultJobStatusStoreTest
 
         when(this.cacheManager.createNewCache(any())).thenReturn(new MapCache<>());
 
-        when(this.loggerManager.createLoggerTail(any(), anyBoolean())).then(new Answer<LoggerTail>()
-        {
-            @Override
-            public LoggerTail answer(InvocationOnMock invocation) throws Throwable
-            {
+        when(this.loggerManager.createLoggerTail(any(), anyBoolean())).then(
+            (Answer<LoggerTail>) invocation -> {
                 XStreamFileLoggerTail loggerTail = componentManager.getInstance(XStreamFileLoggerTail.class);
                 loggerTail.initialize(invocation.getArgument(0), invocation.getArgument(1));
-
                 return loggerTail;
             }
-        });
+        );
     }
 
     private DefaultJobStatus<Request> createStatus()
@@ -294,14 +291,14 @@ class DefaultJobStatusStoreTest
         return createStatus(true);
     }
 
-    private DefaultJobStatus<Request> createStatus(boolean logtail)
+    private DefaultJobStatus<Request> createStatus(boolean logTail)
     {
         DefaultRequest request = new DefaultRequest();
         request.setId(ID);
 
         DefaultJobStatus<Request> status = new DefaultJobStatus<>("type", request, null, null, null);
 
-        if (logtail) {
+        if (logTail) {
             status.setLoggerTail(this.store.createLoggerTail(ID, false));
         }
 
@@ -316,7 +313,7 @@ class DefaultJobStatusStoreTest
     private <S extends JobStatus> S storeGet(S status) throws Exception
     {
         if (status instanceof AbstractJobStatus) {
-            ((AbstractJobStatus) status).getLoggerTail().close();
+            ((AbstractJobStatus<?>) status).getLoggerTail().close();
         }
 
         this.store.store(status);
@@ -382,7 +379,7 @@ class DefaultJobStatusStoreTest
     @Test
     void getJobStatusInWrongPlaceAndWithInvalidLogArgument()
     {
-        JobStatus jobStatus = this.store.getJobStatus(Arrays.asList("invalidlogargument"));
+        JobStatus jobStatus = this.store.getJobStatus(List.of("invalidlogargument"));
 
         assertNotNull(jobStatus);
         assertEquals(3, jobStatus.getLog().size());
@@ -391,14 +388,14 @@ class DefaultJobStatusStoreTest
     @Test
     void getJobStatusThatDoesNotExist()
     {
-        JobStatus jobStatus = this.store.getJobStatus(Arrays.asList("nostatus"));
+        JobStatus jobStatus = this.store.getJobStatus(List.of("nostatus"));
 
         assertNull(jobStatus);
 
-        JobStatusSerializer mockSerializer = mock(JobStatusSerializer.class);
+        JobStatusSerializer mockSerializer = mock();
         ReflectionUtils.setFieldValue(this.store, "serializer", mockSerializer);
 
-        jobStatus = this.store.getJobStatus(Arrays.asList("nostatus"));
+        jobStatus = this.store.getJobStatus(List.of("nostatus"));
         assertNull(jobStatus);
 
         verifyNoMoreInteractions(mockSerializer);
@@ -493,7 +490,7 @@ class DefaultJobStatusStoreTest
     @Test
     void storeUnserializableJobStatus()
     {
-        List<String> id = Arrays.asList("test");
+        List<String> id = List.of("test");
         DefaultRequest request = new DefaultRequest();
         request.setId(id);
         JobStatus jobStatus = new UnserializableJobStatus("type", request, null, null, null);
@@ -508,11 +505,11 @@ class DefaultJobStatusStoreTest
     @Test
     void storeUnserializedJobStatus()
     {
-        List<String> id = Arrays.asList("test");
+        List<String> id = List.of("test");
         DefaultRequest request = new DefaultRequest();
         request.setId(id);
         request.setStatusSerialized(false);
-        JobStatus jobStatus = new DefaultJobStatus("type", request, null, null, null);
+        JobStatus jobStatus = new DefaultJobStatus<>("type", request, null, null, null);
 
         this.store.store(jobStatus);
 
@@ -524,11 +521,11 @@ class DefaultJobStatusStoreTest
     @Test
     void storeJobStatusWhenSerializable()
     {
-        List<String> id = Arrays.asList("newstatus");
+        List<String> id = List.of("newstatus");
 
         DefaultRequest request = new DefaultRequest();
         request.setId(id);
-        JobStatus jobStatus = new DefaultJobStatus("type", request, null, null, null);
+        JobStatus jobStatus = new DefaultJobStatus<>("type", request, null, null, null);
 
         this.store.store(jobStatus);
 
@@ -536,7 +533,7 @@ class DefaultJobStatusStoreTest
 
         // Verify that the status has been serialized, indirectly verifying that isSerializable() has been called and
         // returned true.
-        assertTrue(new File(this.storeDirectory, "3/%s/status.xml.zip".formatted(id.get(0))).exists());
+        assertTrue(new File(this.storeDirectory, "3/%s/status.xml.zip".formatted(id.getFirst())).exists());
     }
 
     @Test
@@ -549,7 +546,7 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertEquals("error message", status.getLog().peek().getMessage());
+        assertEquals("error message", Objects.requireNonNull(status.getLog().peek()).getMessage());
     }
 
     @Test
@@ -562,8 +559,9 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertEquals("error message", status.getLog().peek().getMessage());
-        assertEquals(new TranslationMarker("translation.key"), status.getLog().peek().getMarker());
+        assertEquals("error message", Objects.requireNonNull(status.getLog().peek()).getMessage());
+        assertEquals(new TranslationMarker("translation.key"),
+            Objects.requireNonNull(status.getLog().peek()).getMarker());
     }
 
     @Test
@@ -577,10 +575,11 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertEquals("error message", status.getLog().peek().getMessage());
-        assertEquals("exception message", status.getLog().peek().getThrowable().getMessage());
-        assertEquals("cause", status.getLog().peek().getThrowable().getCause().getMessage());
-        assertNull(((TestException) status.getLog().peek().getThrowable()).getCustom(), "exception message");
+        assertEquals("error message", Objects.requireNonNull(status.getLog().peek()).getMessage());
+        assertEquals("exception message", Objects.requireNonNull(status.getLog().peek()).getThrowable().getMessage());
+        assertEquals("cause", Objects.requireNonNull(status.getLog().peek()).getThrowable().getCause().getMessage());
+        assertNull(((TestException) Objects.requireNonNull(status.getLog().peek()).getThrowable()).getCustom(),
+            "exception message");
     }
 
     @Test
@@ -593,9 +592,9 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertEquals("error message", status.getLog().peek().getMessage());
-        assertEquals("arg1", status.getLog().peek().getArgumentArray()[0]);
-        assertEquals("arg2", status.getLog().peek().getArgumentArray()[1]);
+        assertEquals("error message", Objects.requireNonNull(status.getLog().peek()).getMessage());
+        assertEquals("arg1", Objects.requireNonNull(status.getLog().peek()).getArgumentArray()[0]);
+        assertEquals("arg2", Objects.requireNonNull(status.getLog().peek()).getArgumentArray()[1]);
     }
 
     @Test
@@ -608,10 +607,10 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertEquals("error message", status.getLog().peek().getMessage());
-        assertEquals("arg1", status.getLog().peek().getArgumentArray()[0]);
-        assertNull(status.getLog().peek().getArgumentArray()[1]);
-        assertEquals("arg3", status.getLog().peek().getArgumentArray()[2]);
+        assertEquals("error message", Objects.requireNonNull(status.getLog().peek()).getMessage());
+        assertEquals("arg1", Objects.requireNonNull(status.getLog().peek()).getArgumentArray()[0]);
+        assertNull(Objects.requireNonNull(status.getLog().peek()).getArgumentArray()[1]);
+        assertEquals("arg3", Objects.requireNonNull(status.getLog().peek()).getArgumentArray()[2]);
     }
 
     @Test
@@ -624,8 +623,8 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertEquals("error message", status.getLog().peek().getMessage());
-        assertEquals(String.class, status.getLog().peek().getArgumentArray()[0].getClass());
+        assertEquals("error message", Objects.requireNonNull(status.getLog().peek()).getMessage());
+        assertEquals(String.class, Objects.requireNonNull(status.getLog().peek()).getArgumentArray()[0].getClass());
     }
 
     @Test
@@ -638,8 +637,8 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertEquals("error message", status.getLog().peek().getMessage());
-        assertEquals(String.class, status.getLog().peek().getArgumentArray()[0].getClass());
+        assertEquals("error message", Objects.requireNonNull(status.getLog().peek()).getMessage());
+        assertEquals(String.class, Objects.requireNonNull(status.getLog().peek()).getArgumentArray()[0].getClass());
     }
 
     @Test
@@ -694,7 +693,8 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertNull(((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+        assertNull(((SerializableObjectTest) Objects.requireNonNull(
+            status.getLog().peek()).getArgumentArray()[0]).field);
     }
 
     @Test
@@ -707,7 +707,8 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertNull(((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+        assertNull(((SerializableObjectTest) Objects.requireNonNull(
+            status.getLog().peek()).getArgumentArray()[0]).field);
     }
 
     @Test
@@ -720,7 +721,8 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertNull(((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+        assertNull(((SerializableObjectTest) Objects.requireNonNull(
+            status.getLog().peek()).getArgumentArray()[0]).field);
     }
 
     @Test
@@ -733,7 +735,8 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertNull(((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+        assertNull(((SerializableObjectTest) Objects.requireNonNull(
+            status.getLog().peek()).getArgumentArray()[0]).field);
     }
 
     @Test
@@ -746,9 +749,10 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertEquals("error message", status.getLog().peek().getMessage());
+        assertEquals("error message", Objects.requireNonNull(status.getLog().peek()).getMessage());
         assertEquals(SerializableProvider.class,
-            ((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field.getClass());
+            ((SerializableObjectTest) Objects.requireNonNull(
+                status.getLog().peek()).getArgumentArray()[0]).field.getClass());
     }
 
     @Test
@@ -762,9 +766,10 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertEquals("error message", status.getLog().peek().getMessage());
+        assertEquals("error message", Objects.requireNonNull(status.getLog().peek()).getMessage());
         assertEquals(SerializableImplementationProvider.class,
-            ((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field.getClass());
+            ((SerializableObjectTest) Objects.requireNonNull(
+                status.getLog().peek()).getArgumentArray()[0]).field.getClass());
     }
 
     @Test
@@ -777,8 +782,9 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertEquals("error message", status.getLog().peek().getMessage());
-        assertEquals(new CustomSerializableObject("value"), status.getLog().peek().getArgumentArray()[0]);
+        assertEquals("error message", Objects.requireNonNull(status.getLog().peek()).getMessage());
+        assertEquals(new CustomSerializableObject("value"),
+            Objects.requireNonNull(status.getLog().peek()).getArgumentArray()[0]);
     }
 
     @Test
@@ -791,8 +797,9 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertEquals("error message", status.getLog().peek().getMessage());
-        assertEquals(new SerializableCustomObject("value"), status.getLog().peek().getArgumentArray()[0]);
+        assertEquals("error message", Objects.requireNonNull(status.getLog().peek()).getMessage());
+        assertEquals(new SerializableCustomObject("value"),
+            Objects.requireNonNull(status.getLog().peek()).getArgumentArray()[0]);
     }
 
     @Test
@@ -805,8 +812,8 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertEquals("error message", status.getLog().peek().getMessage());
-        assertEquals("value", status.getLog().peek().getArgumentArray()[0]);
+        assertEquals("error message", Objects.requireNonNull(status.getLog().peek()).getMessage());
+        assertEquals("value", Objects.requireNonNull(status.getLog().peek()).getArgumentArray()[0]);
     }
 
     @Test
@@ -819,9 +826,9 @@ class DefaultJobStatusStoreTest
         status = storeGet(status);
 
         assertNotNull(status.getLog());
-        assertEquals("error message", status.getLog().peek().getMessage());
-        assertEquals("arg1", status.getLog().peek().getArgumentArray()[0]);
-        assertEquals("arg2", status.getLog().peek().getArgumentArray()[1]);
+        assertEquals("error message", Objects.requireNonNull(status.getLog().peek()).getMessage());
+        assertEquals("arg1", Objects.requireNonNull(status.getLog().peek()).getArgumentArray()[0]);
+        assertEquals("arg2", Objects.requireNonNull(status.getLog().peek()).getArgumentArray()[1]);
     }
 
     @Test
