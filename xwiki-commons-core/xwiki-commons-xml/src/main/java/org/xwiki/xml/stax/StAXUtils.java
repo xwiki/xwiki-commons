@@ -50,7 +50,7 @@ public final class StAXUtils
     /**
      * Force using Woodstox implementation which is thread safe.
      */
-    private static final XMLInputFactory XML_INPUT_FACTORY = new WstxInputFactory();
+    private static final XMLInputFactory XML_INPUT_FACTORY = createXMLInputFactory();
 
     /**
      * Force using Woodstox implementation which is thread safe.
@@ -64,6 +64,17 @@ public final class StAXUtils
      */
     private StAXUtils()
     {
+    }
+
+    private static XMLInputFactory createXMLInputFactory()
+    {
+        XMLInputFactory factory = new WstxInputFactory();
+
+        // By default, make sure that parsing is safe
+        factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+        factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
+
+        return factory;
     }
 
     /**
