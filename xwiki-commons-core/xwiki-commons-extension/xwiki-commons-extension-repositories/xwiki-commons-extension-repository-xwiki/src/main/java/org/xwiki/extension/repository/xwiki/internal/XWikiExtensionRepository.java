@@ -27,8 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.Consts;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
@@ -36,6 +41,7 @@ import org.apache.http.client.AuthCache;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -78,6 +84,7 @@ import org.xwiki.extension.version.internal.DefaultVersion;
 import org.xwiki.extension.version.internal.VersionUtils;
 import org.xwiki.repository.Resources;
 import org.xwiki.repository.UriBuilder;
+import org.xwiki.xml.stax.StAXUtils;
 
 /**
  * @version $Id$
@@ -223,6 +230,13 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         return this.extensionVersionFileUriBuider;
     }
 
+    private void closeBadResponse(CloseableHttpResponse response)
+    {
+        // We only log the failed close to not swallow the failed request
+        IOUtils.closeQuietly(response,
+            e -> LOGGER.warn("Failed to close the response: {}", ExceptionUtils.getRootCauseMessage(e)));
+    }
+
     protected CloseableHttpResponse getRESTResource(UriBuilder builder, Object... values) throws IOException
     {
         String url;
@@ -232,27 +246,22 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             throw new IOException("Failed to build REST URL", e);
         }
 
-        CloseableHttpClient httpClient = this.httpClientFactory.createClient(getDescriptor().getProperty("auth.user"),
-            getDescriptor().getProperty("auth.password"));
-
         HttpGet getMethod = new HttpGet(url);
         getMethod.addHeader("Accept", "application/xml");
-        CloseableHttpResponse response;
-        try {
-            if (this.localContext != null) {
-                response = httpClient.execute(getMethod, this.localContext);
-            } else {
-                response = httpClient.execute(getMethod);
-            }
-        } catch (Exception e) {
-            throw new IOException(String.format("Failed to request [%s]", getMethod.getURI()), e);
-        }
+
+        CloseableHttpResponse response = getResponse(getMethod);
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+                // Close the response since it's not going to be returned
+                closeBadResponse(response);
+
                 throw new ResourceNotFoundException(
                     String.format("Resource with URI [%s] does not exist", getMethod.getURI()));
             } else {
+                // Close the response since it's not going to be returned
+                closeBadResponse(response);
+
                 throw new IOException(String.format("Invalid answer [%s] from the server when requesting [%s]",
                     response.getStatusLine().getStatusCode(), getMethod.getURI()));
             }
@@ -271,9 +280,6 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             throw new IOException("Failed to build REST URL", e);
         }
 
-        CloseableHttpClient httpClient = this.httpClientFactory.createClient(getDescriptor().getProperty("auth.user"),
-            getDescriptor().getProperty("auth.password"));
-
         HttpPost postMethod = new HttpPost(url);
         postMethod.addHeader("Accept", "application/xml");
 
@@ -281,18 +287,12 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             new StringEntity(content, ContentType.create(ContentType.APPLICATION_XML.getMimeType(), Consts.UTF_8));
         postMethod.setEntity(entity);
 
-        CloseableHttpResponse response;
-        try {
-            if (this.localContext != null) {
-                response = httpClient.execute(postMethod, this.localContext);
-            } else {
-                response = httpClient.execute(postMethod);
-            }
-        } catch (Exception e) {
-            throw new IOException(String.format("Failed to request [%s]", postMethod.getURI()), e);
-        }
+        CloseableHttpResponse response = getResponse(postMethod);
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+            // Close the response since it's not going to be returned
+            closeBadResponse(response);
+
             throw new IOException(String.format("Invalid answer [%s] from the server when requesting [%s]",
                 response.getStatusLine().getStatusCode(), postMethod.getURI()));
         }
@@ -300,14 +300,31 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         return response;
     }
 
+    private CloseableHttpResponse getResponse(HttpUriRequest method) throws IOException
+    {
+        CloseableHttpResponse response;
+        try {
+            CloseableHttpClient httpClient = this.httpClientFactory
+                .createClient(getDescriptor().getProperty("auth.user"), getDescriptor().getProperty("auth.password"));
+            if (this.localContext != null) {
+                response = httpClient.execute(method, this.localContext);
+            } else {
+                response = httpClient.execute(method);
+            }
+        } catch (Exception e) {
+            throw new IOException(String.format("Failed to request [%s]", method.getURI()), e);
+        }
+        return response;
+    }
+
     protected Object getRESTObject(UriBuilder builder, Object... values)
-        throws IllegalStateException, IOException, JAXBException
+        throws IllegalStateException, IOException, JAXBException, XMLStreamException
     {
         return getRESTObject(getRESTResource(builder, values));
     }
 
     protected Object postRESTObject(UriBuilder builder, Object restObject, Object... values)
-        throws IllegalStateException, IOException, JAXBException
+        throws IllegalStateException, IOException, JAXBException, XMLStreamException
     {
         StringWriter writer = new StringWriter();
         this.repositoryFactory.createMarshaller().marshal(restObject, writer);
@@ -316,14 +333,19 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
     }
 
     protected <T> T getRESTObject(CloseableHttpResponse response)
-        throws IllegalStateException, IOException, JAXBException
+        throws IllegalStateException, IOException, JAXBException, XMLStreamException
     {
-        try {
+        try (response) {
             try (InputStream inputStream = response.getEntity().getContent()) {
-                return (T) this.repositoryFactory.createUnmarshaller().unmarshal(inputStream);
+                // Get a safe XML reader
+                XMLStreamReader xmlReader = StAXUtils.getXMLStreamReader(new StreamSource(inputStream));
+
+                try {
+                    return (T) this.repositoryFactory.createUnmarshaller().unmarshal(xmlReader);
+                } finally {
+                    xmlReader.close();
+                }
             }
-        } finally {
-            response.close();
         }
     }
 
@@ -346,7 +368,8 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         }
     }
 
-    private Extension resolve(String id, Version version) throws IllegalStateException, IOException, JAXBException
+    private Extension resolve(String id, Version version)
+        throws IllegalStateException, IOException, JAXBException, XMLStreamException
     {
         return new XWikiExtension(this, (ExtensionVersion) getRESTObject(this.extensionVersionUriBuider, id, version),
             this.licenseManager, this.factory);

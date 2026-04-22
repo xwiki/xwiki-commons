@@ -20,13 +20,13 @@
 package org.xwiki.extension.repository.xwiki.internal;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLStreamReader;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
@@ -103,7 +103,7 @@ class XWikiExtensionRepositoryTest
 
         List<ExtensionVersionSummary> versionSummaries = Arrays.asList(v1, v2);
         ExtensionVersions restVersions = mock(ExtensionVersions.class);
-        when(this.unmarshaller.unmarshal(any(InputStream.class))).thenReturn(restVersions);
+        when(this.unmarshaller.unmarshal(any(XMLStreamReader.class))).thenReturn(restVersions);
         when(restVersions.getExtensionVersionSummaries()).thenReturn(versionSummaries);
         when(restVersions.getOffset()).thenReturn(5);
         when(restVersions.getTotalHits()).thenReturn(7);
