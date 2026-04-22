@@ -43,6 +43,11 @@
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-xml</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-extension-repository-http</artifactId>
       <version>${project.version}</version>
     </dependency>
