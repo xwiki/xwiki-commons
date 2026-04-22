@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -81,6 +84,7 @@ import org.xwiki.extension.version.internal.DefaultVersion;
 import org.xwiki.extension.version.internal.VersionUtils;
 import org.xwiki.repository.Resources;
 import org.xwiki.repository.UriBuilder;
+import org.xwiki.xml.stax.StAXUtils;
 
 /**
  * @version $Id$
@@ -300,8 +304,8 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
     {
         CloseableHttpResponse response;
         try {
-            CloseableHttpClient httpClient = this.httpClientFactory.createClient(
-                getDescriptor().getProperty("auth.user"), getDescriptor().getProperty("auth.password"));
+            CloseableHttpClient httpClient = this.httpClientFactory
+                .createClient(getDescriptor().getProperty("auth.user"), getDescriptor().getProperty("auth.password"));
             if (this.localContext != null) {
                 response = httpClient.execute(method, this.localContext);
             } else {
@@ -314,13 +318,13 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
     }
 
     protected Object getRESTObject(UriBuilder builder, Object... values)
-        throws IllegalStateException, IOException, JAXBException
+        throws IllegalStateException, IOException, JAXBException, XMLStreamException
     {
         return getRESTObject(getRESTResource(builder, values));
     }
 
     protected Object postRESTObject(UriBuilder builder, Object restObject, Object... values)
-        throws IllegalStateException, IOException, JAXBException
+        throws IllegalStateException, IOException, JAXBException, XMLStreamException
     {
         StringWriter writer = new StringWriter();
         this.repositoryFactory.createMarshaller().marshal(restObject, writer);
@@ -329,11 +333,18 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
     }
 
     protected <T> T getRESTObject(CloseableHttpResponse response)
-        throws IllegalStateException, IOException, JAXBException
+        throws IllegalStateException, IOException, JAXBException, XMLStreamException
     {
         try (response) {
             try (InputStream inputStream = response.getEntity().getContent()) {
-                return (T) this.repositoryFactory.createUnmarshaller().unmarshal(inputStream);
+                // Get a safe XML reader
+                XMLStreamReader xmlReader = StAXUtils.getXMLStreamReader(new StreamSource(inputStream));
+
+                try {
+                    return (T) this.repositoryFactory.createUnmarshaller().unmarshal(xmlReader);
+                } finally {
+                    xmlReader.close();
+                }
             }
         }
     }
@@ -357,7 +368,8 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         }
     }
 
-    private Extension resolve(String id, Version version) throws IllegalStateException, IOException, JAXBException
+    private Extension resolve(String id, Version version)
+        throws IllegalStateException, IOException, JAXBException, XMLStreamException
     {
         return new XWikiExtension(this, (ExtensionVersion) getRESTObject(this.extensionVersionUriBuider, id, version),
             this.licenseManager, this.factory);

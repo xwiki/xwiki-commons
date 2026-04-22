@@ -19,6 +19,7 @@
  */
 package org.xwiki.xml.stax;
 
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 
@@ -44,6 +45,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -135,5 +137,26 @@ class StAXUtilsTest
         when(event.getLocation()).thenReturn(location);
 
         return xmlEventReader;
+    }
+
+    @Test
+    void getXMLStreamReaderXXE() throws Exception
+    {
+        String xml = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE foo [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
+
+            <p>&xxe;</p>
+            """;
+
+        XMLStreamReader reader = StAXUtils.getXMLStreamReader(
+            new StreamSource(new ByteArrayInputStream(xml.getBytes())));
+
+        assertThrows(Exception.class, () -> {
+            // Read the entire XML document to trigger the XXE attack if the parser is vulnerable.
+            while (reader.hasNext()) {
+                reader.next();
+            }
+        });
     }
 }
