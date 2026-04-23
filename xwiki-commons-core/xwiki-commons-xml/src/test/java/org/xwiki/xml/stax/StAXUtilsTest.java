@@ -44,6 +44,8 @@ import javax.xml.transform.stream.StreamSource;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.ctc.wstx.exc.WstxParsingException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -151,7 +153,7 @@ public class StAXUtilsTest
         XMLStreamReader reader = StAXUtils.getXMLStreamReader(
             new StreamSource(new ByteArrayInputStream(xml.getBytes())));
 
-        assertThrows(Exception.class, () -> {
+        assertThrows(WstxParsingException.class, () -> {
             // Read the entire XML document to trigger the XXE attack if the parser is vulnerable.
             while (reader.hasNext()) {
                 reader.next();
