@@ -28,7 +28,7 @@ import org.xwiki.stability.Unstable;
  * Base class for partial binary message handlers.
  *
  * @version $Id$
- * @since 18.3.0RC1
+ * @since 18.4.0RC1
  */
 @Unstable
 public abstract class AbstractPartialBinaryMessageHandler extends AbstractPartialMessageHandler<byte[]>

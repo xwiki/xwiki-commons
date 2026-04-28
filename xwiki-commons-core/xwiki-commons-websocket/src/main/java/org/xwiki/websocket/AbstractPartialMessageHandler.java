@@ -62,7 +62,7 @@ public abstract class AbstractPartialMessageHandler<T> implements MessageHandler
      * Create a new partial message handler with the specified maximum message size.
      *
      * @param maxMessageSize the maximum allowed size for a message; only positive values are enforced
-     * @since 18.3.0RC1
+     * @since 18.4.0RC1
      */
     protected AbstractPartialMessageHandler(int maxMessageSize)
     {
@@ -98,7 +98,7 @@ public abstract class AbstractPartialMessageHandler<T> implements MessageHandler
      *
      * @param partialMessage the partial message to get the length of
      * @return the length of the given partial message
-     * @since 18.3.0RC1
+     * @since 18.4.0RC1
      */
     protected int getLength(T partialMessage)
     {
@@ -112,7 +112,7 @@ public abstract class AbstractPartialMessageHandler<T> implements MessageHandler
 
     /**
      * @return the current message size, i.e. the aggregated size of the partial messages received so far
-     * @since 18.3.0RC1
+     * @since 18.4.0RC1
      */
     protected int getMessageSize()
     {

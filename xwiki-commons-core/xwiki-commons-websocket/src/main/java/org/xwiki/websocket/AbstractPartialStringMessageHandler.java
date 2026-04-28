@@ -43,7 +43,7 @@ public abstract class AbstractPartialStringMessageHandler extends AbstractPartia
      * Create a new partial message handler with the specified maximum message size.
      *
      * @param maxMessageSize the maximum allowed size for a message; only positive values are enforced
-     * @since 18.3.0RC1
+     * @since 18.4.0RC1
      */
     protected AbstractPartialStringMessageHandler(int maxMessageSize)
     {
