@@ -40,14 +40,83 @@ public abstract class AbstractPartialMessageHandler<T> implements MessageHandler
      */
     private final List<T> parts = new LinkedList<>();
 
+    /**
+     * The maximum allowed size for a message.
+     */
+    private final int maxMessageSize;
+
+    /**
+     * The current message size, i.e. the aggregated size of the partial messages received so far.
+     */
+    private int messageSize;
+
+    /**
+     * Create a new partial message handler with no limit on the message size.
+     */
+    protected AbstractPartialMessageHandler()
+    {
+        this(0);
+    }
+
+    /**
+     * Create a new partial message handler with the specified maximum message size.
+     *
+     * @param maxMessageSize the maximum allowed size for a message; only positive values are enforced
+     * @since 18.3.0RC1
+     */
+    protected AbstractPartialMessageHandler(int maxMessageSize)
+    {
+        this.maxMessageSize = maxMessageSize;
+    }
+
     @Override
     public void onMessage(T partialMessage, boolean last)
     {
+        this.messageSize += getLength(partialMessage);
+        if (this.maxMessageSize > 0 && this.messageSize > this.maxMessageSize) {
+            throw new IllegalStateException(
+                "Message size exceeds the configured limit of [%s].".formatted(this.maxMessageSize));
+        }
+
         this.parts.add(partialMessage);
         if (last) {
             onMessage(Collections.unmodifiableList(this.parts));
+
+            // Reset the message size and the message parts for the next message.
+            this.messageSize = 0;
             this.parts.clear();
         }
+    }
+
+    /**
+     * Get the length of the given partial message. This is used to compute the total message size and check it against
+     * the configured maximum message size.
+     * <p>
+     * NOTE: the default implementation supports only {@link String} and {@code byte[]} messages. For other types of
+     * messages you'll have to overwrite this method to return the appropriate length if you want to enforce the maximum
+     * message size limit.
+     *
+     * @param partialMessage the partial message to get the length of
+     * @return the length of the given partial message
+     * @since 18.3.0RC1
+     */
+    protected int getLength(T partialMessage)
+    {
+        return switch (partialMessage) {
+            case null -> 0;
+            case String stringPartialMessage -> stringPartialMessage.length();
+            case byte[] byteArrayPartialMessage -> byteArrayPartialMessage.length;
+            default -> 0;
+        };
+    }
+
+    /**
+     * @return the current message size, i.e. the aggregated size of the partial messages received so far
+     * @since 18.3.0RC1
+     */
+    protected int getMessageSize()
+    {
+        return this.messageSize;
     }
 
     /**

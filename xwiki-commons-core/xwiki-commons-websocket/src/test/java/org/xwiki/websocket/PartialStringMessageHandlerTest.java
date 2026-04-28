@@ -26,6 +26,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit tests for {@link AbstractPartialStringMessageHandler}.
@@ -37,6 +38,16 @@ class PartialStringMessageHandlerTest
     static class CollectingPartialStringMessageHandler extends AbstractPartialStringMessageHandler
     {
         private final List<String> messages = new LinkedList<>();
+
+        public CollectingPartialStringMessageHandler()
+        {
+            super();
+        }
+
+        public CollectingPartialStringMessageHandler(int maxMessageSize)
+        {
+            super(maxMessageSize);
+        }
 
         @Override
         public void onMessage(String message)
@@ -64,5 +75,47 @@ class PartialStringMessageHandlerTest
         handler.onMessage("six,", false);
 
         assertEquals(Arrays.asList("one,two,three", "four,five"), handler.getMessages());
+    }
+
+    @Test
+    void onMessageExceedingMaxSize()
+    {
+        CollectingPartialStringMessageHandler handler = new CollectingPartialStringMessageHandler(10);
+        assertEquals(0, handler.getMessages().size());
+
+        try {
+            // Exceed the maximum message size on the first message part.
+            handler.onMessage("alice,carol,", false);
+            fail(
+                "Expected an IllegalStateException to be thrown since the message size exceeds the configured limit of [10].");
+        } catch (IllegalStateException e) {
+            assertEquals("Message size exceeds the configured limit of [10].", e.getMessage());
+        }
+
+        handler = new CollectingPartialStringMessageHandler(10);
+        assertEquals(0, handler.getMessages().size());
+
+        handler.onMessage("alice,", false);
+        try {
+            // Exceed the maximum message size on an intermediate message part.
+            handler.onMessage("carol,", false);
+            fail(
+                "Expected an IllegalStateException to be thrown since the message size exceeds the configured limit of [10].");
+        } catch (IllegalStateException e) {
+            assertEquals("Message size exceeds the configured limit of [10].", e.getMessage());
+        }
+
+        handler = new CollectingPartialStringMessageHandler(10);
+        assertEquals(0, handler.getMessages().size());
+
+        handler.onMessage("alice,", false);
+        try {
+            // Exceed the maximum message size on the final message part.
+            handler.onMessage("carol,", true);
+            fail(
+                "Expected an IllegalStateException to be thrown since the message size exceeds the configured limit of [10].");
+        } catch (IllegalStateException e) {
+            assertEquals("Message size exceeds the configured limit of [10].", e.getMessage());
+        }
     }
 }

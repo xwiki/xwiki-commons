@@ -19,47 +19,50 @@
  */
 package org.xwiki.websocket;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.xwiki.stability.Unstable;
 
 /**
- * Base class for partial string message handlers.
- * 
+ * Base class for partial binary message handlers.
+ *
  * @version $Id$
- * @since 13.10.5
- * @since 14.3RC1
+ * @since 18.3.0RC1
  */
-public abstract class AbstractPartialStringMessageHandler extends AbstractPartialMessageHandler<String>
+@Unstable
+public abstract class AbstractPartialBinaryMessageHandler extends AbstractPartialMessageHandler<byte[]>
 {
     /**
-     * Create a new partial message handler with no limit on the message size.
-     */
-    protected AbstractPartialStringMessageHandler()
-    {
-    }
-
-    /**
-     * Create a new partial message handler with the specified maximum message size.
+     * Create a new partial binary message handler with the specified maximum message size.
      *
      * @param maxMessageSize the maximum allowed size for a message; only positive values are enforced
-     * @since 18.3.0RC1
      */
-    protected AbstractPartialStringMessageHandler(int maxMessageSize)
+    protected AbstractPartialBinaryMessageHandler(int maxMessageSize)
     {
         super(maxMessageSize);
     }
 
     @Override
-    public void onMessage(List<String> parts)
+    public void onMessage(List<byte[]> parts)
     {
-        onMessage(StringUtils.join(parts, ""));
+        this.onMessage(this.getMessage(parts));
+    }
+
+    private byte[] getMessage(List<byte[]> parts)
+    {
+        ByteBuffer buffer = ByteBuffer.allocate(getMessageSize());
+        for (byte[] part : parts) {
+            buffer.put(part);
+        }
+
+        return buffer.array();
     }
 
     /**
-     * Called to handle the string message when all its parts have been received.
+     * Called to handle the whole binary message when all its parts have been received.
      * 
-     * @param message the complete string message
+     * @param message the complete binary message
      */
-    public abstract void onMessage(String message);
+    public abstract void onMessage(byte[] message);
 }
