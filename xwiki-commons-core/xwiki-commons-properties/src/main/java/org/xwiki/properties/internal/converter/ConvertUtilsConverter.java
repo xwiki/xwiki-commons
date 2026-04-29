@@ -27,6 +27,7 @@ import javax.inject.Singleton;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConversionException;
 import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -53,7 +54,8 @@ public class ConvertUtilsConverter implements Converter, Initializable
     @Override
     public void initialize()
     {
-        BeanUtilsBean.getInstance().getConvertUtils().register(true, false, 0);
+        ConvertUtilsBean conerter = BeanUtilsBean.getInstance().getConvertUtils();
+        conerter.register(true, false, 0);
     }
 
     /**
