@@ -95,6 +95,10 @@ public abstract class AbstractCollectionConverter<T extends Collection> extends 
     @Override
     protected <G extends T> G convertToType(Type targetType, Object value)
     {
+        if (value == null) {
+            return null;
+        }
+
         Type elementType = null;
         if (targetType instanceof ParameterizedType) {
             elementType = ((ParameterizedType) targetType).getActualTypeArguments()[0];

@@ -35,6 +35,7 @@ import org.xwiki.test.mockito.MockitoComponentManager;
 import com.google.common.reflect.TypeToken;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
@@ -94,6 +95,12 @@ class ListConverterTest
     {
         assertEquals(Arrays.asList(1, 2, 3), this.converterManager
             .convert(new DefaultParameterizedType(null, List.class, Integer.class), Arrays.asList("1", "2", "3")));
+    }
+
+    @Test
+    void convertFromNull()
+    {
+        assertNull(this.converterManager.convert(List.class, null));
     }
 
     @Test
