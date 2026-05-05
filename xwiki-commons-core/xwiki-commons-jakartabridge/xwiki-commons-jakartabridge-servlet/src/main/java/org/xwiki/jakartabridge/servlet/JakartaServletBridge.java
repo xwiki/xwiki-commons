@@ -139,18 +139,22 @@ public final class JakartaServletBridge
      */
     public static javax.servlet.ServletRequest toJavax(ServletRequest jakarta)
     {
-        javax.servlet.ServletRequest javax;
+        javax.servlet.ServletRequest javax = null;
 
-        if (jakarta == null) {
-            javax = null;
-        } else if (jakarta instanceof JakartaToJavaxWrapper<?> bridge) {
-            javax = (javax.servlet.ServletRequest) bridge.getJavax();
-        } else if (jakarta instanceof HttpServletRequest httpjakarta) {
-            javax = toJavax(httpjakarta);
-        } else if (jakarta instanceof ServletRequestWrapper wrapper) {
-            javax = new JavaxToJakartaServletRequestWrapper<jakarta.servlet.ServletRequestWrapper>(wrapper);
-        } else {
-            javax = new JavaxToJakartaServletRequest<jakarta.servlet.ServletRequest>(jakarta);
+        if (jakarta != null) {
+            if (jakarta instanceof JakartaToJavaxWrapper<?> bridge) {
+                javax = (javax.servlet.ServletRequest) bridge.getJavax();
+            } else if (jakarta instanceof HttpServletRequest httpjakarta) {
+                javax = toJavax(httpjakarta);
+            }
+
+            if (javax == null) {
+                if (jakarta instanceof ServletRequestWrapper wrapper) {
+                    javax = new JavaxToJakartaServletRequestWrapper<jakarta.servlet.ServletRequestWrapper>(wrapper);
+                } else {
+                    javax = new JavaxToJakartaServletRequest<jakarta.servlet.ServletRequest>(jakarta);
+                }
+            }
         }
 
         return javax;
@@ -162,17 +166,21 @@ public final class JakartaServletBridge
      */
     public static javax.servlet.http.HttpServletRequest toJavax(HttpServletRequest jakarta)
     {
-        javax.servlet.http.HttpServletRequest javax;
+        javax.servlet.http.HttpServletRequest javax = null;
 
-        if (jakarta == null) {
-            javax = null;
-        } else if (jakarta instanceof JakartaToJavaxWrapper<?> bridge) {
-            javax = (javax.servlet.http.HttpServletRequest) bridge.getJavax();
-        } else if (jakarta instanceof HttpServletRequestWrapper wrapper) {
-            javax =
-                new JavaxToJakartaHttpServletRequestWrapper<jakarta.servlet.http.HttpServletRequestWrapper>(wrapper);
-        } else {
-            javax = new JavaxToJakartaHttpServletRequest<jakarta.servlet.http.HttpServletRequest>(jakarta);
+        if (jakarta != null) {
+            if (jakarta instanceof JakartaToJavaxWrapper<?> bridge) {
+                javax = (javax.servlet.http.HttpServletRequest) bridge.getJavax();
+            }
+
+            if (javax == null) {
+                if (jakarta instanceof HttpServletRequestWrapper wrapper) {
+                    javax = new JavaxToJakartaHttpServletRequestWrapper<jakarta.servlet.http.HttpServletRequestWrapper>(
+                        wrapper);
+                } else {
+                    javax = new JavaxToJakartaHttpServletRequest<jakarta.servlet.http.HttpServletRequest>(jakarta);
+                }
+            }
         }
 
         return javax;
@@ -184,18 +192,22 @@ public final class JakartaServletBridge
      */
     public static ServletRequest toJakarta(javax.servlet.ServletRequest javax)
     {
-        ServletRequest jakarta;
+        ServletRequest jakarta = null;
 
-        if (javax == null) {
-            jakarta = null;
-        } else if (javax instanceof JavaxToJakartaWrapper<?> bridge) {
-            jakarta = (ServletRequest) bridge.getJakarta();
-        } else if (javax instanceof javax.servlet.http.HttpServletRequest httpjakarta) {
-            jakarta = toJakarta(httpjakarta);
-        } else if (javax instanceof javax.servlet.ServletRequestWrapper wrapper) {
-            jakarta = new JakartaToJavaxServletRequestWrapper<javax.servlet.ServletRequestWrapper>(wrapper);
-        } else {
-            jakarta = new JakartaToJavaxServletRequest<javax.servlet.ServletRequest>(javax);
+        if (javax != null) {
+            if (javax instanceof JavaxToJakartaWrapper<?> bridge) {
+                jakarta = (ServletRequest) bridge.getJakarta();
+            } else if (javax instanceof javax.servlet.http.HttpServletRequest httpjakarta) {
+                jakarta = toJakarta(httpjakarta);
+            }
+
+            if (jakarta == null) {
+                if (javax instanceof javax.servlet.ServletRequestWrapper wrapper) {
+                    jakarta = new JakartaToJavaxServletRequestWrapper<javax.servlet.ServletRequestWrapper>(wrapper);
+                } else {
+                    jakarta = new JakartaToJavaxServletRequest<javax.servlet.ServletRequest>(javax);
+                }
+            }
         }
 
         return jakarta;
@@ -207,17 +219,21 @@ public final class JakartaServletBridge
      */
     public static HttpServletRequest toJakarta(javax.servlet.http.HttpServletRequest javax)
     {
-        HttpServletRequest jakarta;
+        HttpServletRequest jakarta = null;
 
-        if (javax == null) {
-            jakarta = null;
-        } else if (javax instanceof JavaxToJakartaWrapper<?> bridge) {
-            jakarta = (HttpServletRequest) bridge.getJakarta();
-        } else if (javax instanceof javax.servlet.http.HttpServletRequestWrapper wrapper) {
-            jakarta =
-                new JakartaToJavaxHttpServletRequestWrapper<javax.servlet.http.HttpServletRequestWrapper>(wrapper);
-        } else {
-            jakarta = new JakartaToJavaxHttpServletRequest<javax.servlet.http.HttpServletRequest>(javax);
+        if (javax != null) {
+            if (javax instanceof JavaxToJakartaWrapper<?> bridge) {
+                jakarta = (HttpServletRequest) bridge.getJakarta();
+            }
+
+            if (jakarta == null) {
+                if (javax instanceof javax.servlet.http.HttpServletRequestWrapper wrapper) {
+                    jakarta = new JakartaToJavaxHttpServletRequestWrapper<javax.servlet.http.HttpServletRequestWrapper>(
+                        wrapper);
+                } else {
+                    jakarta = new JakartaToJavaxHttpServletRequest<javax.servlet.http.HttpServletRequest>(javax);
+                }
+            }
         }
 
         return jakarta;
@@ -229,18 +245,22 @@ public final class JakartaServletBridge
      */
     public static javax.servlet.ServletResponse toJavax(ServletResponse jakarta)
     {
-        javax.servlet.ServletResponse javax;
+        javax.servlet.ServletResponse javax = null;
 
-        if (jakarta == null) {
-            javax = null;
-        } else if (jakarta instanceof JakartaToJavaxWrapper<?> bridge) {
-            javax = (javax.servlet.ServletResponse) bridge.getJavax();
-        } else if (jakarta instanceof HttpServletResponse httpjakarta) {
-            javax = toJavax(httpjakarta);
-        } else if (jakarta instanceof ServletResponseWrapper wrapper) {
-            javax = new JavaxToJakartaServletResponseWrapper<jakarta.servlet.ServletResponseWrapper>(wrapper);
-        } else {
-            javax = new JavaxToJakartaServletResponse<jakarta.servlet.ServletResponse>(jakarta);
+        if (jakarta != null) {
+            if (jakarta instanceof JakartaToJavaxWrapper<?> bridge) {
+                javax = (javax.servlet.ServletResponse) bridge.getJavax();
+            } else if (jakarta instanceof HttpServletResponse httpjakarta) {
+                javax = toJavax(httpjakarta);
+            }
+
+            if (javax == null) {
+                if (jakarta instanceof ServletResponseWrapper wrapper) {
+                    javax = new JavaxToJakartaServletResponseWrapper<jakarta.servlet.ServletResponseWrapper>(wrapper);
+                } else {
+                    javax = new JavaxToJakartaServletResponse<jakarta.servlet.ServletResponse>(jakarta);
+                }
+            }
         }
 
         return javax;
@@ -252,17 +272,22 @@ public final class JakartaServletBridge
      */
     public static javax.servlet.http.HttpServletResponse toJavax(HttpServletResponse jakarta)
     {
-        javax.servlet.http.HttpServletResponse javax;
+        javax.servlet.http.HttpServletResponse javax = null;
 
-        if (jakarta == null) {
-            javax = null;
-        } else if (jakarta instanceof JakartaToJavaxWrapper<?> bridge) {
-            javax = (javax.servlet.http.HttpServletResponse) bridge.getJavax();
-        } else if (jakarta instanceof HttpServletResponseWrapper wrapper) {
-            javax =
-                new JavaxToJakartaHttpServletResponseWrapper<jakarta.servlet.http.HttpServletResponseWrapper>(wrapper);
-        } else {
-            javax = new JavaxToJakartaHttpServletResponse<jakarta.servlet.http.HttpServletResponse>(jakarta);
+        if (jakarta != null) {
+            if (jakarta instanceof JakartaToJavaxWrapper<?> bridge) {
+                javax = (javax.servlet.http.HttpServletResponse) bridge.getJavax();
+            }
+
+            if (javax == null) {
+                if (jakarta instanceof HttpServletResponseWrapper wrapper) {
+                    javax =
+                        new JavaxToJakartaHttpServletResponseWrapper<jakarta.servlet.http.HttpServletResponseWrapper>(
+                            wrapper);
+                } else {
+                    javax = new JavaxToJakartaHttpServletResponse<jakarta.servlet.http.HttpServletResponse>(jakarta);
+                }
+            }
         }
 
         return javax;
@@ -274,18 +299,22 @@ public final class JakartaServletBridge
      */
     public static ServletResponse toJakarta(javax.servlet.ServletResponse javax)
     {
-        ServletResponse jakarta;
+        ServletResponse jakarta = null;
 
-        if (javax == null) {
-            jakarta = null;
-        } else if (javax instanceof JavaxToJakartaWrapper<?> bridge) {
-            jakarta = (ServletResponse) bridge.getJakarta();
-        } else if (javax instanceof javax.servlet.http.HttpServletResponse httpjakarta) {
-            jakarta = toJakarta(httpjakarta);
-        } else if (javax instanceof javax.servlet.ServletResponseWrapper wrapper) {
-            jakarta = new JakartaToJavaxServletResponseWrapper<javax.servlet.ServletResponseWrapper>(wrapper);
-        } else {
-            jakarta = new JakartaToJavaxServletResponse<javax.servlet.ServletResponse>(javax);
+        if (javax != null) {
+            if (javax instanceof JavaxToJakartaWrapper<?> bridge) {
+                jakarta = (ServletResponse) bridge.getJakarta();
+            } else if (javax instanceof javax.servlet.http.HttpServletResponse httpjakarta) {
+                jakarta = toJakarta(httpjakarta);
+            }
+
+            if (jakarta == null) {
+                if (javax instanceof javax.servlet.ServletResponseWrapper wrapper) {
+                    jakarta = new JakartaToJavaxServletResponseWrapper<javax.servlet.ServletResponseWrapper>(wrapper);
+                } else {
+                    jakarta = new JakartaToJavaxServletResponse<javax.servlet.ServletResponse>(javax);
+                }
+            }
         }
 
         return jakarta;
@@ -297,17 +326,22 @@ public final class JakartaServletBridge
      */
     public static HttpServletResponse toJakarta(javax.servlet.http.HttpServletResponse javax)
     {
-        HttpServletResponse jakarta;
+        HttpServletResponse jakarta = null;
 
-        if (javax == null) {
-            jakarta = null;
-        } else if (javax instanceof JavaxToJakartaWrapper<?> bridge) {
-            jakarta = (HttpServletResponse) bridge.getJakarta();
-        } else if (javax instanceof javax.servlet.http.HttpServletResponseWrapper wrapper) {
-            jakarta =
-                new JakartaToJavaxHttpServletResponseWrapper<javax.servlet.http.HttpServletResponseWrapper>(wrapper);
-        } else {
-            jakarta = new JakartaToJavaxHttpServletResponse<javax.servlet.http.HttpServletResponse>(javax);
+        if (javax != null) {
+            if (javax instanceof JavaxToJakartaWrapper<?> bridge) {
+                jakarta = (HttpServletResponse) bridge.getJakarta();
+            }
+
+            if (jakarta == null) {
+                if (javax instanceof javax.servlet.http.HttpServletResponseWrapper wrapper) {
+                    jakarta =
+                        new JakartaToJavaxHttpServletResponseWrapper<javax.servlet.http.HttpServletResponseWrapper>(
+                            wrapper);
+                } else {
+                    jakarta = new JakartaToJavaxHttpServletResponse<javax.servlet.http.HttpServletResponse>(javax);
+                }
+            }
         }
 
         return jakarta;
