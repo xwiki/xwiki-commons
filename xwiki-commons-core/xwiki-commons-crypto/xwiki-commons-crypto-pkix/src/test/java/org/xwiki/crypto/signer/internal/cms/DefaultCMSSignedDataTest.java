@@ -20,11 +20,11 @@
 
 package org.xwiki.crypto.signer.internal.cms;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.AbstractPKIXTest;
 import org.xwiki.crypto.AsymmetricKeyFactory;
 import org.xwiki.crypto.BinaryStringEncoder;
@@ -41,8 +41,6 @@ import org.xwiki.crypto.pkix.internal.BcX509CertificateChainBuilder;
 import org.xwiki.crypto.pkix.internal.BcX509CertificateFactory;
 import org.xwiki.crypto.pkix.params.CertifiedKeyPair;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
-import org.xwiki.crypto.signer.CMSSignedDataGenerator;
-import org.xwiki.crypto.signer.CMSSignedDataVerifier;
 import org.xwiki.crypto.signer.SignerFactory;
 import org.xwiki.crypto.signer.internal.DefaultBcContentVerifierProviderBuilder;
 import org.xwiki.crypto.signer.internal.factory.BcDSAwithSHA1SignerFactory;
@@ -52,71 +50,76 @@ import org.xwiki.crypto.signer.param.CMSSignedDataGeneratorParameters;
 import org.xwiki.crypto.signer.param.CMSSignedDataVerified;
 import org.xwiki.crypto.signer.param.CMSSignerVerifiedInformation;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ComponentList({Base64BinaryStringEncoder.class, BcRSAKeyFactory.class, BcDSAKeyFactory.class,
+@ComponentTest
+@ComponentList({ Base64BinaryStringEncoder.class, BcRSAKeyFactory.class, BcDSAKeyFactory.class,
     DefaultDigestFactory.class, BcSHA1DigestFactory.class, BcSHA1withRsaSignerFactory.class,
     BcDSAwithSHA1SignerFactory.class, DefaultSignerFactory.class, BcX509CertificateFactory.class,
     DefaultBcContentVerifierProviderBuilder.class, BcStoreX509CertificateProvider.class,
-    BcX509CertificateChainBuilder.class})
-public class DefaultCMSSignedDataTest extends AbstractPKIXTest
+    BcX509CertificateChainBuilder.class })
+class DefaultCMSSignedDataTest extends AbstractPKIXTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<CMSSignedDataGenerator> generatorMocker =
-        new MockitoComponentMockingRule<>(DefaultCMSSignedDataGenerator.class);
+    @InjectMockComponents
+    private DefaultCMSSignedDataGenerator generator;
 
-    @Rule
-    public final MockitoComponentMockingRule<CMSSignedDataVerifier> verifierMocker =
-        new MockitoComponentMockingRule<>(DefaultCMSSignedDataVerifier.class);
+    @InjectMockComponents
+    private DefaultCMSSignedDataVerifier verifier;
 
-    private CMSSignedDataGenerator generator;
-    private CMSSignedDataVerifier verifier;
+    @InjectComponentManager
+    private MockitoComponentManager componentManager;
+
     @SuppressWarnings("unused")
     private static SignerFactory rsaSignerFactory;
+
     private static SignerFactory dsaSignerFactory;
+
     private static PrivateKeyParameters rsaPrivateKey;
+
     private static PrivateKeyParameters dsaPrivateKey;
+
     private static CertifiedPublicKey v3CaCert;
+
     private static CertifiedPublicKey v3InterCaCert;
+
     private static CertifiedPublicKey v3Cert;
+
     protected static byte[] text;
 
-    public void setupTest(MockitoComponentMockingRule<CMSSignedDataGenerator> mocker) throws Exception
+    @BeforeEach
+    void configure() throws Exception
     {
         // Decode keys once for all tests.
         if (rsaPrivateKey == null) {
-            BinaryStringEncoder base64encoder = mocker.getInstance(BinaryStringEncoder.class, "Base64");
-            AsymmetricKeyFactory rsaKeyFactory = mocker.getInstance(AsymmetricKeyFactory.class, "RSA");
-            AsymmetricKeyFactory dsaKeyFactory = mocker.getInstance(AsymmetricKeyFactory.class, "DSA");
-            CertificateFactory certFactory = mocker.getInstance(CertificateFactory.class, "X509");
+            BinaryStringEncoder base64encoder = this.componentManager.getInstance(BinaryStringEncoder.class, "Base64");
+            AsymmetricKeyFactory rsaKeyFactory = this.componentManager.getInstance(AsymmetricKeyFactory.class, "RSA");
+            AsymmetricKeyFactory dsaKeyFactory = this.componentManager.getInstance(AsymmetricKeyFactory.class, "DSA");
+            CertificateFactory certFactory = this.componentManager.getInstance(CertificateFactory.class, "X509");
             rsaPrivateKey = rsaKeyFactory.fromPKCS8(base64encoder.decode(RSA_PRIVATE_KEY));
             dsaPrivateKey = dsaKeyFactory.fromPKCS8(base64encoder.decode(DSA_PRIVATE_KEY));
             v3CaCert = certFactory.decode(base64encoder.decode(V3_CA_CERT));
             v3InterCaCert = certFactory.decode(base64encoder.decode(V3_ITERCA_CERT));
             v3Cert = certFactory.decode(base64encoder.decode(V3_CERT));
-            text = TEXT.getBytes("UTF-8");
-            rsaSignerFactory = mocker.getInstance(SignerFactory.class, "SHA1withRSAEncryption");
-            dsaSignerFactory = mocker.getInstance(SignerFactory.class, "DSAwithSHA1");
+            text = TEXT.getBytes(StandardCharsets.UTF_8);
+            rsaSignerFactory = this.componentManager.getInstance(SignerFactory.class, "SHA1withRSAEncryption");
+            dsaSignerFactory = this.componentManager.getInstance(SignerFactory.class, "DSAwithSHA1");
         }
     }
 
-    @Before
-    public void configure() throws Exception
-    {
-        generator = generatorMocker.getComponentUnderTest();
-        verifier = verifierMocker.getComponentUnderTest();
-        setupTest(generatorMocker);
-    }
-
     @Test
-    public void testDSASignatureAllEmbedded() throws Exception
+    void testDSASignatureAllEmbedded() throws Exception
     {
-        byte[] signature = generator.generate(text,
+        byte[] signature = this.generator.generate(text,
             new CMSSignedDataGeneratorParameters()
                 .addSigner(CertifyingSigner.getInstance(true,
                     new CertifiedKeyPair(dsaPrivateKey, v3Cert), dsaSignerFactory))
@@ -124,46 +127,47 @@ public class DefaultCMSSignedDataTest extends AbstractPKIXTest
                 .addCertificate(v3InterCaCert)
                 .addCertificate(v3CaCert), true);
 
-        CMSSignedDataVerified result = verifier.verify(signature);
+        CMSSignedDataVerified result = this.verifier.verify(signature);
 
-        assertThat(result.isVerified(), equalTo(true));
-        assertThat(result.getCertificates(), containsInAnyOrder(v3CaCert, v3InterCaCert, v3Cert));
-        assertThat(result.getContent(), equalTo(text));
-        assertThat(result.getContentType(), equalTo("1.2.840.113549.1.7.1"));
-        assertThat(result.getSignatures().size(),equalTo(1));
+        assertTrue(result.isVerified());
+        assertTrue(result.getCertificates().containsAll(java.util.Arrays.asList(v3CaCert, v3InterCaCert, v3Cert)) &&
+            result.getCertificates().size() == 3);
+        assertArrayEquals(text, result.getContent());
+        assertEquals("1.2.840.113549.1.7.1", result.getContentType());
+        assertEquals(1, result.getSignatures().size());
 
         CMSSignerVerifiedInformation signerInfo = result.getSignatures().iterator().next();
 
-        assertThat(signerInfo.isVerified(), equalTo(true));
+        assertTrue(signerInfo.isVerified());
         assertThat(signerInfo.getCertificateChain(), contains(v3CaCert, v3InterCaCert, v3Cert));
     }
 
     @Test
-    public void testDSASignatureWithExternalCerts() throws Exception
+    void testDSASignatureWithExternalCerts() throws Exception
     {
-        byte[] signature = generator.generate(text,
+        byte[] signature = this.generator.generate(text,
             new CMSSignedDataGeneratorParameters()
                 .addSigner(CertifyingSigner.getInstance(true,
                     new CertifiedKeyPair(dsaPrivateKey, v3Cert), dsaSignerFactory)), true);
 
-        CMSSignedDataVerified result = verifier.verify(signature, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
+        CMSSignedDataVerified result = this.verifier.verify(signature, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
 
-        assertThat(result.isVerified(), equalTo(true));
-        assertThat(result.getCertificates().isEmpty(), equalTo(true));
-        assertThat(result.getContent(), equalTo(text));
-        assertThat(result.getContentType(), equalTo("1.2.840.113549.1.7.1"));
-        assertThat(result.getSignatures().size(),equalTo(1));
+        assertTrue(result.isVerified());
+        assertTrue(result.getCertificates().isEmpty());
+        assertArrayEquals(text, result.getContent());
+        assertEquals("1.2.840.113549.1.7.1", result.getContentType());
+        assertEquals(1, result.getSignatures().size());
 
         CMSSignerVerifiedInformation signerInfo = result.getSignatures().iterator().next();
 
-        assertThat(signerInfo.isVerified(), equalTo(true));
+        assertTrue(signerInfo.isVerified());
         assertThat(signerInfo.getCertificateChain(), contains(v3CaCert, v3InterCaCert, v3Cert));
     }
 
     @Test
-    public void testDSADetachedSignatureWithEmbeddedCerts() throws Exception
+    void testDSADetachedSignatureWithEmbeddedCerts() throws Exception
     {
-        byte[] signature = generator.generate(text,
+        byte[] signature = this.generator.generate(text,
             new CMSSignedDataGeneratorParameters()
                 .addSigner(CertifyingSigner.getInstance(true,
                     new CertifiedKeyPair(dsaPrivateKey, v3Cert), dsaSignerFactory))
@@ -171,112 +175,116 @@ public class DefaultCMSSignedDataTest extends AbstractPKIXTest
                 .addCertificate(v3InterCaCert)
                 .addCertificate(v3CaCert));
 
-        CMSSignedDataVerified result = verifier.verify(signature, text);
+        CMSSignedDataVerified result = this.verifier.verify(signature, text);
 
-        assertThat(result.isVerified(), equalTo(true));
+        assertTrue(result.isVerified());
         assertThat(result.getCertificates(), containsInAnyOrder(v3CaCert, v3InterCaCert, v3Cert));
-        assertThat(result.getContent(), equalTo(text));
-        assertThat(result.getContentType(), equalTo("1.2.840.113549.1.7.1"));
-        assertThat(result.getSignatures().size(),equalTo(1));
+        assertArrayEquals(text, result.getContent());
+        assertEquals("1.2.840.113549.1.7.1", result.getContentType());
+        assertEquals(1, result.getSignatures().size());
 
         CMSSignerVerifiedInformation signerInfo = result.getSignatures().iterator().next();
 
-        assertThat(signerInfo.isVerified(), equalTo(true));
+        assertTrue(signerInfo.isVerified());
         assertThat(signerInfo.getCertificateChain(), contains(v3CaCert, v3InterCaCert, v3Cert));
     }
 
     @Test
-    public void testDSADetachedSignatureWithExternalCerts() throws Exception
+    void testDSADetachedSignatureWithExternalCerts() throws Exception
     {
-        byte[] signature = generator.generate(text,
+        byte[] signature = this.generator.generate(text,
             new CMSSignedDataGeneratorParameters()
                 .addSigner(CertifyingSigner.getInstance(true,
                     new CertifiedKeyPair(dsaPrivateKey, v3Cert), dsaSignerFactory)));
 
-        CMSSignedDataVerified result = verifier.verify(signature, text, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
+        CMSSignedDataVerified result =
+            this.verifier.verify(signature, text, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
 
-        assertThat(result.isVerified(), equalTo(true));
-        assertThat(result.getCertificates().isEmpty(), equalTo(true));
-        assertThat(result.getContent(), equalTo(text));
-        assertThat(result.getContentType(), equalTo("1.2.840.113549.1.7.1"));
-        assertThat(result.getSignatures().size(),equalTo(1));
+        assertTrue(result.isVerified());
+        assertTrue(result.getCertificates().isEmpty());
+        assertArrayEquals(text, result.getContent());
+        assertEquals("1.2.840.113549.1.7.1", result.getContentType());
+        assertEquals(1, result.getSignatures().size());
 
         CMSSignerVerifiedInformation signerInfo = result.getSignatures().iterator().next();
 
-        assertThat(signerInfo.isVerified(), equalTo(true));
+        assertTrue(signerInfo.isVerified());
         assertThat(signerInfo.getCertificateChain(), contains(v3CaCert, v3InterCaCert, v3Cert));
     }
 
     @Test
-    public void testDSADetachedSignatureWitMixedCerts() throws Exception
+    void testDSADetachedSignatureWitMixedCerts() throws Exception
     {
-        byte[] signature = generator.generate(text,
+        byte[] signature = this.generator.generate(text,
             new CMSSignedDataGeneratorParameters()
                 .addSigner(CertifyingSigner.getInstance(true,
                     new CertifiedKeyPair(dsaPrivateKey, v3Cert), dsaSignerFactory))
                 .addCertificate(v3Cert));
 
-        CMSSignedDataVerified result = verifier.verify(signature, text, Arrays.asList(v3InterCaCert, v3CaCert));
+        CMSSignedDataVerified result = this.verifier.verify(signature, text, Arrays.asList(v3InterCaCert, v3CaCert));
 
-        assertThat(result.isVerified(), equalTo(true));
+        assertTrue(result.isVerified());
+        assertEquals(1, result.getCertificates().size());
         assertThat(result.getCertificates(), containsInAnyOrder(v3Cert));
-        assertThat(result.getContent(), equalTo(text));
-        assertThat(result.getContentType(), equalTo("1.2.840.113549.1.7.1"));
-        assertThat(result.getSignatures().size(),equalTo(1));
+        assertArrayEquals(text, result.getContent());
+        assertEquals("1.2.840.113549.1.7.1", result.getContentType());
+        assertEquals(1, result.getSignatures().size());
 
         CMSSignerVerifiedInformation signerInfo = result.getSignatures().iterator().next();
 
-        assertThat(signerInfo.isVerified(), equalTo(true));
+        assertTrue(signerInfo.isVerified());
         assertThat(signerInfo.getCertificateChain(), contains(v3CaCert, v3InterCaCert, v3Cert));
     }
 
     @Test
-    public void testPreCalculatedSignature() throws Exception
+    void testPreCalculatedSignature() throws Exception
     {
-        byte[] signature = generator.generate(text,
+        byte[] signature = this.generator.generate(text,
             new CMSSignedDataGeneratorParameters()
                 .addSigner(CertifyingSigner.getInstance(true,
                     new CertifiedKeyPair(dsaPrivateKey, v3Cert), dsaSignerFactory))
         );
 
-        CMSSignedDataVerified result = verifier.verify(signature, text, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
+        CMSSignedDataVerified result =
+            this.verifier.verify(signature, text, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
 
-        byte[] signature2 = generator.generate(text,
+        byte[] signature2 = this.generator.generate(text,
             new CMSSignedDataGeneratorParameters()
                 .addSignature(result.getSignatures().iterator().next())
         );
 
-        result = verifier.verify(signature2, text, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
+        result = this.verifier.verify(signature2, text, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
 
-        assertThat(signature2, equalTo(signature));
+        assertArrayEquals(signature, signature2);
     }
 
     @Test
-    public void testAddingCertificatesToSignature() throws Exception
+    void testAddingCertificatesToSignature() throws Exception
     {
-        byte[] signature = generator.generate(text,
+        byte[] signature = this.generator.generate(text,
             new CMSSignedDataGeneratorParameters()
                 .addSigner(CertifyingSigner.getInstance(true,
                     new CertifiedKeyPair(dsaPrivateKey, v3Cert), dsaSignerFactory))
         );
 
-        CMSSignedDataVerified result = verifier.verify(signature, text, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
+        CMSSignedDataVerified result =
+            this.verifier.verify(signature, text, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
 
-        byte[] signature2 = generator.generate(text,
+        byte[] signature2 = this.generator.generate(text,
             new CMSSignedDataGeneratorParameters()
                 .addSignature(result.getSignatures().iterator().next())
                 .addCertificates(result.getSignatures().iterator().next().getCertificateChain())
         );
 
-        result = verifier.verify(signature2, text);
+        result = this.verifier.verify(signature2, text);
 
-        assertThat(result.isVerified(), equalTo(true));
+        assertTrue(result.isVerified());
         assertThat(result.getCertificates(), containsInAnyOrder(v3CaCert, v3InterCaCert, v3Cert));
-        assertThat(result.getSignatures().size(),equalTo(1));
+        assertEquals(1, result.getSignatures().size());
 
         CMSSignerVerifiedInformation signerInfo = result.getSignatures().iterator().next();
 
-        assertThat(signerInfo.isVerified(), equalTo(true));
+        assertTrue(signerInfo.isVerified());
         assertThat(signerInfo.getCertificateChain(), contains(v3CaCert, v3InterCaCert, v3Cert));
     }
 }
