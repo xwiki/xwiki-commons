@@ -20,9 +20,7 @@
 package org.xwiki.crypto.password.internal.pbe.factory;
 
 import org.bouncycastle.util.encoders.Base64;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.cipher.internal.symmetric.factory.BcAesCbcPaddedCipherFactory;
 import org.xwiki.crypto.cipher.internal.symmetric.factory.BcBlowfishCbcPaddedCipherFactory;
 import org.xwiki.crypto.cipher.internal.symmetric.factory.BcDesCbcPaddedCipherFactory;
@@ -43,11 +41,12 @@ import org.xwiki.crypto.password.params.KeyDerivationFunctionParameters;
 import org.xwiki.crypto.password.params.PBKDF2Parameters;
 import org.xwiki.crypto.password.params.ScryptParameters;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
+@ComponentTest
 @ComponentList({DefaultKeyDerivationFunctionFactory.class, BcPKCS5S2KeyDerivationFunctionFactory.class,
     BcPBES2Rc2CipherFactory.class, BcRc2CbcPaddedCipherFactory.class,
     BcPBES2DesCipherFactory.class, BcDesCbcPaddedCipherFactory.class,
@@ -55,7 +54,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
     BcPBES2BlowfishCipherFactory.class, BcBlowfishCbcPaddedCipherFactory.class,
     BcPBES2AesCipherFactory.class, BcAesCbcPaddedCipherFactory.class, BcScryptKeyDerivationFunctionFactory.class,
     BcSHA224DigestFactory.class, BcSHA256DigestFactory.class, BcSHA384DigestFactory.class, BcSHA512DigestFactory.class})
-public class BcPBES2CipherFactoryTest
+class BcPBES2CipherFactoryTest
 {
     private static final byte[] PASSWORD = PasswordToByteConverter.convert("changeit");
 
@@ -90,86 +89,72 @@ public class BcPBES2CipherFactoryTest
             + "zYoZ7nCUo4TmVXxgCjiEWglg3b/R3xjQr1dAABhTeI8bXMv5r/tMUsnS79uKqwGD"
             + "2Gc1syc3+055K4qcfZHH0XWu");
 
-    @Rule
-    public final MockitoComponentMockingRule<PasswordBasedCipherFactory> mocker =
-        new MockitoComponentMockingRule<>(BcPBES2CipherFactory.class);
+    @InjectMockComponents
+    private BcPBES2CipherFactory factory;
 
-    @Rule
-    public final MockitoComponentMockingRule<PasswordBasedCipherFactory> desMocker =
-        new MockitoComponentMockingRule<>(BcPBES2DesCipherFactory.class);
+    @InjectMockComponents
+    private BcPBES2DesCipherFactory desFactory;
 
-    @Rule
-    public final MockitoComponentMockingRule<PasswordBasedCipherFactory> desEdeMocker =
-        new MockitoComponentMockingRule<>(BcPBES2DesEdeCipherFactory.class);
+    @InjectMockComponents
+    private BcPBES2DesEdeCipherFactory desEdeFactory;
 
-    @Rule
-    public final MockitoComponentMockingRule<PasswordBasedCipherFactory> rc2Mocker =
-        new MockitoComponentMockingRule<>(BcPBES2Rc2CipherFactory.class);
+    @InjectMockComponents
+    private BcPBES2Rc2CipherFactory rc2Factory;
 
-    @Rule
-    public final MockitoComponentMockingRule<PasswordBasedCipherFactory> blowfishMocker =
-        new MockitoComponentMockingRule<>(BcPBES2BlowfishCipherFactory.class);
+    @InjectMockComponents
+    private BcPBES2BlowfishCipherFactory blowfishFactory;
 
-    @Rule
-    public final MockitoComponentMockingRule<PasswordBasedCipherFactory> aesMocker =
-        new MockitoComponentMockingRule<>(BcPBES2AesCipherFactory.class);
+    @InjectMockComponents
+    private BcPBES2AesCipherFactory aesFactory;
 
-    PasswordBasedCipherFactory factory;
-
-    @Before
-    public void configure() throws Exception
-    {
-        factory = mocker.getComponentUnderTest();
-    }
-
-    private void PBESEncodeDecodeTest(MockitoComponentMockingRule<? extends PasswordBasedCipherFactory> mocker,
+    private void pbesEncodeDecodeTest(PasswordBasedCipherFactory cipherFactory,
                                       int blockSize, KeyDerivationFunctionParameters kdfParams) throws Exception
     {
-        PasswordBasedCipher encCipher = mocker.getComponentUnderTest().getInstance(true,
+        PasswordBasedCipher encCipher = cipherFactory.getInstance(true,
             new KeyWithIVParameters(PASSWORD, blockSize),
             kdfParams);
 
         byte[] encoded = encCipher.doFinal(RSAKEY);
 
-        PasswordBasedCipher decCipher = factory.getInstance(false, PASSWORD, encCipher.getEncoded());
+        PasswordBasedCipher decCipher = this.factory.getInstance(false, PASSWORD, encCipher.getEncoded());
 
-        assertThat(decCipher.getEncoded(), equalTo(encCipher.getEncoded()));
-        assertThat(decCipher.doFinal(encoded),equalTo(RSAKEY));
+        assertArrayEquals(encCipher.getEncoded(), decCipher.getEncoded());
+        assertArrayEquals(RSAKEY, decCipher.doFinal(encoded));
     }
 
     @Test
-    public void testPBES2BlowfishWithPBKDF2() throws Exception
+    void pbes2BlowfishWithPBKDF2() throws Exception
     {
-        PBESEncodeDecodeTest(blowfishMocker, 8, new PBKDF2Parameters(16, 2048));
+        pbesEncodeDecodeTest(this.blowfishFactory, 8, new PBKDF2Parameters(16, 2048));
     }
 
     @Test
-    public void testPBES2BlowfishWithScrypt() throws Exception
+    void pbes2BlowfishWithScrypt() throws Exception
     {
-        PBESEncodeDecodeTest(blowfishMocker, 8, new ScryptParameters(16));
+        pbesEncodeDecodeTest(this.blowfishFactory, 8, new ScryptParameters(16));
     }
 
     @Test
-    public void testPBES2AESWithHmacSHA224() throws Exception
+    void pbes2AESWithHmacSHA224() throws Exception
     {
-        PBESEncodeDecodeTest(aesMocker, 16, new PBKDF2Parameters(16, 2048, "SHA-224"));
+        pbesEncodeDecodeTest(this.aesFactory, 16, new PBKDF2Parameters(16, 2048, "SHA-224"));
     }
 
     @Test
-    public void testPBES2AESWithHmacSHA256() throws Exception
+    void pbes2AESWithHmacSHA256() throws Exception
     {
-        PBESEncodeDecodeTest(aesMocker, 16, new PBKDF2Parameters(16, 2048, "SHA-256"));
+        pbesEncodeDecodeTest(this.aesFactory, 16, new PBKDF2Parameters(16, 2048, "SHA-256"));
     }
 
     @Test
-    public void testPBES2AESWithHmacSHA384() throws Exception
+    void pbes2AESWithHmacSHA384() throws Exception
     {
-        PBESEncodeDecodeTest(aesMocker, 16, new PBKDF2Parameters(16, 2048, "SHA-384"));
+        pbesEncodeDecodeTest(this.aesFactory, 16, new PBKDF2Parameters(16, 2048, "SHA-384"));
     }
 
     @Test
-    public void testPBES2AESWithHmacSHA512() throws Exception
+    void pbes2AESWithHmacSHA512() throws Exception
     {
-        PBESEncodeDecodeTest(aesMocker, 16, new PBKDF2Parameters(16, 2048, "SHA-512"));
+        pbesEncodeDecodeTest(this.aesFactory, 16, new PBKDF2Parameters(16, 2048, "SHA-512"));
     }
 }
