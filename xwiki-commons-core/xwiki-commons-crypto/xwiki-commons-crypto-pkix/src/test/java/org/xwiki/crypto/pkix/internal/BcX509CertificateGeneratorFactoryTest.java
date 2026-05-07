@@ -29,7 +29,6 @@ import java.util.List;
 import javax.mail.internet.InternetAddress;
 
 import org.bouncycastle.util.IPAddress;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.AbstractPKIXTest;
@@ -75,11 +74,13 @@ import org.xwiki.test.mockito.MockitoComponentManager;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.AnyOf.anyOf;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -127,11 +128,11 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     {
         // Decode keys once for all tests.
         if (rsaPrivateKey == null) {
-            BinaryStringEncoder base64encoder = componentManager.getInstance(BinaryStringEncoder.class, "Base64");
-            AsymmetricKeyFactory keyFactory = componentManager.getInstance(AsymmetricKeyFactory.class, "RSA");
+            BinaryStringEncoder base64encoder = this.componentManager.getInstance(BinaryStringEncoder.class, "Base64");
+            AsymmetricKeyFactory keyFactory = this.componentManager.getInstance(AsymmetricKeyFactory.class, "RSA");
             rsaPrivateKey = keyFactory.fromPKCS8(base64encoder.decode(RSA_PRIVATE_KEY));
             rsaPublicKey = keyFactory.fromX509(base64encoder.decode(RSA_PUBLIC_KEY));
-            keyFactory = componentManager.getInstance(AsymmetricKeyFactory.class, "DSA");
+            keyFactory = this.componentManager.getInstance(AsymmetricKeyFactory.class, "DSA");
             interCaDsaPrivateKey = keyFactory.fromPKCS8(base64encoder.decode(INTERCA_DSA_PRIVATE_KEY));
             interCaDsaPublicKey = keyFactory.fromX509(base64encoder.decode(INTERCA_DSA_PUBLIC_KEY));
             dsaPrivateKey = keyFactory.fromPKCS8(base64encoder.decode(DSA_PRIVATE_KEY));
@@ -142,7 +143,7 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     @BeforeEach
     void configure() throws Exception
     {
-        signerFactory = componentManager.getInstance(SignerFactory.class, "SHA1withRSAEncryption");
+        this.signerFactory = this.componentManager.getInstance(SignerFactory.class, "SHA1withRSAEncryption");
         setupTest();
     }
 
@@ -157,19 +158,19 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
 
     private X509CertifiedPublicKey checkSelfSigned(CertifiedPublicKey certificate, int version) throws Exception
     {
-        assertThat(certificate.getIssuer(), equalTo(new DistinguishedName("CN=Test")));
-        assertThat(certificate.getSubject(), equalTo(new DistinguishedName("CN=Test")));
-        assertThat(certificate.getIssuer(), equalTo(certificate.getSubject()));
+        assertEquals(new DistinguishedName("CN=Test"), certificate.getIssuer());
+        assertEquals(new DistinguishedName("CN=Test"), certificate.getSubject());
+        assertEquals(certificate.getSubject(), certificate.getIssuer());
         assertTrue(certificate.isSignedBy(rsaPublicKey), "Signature should match used private key.");
         assertTrue(certificate.isSignedBy(certificate.getPublicKeyParameters()),
             "Signature should match subject public key.");
 
-        assertThat(certificate, instanceOf(X509CertifiedPublicKey.class));
+        assertInstanceOf(X509CertifiedPublicKey.class, certificate);
         X509CertifiedPublicKey x509cert = (X509CertifiedPublicKey) certificate;
 
         //dumpCert(certificate);
 
-        assertThat(x509cert.getVersionNumber(), equalTo(version));
+        assertEquals(version, x509cert.getVersionNumber());
 
         Date yesterday = new Date(System.currentTimeMillis() - 86400000);
         Date inMoreThan500Days = new Date(System.currentTimeMillis() + 43286400000L);
@@ -186,16 +187,16 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
 
     private X509CertifiedPublicKey checkRootSigned(CertifiedPublicKey certificate, int version) throws Exception
     {
-        assertThat(certificate.getIssuer(), equalTo(new DistinguishedName("CN=Test CA")));
-        assertThat(certificate.getSubject(), equalTo(new DistinguishedName("CN=Test End Entity")));
+        assertEquals(new DistinguishedName("CN=Test CA"), certificate.getIssuer());
+        assertEquals(new DistinguishedName("CN=Test End Entity"), certificate.getSubject());
         assertTrue(certificate.isSignedBy(rsaPublicKey), "Signature should match used private key.");
 
-        assertThat(certificate, instanceOf(X509CertifiedPublicKey.class));
+        assertInstanceOf(X509CertifiedPublicKey.class, certificate);
         X509CertifiedPublicKey x509cert = (X509CertifiedPublicKey) certificate;
 
         //dumpCert(certificate);
 
-        assertThat(x509cert.getVersionNumber(), equalTo(version));
+        assertEquals(version, x509cert.getVersionNumber());
 
         Date yesterday = new Date(System.currentTimeMillis() - 86400000);
         Date inMoreThan500Days = new Date(System.currentTimeMillis() + 43286400000L);
@@ -214,8 +215,8 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     void generateSelfSignedCertificateVersion1() throws Exception
     {
         CertifiedPublicKey certificate =
-            factory.getInstance(signerFactory.getInstance(true, rsaPrivateKey),
-                new X509CertificateGenerationParameters())
+            this.factory.getInstance(this.signerFactory.getInstance(true, rsaPrivateKey),
+                    new X509CertificateGenerationParameters())
                 .generate(new DistinguishedName("CN=Test"), rsaPublicKey,
                     new X509CertificateParameters());
 
@@ -226,8 +227,8 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     void generateSelfSignedCertificateVersion3WithoutExtension() throws Exception
     {
         CertifiedPublicKey certificate =
-            factory.getInstance(signerFactory.getInstance(true, rsaPrivateKey),
-                new X509CertificateGenerationParameters(null))
+            this.factory.getInstance(this.signerFactory.getInstance(true, rsaPrivateKey),
+                    new X509CertificateGenerationParameters(null))
                 .generate(new DistinguishedName("CN=Test"), rsaPublicKey,
                     new X509CertificateParameters());
 
@@ -238,12 +239,12 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     void generateSelfSignedCertificateVersion3RootCa() throws Exception
     {
         CertifiedPublicKey certificate =
-            factory.getInstance(signerFactory.getInstance(true, rsaPrivateKey),
-                new X509CertificateGenerationParameters(
-                    builder.addBasicConstraints(true)
-                        .addKeyUsage(true, EnumSet.of(KeyUsage.keyCertSign,
-                            KeyUsage.cRLSign))
-                        .build()))
+            this.factory.getInstance(this.signerFactory.getInstance(true, rsaPrivateKey),
+                    new X509CertificateGenerationParameters(
+                        this.builder.addBasicConstraints(true)
+                            .addKeyUsage(true, EnumSet.of(KeyUsage.keyCertSign,
+                                KeyUsage.cRLSign))
+                            .build()))
                 .generate(new DistinguishedName("CN=Test"), rsaPublicKey,
                     new X509CertificateParameters());
 
@@ -254,29 +255,28 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
         assertTrue(cert.getExtensions().hasCertificateAuthorityBasicConstraints(),
             "Basic constraints should be set to CA.");
         assertTrue(cert.getExtensions().isCritical(KeyUsage.OID), "KeyUsage extension should be critical.");
-        assertThat(cert.getExtensions().getKeyUsage(), equalTo(EnumSet.of(KeyUsage.keyCertSign,
-            KeyUsage.cRLSign)));
-        assertThat(cert.getAuthorityKeyIdentifier(), notNullValue());
-        assertThat(cert.getAuthorityKeyIdentifier(),
-            equalTo(cert.getSubjectKeyIdentifier()));
+        assertEquals(EnumSet.of(KeyUsage.keyCertSign, KeyUsage.cRLSign), cert.getExtensions().getKeyUsage());
+        assertNotNull(cert.getAuthorityKeyIdentifier());
+        assertArrayEquals(cert.getSubjectKeyIdentifier(), cert.getAuthorityKeyIdentifier());
     }
 
     @Test
     void generateEndEntitySignedCertificateVersion1() throws Exception
     {
         CertifiedPublicKey caCertificate =
-            factory.getInstance(signerFactory.getInstance(true, rsaPrivateKey),
-                new X509CertificateGenerationParameters(
-                    //<validity in days>
-                ))
+            this.factory.getInstance(this.signerFactory.getInstance(true, rsaPrivateKey),
+                    new X509CertificateGenerationParameters(
+                        //<validity in days>
+                    ))
                 .generate(new DistinguishedName("CN=Test CA"), rsaPublicKey,
                     new X509CertificateParameters());
 
         //dumpCert(caCertificate);
 
         CertifiedPublicKey certificate =
-            factory.getInstance(
-                CertifyingSigner.getInstance(true, new CertifiedKeyPair(rsaPrivateKey, caCertificate), signerFactory),
+            this.factory.getInstance(
+                CertifyingSigner.getInstance(true, new CertifiedKeyPair(rsaPrivateKey, caCertificate),
+                    this.signerFactory),
                 new X509CertificateGenerationParameters(
                     //<validity in days>
                 )
@@ -290,99 +290,101 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     void generateEndEntitySignedCertificateVersion3() throws Exception
     {
         CertifiedPublicKey caCertificate =
-            factory.getInstance(signerFactory.getInstance(true, rsaPrivateKey),
-                new X509CertificateGenerationParameters(
-                    builder.addBasicConstraints(true)
-                        .addKeyUsage(true, EnumSet.of(KeyUsage.keyCertSign,
-                            KeyUsage.cRLSign))
-                        .build()))
+            this.factory.getInstance(this.signerFactory.getInstance(true, rsaPrivateKey),
+                    new X509CertificateGenerationParameters(
+                        this.builder.addBasicConstraints(true)
+                            .addKeyUsage(true, EnumSet.of(KeyUsage.keyCertSign,
+                                KeyUsage.cRLSign))
+                            .build()))
                 .generate(new DistinguishedName("CN=Test CA"), rsaPublicKey,
                     new X509CertificateParameters());
 
-        builder = componentManager.getInstance(X509ExtensionBuilder.class);
+        this.builder = this.componentManager.getInstance(X509ExtensionBuilder.class);
 
-        CertificateGenerator generator = factory.getInstance(
-            CertifyingSigner.getInstance(true, new CertifiedKeyPair(rsaPrivateKey, caCertificate), signerFactory),
+        CertificateGenerator generator = this.factory.getInstance(
+            CertifyingSigner.getInstance(true, new CertifiedKeyPair(rsaPrivateKey, caCertificate), this.signerFactory),
             new X509CertificateGenerationParameters(
-                builder.addKeyUsage(EnumSet.of(KeyUsage.digitalSignature,
-                    KeyUsage.dataEncipherment))
+                this.builder.addKeyUsage(EnumSet.of(KeyUsage.digitalSignature,
+                        KeyUsage.dataEncipherment))
                     .addExtendedKeyUsage(false,
-                        new ExtendedKeyUsages(new String[]{ ExtendedKeyUsages.EMAIL_PROTECTION }))
+                        new ExtendedKeyUsages(new String[] { ExtendedKeyUsages.EMAIL_PROTECTION }))
                     .build()));
 
-        builder = componentManager.getInstance(X509ExtensionBuilder.class);
+        this.builder = this.componentManager.getInstance(X509ExtensionBuilder.class);
 
         CertifiedPublicKey certificate =
             generator.generate(new DistinguishedName("CN=Test End Entity"), dsaPublicKey,
                 new X509CertificateParameters(
-                    builder.addSubjectAltName(false,
-                        new X509GeneralName[]{
-                            new X509Rfc822Name("test@example.com"),
-                            new X509Rfc822Name(new InternetAddress("test@test.com")),
-                            new X509DnsName("example.com"),
-                            new X509DirectoryName("CN=Test"),
-                            new X509IpAddress("192.168.1.1"),
-                            new X509IpAddress("192.168.2.0/24"),
-                            new X509IpAddress("192.168.3.0/255.255.255.0"),
-                            new X509IpAddress(InetAddress.getByName("192.168.4.1")),
-                            new X509IpAddress(InetAddress.getByName("192.168.5.0"),
-                                InetAddress.getByName("255.255.255.0")),
-                            new X509IpAddress("2001:db8:0:85a3::ac1f:8001"),
-                            new X509IpAddress("2001:db8:1f89::/48"),
-                            new X509IpAddress(InetAddress.getByName("2001:db8:0:85a3::ac1f:8001")),
-                            new X509IpAddress(InetAddress.getByName("2001:db8:1f89::"),
-                                InetAddress.getByName("ffff:ffff:ffff::")),
-                            new X509URI("http://xwiki.org"),
-                            new X509URI(new URL("http://myxwiki.org"))
-                        })
+                    this.builder.addSubjectAltName(false,
+                            new X509GeneralName[] {
+                                new X509Rfc822Name("test@example.com"),
+                                new X509Rfc822Name(new InternetAddress("test@test.com")),
+                                new X509DnsName("example.com"),
+                                new X509DirectoryName("CN=Test"),
+                                new X509IpAddress("192.168.1.1"),
+                                new X509IpAddress("192.168.2.0/24"),
+                                new X509IpAddress("192.168.3.0/255.255.255.0"),
+                                new X509IpAddress(InetAddress.getByName("192.168.4.1")),
+                                new X509IpAddress(InetAddress.getByName("192.168.5.0"),
+                                    InetAddress.getByName("255.255.255.0")),
+                                new X509IpAddress("2001:db8:0:85a3::ac1f:8001"),
+                                new X509IpAddress("2001:db8:1f89::/48"),
+                                new X509IpAddress(InetAddress.getByName("2001:db8:0:85a3::ac1f:8001")),
+                                new X509IpAddress(InetAddress.getByName("2001:db8:1f89::"),
+                                    InetAddress.getByName("ffff:ffff:ffff::")),
+                                new X509URI("http://xwiki.org"),
+                                new X509URI(new URL("http://myxwiki.org"))
+                            })
                         .build()
                 ));
 
         X509CertifiedPublicKey cert = checkRootSigned(certificate, 3);
 
-        assertThat(cert.getExtensions().getExtensionOID(),
-            equalTo(new String[]{ "2.5.29.35", "2.5.29.14", "2.5.29.15", "2.5.29.37", "2.5.29.17" }));
-        assertThat(cert.getExtensions().getCriticalExtensionOID(), equalTo(new String[]{ "2.5.29.15" }));
-        assertThat(cert.getExtensions().getNonCriticalExtensionOID(),
-            equalTo(new String[]{ "2.5.29.35", "2.5.29.14", "2.5.29.37", "2.5.29.17" }));
+        assertArrayEquals(new String[] { "2.5.29.35", "2.5.29.14", "2.5.29.15", "2.5.29.37", "2.5.29.17" },
+            cert.getExtensions().getExtensionOID());
+        assertArrayEquals(new String[] { "2.5.29.15" }, cert.getExtensions().getCriticalExtensionOID());
+        assertArrayEquals(new String[] { "2.5.29.35", "2.5.29.14", "2.5.29.37", "2.5.29.17" },
+            cert.getExtensions().getNonCriticalExtensionOID());
 
         assertTrue(cert.getExtensions().isCritical(KeyUsage.OID), "KeyUsage extension should be critical.");
-        assertThat(cert.getExtensions().getKeyUsage(), equalTo(EnumSet.of(KeyUsage.digitalSignature,
-            KeyUsage.dataEncipherment)));
+        assertEquals(EnumSet.of(KeyUsage.digitalSignature,
+            KeyUsage.dataEncipherment), cert.getExtensions().getKeyUsage());
         assertFalse(cert.getExtensions().isCritical(ExtendedKeyUsages.OID),
             "ExtendedKeyUsage extension should be non critical.");
-        assertThat(cert.getExtensions().getExtendedKeyUsage().getAll().toArray(new String[0]), equalTo(
-            new String[]{ ExtendedKeyUsages.EMAIL_PROTECTION }));
+        assertArrayEquals(new String[] { ExtendedKeyUsages.EMAIL_PROTECTION },
+            cert.getExtensions().getExtendedKeyUsage().getAll().toArray(new String[0]));
         assertTrue(cert.getExtensions().getExtendedKeyUsage().hasUsage(ExtendedKeyUsages.EMAIL_PROTECTION),
             "Email data protection extended usage should be set.");
 
         List<X509GeneralName> names = cert.getExtensions().getSubjectAltName();
 
-        assertThat(names.size(), equalTo(15));
+        assertEquals(15, names.size());
         for (X509GeneralName name : names) {
-            if (name instanceof X509Rfc822Name) {
-                assertThat(((X509StringGeneralName) name).getName(),
-                    anyOf(equalTo("test@example.com"), equalTo("test@test.com")));
-                assertThat(((X509Rfc822Name) name).getAddress(), anyOf(equalTo(new InternetAddress("test@example.com")),
-                    equalTo(new InternetAddress("test@test.com"))));
-            } else if (name instanceof X509DnsName) {
-                assertThat(((X509StringGeneralName) name).getName(), equalTo("example.com"));
-                assertThat(((X509DnsName) name).getDomain(), equalTo("example.com"));
-            } else if (name instanceof X509DirectoryName) {
-                assertThat(((X509StringGeneralName) name).getName(), equalTo("CN=Test"));
-            } else if (name instanceof X509URI) {
-                assertThat(((X509StringGeneralName) name).getName(), anyOf(equalTo("http://xwiki.org"),
-                    equalTo("http://myxwiki.org")));
-                assertThat(((X509URI) name).getURI(), anyOf(equalTo(new URI("http://xwiki.org")),
-                    equalTo(new URI("http://myxwiki.org"))));
-                assertThat(((X509URI) name).getURL(), anyOf(equalTo(new URL("http://xwiki.org")),
-                    equalTo(new URL("http://myxwiki.org"))));
-            } else if (name instanceof X509IpAddress) {
-                assertTrue(IPAddress.isValid(((X509StringGeneralName) name).getName())
+            switch (name) {
+                case X509Rfc822Name x509Rfc822Name -> {
+                    assertThat(((X509StringGeneralName) name).getName(),
+                        anyOf(equalTo("test@example.com"), equalTo("test@test.com")));
+                    assertThat(x509Rfc822Name.getAddress(), anyOf(equalTo(new InternetAddress("test@example.com")),
+                        equalTo(new InternetAddress("test@test.com"))));
+                }
+                case X509DnsName x509DnsName -> {
+                    assertThat(((X509StringGeneralName) name).getName(), equalTo("example.com"));
+                    assertThat(x509DnsName.getDomain(), equalTo("example.com"));
+                }
+                case X509DirectoryName ignored ->
+                    assertThat(((X509StringGeneralName) name).getName(), equalTo("CN=Test"));
+                case X509URI x509URI -> {
+                    assertThat(((X509StringGeneralName) name).getName(), anyOf(equalTo("http://xwiki.org"),
+                        equalTo("http://myxwiki.org")));
+                    assertThat(x509URI.getURI(), anyOf(equalTo(new URI("http://xwiki.org")),
+                        equalTo(new URI("http://myxwiki.org"))));
+                    assertThat(x509URI.getURL(), anyOf(equalTo(new URL("http://xwiki.org")),
+                        equalTo(new URL("http://myxwiki.org"))));
+                }
+                case X509IpAddress ignored1 -> assertTrue(IPAddress.isValid(((X509StringGeneralName) name).getName())
                         || IPAddress.isValidWithNetMask(((X509StringGeneralName) name).getName()),
                     "Invalid IP address: " + ((X509StringGeneralName) name).getName());
-            } else {
-                fail("Unexpected SubjectAltName type.");
+                case null, default -> fail("Unexpected SubjectAltName type.");
             }
         }
     }
@@ -391,13 +393,13 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     void generateIntermediateCertificateVersion3() throws Exception
     {
         CertifiedPublicKey caCertificate =
-            factory.getInstance(signerFactory.getInstance(true, rsaPrivateKey),
-                new X509CertificateGenerationParameters(
-                    //<validity in days>,
-                    builder.addBasicConstraints(true)
-                        .addKeyUsage(true, EnumSet.of(KeyUsage.keyCertSign,
-                            KeyUsage.cRLSign))
-                        .build()))
+            this.factory.getInstance(this.signerFactory.getInstance(true, rsaPrivateKey),
+                    new X509CertificateGenerationParameters(
+                        //<validity in days>,
+                        this.builder.addBasicConstraints(true)
+                            .addKeyUsage(true, EnumSet.of(KeyUsage.keyCertSign,
+                                KeyUsage.cRLSign))
+                            .build()))
                 .generate(new DistinguishedName("CN=Test CA"), rsaPublicKey,
                     new X509CertificateParameters());
 
@@ -405,13 +407,13 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
 
         X509CertifiedPublicKey caKey = (X509CertifiedPublicKey) caCertificate;
 
-        builder = componentManager.getInstance(X509ExtensionBuilder.class);
+        this.builder = this.componentManager.getInstance(X509ExtensionBuilder.class);
 
-        CertificateGenerator generator = factory.getInstance(
-            CertifyingSigner.getInstance(true, new CertifiedKeyPair(rsaPrivateKey, caCertificate), signerFactory),
+        CertificateGenerator generator = this.factory.getInstance(
+            CertifyingSigner.getInstance(true, new CertifiedKeyPair(rsaPrivateKey, caCertificate), this.signerFactory),
             new X509CertificateGenerationParameters(
                 //<validity in days>,
-                builder.addBasicConstraints(0)
+                this.builder.addBasicConstraints(0)
                     .addKeyUsage(EnumSet.of(KeyUsage.keyCertSign,
                         KeyUsage.cRLSign))
                     .build()));
@@ -423,58 +425,55 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
         //dumpCert(interCAcert);
 
         assertTrue(interCAcert.isSignedBy(rsaPublicKey), "Signature should match Root CA key.");
-        assertThat(interCAcert.getIssuer(), equalTo(caCertificate.getSubject()));
-        assertThat(interCAcert.getSubject(), equalTo(new DistinguishedName("CN=Test Intermediate CA")));
-        assertThat(interCAcert, instanceOf(X509CertifiedPublicKey.class));
+        assertEquals(caCertificate.getSubject(), interCAcert.getIssuer());
+        assertEquals(new DistinguishedName("CN=Test Intermediate CA"), interCAcert.getSubject());
+        assertInstanceOf(X509CertifiedPublicKey.class, interCAcert);
 
         X509CertifiedPublicKey interCaKey = (X509CertifiedPublicKey) interCAcert;
 
-        assertThat(interCaKey.getVersionNumber(), equalTo(3));
+        assertEquals(3, interCaKey.getVersionNumber());
         assertTrue(interCaKey.getExtensions().isCritical(X509Extensions.BASIC_CONSTRAINTS_OID),
             "Basic constraints should be critical.");
         assertTrue(interCaKey.getExtensions().hasCertificateAuthorityBasicConstraints(),
             "Basic constraints should be set to CA.");
-        assertThat(interCaKey.getExtensions().getBasicConstraintsPathLen(), Matchers.equalTo(0));
+        assertEquals(0, interCaKey.getExtensions().getBasicConstraintsPathLen());
         assertTrue(interCaKey.getExtensions().isCritical(KeyUsage.OID), "KeyUsage extension should be critical.");
-        assertThat(interCaKey.getExtensions().getKeyUsage(), equalTo(EnumSet.of(KeyUsage.keyCertSign,
-            KeyUsage.cRLSign)));
-        assertThat(interCaKey.getAuthorityKeyIdentifier(),
-            equalTo(caKey.getSubjectKeyIdentifier()));
+        assertEquals(EnumSet.of(KeyUsage.keyCertSign, KeyUsage.cRLSign), interCaKey.getExtensions().getKeyUsage());
+        assertArrayEquals(caKey.getSubjectKeyIdentifier(), interCaKey.getAuthorityKeyIdentifier());
 
-        builder = componentManager.getInstance(X509ExtensionBuilder.class);
+        this.builder = this.componentManager.getInstance(X509ExtensionBuilder.class);
 
-        generator = factory.getInstance(
+        generator = this.factory.getInstance(
             CertifyingSigner.getInstance(true, new CertifiedKeyPair(interCaDsaPrivateKey, interCAcert),
-                componentManager.getInstance(SignerFactory.class, "DSAwithSHA1")),
+                this.componentManager.getInstance(SignerFactory.class, "DSAwithSHA1")),
             new X509CertificateGenerationParameters(
                 //<validity in days>,
-                builder.addKeyUsage(EnumSet.of(KeyUsage.digitalSignature,
-                    KeyUsage.dataEncipherment))
+                this.builder.addKeyUsage(EnumSet.of(KeyUsage.digitalSignature,
+                        KeyUsage.dataEncipherment))
                     .addExtendedKeyUsage(false,
-                        new ExtendedKeyUsages(new String[]{ ExtendedKeyUsages.EMAIL_PROTECTION }))
+                        new ExtendedKeyUsages(new String[] { ExtendedKeyUsages.EMAIL_PROTECTION }))
                     .build()));
 
-        builder = componentManager.getInstance(X509ExtensionBuilder.class);
+        this.builder = this.componentManager.getInstance(X509ExtensionBuilder.class);
 
         CertifiedPublicKey certificate =
             generator.generate(new DistinguishedName("CN=Test End Entity"), dsaPublicKey,
                 new X509CertificateParameters(
-                    builder.addSubjectAltName(false,
-                        new X509GeneralName[]{
-                            new X509Rfc822Name("test@example.com")
-                        })
+                    this.builder.addSubjectAltName(false,
+                            new X509GeneralName[] {
+                                new X509Rfc822Name("test@example.com")
+                            })
                         .build()
                 ));
 
         //dumpCert(certificate);
 
         assertTrue(certificate.isSignedBy(interCaDsaPublicKey), "Signature should match intermediate CA key.");
-        assertThat(certificate.getIssuer(), equalTo(interCAcert.getSubject()));
-        assertThat(certificate.getSubject(), equalTo(new DistinguishedName("CN=Test End Entity")));
-        assertThat(certificate, instanceOf(X509CertifiedPublicKey.class));
+        assertEquals(interCAcert.getSubject(), certificate.getIssuer());
+        assertEquals(new DistinguishedName("CN=Test End Entity"), certificate.getSubject());
+        assertInstanceOf(X509CertifiedPublicKey.class, certificate);
 
         X509CertifiedPublicKey key = (X509CertifiedPublicKey) certificate;
-        assertThat(key.getAuthorityKeyIdentifier(),
-            equalTo(interCaKey.getSubjectKeyIdentifier()));
+        assertArrayEquals(interCaKey.getSubjectKeyIdentifier(), key.getAuthorityKeyIdentifier());
     }
 }

@@ -25,9 +25,8 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.pkix.params.PrincipalIndentifier;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class DistinguishedNameTest
 {
@@ -66,12 +65,12 @@ class DistinguishedNameTest
             }
         };
 
-        assertThat(john, equalTo(john));
-        assertThat(john, equalTo(johnAlias));
-        assertThat(john, equalTo(johnOtherImpl));
-        assertThat(john, not(equalTo(jane)));
-        assertThat(jane, not(equalTo(john)));
-        assertThat(john, not(equalTo(janeOtherImpl)));
-        assertThat(john, not(equalTo(new Object())));
+        assertEquals(john, john);
+        assertEquals(johnAlias, john);
+        assertEquals(john, johnOtherImpl);
+        assertNotEquals(jane, john);
+        assertNotEquals(john, jane);
+        assertNotEquals(janeOtherImpl, john);
+        assertNotEquals(new Object(), john);
     }
 }

@@ -83,27 +83,27 @@ class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
     @BeforeEach
     void setupTest() throws Exception
     {
-        BinaryStringEncoder base64encoder = componentManager.getInstance(BinaryStringEncoder.class, "Base64");
-        CertificateFactory certFactory = componentManager.getInstance(CertificateFactory.class, "X509");
-        v1CaCert = certFactory.decode(base64encoder.decode(V1_CA_CERT));
-        v1Cert = certFactory.decode(base64encoder.decode(V1_CERT));
-        v3CaCert = certFactory.decode(base64encoder.decode(V3_CA_CERT));
-        v3InterCaCert = certFactory.decode(base64encoder.decode(V3_ITERCA_CERT));
-        v3Cert = certFactory.decode(base64encoder.decode(V3_CERT));
+        BinaryStringEncoder base64encoder = this.componentManager.getInstance(BinaryStringEncoder.class, "Base64");
+        CertificateFactory certFactory = this.componentManager.getInstance(CertificateFactory.class, "X509");
+        this.v1CaCert = certFactory.decode(base64encoder.decode(V1_CA_CERT));
+        this.v1Cert = certFactory.decode(base64encoder.decode(V1_CERT));
+        this.v3CaCert = certFactory.decode(base64encoder.decode(V3_CA_CERT));
+        this.v3InterCaCert = certFactory.decode(base64encoder.decode(V3_ITERCA_CERT));
+        this.v3Cert = certFactory.decode(base64encoder.decode(V3_CERT));
     }
 
     @Test
     void validV3CertificatePath() throws Exception
     {
         Collection<X509CertificateHolder> certs = new ArrayList<>();
-        certs.add(BcUtils.getX509CertificateHolder(v3CaCert));
-        certs.add(BcUtils.getX509CertificateHolder(v3InterCaCert));
+        certs.add(BcUtils.getX509CertificateHolder(this.v3CaCert));
+        certs.add(BcUtils.getX509CertificateHolder(this.v3InterCaCert));
 
         CollectionStore store = new CollectionStore(certs);
-        CertificateProvider provider = componentManager.getInstance(CertificateProvider.class, "BCStoreX509");
+        CertificateProvider provider = this.componentManager.getInstance(CertificateProvider.class, "BCStoreX509");
         ((BcStoreX509CertificateProvider) provider).setStore(store);
 
-        Collection<CertifiedPublicKey> chain = builder.build(v3Cert, provider);
+        Collection<CertifiedPublicKey> chain = this.builder.build(this.v3Cert, provider);
 
         assertThat(chain, contains(v3CaCert, v3InterCaCert, v3Cert));
     }
@@ -112,13 +112,13 @@ class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
     void incompleteV3CertificatePath() throws Exception
     {
         Collection<X509CertificateHolder> certs = new ArrayList<>();
-        certs.add(BcUtils.getX509CertificateHolder(v3InterCaCert));
+        certs.add(BcUtils.getX509CertificateHolder(this.v3InterCaCert));
 
         CollectionStore store = new CollectionStore(certs);
-        CertificateProvider provider = componentManager.getInstance(CertificateProvider.class, "BCStoreX509");
+        CertificateProvider provider = this.componentManager.getInstance(CertificateProvider.class, "BCStoreX509");
         ((BcStoreX509CertificateProvider) provider).setStore(store);
 
-        Collection<CertifiedPublicKey> chain = builder.build(v3Cert, provider);
+        Collection<CertifiedPublicKey> chain = this.builder.build(this.v3Cert, provider);
 
         assertThat(chain, contains(v3InterCaCert, v3Cert));
     }
@@ -127,13 +127,13 @@ class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
     void brokenV3CertificatePath() throws Exception
     {
         Collection<X509CertificateHolder> certs = new ArrayList<>();
-        certs.add(BcUtils.getX509CertificateHolder(v3CaCert));
+        certs.add(BcUtils.getX509CertificateHolder(this.v3CaCert));
 
         CollectionStore store = new CollectionStore(certs);
-        CertificateProvider provider = componentManager.getInstance(CertificateProvider.class, "BCStoreX509");
+        CertificateProvider provider = this.componentManager.getInstance(CertificateProvider.class, "BCStoreX509");
         ((BcStoreX509CertificateProvider) provider).setStore(store);
 
-        Collection<CertifiedPublicKey> chain = builder.build(v3Cert, provider);
+        Collection<CertifiedPublicKey> chain = this.builder.build(this.v3Cert, provider);
 
         assertThat(chain, contains(v3Cert));
     }
@@ -142,13 +142,13 @@ class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
     void validV1CertificatePath() throws Exception
     {
         Collection<X509CertificateHolder> certs = new ArrayList<>();
-        certs.add(BcUtils.getX509CertificateHolder(v1CaCert));
+        certs.add(BcUtils.getX509CertificateHolder(this.v1CaCert));
 
         CollectionStore store = new CollectionStore(certs);
-        CertificateProvider provider = componentManager.getInstance(CertificateProvider.class, "BCStoreX509");
+        CertificateProvider provider = this.componentManager.getInstance(CertificateProvider.class, "BCStoreX509");
         ((BcStoreX509CertificateProvider) provider).setStore(store);
 
-        Collection<CertifiedPublicKey> chain = builder.build(v1Cert, provider);
+        Collection<CertifiedPublicKey> chain = this.builder.build(this.v1Cert, provider);
 
         assertThat(chain, contains(v1CaCert, v1Cert));
     }
@@ -156,9 +156,9 @@ class BcX509CertificateChainBuilderTest extends AbstractPKIXTest
     @Test
     void incompleteV1CertificatePath() throws Exception
     {
-        CertificateProvider provider = componentManager.getInstance(CertificateProvider.class, "BCStoreX509");
+        CertificateProvider provider = this.componentManager.getInstance(CertificateProvider.class, "BCStoreX509");
 
-        Collection<CertifiedPublicKey> chain = builder.build(v1Cert, provider);
+        Collection<CertifiedPublicKey> chain = this.builder.build(this.v1Cert, provider);
 
         assertThat(chain, contains(v1Cert));
     }
