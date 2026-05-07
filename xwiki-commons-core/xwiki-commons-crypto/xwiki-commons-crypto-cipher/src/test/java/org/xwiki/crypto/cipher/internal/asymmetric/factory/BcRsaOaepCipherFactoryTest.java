@@ -19,14 +19,13 @@
  */
 package org.xwiki.crypto.cipher.internal.asymmetric.factory;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import javax.inject.Inject;
+import javax.inject.Named;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.AsymmetricKeyFactory;
 import org.xwiki.crypto.BinaryStringEncoder;
 import org.xwiki.crypto.cipher.Cipher;
-import org.xwiki.crypto.cipher.CipherFactory;
 import org.xwiki.crypto.internal.DefaultSecureRandomProvider;
 import org.xwiki.crypto.internal.asymmetric.keyfactory.BcRSAKeyFactory;
 import org.xwiki.crypto.internal.encoder.Base64BinaryStringEncoder;
@@ -36,14 +35,17 @@ import org.xwiki.crypto.params.cipher.asymmetric.PrivateKeyParameters;
 import org.xwiki.crypto.params.cipher.asymmetric.PublicKeyParameters;
 import org.xwiki.crypto.params.cipher.symmetric.SymmetricCipherParameters;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ComponentList({Base64BinaryStringEncoder.class, HexBinaryStringEncoder.class,
                 BcRSAKeyFactory.class, DefaultSecureRandomProvider.class})
-public class BcRsaOaepCipherFactoryTest
+@ComponentTest
+class BcRsaOaepCipherFactoryTest
 {
     private static final String PRIVATE_KEY =
         // Link to decoded ASN.1: https://goo.gl/kgV0IB
@@ -86,92 +88,95 @@ public class BcRsaOaepCipherFactoryTest
 
     private static final String INPUT = "4e6f77206973207468652074696d6520666f7220616c6c20676f6f64206d656e";
 
-    @Rule
-    public final MockitoComponentMockingRule<CipherFactory> mocker =
-        new MockitoComponentMockingRule<>(BcRsaOaepCipherFactory.class);
-
-    private CipherFactory factory;
-
     private static PrivateKeyParameters privateKey;
     private static PublicKeyParameters publicKey;
     private static byte[] input;
 
-    @Before
-    public void configure() throws Exception
-    {
-        factory = mocker.getComponentUnderTest();
+    @InjectMockComponents
+    private BcRsaOaepCipherFactory factory;
 
+    @Inject
+    @Named("Base64")
+    private BinaryStringEncoder base64Encoder;
+
+    @Inject
+    @Named("Hex")
+    private BinaryStringEncoder hexEncoder;
+
+    @Inject
+    @Named("RSA")
+    private AsymmetricKeyFactory keyfactory;
+
+    @BeforeEach
+    void setup() throws Exception
+    {
         // Decode keys once for all tests.
         if (privateKey == null) {
-            BinaryStringEncoder base64Encoder = mocker.getInstance(BinaryStringEncoder.class, "Base64");
-            BinaryStringEncoder hexEencoder = mocker.getInstance(BinaryStringEncoder.class, "Base64");
-            AsymmetricKeyFactory keyfactory = mocker.getInstance(AsymmetricKeyFactory.class, "RSA");
-
-            privateKey = keyfactory.fromPKCS8(base64Encoder.decode(PRIVATE_KEY));
-            publicKey = keyfactory.fromX509(base64Encoder.decode(PUBLIC_KEY));
-            input = hexEencoder.decode(INPUT);
+            privateKey = this.keyfactory.fromPKCS8(this.base64Encoder.decode(PRIVATE_KEY));
+            publicKey = this.keyfactory.fromX509(this.base64Encoder.decode(PUBLIC_KEY));
+            input = this.hexEncoder.decode(INPUT);
         }
     }
 
     @Test
-    public void testRSAEncryptionDecryptionOneShot() throws Exception
+    void rsaEncryptionDecryptionOneShot() throws Exception
     {
-        Cipher cipher = factory.getInstance(true, publicKey);
+        Cipher cipher = this.factory.getInstance(true, publicKey);
         byte[] encrypted = cipher.doFinal(input);
-        cipher = factory.getInstance(false, privateKey);
-        assertThat(cipher.doFinal(encrypted), equalTo(input));
+        cipher = this.factory.getInstance(false, privateKey);
+        assertArrayEquals(input, cipher.doFinal(encrypted));
 
-        cipher = factory.getInstance(true, privateKey);
+        cipher = this.factory.getInstance(true, privateKey);
         encrypted = cipher.doFinal(input);
-        cipher = factory.getInstance(false, publicKey);
-        assertThat(cipher.doFinal(encrypted), equalTo(input));
+        cipher = this.factory.getInstance(false, publicKey);
+        assertArrayEquals(input, cipher.doFinal(encrypted));
     }
 
     @Test
-    public void testRSAEncryptionDecryptionProgressive() throws Exception
+    void rsaEncryptionDecryptionProgressive() throws Exception
     {
-        Cipher cipher = factory.getInstance(true, publicKey);
+        Cipher cipher = this.factory.getInstance(true, publicKey);
         cipher.update(input, 0, 17);
         cipher.update(input, 17, 1);
         cipher.update(input, 18, input.length - 18);
         byte[] encrypted = cipher.doFinal();
-        cipher = factory.getInstance(false, privateKey);
+        cipher = this.factory.getInstance(false, privateKey);
         cipher.update(encrypted, 0, 65);
         cipher.update(encrypted, 65, 1);
         cipher.update(encrypted, 66, encrypted.length - 66);
-        assertThat(cipher.doFinal(), equalTo(input));
+        assertArrayEquals(input, cipher.doFinal());
 
-        cipher = factory.getInstance(true, privateKey);
+        cipher = this.factory.getInstance(true, privateKey);
         cipher.update(input, 0, 15);
         cipher.update(input, 15, 1);
         encrypted = cipher.doFinal(input, 16, input.length - 16);
-        cipher = factory.getInstance(false, publicKey);
+        cipher = this.factory.getInstance(false, publicKey);
         cipher.update(encrypted);
-        assertThat(cipher.doFinal(), equalTo(input));
+        assertArrayEquals(input, cipher.doFinal());
     }
-
-    @Rule public ExpectedException thrown = ExpectedException.none();
 
     class WrongParameters implements AsymmetricCipherParameters
     { }
 
     @Test
-    public void testCipherWithWrongParameters() throws Exception
+    void cipherWithWrongParameters()
     {
-        thrown.expect(UnsupportedOperationException.class);
-        thrown.expectMessage("Cipher parameters are incompatible with this cipher: " + WrongParameters.class.getName());
-        factory.getInstance(true, new WrongParameters());
+        WrongParameters parameters = new WrongParameters();
+        UnsupportedOperationException ex = assertThrows(UnsupportedOperationException.class,
+            () -> this.factory.getInstance(true, parameters));
+        assertEquals("Cipher parameters are incompatible with this cipher: " + WrongParameters.class.getName(), ex.getMessage());
     }
 
     class SymmetricParameters implements SymmetricCipherParameters
     { }
 
     @Test
-    public void testCipherWithAsymmetricParameters() throws Exception
+    void cipherWithAsymmetricParameters()
     {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("Unexpected parameters received for a asymmetric cipher: "
-            + SymmetricParameters.class.getName());
-        factory.getInstance(true, new SymmetricParameters());
+        SymmetricParameters parameters = new SymmetricParameters();
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+            () -> this.factory.getInstance(true, parameters));
+        assertEquals("Unexpected parameters received for a asymmetric cipher: " + SymmetricParameters.class.getName(),
+            ex.getMessage());
     }
 }

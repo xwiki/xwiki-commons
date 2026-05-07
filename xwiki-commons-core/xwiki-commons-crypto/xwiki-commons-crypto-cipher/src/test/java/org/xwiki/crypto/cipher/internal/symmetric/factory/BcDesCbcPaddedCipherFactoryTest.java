@@ -19,38 +19,37 @@
  */
 package org.xwiki.crypto.cipher.internal.symmetric.factory;
 
-import org.junit.Before;
-import org.junit.Rule;
 import org.xwiki.crypto.cipher.Cipher;
 import org.xwiki.crypto.cipher.CipherFactory;
 import org.xwiki.crypto.params.cipher.symmetric.KeyWithIVParameters;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
-public class BcDesCbcPaddedCipherFactoryTest extends AbstractSymmetricCipherFactoryTest
+@ComponentTest
+class BcDesCbcPaddedCipherFactoryTest extends AbstractSymmetricCipherFactoryTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<CipherFactory> mocker =
-        new MockitoComponentMockingRule<>(BcDesCbcPaddedCipherFactory.class);
+    @InjectMockComponents
+    private BcDesCbcPaddedCipherFactory factory;
 
     {
-        CIPHER_ALGO = "DES/CBC/PKCS5Padding";
-        BLOCK_SIZE = 8;
-        KEY_SIZE = 8;
-        SUPPORTED_KEY_SIZE = new int[] { 8 };
+        this.cipherAlgo = "DES/CBC/PKCS5Padding";
+        this.blockSize = 8;
+        this.keySize = 8;
+        this.supportedKeySize = new int[] { 8 };
 
-        BYTES_ENCRYPTED_SIZE = ((BYTES.length / BLOCK_SIZE) * BLOCK_SIZE) + BLOCK_SIZE;
-        ANOTHER_BYTES_ENCRYPTED_SIZE = ((ANOTHER_BYTES.length / BLOCK_SIZE) * BLOCK_SIZE) + BLOCK_SIZE;
+        this.bytesEncryptedSize = ((BYTES.length / this.blockSize) * this.blockSize) + this.blockSize;
+        this.anotherBytesEncryptedSize = ((ANOTHER_BYTES.length / this.blockSize) * this.blockSize) + this.blockSize;
     }
 
-    @Before
-    public void configure() throws Exception
+    @Override
+    protected CipherFactory getFactory()
     {
-        factory = mocker.getComponentUnderTest();
+        return this.factory;
     }
 
     @Override
     Cipher getCipherInstance(boolean forEncryption)
     {
-        return factory.getInstance(forEncryption, new KeyWithIVParameters(KEY8, IV8));
+        return this.factory.getInstance(forEncryption, new KeyWithIVParameters(KEY8, IV8));
     }
 }

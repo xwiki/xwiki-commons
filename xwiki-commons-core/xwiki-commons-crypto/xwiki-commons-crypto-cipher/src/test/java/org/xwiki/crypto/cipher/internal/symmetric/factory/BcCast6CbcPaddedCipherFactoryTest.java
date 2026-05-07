@@ -19,38 +19,38 @@
  */
 package org.xwiki.crypto.cipher.internal.symmetric.factory;
 
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.jupiter.api.BeforeEach;
 import org.xwiki.crypto.cipher.Cipher;
 import org.xwiki.crypto.cipher.CipherFactory;
 import org.xwiki.crypto.params.cipher.symmetric.KeyWithIVParameters;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
-public class BcCast6CbcPaddedCipherFactoryTest extends AbstractSymmetricCipherFactoryTest
+@ComponentTest
+class BcCast6CbcPaddedCipherFactoryTest extends AbstractSymmetricCipherFactoryTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<CipherFactory> mocker =
-        new MockitoComponentMockingRule<>(BcCast6CbcPaddedCipherFactory.class);
+    @InjectMockComponents
+    private BcCast6CbcPaddedCipherFactory factory;
 
     {
-        CIPHER_ALGO = "CAST6/CBC/PKCS7Padding";
-        BLOCK_SIZE = 16;
-        KEY_SIZE = 32;
-        SUPPORTED_KEY_SIZE = new int[] { 16, 20, 24, 28, 32 };
+        this.cipherAlgo = "CAST6/CBC/PKCS7Padding";
+        this.blockSize = 16;
+        this.keySize = 32;
+        this.supportedKeySize = new int[] { 16, 20, 24, 28, 32 };
 
-        BYTES_ENCRYPTED_SIZE = ((BYTES.length / BLOCK_SIZE) * BLOCK_SIZE) + BLOCK_SIZE;
-        ANOTHER_BYTES_ENCRYPTED_SIZE = ((ANOTHER_BYTES.length / BLOCK_SIZE) * BLOCK_SIZE) + BLOCK_SIZE;
+        this.bytesEncryptedSize = ((BYTES.length / this.blockSize) * this.blockSize) + this.blockSize;
+        this.anotherBytesEncryptedSize = ((ANOTHER_BYTES.length / this.blockSize) * this.blockSize) + this.blockSize;
     }
 
-    @Before
-    public void configure() throws Exception
+    @Override
+    protected CipherFactory getFactory()
     {
-        factory = mocker.getComponentUnderTest();
+        return this.factory;
     }
 
     @Override
     Cipher getCipherInstance(boolean forEncryption)
     {
-        return factory.getInstance(forEncryption, new KeyWithIVParameters(KEY32, IV16));
+        return this.factory.getInstance(forEncryption, new KeyWithIVParameters(KEY32, IV16));
     }
 }

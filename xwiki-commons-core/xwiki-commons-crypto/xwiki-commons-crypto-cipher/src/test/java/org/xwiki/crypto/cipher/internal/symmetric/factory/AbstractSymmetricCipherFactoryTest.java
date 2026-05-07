@@ -26,20 +26,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.cipher.Cipher;
 import org.xwiki.crypto.cipher.CipherFactory;
 import org.xwiki.crypto.params.cipher.asymmetric.AsymmetricCipherParameters;
 import org.xwiki.crypto.params.cipher.symmetric.SymmetricCipherParameters;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Abstract base class for cipher tests.
@@ -86,38 +86,38 @@ public abstract class AbstractSymmetricCipherFactoryTest
         0x12, 0x34, 0x56, 0x78, 0x78, 0x56, 0x34, 0x12,
         0x12, 0x34, 0x56, 0x78, 0x78, 0x56, 0x34, 0x12 };
 
-    protected CipherFactory factory;
+    abstract protected CipherFactory getFactory();
 
-    protected String CIPHER_ALGO;
-    protected int BLOCK_SIZE;
-    protected int KEY_SIZE;
-    protected int[] SUPPORTED_KEY_SIZE;
+    protected String cipherAlgo;
+    protected int blockSize;
+    protected int keySize;
+    protected int[] supportedKeySize;
 
-    protected int BYTES_ENCRYPTED_SIZE;
-    protected int ANOTHER_BYTES_ENCRYPTED_SIZE;
+    protected int bytesEncryptedSize;
+    protected int anotherBytesEncryptedSize;
 
     @Test
-    public void fetCipherFactoryProperties() throws Exception
+    public void fetCipherFactoryProperties()
     {
-        assertThat(factory.getCipherAlgorithmName(),equalTo(CIPHER_ALGO));
-        assertThat(factory.getIVSize(),equalTo(BLOCK_SIZE));
-        assertThat(factory.getKeySize(),equalTo(KEY_SIZE));
-        assertThat(factory.getSupportedKeySizes(),equalTo(SUPPORTED_KEY_SIZE));
+        assertEquals(this.cipherAlgo, getFactory().getCipherAlgorithmName());
+        assertEquals(this.blockSize, getFactory().getIVSize());
+        assertEquals(this.keySize, getFactory().getKeySize());
+        assertArrayEquals(this.supportedKeySize, getFactory().getSupportedKeySizes());
     }
 
     @Test
-    public void fetCipherProperties() throws Exception
+    public void fetCipherProperties()
     {
         Cipher cipher = getCipher(true);
 
-        assertThat(cipher.getAlgorithmName(),equalTo(CIPHER_ALGO));
-        assertThat(cipher.getOutputBlockSize(),equalTo(BLOCK_SIZE));
-        assertThat(cipher.isForEncryption(),is(true));
+        assertEquals(this.cipherAlgo, cipher.getAlgorithmName());
+        assertEquals(this.blockSize, cipher.getOutputBlockSize());
+        assertTrue(cipher.isForEncryption());
 
         cipher = getCipher(false);
-        assertThat(cipher.getAlgorithmName(),equalTo(CIPHER_ALGO));
-        assertThat(cipher.getOutputBlockSize(),equalTo(BLOCK_SIZE));
-        assertThat(cipher.isForEncryption(),is(false));
+        assertEquals(this.cipherAlgo, cipher.getAlgorithmName());
+        assertEquals(this.blockSize, cipher.getOutputBlockSize());
+        assertFalse(cipher.isForEncryption());
     }
 
     private static Cipher encryptCipher;
@@ -126,7 +126,7 @@ public abstract class AbstractSymmetricCipherFactoryTest
     protected static byte[] encrypted;
     protected static byte[] anotherEncrypted;
 
-    @BeforeClass
+    @BeforeAll
     public static void cleanUpCaches() {
         encryptCipher = null;
         decryptCipher = null;
@@ -189,11 +189,11 @@ public abstract class AbstractSymmetricCipherFactoryTest
     {
         Cipher cipher = getCipher(true);
 
-        assertThat(getEncrypted().length,equalTo(BYTES_ENCRYPTED_SIZE));
-        assertThat(cipher.doFinal(BYTES),equalTo(getEncrypted()));
+        assertEquals(this.bytesEncryptedSize, getEncrypted().length);
+        assertArrayEquals(getEncrypted(), cipher.doFinal(BYTES));
 
-        assertThat(getAnotherEncrypted().length,equalTo(ANOTHER_BYTES_ENCRYPTED_SIZE));
-        assertThat(cipher.doFinal(ANOTHER_BYTES),equalTo(getAnotherEncrypted()));
+        assertEquals(this.anotherBytesEncryptedSize, getAnotherEncrypted().length);
+        assertArrayEquals(getAnotherEncrypted(), cipher.doFinal(ANOTHER_BYTES));
     }
 
     @Test
@@ -202,12 +202,12 @@ public abstract class AbstractSymmetricCipherFactoryTest
         Cipher cipher = getCipher(false);
 
         byte[] result = cipher.doFinal(getEncrypted());
-        assertThat(result.length, equalTo(BYTES.length));
-        assertThat(result,equalTo(BYTES));
+        assertEquals(BYTES.length, result.length);
+        assertArrayEquals(BYTES, result);
 
         result = cipher.doFinal(getAnotherEncrypted());
-        assertThat(result.length, equalTo(ANOTHER_BYTES.length));
-        assertThat(result, equalTo(ANOTHER_BYTES));
+        assertEquals(ANOTHER_BYTES.length, result.length);
+        assertArrayEquals(ANOTHER_BYTES, result);
     }
 
     private byte[] getProgressive(boolean forEncryption, byte[] bytes, int size) throws Exception
@@ -217,25 +217,25 @@ public abstract class AbstractSymmetricCipherFactoryTest
         byte[] tmp;
         int len = 0;
 
-        tmp = cipher.update(bytes, 0, BLOCK_SIZE + 1);
-        assertThat(tmp, not(nullValue()));
+        tmp = cipher.update(bytes, 0, this.blockSize + 1);
+        assertNotNull(tmp);
         System.arraycopy(tmp, 0, result, 0, len = tmp.length);
 
-        assertThat(cipher.update(bytes, BLOCK_SIZE + 1, BLOCK_SIZE - 1), nullValue());
+        assertNull(cipher.update(bytes, this.blockSize + 1, this.blockSize - 1));
 
-        tmp = cipher.update(bytes, BLOCK_SIZE * 2, 1);
-        assertThat(tmp, not(nullValue()));
+        tmp = cipher.update(bytes, this.blockSize * 2, 1);
+        assertNotNull(tmp);
         System.arraycopy(tmp, 0, result, len, tmp.length);
         len += tmp.length;
 
-        tmp = cipher.update(bytes, ((BLOCK_SIZE * 2) + 1), bytes.length - ((BLOCK_SIZE * 2) + 1));
-        assertThat(tmp, not(nullValue()));
+        tmp = cipher.update(bytes, ((this.blockSize * 2) + 1), bytes.length - ((this.blockSize * 2) + 1));
+        assertNotNull(tmp);
         System.arraycopy(tmp, 0, result, len, tmp.length);
         len += tmp.length;
 
         tmp = cipher.doFinal();
         if (forEncryption || tmp != null) {
-            assertThat(tmp, not(nullValue()));
+            assertNotNull(tmp);
             System.arraycopy(tmp, 0, result, len, tmp.length);
             len += tmp.length;
         }
@@ -246,33 +246,33 @@ public abstract class AbstractSymmetricCipherFactoryTest
     @Test
     public void cipherProgressiveEncryption() throws Exception
     {
-        assertThat(getProgressive(true, BYTES, BYTES_ENCRYPTED_SIZE), equalTo(getEncrypted()));
-        assertThat(getProgressive(true, ANOTHER_BYTES, ANOTHER_BYTES_ENCRYPTED_SIZE), equalTo(getAnotherEncrypted()));
+        assertArrayEquals(getEncrypted(), getProgressive(true, BYTES, this.bytesEncryptedSize));
+        assertArrayEquals(getAnotherEncrypted(), getProgressive(true, ANOTHER_BYTES, this.anotherBytesEncryptedSize));
     }
 
     @Test
     public void cipherProgressiveDecryption() throws Exception
     {
-        assertThat(getProgressive(false, getEncrypted(), BYTES.length), equalTo(BYTES));
-        assertThat(getProgressive(false, getAnotherEncrypted(), ANOTHER_BYTES.length), equalTo(ANOTHER_BYTES));
+        assertArrayEquals(BYTES, getProgressive(false, getEncrypted(), BYTES.length));
+        assertArrayEquals(ANOTHER_BYTES, getProgressive(false, getAnotherEncrypted(), ANOTHER_BYTES.length));
     }
 
     @Test
     public void cipherOutputStreamEncryption() throws Exception
     {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(BYTES_ENCRYPTED_SIZE);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(this.bytesEncryptedSize);
         OutputStream encos = getCipher(true).getOutputStream(baos);
         encos.write(BYTES);
         encos.close();
 
-        assertThat(baos.toByteArray(), equalTo(getEncrypted()));
+        assertArrayEquals(getEncrypted(), baos.toByteArray());
 
-        baos = new ByteArrayOutputStream(ANOTHER_BYTES_ENCRYPTED_SIZE);
+        baos = new ByteArrayOutputStream(this.anotherBytesEncryptedSize);
         encos = getCipher(true).getOutputStream(baos);
         encos.write(ANOTHER_BYTES);
         encos.close();
 
-        assertThat(baos.toByteArray(), equalTo(getAnotherEncrypted()));
+        assertArrayEquals(getAnotherEncrypted(), baos.toByteArray());
     }
 
     @Test
@@ -283,20 +283,20 @@ public abstract class AbstractSymmetricCipherFactoryTest
         encos.write(getEncrypted());
         encos.close();
 
-        assertThat(baos.toByteArray(), equalTo(BYTES));
+        assertArrayEquals(BYTES, baos.toByteArray());
 
         baos = new ByteArrayOutputStream(ANOTHER_BYTES.length);
         encos = getCipher(false).getOutputStream(baos);
         encos.write(getAnotherEncrypted());
         encos.close();
 
-        assertThat(baos.toByteArray(), equalTo(ANOTHER_BYTES));
+        assertArrayEquals(ANOTHER_BYTES, baos.toByteArray());
     }
 
     private int readAll(InputStream decis, byte[] out) throws IOException
     {
         int readLen = 0, len = 0;
-        while( (readLen = decis.read(out, len, BLOCK_SIZE + 1)) > 0 ) {
+        while( (readLen = decis.read(out, len, this.blockSize + 1)) > 0 ) {
             len += readLen;
         }
         decis.close();
@@ -308,15 +308,15 @@ public abstract class AbstractSymmetricCipherFactoryTest
     {
         ByteArrayInputStream bais = new ByteArrayInputStream(BYTES);
         InputStream decis = getCipher(true).getInputStream(bais);
-        byte[] buf = new byte[BYTES_ENCRYPTED_SIZE];
-        assertThat(readAll(decis, buf), equalTo(BYTES_ENCRYPTED_SIZE));
-        assertThat(buf, equalTo(getEncrypted()));
+        byte[] buf = new byte[this.bytesEncryptedSize];
+        assertEquals(this.bytesEncryptedSize, readAll(decis, buf));
+        assertArrayEquals(getEncrypted(), buf);
 
         bais = new ByteArrayInputStream(ANOTHER_BYTES);
         decis = getCipher(true).getInputStream(bais);
-        buf = new byte[ANOTHER_BYTES_ENCRYPTED_SIZE];
-        assertThat(readAll(decis, buf), equalTo(ANOTHER_BYTES_ENCRYPTED_SIZE));
-        assertThat(buf, equalTo(getAnotherEncrypted()));
+        buf = new byte[this.anotherBytesEncryptedSize];
+        assertEquals(this.anotherBytesEncryptedSize, readAll(decis, buf));
+        assertArrayEquals(getAnotherEncrypted(), buf);
     }
 
     @Test
@@ -325,38 +325,38 @@ public abstract class AbstractSymmetricCipherFactoryTest
         ByteArrayInputStream bais = new ByteArrayInputStream(getEncrypted());
         InputStream decis = getCipher(false).getInputStream(bais);
         byte[] buf = new byte[BYTES.length];
-        assertThat(readAll(decis, buf), equalTo(BYTES.length));
-        assertThat(buf, equalTo(BYTES));
+        assertEquals(BYTES.length, readAll(decis, buf));
+        assertArrayEquals(BYTES, buf);
 
         bais = new ByteArrayInputStream(getAnotherEncrypted());
         decis = getCipher(false).getInputStream(bais);
         buf = new byte[ANOTHER_BYTES.length];
-        assertThat(readAll(decis, buf), equalTo(ANOTHER_BYTES.length));
-        assertThat(buf, equalTo(ANOTHER_BYTES));
+        assertEquals(ANOTHER_BYTES.length, readAll(decis, buf));
+        assertArrayEquals(ANOTHER_BYTES, buf);
     }
-
-    @Rule public ExpectedException thrown = ExpectedException.none();
 
     class WrongParameters implements SymmetricCipherParameters
     { }
 
     @Test
-    public void cipherWithWrongParameters() throws Exception
+    public void cipherWithWrongParameters()
     {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("Invalid parameters for cipher: " + WrongParameters.class.getName());
-        factory.getInstance(true, new WrongParameters());
+        WrongParameters parameters = new WrongParameters();
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+            () -> getFactory().getInstance(true, parameters));
+        assertEquals("Invalid parameters for cipher: " + WrongParameters.class.getName(), ex.getMessage());
     }
 
     class AsymmetricParameters implements AsymmetricCipherParameters
     { }
 
     @Test
-    public void cipherWithAsymmetricParameters() throws Exception
+    public void cipherWithAsymmetricParameters()
     {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("Unexpected parameters received for a symmetric cipher: "
-            + AsymmetricParameters.class.getName());
-        factory.getInstance(true, new AsymmetricParameters());
+        AsymmetricParameters parameters = new AsymmetricParameters();
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+            () -> getFactory().getInstance(true, parameters));
+        assertEquals("Unexpected parameters received for a symmetric cipher: " + AsymmetricParameters.class.getName(),
+            ex.getMessage());
     }
 }

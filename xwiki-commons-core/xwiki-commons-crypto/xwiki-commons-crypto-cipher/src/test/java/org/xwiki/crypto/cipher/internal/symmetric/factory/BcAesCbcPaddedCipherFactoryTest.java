@@ -19,27 +19,26 @@
  */
 package org.xwiki.crypto.cipher.internal.symmetric.factory;
 
-import org.junit.Before;
-import org.junit.Rule;
 import org.xwiki.crypto.cipher.Cipher;
 import org.xwiki.crypto.cipher.CipherFactory;
 import org.xwiki.crypto.params.cipher.symmetric.KeyWithIVParameters;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
-public class BcAesCbcPaddedCipherFactoryTest extends AbstractSymmetricCipherFactoryTest
+@ComponentTest
+class BcAesCbcPaddedCipherFactoryTest extends AbstractSymmetricCipherFactoryTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<CipherFactory> mocker =
-        new MockitoComponentMockingRule<>(BcAesCbcPaddedCipherFactory.class);
+    @InjectMockComponents
+    private BcAesCbcPaddedCipherFactory factory;
 
     {
-        CIPHER_ALGO = "AES/CBC/PKCS7Padding";
-        BLOCK_SIZE = 16;
-        KEY_SIZE = 32;
-        SUPPORTED_KEY_SIZE = new int[] {16, 24, 32};
+        this.cipherAlgo = "AES/CBC/PKCS7Padding";
+        this.blockSize = 16;
+        this.keySize = 32;
+        this.supportedKeySize = new int[] { 16, 24, 32 };
 
-        BYTES_ENCRYPTED_SIZE = ((BYTES.length / BLOCK_SIZE) * BLOCK_SIZE) + BLOCK_SIZE;
-        ANOTHER_BYTES_ENCRYPTED_SIZE = ((ANOTHER_BYTES.length / BLOCK_SIZE) * BLOCK_SIZE) + BLOCK_SIZE;
+        this.bytesEncryptedSize = ((BYTES.length / this.blockSize) * this.blockSize) + this.blockSize;
+        this.anotherBytesEncryptedSize = ((ANOTHER_BYTES.length / this.blockSize) * this.blockSize) + this.blockSize;
 
         encrypted = new byte[] { -60, -101, 2, -99, 90, -34, -49, -105, -41, -120, 119, 32, -28, -84, -54, 101, 70, -13,
             91, -54, 16, 106, 43, 58, -33, -6, 33, -52, 11, 35, -75, 106, -12, -12, 21, 23, -112, 38, -107, 66, -104,
@@ -63,15 +62,15 @@ public class BcAesCbcPaddedCipherFactoryTest extends AbstractSymmetricCipherFact
             108, 70, 18, 47, 104, 76, 58, 100, 58, 8, -76, -90, 45, -61, -18, -1, 105, -28, -80, 68, 78 };
     }
 
-    @Before
-    public void configure() throws Exception
+    @Override
+    protected CipherFactory getFactory()
     {
-        factory = mocker.getComponentUnderTest();
+        return this.factory;
     }
 
     @Override
     Cipher getCipherInstance(boolean forEncryption)
     {
-        return factory.getInstance(forEncryption, new KeyWithIVParameters(KEY32, IV16));
+        return this.factory.getInstance(forEncryption, new KeyWithIVParameters(KEY32, IV16));
     }
 }

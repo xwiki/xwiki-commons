@@ -19,29 +19,28 @@
  */
 package org.xwiki.crypto.cipher.internal.symmetric.factory;
 
-import org.junit.Before;
-import org.junit.Rule;
 import org.xwiki.crypto.cipher.Cipher;
 import org.xwiki.crypto.cipher.CipherFactory;
 import org.xwiki.crypto.params.cipher.symmetric.KeyWithIVParameters;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
-public class BcBlowfishCbcPaddedCipherFactoryTest extends AbstractSymmetricCipherFactoryTest
+@ComponentTest
+class BcBlowfishCbcPaddedCipherFactoryTest extends AbstractSymmetricCipherFactoryTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<CipherFactory> mocker =
-        new MockitoComponentMockingRule<>(BcBlowfishCbcPaddedCipherFactory.class);
+    @InjectMockComponents
+    private BcBlowfishCbcPaddedCipherFactory factory;
 
     {
-        CIPHER_ALGO = "Blowfish/CBC/PKCS5Padding";
-        BLOCK_SIZE = 8;
-        KEY_SIZE = 16;
-        SUPPORTED_KEY_SIZE = new int[] { 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+        this.cipherAlgo = "Blowfish/CBC/PKCS5Padding";
+        this.blockSize = 8;
+        this.keySize = 16;
+        this.supportedKeySize = new int[] { 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
             25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,
             52, 53, 54, 55, 56 };
 
-        BYTES_ENCRYPTED_SIZE = ((BYTES.length / BLOCK_SIZE) * BLOCK_SIZE) + BLOCK_SIZE;
-        ANOTHER_BYTES_ENCRYPTED_SIZE = ((ANOTHER_BYTES.length / BLOCK_SIZE) * BLOCK_SIZE) + BLOCK_SIZE;
+        this.bytesEncryptedSize = ((BYTES.length / this.blockSize) * this.blockSize) + this.blockSize;
+        this.anotherBytesEncryptedSize = ((ANOTHER_BYTES.length / this.blockSize) * this.blockSize) + this.blockSize;
 
         encrypted = new byte[] { 101, -74, 57, 30, -11, 114, -16, 44, -127, -50, 71, 60, -33, 36, 24, -2, -43, 111, 118,
             115, -68, -124, -96, -26, 88, 121, -95, 18, -92, -67, -42, 14, -30, 106, -128, -74, 113, 80, -40, 26, -39,
@@ -65,15 +64,15 @@ public class BcBlowfishCbcPaddedCipherFactoryTest extends AbstractSymmetricCiphe
             -86, -12, -36, 117, -77, -22, -74, -58, -70, 42, 34 };
     }
 
-    @Before
-    public void configure() throws Exception
+    @Override
+    protected CipherFactory getFactory()
     {
-        factory = mocker.getComponentUnderTest();
+        return this.factory;
     }
 
     @Override
     Cipher getCipherInstance(boolean forEncryption)
     {
-        return factory.getInstance(forEncryption, new KeyWithIVParameters(KEY32, IV8));
+        return this.factory.getInstance(forEncryption, new KeyWithIVParameters(KEY32, IV8));
     }
 }
