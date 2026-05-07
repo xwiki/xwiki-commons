@@ -31,9 +31,9 @@ import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.xwiki.crypto.password.PasswordToByteConverter.ToBytesMode.PKCS12;
 import static org.xwiki.crypto.password.PasswordToByteConverter.ToBytesMode.PKCS5;
 
@@ -57,7 +57,7 @@ class BcPKCS5S2KeyDerivationFunctionFactoryTest
     @Test
     void pbkdf2PropertiesTest()
     {
-        assertThat(this.factory.getKDFAlgorithmName(), equalTo("PKCS5S2"));
+        assertEquals("PKCS5S2", this.factory.getKDFAlgorithmName());
     }
 
     /**
@@ -70,7 +70,7 @@ class BcPKCS5S2KeyDerivationFunctionFactoryTest
         byte[] password = PasswordToByteConverter.convert("password", PKCS5);
         byte[] key = Hex.decode("D1 DA A7 86 15 F2 87 E6");
 
-        assertThat(getKDFInstance(new PBKDF2Parameters(8, 5, salt)).derive(password).getKey(), equalTo(key));
+        assertArrayEquals(key, getKDFInstance(new PBKDF2Parameters(8, 5, salt)).derive(password).getKey());
     }
 
     /**
@@ -84,7 +84,7 @@ class BcPKCS5S2KeyDerivationFunctionFactoryTest
             "All n-entities must communicate with other n-entities via n-1 entiteeheehees", PKCS5);
         byte[] key = Hex.decode("6A 89 70 BF 68 C9 2C AE A8 4A 8D F2 85 10 85 86");
 
-        assertThat(getKDFInstance(new PBKDF2Parameters(16, 500, salt)).derive(password).getKey(), equalTo(key));
+        assertArrayEquals(key, getKDFInstance(new PBKDF2Parameters(16, 500, salt)).derive(password).getKey());
     }
 
     /**
@@ -97,7 +97,7 @@ class BcPKCS5S2KeyDerivationFunctionFactoryTest
         byte[] password = PasswordToByteConverter.convert("password");
         byte[] key = Hex.decode("edf96e6e3591f8d96b9ed4addc47a7632edea176bb2fa8a03fa3179b75b5bf09");
 
-        assertThat(getKDFInstance(new PBKDF2Parameters(32, 10000, salt)).derive(password).getKey(), equalTo(key));
+        assertArrayEquals(key, getKDFInstance(new PBKDF2Parameters(32, 10000, salt)).derive(password).getKey());
     }
 
     @Test
@@ -107,7 +107,7 @@ class BcPKCS5S2KeyDerivationFunctionFactoryTest
         byte[] password = PasswordToByteConverter.convert("password", PKCS12);
         byte[] key = new byte[] { 5, 54, -36, -24, 96, -76, 7, -128 };
 
-        assertThat(getKDFInstance(new PBKDF2Parameters(8, 5, salt)).derive(password).getKey(), equalTo(key));
+        assertArrayEquals(key, getKDFInstance(new PBKDF2Parameters(8, 5, salt)).derive(password).getKey());
     }
 
     @Test
@@ -120,8 +120,8 @@ class BcPKCS5S2KeyDerivationFunctionFactoryTest
 
         KeyWithIVParameters params = getKDFInstance(new PBKDF2Parameters(32, 5, salt)).derive(password, 16);
 
-        assertThat(params.getKey(), equalTo(key));
-        assertThat(params.getIV(), equalTo(iv));
+        assertArrayEquals(key, params.getKey());
+        assertArrayEquals(iv, params.getIV());
     }
 
     @Test
@@ -135,10 +135,10 @@ class BcPKCS5S2KeyDerivationFunctionFactoryTest
         PBKDF2Parameters kdfParam2 = new PBKDF2Parameters(32, 5);
         KeyParameter params2 = getKDFInstance(kdfParam2).derive(password);
 
-        assertThat(params1.getKey(), not(equalTo(params2.getKey())));
-        assertThat(params1.getKey().length, equalTo(32));
-        assertThat(kdfParam1.getIterationCount(), equalTo(kdfParam2.getIterationCount()));
-        assertThat(kdfParam1.getSalt(), not(equalTo(kdfParam2.getSalt())));
+        assertNotEquals(params2.getKey(), params1.getKey());
+        assertEquals(32, params1.getKey().length);
+        assertEquals(kdfParam2.getIterationCount(), kdfParam1.getIterationCount());
+        assertNotEquals(kdfParam2.getSalt(), kdfParam1.getSalt());
     }
 
     @Test
@@ -162,10 +162,10 @@ class BcPKCS5S2KeyDerivationFunctionFactoryTest
 
         KeyParameter params2 = getKDFInstance(kdfParam2).derive(password);
 
-        assertThat(params1.getKey(), not(equalTo(params2.getKey())));
-        assertThat(params1.getKey().length, equalTo(24));
-        assertThat(kdfParam1.getSalt(), equalTo(kdfParam2.getSalt()));
-        assertThat(kdfParam1.getIterationCount(), not(equalTo(kdfParam2.getIterationCount())));
+        assertNotEquals(params2.getKey(), params1.getKey());
+        assertEquals(24, params1.getKey().length);
+        assertArrayEquals(kdfParam2.getSalt(), kdfParam1.getSalt());
+        assertNotEquals(kdfParam2.getIterationCount(), kdfParam1.getIterationCount());
     }
 
     @Test
@@ -179,10 +179,10 @@ class BcPKCS5S2KeyDerivationFunctionFactoryTest
         PBKDF2Parameters kdfParam2 = new PBKDF2Parameters(16);
         KeyParameter params2 = getKDFInstance(kdfParam2).derive(password);
 
-        assertThat(params1.getKey(), not(equalTo(params2.getKey())));
-        assertThat(params1.getKey().length, equalTo(16));
-        assertThat(kdfParam1.getSalt(), not(equalTo(kdfParam2.getSalt())));
-        assertThat(kdfParam1.getIterationCount(), not(equalTo(kdfParam2.getIterationCount())));
+        assertNotEquals(params2.getKey(), params1.getKey());
+        assertEquals(16, params1.getKey().length);
+        assertNotEquals(kdfParam2.getSalt(), kdfParam1.getSalt());
+        assertNotEquals(kdfParam2.getIterationCount(), kdfParam1.getIterationCount());
     }
 
     @Test
@@ -196,11 +196,11 @@ class BcPKCS5S2KeyDerivationFunctionFactoryTest
         PBKDF2Parameters kdfParam2 = new PBKDF2Parameters(32, 5);
         KeyWithIVParameters params2 = getKDFInstance(kdfParam2).derive(password, 16);
 
-        assertThat(params1.getKey(), not(equalTo(params2.getKey())));
-        assertThat(params1.getKey().length, equalTo(32));
-        assertThat(params1.getIV().length, equalTo(16));
-        assertThat(kdfParam1.getIterationCount(), equalTo(kdfParam2.getIterationCount()));
-        assertThat(kdfParam1.getSalt(), not(equalTo(kdfParam2.getSalt())));
+        assertNotEquals(params2.getKey(), params1.getKey());
+        assertEquals(32, params1.getKey().length);
+        assertEquals(16, params1.getIV().length);
+        assertEquals(kdfParam2.getIterationCount(), kdfParam1.getIterationCount());
+        assertNotEquals(kdfParam2.getSalt(), kdfParam1.getSalt());
     }
 
     @Test
@@ -215,11 +215,11 @@ class BcPKCS5S2KeyDerivationFunctionFactoryTest
         PBKDF2Parameters kdfParam2 = new PBKDF2Parameters(24, salt);
         KeyWithIVParameters params2 = getKDFInstance(kdfParam2).derive(password, 12);
 
-        assertThat(params1.getKey(), not(equalTo(params2.getKey())));
-        assertThat(params1.getKey().length, equalTo(24));
-        assertThat(params1.getIV().length, equalTo(12));
-        assertThat(kdfParam1.getSalt(), equalTo(kdfParam2.getSalt()));
-        assertThat(kdfParam1.getIterationCount(), not(equalTo(kdfParam2.getIterationCount())));
+        assertNotEquals(params2.getKey(), params1.getKey());
+        assertEquals(24, params1.getKey().length);
+        assertEquals(12, params1.getIV().length);
+        assertArrayEquals(kdfParam2.getSalt(), kdfParam1.getSalt());
+        assertNotEquals(kdfParam2.getIterationCount(), kdfParam1.getIterationCount());
     }
 
     @Test
@@ -233,11 +233,11 @@ class BcPKCS5S2KeyDerivationFunctionFactoryTest
         PBKDF2Parameters kdfParam2 = new PBKDF2Parameters(16);
         KeyWithIVParameters params2 = getKDFInstance(kdfParam2).derive(password, 8);
 
-        assertThat(params1.getKey(), not(equalTo(params2.getKey())));
-        assertThat(params1.getKey().length, equalTo(16));
-        assertThat(params1.getIV().length, equalTo(8));
-        assertThat(kdfParam1.getSalt(), not(equalTo(kdfParam2.getSalt())));
-        assertThat(kdfParam1.getIterationCount(), not(equalTo(kdfParam2.getIterationCount())));
+        assertNotEquals(params2.getKey(), params1.getKey());
+        assertEquals(16, params1.getKey().length);
+        assertEquals(8, params1.getIV().length);
+        assertNotEquals(kdfParam2.getSalt(), kdfParam1.getSalt());
+        assertNotEquals(kdfParam2.getIterationCount(), kdfParam1.getIterationCount());
     }
 
     @Test
@@ -250,7 +250,7 @@ class BcPKCS5S2KeyDerivationFunctionFactoryTest
         KeyDerivationFunction kdf2 = this.factory.getInstance(kdf.getEncoded());
         KeyWithIVParameters params2 = kdf2.derive(password, 8);
 
-        assertThat(params.getKey(), equalTo(params2.getKey()));
-        assertThat(params2.getIV(), equalTo(params2.getIV()));
+        assertArrayEquals(params2.getKey(), params.getKey());
+        assertArrayEquals(params2.getIV(), params2.getIV());
     }
 }

@@ -28,8 +28,8 @@ import org.xwiki.crypto.password.params.ScryptParameters;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test of {@link BcScryptKeyDerivationFunctionFactory}.
@@ -50,41 +50,41 @@ class BcScryptKeyDerivationFunctionFactoryTest
     @Test
     void scryptPropertiesTest()
     {
-        assertThat(this.factory.getKDFAlgorithmName(), equalTo("Scrypt"));
+        assertEquals("Scrypt", this.factory.getKDFAlgorithmName());
     }
 
     @Test
     void scryptConformanceTest1()
     {
-        assertThat(getKDFInstance(new ScryptParameters(64, 16, 1, 1, new byte[0]))
-                .derive(new byte[0]).getKey(),
-            equalTo(Hex.decode("77 d6 57 62 38 65 7b 20 3b 19 ca 42 c1 8a 04 97"
+        assertArrayEquals(Hex.decode("77 d6 57 62 38 65 7b 20 3b 19 ca 42 c1 8a 04 97"
                 + "f1 6b 48 44 e3 07 4a e8 df df fa 3f ed e2 14 42"
                 + "fc d0 06 9d ed 09 48 f8 32 6a 75 3a 0f c8 1f 17"
-                + "e8 d3 e0 fb 2e 0d 36 28 cf 35 e2 0c 38 d1 89 06")));
+                + "e8 d3 e0 fb 2e 0d 36 28 cf 35 e2 0c 38 d1 89 06"),
+            getKDFInstance(new ScryptParameters(64, 16, 1, 1, new byte[0]))
+                .derive(new byte[0]).getKey());
     }
 
     @Test
     void scryptConformanceTest2()
     {
-        assertThat(getKDFInstance(new ScryptParameters(64, 1024, 16, 8, new byte[] { 'N', 'a', 'C', 'l' }))
-                .derive(new byte[] { 'p', 'a', 's', 's', 'w', 'o', 'r', 'd' }).getKey(),
-            equalTo(Hex.decode("fd ba be 1c 9d 34 72 00 78 56 e7 19 0d 01 e9 fe"
+        assertArrayEquals(Hex.decode("fd ba be 1c 9d 34 72 00 78 56 e7 19 0d 01 e9 fe"
                 + "7c 6a d7 cb c8 23 78 30 e7 73 76 63 4b 37 31 62"
                 + "2e af 30 d9 2e 22 a3 88 6f f1 09 27 9d 98 30 da"
-                + "c7 27 af b9 4a 83 ee 6d 83 60 cb df a2 cc 06 40")));
+                + "c7 27 af b9 4a 83 ee 6d 83 60 cb df a2 cc 06 40"),
+            getKDFInstance(new ScryptParameters(64, 1024, 16, 8, new byte[] { 'N', 'a', 'C', 'l' }))
+                .derive(new byte[] { 'p', 'a', 's', 's', 'w', 'o', 'r', 'd' }).getKey());
     }
 
     @Test
     void scryptConformanceTest3()
     {
-        assertThat(getKDFInstance(new ScryptParameters(64, 16384, 1, 8,
-                new byte[] { 'S', 'o', 'd', 'i', 'u', 'm', 'C', 'h', 'l', 'o', 'r', 'i', 'd', 'e' }))
-                .derive(new byte[] { 'p', 'l', 'e', 'a', 's', 'e', 'l', 'e', 't', 'm', 'e', 'i', 'n' }).getKey(),
-            equalTo(Hex.decode("70 23 bd cb 3a fd 73 48 46 1c 06 cd 81 fd 38 eb"
+        assertArrayEquals(Hex.decode("70 23 bd cb 3a fd 73 48 46 1c 06 cd 81 fd 38 eb"
                 + "fd a8 fb ba 90 4f 8e 3e a9 b5 43 f6 54 5d a1 f2"
                 + "d5 43 29 55 61 3f 0f cf 62 d4 97 05 24 2a 9a f9"
-                + "e6 1e 85 dc 0d 65 1e 40 df cf 01 7b 45 57 58 87")));
+                + "e6 1e 85 dc 0d 65 1e 40 df cf 01 7b 45 57 58 87"),
+            getKDFInstance(new ScryptParameters(64, 16384, 1, 8,
+                new byte[] { 'S', 'o', 'd', 'i', 'u', 'm', 'C', 'h', 'l', 'o', 'r', 'i', 'd', 'e' }))
+                .derive(new byte[] { 'p', 'l', 'e', 'a', 's', 'e', 'l', 'e', 't', 'm', 'e', 'i', 'n' }).getKey());
     }
 
     @Test
@@ -97,7 +97,7 @@ class BcScryptKeyDerivationFunctionFactoryTest
         KeyDerivationFunction kdf2 = this.factory.getInstance(kdf.getEncoded());
         KeyWithIVParameters params2 = kdf2.derive(password, 8);
 
-        assertThat(params.getKey(), equalTo(params2.getKey()));
-        assertThat(params2.getIV(), equalTo(params2.getIV()));
+        assertArrayEquals(params2.getKey(), params.getKey());
+        assertArrayEquals(params2.getIV(), params2.getIV());
     }
 }

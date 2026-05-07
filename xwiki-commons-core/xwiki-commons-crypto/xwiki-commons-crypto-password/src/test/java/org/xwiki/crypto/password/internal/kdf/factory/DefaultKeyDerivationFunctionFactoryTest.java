@@ -32,8 +32,7 @@ import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 @ComponentTest
 @ComponentList({ BcScryptKeyDerivationFunctionFactory.class, BcPKCS5S2KeyDerivationFunctionFactory.class })
@@ -60,9 +59,9 @@ class DefaultKeyDerivationFunctionFactoryTest
         KeyDerivationFunction kdf2 = this.factory.getInstance(encoded);
         KeyWithIVParameters params2 = kdf2.derive(password, 8);
 
-        assertThat(kdf.getEncoded(), equalTo(encoded));
-        assertThat(params.getKey(), equalTo(params2.getKey()));
-        assertThat(params2.getIV(), equalTo(params2.getIV()));
+        assertArrayEquals(encoded, kdf.getEncoded());
+        assertArrayEquals(params2.getKey(), params.getKey());
+        assertArrayEquals(params2.getIV(), params2.getIV());
     }
 
     @Test
@@ -78,8 +77,8 @@ class DefaultKeyDerivationFunctionFactoryTest
         KeyDerivationFunction kdf2 = this.factory.getInstance(encoded);
         KeyWithIVParameters params2 = kdf2.derive(password, 8);
 
-        assertThat(kdf.getEncoded(), equalTo(encoded));
-        assertThat(params.getKey(), equalTo(params2.getKey()));
-        assertThat(params2.getIV(), equalTo(params2.getIV()));
+        assertArrayEquals(encoded, kdf.getEncoded());
+        assertArrayEquals(params2.getKey(), params.getKey());
+        assertArrayEquals(params2.getIV(), params2.getIV());
     }
 }
