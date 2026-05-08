@@ -29,10 +29,12 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.platform.commons.util.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.xwiki.test.LogLevel;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -67,7 +69,11 @@ public class LogCaptureExtension implements BeforeAllCallback, AfterAllCallback,
 
     private final Set<Integer> assertedMessages = new HashSet<>();
 
-    private LogLevel level;
+    private final LogLevel level;
+
+    private final String loggerName;
+
+    private Level previousLevel;
 
     private int assertionPosition;
 
@@ -79,7 +85,23 @@ public class LogCaptureExtension implements BeforeAllCallback, AfterAllCallback,
      */
     public LogCaptureExtension(LogLevel level)
     {
+        this(level, null);
+    }
+
+    /**
+     * Captures all logs from the specified logger.
+     *
+     * @param level the logging level from which to start capturing logs (for example, if {@link LogLevel#INFO} then
+     *              INFO, WARN, ERROR, etc. are captured too).
+     * @param loggerName the name of the logger from which to capture logs (for example "org.xwiki.cache"). If null
+     * or empty then the root logger is used and logs from all loggers are captured.
+     * @since 17.10.4
+     * @since 18.2.0RC1
+     */
+    public LogCaptureExtension(LogLevel level, String loggerName)
+    {
         this.level = level;
+        this.loggerName = loggerName;
     }
 
     /**
@@ -87,7 +109,7 @@ public class LogCaptureExtension implements BeforeAllCallback, AfterAllCallback,
      */
     public LogCaptureExtension()
     {
-        this.level = LogLevel.INFO;
+        this(LogLevel.INFO);
     }
 
     @Override
@@ -218,24 +240,38 @@ public class LogCaptureExtension implements BeforeAllCallback, AfterAllCallback,
     }
     private void initializeLoggers()
     {
-        // Reinitialize completely Logback
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        context.reset();
+        String name = this.loggerName;
 
-        // Configure the root logger to use our list appender and to log at the level asked.
-        Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        if (StringUtils.isBlank(name)) {
+            // Reinitialize completely Logback
+            LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+            context.reset();
+            name = Logger.ROOT_LOGGER_NAME;
+        }
+
+        // Configure the logger to use our list appender and to log at the level asked.
+        Logger logger = (Logger) LoggerFactory.getLogger(name);
         logger.addAppender(this.listAppender);
+        this.previousLevel = logger.getLevel();
         logger.setLevel(this.level.getLevel());
+        logger.setAdditive(false);
     }
 
     private void uninitializeLogger() throws Exception
     {
-        // Reinitialize Logback (by reading its config from the logback-test.xml file in the classpath)
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        context.reset();
-        ContextInitializer initializer = new ContextInitializer(context);
-        initializer.autoConfig();
-
+        if (StringUtils.isBlank(this.loggerName)) {
+            // Reinitialize Logback (by reading its config from the logback-test.xml file in the classpath)
+            LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+            context.reset();
+            ContextInitializer initializer = new ContextInitializer(context);
+            initializer.autoConfig();
+        } else {
+            // Detach the appender from the logger.
+            Logger logger = (Logger) LoggerFactory.getLogger(this.loggerName);
+            logger.detachAppender(this.listAppender);
+            logger.setLevel(this.previousLevel);
+            logger.setAdditive(true);
+        }
     }
 
     private void verifyAssertedMessages()
