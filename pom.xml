@@ -106,7 +106,7 @@
     <bouncycastle.version>1.84</bouncycastle.version>
 
     <!-- ASM -->
-    <asm.version>9.10</asm.version>
+    <asm.version>9.10.1</asm.version>
 
     <!-- Guava -->
     <guava.version>33.6.0-jre</guava.version>
