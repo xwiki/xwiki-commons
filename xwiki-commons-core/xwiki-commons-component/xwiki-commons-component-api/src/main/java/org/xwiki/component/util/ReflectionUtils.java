@@ -101,7 +101,7 @@ public final class ReflectionUtils
      * @param clazz the class for which to return all fields
      * @param fieldName the name of the field to get
      * @return the field specified from either the passed class or its superclasses
-     * @exception NoSuchFieldException if the field doesn't exist in the class or superclasses
+     * @throws NoSuchFieldException if the field doesn't exist in the class or superclasses
      */
     public static Field getField(Class<?> clazz, String fieldName) throws NoSuchFieldException
     {
@@ -136,12 +136,12 @@ public final class ReflectionUtils
     {
         Class typeClassClass = null;
 
-        if (type instanceof Class) {
-            typeClassClass = (Class) type;
+        if (type instanceof Class clazz) {
+            typeClassClass = clazz;
         } else if (type instanceof ParameterizedType) {
             typeClassClass = (Class) ((ParameterizedType) type).getRawType();
-        } else if (type instanceof GenericArrayType) {
-            Class<?> arrayParameter = getTypeClass(((GenericArrayType) type).getGenericComponentType());
+        } else if (type instanceof GenericArrayType genericArrayType) {
+            Class<?> arrayParameter = getTypeClass(genericArrayType.getGenericComponentType());
             if (arrayParameter != null) {
                 typeClassClass = Array.newInstance(arrayParameter, 0).getClass();
             }
@@ -189,8 +189,8 @@ public final class ReflectionUtils
     }
 
     /**
-     * Extract the last generic type from the passed field. For example {@code private List<A, B> field} would
-     * return the {@code B} class.
+     * Extract the last generic type from the passed field. For example {@code private List<A, B> field} would return
+     * the {@code B} class.
      *
      * @param field the field from which to extract the generic type
      * @return the class of the last generic type or null if the field doesn't have a generic type
@@ -201,8 +201,8 @@ public final class ReflectionUtils
     }
 
     /**
-     * Extract the last generic type from the passed field. For example {@code private List<A, B> field} would
-     * return the {@code B} class.
+     * Extract the last generic type from the passed field. For example {@code private List<A, B> field} would return
+     * the {@code B} class.
      *
      * @param field the field from which to extract the generic type
      * @return the type of the last generic type or null if the field doesn't have a generic type
@@ -214,8 +214,8 @@ public final class ReflectionUtils
     }
 
     /**
-     * Extract the last generic type from the passed Type. For example {@code private List<A, B> field} would
-     * return the {@code B} class.
+     * Extract the last generic type from the passed Type. For example {@code private List<A, B> field} would return the
+     * {@code B} class.
      *
      * @param type the type from which to extract the generic type
      * @return the type of the last generic type or null if the field doesn't have a generic type
@@ -223,8 +223,7 @@ public final class ReflectionUtils
      */
     public static Type getLastTypeGenericArgument(Type type)
     {
-        if (type instanceof ParameterizedType) {
-            ParameterizedType pType = (ParameterizedType) type;
+        if (type instanceof ParameterizedType pType) {
             Type[] types = pType.getActualTypeArguments();
             if (types.length > 0) {
                 return types[types.length - 1];
@@ -236,8 +235,7 @@ public final class ReflectionUtils
 
     /**
      * Extract the last generic type from the passed class. For example
-     * {@code public Class MyClass implements FilterClass<A, B>, SomeOtherClass<C>} will return {@code
-     * B}.
+     * {@code public Class MyClass implements FilterClass<A, B>, SomeOtherClass<C>} will return {@code B}.
      *
      * @param clazz the class to extract from
      * @param filterClass the class of the generic type we're looking for
@@ -247,13 +245,10 @@ public final class ReflectionUtils
     {
         Type type = getGenericClassType(clazz, filterClass);
 
-        if (type instanceof ParameterizedType) {
-            ParameterizedType pType = (ParameterizedType) type;
-            if (filterClass.isAssignableFrom((Class) pType.getRawType())) {
-                Type[] actualTypes = pType.getActualTypeArguments();
-                if (actualTypes.length > 0 && actualTypes[actualTypes.length - 1] instanceof Class) {
-                    return (Class) actualTypes[actualTypes.length - 1];
-                }
+        if (type instanceof ParameterizedType pType && filterClass.isAssignableFrom((Class) pType.getRawType())) {
+            Type[] actualTypes = pType.getActualTypeArguments();
+            if (actualTypes.length > 0 && actualTypes[actualTypes.length - 1] instanceof Class actualTypesClass) {
+                return actualTypesClass;
             }
         }
 
@@ -275,11 +270,9 @@ public final class ReflectionUtils
         for (Type type : clazz.getGenericInterfaces()) {
             if (type == filterClass) {
                 return type;
-            } else if (type instanceof ParameterizedType) {
-                ParameterizedType pType = (ParameterizedType) type;
-                if (filterClass.isAssignableFrom((Class) pType.getRawType())) {
-                    return type;
-                }
+            }
+            if (type instanceof ParameterizedType pType && filterClass.isAssignableFrom((Class) pType.getRawType())) {
+                return type;
             }
         }
 
@@ -295,8 +288,7 @@ public final class ReflectionUtils
     {
         Type[] resolvedPrameters = null;
 
-        if (parameters != null && childType instanceof ParameterizedType) {
-            ParameterizedType parameterizedChildType = (ParameterizedType) childType;
+        if (parameters != null && childType instanceof ParameterizedType parameterizedChildType) {
 
             return resolveSuperArguments(parameters, parameterizedChildType.getClass(),
                 parameterizedChildType.getActualTypeArguments());
@@ -343,8 +335,7 @@ public final class ReflectionUtils
             }
 
             resolvedType = typeMapping.get(type);
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) type;
+        } else if (type instanceof ParameterizedType parameterizedType) {
 
             Type[] arguments = parameterizedType.getActualTypeArguments();
             Type[] resolvedArguments = resolveTypes(arguments, typeMapping);
@@ -353,8 +344,6 @@ public final class ReflectionUtils
                 resolvedType =
                     new DefaultParameterizedType(parameterizedType.getOwnerType(),
                         (Class<?>) parameterizedType.getRawType(), resolvedArguments);
-            } else {
-                resolvedType = type;
             }
         }
 
@@ -378,13 +367,9 @@ public final class ReflectionUtils
                 return null;
             }
 
-            if (resovedType != type) {
-                if (resolvedTypes == types) {
-                    resolvedTypes = new Type[types.length];
-                    for (int j = 0; j < i; ++j) {
-                        resolvedTypes[j] = types[j];
-                    }
-                }
+            if (resovedType != type && resolvedTypes == types) {
+                resolvedTypes = new Type[types.length];
+                System.arraycopy(types, 0, resolvedTypes, 0, i);
             }
 
             if (resolvedTypes != types) {
@@ -406,8 +391,7 @@ public final class ReflectionUtils
     {
         Type resolvedType;
 
-        if (targetType instanceof ParameterizedType && rootType instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) targetType;
+        if (targetType instanceof ParameterizedType parameterizedType && rootType instanceof ParameterizedType) {
 
             resolvedType =
                 resolveType((Class<?>) parameterizedType.getRawType(), parameterizedType.getActualTypeArguments(),
@@ -460,8 +444,7 @@ public final class ReflectionUtils
         Class<?> interfaceClass;
         Type[] interfaceParameters;
 
-        if (newType instanceof ParameterizedType) {
-            ParameterizedType interfaceParameterizedType = (ParameterizedType) newType;
+        if (newType instanceof ParameterizedType interfaceParameterizedType) {
 
             interfaceClass = ReflectionUtils.getTypeClass(newType);
             Type[] variableParameters = interfaceParameterizedType.getActualTypeArguments();
@@ -500,7 +483,7 @@ public final class ReflectionUtils
     public static Type unserializeType(String serializedType, ClassLoader classLoader) throws ClassNotFoundException
     {
         String sType = serializedType.replace(" ", "");
-        Type type = null;
+        Type type;
 
         // A real parser could be used here but it would probably be overkill.
         if (sType.contains(OPEN_GENERIC)) {
@@ -600,8 +583,8 @@ public final class ReflectionUtils
 
     private static String getTypeName(Type type)
     {
-        if (type instanceof Class) {
-            return ((Class) type).getName();
+        if (type instanceof Class clazz) {
+            return clazz.getName();
         } else {
             return type.getTypeName();
         }
@@ -609,6 +592,7 @@ public final class ReflectionUtils
 
     /**
      * Serialize a type in a String using a standard definition.
+     *
      * @param type the type to serialize.
      * @return a string representing this type.
      * @since 11.2RC1
@@ -620,54 +604,55 @@ public final class ReflectionUtils
         }
 
         StringBuilder sb = new StringBuilder();
-        if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) type;
-
-            String rawTypeName = getTypeName(parameterizedType.getRawType());
-
-            if (parameterizedType.getOwnerType() != null) {
-                if (parameterizedType.getOwnerType() instanceof Class) {
-                    sb.append(((Class<?>) parameterizedType.getOwnerType()).getName());
-                } else {
-                    sb.append(parameterizedType.getOwnerType().toString());
-                }
-
-                sb.append('.');
-
-
-                if (parameterizedType.getOwnerType() instanceof ParameterizedType) {
-                    // Find simple name of nested type by removing the
-                    // shared prefix with owner.
-                    sb.append(rawTypeName.replace(
-                        ((Class<?>) ((ParameterizedType) parameterizedType.getOwnerType()).getRawType())
-                            .getName() + '$', ""));
-                } else {
-                    sb.append(rawTypeName);
-                }
-            } else {
-                sb.append(rawTypeName);
-            }
-
-            if (parameterizedType.getActualTypeArguments() != null
-                && parameterizedType.getActualTypeArguments().length > 0) {
-                sb.append(OPEN_GENERIC);
-
-                boolean first = true;
-                for (Type typeArgument : parameterizedType.getActualTypeArguments()) {
-                    if (!first) {
-                        sb.append(", ");
-                    }
-                    sb.append(getTypeName(typeArgument));
-                    first = false;
-                }
-
-                sb.append(CLOSE_GENERIC);
-            }
+        if (type instanceof ParameterizedType parameterizedType) {
+            serializeParametrizedType(parameterizedType, sb);
         } else {
             sb.append(getTypeName(type));
         }
 
         return sb.toString();
+    }
+
+    private static void serializeParametrizedType(ParameterizedType parameterizedType, StringBuilder sb)
+    {
+        String rawTypeName = getTypeName(parameterizedType.getRawType());
+
+        if (parameterizedType.getOwnerType() != null) {
+            if (parameterizedType.getOwnerType() instanceof Class) {
+                sb.append(((Class<?>) parameterizedType.getOwnerType()).getName());
+            } else {
+                sb.append(parameterizedType.getOwnerType());
+            }
+
+            sb.append('.');
+
+            if (parameterizedType.getOwnerType() instanceof ParameterizedType) {
+                // Find simple name of nested type by removing the
+                // shared prefix with owner.
+                sb.append(rawTypeName.replace(
+                    ((Class<?>) ((ParameterizedType) parameterizedType.getOwnerType()).getRawType())
+                        .getName() + '$', ""));
+            } else {
+                sb.append(rawTypeName);
+            }
+        } else {
+            sb.append(rawTypeName);
+        }
+
+        if (parameterizedType.getActualTypeArguments().length > 0) {
+            sb.append(OPEN_GENERIC);
+
+            boolean first = true;
+            for (Type typeArgument : parameterizedType.getActualTypeArguments()) {
+                if (!first) {
+                    sb.append(", ");
+                }
+                sb.append(getTypeName(typeArgument));
+                first = false;
+            }
+
+            sb.append(CLOSE_GENERIC);
+        }
     }
 
     /**
@@ -703,35 +688,41 @@ public final class ReflectionUtils
     {
         // Get all methods for the current class (doesn't include inherited methods)
         for (Method method : current.getDeclaredMethods()) {
-            int mod = method.getModifiers();
-            int access = Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE;
-            if (!Modifier.isStatic(mod)) {
-                switch (mod & access) {
-                    case Modifier.PUBLIC:
-                        // Already added to the methods Set.
-                        continue;
-                    case Modifier.PROTECTED:
-                        if (types.putIfAbsent(getMethodSignature(method), pkgIndependent) != null) {
-                            // There was a mapping already so already taken care of, we don't add the method again
-                            continue;
-                        }
-                        // Otherwise add the method by falling-through
-                        break;
-                    case Modifier.PRIVATE:
-                        // Cannot be inherited so no need to check the method signature.
-                        // Add the method by falling-through
-                    default:
-                        // Package level visibility
-                        Set<Package> pkg = types.computeIfAbsent(getMethodSignature(method), key -> new HashSet<>());
-                        if (pkg != pkgIndependent && pkg.add(current.getPackage())) {
-                            break;
-                        } else {
-                            continue;
-                        }
-                }
-            }
-            methods.add(method);
+            addDeclaredMethodsForClass(current, methods, types, pkgIndependent, method);
         }
+    }
+
+    private static void addDeclaredMethodsForClass(Class<?> current, Set<Method> methods,
+        Map<Object, Set<Package>> types, Set<Package> pkgIndependent, Method method)
+    {
+        int mod = method.getModifiers();
+        int access = Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE;
+        if (!Modifier.isStatic(mod)) {
+            switch (mod & access) {
+                case Modifier.PUBLIC:
+                    // Already added to the methods Set.
+                    return;
+                case Modifier.PROTECTED:
+                    if (types.putIfAbsent(getMethodSignature(method), pkgIndependent) != null) {
+                        // There was a mapping already so already taken care of, we don't add the method again
+                        return;
+                    }
+                    // Otherwise add the method by falling-through
+                    break;
+                case Modifier.PRIVATE:
+                    // Cannot be inherited so no need to check the method signature.
+                    // Add the method by falling-through
+                default:
+                    // Package level visibility
+                    Set<Package> pkg = types.computeIfAbsent(getMethodSignature(method), key -> new HashSet<>());
+                    if (pkg != pkgIndependent && pkg.add(current.getPackage())) {
+                        break;
+                    } else {
+                        return;
+                    }
+            }
+        }
+        methods.add(method);
     }
 
     private static Object getMethodSignature(Method method)
