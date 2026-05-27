@@ -33,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.xwiki.cache.eviction.EntryEvictionConfiguration.CONFIGURATIONID;
 
 /**
  * Base class for testing cache component implementation. Also test eviction.
@@ -46,7 +47,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
     /**
      * Indicate if the cache implementation send event for evicted entries.
      */
-    private boolean supportEvictionEvent;
+    private final boolean supportEvictionEvent;
 
     /**
      * @param roleHint             the role hint of the cache component implementation to test.
@@ -78,7 +79,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
         LRUEvictionConfiguration lec = new LRUEvictionConfiguration();
         lec.setMaxEntries(1);
         customizeEviction(lec);
-        conf.put(LRUEvictionConfiguration.CONFIGURATIONID, lec);
+        conf.put(CONFIGURATIONID, lec);
 
         Cache<Object> cache = factory.newCache(conf);
 
@@ -123,7 +124,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
         LRUEvictionConfiguration lec = new LRUEvictionConfiguration();
         lec.setMaxIdle(1);
         customizeEviction(lec);
-        conf.put(LRUEvictionConfiguration.CONFIGURATIONID, lec);
+        conf.put(CONFIGURATIONID, lec);
 
         Cache<Object> cache = factory.newCache(conf);
 
@@ -166,7 +167,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
         LRUEvictionConfiguration lec = new LRUEvictionConfiguration();
         lec.setLifespan(1);
         customizeEviction(lec);
-        conf.put(LRUEvictionConfiguration.CONFIGURATIONID, lec);
+        conf.put(CONFIGURATIONID, lec);
 
         Cache<Object> cache = factory.newCache(conf);
 
