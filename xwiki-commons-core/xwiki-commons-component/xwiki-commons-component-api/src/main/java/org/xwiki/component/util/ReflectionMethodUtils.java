@@ -68,7 +68,7 @@ public final class ReflectionMethodUtils
     }
 
     /**
-     * Get {@link Annotation}s of the provided class associated to the the provided method parameter.
+     * Get {@link Annotation}s of the provided class associated to the provided method parameter.
      *
      * @param <A> the actual {@link Annotation} type
      * @param method the method
@@ -83,36 +83,38 @@ public final class ReflectionMethodUtils
         List<A> annotations = getMethodParameterAnnotations(method, index, annotationClass);
 
         if (inherits && annotationClass.getAnnotation(Inherited.class) != null) {
-            Class<?>[] ifaces = method.getDeclaringClass().getInterfaces();
-
-            for (Class<?> iface : ifaces) {
-                Method interfaceMethod;
-                try {
-                    interfaceMethod = iface.getMethod(method.getName(), method.getParameterTypes());
-
-                    if (interfaceMethod != null) {
-                        annotations
-                            .addAll(getMethodParameterAnnotations(interfaceMethod, index, annotationClass, true));
-                    }
-                } catch (Exception e) {
-                    // Ignore it
-                }
-            }
-
-            Class<?> superClass = method.getDeclaringClass().getSuperclass();
-            if (superClass != null) {
-                try {
-                    Method superMethod = superClass.getMethod(method.getName(), method.getParameterTypes());
-
-                    if (superMethod != null) {
-                        annotations.addAll(getMethodParameterAnnotations(superMethod, index, annotationClass, true));
-                    }
-                } catch (Exception e) {
-                    // Ignore it
-                }
-            }
+            collectParentInterfacesAnnotations(method, index, annotationClass, annotations);
+            collectParentClassesAnnotations(method, index, annotationClass, annotations);
         }
 
         return annotations;
+    }
+
+    private static <A extends Annotation> void collectParentInterfacesAnnotations(Method method, int index,
+        Class<A> annotationClass, List<A> annotations)
+    {
+        Class<?>[] ifaces = method.getDeclaringClass().getInterfaces();
+        for (Class<?> iface : ifaces) {
+            try {
+                Method interfaceMethod = iface.getMethod(method.getName(), method.getParameterTypes());
+                annotations.addAll(getMethodParameterAnnotations(interfaceMethod, index, annotationClass, true));
+            } catch (Exception e1) {
+                // Ignore it
+            }
+        }
+    }
+
+    private static <A extends Annotation> void collectParentClassesAnnotations(Method method, int index,
+        Class<A> annotationClass, List<A> annotations)
+    {
+        Class<?> superClass = method.getDeclaringClass().getSuperclass();
+        if (superClass != null) {
+            try {
+                Method superMethod = superClass.getMethod(method.getName(), method.getParameterTypes());
+                annotations.addAll(getMethodParameterAnnotations(superMethod, index, annotationClass, true));
+            } catch (Exception e) {
+                // Ignore it
+            }
+        }
     }
 }
