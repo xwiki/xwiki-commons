@@ -21,7 +21,7 @@ package org.xwiki.properties.internal.converter;
 
 import java.util.List;
 
-import jakarta.inject.Inject;
+import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
 import org.xwiki.properties.ConverterManager;
