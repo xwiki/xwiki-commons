@@ -25,8 +25,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Use this annotation to indicate that a property should not be displayed in UIs. For example the WYSIWYG editor
  * uses it to decide whether to display or not a Macro property in the Macro editor UI.
@@ -34,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 12.4RC1
  */
-@Unstable
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.FIELD })
 @Inherited
