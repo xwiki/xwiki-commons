@@ -44,7 +44,7 @@ public interface ComponentManager
     /**
      * @param role the class (aka role) that the component implements
      * @param hint the hint that differentiates a component implementation from another one (each component is
-     *            registered with a hint; the "default" hint being the default)
+     *     registered with a hint; the "default" hint being the default)
      * @return true if the component is registered for the passed hint or false otherwise
      * @since 4.0M1
      */
@@ -57,8 +57,8 @@ public interface ComponentManager
      * @param <T> the component role type
      * @param roleType the class (aka role) that the component implements
      * @return the component instance
-     * @throws ComponentLookupException if any error happen during component search (the component does not exist, the
-     *             instance fail to initialize)
+     * @throws ComponentLookupException if any error happen during component search (the component does not exist,
+     *     the instance fail to initialize)
      * @since 4.0RC1
      */
     <T> T getInstance(Type roleType) throws ComponentLookupException;
@@ -70,10 +70,10 @@ public interface ComponentManager
      * @param <T> the component role type
      * @param roleType the class (aka role) that the component implements
      * @param roleHint the hint that differentiates a component implementation from another one (each component is
-     *            registered with a hint; the "default" hint being the default)
+     *     registered with a hint; the "default" hint being the default)
      * @return the component instance
-     * @throws ComponentLookupException if any error happen during component search (the component does not exist, the
-     *             instance fail to initialize)
+     * @throws ComponentLookupException if any error happen during component search (the component does not exist,
+     *     the instance fail to initialize)
      * @since 4.0RC1
      */
     <T> T getInstance(Type roleType, String roleHint) throws ComponentLookupException;
@@ -181,7 +181,7 @@ public interface ComponentManager
      * Find all the descriptors of all components implementing the provided role.
      * <p>
      * Since 15.4RC1, the resulting list is sorted according to components priority.
-     * 
+     *
      * @param <T> the role class for which to return all component implementations
      * @param role the role class for which to return all component implementations
      * @return all component implementations for the passed role
@@ -202,7 +202,7 @@ public interface ComponentManager
 
     /**
      * @return the parent Component Manager of this Component Manager. When doing lookups if the component cannot be
-     *         found in the current Component Manager it'll also be looked for in the parent Component Manager
+     *     found in the current Component Manager it'll also be looked for in the parent Component Manager
      */
     ComponentManager getParent();
 
@@ -217,7 +217,7 @@ public interface ComponentManager
      * Find all the descriptors of all components implementing the provided role.
      * <p>
      * Since 15.4RC1, the resulting list is sorted according to components priority.
-     * 
+     *
      * @param <T> the role class for which to return all component implementations
      * @param role the role class for which to return all component implementations
      * @return all component implementations for the passed role

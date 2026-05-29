@@ -92,22 +92,27 @@ class ReflectionUtilsTest
     {
         public void publicParentMethod()
         {
+            // This method is actually used by the getAllMethods reflection test
         }
 
         void packageLeveLParentMethod()
         {
+            // This method is actually used by the getAllMethods reflection test
         }
 
         protected void protectedParentMethod()
         {
+            // This method is actually used by the getAllMethods reflection test
         }
 
-        protected void protectedOverridenMethod()
+        protected void protectedOverriddenMethod()
         {
+            // This method is actually used by the getAllMethods reflection test
         }
 
         private void privateParentMethod()
         {
+            // This method is actually used by the getAllMethods reflection test
         }
     }
 
@@ -115,22 +120,27 @@ class ReflectionUtilsTest
     {
         public void publicMethod()
         {
+            // This method is actually used by the getAllMethods reflection test
         }
 
         void packageLevelMethod()
         {
+            // This method is actually used by the getAllMethods reflection test
         }
 
         protected void protectedMethod()
         {
+            // This method is actually used by the getAllMethods reflection test
         }
 
-        protected void protectedOverridenMethod()
+        protected void protectedOverriddenMethod()
         {
+            // This method is actually used by the getAllMethods reflection test
         }
 
         private void privateMethod()
         {
+            // This method is actually used by the getAllMethods reflection test
         }
     }
 
@@ -302,10 +312,10 @@ class ReflectionUtilsTest
             "protected void org.xwiki.component.util.ReflectionUtilsTest$AllMethodsTestSuperClass."
                 + "protectedParentMethod()",
             "protected void org.xwiki.component.util.ReflectionUtilsTest$AllMethodsTestClass."
-                + "protectedOverridenMethod()"));
+                + "protectedOverriddenMethod()"));
 
         assertThat(methodSignatures, not(hasItems(
             "protected void org.xwiki.component.util.ReflectionUtilsTest$AllMethodsTestSuperClass."
-            + "protectedOverridenMethod()")));
+                + "protectedOverriddenMethod()")));
     }
 }

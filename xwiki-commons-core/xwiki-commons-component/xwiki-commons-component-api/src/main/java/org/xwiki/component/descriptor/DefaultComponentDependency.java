@@ -92,8 +92,8 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
     }
 
     /**
-     * @param name the name of the injection point (can be the name of the field for field injection or the name of the
-     *            method for method injection
+     * @param name the name of the injection point (can be the name of the field for field injection or the name of
+     *     the method for method injection
      */
     public void setName(String name)
     {
@@ -102,7 +102,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
 
     /**
      * @param hints a list of hints used when the mapping type is a collection or map so that only component
-     *            implementations matching passed hints are injected
+     *     implementations matching passed hints are injected
      */
     public void setHints(String[] hints)
     {
@@ -138,7 +138,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
      * @param dependency the dependency to compare to
      * @return true if the passed dependency is equals to the current instance or false otherwise
      */
-    private boolean equals(ComponentDependency dependency)
+    private boolean equals(ComponentDependency<?> dependency)
     {
         return super.equals(dependency) && Objects.equals(getName(), dependency.getName())
             && Arrays.equals(getHints(), dependency.getHints());
@@ -166,7 +166,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
     // deprecated
 
     @Override
-    @Deprecated
+    @Deprecated(since = "4.0M1")
     public Class<?> getMappingType()
     {
         return ReflectionUtils.getTypeClass(getRoleType());
@@ -176,17 +176,12 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
      * @param mappingType the class of the type for the injection (java.lang.String, java.util.List, etc)
      * @deprecated since 4.0M1 use {@link #setRoleType(java.lang.reflect.Type)} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.0M1")
     public void setMappingType(Class<?> mappingType)
     {
-        Type ownerType;
-        Type[] parameters;
-        if (getRoleType() instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) getRoleType();
-            ownerType = parameterizedType.getOwnerType();
-            parameters = parameterizedType.getActualTypeArguments();
-
-            setRoleType(new DefaultParameterizedType(ownerType, mappingType, parameters));
+        if (getRoleType() instanceof ParameterizedType parameterizedType) {
+            setRoleType(new DefaultParameterizedType(parameterizedType.getOwnerType(), mappingType,
+                parameterizedType.getActualTypeArguments()));
         } else {
             setRoleType(mappingType);
         }
@@ -212,8 +207,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
         if (SPECIAL_ROLES.contains(mapping)) {
             Type ownerType;
             Class<?> rawType;
-            if (getRoleType() instanceof ParameterizedType) {
-                ParameterizedType parameterizedType = (ParameterizedType) getRoleType();
+            if (getRoleType() instanceof ParameterizedType parameterizedType) {
                 ownerType = parameterizedType.getOwnerType();
                 rawType = (Class<?>) parameterizedType.getRawType();
             } else {

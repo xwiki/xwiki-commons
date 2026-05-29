@@ -38,13 +38,13 @@ class ReflectionMethodUtilsTest
         assertEquals(
             1,
             ReflectionMethodUtils.getMethodParameterAnnotations(
-                TestImplementation.class.getMethod("methodWithAnnotationParameter", new Class<?>[]{ Object.class }),
+                TestImplementation.class.getMethod("methodWithAnnotationParameter", Object.class),
                 0, TestInheritedAnnotation.class, true).size());
 
         assertEquals(
             0,
             ReflectionMethodUtils.getMethodParameterAnnotations(
-                TestImplementation.class.getMethod("methodWithAnnotationParameter", new Class<?>[]{ Object.class }),
+                TestImplementation.class.getMethod("methodWithAnnotationParameter", Object.class),
                 0, TestInheritedAnnotation.class, false).size());
     }
 }

@@ -81,7 +81,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
         setImplementation(descriptor.getImplementation());
         setInstantiationStrategy(descriptor.getInstantiationStrategy());
         for (ComponentDependency<?> dependency : descriptor.getComponentDependencies()) {
-            addComponentDependency(new DefaultComponentDependency(dependency));
+            addComponentDependency(new DefaultComponentDependency<>(dependency));
         }
         setMandatory(descriptor.isMandatory());
         setRoleTypePriority(descriptor.getRoleTypePriority());
@@ -153,7 +153,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
 
     /**
      * @param mandatory true if failing to initialize the component should fail APIs like
-     *            {@link org.xwiki.component.manager.ComponentManager#getInstanceList(java.lang.reflect.Type)}
+     *     {@link org.xwiki.component.manager.ComponentManager#getInstanceList(java.lang.reflect.Type)}
      * @since 15.0RC1
      */
     public void setMandatory(boolean mandatory)
@@ -227,7 +227,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
                 result = false;
             } else {
                 // object must be Syntax at this point
-                ComponentDescriptor cd = (ComponentDescriptor) object;
+                ComponentDescriptor<?> cd = (ComponentDescriptor<?>) object;
 
                 EqualsBuilder builder = new EqualsBuilder();
 

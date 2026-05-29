@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit tests for {@link Namespace}.
- * 
+ *
  * @version $Id$
  */
 class NamespaceTest
@@ -52,7 +52,7 @@ class NamespaceTest
         assertEquals(ns1, ns4);
         assertEquals(ns1.hashCode(), ns4.hashCode());
 
-        assertNotEquals(ns1, "not a NameSpace instance");
+        assertNotEquals("not a NameSpace instance", ns1);
     }
 
     @Test

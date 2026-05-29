@@ -29,9 +29,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * <p>
- * Helps controlling the order in which Components are disposed upon XWiki's shutdown. This annotation is optional
- * and should be used only for Components needing to be disposed before or after other components (for example
- * the Database shutdown needs to be executed after all other components using DB storage have been disposed of).
+ * Helps control the order in which Components are disposed upon XWiki's shutdown. This annotation is optional and
+ * should be used only for Components needing to be disposed before or after other components (for example the Database
+ * shutdown needs to be executed after all other components using DB storage have been disposed of).
  * </p>
  * <p>
  * When used, this annotation takes precedence over the natural order defined by explicit Component dependencies.

@@ -21,7 +21,7 @@ package org.xwiki.component.manager;
 
 /**
  * Add namespace information to {@link ComponentManager}.
- * 
+ *
  * @version $Id$
  * @since 6.4M2
  */

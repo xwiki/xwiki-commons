@@ -583,7 +583,7 @@ public final class ReflectionUtils
 
     private static String getTypeName(Type type)
     {
-        if (type instanceof Class clazz) {
+        if (type instanceof Class<?> clazz) {
             return clazz.getName();
         } else {
             return type.getTypeName();

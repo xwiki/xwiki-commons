@@ -25,7 +25,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Validate a namespace against list of allowed namespaces.
- * 
+ *
  * @version $Id$
  * @since 8.0M1
  */

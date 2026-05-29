@@ -146,14 +146,13 @@ class DefaultComponentDescriptorTest
         dep.setRoleType(String.class);
         cd.addComponentDependency(dep);
 
-        assertEquals(
-            "role = [interface org.xwiki.component.descriptor.DefaultComponentDescriptorTest$Role], "
-            + "hint = [hint], "
-            + "implementation = [org.xwiki.component.descriptor.DefaultComponentDescriptorTest$ImplRole], "
-            + "instantiation = [SINGLETON], "
-            + "mandatory = [false], "
-            + "roleTypePriority = [1000], "
-            + "roleHintPriority = [1000]",
-            cd.toString());
+        assertEquals("""
+            role = [interface org.xwiki.component.descriptor.DefaultComponentDescriptorTest$Role], \
+            hint = [hint], \
+            implementation = [org.xwiki.component.descriptor.DefaultComponentDescriptorTest$ImplRole], \
+            instantiation = [SINGLETON], \
+            mandatory = [false], \
+            roleTypePriority = [1000], \
+            roleHintPriority = [1000]""", cd.toString());
     }
 }

@@ -39,17 +39,17 @@ public @interface Component
 {
     /**
      * @return the hint value. Can be any text value. It's used to differentiate one component implementation from
-     *         another one.
+     *     another one.
      * @deprecated since 3.1M1 use the {@code @Named} annotation instead
      */
-    @Deprecated
+    @Deprecated(since = "3.1M1")
     String value() default "";
 
     /**
      * Sometimes you want to register the component several times with different hints. In this case the default
-     * annotation value is ignored and the passed list of hints is used instead.
-     * 
-     * @return the list of hints
+     * annotation value is ignored and the passed array of hints is used instead.
+     *
+     * @return the array of hints
      */
     String[] hints() default {};
 
@@ -57,15 +57,15 @@ public @interface Component
      * When specified forces the component to be registered as many times as there are roles specified. Otherwise the
      * superclass/interface hierarchy is scanned for ComponentRole annotations and the component is registered under all
      * roles found.
-     * 
+     *
      * @return the list of roles
      */
     Class<?>[] roles() default {};
 
     /**
      * @return true if the Component should be registered in a {@code components.txt} file. False can be used for
-     *         example when using a component in a test and registering it dynamically without going through a
-     *         {@code components.txt} file.
+     *     example when using a component in a test and registering it dynamically without going through a
+     *     {@code components.txt} file.
      */
     boolean staticRegistration() default true;
 }

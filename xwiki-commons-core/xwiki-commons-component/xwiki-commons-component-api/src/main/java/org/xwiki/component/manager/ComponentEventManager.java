@@ -39,7 +39,7 @@ public interface ComponentEventManager
      * @since 2.0M2
      * @deprecated since 3.3 use {@link #notifyComponentRegistered(ComponentDescriptor, ComponentManager)} instead
      */
-    @Deprecated
+    @Deprecated(since = "3.3")
     void notifyComponentRegistered(ComponentDescriptor<?> descriptor);
 
     /**
@@ -58,7 +58,7 @@ public interface ComponentEventManager
      * @since 2.0M2
      * @deprecated since 3.3 use {@link #notifyComponentUnregistered(ComponentDescriptor, ComponentManager)} instead
      */
-    @Deprecated
+    @Deprecated(since = "3.3")
     void notifyComponentUnregistered(ComponentDescriptor<?> descriptor);
 
     /**

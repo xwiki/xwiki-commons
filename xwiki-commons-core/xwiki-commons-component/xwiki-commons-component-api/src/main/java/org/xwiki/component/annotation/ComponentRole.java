@@ -40,7 +40,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target(TYPE)
 @Inherited
-@Deprecated
+@Deprecated(since = "4.0M1")
 public @interface ComponentRole
 {
 }

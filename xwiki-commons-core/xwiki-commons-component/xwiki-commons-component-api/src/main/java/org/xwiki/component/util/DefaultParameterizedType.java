@@ -94,11 +94,9 @@ public class DefaultParameterizedType implements ParameterizedType
     @Override
     public boolean equals(Object o)
     {
-        if (o == null || !(o instanceof ParameterizedType)) {
+        if (!(o instanceof ParameterizedType parameterizedType)) {
             return false;
         }
-
-        ParameterizedType parameterizedType = (ParameterizedType) o;
 
         return Objects.equals(this.rawType, parameterizedType.getRawType())
             && Objects.equals(this.ownerType, parameterizedType.getOwnerType())

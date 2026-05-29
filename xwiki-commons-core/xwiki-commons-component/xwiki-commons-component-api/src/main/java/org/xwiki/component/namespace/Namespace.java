@@ -24,7 +24,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * A namespace.
- * 
+ *
  * @version $Id$
  * @since 9.0RC1
  */
@@ -32,7 +32,7 @@ public class Namespace
 {
     /**
      * Root namespace.
-     * 
+     *
      * @since 9.7RC1
      */
     public static final Namespace ROOT = new Namespace(null, null);
@@ -79,9 +79,9 @@ public class Namespace
             return true;
         }
 
-        if (other instanceof Namespace) {
-            return Strings.CS.equals(this.type, ((Namespace) other).getType())
-                && Strings.CS.equals(this.value, ((Namespace) other).getValue());
+        if (other instanceof Namespace namespace) {
+            return Strings.CS.equals(this.type, namespace.getType())
+                && Strings.CS.equals(this.value, namespace.getValue());
         }
 
         return false;

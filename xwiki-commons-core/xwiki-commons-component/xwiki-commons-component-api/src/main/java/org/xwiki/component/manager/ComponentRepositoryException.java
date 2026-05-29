@@ -32,8 +32,8 @@ public class ComponentRepositoryException extends Exception
     private static final long serialVersionUID = -5632308369546468757L;
 
     /**
-     * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
-     *            method.
+     * @param message the detail message. The detail message is saved for later retrieval by the
+     *     {@link #getMessage()} method.
      */
     public ComponentRepositoryException(String message)
     {
@@ -41,10 +41,10 @@ public class ComponentRepositoryException extends Exception
     }
 
     /**
-     * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
-     *            method.
+     * @param message the detail message. The detail message is saved for later retrieval by the
+     *     {@link #getMessage()} method.
      * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). A {@code null}
-     **            value is permitted, and indicates that the cause is nonexistent or unknown
+     *     value is permitted, and indicates that the cause is nonexistent or unknown
      */
     public ComponentRepositoryException(String message, Throwable cause)
     {

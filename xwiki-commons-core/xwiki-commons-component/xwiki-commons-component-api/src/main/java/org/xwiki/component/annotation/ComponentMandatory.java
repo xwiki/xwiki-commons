@@ -24,13 +24,15 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.xwiki.component.manager.ComponentManager;
+
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Control if failing to initialize the component should fail APIs like
- * {@link org.xwiki.component.manager.ComponentManager#getInstanceList(java.lang.reflect.Type)}.
- * 
+ * {@link ComponentManager#getInstanceList(java.lang.reflect.Type)}.
+ *
  * @version $Id$
  * @since 15.0RC1
  */
@@ -42,8 +44,7 @@ public @interface ComponentMandatory
 {
     /**
      * @return true if failing to initialize the component should fail APIs like
-     *         {@link org.xwiki.component.manager.ComponentManager#getInstanceList(java.lang.reflect.Type)}
+     *     {@link ComponentManager#getInstanceList(java.lang.reflect.Type)}
      */
     boolean value() default true;
-
 }

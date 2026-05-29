@@ -21,6 +21,8 @@ package org.xwiki.component.descriptor;
 
 import java.util.Collection;
 
+import org.xwiki.component.manager.ComponentManager;
+
 /**
  * Represent a component.
  *
@@ -32,7 +34,7 @@ public interface ComponentDescriptor<T> extends ComponentRole<T>
 {
     /**
      * Default priority value for {@link #getRoleTypePriority()} and {@link #getRoleHintPriority()}.
-     * 
+     *
      * @since 15.4RC1
      */
     int DEFAULT_PRIORITY = 1000;
@@ -55,7 +57,7 @@ public interface ComponentDescriptor<T> extends ComponentRole<T>
 
     /**
      * @return true if failing to initialize the component should fail APIs like
-     *         {@link org.xwiki.component.manager.ComponentManager#getInstanceList(java.lang.reflect.Type)}.
+     *     {@link ComponentManager#getInstanceList(java.lang.reflect.Type)}.
      * @since 15.0RC1
      */
     default boolean isMandatory()

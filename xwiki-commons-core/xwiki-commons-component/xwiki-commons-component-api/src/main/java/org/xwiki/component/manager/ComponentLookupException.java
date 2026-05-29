@@ -22,8 +22,8 @@ package org.xwiki.component.manager;
 /**
  * Raised during component lookup when an error happens.
  *
- * @see ComponentManager#getInstance(java.lang.reflect.Type)
  * @version $Id$
+ * @see ComponentManager#getInstance(java.lang.reflect.Type)
  */
 public class ComponentLookupException extends Exception
 {
@@ -34,8 +34,8 @@ public class ComponentLookupException extends Exception
     private static final long serialVersionUID = 8361313158481775054L;
 
     /**
-     * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
-     *            method.
+     * @param message the detail message. The detail message is saved for later retrieval by the
+     *     {@link #getMessage()} method.
      */
     public ComponentLookupException(String message)
     {
@@ -43,10 +43,10 @@ public class ComponentLookupException extends Exception
     }
 
     /**
-     * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
-     *            method.
+     * @param message the detail message. The detail message is saved for later retrieval by the
+     *     {@link #getMessage()} method.
      * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). A {@code null}
-     *            value is permitted, and indicates that the cause is nonexistent or unknown
+     *     value is permitted, and indicates that the cause is nonexistent or unknown
      */
     public ComponentLookupException(String message, Throwable cause)
     {

@@ -33,8 +33,8 @@ public class InitializationException extends Exception
     private static final long serialVersionUID = -4572006812408492126L;
 
     /**
-     * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
-     *            method.
+     * @param message the detail message. The detail message is saved for later retrieval by the
+     *     {@link #getMessage()} method.
      */
     public InitializationException(String message)
     {
@@ -42,10 +42,10 @@ public class InitializationException extends Exception
     }
 
     /**
-     * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
-     *            method.
+     * @param message the detail message. The detail message is saved for later retrieval by the
+     *     {@link #getMessage()} method.
      * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). A {@code null}
-     *            value is permitted, and indicates that the cause is nonexistent or unknown
+     *     value is permitted, and indicates that the cause is nonexistent or unknown
      */
     public InitializationException(String message, Throwable cause)
     {

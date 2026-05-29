@@ -33,8 +33,8 @@ public class ComponentLifecycleException extends Exception
     private static final long serialVersionUID = 4997756616508082309L;
 
     /**
-     * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
-     *            method.
+     * @param message the detail message. The detail message is saved for later retrieval by the
+     *     {@link #getMessage()} method.
      */
     public ComponentLifecycleException(String message)
     {
@@ -42,10 +42,10 @@ public class ComponentLifecycleException extends Exception
     }
 
     /**
-     * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
-     *            method.
+     * @param message the detail message. The detail message is saved for later retrieval by the
+     *     {@link #getMessage()} method.
      * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). A {@code null}
-     *            value is permitted, and indicates that the cause is nonexistent or unknown
+     *     value is permitted, and indicates that the cause is nonexistent or unknown
      */
     public ComponentLifecycleException(String message, Throwable cause)
     {

@@ -38,7 +38,7 @@ import org.xwiki.component.namespace.NamespaceValidator;
 
 /**
  * Default implementation of {@link NamespaceValidator}.
- * 
+ *
  * @version $Id$
  * @since 8.0M1
  */

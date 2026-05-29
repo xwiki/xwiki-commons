@@ -104,7 +104,7 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
     public String toString()
     {
         ToStringBuilder builder = new XWikiToStringBuilder(this);
-        builder.append("role", null == getRoleType() ? "<null>" : getRoleType());
+        builder.append("role", getRoleType() == null ? "<null>" : getRoleType());
         builder.append("hint", getRoleHint());
         return builder.toString();
     }
@@ -147,14 +147,14 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
      * @param role the class of the component role
      * @deprecated since 4.0M1 use {@link #setRoleType(Type)} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.0M1")
     public void setRole(Class<T> role)
     {
         this.roleType = role;
     }
 
     @Override
-    @Deprecated
+    @Deprecated(since = "4.0M1")
     public Class<T> getRole()
     {
         return ReflectionUtils.getTypeClass(getRoleType());

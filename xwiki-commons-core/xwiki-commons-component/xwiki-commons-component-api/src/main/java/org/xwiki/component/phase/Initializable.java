@@ -20,8 +20,8 @@
 package org.xwiki.component.phase;
 
 /**
- * @see #initialize()
  * @version $Id$
+ * @see #initialize()
  */
 public interface Initializable
 {

@@ -38,7 +38,7 @@ public interface ComponentManagerManager
      * @param namespace the identifier of the {@link ComponentManager} to return or create
      * @param create if true the {@link ComponentManager} is created if it does not exist
      * @return a {@link ComponentManager} instance or null if none exists associated to the provided id and
-     *         <code>create</code> is false
+     *     <code>create</code> is false
      */
     ComponentManager getComponentManager(String namespace, boolean create);
 }

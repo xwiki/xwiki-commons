@@ -30,13 +30,13 @@ public interface ComponentDependency<T> extends ComponentRole<T>
 {
     /**
      * @return the name of the injection point (can be the name of the field for field injection or the name of the
-     *         method for method injection
+     *     method for method injection
      */
     String getName();
 
     /**
-     * @return a list of hints used when the mapping type is a collection or map so that only component implementations
-     *         matching passed hints are injected
+     * @return an array of hints used when the mapping type is a collection or map so that only component
+     *     implementations matching passed hints are injected
      */
     String[] getHints();
 
@@ -46,6 +46,6 @@ public interface ComponentDependency<T> extends ComponentRole<T>
      * @return the class of the type for the injection (java.lang.String, java.util.List, etc)
      * @deprecated since 4.0M1 use {@link #getRoleType()} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.0M1")
     Class<?> getMappingType();
 }

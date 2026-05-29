@@ -24,6 +24,6 @@ public class TestImplementation implements TestInterface
     @Override
     public void methodWithAnnotationParameter(Object parameter)
     {
-
+        // This method is actually used by ReflectionMethodUtilsTest
     }
 }

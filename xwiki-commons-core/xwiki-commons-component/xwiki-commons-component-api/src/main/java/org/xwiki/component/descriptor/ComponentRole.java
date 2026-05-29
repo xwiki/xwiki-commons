@@ -45,6 +45,6 @@ public interface ComponentRole<T>
      * @return the class of the component role
      * @deprecated since 4.0M1 use {@link #getRoleType()} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.0M1")
     Class<T> getRole();
 }

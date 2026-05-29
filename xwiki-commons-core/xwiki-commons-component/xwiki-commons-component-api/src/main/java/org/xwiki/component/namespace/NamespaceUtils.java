@@ -36,7 +36,7 @@ public final class NamespaceUtils
         ROOT_NAMESPACES.add("{root}");
         ROOT_NAMESPACES.add("{}");
         ROOT_NAMESPACES.add("");
-    };
+    }
 
     /**
      * Utility class.
