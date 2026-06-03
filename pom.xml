@@ -98,10 +98,9 @@
     <expressly.version>5.0.0</expressly.version>
 
     <!-- Jackson -->
-    <jackson.version>2.22.0</jackson.version>
-    <jackson.core.version>2.21.4</jackson.core.version>
-    <jackson.databind.version>2.22.0</jackson.databind.version>
-    <jackson.annotations.version>2.22</jackson.annotations.version>
+    <jackson.version>2.21.3</jackson.version>
+    <jackson.databind.version>${jackson.version}</jackson.databind.version>
+    <jackson.annotations.version>2.21</jackson.annotations.version>
 
     <!-- Bouncy Castle -->
     <bouncycastle.version>1.84</bouncycastle.version>
@@ -915,7 +914,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
-        <version>${jackson.core.version}</version>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
