@@ -90,7 +90,7 @@ public class TestComponentManager extends EmbeddableComponentManager
     }
 
     /**
-     * Register components associated to the provided class.
+     * Register components associated with the provided class.
      *
      * @param testClass the class containing the annotations
      * @throws Exception in case of an error during registration
@@ -102,7 +102,7 @@ public class TestComponentManager extends EmbeddableComponentManager
     }
 
     /**
-     * Register components associated to the provided class if there is not already one.
+     * Register components associated with the provided class if there is not already one.
      *
      * @param testClass the class containing the annotations
      * @throws Exception in case of an error during registration
@@ -128,7 +128,7 @@ public class TestComponentManager extends EmbeddableComponentManager
     {
         Class<?> testClass = testClassInstance.getClass();
 
-        // If there are methods annotated with the BeforeComponent annotation then call them. This gives an
+        // If there are methods annotated with the BeforeComponent annotation, then call them. This gives an
         // opportunity for the test to register some components *before* we register the other components below.
         for (Method method : getBeforeComponentAnnotatedMethods(testClass)) {
             String target = method.getAnnotation(BeforeComponent.class).value();
@@ -137,7 +137,7 @@ public class TestComponentManager extends EmbeddableComponentManager
 
         this.componentRegistrator.registerComponents(testClass, this);
 
-        // If there are methods annotated with the AfterComponent annotation then call them. This gives an
+        // If there are methods annotated with the AfterComponent annotation, then call them. This gives an
         // opportunity to override or modify some components *after* they are actually used.
         for (Method method : getAfterComponentAnnotatedMethods(testClass)) {
             String target = method.getAnnotation(AfterComponent.class).value();
@@ -151,7 +151,7 @@ public class TestComponentManager extends EmbeddableComponentManager
         for (Method method : ReflectionUtils.getAllMethods(testClass)) {
             if (method.isAnnotationPresent(BeforeComponent.class)) {
                 String target = method.getAnnotation(BeforeComponent.class).value();
-                // Add to the top if the method applies globally to all test and at the bottom if not so that we
+                // Add to the top if the method applies globally to all tests and at the bottom if not so that we
                 // execute them in the right order! Indeed, test-specific BeforeComponent methods may require fixture
                 // defined in the global ones.
                 if (StringUtils.isEmpty(target)) {
@@ -170,7 +170,7 @@ public class TestComponentManager extends EmbeddableComponentManager
         for (Method method : ReflectionUtils.getAllMethods(testClass)) {
             if (method.isAnnotationPresent(AfterComponent.class)) {
                 String target = method.getAnnotation(AfterComponent.class).value();
-                // Add to the top if the method applies globally to all test and at the bottom if not so that we
+                // Add to the top if the method applies globally to all tests and at the bottom if not so that we
                 // execute them in the right order! Indeed, test-specific BeforeComponent methods may require fixture
                 // defined in the global ones.
                 if (StringUtils.isEmpty(target)) {
@@ -250,7 +250,7 @@ public class TestComponentManager extends EmbeddableComponentManager
         // Set component event manager if available
         if (hasComponent(ObservationManager.class)) {
             QueueComponentEventManager eventManager = new QueueComponentEventManager();
-            eventManager.setObservationManager(this.<ObservationManager>getInstance(ObservationManager.class));
+            eventManager.setObservationManager(this.getInstance(ObservationManager.class));
             eventManager.shouldQueue(false);
 
             setComponentEventManager(eventManager);
