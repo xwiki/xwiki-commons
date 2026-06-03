@@ -150,6 +150,12 @@ public class TestComponentManager extends EmbeddableComponentManager
         LinkedList<Method> methods = new LinkedList<>();
         for (Method method : ReflectionUtils.getAllMethods(testClass)) {
             if (method.isAnnotationPresent(BeforeComponent.class)) {
+                // If the method is named "setUp" then fail the test. This is to prevent SonarQube raising issues
+                // "java:S5826" (methods named "setUp" need to be annotated with @Before or @BeforeEach).
+                if (method.getName().equalsIgnoreCase("setUp")) {
+                    throw new IllegalArgumentException("Method name 'setUp' is not allowed for @BeforeComponent "
+                        + "annotated methods, as this is raising SonarQube java:S5826.");
+                }
                 String target = method.getAnnotation(BeforeComponent.class).value();
                 // Add to the top if the method applies globally to all tests and at the bottom if not so that we
                 // execute them in the right order! Indeed, test-specific BeforeComponent methods may require fixture
@@ -169,6 +175,12 @@ public class TestComponentManager extends EmbeddableComponentManager
         LinkedList<Method> methods = new LinkedList<>();
         for (Method method : ReflectionUtils.getAllMethods(testClass)) {
             if (method.isAnnotationPresent(AfterComponent.class)) {
+                // If the method is named "tearDown" then fail the test. This is to prevent SonarQube raising issues
+                // "java:S5826" (methods named "tearDown" need to be annotated with @Before or @BeforeEach).
+                if (method.getName().equalsIgnoreCase("tearDown")) {
+                    throw new IllegalArgumentException("Method name 'tearDown' is not allowed for @AfterComponent "
+                        + "annotated methods, as this is raising SonarQube java:S5826.");
+                }
                 String target = method.getAnnotation(AfterComponent.class).value();
                 // Add to the top if the method applies globally to all tests and at the bottom if not so that we
                 // execute them in the right order! Indeed, test-specific BeforeComponent methods may require fixture

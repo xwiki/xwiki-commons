@@ -24,7 +24,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
@@ -45,6 +44,7 @@ import org.mockito.MockingDetails;
 import org.mockito.Mockito;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
+import org.xwiki.test.annotation.AfterComponent;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentManager;
@@ -305,6 +305,38 @@ class MockitoComponentManagerExtensionTest
         }
     }
 
+    @ExtendWith(MockitoComponentManagerExtension.class)
+    static class BadBeforeComponentTestCase
+    {
+        @BeforeComponent
+        void setUp()
+        {
+            // Empty
+        }
+
+        @Test
+        void dummy()
+        {
+            // Empty
+        }
+    }
+
+    @ExtendWith(MockitoComponentManagerExtension.class)
+    static class BadAfterComponentTestCase
+    {
+        @AfterComponent
+        void tearDown()
+        {
+            // Empty
+        }
+
+        @Test
+        void dummy()
+        {
+            // Empty
+        }
+    }
+
     /**
      * Verify that we can have nested components and that they're all injected.
      */
@@ -362,7 +394,26 @@ class MockitoComponentManagerExtensionTest
         execute(CMDoesntLeakBetweenTestTestCase.class);
     }
 
+    @Test
+    void badBeforeComponentMethodNames()
+    {
+        execute(BadBeforeComponentTestCase.class, List.of("Method name 'setUp' is not allowed for @BeforeComponent "
+            + "annotated methods, as this is raising SonarQube java:S5826."));
+    }
+
+    @Test
+    void badAfterComponentMethodNames()
+    {
+        execute(BadAfterComponentTestCase.class, List.of("Method name 'tearDown' is not allowed for @AfterComponent "
+            + "annotated methods, as this is raising SonarQube java:S5826."));
+    }
+
     private void execute(Class<?> testClass)
+    {
+        execute(testClass, List.of());
+    }
+
+    private void execute(Class<?> testClass, List<String> expectedFailureMessages)
     {
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
             .selectors(selectClass(testClass))
@@ -372,8 +423,11 @@ class MockitoComponentManagerExtensionTest
         launcher.execute(request, summaryListener);
 
         TestExecutionSummary summary = summaryListener.getSummary();
-        String message = !summary.getFailures().isEmpty()
-            ? ExceptionUtils.getStackTrace(summary.getFailures().getFirst().getException()) : "";
-        assertEquals(0, summary.getFailures().size(), message);
+        for (TestExecutionSummary.Failure failure : summary.getFailures()) {
+            if (!expectedFailureMessages.contains(failure.getException().getMessage())) {
+                throw new AssertionError("Unexpected failure: " + failure.getException().getMessage(),
+                    failure.getException());
+            }
+        }
     }
 }
