@@ -65,7 +65,7 @@ class DefaultExtensionManagerTest
     private InstalledExtensionRepository installedExtensionRepository;
 
     @BeforeComponent
-    void setUp()
+    void setup()
     {
         mockExtensionRepositoryDescriptor(this.coreExtensionRepository, "core");
         mockExtensionRepositoryDescriptor(this.localExtensionRepository, "local");
