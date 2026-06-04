@@ -48,6 +48,10 @@ import org.xwiki.test.internal.ComponentRegistrator;
  */
 public class TestComponentManager extends EmbeddableComponentManager
 {
+    private static final String SETUP_METHOD_NAME = "setUp";
+
+    private static final String TEARDOWN_METHOD_NAME = "tearDown";
+
     /**
      * Used to register components.
      */
@@ -152,9 +156,8 @@ public class TestComponentManager extends EmbeddableComponentManager
             if (method.isAnnotationPresent(BeforeComponent.class)) {
                 // If the method is named "setUp" then fail the test. This is to prevent SonarQube raising issues
                 // "java:S5826" (methods named "setUp" need to be annotated with @Before or @BeforeEach).
-                if (method.getName().equalsIgnoreCase("setUp")) {
-                    throw new IllegalArgumentException("Method name 'setUp' is not allowed for @BeforeComponent "
-                        + "annotated methods, as this is raising SonarQube java:S5826.");
+                if (method.getName().equalsIgnoreCase(SETUP_METHOD_NAME)) {
+                    throw new IllegalArgumentException(getExceptionMessage(SETUP_METHOD_NAME, "BeforeComponent"));
                 }
                 String target = method.getAnnotation(BeforeComponent.class).value();
                 // Add to the top if the method applies globally to all tests and at the bottom if not so that we
@@ -177,9 +180,8 @@ public class TestComponentManager extends EmbeddableComponentManager
             if (method.isAnnotationPresent(AfterComponent.class)) {
                 // If the method is named "tearDown" then fail the test. This is to prevent SonarQube raising issues
                 // "java:S5826" (methods named "tearDown" need to be annotated with @Before or @BeforeEach).
-                if (method.getName().equalsIgnoreCase("tearDown")) {
-                    throw new IllegalArgumentException("Method name 'tearDown' is not allowed for @AfterComponent "
-                        + "annotated methods, as this is raising SonarQube java:S5826.");
+                if (method.getName().equalsIgnoreCase(TEARDOWN_METHOD_NAME)) {
+                    throw new IllegalArgumentException(getExceptionMessage(TEARDOWN_METHOD_NAME, "AfterComponent"));
                 }
                 String target = method.getAnnotation(AfterComponent.class).value();
                 // Add to the top if the method applies globally to all tests and at the bottom if not so that we
@@ -193,6 +195,12 @@ public class TestComponentManager extends EmbeddableComponentManager
             }
         }
         return methods;
+    }
+
+    private String getExceptionMessage(String methodName, String annotationName)
+    {
+        return String.format("Method name '%s' is not allowed for @%s annotated methods, as this is raising "
+            + "SonarQube java:S5826.", methodName, annotationName);
     }
 
     private void invokeMethod(Method test, String target, Method declaredMethod, Object testClassInstance,
