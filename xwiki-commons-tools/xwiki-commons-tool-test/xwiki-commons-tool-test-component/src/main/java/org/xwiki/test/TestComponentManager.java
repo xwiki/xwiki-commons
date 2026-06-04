@@ -156,7 +156,7 @@ public class TestComponentManager extends EmbeddableComponentManager
             if (method.isAnnotationPresent(BeforeComponent.class)) {
                 // If the method is named "setUp" then fail the test. This is to prevent SonarQube raising issues
                 // "java:S5826" (methods named "setUp" need to be annotated with @Before or @BeforeEach).
-                if (method.getName().equalsIgnoreCase(SETUP_METHOD_NAME)) {
+                if (method.getName().equals(SETUP_METHOD_NAME)) {
                     throw new IllegalArgumentException(getExceptionMessage(SETUP_METHOD_NAME, "BeforeComponent"));
                 }
                 String target = method.getAnnotation(BeforeComponent.class).value();
@@ -180,7 +180,7 @@ public class TestComponentManager extends EmbeddableComponentManager
             if (method.isAnnotationPresent(AfterComponent.class)) {
                 // If the method is named "tearDown" then fail the test. This is to prevent SonarQube raising issues
                 // "java:S5826" (methods named "tearDown" need to be annotated with @Before or @BeforeEach).
-                if (method.getName().equalsIgnoreCase(TEARDOWN_METHOD_NAME)) {
+                if (method.getName().equals(TEARDOWN_METHOD_NAME)) {
                     throw new IllegalArgumentException(getExceptionMessage(TEARDOWN_METHOD_NAME, "AfterComponent"));
                 }
                 String target = method.getAnnotation(AfterComponent.class).value();
