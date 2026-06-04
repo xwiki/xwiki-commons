@@ -49,6 +49,7 @@ import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentManager;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -308,12 +309,14 @@ class MockitoComponentManagerExtensionTest
     @ExtendWith(MockitoComponentManagerExtension.class)
     static class BadBeforeComponentTestCase
     {
+        @SuppressWarnings("java:S5826")
         @BeforeComponent
         void setUp()
         {
             // Empty
         }
 
+        @SuppressWarnings("java:S2699")
         @Test
         void dummy()
         {
@@ -324,12 +327,14 @@ class MockitoComponentManagerExtensionTest
     @ExtendWith(MockitoComponentManagerExtension.class)
     static class BadAfterComponentTestCase
     {
+        @SuppressWarnings("java:S5826")
         @AfterComponent
         void tearDown()
         {
             // Empty
         }
 
+        @SuppressWarnings("java:S2699")
         @Test
         void dummy()
         {
@@ -343,7 +348,7 @@ class MockitoComponentManagerExtensionTest
     @Test
     void nestedComponents()
     {
-        execute(NestedComponentsTestCase.class);
+        assertDoesNotThrow(() -> execute(NestedComponentsTestCase.class));
     }
 
     /**
@@ -352,7 +357,7 @@ class MockitoComponentManagerExtensionTest
     @Test
     void injectComponents()
     {
-        execute(InjectComponentsTestCase.class);
+        assertDoesNotThrow(() -> execute(InjectComponentsTestCase.class));
     }
 
     /**
@@ -361,51 +366,53 @@ class MockitoComponentManagerExtensionTest
     @Test
     void injectGenericComponents()
     {
-        execute(InjectGenericComponentsTestCase.class);
+        assertDoesNotThrow(() -> execute(InjectGenericComponentsTestCase.class));
     }
 
     @Test
     void injectMockitoComponentManagerAsMethodParameter()
     {
-        execute(InjectMockitoComponentManagerAsMethodParameterTestCase.class);
+        assertDoesNotThrow(() -> execute(InjectMockitoComponentManagerAsMethodParameterTestCase.class));
     }
 
     @Test
     void injectMockitoComponentManagerInClassVariable()
     {
-        execute(InjectMockitoComponentManagerInClassVariableTestCase.class);
+        assertDoesNotThrow(() -> execute(InjectMockitoComponentManagerInClassVariableTestCase.class));
     }
 
     @Test
     void injectComponentManagerAsMethodParameter()
     {
-        execute(InjectComponentManagerAsMethodParameterTestCase.class);
+        assertDoesNotThrow(() -> execute(InjectComponentManagerAsMethodParameterTestCase.class));
     }
 
     @Test
     void various()
     {
-        execute(VariousTestCase.class);
+        assertDoesNotThrow(() -> execute(VariousTestCase.class));
     }
 
     @Test
     void cmDoesntLeakBetweenTest()
     {
-        execute(CMDoesntLeakBetweenTestTestCase.class);
+        assertDoesNotThrow(() -> execute(CMDoesntLeakBetweenTestTestCase.class));
     }
 
     @Test
     void badBeforeComponentMethodNames()
     {
-        execute(BadBeforeComponentTestCase.class, List.of("Method name 'setUp' is not allowed for @BeforeComponent "
-            + "annotated methods, as this is raising SonarQube java:S5826."));
+        assertDoesNotThrow(() -> execute(BadBeforeComponentTestCase.class,
+            List.of("Method name 'setUp' is not allowed for @BeforeComponent annotated methods, as this is raising "
+                + "SonarQube java:S5826.")));
     }
 
     @Test
     void badAfterComponentMethodNames()
     {
-        execute(BadAfterComponentTestCase.class, List.of("Method name 'tearDown' is not allowed for @AfterComponent "
-            + "annotated methods, as this is raising SonarQube java:S5826."));
+        assertDoesNotThrow(() -> execute(BadAfterComponentTestCase.class,
+            List.of("Method name 'tearDown' is not allowed for @AfterComponent annotated methods, as this is raising "
+                + "SonarQube java:S5826.")));
     }
 
     private void execute(Class<?> testClass)
