@@ -830,18 +830,10 @@
       <!-- Bouncy Castle -->
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-jdk18on</artifactId>
+        <artifactId>bc-jdk18on-bom</artifactId>
         <version>${bouncycastle.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.bouncycastle</groupId>
-        <artifactId>bcpkix-jdk18on</artifactId>
-        <version>${bouncycastle.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.bouncycastle</groupId>
-        <artifactId>bcmail-jdk18on</artifactId>
-        <version>${bouncycastle.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
       <!-- Various project are using it to scan the classpath -->
@@ -2020,6 +2012,9 @@
                     <exclude>org.bouncycastle:bcmail-jdk14</exclude>
                     <exclude>org.bouncycastle:bcmail-jdk13</exclude>
                     <exclude>org.bouncycastle:bcmail-jdk12</exclude>
+                    <exclude>org.bouncycastle:bcutil-jdk14</exclude>
+                    <exclude>org.bouncycastle:bcutil-jdk15to18</exclude>
+                    <exclude>org.bouncycastle:bcutil-jdk15on</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
