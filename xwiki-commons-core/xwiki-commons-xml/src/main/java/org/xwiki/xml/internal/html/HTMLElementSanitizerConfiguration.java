@@ -20,13 +20,19 @@
 package org.xwiki.xml.internal.html;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
 
@@ -53,6 +59,9 @@ public class HTMLElementSanitizerConfiguration
     private static final String FORBID_TAGS_CONFIGURATION = "xml.htmlElementSanitizer.forbidTags";
 
     private static final String FORBID_ATTRIBUTES_CONFIGURATION = "xml.htmlElementSanitizer.forbidAttributes";
+
+    private static final String EXTRA_ELEMENT_RESTRICTED_ATTRIBUTES_CONFIGURATION =
+        "xml.htmlElementSanitizer.extraElementRestrictedAttributes";
 
     private static final String ALLOW_UNKNOWN_PROTOCOLS_CONFIGURATION =
         "xml.htmlElementSanitizer.allowUnknownProtocols";
@@ -124,6 +133,34 @@ public class HTMLElementSanitizerConfiguration
     public List<String> getForbidAttributes()
     {
         return getValue(FORBID_ATTRIBUTES_CONFIGURATION, List.class, Collections.emptyList());
+    }
+
+    /**
+     * @return additional element restrictions for attributes, mapping each configured attribute to the set of
+     *     elements on which it should be allowed; listing an attribute here restricts it to the configured elements
+     *     (in addition to any built-in defaults). Attribute and element names are normalized to lowercase.
+     * @since 18.6.0RC1
+     * @since 18.4.2
+     * @since 17.10.10
+     */
+    public Map<String, Set<String>> getExtraElementRestrictedAttributes()
+    {
+        Properties properties =
+            getValue(EXTRA_ELEMENT_RESTRICTED_ATTRIBUTES_CONFIGURATION, Properties.class, new Properties());
+
+        Map<String, Set<String>> result = new HashMap<>();
+        if (properties != null) {
+            for (String attribute : properties.stringPropertyNames()) {
+                Set<String> elements = result.computeIfAbsent(attribute.toLowerCase(), key -> new HashSet<>());
+                // Elements for a single attribute can be separated by whitespace or commas (the latter need to be
+                // escaped as "\," in the configuration file so that they aren't interpreted as a property separator).
+                for (String element : StringUtils.split(properties.getProperty(attribute), ", ")) {
+                    elements.add(element.toLowerCase());
+                }
+            }
+        }
+
+        return result;
     }
 
     /**
