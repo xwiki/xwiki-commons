@@ -24,7 +24,9 @@
 package org.xwiki.xml.internal.html;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -127,6 +129,12 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
 
     private final Set<String> forbidAttributes;
 
+    /**
+     * For each attribute that is only allowed on certain elements, the elements on which it is allowed. Attributes
+     * that aren't keys in this map are allowed on any element, subject to the general attribute checks.
+     */
+    private final Map<String, Set<String>> elementRestrictedAttributes;
+
     private boolean allowUnknownProtocols;
 
     private Pattern allowedUriPattern;
@@ -153,6 +161,8 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
 
         this.forbidAttributes = new HashSet<>();
 
+        this.elementRestrictedAttributes = new HashMap<>();
+
         this.allowedUriPattern = IS_ALLOWED_URI;
     }
 
@@ -166,10 +176,20 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
         this.allowUnknownProtocols = this.htmlElementSanitizerConfiguration.isAllowUnknownProtocols();
         this.forbidTags.addAll(this.htmlElementSanitizerConfiguration.getForbidTags());
         this.forbidAttributes.addAll(this.htmlElementSanitizerConfiguration.getForbidAttributes());
+        initializeElementRestrictedAttributes();
         String configuredRegexp = this.htmlElementSanitizerConfiguration.getAllowedUriRegexp();
         if (StringUtils.isNotBlank(configuredRegexp)) {
             this.allowedUriPattern = Pattern.compile(configuredRegexp, Pattern.CASE_INSENSITIVE);
         }
+    }
+
+    private void initializeElementRestrictedAttributes()
+    {
+        this.htmlDefinitions.getElementRestrictedAttributes()
+            .forEach((attribute, elements) -> this.elementRestrictedAttributes.put(attribute, new HashSet<>(elements)));
+        this.htmlElementSanitizerConfiguration.getExtraElementRestrictedAttributes()
+            .forEach((attribute, elements) ->
+                this.elementRestrictedAttributes.computeIfAbsent(attribute, key -> new HashSet<>()).addAll(elements));
     }
 
     @Override
@@ -193,15 +213,29 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
         String lowerElement = elementName.toLowerCase();
         String lowerAttribute = attributeName.toLowerCase();
 
-        if ((DATA_ATTR.matcher(lowerAttribute).matches() || ARIA_ATTR.matcher(lowerAttribute).matches())
-            && !this.forbidAttributes.contains(lowerAttribute))
-        {
-            result = true;
-        } else if (isAttributeAllowed(lowerAttribute) && !this.forbidAttributes.contains(lowerAttribute)) {
-            result = isAllowedValue(lowerElement, lowerAttribute, attributeValue);
+        if (isAttributePermittedOnElement(lowerElement, lowerAttribute)) {
+            if (DATA_ATTR.matcher(lowerAttribute).matches() || ARIA_ATTR.matcher(lowerAttribute).matches()) {
+                result = true;
+            } else if (isAttributeAllowed(lowerAttribute)) {
+                result = isAllowedValue(lowerElement, lowerAttribute, attributeValue);
+            }
         }
 
         return result;
+    }
+
+    /**
+     * @return {@code true} if the attribute is neither globally forbidden nor restricted to elements other than the
+     *     given one
+     */
+    private boolean isAttributePermittedOnElement(String lowercaseElementName, String lowercaseAttributeName)
+    {
+        if (this.forbidAttributes.contains(lowercaseAttributeName)) {
+            return false;
+        }
+
+        Set<String> allowedElements = this.elementRestrictedAttributes.get(lowercaseAttributeName);
+        return allowedElements == null || allowedElements.contains(lowercaseElementName);
     }
 
     private boolean isAllowedValue(String lowercaseElementName, String lowercaseAttributeName, String attributeValue)

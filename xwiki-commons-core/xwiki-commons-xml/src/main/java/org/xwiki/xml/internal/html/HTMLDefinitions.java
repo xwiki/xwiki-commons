@@ -25,11 +25,13 @@ package org.xwiki.xml.internal.html;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.xml.html.HTMLConstants;
 
 /**
  * Provides definitions of safe HTML attributes and tags.
@@ -57,6 +59,13 @@ public class HTMLDefinitions
      * Allowed attributes.
      */
     private final Set<String> htmlAttributes;
+
+    /**
+     * Attributes that are only allowed on certain elements, mapping each such attribute to the set of elements on
+     * which it is allowed. Attributes that aren't keys in this map are allowed on any element, subject to the general
+     * attribute checks.
+     */
+    private final Map<String, Set<String>> elementRestrictedAttributes;
 
     /**
      * Default constructor.
@@ -92,6 +101,10 @@ public class HTMLDefinitions
                 "shape", "size", "sizes", "span", "srclang", "start", "src", "srcset", "step", "style", "summary",
                 "tabindex", "title", "translate", "type", "usemap", "valign", "value", "width", "xmlns", "slot",
                 "target"));
+
+        // The "name" attribute is restricted to "a" (legacy anchors) and "map" (image maps) to mitigate DOM
+        // clobbering. This in particular excludes "img".
+        this.elementRestrictedAttributes = Map.of(HTMLConstants.ATTRIBUTE_NAME, Set.of(HTMLConstants.TAG_A, "map"));
     }
 
     /**
@@ -110,5 +123,17 @@ public class HTMLDefinitions
     public boolean isAllowedAttribute(String attributeName)
     {
         return this.htmlAttributes.contains(attributeName);
+    }
+
+    /**
+     * @return for each attribute that is only allowed on certain elements, the set of elements on which it is allowed;
+     *     attributes that aren't keys in this map are allowed on any element
+     * @since 18.6.0RC1
+     * @since 18.4.2
+     * @since 17.10.10
+     */
+    public Map<String, Set<String>> getElementRestrictedAttributes()
+    {
+        return this.elementRestrictedAttributes;
     }
 }
