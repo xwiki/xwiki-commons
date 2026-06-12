@@ -46,6 +46,7 @@ import org.xwiki.xml.html.filter.HTMLFilter;
 import org.xwiki.xml.internal.html.filter.UniqueIdFilter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Unit tests for {@link DefaultHTMLCleaner}.
@@ -315,9 +316,14 @@ public class DefaultHTMLCleanerTest
         parameters.put("restricted", "true");
         this.cleanerConfiguration.setParameters(parameters);
 
+        assertHTML("<p><a name=\"legacyAnchor\">Hello!</a></p>", "<a name=\"legacyAnchor\">Hello!</a>");
+        assertHTML("<p><map name=\"legacyMap\"></map></p>", "<map name=\"legacyMap\"></map>");
+        assertHTML("<p><span>Hello!</span></p>", "<span name=\"blocked\">Hello!</span>");
         assertHTML("<p><img src=\"img.png\" /></p>", "<img onerror=\"alert(1)\" src=img.png />");
+        assertHTML("<p><img src=\"img.png\" /></p>", "<img name=\"blocked\" src=img.png />");
         assertHTML("<p><a>Hello!</a></p>", "<a href=\"javascript:alert(1)\">Hello!</a>");
         assertHTML("<p></p>", "<iframe src=\"whatever\"/>");
+        assertFalse(HTMLUtils.toString(clean("<image name=\"blocked\">Hello!</image>")).contains("name=\"blocked\""));
 
         // Check that SVG is still working in restricted mode.
         cleanSVGTags();

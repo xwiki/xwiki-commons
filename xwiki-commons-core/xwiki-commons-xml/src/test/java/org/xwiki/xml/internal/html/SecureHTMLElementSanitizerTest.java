@@ -21,6 +21,8 @@ package org.xwiki.xml.internal.html;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -54,7 +56,25 @@ class SecureHTMLElementSanitizerTest
 {
     private static final String ALLOWED_ATTRIBUTE = "allowed_attribute";
 
+    private static final String BLINK = "blink";
+
+    private static final String GET_ELEMENT_BY_ID = "getElementById";
+
+    private static final String DIV = "div";
+
+    private static final String IMAGE = "image";
+
+    private static final String MAP = "map";
+
+    private static final String HEADERS = "headers";
+
+    private static final String SECTION = "section";
+
+    private static final String SPAN = "span";
+
     private static final String ONERROR = "onerror";
+
+    private static final String XWIKI = "XWiki";
 
     @MockComponent
     private HTMLElementSanitizerConfiguration htmlElementSanitizerConfiguration;
@@ -66,9 +86,15 @@ class SecureHTMLElementSanitizerTest
     void setupMocks()
     {
         when(this.htmlElementSanitizerConfiguration.getForbidTags())
-            .thenReturn(Collections.singletonList(HTMLConstants.TAG_A));
+            .thenReturn(Collections.singletonList(BLINK));
         when(this.htmlElementSanitizerConfiguration.getForbidAttributes())
             .thenReturn(Collections.singletonList(HTMLConstants.ATTRIBUTE_ALT));
+        // "name" is loosened to additionally allow "div" and "span", while "headers" (allowed everywhere by default)
+        // is restricted to "section".
+        when(this.htmlElementSanitizerConfiguration.getExtraElementRestrictedAttributes())
+            .thenReturn(Map.of(
+                HTMLConstants.ATTRIBUTE_NAME, Set.of(DIV, SPAN),
+                HEADERS, Set.of(SECTION)));
         when(this.htmlElementSanitizerConfiguration.getExtraAllowedTags())
             .thenReturn(Collections.singletonList(HTMLConstants.TAG_SCRIPT));
         when(this.htmlElementSanitizerConfiguration.getExtraAllowedAttributes())
@@ -86,7 +112,7 @@ class SecureHTMLElementSanitizerTest
     @Test
     void forbiddenTags()
     {
-        assertFalse(this.secureHTMLElementSanitizer.isElementAllowed(HTMLConstants.TAG_A));
+        assertFalse(this.secureHTMLElementSanitizer.isElementAllowed(BLINK));
     }
 
     @ParameterizedTest
@@ -100,7 +126,7 @@ class SecureHTMLElementSanitizerTest
     void forbiddenAttributes()
     {
         assertFalse(this.secureHTMLElementSanitizer.isAttributeAllowed(HTMLConstants.TAG_IMG,
-            HTMLConstants.ATTRIBUTE_ALT, "XWiki"));
+            HTMLConstants.ATTRIBUTE_ALT, XWIKI));
     }
 
     @Test
@@ -143,6 +169,41 @@ class SecureHTMLElementSanitizerTest
             HTMLConstants.ATTRIBUTE_HREF, "xwiki:test"));
         assertFalse(this.secureHTMLElementSanitizer.isAttributeAllowed(HTMLConstants.TAG_A,
             HTMLConstants.ATTRIBUTE_HREF, "http://example.com"));
+    }
+
+    @Test
+    void defaultElementRestrictedAttributes()
+    {
+        // By default, "name" is only allowed on "a" and "map".
+        assertTrue(this.secureHTMLElementSanitizer.isAttributeAllowed(HTMLConstants.TAG_A,
+            HTMLConstants.ATTRIBUTE_NAME, XWIKI));
+        assertTrue(this.secureHTMLElementSanitizer.isAttributeAllowed(MAP, HTMLConstants.ATTRIBUTE_NAME, XWIKI));
+        assertFalse(this.secureHTMLElementSanitizer.isAttributeAllowed(HTMLConstants.TAG_IMG,
+            HTMLConstants.ATTRIBUTE_NAME, GET_ELEMENT_BY_ID));
+        assertFalse(this.secureHTMLElementSanitizer.isAttributeAllowed(IMAGE, HTMLConstants.ATTRIBUTE_NAME,
+            GET_ELEMENT_BY_ID));
+        assertFalse(this.secureHTMLElementSanitizer.isAttributeAllowed(HTMLConstants.TAG_IMG,
+            HTMLConstants.ATTRIBUTE_NAME, ""));
+        // Other attributes such as "id" remain allowed on any element.
+        assertTrue(this.secureHTMLElementSanitizer.isAttributeAllowed(HTMLConstants.TAG_IMG,
+            HTMLConstants.ATTRIBUTE_ID, GET_ELEMENT_BY_ID));
+    }
+
+    @Test
+    void configuredElementRestrictedAttributes()
+    {
+        // "name" is additionally allowed on "div" and "span" through the configuration, without losing the built-in
+        // elements.
+        assertTrue(this.secureHTMLElementSanitizer.isAttributeAllowed(DIV, HTMLConstants.ATTRIBUTE_NAME, XWIKI));
+        assertTrue(this.secureHTMLElementSanitizer.isAttributeAllowed(SPAN, HTMLConstants.ATTRIBUTE_NAME, XWIKI));
+        assertTrue(this.secureHTMLElementSanitizer.isAttributeAllowed(HTMLConstants.TAG_A,
+            HTMLConstants.ATTRIBUTE_NAME, XWIKI));
+        // Unrelated attributes on the configured element stay allowed.
+        assertTrue(this.secureHTMLElementSanitizer.isAttributeAllowed(DIV, HTMLConstants.ATTRIBUTE_ID, XWIKI));
+        // "headers" is restricted to "section" through the configuration, even though it is allowed everywhere by
+        // default.
+        assertTrue(this.secureHTMLElementSanitizer.isAttributeAllowed(SECTION, HEADERS, XWIKI));
+        assertFalse(this.secureHTMLElementSanitizer.isAttributeAllowed(DIV, HEADERS, XWIKI));
     }
 
     @ParameterizedTest
