@@ -96,9 +96,7 @@
             <configuration>
               <excludes>
                 **/XWikiExtension.java,
-                **/XWikiExtensionFile.java,
-                **/XWikiExtensionRepository.java,
-                **/XWikiExtensionRepositoryFactory.java
+                **/XWikiExtensionRepository.java
               </excludes>
             </configuration>
           </execution>

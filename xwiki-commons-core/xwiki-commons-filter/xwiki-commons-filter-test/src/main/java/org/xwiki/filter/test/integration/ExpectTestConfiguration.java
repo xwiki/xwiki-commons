@@ -29,11 +29,15 @@ import org.xwiki.filter.utils.FilterStreamConstants;
  */
 public class ExpectTestConfiguration extends HashMap<String, String> implements Cloneable
 {
+    /** The identifier of the filter stream type expected as output. */
     public final String typeId;
 
+    /** The content expected as output. */
     public final String buffer;
 
     /**
+     * @param typeId the identifier of the filter stream type expected as output
+     * @param buffer the content expected as output
      * @since 6.2M1
      */
     public ExpectTestConfiguration(String typeId, String buffer)
@@ -43,6 +47,7 @@ public class ExpectTestConfiguration extends HashMap<String, String> implements 
     }
 
     /**
+     * @param other the configuration to copy
      * @since 6.2M1
      */
     public ExpectTestConfiguration(ExpectTestConfiguration other)
@@ -54,6 +59,7 @@ public class ExpectTestConfiguration extends HashMap<String, String> implements 
     }
 
     /**
+     * @param encoding the encoding to use to read the expected output
      * @since 6.2M1
      */
     public void setEncoding(String encoding)

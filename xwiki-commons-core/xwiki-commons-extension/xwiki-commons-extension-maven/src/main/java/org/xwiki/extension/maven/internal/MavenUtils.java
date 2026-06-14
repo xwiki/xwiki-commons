@@ -37,8 +37,9 @@ import org.xwiki.extension.version.internal.DefaultVersion;
  * @version $Id$
  * @since 7.0M1
  */
-public class MavenUtils
+public final class MavenUtils
 {
+    /** The property key under which the Maven model is stored. */
     public static final String PKEY_MAVEN_MODEL = "maven.Model";
 
     /**
@@ -46,8 +47,10 @@ public class MavenUtils
      */
     public static final String POM_EXTENSION = "pom";
 
+    /** The {@code jar} extension. */
     public static final String JAR_EXTENSION = "jar";
 
+    /** The {@code java} language. */
     public static final String JAVA_LANGUAGE = "java";
 
     /**
@@ -104,6 +107,13 @@ public class MavenUtils
      * @since 17.10.4
      */
     public static final String REPOSITORY_PROPERTY_SNAPSHOT = "maven.snapshot";
+
+    private static final String PROPERTY_REFERENCE_PREFIX = "$";
+
+    private MavenUtils()
+    {
+        // Utility class
+    }
 
     /**
      * Parse a Maven scm URL to generate a {@link ExtensionScmConnection}.
@@ -230,11 +240,11 @@ public class MavenUtils
                     version = parent.getVersion();
                 }
             }
-        } else if (version.startsWith("$")) {
+        } else if (version.startsWith(PROPERTY_REFERENCE_PREFIX)) {
             String propertyName = version.substring(2, version.length() - 1);
 
-            if (propertyName.equals("project.version") || propertyName.equals("pom.version")
-                || propertyName.equals("version")) {
+            if ("project.version".equals(propertyName) || "pom.version".equals(propertyName)
+                || "version".equals(propertyName)) {
                 version = resolveVersion(mavenModel.getVersion(), mavenModel, false);
             } else {
                 String value = mavenModel.getProperties().getProperty(propertyName);
@@ -282,7 +292,7 @@ public class MavenUtils
                     groupId = parent.getGroupId();
                 }
             }
-        } else if (groupId.startsWith("$")) {
+        } else if (groupId.startsWith(PROPERTY_REFERENCE_PREFIX)) {
             String propertyName = groupId.substring(2, groupId.length() - 1);
 
             String value = mavenModel.getProperties().getProperty(propertyName);

@@ -31,6 +31,9 @@ public class DefaultByteArrayInputSource extends AbstractInputStreamInputSource
 {
     private final byte[] array;
 
+    /**
+     * @param array the content of the source
+     */
     public DefaultByteArrayInputSource(byte[] array)
     {
         this.array = array;

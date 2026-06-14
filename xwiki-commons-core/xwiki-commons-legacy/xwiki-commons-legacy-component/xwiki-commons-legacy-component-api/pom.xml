@@ -70,8 +70,7 @@
             <id>default</id>
             <configuration>
               <excludes>
-                org/xwiki/component/logging/AbstractLogEnabled.java,
-                org/xwiki/component/phase/LogEnabled.java
+                org/xwiki/component/logging/AbstractLogEnabled.java
               </excludes>
             </configuration>
           </execution>

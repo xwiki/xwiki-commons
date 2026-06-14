@@ -27,5 +27,8 @@ import java.net.URL;
  */
 public interface URLInputSource extends InputSource
 {
-    public URL getURL();
+    /**
+     * @return the URL to read the source from
+     */
+    URL getURL();
 }

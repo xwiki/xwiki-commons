@@ -30,6 +30,9 @@ public class DirectoryInputSource implements FileInputSource
 {
     private final File file;
 
+    /**
+     * @param file the directory
+     */
     public DirectoryInputSource(File file)
     {
         this.file = file;

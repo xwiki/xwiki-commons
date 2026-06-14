@@ -31,6 +31,9 @@ public class DefaultURLInputSource extends AbstractInputStreamInputSource implem
 {
     private final URL url;
 
+    /**
+     * @param url the URL to read
+     */
     public DefaultURLInputSource(URL url)
     {
         this.url = url;

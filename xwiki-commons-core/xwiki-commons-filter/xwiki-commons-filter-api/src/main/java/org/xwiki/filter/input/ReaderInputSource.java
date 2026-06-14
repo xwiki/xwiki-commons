@@ -27,5 +27,8 @@ import java.io.Reader;
  */
 public interface ReaderInputSource extends InputSource
 {
-    public Reader getReader();
+    /**
+     * @return the reader to read the source from
+     */
+    Reader getReader();
 }

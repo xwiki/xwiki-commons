@@ -42,11 +42,11 @@ public class CompositeFilter implements InvocationHandler
 
     private static class SubFilter
     {
-        public final Object filter;
+        private final Object filter;
 
-        public final FilterDescriptor descriptor;
+        private final FilterDescriptor descriptor;
 
-        public SubFilter(Object filter, FilterDescriptor descriptor)
+        SubFilter(Object filter, FilterDescriptor descriptor)
         {
             this.filter = filter;
             this.descriptor = descriptor;

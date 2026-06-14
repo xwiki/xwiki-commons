@@ -164,7 +164,6 @@
             <configuration>
               <excludes>
                 **/AbstractXARMojo.java,
-                **/UnXARMojo.java,
                 **/XARMojo.java,
                 **/VerifyMojo.java,
                 **/FormatMojo.java

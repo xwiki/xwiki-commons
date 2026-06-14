@@ -173,18 +173,7 @@
             <id>default</id>
             <configuration>
               <excludes>
-                **/AetherExtension.java,
-                **/AetherExtensionDependency.java,
-                **/AetherExtensionFile.java,
                 **/AetherExtensionRepository.java,
-                **/AetherExtensionRepositoryFactory.java,
-                **/AetherUtils.java,
-                **/XWikiLogger.java,
-                **/XWikiLoggerManager.java,
-                **/AetherConfiguration.java,
-                **/DefaultAetherConfiguration.java,
-                **/DefaultPlexusComponentManager.java,
-                **/PlexusComponentManager.java,
                 **/MavenExtensionScanner.java,
                 **/AbstractModelConverter.java
               </excludes>

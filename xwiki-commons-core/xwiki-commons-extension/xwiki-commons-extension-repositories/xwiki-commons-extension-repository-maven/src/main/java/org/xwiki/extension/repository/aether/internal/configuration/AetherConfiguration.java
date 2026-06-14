@@ -31,6 +31,7 @@ import org.xwiki.component.annotation.Role;
 public interface AetherConfiguration
 {
     /**
+     * @return the local Maven repository
      * @deprecated not used anymore since 6.0
      */
     @Deprecated

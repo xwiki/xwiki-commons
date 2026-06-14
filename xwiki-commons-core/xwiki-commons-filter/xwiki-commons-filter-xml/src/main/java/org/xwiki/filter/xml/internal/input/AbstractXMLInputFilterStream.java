@@ -43,6 +43,8 @@ public abstract class AbstractXMLInputFilterStream<P extends XMLInputProperties>
     protected XMLInputFactory xmlFactory;
 
     /**
+     * @param parameters the parameters of the stream
+     * @param xmlFactory the factory used to create the XML reader
      * @since 9.5
      * @since 9.6RC1
      */

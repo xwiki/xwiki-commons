@@ -34,11 +34,18 @@ public class DefaultInputStreamInputSource implements InputStreamInputSource
 
     private final boolean close;
 
+    /**
+     * @param inputStream the stream to read
+     */
     public DefaultInputStreamInputSource(InputStream inputStream)
     {
         this(inputStream, false);
     }
 
+    /**
+     * @param inputStream the stream to read
+     * @param close true if the stream should be closed when this source is closed
+     */
     public DefaultInputStreamInputSource(InputStream inputStream, boolean close)
     {
         this.inputStream = inputStream;

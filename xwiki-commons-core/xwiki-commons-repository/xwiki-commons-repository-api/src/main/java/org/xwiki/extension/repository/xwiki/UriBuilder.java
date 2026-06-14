@@ -33,11 +33,19 @@ import java.net.URI;
 @Deprecated
 public class UriBuilder extends org.xwiki.repository.UriBuilder
 {
+    /**
+     * @param base the base URI
+     * @param path the path to append to the base URI
+     */
     public UriBuilder(URI base, String path)
     {
         super(base, path);
     }
 
+    /**
+     * @param base the base URI
+     * @param path the path to append to the base URI
+     */
     public UriBuilder(String base, String path)
     {
         super(base, path);

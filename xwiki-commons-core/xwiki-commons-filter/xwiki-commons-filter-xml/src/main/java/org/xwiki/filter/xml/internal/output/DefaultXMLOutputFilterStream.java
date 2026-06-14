@@ -30,7 +30,8 @@ import org.xwiki.filter.output.BeanOutputFilterStream;
 import org.xwiki.filter.xml.output.XMLOutputProperties;
 
 /**
- * @param <P>
+ * @param <P> the type of the properties bean
+ * @param <F> the type of the filter supported by this stream
  * @version $Id$
  * @since 6.2M1
  */
@@ -39,6 +40,14 @@ public class DefaultXMLOutputFilterStream<P extends XMLOutputProperties, F> exte
 {
     private final AbstractXMLBeanOutputFilterStreamFactory<P, F> factory;
 
+    /**
+     * @param factory the factory used to create the filter
+     * @param properties the properties of the stream
+     * @param xmlFactory the factory used to create the XML writer
+     * @throws FilterException when failing to create the stream
+     * @throws XMLStreamException when failing to create the XML writer
+     * @throws IOException when failing to access the target
+     */
     public DefaultXMLOutputFilterStream(AbstractXMLBeanOutputFilterStreamFactory<P, F> factory, P properties,
         XMLOutputFactory xmlFactory) throws FilterException, XMLStreamException, IOException
     {

@@ -77,19 +77,7 @@
             <id>default</id>
             <configuration>
               <excludes>
-                org/xwiki/filter/test/integration/ExpectTestConfiguration.java,
-                org/xwiki/filter/test/integration/InputTestConfiguration.java,
-                org/xwiki/filter/test/integration/OutputTestConfiguration.java,
-                org/xwiki/filter/test/integration/TestConfiguration.java,
-                org/xwiki/filter/test/integration/TestDataGenerator.java,
-                org/xwiki/filter/test/integration/TestDataParser.java,
-                org/xwiki/filter/test/integration/TestResourceData.java,
-                org/xwiki/filter/test/internal/DefaultFileAssertComparator.java,
-                org/xwiki/filter/test/internal/FileAssert.java,
-                org/xwiki/filter/test/internal/FileAssertComparator.java,
-                org/xwiki/filter/test/internal/StringFileAssertComparator.java,
-                org/xwiki/filter/test/internal/ZipFileAssert.java,
-                org/xwiki/filter/test/internal/ZIPFileAssertComparator.java
+                org/xwiki/filter/test/integration/TestDataParser.java
               </excludes>
             </configuration>
           </execution>

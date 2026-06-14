@@ -38,16 +38,31 @@ public class FilterStreamXMLStreamWriter
 {
     private static final XMLOutputFactory XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
 
+    private static final String FAILED_CREATE_WRITER = "Failed to create XML writer";
+
+    private static final String FAILED_START_DOCUMENT = "Failed to write start document";
+
     private final XMLStreamWriter writer;
 
     private final boolean printNullValue;
 
+    /**
+     * @param writer the wrapped XML writer
+     * @param printNullValue true if null values should be written as empty elements
+     */
     public FilterStreamXMLStreamWriter(XMLStreamWriter writer, boolean printNullValue)
     {
         this.writer = writer;
         this.printNullValue = printNullValue;
     }
 
+    /**
+     * @param outputStream the stream to write to
+     * @param encoding the encoding to use to write
+     * @param format true if the output should be indented
+     * @param printNullValue true if null values should be written as empty elements
+     * @throws FilterException when failing to create the writer
+     */
     public FilterStreamXMLStreamWriter(OutputStream outputStream, String encoding, boolean format,
         boolean printNullValue) throws FilterException
     {
@@ -60,23 +75,31 @@ public class FilterStreamXMLStreamWriter
                 this.writer = streamWriter;
             }
         } catch (Exception e) {
-            throw new FilterException("Failed to create XML writer", e);
+            throw new FilterException(FAILED_CREATE_WRITER, e);
         }
 
         this.printNullValue = printNullValue;
     }
 
+    /**
+     * @param properties the properties containing the target to write to
+     * @param printNullValue true if null values should be written as empty elements
+     * @throws FilterException when failing to create the writer
+     */
     public FilterStreamXMLStreamWriter(XMLOutputProperties properties, boolean printNullValue) throws FilterException
     {
         try {
             this.writer = XMLOutputFilterStreamUtils.createXMLStreamWriter(properties);
         } catch (Exception e) {
-            throw new FilterException("Failed to create XML writer", e);
+            throw new FilterException(FAILED_CREATE_WRITER, e);
         }
 
         this.printNullValue = printNullValue;
     }
 
+    /**
+     * @return the wrapped XML writer
+     */
     public XMLStreamWriter getWriter()
     {
         return this.writer;
@@ -94,7 +117,7 @@ public class FilterStreamXMLStreamWriter
         try {
             this.writer.writeStartDocument();
         } catch (XMLStreamException e) {
-            throw new FilterException("Failed to write start document", e);
+            throw new FilterException(FAILED_START_DOCUMENT, e);
         }
     }
 
@@ -110,7 +133,7 @@ public class FilterStreamXMLStreamWriter
         try {
             this.writer.writeStartDocument(encoding, version);
         } catch (XMLStreamException e) {
-            throw new FilterException("Failed to write start document", e);
+            throw new FilterException(FAILED_START_DOCUMENT, e);
         }
     }
 
@@ -128,6 +151,10 @@ public class FilterStreamXMLStreamWriter
         }
     }
 
+    /**
+     * @param localName the local name of the empty element to write
+     * @throws FilterException when failing to write the element
+     */
     public void writeEmptyElement(String localName) throws FilterException
     {
         try {
@@ -137,6 +164,11 @@ public class FilterStreamXMLStreamWriter
         }
     }
 
+    /**
+     * @param localName the local name of the element to write
+     * @param value the text value of the element
+     * @throws FilterException when failing to write the element
+     */
     public void writeElement(String localName, String value) throws FilterException
     {
         if (value != null) {
@@ -152,6 +184,10 @@ public class FilterStreamXMLStreamWriter
         }
     }
 
+    /**
+     * @param text the text to write
+     * @throws FilterException when failing to write the text
+     */
     public void writeCharacters(String text) throws FilterException
     {
         try {
@@ -161,6 +197,10 @@ public class FilterStreamXMLStreamWriter
         }
     }
 
+    /**
+     * @param localName the local name of the element to start
+     * @throws FilterException when failing to write the element
+     */
     public void writeStartElement(String localName) throws FilterException
     {
         try {
@@ -170,6 +210,9 @@ public class FilterStreamXMLStreamWriter
         }
     }
 
+    /**
+     * @throws FilterException when failing to write the end element
+     */
     public void writeEndElement() throws FilterException
     {
         try {
@@ -179,6 +222,11 @@ public class FilterStreamXMLStreamWriter
         }
     }
 
+    /**
+     * @param localName the local name of the attribute to write
+     * @param value the value of the attribute (nothing is written when null)
+     * @throws FilterException when failing to write the attribute
+     */
     public void writeAttribute(String localName, String value) throws FilterException
     {
         if (value != null) {
@@ -191,6 +239,12 @@ public class FilterStreamXMLStreamWriter
         }
     }
 
+    /**
+     * @param text the characters to write
+     * @param start the index of the first character to write
+     * @param len the number of characters to write
+     * @throws FilterException when failing to write the characters
+     */
     public void writeCharacters(char[] text, int start, int len) throws FilterException
     {
         try {

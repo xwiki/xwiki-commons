@@ -69,6 +69,8 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
      */
     private static final Logger SHUTDOWN_LOGGER = LoggerFactory.getLogger("org.xwiki.shutdown");
 
+    private static final String XED_RESOURCE = "/META-INF/extension.xed";
+
     /**
      * The logger to log.
      */
@@ -159,9 +161,9 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
         //////////
         // XED
 
-        URL xedURL = this.environment.getResource("/META-INF/extension.xed");
+        URL xedURL = this.environment.getResource(XED_RESOURCE);
         if (xedURL != null) {
-            try (InputStream xedStream = this.environment.getResourceAsStream("/META-INF/extension.xed")) {
+            try (InputStream xedStream = this.environment.getResourceAsStream(XED_RESOURCE)) {
                 return this.parser.loadCoreExtensionDescriptor(repository, getEnvironmentExtensionURL(xedURL),
                     xedStream);
             } catch (Exception e) {
@@ -218,6 +220,11 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
         addCoreExtension(extensions, coreExtension, this.logger);
     }
 
+    /**
+     * @param extensions the already loaded core extensions, indexed by id
+     * @param coreExtension the core extension to add
+     * @param logger the logger used to log a warning when an extension already exists with the same id
+     */
     public static void addCoreExtension(Map<String, DefaultCoreExtension> extensions,
         DefaultCoreExtension coreExtension, Logger logger)
     {
@@ -276,7 +283,10 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                     xedStream = xedURL.openStream();
                 } catch (IOException e) {
                     // We assume it means the xed does not exist so we just ignore it
-                    this.logger.debug("Failed to load [{}]. This is likely to be normal if matching jar file is not an XWiki extension.", xedURL, e);
+                    this.logger.debug(
+                        "Failed to load [{}]. This is likely to be normal if matching jar file is not an XWiki "
+                            + "extension.",
+                        xedURL, e);
                     return null;
                 }
 

@@ -42,6 +42,8 @@ import org.codehaus.plexus.archiver.ArchiverException;
 )
 public class UnXARMojo extends AbstractXARMojo
 {
+    private static final String LOG_OWNER = "XAR Plugin";
+
     /**
      * The groupId of the XAR dependency to expand.
      */
@@ -113,7 +115,7 @@ public class UnXARMojo extends AbstractXARMojo
         Artifact artifact = findArtifact();
 
         getLog().debug(String.format("Source XAR = [%s]", artifact.getFile()));
-        unpack(artifact.getFile(), this.outputDirectory, "XAR Plugin", true, getIncludes(), getExcludes());
+        unpack(artifact.getFile(), this.outputDirectory, LOG_OWNER, true, getIncludes(), getExcludes());
         unpackDependentXars(artifact);
     }
 
@@ -127,7 +129,7 @@ public class UnXARMojo extends AbstractXARMojo
         try {
             Set<Artifact> dependencies = resolveArtifactDependencies(artifact);
             for (Artifact dependency : dependencies) {
-                unpack(dependency.getFile(), this.outputDirectory, "XAR Plugin", false, getIncludes(), getExcludes());
+                unpack(dependency.getFile(), this.outputDirectory, LOG_OWNER, false, getIncludes(), getExcludes());
             }
         } catch (Exception e) {
             throw new MojoExecutionException(String.format("Failed to unpack artifact [%s] dependencies", artifact), e);

@@ -81,6 +81,11 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
         }
     }
 
+    /**
+     * @return a new repository system session
+     * @throws IOException when failing to create the session
+     * @throws org.xwiki.component.manager.ComponentLookupException when failing to lookup the session component
+     */
     public XWikiRepositorySystemSession createRepositorySystemSession()
         throws IOException, org.xwiki.component.manager.ComponentLookupException
     {
@@ -134,6 +139,12 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
         }
     }
 
+    /**
+     * @param prefix the prefix of the temporary file name
+     * @param suffix the suffix of the temporary file name
+     * @return the created temporary file
+     * @throws IOException when failing to create the file
+     */
     public File createTemporaryFile(String prefix, String suffix) throws IOException
     {
         Path filesDirectory = this.environment.getTemporaryDirectory().toPath().resolve("extension/download/files/");

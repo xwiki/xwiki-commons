@@ -139,11 +139,7 @@
             <id>default</id>
             <configuration>
               <excludes>
-                **/ExtensionMojoHelper.java,
-                **/MavenBuildExtensionRepositor.java,
-                **/ExtensionMojoCoreExtensionRepository.java,
-                **/ExtensionArtifact.java,
-                **/MavenBuildExtensionRepository.java
+                **/ExtensionMojoHelper.java
               </excludes>
             </configuration>
           </execution>

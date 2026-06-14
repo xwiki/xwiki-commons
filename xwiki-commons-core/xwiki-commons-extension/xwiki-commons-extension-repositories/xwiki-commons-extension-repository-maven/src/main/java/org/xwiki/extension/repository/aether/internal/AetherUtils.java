@@ -39,6 +39,17 @@ public final class AetherUtils
 {
     private static final Pattern PARSER_ID = Pattern.compile("([^: ]+):([^: ]+)(:([^: ]+))?");
 
+    private AetherUtils()
+    {
+        // Utility class
+    }
+
+    /**
+     * @param id the extension id in the {@code <groupId>:<artifactId>[:<classifier>]} format
+     * @param version the version of the artifact
+     * @return the created Aether artifact
+     * @throws ResolveException when the passed id is invalid
+     */
     public static DefaultArtifact createArtifact(String id, String version) throws ResolveException
     {
         Matcher matcher = PARSER_ID.matcher(id);
@@ -51,12 +62,19 @@ public final class AetherUtils
             "jar", version);
     }
 
+    /**
+     * @param artifact the Aether artifact
+     * @return the extension id corresponding to the passed artifact
+     */
     public static ExtensionId createExtensionId(Artifact artifact)
     {
         return createExtensionId(artifact, null);
     }
 
     /**
+     * @param artifact the Aether artifact
+     * @param factory the factory used to create the version (a default one is used when null)
+     * @return the extension id corresponding to the passed artifact
      * @since 8.4
      */
     public static ExtensionId createExtensionId(Artifact artifact, ExtensionFactory factory)
@@ -65,6 +83,10 @@ public final class AetherUtils
     }
 
     /**
+     * @param artifact the Aether artifact
+     * @param includeExtension true if the artifact extension should be part of the id
+     * @param factory the factory used to create the version (a default one is used when null)
+     * @return the extension id corresponding to the passed artifact
      * @since 12.4RC1
      */
     public static ExtensionId createExtensionId(Artifact artifact, boolean includeExtension, ExtensionFactory factory)

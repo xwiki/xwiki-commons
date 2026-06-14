@@ -38,17 +38,25 @@ import org.xwiki.filter.FilterException;
  */
 public abstract class AbstractBeanInputFilterStream<P, F> implements BeanInputFilterStream<P>, Initializable
 {
-    @Inject
-    private FilterDescriptorManager filterDescriptorManager;
-
     protected Class<F> filterType;
 
     protected P properties;
 
+    @Inject
+    private FilterDescriptorManager filterDescriptorManager;
+
+    /**
+     * Default constructor.
+     */
     public AbstractBeanInputFilterStream()
     {
     }
 
+    /**
+     * @param filterDescriptorManager the manager used to create the filter proxy
+     * @param properties the properties of the stream
+     * @throws FilterException when failing to create the stream
+     */
     public AbstractBeanInputFilterStream(FilterDescriptorManager filterDescriptorManager, P properties)
         throws FilterException
     {

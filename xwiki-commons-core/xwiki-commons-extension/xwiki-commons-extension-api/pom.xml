@@ -142,18 +142,13 @@
             <id>default</id>
             <configuration>
               <excludes>
-                **/ExtensionConverter.java,
-                **/MavenUtils.java,
                 **/AbstractExtensionJob.java,
-                **/DefaultCoreExtensionScanner.java,
                 **/DefaultExtensionRepositoryManager.java,
                 **/DefaultExtensionSerializer.java,
                 **/DefaultInstalledExtensionRepository.java,
                 **/DefaultVersion.java,
                 **/AbstractInstallPlanJob.java,
-                **/UnmodifiableUtils.java,
                 **/AbstractExtension.java,
-                **/DefaultExtensionManagerConfiguration.java,
                 **/ExtensionUtils.java,
                 **/ExtensionConverterParser.java,
                 **/ExtensionFactory.java

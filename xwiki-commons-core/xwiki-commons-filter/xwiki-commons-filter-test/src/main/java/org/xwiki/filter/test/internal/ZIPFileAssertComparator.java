@@ -42,6 +42,11 @@ import org.junit.jupiter.api.Assertions;
  */
 public class ZIPFileAssertComparator implements FileAssertComparator
 {
+    /**
+     * @param file the file to check
+     * @return true if the passed file is a ZIP archive
+     * @throws IOException when failing to read the file
+     */
     public static boolean isZip(File file) throws IOException
     {
         final byte[] signature = new byte[12];

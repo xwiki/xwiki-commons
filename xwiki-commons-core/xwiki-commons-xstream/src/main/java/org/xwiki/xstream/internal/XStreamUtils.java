@@ -63,8 +63,11 @@ public class XStreamUtils
      */
     public boolean isSafeType(Object obj)
     {
-        return obj == null || obj instanceof String || obj instanceof Number || obj.getClass().isArray()
-            || obj instanceof Enum;
+        if (obj == null) {
+            return true;
+        }
+
+        return obj instanceof String || obj instanceof Number || obj.getClass().isArray() || obj instanceof Enum;
     }
 
     /**
@@ -117,6 +120,17 @@ public class XStreamUtils
         return true;
     }
 
+    /**
+     * Serialize a field into the passed writer, adding a class attribute when the actual type of the value differs from
+     * the expected default type.
+     *
+     * @param name the name of the node to write
+     * @param defaultType the expected type of the value (no class attribute is written when the value matches it)
+     * @param value the value to serialize (nothing is written when it's null)
+     * @param writer the writer to serialize into
+     * @param context the marshalling context used to convert the value
+     * @param mapper the mapper used to compute the serialized class name and attribute name
+     */
     public static void serializeField(String name, Class<?> defaultType, Object value, HierarchicalStreamWriter writer,
         MarshallingContext context, Mapper mapper)
     {

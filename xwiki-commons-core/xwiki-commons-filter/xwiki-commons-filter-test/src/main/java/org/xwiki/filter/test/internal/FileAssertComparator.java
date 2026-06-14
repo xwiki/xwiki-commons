@@ -28,7 +28,19 @@ import java.io.IOException;
  */
 public interface FileAssertComparator
 {
+    /**
+     * @param message the message to display when the assertion fails
+     * @param expected the expected file
+     * @param actual the actual file
+     * @throws IOException when failing to compare the files
+     */
     void assertEquals(String message, File expected, File actual) throws IOException;
 
+    /**
+     * @param message the message to display when the assertion fails
+     * @param expected the expected content
+     * @param actual the actual content
+     * @throws IOException when failing to compare the content
+     */
     void assertEquals(String message, byte[] expected, byte[] actual) throws IOException;
 }

@@ -30,11 +30,15 @@ import java.util.Map;
  */
 public class TestResourceData
 {
+    /** The name of the resource holding the test data. */
     public String resourceName;
 
+    /** The input configurations of the test. */
     public List<InputTestConfiguration> inputs = new LinkedList<>();
 
+    /** The expected configurations of the test. */
     public List<ExpectTestConfiguration> expects = new LinkedList<>();
 
+    /** The generic configuration of the test. */
     public Map<String, String> configuration = new LinkedHashMap<>();
 }

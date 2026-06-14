@@ -40,6 +40,11 @@ public class TestDataGenerator
 {
     private TestDataParser parser = new TestDataParser();
 
+    /**
+     * @param testPackage the package in which to look for test resources
+     * @param pattern a regular expression used to filter the test resources to consider
+     * @return the test configurations found
+     */
     public Collection<TestConfiguration> generateData(String testPackage, String pattern)
     {
         Reflections reflections =

@@ -48,6 +48,13 @@ public abstract class AbstractXMLOutputFilterStream<P extends XMLOutputPropertie
 
     protected Object filter;
 
+    /**
+     * @param properties the properties of the stream
+     * @param xmlFactory the factory used to create the XML writer
+     * @throws FilterException when failing to create the stream
+     * @throws XMLStreamException when failing to create the XML writer
+     * @throws IOException when failing to access the target
+     */
     public AbstractXMLOutputFilterStream(P properties, XMLOutputFactory xmlFactory)
         throws FilterException, XMLStreamException, IOException
     {
@@ -64,17 +71,17 @@ public abstract class AbstractXMLOutputFilterStream<P extends XMLOutputPropertie
     {
         OutputTarget target = properties.getTarget();
 
-        Result result;
+        Result xmlResult;
 
         if (target instanceof ResultOutputTarget) {
-            result = ((ResultOutputTarget) target).getResult();
+            xmlResult = ((ResultOutputTarget) target).getResult();
         } else {
             XMLStreamWriter xmlStreamWriter = XMLOutputFilterStreamUtils.createXMLStreamWriter(xmlfactory, properties);
 
-            result = new StAXResult(xmlStreamWriter);
+            xmlResult = new StAXResult(xmlStreamWriter);
         }
 
-        return result;
+        return xmlResult;
     }
 
     @Override

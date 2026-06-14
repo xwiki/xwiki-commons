@@ -32,11 +32,13 @@ import org.junit.jupiter.api.Assertions;
  */
 public class StringFileAssertComparator implements FileAssertComparator
 {
+    private static final String UTF8 = "UTF8";
+
     @Override
     public void assertEquals(String message, File expected, File actual) throws IOException
     {
-        String expectedString = FileUtils.readFileToString(expected, "UTF8");
-        String actualString = FileUtils.readFileToString(actual, "UTF8");
+        String expectedString = FileUtils.readFileToString(expected, UTF8);
+        String actualString = FileUtils.readFileToString(actual, UTF8);
 
         Assertions.assertEquals(expectedString, actualString, message);
     }
@@ -44,8 +46,8 @@ public class StringFileAssertComparator implements FileAssertComparator
     @Override
     public void assertEquals(String message, byte[] expected, byte[] actual) throws IOException
     {
-        String expectedString = IOUtils.toString(expected, "UTF8");
-        String actualString = IOUtils.toString(actual, "UTF8");
+        String expectedString = IOUtils.toString(expected, UTF8);
+        String actualString = IOUtils.toString(actual, UTF8);
 
         Assertions.assertEquals(expectedString, actualString, message);
     }

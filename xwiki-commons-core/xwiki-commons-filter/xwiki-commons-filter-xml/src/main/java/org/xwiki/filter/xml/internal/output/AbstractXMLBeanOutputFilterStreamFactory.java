@@ -34,6 +34,8 @@ import org.xwiki.filter.xml.output.XMLOutputProperties;
  * A generic xml output filter implementation. This class can be used as a test bench to validate various XMLInputStream
  * wiki parsers.
  *
+ * @param <P> the type of the properties bean
+ * @param <F> the type of the filter supported by this stream
  * @version $Id$
  * @since 6.2M1
  */
@@ -42,6 +44,9 @@ public abstract class AbstractXMLBeanOutputFilterStreamFactory<P extends XMLOutp
 {
     protected XMLOutputFactory xmlFactory;
 
+    /**
+     * @param type the type of the filter stream
+     */
     public AbstractXMLBeanOutputFilterStreamFactory(FilterStreamType type)
     {
         super(type);
@@ -60,6 +65,11 @@ public abstract class AbstractXMLBeanOutputFilterStreamFactory<P extends XMLOutp
     protected abstract Object createListener(Result result, P parameters)
         throws XMLStreamException, FactoryConfigurationError, FilterException;
 
+    /**
+     * @param result the result to write to
+     * @param properties the properties of the stream
+     * @return the factory to use to create the XML writer, or null to use the default one
+     */
     public XMLOutputFactory getXMLOutputFactory(Result result, P properties)
     {
         return null;

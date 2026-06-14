@@ -27,13 +27,18 @@ import java.util.Map;
  */
 public class TestConfiguration
 {
+    /** The name of the resource holding the test data. */
     public String resourceName;
 
+    /** The name of the test. */
     public String name;
 
+    /** The generic configuration of the test. */
     public Map<String, String> configuration;
 
+    /** The configuration of the input part of the test. */
     public InputTestConfiguration inputConfiguration;
 
+    /** The configuration of the expected part of the test. */
     public ExpectTestConfiguration expectConfiguration;
 }

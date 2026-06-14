@@ -36,11 +36,12 @@ import org.xwiki.test.XWikiTempDirUtil;
  */
 public final class FileAssert
 {
+    /** The temporary directory in which actual files are generated before being compared. */
     public static final File TEMPORARY_DIRECTORY = XWikiTempDirUtil.createTemporaryDirectory();
 
-    private final static Map<String, FileAssertComparator> COMPARATORS = new HashMap<>();
+    private static final Map<String, FileAssertComparator> COMPARATORS = new HashMap<>();
 
-    private final static DefaultFileAssertComparator DEFAULT_COMPARATOR = new DefaultFileAssertComparator();
+    private static final DefaultFileAssertComparator DEFAULT_COMPARATOR = new DefaultFileAssertComparator();
 
     static {
         setStringComparator("txt");
@@ -56,21 +57,35 @@ public final class FileAssert
     {
     }
 
+    /**
+     * @param extension the file extension to associate the comparator with
+     * @param comparator the comparator to use for files with the passed extension
+     */
     public static void setComparator(String extension, FileAssertComparator comparator)
     {
         COMPARATORS.put(extension, comparator);
     }
 
+    /**
+     * @param extension the file extension to compare as text
+     */
     public static void setStringComparator(String extension)
     {
         setComparator(extension, new StringFileAssertComparator());
     }
 
+    /**
+     * @param extension the file extension to compare as a ZIP archive
+     */
     public static void setZIPComparator(String extension)
     {
         setComparator(extension, new ZIPFileAssertComparator());
     }
 
+    /**
+     * @param filename the name of the file for which to find a comparator
+     * @return the comparator associated with the file extension, or a default one when none is registered
+     */
     public static FileAssertComparator getComparator(String filename)
     {
         String extension = FilenameUtils.getExtension(filename);
@@ -85,6 +100,10 @@ public final class FileAssert
 
     /**
      * Asserts that two files are equal. If they are not, an {@link AssertionError} without a message is thrown.
+     *
+     * @param expected the expected file
+     * @param actual the actual content
+     * @throws IOException when failing to compare the files
      */
     public static void assertEquals(File expected, byte[] actual) throws IOException
     {
@@ -101,6 +120,10 @@ public final class FileAssert
 
     /**
      * Asserts that two ZIP files are equal. If they are not, an {@link AssertionError} without a message is thrown.
+     *
+     * @param expected the expected file
+     * @param actual the actual file
+     * @throws IOException when failing to compare the files
      */
     public static void assertEquals(File expected, File actual) throws IOException
     {

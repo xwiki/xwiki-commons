@@ -51,6 +51,9 @@ public abstract class AbstractBeanInputFilterStreamFactory<P, F> extends Abstrac
 
     private List<Class<?>> filerInterfaces;
 
+    /**
+     * @param type the type of the filter stream
+     */
     public AbstractBeanInputFilterStreamFactory(FilterStreamType type)
     {
         super(type);

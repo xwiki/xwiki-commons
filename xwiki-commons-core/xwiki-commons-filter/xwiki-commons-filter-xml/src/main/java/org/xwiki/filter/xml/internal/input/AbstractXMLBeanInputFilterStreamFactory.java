@@ -29,7 +29,8 @@ import org.xwiki.filter.type.FilterStreamType;
 import org.xwiki.filter.xml.input.XMLInputProperties;
 
 /**
- * @param <P>
+ * @param <P> the type of the properties bean
+ * @param <F> the type of the filter supported by this stream
  * @version $Id$
  * @since 6.2M1
  */
@@ -38,6 +39,9 @@ public abstract class AbstractXMLBeanInputFilterStreamFactory<P extends XMLInput
 {
     protected XMLInputFactory xmlFactory;
 
+    /**
+     * @param type the type of the filter stream
+     */
     public AbstractXMLBeanInputFilterStreamFactory(FilterStreamType type)
     {
         super(type);

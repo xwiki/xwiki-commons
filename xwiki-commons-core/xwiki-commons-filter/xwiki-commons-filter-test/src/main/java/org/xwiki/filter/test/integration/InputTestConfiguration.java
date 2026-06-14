@@ -30,16 +30,25 @@ import org.xwiki.filter.utils.FilterStreamConstants;
  */
 public class InputTestConfiguration extends HashMap<String, String> implements Cloneable
 {
+    /** The identifier of the filter stream type to use as input. */
     public final String typeId;
 
+    /** The content to use as input. */
     public final String buffer;
 
+    /**
+     * @param typeId the identifier of the filter stream type to use as input
+     * @param buffer the content to use as input
+     */
     public InputTestConfiguration(String typeId, String buffer)
     {
         this.typeId = typeId;
         this.buffer = buffer;
     }
 
+    /**
+     * @param other the configuration to copy
+     */
     public InputTestConfiguration(InputTestConfiguration other)
     {
         super(other);
@@ -48,6 +57,9 @@ public class InputTestConfiguration extends HashMap<String, String> implements C
         this.buffer = other.buffer;
     }
 
+    /**
+     * @param encoding the encoding to use to read the input
+     */
     public void setEncoding(String encoding)
     {
         put(FilterStreamConstants.PROPERTY_ENCODING, encoding);

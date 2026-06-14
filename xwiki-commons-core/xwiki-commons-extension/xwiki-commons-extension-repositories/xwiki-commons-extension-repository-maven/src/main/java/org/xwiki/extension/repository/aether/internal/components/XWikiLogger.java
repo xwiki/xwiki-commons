@@ -29,7 +29,7 @@ class XWikiLogger implements org.codehaus.plexus.logging.Logger
 {
     private Logger logger;
 
-    public XWikiLogger(Logger logger)
+    XWikiLogger(Logger logger)
     {
         this.logger = logger;
     }

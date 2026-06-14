@@ -42,7 +42,19 @@ public final class XMLInputFilterStreamUtils
 {
     private static final XMLInputFactory XML_INPUT_FACTORY = XMLInputFactory.newInstance();
 
+    private static final String UNKNOWN_SOURCE = "Unknown source type [";
+
+    private XMLInputFilterStreamUtils()
+    {
+        // Utility class
+    }
+
     /**
+     * @param properties the properties containing the source to read
+     * @return the XML event reader to read the source with
+     * @throws XMLStreamException when failing to create the reader
+     * @throws IOException when failing to access the source
+     * @throws FilterException when the source type is not supported
      * @since 9.5.2
      * @since 9.6RC1
      */
@@ -52,6 +64,14 @@ public final class XMLInputFilterStreamUtils
         return createXMLEventReader(XML_INPUT_FACTORY, properties);
     }
 
+    /**
+     * @param factory the factory to use to create the reader (a default one is used when null)
+     * @param properties the properties containing the source to read
+     * @return the XML event reader to read the source with
+     * @throws XMLStreamException when failing to create the reader
+     * @throws IOException when failing to access the source
+     * @throws FilterException when the source type is not supported
+     */
     public static XMLEventReader createXMLEventReader(XMLInputFactory factory, XMLInputProperties properties)
         throws XMLStreamException, IOException, FilterException
     {
@@ -67,12 +87,19 @@ public final class XMLInputFilterStreamUtils
         } else if (source instanceof SourceInputSource) {
             xmlEventReader = StAXUtils.getXMLEventReader(((SourceInputSource) source).getSource());
         } else {
-            throw new FilterException("Unknown source type [" + source.getClass() + "]");
+            throw new FilterException(UNKNOWN_SOURCE + source.getClass() + "]");
         }
 
         return xmlEventReader;
     }
 
+    /**
+     * @param properties the properties containing the source to read
+     * @return the XML stream reader to read the source with
+     * @throws XMLStreamException when failing to create the reader
+     * @throws IOException when failing to access the source
+     * @throws FilterException when the source type is not supported
+     */
     public static XMLStreamReader createXMLStreamReader(XMLInputProperties properties)
         throws XMLStreamException, IOException, FilterException
     {
@@ -88,7 +115,7 @@ public final class XMLInputFilterStreamUtils
         } else if (source instanceof SourceInputSource) {
             xmlStreamReader = StAXUtils.getXMLStreamReader(((SourceInputSource) source).getSource());
         } else {
-            throw new FilterException("Unknown source type [" + source.getClass() + "]");
+            throw new FilterException(UNKNOWN_SOURCE + source.getClass() + "]");
         }
 
         return xmlStreamReader;

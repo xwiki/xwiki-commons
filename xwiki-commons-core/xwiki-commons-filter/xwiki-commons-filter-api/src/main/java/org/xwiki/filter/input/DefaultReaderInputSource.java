@@ -32,12 +32,17 @@ public class DefaultReaderInputSource implements ReaderInputSource
 
     private final boolean close;
 
+    /**
+     * @param reader the reader to read
+     */
     public DefaultReaderInputSource(Reader reader)
     {
         this(reader, false);
     }
 
     /**
+     * @param reader the reader to read
+     * @param close true if the reader should be closed when this source is closed
      * @since 9.0RC1
      */
     public DefaultReaderInputSource(Reader reader, boolean close)

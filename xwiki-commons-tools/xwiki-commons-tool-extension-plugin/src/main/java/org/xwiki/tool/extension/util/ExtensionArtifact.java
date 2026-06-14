@@ -36,46 +36,76 @@ public class ExtensionArtifact
 
     private String type;
 
+    /**
+     * @return the group id of the artifact
+     */
     public String getGroupId()
     {
         return groupId;
     }
 
+    /**
+     * @param grouId the group id of the artifact
+     */
     public void setGrouId(String grouId)
     {
         this.groupId = grouId;
     }
 
+    /**
+     * @return the artifact id of the artifact
+     */
     public String getArtifactId()
     {
         return artifactId;
     }
 
+    /**
+     * @param artifactId the artifact id of the artifact
+     */
     public void setArtifactId(String artifactId)
     {
         this.artifactId = artifactId;
     }
 
+    /**
+     * @return the version of the artifact
+     */
     public String getVersion()
     {
         return version;
     }
 
+    /**
+     * @param version the version of the artifact
+     */
     public void setVersion(String version)
     {
         this.version = version;
     }
 
+    /**
+     * @return the type of the artifact
+     */
     public String getType()
     {
         return type;
     }
 
+    /**
+     * @param type the type of the artifact
+     */
     public void setType(String type)
     {
         this.type = type;
     }
 
+    /**
+     * Set the artifact coordinates from a single string in the
+     * {@code <groupId>:<artifactId>[:<version>[:<type>]]} format.
+     *
+     * @param value the artifact coordinates
+     */
     public void set(String value)
     {
         String[] values = StringUtils.split(value, ':');

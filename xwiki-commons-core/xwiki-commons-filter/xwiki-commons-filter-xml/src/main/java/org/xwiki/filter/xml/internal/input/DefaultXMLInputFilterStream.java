@@ -27,7 +27,8 @@ import org.xwiki.filter.input.BeanInputFilterStream;
 import org.xwiki.filter.xml.input.XMLInputProperties;
 
 /**
- * @param <P>
+ * @param <P> the type of the properties bean
+ * @param <F> the type of the filter supported by this stream
  * @version $Id$
  * @since 6.2M1
  */
@@ -36,6 +37,11 @@ public class DefaultXMLInputFilterStream<P extends XMLInputProperties, F> extend
 {
     private final AbstractXMLBeanInputFilterStreamFactory<P, F> factory;
 
+    /**
+     * @param factory the factory used to create the XML event writer
+     * @param parameters the parameters of the stream
+     * @param xmlFactory the factory used to create the XML reader
+     */
     public DefaultXMLInputFilterStream(AbstractXMLBeanInputFilterStreamFactory<P, F> factory, P parameters,
         XMLInputFactory xmlFactory)
     {

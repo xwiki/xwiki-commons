@@ -30,6 +30,9 @@ public class XWikiLoggerManager extends AbstractLoggerManager
 {
     private XWikiLogger logger;
 
+    /**
+     * @param logger the SLF4J logger to delegate to
+     */
     public XWikiLoggerManager(Logger logger)
     {
         this.logger = new XWikiLogger(logger);

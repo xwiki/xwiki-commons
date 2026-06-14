@@ -48,7 +48,7 @@ public class XWikiExtensionFile implements ExtensionFile
     {
         private CloseableHttpResponse response;
 
-        public XWikiExtensionFileInputStream(CloseableHttpResponse response) throws IllegalStateException, IOException
+        XWikiExtensionFileInputStream(CloseableHttpResponse response) throws IllegalStateException, IOException
         {
             super(response.getEntity().getContent());
 
@@ -66,6 +66,10 @@ public class XWikiExtensionFile implements ExtensionFile
         }
     }
 
+    /**
+     * @param repository the repository from which to download the file
+     * @param id the id of the extension whose file is represented
+     */
     public XWikiExtensionFile(XWikiExtensionRepository repository, ExtensionId id)
     {
         this.repository = repository;

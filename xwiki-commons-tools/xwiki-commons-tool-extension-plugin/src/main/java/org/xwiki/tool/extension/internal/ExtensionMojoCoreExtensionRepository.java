@@ -39,6 +39,9 @@ public class ExtensionMojoCoreExtensionRepository extends DefaultCoreExtensionRe
         // classloader
     }
 
+    /**
+     * @param extension the extension to register as a core extension
+     */
     public void addExtension(Extension extension)
     {
         DefaultCoreExtension coreExtension = new DefaultCoreExtension(this, null, extension);
@@ -46,6 +49,9 @@ public class ExtensionMojoCoreExtensionRepository extends DefaultCoreExtensionRe
         addExtension(coreExtension);
     }
 
+    /**
+     * @param artifact the Maven artifact to register as a core extension
+     */
     public void addExtension(Artifact artifact)
     {
         DefaultCoreExtension coreExtension = new DefaultCoreExtension(this, null,

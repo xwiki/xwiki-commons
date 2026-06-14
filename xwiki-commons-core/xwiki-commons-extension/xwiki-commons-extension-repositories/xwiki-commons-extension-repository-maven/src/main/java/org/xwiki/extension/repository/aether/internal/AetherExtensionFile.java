@@ -35,6 +35,10 @@ public class AetherExtensionFile implements ExtensionFile
 
     private AetherExtensionRepository repository;
 
+    /**
+     * @param artifact the Aether artifact corresponding to the file
+     * @param repository the repository from which to download the file
+     */
     public AetherExtensionFile(Artifact artifact, AetherExtensionRepository repository)
     {
         this.repository = repository;

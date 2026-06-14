@@ -51,6 +51,12 @@ public class MavenBuildExtensionRepository extends AetherExtensionRepository
 {
     private MavenSession mavenSession;
 
+    /**
+     * @param session the Maven session
+     * @param plexusContainer the Plexus container used to lookup Maven components
+     * @param componentManager the component manager used to lookup XWiki components
+     * @throws Exception when failing to create the repository
+     */
     public MavenBuildExtensionRepository(MavenSession session, PlexusContainer plexusContainer,
         ComponentManager componentManager) throws Exception
     {
@@ -60,11 +66,20 @@ public class MavenBuildExtensionRepository extends AetherExtensionRepository
         this.mavenSession = session;
     }
 
+    /**
+     * @param artifact the Maven artifact
+     * @return the extension id corresponding to the passed artifact
+     */
     public static ExtensionId createExtensionId(Artifact artifact)
     {
         return createExtensionId(artifact, null);
     }
 
+    /**
+     * @param artifact the Maven artifact
+     * @param factory the factory used to create the version (a default one is used when null)
+     * @return the extension id corresponding to the passed artifact
+     */
     public static ExtensionId createExtensionId(Artifact artifact, ExtensionFactory factory)
     {
         String extensionId =

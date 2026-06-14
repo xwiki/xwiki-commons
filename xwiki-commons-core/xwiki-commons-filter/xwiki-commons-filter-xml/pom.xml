@@ -87,18 +87,7 @@
             <configuration>
               <excludes>
                 org/xwiki/filter/xml/internal/parser/DefaultXMLParser.java,
-                org/xwiki/filter/xml/internal/serializer/DefaultXMLSerializer.java,
-                org/xwiki/filter/xml/internal/input/AbstractXMLBeanInputFilterStreamFactory.java,
-                org/xwiki/filter/xml/internal/input/AbstractXMLInputFilterStream.java,
-                org/xwiki/filter/xml/internal/input/DefaultSourceInputSource.java,
-                org/xwiki/filter/xml/internal/input/DefaultXMLInputFilterStream.java,
-                org/xwiki/filter/xml/internal/input/XMLInputFilterStreamUtils.java,
-                org/xwiki/filter/xml/internal/output/AbstractXMLBeanOutputFilterStreamFactory.java,
-                org/xwiki/filter/xml/internal/output/AbstractXMLOutputFilterStream.java,
-                org/xwiki/filter/xml/internal/output/DefaultResultInputSource.java,
-                org/xwiki/filter/xml/internal/output/DefaultXMLOutputFilterStream.java,
-                org/xwiki/filter/xml/internal/output/FilterStreamXMLStreamWriter.java,
-                org/xwiki/filter/xml/internal/output/XMLOutputFilterStreamUtils.java
+                org/xwiki/filter/xml/internal/serializer/DefaultXMLSerializer.java
               </excludes>
             </configuration>
           </execution>

@@ -37,8 +37,16 @@ import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
  */
 public class AetherExtension extends AbstractMavenExtension
 {
+    /** The property key under which the Aether artifact is stored. */
     public static final String PKEY_AETHER_ARTIFACT = "aether.Artifact";
 
+    /**
+     * @param extensionId the id of the extension
+     * @param extensionType the type of the extension
+     * @param extension the resolved Maven extension
+     * @param artifact the Aether artifact corresponding to the extension
+     * @param repository the repository where the extension comes from
+     */
     public AetherExtension(ExtensionId extensionId, String extensionType, Extension extension, Artifact artifact,
         AetherExtensionRepository repository)
     {

@@ -33,6 +33,9 @@ public class DefaultFileInputSource extends AbstractInputStreamInputSource imple
 {
     private final File file;
 
+    /**
+     * @param file the file to read
+     */
     public DefaultFileInputSource(File file)
     {
         this.file = file;

@@ -36,8 +36,14 @@ import org.xwiki.extension.version.internal.DefaultVersionConstraint;
  */
 public class AetherExtensionDependency extends DefaultMavenExtensionDependency
 {
+    /** The property key under which the Aether dependency is stored. */
     public static final String PKEY_AETHER_DEPENDENCY = "aether.Dependency";
 
+    /**
+     * @param extensionDependency the wrapped extension dependency
+     * @param aetherDependency the Aether dependency corresponding to the extension dependency
+     * @param extensionRepository the repository in which to resolve the dependency first
+     */
     public AetherExtensionDependency(ExtensionDependency extensionDependency, Dependency aetherDependency,
         ExtensionRepositoryDescriptor extensionRepository)
     {
@@ -57,6 +63,9 @@ public class AetherExtensionDependency extends DefaultMavenExtensionDependency
         putProperty(PKEY_AETHER_DEPENDENCY, aetherDependency);
     }
 
+    /**
+     * @param aetherDependency the Aether dependency to wrap
+     */
     public AetherExtensionDependency(Dependency aetherDependency)
     {
         super(new DefaultExtensionDependency(MavenUtils.toExtensionId(aetherDependency.getArtifact().getGroupId(),
@@ -67,6 +76,9 @@ public class AetherExtensionDependency extends DefaultMavenExtensionDependency
         putProperty(PKEY_AETHER_DEPENDENCY, aetherDependency);
     }
 
+    /**
+     * @return the Aether dependency corresponding to this extension dependency
+     */
     public Dependency getAetherDependency()
     {
         return (Dependency) this.getProperty(PKEY_AETHER_DEPENDENCY);

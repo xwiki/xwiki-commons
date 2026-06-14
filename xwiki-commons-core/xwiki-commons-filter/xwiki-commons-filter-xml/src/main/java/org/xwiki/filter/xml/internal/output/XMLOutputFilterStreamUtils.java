@@ -43,7 +43,17 @@ public final class XMLOutputFilterStreamUtils
 {
     private static final XMLOutputFactory XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
 
+    private XMLOutputFilterStreamUtils()
+    {
+        // Utility class
+    }
+
     /**
+     * @param properties the properties containing the target to write to
+     * @return the XML stream writer to write the target with
+     * @throws XMLStreamException when failing to create the writer
+     * @throws IOException when failing to access the target
+     * @throws FilterException when the target type is not supported
      * @since 9.5.2
      * @since 9.6RC1
      */
@@ -53,6 +63,14 @@ public final class XMLOutputFilterStreamUtils
         return createXMLStreamWriter(XML_OUTPUT_FACTORY, properties);
     }
 
+    /**
+     * @param factory the factory to use to create the writer (a default one is used when null)
+     * @param properties the properties containing the target to write to
+     * @return the XML stream writer to write the target with
+     * @throws XMLStreamException when failing to create the writer
+     * @throws IOException when failing to access the target
+     * @throws FilterException when the target type is not supported
+     */
     public static XMLStreamWriter createXMLStreamWriter(XMLOutputFactory factory, XMLOutputProperties properties)
         throws XMLStreamException, IOException, FilterException
     {
