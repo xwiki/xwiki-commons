@@ -23,6 +23,7 @@ import java.io.File;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.xwiki.environment.Environment;
@@ -57,13 +58,12 @@ class FileSystemBlobStoreFactoryTest
 
     @ParameterizedTest
     @CsvSource({
-        "testStore, /tmp/xwiki/testStore",
-        "test-store_with.special/chars, /tmp/xwiki/test-store_with.special/chars",
-        "'', /tmp/xwiki"
+        "testStore",
+        "test-store_with.special/chars",
+        "''"
     })
-    void newPropertiesBuilder(String storeName, String expectedPath) throws Exception
+    void newPropertiesBuilder(String storeName, @TempDir File permanentDirectory) throws Exception
     {
-        File permanentDirectory = new File("/tmp/xwiki");
         when(this.environment.getPermanentDirectory()).thenReturn(permanentDirectory);
 
         BlobStorePropertiesBuilder builder = this.factory.newPropertiesBuilder(storeName);
@@ -71,13 +71,12 @@ class FileSystemBlobStoreFactoryTest
         assertEquals(storeName, builder.getName());
         assertEquals(this.factory.getType(), builder.getType());
         Path rootDir = (Path) builder.get(FileSystemBlobStoreProperties.ROOT_DIRECTORY).orElseThrow();
-        assertEquals(Path.of(expectedPath), rootDir);
+        assertEquals(permanentDirectory.toPath().resolve(storeName), rootDir);
     }
 
     @Test
-    void newPropertiesBuilderWithNullName()
+    void newPropertiesBuilderWithNullName(@TempDir File permanentDirectory)
     {
-        File permanentDirectory = new File("/tmp/xwiki");
         when(this.environment.getPermanentDirectory()).thenReturn(permanentDirectory);
 
         assertThrows(NullPointerException.class, () -> this.factory.newPropertiesBuilder(null));

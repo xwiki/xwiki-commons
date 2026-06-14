@@ -27,19 +27,11 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.launcher.TestIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Captures any content sent to stdout/stderr by JUnit5 unit tests and report a failure if the content is not empty.
@@ -50,8 +42,6 @@ import java.util.regex.Pattern;
 public class CaptureConsoleExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback,
     AfterEachCallback
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CaptureConsoleExtension.class);
-
     private static final String CAPTURECONSOLESKIP_PROPERTY = "xwiki.surefire.captureconsole.skip";
 
     private static final ExtensionContext.Namespace NAMESPACE =
@@ -159,58 +149,16 @@ public class CaptureConsoleExtension implements BeforeAllCallback, BeforeEachCal
     }
 
     /**
-     * @param propertyName the property to look for
-     * @return the property value by first looking for it in System properties and then in the current {@code pom.xml}
-     * file. Return null if not found in either.
-     */
-    private static String getPropertyValue(String propertyName)
-    {
-        String value = System.getProperty(propertyName);
-        if (value == null) {
-            value = getPropertyValueFromPOM(propertyName);
-        }
-        return value;
-    }
-
-    /**
      * @return true if the check should be skipped or false otherwise. The defined System property is checked first and
      * if it doesn't exist, the Maven property of the same name is read from the current {@code pom.xml}
      */
     static boolean shouldSkip()
     {
         if (skip == null) {
-            String value = getPropertyValue(CAPTURECONSOLESKIP_PROPERTY);
+            String value = SurefirePropertyUtils.getPropertyValue(CAPTURECONSOLESKIP_PROPERTY);
             skip = Boolean.parseBoolean(value);
         }
         return skip;
-    }
-
-    private static String getPropertyValueFromPOM(String propertyName)
-    {
-        String value = null;
-        // Low tech (doesn't bring any additional dependencies that could cause conflicts with tests) and fast.
-        // Note: doesn't support inheritance: the property needs to be set in each pom.xml where it's used.
-        if (Files.exists(getPOMPath())) {
-            try {
-                String content = new String(Files.readAllBytes(getPOMPath()));
-                Pattern regex = Pattern.compile(String.format("<%s>(.*)</%s>", propertyName, propertyName),
-                    Pattern.DOTALL);
-                Matcher regexMatcher = regex.matcher(content);
-                if (regexMatcher.find()) {
-                    value = regexMatcher.group(1).trim();
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(String.format("Error reading file [%s]", getPOMPath()), e);
-            }
-        } else {
-            LOGGER.warn("No [{}] file in current directory [{}]", getPOMPath(), Paths.get("").toAbsolutePath());
-        }
-        return value;
-    }
-
-    private static Path getPOMPath()
-    {
-        return Paths.get("pom.xml");
     }
 
     private static ExtensionContext.Store getStore(ExtensionContext context)

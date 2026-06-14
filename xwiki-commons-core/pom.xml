@@ -31,8 +31,11 @@
   <packaging>pom</packaging>
   <description>XWiki Commons - Core - Parent POM</description>
   <properties>
-    <!-- By default check that unit tests don't output anything to the console -->
+    <!-- By default, check that unit tests don't output anything to the console -->
     <xwiki.surefire.captureconsole.skip>false</xwiki.surefire.captureconsole.skip>
+    <!-- By default, check that tests don't generate any file outside the "target" directory (so that "mvn clean"
+         removes them and no file leaks outside the build workspace). -->
+    <xwiki.surefire.captureworkingdir.skip>false</xwiki.surefire.captureworkingdir.skip>
   </properties>
   <modules>
     <!-- Sorted Alphabetically -->
@@ -248,6 +251,9 @@
         <!-- Don't check that unit tests don't output anything to the console since for example Clover will output
              messages such as "Updating existing database at '...'." during tests! -->
         <xwiki.surefire.captureconsole.skip>true</xwiki.surefire.captureconsole.skip>
+        <!-- Don't check that tests don't generate files outside "target" since Clover generates a coverage database
+             that can be located outside it. -->
+        <xwiki.surefire.captureworkingdir.skip>true</xwiki.surefire.captureworkingdir.skip>
       </properties>
     </profile>
   </profiles>

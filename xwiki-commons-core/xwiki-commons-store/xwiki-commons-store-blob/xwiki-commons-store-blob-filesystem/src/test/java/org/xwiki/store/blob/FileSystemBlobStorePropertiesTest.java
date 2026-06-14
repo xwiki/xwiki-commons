@@ -25,6 +25,7 @@ import java.util.Map;
 import jakarta.inject.Inject;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.xwiki.properties.BeanManager;
 import org.xwiki.properties.PropertyMandatoryException;
 import org.xwiki.properties.internal.DefaultBeanManager;
@@ -67,11 +68,10 @@ class FileSystemBlobStorePropertiesTest
     }
 
     @Test
-    void validateSuccessfulPopulation() throws Exception
+    void validateSuccessfulPopulation(@TempDir Path rootDir) throws Exception
     {
         FileSystemBlobStoreProperties props = new FileSystemBlobStoreProperties();
 
-        Path rootDir = Path.of("/tmp/test");
         Map<String, Object> parameters = Map.of(
             FileSystemBlobStoreProperties.ROOT_DIRECTORY, rootDir,
             "name", "test",

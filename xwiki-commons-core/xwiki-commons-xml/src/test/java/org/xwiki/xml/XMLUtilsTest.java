@@ -41,6 +41,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.w3c.dom.Document;
@@ -352,10 +353,10 @@ class XMLUtilsTest
     }
 
     @Test
-    void parseWhenXXEFileAttack()
+    void parseWhenXXEFileAttack(@TempDir File tempDir)
         throws ClassNotFoundException, InstantiationException, IllegalAccessException, ClassCastException, IOException
     {
-        File tempFile = File.createTempFile("file", ".txt");
+        File tempFile = new File(tempDir, "file.txt");
 
         FileUtils.write(tempFile, "external", StandardCharsets.UTF_8);
 

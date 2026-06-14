@@ -19,3 +19,4 @@
 #
 
 org.xwiki.test.junit5.CaptureConsoleExtension
+org.xwiki.test.junit5.CaptureWorkingDirectoryFilesExtension

@@ -28,7 +28,6 @@ import java.util.Map;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
@@ -199,7 +198,6 @@ public class XARMojoTest extends AbstractMojoTest
         // not subject to XXE attacks.
         reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         Document document = reader.read(new File(tempDir, "Blog/WebHome.xml"));
-        FileUtils.copyFile(new File(tempDir, "Blog/WebHome.xml"), new File("/tmp/WebHome.xml"));
         assertEquals("100", document.selectSingleNode("/xwikidoc/object/property/itemsPerPage").getText(),
             "Transformation of itemsPerPage did not happen?");
         assertEquals("My Blog (The Wiki Blog)", document.selectSingleNode("/xwikidoc/object/property/title").getText(),

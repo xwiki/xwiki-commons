@@ -21,8 +21,10 @@ package org.xwiki.test.junit5;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
@@ -46,6 +48,7 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
  */
 class LogCaptureExtensionTest
 {
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     static class SampleTestCase
     {
         private static final Logger LOGGER = LoggerFactory.getLogger(SampleTestCase.class);
@@ -78,6 +81,7 @@ class LogCaptureExtensionTest
         }
     }
 
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     static class SampleStaticTestCase
     {
         private static final Logger LOGGER = LoggerFactory.getLogger(SampleTestCase.class);

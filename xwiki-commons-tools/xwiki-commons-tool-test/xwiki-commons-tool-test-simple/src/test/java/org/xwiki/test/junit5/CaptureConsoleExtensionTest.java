@@ -21,8 +21,10 @@ package org.xwiki.test.junit5;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
@@ -50,6 +52,7 @@ import static org.xwiki.test.junit5.FailingTestDebuggingTestExecutionListener.ST
  */
 class CaptureConsoleExtensionTest
 {
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     static class SampleTestCase
     {
         private static final Logger LOGGER = LoggerFactory.getLogger(SampleTestCase.class);

@@ -54,7 +54,7 @@
             currentVersion=${project.version}
           </propertyExpansion>
           <!-- Used by the "blocker" execution id and the "default-cli" one
-              (i.e. when executing "mvn checkstyle:check") -->
+              (i.e., when executing "mvn checkstyle:check") -->
           <configLocation>checkstyle-blocker.xml</configLocation>
         </configuration>
         <executions>
@@ -73,6 +73,21 @@
             <goals>
               <goal>check</goal>
             </goals>
+          </execution>
+          <execution>
+            <!-- Checks applied to test sources only (e.g., verifying that tests don't generate files outside the
+                 "target" directory). We use a dedicated config and point the scanned source directory at the test
+                 sources so that these checks apply to test code only and not to main code. -->
+            <id>test</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <configLocation>checkstyle-test.xml</configLocation>
+              <sourceDirectories>
+                <sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>
+              </sourceDirectories>
+            </configuration>
           </execution>
         </executions>
       </plugin>
