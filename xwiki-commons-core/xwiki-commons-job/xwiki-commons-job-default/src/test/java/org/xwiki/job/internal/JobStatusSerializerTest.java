@@ -27,6 +27,7 @@ import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.test.TestEnvironment;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
@@ -42,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * @version $Id$
  */
 @ComponentTest
-@ComponentList({ SafeXStream.class, XStreamUtils.class })
+@ComponentList({ SafeXStream.class, XStreamUtils.class, TestEnvironment.class })
 class JobStatusSerializerTest
 {
     @InjectMockComponents
