@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.PropertyGroupDescriptor;
@@ -107,6 +108,11 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
      */
     private boolean displayHidden;
 
+    /**
+     * @see #getDisplayOptions()
+     */
+    private Map<String, String> displayOptions;
+    
     /**
      * @see #getOrder()
      */
@@ -365,4 +371,20 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     {
         this.order = order;
     }
+    
+    @Override
+    public Map<String, String> getDisplayOptions()
+    {
+        return displayOptions;
+    }
+    
+    /**
+     * @param displayOptions see {@link #getDisplayOptions()}
+     * @since 18.1.0
+     */
+    public void setDisplayOptions(Map<String, String> displayOptions)
+    {
+        this.displayOptions = displayOptions;
+    }
+
 }
