@@ -23,6 +23,8 @@ import java.io.File;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import javax.inject.Named;
+
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -164,10 +166,32 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     /**
+     * Check that the extension is properly reported to be installed in all namespaces.
+     *
+     * @param extensionId the extension to check
+     */
+    private void checkInstallStatus(ExtensionId extensionId)
+    {
+        checkInstallStatus(extensionId, null);
+    }
+
+    /**
      * Check that the extension is properly reported to be installed in the given namespace.
      *
-     * @param installedExtension the local extension to check
-     * @param namespace          the namespace where it has been installed
+     * @param extensionId the extension to check
+     * @param namespace the namespace where it has been installed
+     */
+    private void checkInstallStatus(ExtensionId extensionId, String namespace)
+    {
+        checkInstallStatus(this.installedExtensionRepository.getInstalledExtension(extensionId.getId(), namespace),
+            namespace);
+    }
+
+    /**
+     * Check that the extension is properly reported to be installed in the given namespace.
+     *
+     * @param installedExtension the extension to check
+     * @param namespace the namespace where it has been installed
      */
     private void checkInstallStatus(InstalledExtension installedExtension, String namespace)
     {
@@ -189,13 +213,13 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         }
     }
 
-    private Type getLoadedType(Type role, ClassLoader extensionLoader) throws ClassNotFoundException
+    private Type getLoadedType(Type role, ClassLoader extensionClassLoader) throws ClassNotFoundException
     {
         if (role instanceof Class) {
-            return Class.forName(((Class<?>) role).getName(), true, extensionLoader);
+            return Class.forName(((Class<?>) role).getName(), true, extensionClassLoader);
         } else if (role instanceof ParameterizedType) {
             Class<?> rawType =
-                Class.forName(((Class<?>) ((ParameterizedType) role).getRawType()).getName(), true, extensionLoader);
+                Class.forName(((Class<?>) ((ParameterizedType) role).getRawType()).getName(), true, extensionClassLoader);
             return new DefaultParameterizedType(((ParameterizedType) role).getOwnerType(), rawType,
                 ((ParameterizedType) role).getActualTypeArguments());
         }
@@ -207,9 +231,9 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
      * Check that an extension is effectively available in all namespace and that the global component manager provide
      * the expected default implementation.
      *
-     * @param role           the role expected to be provided by the extension
+     * @param role the role expected to be provided by the extension
      * @param implementation the implementation expected for the given role
-     * @param <T>            the role class
+     * @param <T> the role class
      * @return the effective role class in the extension class loader
      * @throws Exception on error
      */
@@ -222,21 +246,21 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
      * Check that an extension is effectively available in the given namespace and that the corresponding component
      * manager provide the expected default implementation.
      *
-     * @param role           the role expected to be provided by the extension
+     * @param role the role expected to be provided by the extension
      * @param implementation the implementation expected for the given role
-     * @param namespace      the namespace where the extension is expected to installed
-     * @param <T>            the role class
+     * @param namespace the namespace where the extension is expected to installed
+     * @param <T> the role class
      * @return the effective role class in the extension class loader
      * @throws Exception on error
      */
     private <T> Type checkJarExtensionAvailability(Type role, Class<? extends T> implementation, String namespace)
         throws Exception
     {
-        ClassLoader extensionLoader = getExtensionClassloader(namespace);
-        assertNotNull(extensionLoader);
-        assertNotSame(this.testApplicationClassloader, extensionLoader);
+        ClassLoader extensionClassLoader = getExtensionClassloader(namespace);
+        assertNotNull(extensionClassLoader);
+        assertNotSame(this.testApplicationClassloader, extensionClassLoader);
 
-        Type loadedRole = getLoadedType(role, extensionLoader);
+        Type loadedRole = getLoadedType(role, extensionClassLoader);
         // Ensure the loaded role does not came from the application classloader (a check to validate the test)
         assertFalse(loadedRole.equals(role));
 
@@ -250,19 +274,32 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
             }
         }
 
+        // Find the role hint
+        String roleHint = null;
+        Named named = implementation.getAnnotation(Named.class);
+        if (named != null) {
+            roleHint = named.value();
+        } else {
+            jakarta.inject.Named jakarteNamed = implementation.getAnnotation(jakarta.inject.Named.class);
+            if (jakarteNamed != null) {
+                roleHint = jakarteNamed.value();
+            }
+        }
+
         // check components managers
         Class<?> componentInstanceClass = null;
         if (namespace != null) {
-            componentInstanceClass = getExtensionComponentManager(namespace).getInstance(loadedRole).getClass();
+            componentInstanceClass =
+                getExtensionComponentManager(namespace).getInstance(loadedRole, roleHint).getClass();
 
             try {
-                this.componentManager.getInstance(loadedRole);
+                this.componentManager.getInstance(loadedRole, roleHint);
                 fail("the component should not be in the root component manager");
             } catch (ComponentLookupException expected) {
                 // expected
             }
         } else {
-            componentInstanceClass = this.componentManager.getInstance(loadedRole).getClass();
+            componentInstanceClass = this.componentManager.getInstance(loadedRole, roleHint).getClass();
         }
         assertEquals(implementation.getName(), componentInstanceClass.getName());
         assertNotSame(implementation, componentInstanceClass);
@@ -280,11 +317,18 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         ckeckUninstallStatus(localExtension, null);
     }
 
+    private void ckeckUninstallStatus(ExtensionId extensionId, String namespace)
+    {
+        LocalExtension localExtension = this.localExtensionRepository.getLocalExtension(extensionId);
+
+        ckeckUninstallStatus(localExtension, namespace);
+    }
+
     /**
      * Check that the extension is properly reported to be not installed in the given namespace.
      *
      * @param localExtension the local extension to check
-     * @param namespace      the namespace where it should not be installed
+     * @param namespace the namespace where it should not be installed
      */
     private void ckeckUninstallStatus(LocalExtension localExtension, String namespace)
     {
@@ -316,7 +360,7 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
      * Check that an extension is effectively not available in the given namespace and that the corresponding component
      * manager does not provide an implementation.
      *
-     * @param role      the role expected to not be provide
+     * @param role the role expected to not be provided
      * @param namespace the namespace where the extension is not expected to be installed
      * @throws Exception on error
      */
@@ -1066,8 +1110,8 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, NAMESPACE);
 
-        checkJarExtensionAvailability(TestInstalledComponent.TYPE_STRING,
-            DefaultTestInstalledComponent.class, NAMESPACE);
+        checkJarExtensionAvailability(TestInstalledComponent.TYPE_STRING, DefaultTestInstalledComponent.class,
+            NAMESPACE);
 
         uninstall(extensionId, NAMESPACE);
     }
@@ -1112,15 +1156,56 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    void testInstallOnNamespaceThenUpgradeOnRoot() throws Throwable
+    void testInstallOnNamespaceThenUpgradeOnNamespace() throws Throwable
     {
         final ExtensionId extensionId1 = new ExtensionId("jarupgrade", "1.0");
+        final ExtensionId extensiondendencyId1 = new ExtensionId("jarupgradedependency", "1.0");
         final ExtensionId extensionId2 = new ExtensionId("jarupgrade", "2.0");
+        final ExtensionId extensiondendencyId2 = new ExtensionId("jarupgradedependency", "2.0");
 
         // install on namespace
         InstalledExtension installedExtension1 = install(extensionId1, NAMESPACE);
 
         checkInstallStatus(installedExtension1, NAMESPACE);
+        checkInstallStatus(extensiondendencyId1, NAMESPACE);
+
+        assertSame(installedExtension1,
+            this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), NAMESPACE));
+        assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), null));
+
+        checkJarExtensionAvailability(packagefile.jarupgrade1.TestComponent.class,
+            packagefile.jarupgrade1.DefaultTestComponent.class, NAMESPACE);
+
+        // install on root
+        InstalledExtension installedExtension2 = install(extensionId2, NAMESPACE);
+
+        ckeckUninstallStatus(extensionId1, NAMESPACE);
+        ckeckUninstallStatus(extensiondendencyId1, NAMESPACE);
+        checkInstallStatus(installedExtension2, NAMESPACE);
+        checkInstallStatus(extensiondendencyId2, NAMESPACE);
+
+        checkJarExtensionUnavailability(packagefile.jarupgrade1.TestComponent.class, NAMESPACE);
+        checkJarExtensionAvailability(packagefile.jarupgrade2.TestComponent.class,
+            packagefile.jarupgrade2.DefaultTestComponent.class, NAMESPACE);
+        checkJarExtensionAvailability(packagefile.jarupgradedependency2.NewComponent.class,
+            packagefile.jarupgrade2.DefaultNewComponent.class, NAMESPACE);
+        checkJarExtensionAvailability(packagefile.jarupgradedependency2.NewComponent.class,
+            packagefile.jarupgradenewdependency.OtherNewComponent.class, NAMESPACE);
+    }
+
+    @Test
+    void testInstallOnNamespaceThenUpgradeOnRoot() throws Throwable
+    {
+        final ExtensionId extensionId1 = new ExtensionId("jarupgrade", "1.0");
+        final ExtensionId extensiondendencyId1 = new ExtensionId("jarupgradedependency", "1.0");
+        final ExtensionId extensionId2 = new ExtensionId("jarupgrade", "2.0");
+        final ExtensionId extensiondendencyId2 = new ExtensionId("jarupgradedependency", "2.0");
+
+        // install on namespace
+        InstalledExtension installedExtension1 = install(extensionId1, NAMESPACE);
+
+        checkInstallStatus(installedExtension1, NAMESPACE);
+        checkInstallStatus(extensiondendencyId1, NAMESPACE);
 
         assertSame(installedExtension1,
             this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), NAMESPACE));
@@ -1132,13 +1217,17 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         // install on root
         InstalledExtension installedExtension2 = install(extensionId2);
 
-        LocalExtension localExtension = this.localExtensionRepository.getLocalExtension(extensionId1);
-
-        ckeckUninstallStatus(localExtension, NAMESPACE);
+        ckeckUninstallStatus(extensionId1, NAMESPACE);
+        ckeckUninstallStatus(extensiondendencyId1, NAMESPACE);
         checkInstallStatus(installedExtension2);
+        checkInstallStatus(extensiondendencyId2);
 
         checkJarExtensionUnavailability(packagefile.jarupgrade1.TestComponent.class, NAMESPACE);
         checkJarExtensionAvailability(packagefile.jarupgrade2.TestComponent.class,
             packagefile.jarupgrade2.DefaultTestComponent.class);
+        checkJarExtensionAvailability(packagefile.jarupgradedependency2.NewComponent.class,
+            packagefile.jarupgrade2.DefaultNewComponent.class);
+        checkJarExtensionAvailability(packagefile.jarupgradedependency2.NewComponent.class,
+            packagefile.jarupgradenewdependency.OtherNewComponent.class);
     }
 }

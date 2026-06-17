@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
- *
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -19,20 +16,13 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
--->
+ */
+package packagefile.jarupgradedependency1;
 
-<extension>
-  <id>jarupgrade</id>
-  <version>1.0</version>
-  <type>jar</type>
-  <features>
-    <feature>feature</feature>
-  </features>
-  <dependencies>
-    <dependency>
-      <id>jarupgradedependency</id>
-      <version>1.0</version>
-    </dependency>
-  </dependencies>
-</extension>
+import org.xwiki.component.annotation.Role;
+
+@Role
+public interface OldComponent
+{
+
+}
