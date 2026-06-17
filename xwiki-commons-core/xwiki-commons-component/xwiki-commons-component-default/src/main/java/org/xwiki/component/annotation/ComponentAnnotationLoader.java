@@ -157,7 +157,7 @@ public class ComponentAnnotationLoader
             Class<?> componentClass;
             try {
                 componentClass = classLoader.loadClass(componentDeclaration.getImplementationClassName());
-            } catch (Exception e) {
+            } catch (Exception | LinkageError e) {
                 throw new RuntimeException(
                     String.format("Failed to load component class [%s] for annotation parsing",
                         componentDeclaration.getImplementationClassName()), e);

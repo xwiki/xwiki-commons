@@ -29,4 +29,14 @@
   <features>
     <feature>feature</feature>
   </features>
+  <dependencies>
+    <dependency>
+      <id>jarupgradenewdependency</id>
+      <version>test</version>
+    </dependency>
+    <dependency>
+      <id>jarupgradedependency</id>
+      <version>2.0</version>
+    </dependency>
+  </dependencies>
 </extension>

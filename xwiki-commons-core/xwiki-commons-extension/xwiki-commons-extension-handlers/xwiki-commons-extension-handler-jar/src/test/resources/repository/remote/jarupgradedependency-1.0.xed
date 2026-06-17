@@ -23,16 +23,7 @@
 -->
 
 <extension>
-  <id>jarupgrade</id>
+  <id>jarupgradedependency</id>
   <version>1.0</version>
   <type>jar</type>
-  <features>
-    <feature>feature</feature>
-  </features>
-  <dependencies>
-    <dependency>
-      <id>jarupgradedependency</id>
-      <version>1.0</version>
-    </dependency>
-  </dependencies>
 </extension>

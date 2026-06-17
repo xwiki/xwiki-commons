@@ -20,11 +20,9 @@
 
 package org.xwiki.extension.jar.internal.handler;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -40,10 +38,13 @@ import org.xwiki.classloader.internal.ClassLoaderResetEvent;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
+import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
+import org.xwiki.extension.event.AbstractExtensionEvent;
 import org.xwiki.extension.event.ExtensionEvent;
+import org.xwiki.extension.event.ExtensionInstalledEvent;
 import org.xwiki.extension.event.ExtensionUninstalledEvent;
 import org.xwiki.extension.event.ExtensionUpgradedEvent;
 import org.xwiki.extension.handler.ExtensionHandler;
@@ -51,7 +52,7 @@ import org.xwiki.extension.handler.ExtensionInitializer;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.job.event.JobFinishingEvent;
 import org.xwiki.job.event.JobStartedEvent;
-import org.xwiki.observation.EventListener;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
 
@@ -66,32 +67,38 @@ import org.xwiki.observation.event.Event;
 @Named("JarExtensionJobFinishingListener")
 // Fan out of 21
 @SuppressWarnings("checkstyle:ClassFanOutComplexity")
-public class JarExtensionJobFinishingListener implements EventListener
+public class JarExtensionJobFinishingListener extends AbstractEventListener
 {
-    private static final class UninstalledExtensionCollection
+    private static final class ReloadCollection
     {
-        private boolean rootNamespace;
+        private boolean reload;
 
-        private Set<String> namespaces;
+        private boolean reloadRootNamespace;
 
-        private void add(String namespace)
+        private Set<String> reloadNamespaces = new HashSet<>();
+
+        private Map<String, Set<ExtensionId>> newExtensions = new HashMap<>();
+
+        private void addNamespaceToReload(String namespace)
         {
-            if (!this.rootNamespace) {
+            this.reload = true;
+
+            // No need to keep adding namespaces if the root namespace is already marked for reload
+            if (!this.reloadRootNamespace) {
+                this.reloadNamespaces.add(namespace);
                 if (namespace != null) {
-                    if (this.namespaces == null) {
-                        this.namespaces = new HashSet<>();
-                    }
-                    this.namespaces.add(namespace);
+                    this.reloadNamespaces.add(namespace);
                 } else {
-                    this.rootNamespace = true;
+                    this.reloadRootNamespace = true;
                 }
             }
         }
-    }
 
-    /** The list of events observed. */
-    private static final List<Event> EVENTS = Arrays.asList(new ExtensionUninstalledEvent(),
-        new ExtensionUpgradedEvent(), new JobStartedEvent(), new JobFinishingEvent());
+        private void addNewExtension(String namespace, ExtensionId extensionId)
+        {
+            this.newExtensions.computeIfAbsent(namespace, n -> new HashSet<>()).add(extensionId);
+        }
+    }
 
     /**
      * Jar extension ClassLoader that will be properly refreshed.
@@ -127,16 +134,13 @@ public class JarExtensionJobFinishingListener implements EventListener
     @Inject
     private ObservationManager observationManager;
 
-    @Override
-    public String getName()
+    /**
+     * The default constructor.
+     */
+    public JarExtensionJobFinishingListener()
     {
-        return "JarExtensionJobFinishedListener";
-    }
-
-    @Override
-    public List<Event> getEvents()
-    {
-        return EVENTS;
+        super("JarExtensionJobFinishedListener", new ExtensionInstalledEvent(), new ExtensionUninstalledEvent(),
+            new ExtensionUpgradedEvent(), new JobStartedEvent(), new JobFinishingEvent());
     }
 
     private void pushUninstallLevel()
@@ -144,7 +148,7 @@ public class JarExtensionJobFinishingListener implements EventListener
         ExecutionContext context = this.execution.getContext();
 
         if (context != null) {
-            Stack<UninstalledExtensionCollection> extensions = getUninstalledExtensionCollectionStack(true);
+            Stack<ReloadCollection> extensions = getUninstalledExtensionCollectionStack(true);
 
             extensions.push(null);
         }
@@ -155,7 +159,7 @@ public class JarExtensionJobFinishingListener implements EventListener
         ExecutionContext context = this.execution.getContext();
 
         if (context != null) {
-            Stack<UninstalledExtensionCollection> extensions = getUninstalledExtensionCollectionStack(false);
+            Stack<ReloadCollection> extensions = getUninstalledExtensionCollectionStack(false);
 
             if (extensions != null) {
                 extensions.pop();
@@ -163,15 +167,14 @@ public class JarExtensionJobFinishingListener implements EventListener
         }
     }
 
-    private Stack<UninstalledExtensionCollection> getUninstalledExtensionCollectionStack(boolean create)
+    private Stack<ReloadCollection> getUninstalledExtensionCollectionStack(boolean create)
     {
         ExecutionContext context = this.execution.getContext();
         final String contextKey = "extension.jar.uninstalledExtensions";
 
         if (context != null) {
             @SuppressWarnings("unchecked")
-            Stack<UninstalledExtensionCollection> extensions =
-                (Stack<UninstalledExtensionCollection>) context.getProperty(contextKey);
+            Stack<ReloadCollection> extensions = (Stack<ReloadCollection>) context.getProperty(contextKey);
 
             if (extensions == null && create) {
                 extensions = new Stack<>();
@@ -184,18 +187,18 @@ public class JarExtensionJobFinishingListener implements EventListener
         return null;
     }
 
-    private UninstalledExtensionCollection getCurrentJobUninstalledExtensions(boolean create)
+    private ReloadCollection getCurrentJobUninstalledExtensions(boolean create)
     {
         ExecutionContext context = this.execution.getContext();
 
         if (context != null) {
-            Stack<UninstalledExtensionCollection> extensions = getUninstalledExtensionCollectionStack(false);
+            Stack<ReloadCollection> extensions = getUninstalledExtensionCollectionStack(false);
 
             if (extensions != null) {
-                UninstalledExtensionCollection collection = extensions.peek();
+                ReloadCollection collection = extensions.peek();
 
                 if (collection == null && create) {
-                    collection = new UninstalledExtensionCollection();
+                    collection = new ReloadCollection();
                     extensions.set(extensions.size() - 1, collection);
                 }
 
@@ -208,22 +211,34 @@ public class JarExtensionJobFinishingListener implements EventListener
 
     private void addUninstalledExtension(String namespace)
     {
-        UninstalledExtensionCollection collection = getCurrentJobUninstalledExtensions(true);
+        ReloadCollection collection = getCurrentJobUninstalledExtensions(true);
 
         if (collection != null) {
-            collection.add(namespace);
+            collection.addNamespaceToReload(namespace);
+        }
+    }
+
+    private void addInstalledExtension(String namespace, ExtensionId extensionId)
+    {
+        ReloadCollection collection = getCurrentJobUninstalledExtensions(true);
+
+        if (collection != null) {
+            collection.addNewExtension(namespace, extensionId);
         }
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        if (event instanceof ExtensionUninstalledEvent) {
-            onExtensionRemovedEvent((ExtensionUninstalledEvent) event, (InstalledExtension) source);
-        } else if (event instanceof ExtensionUpgradedEvent) {
+        if (event instanceof ExtensionUninstalledEvent uninstalledEvent) {
+            onExtensionRemovedEvent(uninstalledEvent, (InstalledExtension) source);
+        } else if (event instanceof ExtensionUpgradedEvent upgradedEvent) {
             for (InstalledExtension previous : (Collection<InstalledExtension>) data) {
-                onExtensionRemovedEvent((ExtensionUpgradedEvent) event, previous);
+                onExtensionRemovedEvent(upgradedEvent, previous);
             }
+            onExtensionAddedEvent(upgradedEvent, (InstalledExtension) source);
+        } else if (event instanceof ExtensionInstalledEvent installedEvent) {
+            onExtensionAddedEvent(installedEvent, (InstalledExtension) source);
         } else if (event instanceof JobStartedEvent) {
             onJobStartedEvent();
         } else {
@@ -231,9 +246,18 @@ public class JarExtensionJobFinishingListener implements EventListener
         }
     }
 
+    private void onExtensionAddedEvent(AbstractExtensionEvent event, InstalledExtension extension)
+    {
+        if (JarExtensionHandler.isSupported(extension.getType())) {
+            // Remember extension which are new, and so you should be unloaded at the end of the job
+            addInstalledExtension(event.getNamespace(), extension.getId());
+        }
+    }
+
     private void onExtensionRemovedEvent(ExtensionEvent event, InstalledExtension extension)
     {
         if (JarExtensionHandler.isSupported(extension.getType())) {
+            // Remember namespace which should be reloaded at the end of the job
             addUninstalledExtension(event.getNamespace());
         }
     }
@@ -257,39 +281,43 @@ public class JarExtensionJobFinishingListener implements EventListener
 
     private void onJobFinishedEvent()
     {
-        UninstalledExtensionCollection collection = getCurrentJobUninstalledExtensions(false);
+        ReloadCollection reloadCollection = getCurrentJobUninstalledExtensions(false);
 
         popUninstallLevel();
 
-        if (collection != null) {
-            if (collection.rootNamespace) {
+        if (reloadCollection != null && reloadCollection.reload) {
+            if (reloadCollection.reloadRootNamespace) {
                 // Unload extensions
-                unloadJARsFromNamespace(null);
+                unloadJARsFromNamespace(null, reloadCollection);
 
-                // Drop class loaders
+                // Drop class loaders for all namespaces
                 this.jarExtensionClassLoader.dropURLClassLoaders();
 
+                // Re-initialize all extensions
                 initializeExtensions(null);
+
+                // Notify that all ClassLoaders have been reloaded
                 this.observationManager.notify(new ClassLoaderResetEvent(), null);
-            } else if (collection.namespaces != null) {
-                for (String namespace : collection.namespaces) {
+            } else {
+                for (String namespace : reloadCollection.reloadNamespaces) {
                     // Unload extensions
-                    unloadJARsFromNamespace(namespace);
+                    unloadJARsFromNamespace(namespace, reloadCollection);
 
                     // Drop class loader
                     this.jarExtensionClassLoader.dropURLClassLoader(namespace);
 
+                    // Re-initialize extensions from the namespace
                     initializeExtensions(namespace);
+
+                    // Notify that the ClassLoader has been reloaded for the namespace
                     this.observationManager.notify(new ClassLoaderResetEvent(namespace), null);
                 }
             }
         }
     }
 
-    private void unloadJARsFromNamespace(String namespace)
+    private void unloadJARsFromNamespace(String namespace, ReloadCollection reloadCollection)
     {
-        Map<String, Set<InstalledExtension>> unloadedExtensionsMap = new HashMap<>();
-
         // Load extensions from local repository
         Collection<InstalledExtension> installedExtensions;
         if (namespace != null) {
@@ -299,10 +327,11 @@ public class JarExtensionJobFinishingListener implements EventListener
         }
 
         for (InstalledExtension installedExtension : installedExtensions) {
+            // Skip non JAR extensions
             if (JarExtensionHandler.isSupported(installedExtension.getType())) {
                 if (namespace == null || !installedExtension.isInstalled(null)) {
                     try {
-                        unloadJAR(installedExtension, namespace, unloadedExtensionsMap);
+                        unloadJAR(installedExtension, namespace, reloadCollection.newExtensions);
                     } catch (Exception e) {
                         this.logger.error("Failed to unload installed extension [{}]", installedExtension, e);
                     }
@@ -312,16 +341,11 @@ public class JarExtensionJobFinishingListener implements EventListener
     }
 
     private void unloadJAR(InstalledExtension installedExtension, String namespace,
-        Map<String, Set<InstalledExtension>> unloadedExtensions) throws UninstallException
+        Map<String, Set<ExtensionId>> skipExtensions) throws UninstallException
     {
-        Set<InstalledExtension> unloadedExtensionsInNamespace = unloadedExtensions.get(namespace);
+        Set<ExtensionId> skipExtensionsInNamespace = skipExtensions.computeIfAbsent(namespace, n -> new HashSet<>());
 
-        if (unloadedExtensionsInNamespace == null) {
-            unloadedExtensionsInNamespace = new HashSet<>();
-            unloadedExtensions.put(namespace, unloadedExtensionsInNamespace);
-        }
-
-        if (unloadedExtensionsInNamespace.contains(installedExtension)) {
+        if (skipExtensionsInNamespace.contains(installedExtension.getId())) {
             return;
         }
         if (namespace == null) {
@@ -332,7 +356,7 @@ public class JarExtensionJobFinishingListener implements EventListener
 
                     for (Map.Entry<String, Collection<InstalledExtension>> entry : bDependencies.entrySet()) {
                         for (InstalledExtension bDependency : entry.getValue()) {
-                            unloadJAR(bDependency, entry.getKey(), unloadedExtensions);
+                            unloadJAR(bDependency, entry.getKey(), skipExtensions);
                         }
                     }
                 } catch (ResolveException e) {
@@ -341,19 +365,21 @@ public class JarExtensionJobFinishingListener implements EventListener
                 }
 
                 this.jarHandler.uninstall(installedExtension, null, null);
-                unloadedExtensionsInNamespace.add(installedExtension);
+
+                // Remember that we unloaded the extension
+                skipExtensionsInNamespace.add(installedExtension.getId());
             } else {
                 for (String namespace2 : installedExtension.getNamespaces()) {
-                    unloadJAR(installedExtension, namespace2, unloadedExtensions);
+                    unloadJAR(installedExtension, namespace2, skipExtensions);
                 }
             }
         } else {
-            unloadJARFromNamespace(installedExtension, namespace, unloadedExtensions, unloadedExtensionsInNamespace);
+            unloadJARFromNamespace(installedExtension, namespace, skipExtensions, skipExtensionsInNamespace);
         }
     }
 
     private void unloadJARFromNamespace(InstalledExtension installedExtension, String namespace,
-        Map<String, Set<InstalledExtension>> unloadedExtensions, Set<InstalledExtension> unloadedExtensionsInNamespace)
+        Map<String, Set<ExtensionId>> skipExtensions, Set<ExtensionId> skipExtensionsInNamespace)
         throws UninstallException
     {
         try {
@@ -361,7 +387,7 @@ public class JarExtensionJobFinishingListener implements EventListener
                 .getBackwardDependencies(installedExtension.getId().getId(), namespace);
 
             for (InstalledExtension bDependency : bDependencies) {
-                unloadJAR(bDependency, namespace, unloadedExtensions);
+                unloadJAR(bDependency, namespace, skipExtensions);
             }
         } catch (ResolveException e) {
             this.logger.error("Failed to get backward dependencies for installed extension [{}] on namespace [{}]",
@@ -369,6 +395,8 @@ public class JarExtensionJobFinishingListener implements EventListener
         }
 
         this.jarHandler.uninstall(installedExtension, namespace, null);
-        unloadedExtensionsInNamespace.add(installedExtension);
+
+        // Remember that we unloaded the extension
+        skipExtensionsInNamespace.add(installedExtension.getId());
     }
 }
