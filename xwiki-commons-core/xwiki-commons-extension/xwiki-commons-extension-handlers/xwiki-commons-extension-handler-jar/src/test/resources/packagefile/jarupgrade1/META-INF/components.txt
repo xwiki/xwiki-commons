@@ -1,1 +1,2 @@
+packagefile.jarupgrade1.DefaultOldComponent
 packagefile.jarupgrade1.DefaultTestComponent
