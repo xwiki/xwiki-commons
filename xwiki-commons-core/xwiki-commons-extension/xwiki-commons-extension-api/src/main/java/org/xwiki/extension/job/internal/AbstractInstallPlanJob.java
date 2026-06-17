@@ -1301,7 +1301,17 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
         throws IncompatibleVersionConstraintException, ResolveException, InstallException
     {
         if (getRequest().isInstalledIgnored()) {
-            return Set.of();
+            // Even when installed extensions are ignored for the plan, we still need to include the currently
+            // installed version (if any) as a "previous" extension so that the install job can properly replace it
+            // using the UPGRADE flow (which correctly unregisters then re-registers the extension in the installed
+            // extension repository, instead of failing with "already installed").
+            Set<InstalledExtension> previousExtensions = new LinkedHashSet<>();
+            InstalledExtension installedExtension =
+                this.installedExtensionRepository.getInstalledExtension(newExtension.getId().getId(), namespace);
+            if (installedExtension != null && installedExtension.isInstalled(namespace)) {
+                previousExtensions.add(installedExtension);
+            }
+            return previousExtensions;
         }
 
         // If a namespace extension already exist on root, fail the install
