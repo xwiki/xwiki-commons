@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  * @since 3.5M1
  */
-public class SystemTest
+class SystemTest
 {
     private static final File TMPDIR = new File(java.lang.System.getProperty("java.io.tmpdir"), "xwiki-temp");
 

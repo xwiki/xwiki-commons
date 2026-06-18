@@ -30,7 +30,7 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
  */
 @ComponentTest
 @ExtendWith(BlobStoreExtension.class)
-public class AllIT
+class AllIT
 {
     @Nested
     class NestedFileSystemBlobStoreIT extends FileSystemBlobStoreIT

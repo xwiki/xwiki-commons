@@ -46,7 +46,7 @@ class DefaultInstalledExtensionTest
     private DefaultInstalledExtension installedExtension;
 
     @BeforeEach
-    public void beforeEach()
+    void beforeEach()
     {
         DefaultLocalExtension localExtension =
             new DefaultLocalExtension(null, new ExtensionId("installed", "version"), "type");

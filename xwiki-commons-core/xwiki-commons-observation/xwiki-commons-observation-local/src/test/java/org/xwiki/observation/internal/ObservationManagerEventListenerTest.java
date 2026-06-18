@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  */
 @ComponentTest
-public class ObservationManagerEventListenerTest
+class ObservationManagerEventListenerTest
 {
     @InjectMockComponents
     private DefaultObservationManager manager;
@@ -60,7 +60,7 @@ public class ObservationManagerEventListenerTest
     private DefaultComponentDescriptor<EventListener> componentDescriptor;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         QueueComponentEventManager componentEventManager = new QueueComponentEventManager();
         componentEventManager.shouldQueue(false);

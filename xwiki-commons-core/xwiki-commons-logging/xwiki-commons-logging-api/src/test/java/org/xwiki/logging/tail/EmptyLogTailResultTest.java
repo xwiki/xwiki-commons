@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class EmptyLogTailResultTest
+class EmptyLogTailResultTest
 {
     EmptyLogTailResult tail = EmptyLogTailResult.INSTANCE;
 

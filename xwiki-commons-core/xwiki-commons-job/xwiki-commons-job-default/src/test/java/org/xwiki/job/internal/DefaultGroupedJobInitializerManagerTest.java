@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
  * @since 12.5RC1
  */
 @ComponentTest
-public class DefaultGroupedJobInitializerManagerTest
+class DefaultGroupedJobInitializerManagerTest
 {
     @InjectMockComponents(role = GroupedJobInitializerManager.class)
     private DefaultGroupedJobInitializerManager groupedJobInitializerManager;
@@ -98,7 +98,7 @@ public class DefaultGroupedJobInitializerManagerTest
     }
 
     @Test
-    public void getInitializerExactMatch()
+    void getInitializerExactMatch()
     {
         assertSame(this.initializerList.get(0),
             this.groupedJobInitializerManager.getGroupedJobInitializer(
@@ -109,7 +109,7 @@ public class DefaultGroupedJobInitializerManagerTest
     }
 
     @Test
-    public void getInitializerFallbackOnParent()
+    void getInitializerFallbackOnParent()
     {
         assertSame(this.initializerList.get(0),
             this.groupedJobInitializerManager.getGroupedJobInitializer(
@@ -123,7 +123,7 @@ public class DefaultGroupedJobInitializerManagerTest
     }
 
     @Test
-    public void getInitializerFallbackOnDefault()
+    void getInitializerFallbackOnDefault()
     {
         assertSame(this.defaultGroupedJobInitializer,
             this.groupedJobInitializerManager.getGroupedJobInitializer(

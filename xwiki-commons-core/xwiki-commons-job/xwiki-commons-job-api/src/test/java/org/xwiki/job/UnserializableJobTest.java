@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  */
 @ComponentTest
-public class UnserializableJobTest
+class UnserializableJobTest
 {
     @InjectMockComponents
     private UnserializableJob job;

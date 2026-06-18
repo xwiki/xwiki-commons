@@ -48,7 +48,7 @@ class DefaultJobContextTest
     private Execution execution;
 
     @BeforeEach
-    public void beforeEach()
+    void beforeEach()
     {
         when(this.execution.getContext()).thenReturn(new ExecutionContext());
     }

@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
  *
  * @version $Id$
  */
-public class FixedNameEventFilterTest
+class FixedNameEventFilterTest
 {
     @Test
     void testFixedNameEventFilterTest()

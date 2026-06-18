@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @version $Id$
  * @since 4.2M1
  */
-public class XARMojoTest extends AbstractMojoTest
+class XARMojoTest extends AbstractMojoTest
 {
     @Test
     void invalidPackageXmlThrowsException() throws Exception

@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class ApplicationStartedEventTest
+class ApplicationStartedEventTest
 {
     @Test
     void applicationStartedEventMatching()

@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * @version $Id$
  */
 @ComponentTest
-public class FilterStreamTypeConverterTest
+class FilterStreamTypeConverterTest
 {
     @InjectMockComponents
     private FilterStreamTypeConverter converter;

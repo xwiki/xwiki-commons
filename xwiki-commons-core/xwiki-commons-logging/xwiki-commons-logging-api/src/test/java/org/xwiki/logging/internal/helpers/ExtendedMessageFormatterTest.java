@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  *
  * @version $Id$
  */
-public class ExtendedMessageFormatterTest
+class ExtendedMessageFormatterTest
 {
     @Test
     void nullMessage()

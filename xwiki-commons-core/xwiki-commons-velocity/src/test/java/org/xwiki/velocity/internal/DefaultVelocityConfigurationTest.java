@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
  * @since 2.4RC1
  */
 @ComponentTest
-public class DefaultVelocityConfigurationTest
+class DefaultVelocityConfigurationTest
 {
     @InjectMockComponents
     private DefaultVelocityConfiguration configuration;
@@ -62,7 +62,7 @@ public class DefaultVelocityConfigurationTest
     }
 
     @BeforeEach
-    public void configure(ComponentManager componentManager) throws Exception
+    void configure(ComponentManager componentManager) throws Exception
     {
         ConfigurationSource source = componentManager.getInstance(ConfigurationSource.class);
         when(source.getProperty("velocity.tools", Properties.class)).thenReturn(new Properties());

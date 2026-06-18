@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  */
 @ComponentTest
-public class DefaultJobManagerConfigurationTest
+class DefaultJobManagerConfigurationTest
 {
     @InjectMockComponents
     private DefaultJobManagerConfiguration configuration;

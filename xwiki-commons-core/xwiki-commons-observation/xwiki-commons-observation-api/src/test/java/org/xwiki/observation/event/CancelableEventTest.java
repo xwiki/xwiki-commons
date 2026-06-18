@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class CancelableEventTest
+class CancelableEventTest
 {
     static class TestCancelableEvent extends AbstractCancelableEvent
     {

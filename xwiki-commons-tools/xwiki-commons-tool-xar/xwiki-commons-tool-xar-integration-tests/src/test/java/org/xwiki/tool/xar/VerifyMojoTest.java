@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @version $Id$
  * @since 4.0M2
  */
-public class VerifyMojoTest extends AbstractMojoTest
+class VerifyMojoTest extends AbstractMojoTest
 {
     @Test
     void executeWithWrongAuthor() throws Exception

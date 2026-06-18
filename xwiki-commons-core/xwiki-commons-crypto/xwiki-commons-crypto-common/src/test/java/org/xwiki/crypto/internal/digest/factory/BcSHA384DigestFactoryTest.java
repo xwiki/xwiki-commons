@@ -34,7 +34,7 @@ import org.xwiki.test.junit5.mockito.InjectMockComponents;
     Base64BinaryStringEncoder.class
 })
 // @formatter:on
-public class BcSHA384DigestFactoryTest extends AbstractDigestFactoryTest
+class BcSHA384DigestFactoryTest extends AbstractDigestFactoryTest
 {
     @InjectMockComponents
     @Named("SHA-384")

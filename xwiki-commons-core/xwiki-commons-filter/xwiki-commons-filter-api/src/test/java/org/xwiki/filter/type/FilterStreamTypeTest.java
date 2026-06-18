@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class FilterStreamTypeTest
+class FilterStreamTypeTest
 {
     @Test
     void testSerializeWithDataAndVersion()

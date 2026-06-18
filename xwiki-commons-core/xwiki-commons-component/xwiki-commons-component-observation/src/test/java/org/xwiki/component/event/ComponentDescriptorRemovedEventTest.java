@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class ComponentDescriptorRemovedEventTest
+class ComponentDescriptorRemovedEventTest
 {
     /**
      * Used in tests below.

@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
  * @since 3.5M1
  */
 @ComponentTest
-public class StandardEnvironmentTest
+class StandardEnvironmentTest
 {
     private static final File TMPDIR = new File(System.getProperty("java.io.tmpdir"), "xwiki-temp");
 
@@ -59,7 +59,7 @@ public class StandardEnvironmentTest
     private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO);
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
         if (TMPDIR.exists()) {
             FileUtils.forceDelete(TMPDIR);
@@ -67,7 +67,7 @@ public class StandardEnvironmentTest
     }
 
     @AfterEach
-    public void tearDown() throws Exception
+    void tearDown() throws Exception
     {
         if (TMPDIR.exists()) {
             FileUtils.forceDelete(TMPDIR);
@@ -117,7 +117,7 @@ public class StandardEnvironmentTest
     }
 
     @Test
-    public void getConfiguredPermanentDirectory(MockitoComponentManager componentManager) throws Exception
+    void getConfiguredPermanentDirectory(MockitoComponentManager componentManager) throws Exception
     {
         File persistentDir =
             new File(System.getProperty("java.io.tmpdir"), "xwiki-test-persistentDir").getAbsoluteFile();
@@ -176,7 +176,7 @@ public class StandardEnvironmentTest
     }
 
     @Test
-    public void getTemporaryDirectoryFailOver(MockitoComponentManager componentManager) throws Exception
+    void getTemporaryDirectoryFailOver(MockitoComponentManager componentManager) throws Exception
     {
         FileUtils.forceMkdir(TMPDIR);
         File txtFile = new File(TMPDIR, "test.txt");

@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  *
  * @version $Id$
  */
-public class UriBuilderTest
+class UriBuilderTest
 {
     @Test
     void buildWithTwoElements()

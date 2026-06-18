@@ -80,7 +80,7 @@ class DefaultScriptContextManagerTest
     private ComponentManager componentManager;
 
     @BeforeEach
-    public void before()
+    void before()
     {
         when(this.contextComponentManagerProvider.get()).thenReturn(this.componentManager);
     }

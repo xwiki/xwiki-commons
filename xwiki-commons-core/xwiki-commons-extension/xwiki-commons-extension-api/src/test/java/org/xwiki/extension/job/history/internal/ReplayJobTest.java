@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
  * @since 7.1RC1
  */
 @ComponentTest
-public class ReplayJobTest
+class ReplayJobTest
 {
     @MockComponent
     @Named("install")

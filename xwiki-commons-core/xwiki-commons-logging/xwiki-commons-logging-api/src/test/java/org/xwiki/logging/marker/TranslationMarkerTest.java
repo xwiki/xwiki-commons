@@ -33,12 +33,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class TranslationMarkerTest
+class TranslationMarkerTest
 {
     private TranslationMarker marker;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         this.marker = new TranslationMarker("translation.key");
     }

@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class LogQueueTest
+class LogQueueTest
 {
     @Test
     void error()

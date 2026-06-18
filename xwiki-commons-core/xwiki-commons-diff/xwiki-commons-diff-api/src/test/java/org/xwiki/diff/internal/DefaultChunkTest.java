@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Test of {@link DefaultChunk}.
  */
-public class DefaultChunkTest
+class DefaultChunkTest
 {
     @Test
     void isOverlapping()

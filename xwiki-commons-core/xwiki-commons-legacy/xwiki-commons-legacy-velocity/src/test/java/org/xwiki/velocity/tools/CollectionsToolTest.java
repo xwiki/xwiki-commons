@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @version $Id$
  * @since 4.0M1
  */
-public class CollectionsToolTest
+class CollectionsToolTest
 {
     private CollectionsTool tool = new CollectionsTool();
 

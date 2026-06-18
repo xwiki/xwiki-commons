@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  *
  * @version $Id$
  */
-public class LocalEntityResolverTest
+class LocalEntityResolverTest
 {
     /**
      * Verify we're not subject to XXE attacks and that our {@link LocalEntityResolver} will prevent the usage of the

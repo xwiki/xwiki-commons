@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  */
 @ComponentTest
-public class DefaultCacheControlTest
+class DefaultCacheControlTest
 {
     @MockComponent
     private Execution execution;
@@ -52,7 +52,7 @@ public class DefaultCacheControlTest
     private ExecutionContext context = new ExecutionContext();
 
     @BeforeEach
-    public void beforeEach()
+    void beforeEach()
     {
         when(this.execution.getContext()).thenReturn(context);
     }

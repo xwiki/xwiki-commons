@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @version $Id$
  */
 @ComponentTest
-public class HTMLDisplayerTest
+class HTMLDisplayerTest
 {
     @InjectMockComponents
     private DefaultHTMLDisplayer defaultHTMLDisplayer;

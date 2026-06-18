@@ -79,7 +79,7 @@ class DefaultBeanManagerTest
     private BeanManager defaultBeanManager;
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
         this.defaultBeanManager = this.componentManager.getInstance(BeanManager.class);
     }

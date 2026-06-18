@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  */
 @ComponentTest
-public class HTMLDisplayerManagerTest
+class HTMLDisplayerManagerTest
 {
     @MockComponent
     private HTMLDisplayer<Object> defaultHTMLDisplayer;
@@ -76,7 +76,7 @@ public class HTMLDisplayerManagerTest
     private DefaultHTMLDisplayerManager defaultDisplayerManager;
 
     @BeforeEach
-    public void configure(ComponentManager componentManager) throws Exception
+    void configure(ComponentManager componentManager) throws Exception
     {
         when(this.componentManagerProvider.get()).thenReturn(componentManager);
 

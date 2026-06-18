@@ -98,7 +98,7 @@ public class AbstractExtensionTest
     }
 
     @BeforeEach
-    public void beforeEach()
+    void beforeEach()
     {
         this.repository = mock(ExtensionRepository.class);
         this.id = new ExtensionId("extesionid", "extensionversion");

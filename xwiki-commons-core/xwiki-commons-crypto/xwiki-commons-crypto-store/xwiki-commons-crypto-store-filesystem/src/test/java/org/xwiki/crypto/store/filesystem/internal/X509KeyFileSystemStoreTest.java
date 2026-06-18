@@ -61,7 +61,7 @@ import static org.mockito.Mockito.when;
  * @since 6.1M2
  */
 @ComponentTest
-public class X509KeyFileSystemStoreTest
+class X509KeyFileSystemStoreTest
 {
     private static final byte[] PASSWORD = "password".getBytes();
 
@@ -143,7 +143,7 @@ public class X509KeyFileSystemStoreTest
     CertifiedKeyPair keyPair;
 
     @BeforeAll
-    public static void staticSetup()
+    static void staticSetup()
     {
         FILE = new File(TEST_DIR, "my.key");
         DIRECTORY = new File(TEST_DIR, "keystore");
@@ -154,7 +154,7 @@ public class X509KeyFileSystemStoreTest
     }
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
         BinaryStringEncoder base64Encoder = this.componentManager.getInstance(BinaryStringEncoder.class, "Base64");
         when(base64Encoder.encode(PRIVATEKEY, 64)).thenReturn(ENCODED_PRIVATEKEY);

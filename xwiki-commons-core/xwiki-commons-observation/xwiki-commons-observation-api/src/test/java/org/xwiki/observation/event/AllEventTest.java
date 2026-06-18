@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class AllEventTest
+class AllEventTest
 {
     @Test
     void allEventMatching()

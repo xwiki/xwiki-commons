@@ -36,7 +36,7 @@ public class BadTest1
     }
 
     @Test
-    public void test()
+    void test()
     {
         // Empty
     }

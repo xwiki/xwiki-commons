@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * @version $Id$
  * @since 3.1M1
  */
-public class GuiceCompatibilityTest
+class GuiceCompatibilityTest
 {
     @Role
     public interface FieldRole

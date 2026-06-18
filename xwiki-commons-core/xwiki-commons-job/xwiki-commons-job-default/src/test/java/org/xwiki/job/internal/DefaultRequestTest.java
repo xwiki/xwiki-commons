@@ -25,7 +25,7 @@ import org.xwiki.job.DefaultRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DefaultRequestTest
+class DefaultRequestTest
 {
     @Test
     void createDefaultRequestWithPassedRequest()

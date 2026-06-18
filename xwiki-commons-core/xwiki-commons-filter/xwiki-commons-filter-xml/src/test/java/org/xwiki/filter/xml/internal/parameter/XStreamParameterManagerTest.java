@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @version $Id$
  */
 @ComponentTest()
-public class XStreamParameterManagerTest
+class XStreamParameterManagerTest
 {
     @InjectMockComponents
     private XStreamParameterManager parameters;

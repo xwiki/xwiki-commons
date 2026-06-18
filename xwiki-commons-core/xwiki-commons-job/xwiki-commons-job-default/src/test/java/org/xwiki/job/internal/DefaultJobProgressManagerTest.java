@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
  * @version $Id$
  */
 @ComponentTest
-public class DefaultJobProgressManagerTest
+class DefaultJobProgressManagerTest
 {
     @InjectMockComponents
     private DefaultJobProgressManager progress;

@@ -30,7 +30,7 @@ import static org.mockito.Mockito.never;
  *
  * @version $Id$
  */
-public class WrappedThreadEventListenerTest
+class WrappedThreadEventListenerTest
 {
     private EventListener listenermock = Mockito.mock(EventListener.class);
 

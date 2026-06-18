@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @since 11.10.5
  */
 @ComponentTest
-public class DefaultDiffManagerIntegrationTest
+class DefaultDiffManagerIntegrationTest
 {
     @InjectMockComponents
     private DefaultDiffManager defaultDiffManager;

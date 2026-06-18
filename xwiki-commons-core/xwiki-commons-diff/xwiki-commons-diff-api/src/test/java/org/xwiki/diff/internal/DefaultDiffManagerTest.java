@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ComponentTest
-public class DefaultDiffManagerTest
+class DefaultDiffManagerTest
 {
     @InjectMockComponents
     private DefaultDiffManager diffManager;

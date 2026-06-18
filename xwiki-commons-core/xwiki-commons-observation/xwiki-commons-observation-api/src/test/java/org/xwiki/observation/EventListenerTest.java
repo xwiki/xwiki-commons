@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @version $Id$
  */
-public class EventListenerTest
+class EventListenerTest
 {
     static class TestEventListener extends AbstractEventListener
     {

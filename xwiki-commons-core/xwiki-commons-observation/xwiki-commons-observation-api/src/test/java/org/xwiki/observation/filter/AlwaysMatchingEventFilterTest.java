@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class AlwaysMatchingEventFilterTest
+class AlwaysMatchingEventFilterTest
 {
     AlwaysMatchingEventFilter filter = AlwaysMatchingEventFilter.INSTANCE;
 

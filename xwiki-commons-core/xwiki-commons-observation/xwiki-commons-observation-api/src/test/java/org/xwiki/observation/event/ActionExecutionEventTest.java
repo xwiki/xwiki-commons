@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class ActionExecutionEventTest
+class ActionExecutionEventTest
 {
     @Test
     void testActionExecutionEventString()

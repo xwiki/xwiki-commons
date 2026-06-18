@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * @version $Id$
  * @since 4.0M1
  */
-public class RestrictParseLocationEventHandlerTest
+class RestrictParseLocationEventHandlerTest
 {
     private RestrictParseLocationEventHandler handler = new RestrictParseLocationEventHandler();
 

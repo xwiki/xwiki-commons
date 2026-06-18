@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @version $Id$
  */
-public class LogEventTest
+class LogEventTest
 {
     @Test
     void testGetMessageElements()

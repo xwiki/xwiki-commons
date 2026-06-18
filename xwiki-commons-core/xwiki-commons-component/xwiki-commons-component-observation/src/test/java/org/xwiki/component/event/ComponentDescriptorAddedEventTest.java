@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class ComponentDescriptorAddedEventTest
+class ComponentDescriptorAddedEventTest
 {
     /**
      * Used in tests below.

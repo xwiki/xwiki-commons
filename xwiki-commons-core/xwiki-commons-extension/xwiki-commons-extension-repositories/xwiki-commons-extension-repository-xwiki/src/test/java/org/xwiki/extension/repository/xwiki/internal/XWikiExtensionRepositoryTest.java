@@ -66,7 +66,7 @@ class XWikiExtensionRepositoryTest
     private Unmarshaller unmarshaller = mock(Unmarshaller.class);
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
         ExtensionRepositoryDescriptor repositoryDescriptor = mock(ExtensionRepositoryDescriptor.class);
         when(repositoryDescriptor.getURI()).thenReturn(new URI("http://extensions.xwiki.org/xwiki/rest"));

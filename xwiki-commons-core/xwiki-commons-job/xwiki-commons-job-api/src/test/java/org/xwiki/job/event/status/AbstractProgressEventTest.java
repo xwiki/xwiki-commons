@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @version $Id$
  */
-public class AbstractProgressEventTest
+class AbstractProgressEventTest
 {
     private class TestableProgressEvent extends AbstractProgressEvent
     {

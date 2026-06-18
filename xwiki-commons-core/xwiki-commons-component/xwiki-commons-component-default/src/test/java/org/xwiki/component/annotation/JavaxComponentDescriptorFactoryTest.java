@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * @version $Id$
  * @since 1.8.1
  */
-public class JavaxComponentDescriptorFactoryTest
+class JavaxComponentDescriptorFactoryTest
 {
     @ComponentRole
     public interface NonGenericFieldRole<T>

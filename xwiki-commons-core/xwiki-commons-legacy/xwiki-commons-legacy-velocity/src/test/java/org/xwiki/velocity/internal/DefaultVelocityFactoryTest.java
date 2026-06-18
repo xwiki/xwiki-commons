@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verify;
  * @version $Id$
  */
 @ComponentTest
-public class DefaultVelocityFactoryTest
+class DefaultVelocityFactoryTest
 {
     @InjectMockComponents
     private DefaultVelocityFactory velocityFactory;

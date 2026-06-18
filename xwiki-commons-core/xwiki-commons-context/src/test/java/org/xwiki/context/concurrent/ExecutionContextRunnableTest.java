@@ -36,7 +36,7 @@ import static org.mockito.Mockito.verify;
  *
  * @version $Id$
  */
-public class ExecutionContextRunnableTest
+class ExecutionContextRunnableTest
 {
     @Test
     void initializedExecutionContext() throws InterruptedException, ComponentLookupException,

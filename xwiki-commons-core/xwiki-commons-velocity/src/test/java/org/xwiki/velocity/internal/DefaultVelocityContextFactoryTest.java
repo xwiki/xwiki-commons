@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  */
 @ComponentTest
-public class DefaultVelocityContextFactoryTest
+class DefaultVelocityContextFactoryTest
 {
     @MockComponent
     private VelocityConfiguration configuration;
