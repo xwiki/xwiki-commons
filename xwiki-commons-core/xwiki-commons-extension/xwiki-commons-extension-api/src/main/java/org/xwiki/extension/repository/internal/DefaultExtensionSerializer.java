@@ -175,6 +175,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private static final String ELEMENT_SURL = "url";
 
+    private static final String ELEMENT_STAG = "tag";
+
     private static final String ELEMENT_ISSUEMANAGEMENT = "issuemanagement";
 
     private static final String ELEMENT_ISYSTEM = "system";
@@ -601,9 +603,11 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             Node connectionNode = getNode(node, ELEMENT_SCONNECTION);
             Node developerConnectionNode = getNode(node, ELEMENT_SDEVELOPERCONNECTION);
             Node urlNode = getNode(node, ELEMENT_SURL);
+            Node tagNode = getNode(node, ELEMENT_STAG);
 
             return new DefaultExtensionScm(urlNode != null ? urlNode.getTextContent() : null,
-                loadlScmConnection(connectionNode), loadlScmConnection(developerConnectionNode));
+                loadlScmConnection(connectionNode), loadlScmConnection(developerConnectionNode),
+                tagNode != null ? tagNode.getTextContent() : null);
         }
 
         return null;
@@ -879,6 +883,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             addElement(document, scmElement, ELEMENT_SURL, scm.getUrl());
             addScmConnection(document, scmElement, scm.getConnection(), ELEMENT_SCONNECTION);
             addScmConnection(document, scmElement, scm.getDeveloperConnection(), ELEMENT_SDEVELOPERCONNECTION);
+            addElement(document, scmElement, ELEMENT_STAG, scm.getTag());
         }
     }
 

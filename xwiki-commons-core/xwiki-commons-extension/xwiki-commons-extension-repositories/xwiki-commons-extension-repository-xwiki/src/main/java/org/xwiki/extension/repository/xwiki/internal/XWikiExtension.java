@@ -145,7 +145,7 @@ public class XWikiExtension extends AbstractRatingExtension
             DefaultExtensionScmConnection developerConnection =
                 toDefaultExtensionScmConnection(restSCM.getDeveloperConnection());
 
-            setScm(new DefaultExtensionScm(restSCM.getUrl(), connection, developerConnection));
+            setScm(new DefaultExtensionScm(restSCM.getUrl(), connection, developerConnection, restSCM.getTag()));
         }
 
         // Issue management

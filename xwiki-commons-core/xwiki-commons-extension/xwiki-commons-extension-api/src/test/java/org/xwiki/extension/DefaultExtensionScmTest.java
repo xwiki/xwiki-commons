@@ -36,34 +36,34 @@ class DefaultExtensionScmTest
     {
         assertEquals(
             new DefaultExtensionScm("http://url", new DefaultExtensionScmConnection("system", "path"),
-                new DefaultExtensionScmConnection("devsystem", "devpath")),
+                new DefaultExtensionScmConnection("devsystem", "devpath"), "tag"),
             new DefaultExtensionScm("http://url", new DefaultExtensionScmConnection("system", "path"),
-                new DefaultExtensionScmConnection("devsystem", "devpath")));
+                new DefaultExtensionScmConnection("devsystem", "devpath"), "tag"));
 
         assertNotEquals(
             new DefaultExtensionScm("http://url2", new DefaultExtensionScmConnection("system", "path"),
-                new DefaultExtensionScmConnection("devsystem", "devpath")),
+                new DefaultExtensionScmConnection("devsystem", "devpath"), "tag"),
             new DefaultExtensionScm("http://url", new DefaultExtensionScmConnection("system", "path"),
-                new DefaultExtensionScmConnection("devsystem", "devpath")));
+                new DefaultExtensionScmConnection("devsystem", "devpath"), "tag"));
         assertNotEquals(
             new DefaultExtensionScm("http://url", new DefaultExtensionScmConnection("system", "path"),
-                new DefaultExtensionScmConnection("devsystem", "devpath")),
+                new DefaultExtensionScmConnection("devsystem", "devpath"), "tag"),
             new DefaultExtensionScm("http://url", new DefaultExtensionScmConnection("system2", "path"),
-                new DefaultExtensionScmConnection("devsystem", "devpath")));
+                new DefaultExtensionScmConnection("devsystem", "devpath"), "tag"));
         assertNotEquals(
             new DefaultExtensionScm("http://url", new DefaultExtensionScmConnection("system", "path"),
-                new DefaultExtensionScmConnection("devsystem", "devpath")),
+                new DefaultExtensionScmConnection("devsystem", "devpath"), "tag"),
             new DefaultExtensionScm("http://url", new DefaultExtensionScmConnection("system", "path2"),
-                new DefaultExtensionScmConnection("devsystem", "devpath")));
+                new DefaultExtensionScmConnection("devsystem", "devpath"), "tag"));
         assertNotEquals(
             new DefaultExtensionScm("http://url", new DefaultExtensionScmConnection("system", "path"),
-                new DefaultExtensionScmConnection("devsystem", "devpath")),
+                new DefaultExtensionScmConnection("devsystem", "devpath"), "tag"),
             new DefaultExtensionScm("http://url", new DefaultExtensionScmConnection("system", "path"),
-                new DefaultExtensionScmConnection("devsystem2", "devpath")));
+                new DefaultExtensionScmConnection("devsystem2", "devpath"), "tag"));
         assertNotEquals(
             new DefaultExtensionScm("http://url", new DefaultExtensionScmConnection("system", "path"),
-                new DefaultExtensionScmConnection("devsystem", "devpath")),
+                new DefaultExtensionScmConnection("devsystem", "devpath"), "tag"),
             new DefaultExtensionScm("http://url", new DefaultExtensionScmConnection("system", "path"),
-                new DefaultExtensionScmConnection("devsystem", "devpath2")));
+                new DefaultExtensionScmConnection("devsystem", "devpath2"), "tag2"));
     }
 }

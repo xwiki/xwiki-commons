@@ -241,6 +241,7 @@
         type="extension:ExtensionScmConnection" minOccurs="0" maxOccurs="1">
       </element>
       <element name="url" type="string" minOccurs="0" maxOccurs="1"></element>
+      <element name="tag" type="string" minOccurs="0" maxOccurs="1"></element>
     </sequence>
   </complexType>
 

@@ -143,7 +143,7 @@ public class AbstractModelConverter<T> extends AbstractConverter<T>
             ExtensionScmConnection developerConnection =
                 MavenUtils.toExtensionScmConnection(scm.getDeveloperConnection());
 
-            extension.setScm(new DefaultExtensionScm(scm.getUrl(), connection, developerConnection));
+            extension.setScm(new DefaultExtensionScm(scm.getUrl(), connection, developerConnection, scm.getUrl()));
         }
 
         // issue management

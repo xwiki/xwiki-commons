@@ -48,4 +48,13 @@ public interface ExtensionScm
      * @return the URL
      */
     String getUrl();
+
+    /**
+     * @return the tag corresponding to the extension's version
+     * @since 18.6.0RC1
+     */
+    default String getTag()
+    {
+        return null;
+    }
 }

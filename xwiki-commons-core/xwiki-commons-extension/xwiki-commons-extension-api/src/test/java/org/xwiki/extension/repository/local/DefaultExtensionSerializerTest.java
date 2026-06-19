@@ -165,7 +165,7 @@ class DefaultExtensionSerializerTest
         extension.addComponent(new DefaultExtensionComponent("roletype2", "rolehint2"));
 
         extension.setScm(new DefaultExtensionScm("url", new DefaultExtensionScmConnection("system", "path"),
-            new DefaultExtensionScmConnection("system2", "path2")));
+            new DefaultExtensionScmConnection("system2", "path2"), "tag"));
         extension.setIssueManagement(new DefaultExtensionIssueManagement("system", "url"));
 
         // Complete extension

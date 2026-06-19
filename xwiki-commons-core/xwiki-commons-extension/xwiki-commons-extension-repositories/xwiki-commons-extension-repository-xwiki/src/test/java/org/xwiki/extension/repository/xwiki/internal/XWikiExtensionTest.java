@@ -120,6 +120,7 @@ class XWikiExtensionTest
         scm.setConnection(connection);
         scm.setDeveloperConnection(devConnection);
         scm.setUrl("http://scm");
+        scm.setTag("tag");
         restExtension.setScm(scm);
         ExtensionAuthor author1 = new ExtensionAuthor();
         author1.setName("author1");
@@ -231,7 +232,7 @@ class XWikiExtensionTest
                 new DefaultExtensionRepositoryDescriptor("repository2", "rtype2", new URI("http://repository2"))),
             extension.getRepositories());
         assertEquals(new DefaultExtensionScm("http://scm", new DefaultExtensionScmConnection("csystem", "cpath"),
-            new DefaultExtensionScmConnection("dsystem", "dpath")), extension.getScm());
+            new DefaultExtensionScmConnection("dsystem", "dpath"), "tag"), extension.getScm());
         assertEquals("summary", extension.getSummary());
         assertEquals(new DefaultExtensionSupportPlans(List.of(
             new DefaultExtensionSupportPlan(new DefaultExtensionSupporter("supporter1", new URL("http://supporter1")),

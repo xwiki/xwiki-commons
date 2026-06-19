@@ -19,9 +19,7 @@
  */
 package org.xwiki.extension;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.xwiki.text.XWikiToStringBuilder;
@@ -34,11 +32,13 @@ import org.xwiki.text.XWikiToStringBuilder;
  */
 public abstract class AbstractExtensionScm implements ExtensionScm
 {
-    private ExtensionScmConnection connection;
+    private final ExtensionScmConnection connection;
 
-    private ExtensionScmConnection developerConnection;
+    private final ExtensionScmConnection developerConnection;
 
-    private String url;
+    private final String url;
+
+    private final String tag;
 
     /**
      * @param url the browsable URL
@@ -48,9 +48,22 @@ public abstract class AbstractExtensionScm implements ExtensionScm
     public AbstractExtensionScm(String url, ExtensionScmConnection connection,
         ExtensionScmConnection developerConnection)
     {
+        this(url, connection, developerConnection, null);
+    }
+
+    /**
+     * @param url the browsable URL
+     * @param connection the read connection
+     * @param developerConnection the write connection
+     * @param tag the tag corresponding to the extension's version
+     */
+    public AbstractExtensionScm(String url, ExtensionScmConnection connection,
+        ExtensionScmConnection developerConnection, String tag)
+    {
         this.url = url;
         this.connection = connection;
         this.developerConnection = developerConnection;
+        this.tag = tag;
     }
 
     @Override
@@ -72,16 +85,27 @@ public abstract class AbstractExtensionScm implements ExtensionScm
     }
 
     @Override
+    public String getTag()
+    {
+        return this.tag;
+    }
+
+    @Override
     public boolean equals(Object obj)
     {
         if (obj == this) {
             return true;
         }
 
-        if (obj instanceof ExtensionScm) {
-            ExtensionScm scm = (ExtensionScm) obj;
-            return Strings.CS.equals(this.url, scm.getUrl()) && Objects.equals(this.connection, scm.getConnection())
-                && Objects.equals(this.developerConnection, scm.getDeveloperConnection());
+        if (obj instanceof ExtensionScm scm) {
+            EqualsBuilder builder = new EqualsBuilder();
+
+            builder.append(this.url, scm.getUrl());
+            builder.append(this.connection, scm.getConnection());
+            builder.append(this.developerConnection, scm.getDeveloperConnection());
+            builder.append(this.tag, scm.getTag());
+
+            return builder.isEquals();
         }
 
         return false;
@@ -95,6 +119,7 @@ public abstract class AbstractExtensionScm implements ExtensionScm
         builder.append(this.connection);
         builder.append(this.developerConnection);
         builder.append(this.url);
+        builder.append(this.tag);
 
         return builder.toHashCode();
     }
@@ -107,6 +132,7 @@ public abstract class AbstractExtensionScm implements ExtensionScm
         builder.append(this.connection);
         builder.append(this.developerConnection);
         builder.append(this.url);
+        builder.append(this.tag);
 
         return builder.toString();
     }

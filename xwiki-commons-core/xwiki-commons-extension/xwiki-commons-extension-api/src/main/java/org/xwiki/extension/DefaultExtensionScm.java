@@ -37,4 +37,16 @@ public class DefaultExtensionScm extends AbstractExtensionScm
     {
         super(url, connection, developerConnection);
     }
+
+    /**
+     * @param url the browsable URL
+     * @param connection the read connection
+     * @param developerConnection the write connection
+     * @param tag the tag corresponding to the extension's version
+     */
+    public DefaultExtensionScm(String url, ExtensionScmConnection connection,
+        ExtensionScmConnection developerConnection, String tag)
+    {
+        super(url, connection, developerConnection, tag);
+    }
 }
