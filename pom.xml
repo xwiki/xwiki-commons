@@ -155,7 +155,7 @@
     <checkstyle.version>13.6.0</checkstyle.version>
 
     <!-- Spoon -->
-    <spoon.version>11.3.0</spoon.version>
+    <spoon.version>11.4.0</spoon.version>
 
     <!-- Groovy -->
     <groovy.version>5.0.6</groovy.version>
