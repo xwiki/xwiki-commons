@@ -103,8 +103,9 @@ public class LogCaptureExtension implements BeforeAllCallback, AfterAllCallback,
      *              INFO, WARN, ERROR, etc. are captured too).
      * @param loggerName the name of the logger from which to capture logs (for example "org.xwiki.cache"). If null
      * or empty then the root logger is used and logs from all loggers are captured.
-     * @since 17.10.4
-     * @since 18.2.0RC1
+     * @since 17.10.10
+     * @since 18.4.2
+     * @since 18.5.0
      */
     public LogCaptureExtension(LogLevel level, String loggerName)
     {
