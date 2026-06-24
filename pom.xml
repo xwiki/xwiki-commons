@@ -171,7 +171,7 @@
     <maven.archetype.version>3.4.1</maven.archetype.version>
 
     <!-- JAXB -->
-    <jaxb.tools.version>2.0.16</jaxb.tools.version>
+    <jaxb.tools.version>4.0.16</jaxb.tools.version>
 
     <!-- Infinispan and Protostream -->
     <protostream.version>5.0.15.Final</protostream.version>
