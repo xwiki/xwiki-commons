@@ -19,18 +19,12 @@
  */
 package org.xwiki.xml.internal.html.filter;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
-import org.slf4j.Logger;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -61,48 +55,45 @@ public class AttributeFilter extends AbstractHTMLFilter
     /**
      * The map between HTML attribute names and the corresponding CSS property name.
      */
-    private static final Map<String, String> ATTRIBUTE_TO_CSS_PROPERTY = new HashMap<>();
+    private static final Map<String, String> ATTRIBUTE_TO_CSS_PROPERTY = new LinkedHashMap<>();
 
     /**
      * The 'vertical-align' CSS property.
      */
     private static final String VERTICAL_ALIGN = "vertical-align";
 
-    /**
-     * The logger.
-     */
-    @Inject
-    private Logger logger;
-
-    {
+    static {
         ATTRIBUTE_TO_CSS_PROPERTY.put("align", "text-align");
-        ATTRIBUTE_TO_CSS_PROPERTY.put("valign", VERTICAL_ALIGN);
         ATTRIBUTE_TO_CSS_PROPERTY.put("bgcolor", "background-color");
+        ATTRIBUTE_TO_CSS_PROPERTY.put("valign", VERTICAL_ALIGN);
     }
 
     @Override
     public void filter(Document document, Map<String, String> cleaningParameters)
     {
-        StringBuilder xpathExpression = new StringBuilder();
-        for (String attributeName : ATTRIBUTE_TO_CSS_PROPERTY.keySet()) {
-            if (xpathExpression.length() > 0) {
-                xpathExpression.append('|');
+        // Take a snapshot of the matching elements before filtering. The NodeList returned by getElementsByTagName is
+        // live and its internal cache is invalidated whenever an attribute is modified, which would turn the iteration
+        // below into a quadratic operation (each item() call would re-traverse the document).
+        NodeList nodeList = document.getElementsByTagName("*");
+        int length = nodeList.getLength();
+        Element[] elements = new Element[length];
+        for (int i = 0; i < length; i++) {
+            elements[i] = (Element) nodeList.item(i);
+        }
+        for (Element element : elements) {
+            filterElement(element);
+        }
+    }
+
+    private void filterElement(Element element)
+    {
+        if (element.hasAttributes()) {
+            for (String attrName : ATTRIBUTE_TO_CSS_PROPERTY.keySet()) {
+                Attr attribute = element.getAttributeNode(attrName);
+                if (attribute != null) {
+                    filterAttribute(attribute);
+                }
             }
-            xpathExpression.append("//@").append(attributeName);
-        }
-
-        NodeList attributes = null;
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        try {
-            attributes = (NodeList) xpath.evaluate(xpathExpression.toString(), document, XPathConstants.NODESET);
-        } catch (XPathExpressionException e) {
-            // Shouldn't happen.
-            this.logger.error("Failed to apply the HTML attribute cleaning filter.", e);
-            return;
-        }
-
-        for (int i = 0; i < attributes.getLength(); i++) {
-            filterAttribute((Attr) attributes.item(i));
         }
     }
 
@@ -117,7 +108,7 @@ public class AttributeFilter extends AbstractHTMLFilter
             property = "left".equals(value) || "right".equals(value) ? "float" : VERTICAL_ALIGN;
         }
         StringBuilder style = new StringBuilder(element.getAttribute(ATTRIBUTE_STYLE).trim());
-        if (style.length() > 0 && style.charAt(style.length() - 1) != ';') {
+        if (!style.isEmpty() && style.charAt(style.length() - 1) != ';') {
             style.append(';');
         }
         style.append(property).append(':').append(value);
