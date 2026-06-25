@@ -28,7 +28,6 @@ import javax.inject.Singleton;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.xml.html.HTMLConstants;
@@ -72,12 +71,17 @@ public class AttributeFilter extends AbstractHTMLFilter
     @Override
     public void filter(Document document, Map<String, String> cleaningParameters)
     {
+        // Take a snapshot of the matching elements before filtering. The NodeList returned by getElementsByTagName is
+        // live and its internal cache is invalidated whenever an attribute is modified, which would turn the iteration
+        // below into a quadratic operation (each item() call would re-traverse the document).
         NodeList nodeList = document.getElementsByTagName("*");
-        for (int i = 0, len = nodeList.getLength(); i < len; i++) {
-            Node node = nodeList.item(i);
-            if (node instanceof Element) {
-                filterElement((Element) node);
-            }
+        int length = nodeList.getLength();
+        Element[] elements = new Element[length];
+        for (int i = 0; i < length; i++) {
+            elements[i] = (Element) nodeList.item(i);
+        }
+        for (Element element : elements) {
+            filterElement(element);
         }
     }
 
@@ -104,7 +108,7 @@ public class AttributeFilter extends AbstractHTMLFilter
             property = "left".equals(value) || "right".equals(value) ? "float" : VERTICAL_ALIGN;
         }
         StringBuilder style = new StringBuilder(element.getAttribute(ATTRIBUTE_STYLE).trim());
-        if (style.length() > 0 && style.charAt(style.length() - 1) != ';') {
+        if (!style.isEmpty() && style.charAt(style.length() - 1) != ';') {
             style.append(';');
         }
         style.append(property).append(':').append(value);
