@@ -114,7 +114,7 @@
 
     <!-- SLF4J API and implementation -->
     <slf4j.version>2.0.18</slf4j.version>
-    <logback.version>1.5.36</logback.version>
+    <logback.version>1.5.37</logback.version>
     <!-- Log4J API -->
     <log4j.version>2.26.0</log4j.version>
 
