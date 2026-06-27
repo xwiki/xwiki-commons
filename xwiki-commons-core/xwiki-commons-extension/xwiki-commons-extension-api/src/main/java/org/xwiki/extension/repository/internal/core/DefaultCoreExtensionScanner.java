@@ -136,7 +136,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                         this.logger.debug("Can't find remote extension with id [{}]", extension.getId(), e);
                     } catch (Exception e) {
                         this.logger.warn("Failed to update core extension [{}]: [{}]", extension.getId(),
-                            ExceptionUtils.getRootCauseMessage(e), e);
+                            ExceptionUtils.getRootCauseMessage(e));
                     }
                 }
             }
@@ -240,7 +240,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
             // Ignore collision between same versions
             if (comparizon != 0) {
-                logger.warn("Collision between core extension [{} ({})] and [{} ({})]", coreExtension.getId(),
+                logger.warn("Collision between core extension [{}] ([{}]) and [{}] ([{}])", coreExtension.getId(),
                     coreExtension.getDescriptorURL(), existingCoreExtension.getId(),
                     existingCoreExtension.getDescriptorURL());
 
@@ -252,7 +252,8 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                 } else {
                     selectedExtension = existingCoreExtension;
                 }
-                logger.warn("[{} ({})] is selected", selectedExtension.getId(), selectedExtension.getDescriptorURL());
+                logger.warn("[{}] ([{}]) is selected", selectedExtension.getId(),
+                    selectedExtension.getDescriptorURL());
             }
         } else if (existingCoreExtension.isGuessed()) {
             extensions.put(coreExtension.getId().getId(), coreExtension);
@@ -323,7 +324,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
         Collection<URL> jars = getJARs();
 
-        this.logger.debug("Found the following JARs: {}", jars);
+        this.logger.debug("Found the following JARs: [{}]", jars);
 
         ////////////////////
         // Try to find associated xed files

@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -113,7 +114,7 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
                 addExtension(this.environmentExtension);
             }
         } catch (Exception e) {
-            this.logger.warn("Failed to load core extensions", e);
+            this.logger.warn("Failed to load core extensions: [{}]", ExceptionUtils.getRootCauseMessage(e));
         }
     }
 

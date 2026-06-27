@@ -147,7 +147,7 @@ public class S3MultipartUploadHelper
             CreateMultipartUploadResponse response = this.s3Client.createMultipartUpload(createRequest);
             this.uploadId = response.uploadId();
 
-            LOGGER.debug("Initialized multipart upload for key {} with upload ID: {}", this.s3Key, this.uploadId);
+            LOGGER.debug("Initialized multipart upload for key [{}] with upload ID: [{}]", this.s3Key, this.uploadId);
         } catch (Exception e) {
             throw new IOException("Failed to initialize multipart upload for blob at path " + this.blobPath, e);
         }
@@ -192,7 +192,7 @@ public class S3MultipartUploadHelper
 
         this.completedParts.add(completedPart);
 
-        LOGGER.debug("Added completed part {} for upload ID: {}", this.nextPartNumber, this.uploadId);
+        LOGGER.debug("Added completed part [{}] for upload ID: [{}]", this.nextPartNumber, this.uploadId);
 
         this.nextPartNumber++;
     }
@@ -241,7 +241,7 @@ public class S3MultipartUploadHelper
 
             this.completed = true;
 
-            LOGGER.debug("Completed multipart upload for key {} with upload ID: {}", this.s3Key, this.uploadId);
+            LOGGER.debug("Completed multipart upload for key [{}] with upload ID: [{}]", this.s3Key, this.uploadId);
         } catch (S3Exception e) {
             handleS3Exception(e);
         } catch (Exception e) {
@@ -269,10 +269,10 @@ public class S3MultipartUploadHelper
             this.s3Client.abortMultipartUpload(abortRequest);
             this.aborted = true;
 
-            LOGGER.debug("Aborted multipart upload for key {} with upload ID: {}", this.s3Key, this.uploadId);
+            LOGGER.debug("Aborted multipart upload for key [{}] with upload ID: [{}]", this.s3Key, this.uploadId);
         } catch (Exception e) {
             // Log but don't throw - abort is best-effort cleanup
-            LOGGER.warn("Failed to abort multipart upload for blob at path {} with upload ID {}, root cause: {}",
+            LOGGER.warn("Failed to abort multipart upload for blob at path [{}] with upload ID [{}], root cause: [{}]",
                 this.blobPath, this.uploadId, ExceptionUtils.getRootCauseMessage(e));
         }
     }

@@ -148,7 +148,8 @@ public class LocalExtensionStorage
 
                     this.repository.addLocalExtension(localExtension);
                 } catch (Exception e) {
-                    LOGGER.warn("Failed to load extension from file [" + child + "] in local repository", e);
+                    LOGGER.warn("Failed to load extension from file [{}] in local repository: [{}]", child,
+                        ExceptionUtils.getRootCauseMessage(e));
                 }
             }
         }
@@ -191,7 +192,7 @@ public class LocalExtensionStorage
             try {
                 fis.close();
             } catch (IOException e) {
-                LOGGER.error("Failed to close stream for file [" + descriptor + "]", e);
+                LOGGER.error("Failed to close stream for file [{}]", descriptor, e);
             }
         }
     }

@@ -63,7 +63,7 @@ public class DefaultExtensionSession implements ExtensionSession
                 try {
                     ((Closeable) entry.getValue()).close();
                 } catch (IOException e) {
-                    LOGGER.warn("Failed to close the value associated with the key [{}]: {}", entry.getKey(),
+                    LOGGER.warn("Failed to close the value associated with the key [{}]: [{}]", entry.getKey(),
                         ExceptionUtils.getRootCauseMessage(e));
                 }
             }

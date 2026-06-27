@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.classloader.ClassLoaderManager;
 import org.xwiki.classloader.NamespaceURLClassLoader;
@@ -138,7 +139,7 @@ public class DefaultClassLoaderManager implements ClassLoaderManager, Initializa
             try {
                 classloader.close();
             } catch (IOException e) {
-                this.logger.warn("Failed to close root Classloader", e);
+                this.logger.warn("Failed to close root Classloader: [{}]", ExceptionUtils.getRootCauseMessage(e));
             }
         }
     }
@@ -158,7 +159,7 @@ public class DefaultClassLoaderManager implements ClassLoaderManager, Initializa
                 try {
                     classloader.close();
                 } catch (IOException e) {
-                    this.logger.warn("Failed to close Classloader", e);
+                    this.logger.warn("Failed to close Classloader: [{}]", ExceptionUtils.getRootCauseMessage(e));
                 }
             }
         }

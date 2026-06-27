@@ -29,6 +29,7 @@ import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.xwiki.classloader.ClassLoaderManager;
 import org.xwiki.classloader.NamespaceURLClassLoader;
 import org.xwiki.component.annotation.Component;
@@ -208,8 +209,8 @@ public class JarExtensionHandler extends AbstractExtensionHandler
                     // We failed to unregister some components, we probably failed to register them in the first
                     // place too so let's just ignore it. Better than making impossible to uninstall the extension.
                     // We catch Throwable because most of the time we end up with a LinkageError
-                    this.logger.warn("Failed to unregister some components of the JAR extension [{}]",
-                        installedExtension.getId(), e);
+                    this.logger.warn("Failed to unregister some components of the JAR extension [{}]: [{}]",
+                        installedExtension.getId(), ExceptionUtils.getRootCauseMessage(e));
                 }
 
                 // The ClassLoader(s) will be replaced and reloaded at the end of the job

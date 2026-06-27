@@ -247,7 +247,7 @@ public class S3CopyOperations
                 writeMode
             );
 
-            this.logger.debug("Initiated multipart copy with upload ID: {}", uploadHelper.getUploadId());
+            this.logger.debug("Initiated multipart copy with upload ID: [{}]", uploadHelper.getUploadId());
 
             // Step 2: Copy parts using configured part size
             long objectSize = headResponse.contentLength();
@@ -276,7 +276,7 @@ public class S3CopyOperations
 
                 uploadHelper.addCompletedPart(uploadPartCopyResponse.copyPartResult().eTag());
 
-                this.logger.debug("Copied part {} (bytes {}-{})", partNumber, bytePosition, lastByte);
+                this.logger.debug("Copied part [{}] (bytes [{}]-[{}])", partNumber, bytePosition, lastByte);
 
                 bytePosition += partSizeBytes;
             }
@@ -284,7 +284,7 @@ public class S3CopyOperations
             // Step 3: Complete multipart upload
             uploadHelper.complete();
 
-            this.logger.debug("Completed multipart copy for key: {}", targetKey);
+            this.logger.debug("Completed multipart copy for key: [{}]", targetKey);
 
             success = true;
         } catch (Exception e) {

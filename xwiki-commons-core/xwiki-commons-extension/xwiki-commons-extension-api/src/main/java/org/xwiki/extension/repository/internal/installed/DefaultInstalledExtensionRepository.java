@@ -253,9 +253,10 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
                     validateExtension(localExtension, null, new ExtensionPlanContext());
                 } catch (InvalidExtensionException | StackOverflowError e) {
                     if (this.logger.isDebugEnabled()) {
-                        this.logger.warn("Invalid extension [{}]", localExtension.getId(), e);
+                        this.logger.warn("Invalid extension [{}]: [{}]", localExtension.getId(),
+                            ExceptionUtils.getRootCauseMessage(e));
                     } else {
-                        this.logger.warn("Invalid extension [{}] ({})", localExtension.getId(),
+                        this.logger.warn("Invalid extension [{}] ([{}])", localExtension.getId(),
                             ExceptionUtils.getRootCauseMessage(e));
                     }
 
@@ -270,11 +271,11 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
                         validateExtension(localExtension, namespace, new ExtensionPlanContext());
                     } catch (InvalidExtensionException | StackOverflowError e) {
                         if (this.logger.isDebugEnabled()) {
-                            this.logger.warn("Invalid extension [{}] on namespace [{}]", localExtension.getId(),
-                                namespace, e);
-                        } else {
-                            this.logger.warn("Invalid extension [{}] on namespace [{}] ({})", localExtension.getId(),
+                            this.logger.warn("Invalid extension [{}] on namespace [{}]: [{}]", localExtension.getId(),
                                 namespace, ExceptionUtils.getRootCauseMessage(e));
+                        } else {
+                            this.logger.warn("Invalid extension [{}] on namespace [{}] ([{}])",
+                                localExtension.getId(), namespace, ExceptionUtils.getRootCauseMessage(e));
                         }
 
                         addInstalledExtension(localExtension, namespace, false);

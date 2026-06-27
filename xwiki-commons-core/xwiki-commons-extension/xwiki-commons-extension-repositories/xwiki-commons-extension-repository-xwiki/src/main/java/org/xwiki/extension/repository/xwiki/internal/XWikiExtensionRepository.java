@@ -234,7 +234,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
     {
         // We only log the failed close to not swallow the failed request
         IOUtils.closeQuietly(response,
-            e -> LOGGER.warn("Failed to close the response: {}", ExceptionUtils.getRootCauseMessage(e)));
+            e -> LOGGER.warn("Failed to close the response: [{}]", ExceptionUtils.getRootCauseMessage(e)));
     }
 
     protected CloseableHttpResponse getRESTResource(UriBuilder builder, Object... values) throws IOException

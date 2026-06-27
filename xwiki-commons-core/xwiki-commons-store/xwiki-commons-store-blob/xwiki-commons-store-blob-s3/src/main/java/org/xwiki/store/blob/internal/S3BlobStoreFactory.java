@@ -116,7 +116,7 @@ public class S3BlobStoreFactory implements BlobStoreFactory<S3BlobStorePropertie
                 .build();
 
             s3Client.headBucket(headBucketRequest);
-            this.logger.debug("Successfully validated access to S3 bucket: {}", bucketName);
+            this.logger.debug("Successfully validated access to S3 bucket: [{}]", bucketName);
         } catch (NoSuchBucketException e) {
             throw new BlobStoreException("S3 bucket does not exist: " + bucketName, e);
         } catch (S3Exception e) {

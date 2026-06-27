@@ -171,7 +171,7 @@ class StandardEnvironmentTest
             exception.getMessage());
 
         assertEquals(1, this.logCapture.size());
-        assertEquals(String.format("Configured temporary directory [%s] is not a directory.",
+        assertEquals(String.format("Configured [temporary] directory [%s] is [not a directory].",
             TMPDIR.getAbsolutePath()), this.logCapture.getMessage(0));
     }
 

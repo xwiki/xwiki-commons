@@ -41,6 +41,7 @@ import java.util.zip.ZipInputStream;
 
 import jakarta.inject.Provider;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.descriptor.ComponentDescriptor;
@@ -267,8 +268,8 @@ public class ComponentAnnotationLoader
                 getLogger().warn("Can't find any existing component with class [{}]. Ignoring it.",
                     componentDeclaration.getImplementationClassName());
             } catch (Exception e) {
-                getLogger().warn("Fail to load component implementation class [{}]. Ignoring it.",
-                    componentDeclaration.getImplementationClassName(), e);
+                getLogger().warn("Fail to load component implementation class [{}]. Ignoring it: [{}]",
+                    componentDeclaration.getImplementationClassName(), ExceptionUtils.getRootCauseMessage(e));
             }
 
             if (componentClass != null) {

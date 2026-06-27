@@ -60,13 +60,13 @@ class DefaultHTMLElementSanitizerTest
 {
     private static final String EXPECTED_ERROR_LOADING_FOO =
         "Couldn't load the configured HTMLElementSanitizer with hint [foo], falling back to "
-            + "the default secure implementation: ComponentLookupException: Can't find descriptor for the "
-            + "component with type [interface org.xwiki.xml.html.HTMLElementSanitizer] and hint [foo]";
+            + "the default secure implementation: [ComponentLookupException: Can't find descriptor for the "
+            + "component with type [interface org.xwiki.xml.html.HTMLElementSanitizer] and hint [foo]]";
 
     private static final String EXPECTED_ERROR_LOADING_FOO_FROM_EXECUTION = "Couldn't load the HTMLElementSanitizer "
         + "with hint [foo] from the execution context, falling back to the configured implementation: "
-        + "ComponentLookupException: Can't find descriptor for the component with type "
-        + "[interface org.xwiki.xml.html.HTMLElementSanitizer] and hint [foo]";
+        + "[ComponentLookupException: Can't find descriptor for the component with type "
+        + "[interface org.xwiki.xml.html.HTMLElementSanitizer] and hint [foo]]";
 
     private static final String FOO = "foo";
 

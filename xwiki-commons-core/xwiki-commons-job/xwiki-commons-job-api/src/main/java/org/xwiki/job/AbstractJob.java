@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
@@ -329,7 +330,8 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
                     this.store.storeAsync(this.status);
                 }
             } catch (Throwable t) {
-                this.logger.warn(LOG_STATUS_STORE_FAILED, "Failed to store job status [{}]", this.status, t);
+                this.logger.warn(LOG_STATUS_STORE_FAILED, "Failed to store job status [{}]: [{}]", this.status,
+                    ExceptionUtils.getRootCauseMessage(t));
             }
         } finally {
             this.lock.unlock();

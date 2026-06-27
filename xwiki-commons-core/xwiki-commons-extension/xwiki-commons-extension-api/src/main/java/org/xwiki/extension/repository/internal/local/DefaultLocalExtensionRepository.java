@@ -230,7 +230,7 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
         } catch (IOException e) {
             // Should not happen if the local extension exists
 
-            this.logger.error("Failed to remove extension [" + extension + "]", e);
+            this.logger.error("Failed to remove extension [{}]", extension, e);
         }
 
         // Remove the extension from the caches

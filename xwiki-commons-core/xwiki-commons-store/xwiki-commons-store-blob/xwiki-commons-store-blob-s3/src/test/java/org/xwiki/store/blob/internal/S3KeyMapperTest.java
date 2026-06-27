@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for {@link S3KeyMapper}.
@@ -124,7 +125,7 @@ class S3KeyMapperTest
         BlobPath path = mapper.s3KeyToBlobPath(s3Key);
 
         assertNull(path);
-        assertEquals("Invalid blob path from S3 key: prefix/invalid/../path", this.logCapture.getMessage(0));
+        assertTrue(this.logCapture.getMessage(0).startsWith("Invalid blob path from S3 key: [prefix/invalid/../path]"));
     }
 
     @ParameterizedTest

@@ -40,6 +40,7 @@ import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
@@ -116,7 +117,8 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
 
                             return coreExtension;
                         } catch (Exception e) {
-                            this.logger.warn("Failed to parse extension descriptor [{}]", descriptorURL, e);
+                            this.logger.warn("Failed to parse extension descriptor [{}]: [{}]", descriptorURL,
+                                ExceptionUtils.getRootCauseMessage(e));
                         }
                     } else {
                         this.logger.warn("Can't find resource file [{}] which contains distribution informations.",
@@ -189,7 +191,8 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
 
                 found = true;
             } catch (Exception e) {
-                this.logger.warn("Failed to parse extension descriptor [{}] ([{}])", descriptorURL, descriptor, e);
+                this.logger.warn("Failed to parse extension descriptor [{}] ([{}]): [{}]", descriptorURL, descriptor,
+                    ExceptionUtils.getRootCauseMessage(e));
             }
         }
 
@@ -285,7 +288,8 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
                     guessedArtefacts.put(artefactname, new Object[] {version, jarURL, type});
                 }
             } catch (Exception e) {
-                this.logger.warn("Failed to parse resource name [{}]", jarURL, e);
+                this.logger.warn("Failed to parse resource name [{}]: [{}]", jarURL,
+                    ExceptionUtils.getRootCauseMessage(e));
             }
         }
 
@@ -353,7 +357,8 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
                 }
             }
         } catch (Exception e) {
-            this.logger.warn("Failed to guess extra information about some extensions", e);
+            this.logger.warn("Failed to guess extra information about some extensions: [{}]",
+                ExceptionUtils.getRootCauseMessage(e));
         }
     }
 

@@ -67,6 +67,7 @@ import org.xwiki.test.junit5.mockito.MockComponent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -403,6 +404,28 @@ class ServletEnvironmentTest
 
         assertNull(this.environment.getResource("prefix", "resource"));
         assertNull(this.environment.getResource("prefix", "resource2"));
+    }
+
+    @Test
+    void getResourceWhenRealPathThrowsIllegalArgumentException() throws CacheException
+    {
+        MapCache<ResourceCacheEntry> testCache = new MapCache<>();
+        when(this.cacheManager.<ResourceCacheEntry>createNewCache(any())).thenReturn(testCache);
+        this.environment.initializeCache();
+        when(this.cacheControl.isCacheReadAllowed()).thenReturn(true);
+
+        ServletContext servletContext = mock(ServletContext.class);
+        // The root real path is resolved first and must succeed.
+        when(servletContext.getRealPath("/")).thenReturn("/real/path");
+        // Some application servers (e.g. Tomcat) throw an IllegalArgumentException for paths trying to escape the
+        // root resource. We must log a warning (without a stack trace) and treat the resource as invalid (null).
+        when(servletContext.getRealPath("/prefix/resource")).thenThrow(new IllegalArgumentException("Invalid path"));
+        this.environment.setServletContext(servletContext);
+
+        assertNull(this.environment.getResource("prefix", "resource"));
+        String message = this.logCapture.getMessage(0);
+        assertTrue(message.startsWith("Failed to get the real path for ["), message);
+        assertTrue(message.endsWith("]: [IllegalArgumentException: Invalid path]"), message);
     }
 
     @ParameterizedTest

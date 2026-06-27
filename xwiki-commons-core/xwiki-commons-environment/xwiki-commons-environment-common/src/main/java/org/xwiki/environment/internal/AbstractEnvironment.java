@@ -187,7 +187,7 @@ public abstract class AbstractEnvironment implements Environment
                 continue;
             }
             if (!first) {
-                this.logger.warn("Falling back on [{}] as the {} directory.", location, tempOrPermanent);
+                this.logger.warn("Falling back on [{}] as the [{}] directory.", location, tempOrPermanent);
             }
             first = false;
             final File dir = initializeDirectory(location, isTemp, tempOrPermanent);
@@ -218,7 +218,7 @@ public abstract class AbstractEnvironment implements Environment
             }
 
             // Not a directory or can't write to it, lets log an error here.
-            this.logger.error("Configured {} directory [{}] is {}.", tempOrPermanent, dir.getAbsolutePath(),
+            this.logger.error("Configured [{}] directory [{}] is [{}].", tempOrPermanent, dir.getAbsolutePath(),
                 (dir.isDirectory()) ? "not writable" : "not a directory");
 
             return null;
@@ -230,7 +230,7 @@ public abstract class AbstractEnvironment implements Environment
 
             return initDir(dir, isTemp);
         } catch (IOException e) {
-            this.logger.error("Configured {} directory [{}] could not be created.", tempOrPermanent,
+            this.logger.error("Configured [{}] directory [{}] could not be created.", tempOrPermanent,
                 dir.getAbsolutePath(), e);
         }
 

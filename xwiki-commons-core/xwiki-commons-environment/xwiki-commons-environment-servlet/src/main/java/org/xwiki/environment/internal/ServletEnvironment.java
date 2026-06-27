@@ -413,7 +413,8 @@ public class ServletEnvironment extends AbstractEnvironment
             // resource and will throw an IllegalArgumentException in that case. In our case we are just interested in
             // the fact that it's invalid (null) and we want to remember it in the cache.
 
-            this.logger.warn("Failed to get the real path for [{}]", resourcePath, e);
+            this.logger.warn("Failed to get the real path for [{}]: [{}]", resourcePath,
+                ExceptionUtils.getRootCauseMessage(e));
         }
 
         // Make sure the resource real path is inside the root real path
@@ -445,7 +446,7 @@ public class ServletEnvironment extends AbstractEnvironment
     {
         String realPath = getJakartaServletContext().getRealPath(resourcePath);
 
-        this.logger.debug("  -> {}", realPath);
+        this.logger.debug("  -> [{}]", realPath);
 
         if (realPath != null) {
             if (resourcePath.endsWith(SLASH)) {
@@ -459,7 +460,7 @@ public class ServletEnvironment extends AbstractEnvironment
                 realPath = Strings.CS.appendIfMissing(realPath, fileSeparator);
             }
 
-            this.logger.debug("    -> {}", realPath);
+            this.logger.debug("    -> [{}]", realPath);
         }
 
         return realPath;

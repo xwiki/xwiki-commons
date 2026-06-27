@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -123,7 +124,8 @@ public class CoreExtensionCache implements Initializable
             try (FileInputStream stream = new FileInputStream(file)) {
                 return this.serializer.loadCoreExtensionDescriptor(repository, descriptorURL, stream);
             } catch (Exception e) {
-                this.logger.warn("Failed to parse cached core extension descriptor [{}]", descriptorURL, e);
+                this.logger.warn("Failed to parse cached core extension descriptor [{}]: [{}]", descriptorURL,
+                    ExceptionUtils.getRootCauseMessage(e));
             }
         }
 

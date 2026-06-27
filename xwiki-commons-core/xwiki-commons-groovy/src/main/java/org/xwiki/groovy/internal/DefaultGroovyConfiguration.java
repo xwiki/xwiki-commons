@@ -26,6 +26,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
@@ -87,7 +88,8 @@ public class DefaultGroovyConfiguration implements GroovyConfiguration
                 }
             } catch (Exception e) {
                 // Just don't use the customizer but log the error
-                this.logger.warn("Failed to create the Groovy Compilation Customizer named [{}]", customizerName, e);
+                this.logger.warn("Failed to create the Groovy Compilation Customizer named [{}]: [{}]", customizerName,
+                    ExceptionUtils.getRootCauseMessage(e));
             }
         }
         return customizers;

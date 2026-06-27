@@ -306,8 +306,8 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
                 setParameter(block, filterParameter, value);
             } else {
-                LOGGER.warn("Unknown element parameter [{}] (=[{}]) in block [{}] (available parameters are {})", name,
-                    value, block.name, Arrays.asList(block.filterElement.getParameters()));
+                LOGGER.warn("Unknown element parameter [{}] (=[{}]) in block [{}] (available parameters are [{}])",
+                    name, value, block.name, Arrays.asList(block.filterElement.getParameters()));
 
                 block.setParameter(name, value);
             }
@@ -318,7 +318,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                 if (filterParameter != null) {
                     setParameter(block, filterParameter, value);
                 } else {
-                    LOGGER.warn("Unknown element parameter [{}] (=[{}]) in block [{}] (available parameters are {})",
+                    LOGGER.warn("Unknown element parameter [{}] (=[{}]) in block [{}] (available parameters are [{}])",
                         name, value, block.name, Arrays.asList(block.filterElement.getParameters()));
 
                     block.setParameter(name, value);

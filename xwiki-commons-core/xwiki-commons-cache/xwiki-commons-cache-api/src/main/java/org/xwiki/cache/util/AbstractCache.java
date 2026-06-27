@@ -21,6 +21,7 @@ package org.xwiki.cache.util;
 
 import javax.swing.event.EventListenerList;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.cache.Cache;
@@ -144,8 +145,9 @@ public abstract class AbstractCache<T> implements Cache<T>
                 // We catch Throwable because this method is usually automatically called by an event send by the cache
                 // implementation and there is no reason to crash the whole cache because of some badly implemented
                 // dispose() we don't control.
-                LOGGER.warn("Error when trying to dispose a cache object of cache [{}]",
-                    this.configuration != null ? this.configuration.getConfigurationId() : null, e);
+                LOGGER.warn("Error when trying to dispose a cache object of cache [{}]: [{}]",
+                    this.configuration != null ? this.configuration.getConfigurationId() : null,
+                    ExceptionUtils.getRootCauseMessage(e));
             }
         }
     }

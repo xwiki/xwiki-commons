@@ -43,6 +43,7 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
@@ -236,7 +237,8 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
                         }
                     }
                 } catch (Exception e) {
-                    this.logger.warn("Failed to load job status in folder [{}]", folder, e);
+                    this.logger.warn("Failed to load job status in folder [{}]: [{}]", folder,
+                        ExceptionUtils.getRootCauseMessage(e));
                 }
             }
         }
@@ -416,7 +418,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
                 this.writeLock.unlock();
             }
         } catch (Exception e) {
-            this.logger.warn("Failed to save job status [{}]", status, e);
+            this.logger.warn("Failed to save job status [{}]: [{}]", status, ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -444,7 +446,8 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
                 this.cache.set(idString, status);
             } catch (Exception e) {
-                this.logger.warn("Failed to load job status for id {}", id, e);
+                this.logger.warn("Failed to load job status for id [{}]: [{}]", id,
+                    ExceptionUtils.getRootCauseMessage(e));
 
                 this.cache.remove(idString);
             }
@@ -503,7 +506,8 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
                         deleteJobStatusFiles(jobFolder);
                         cleanEmptyDirectories(jobFolder);
                     } catch (IOException e) {
-                        this.logger.warn("Failed to delete job folder [{}]", jobFolder, e);
+                        this.logger.warn("Failed to delete job folder [{}]: [{}]", jobFolder,
+                            ExceptionUtils.getRootCauseMessage(e));
                     }
                 }
             }

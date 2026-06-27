@@ -444,7 +444,7 @@ public class DefaultVersion implements Version
             trimPadding(this.elements);
         } catch (Exception e) {
             // Make sure to never fail no matter what
-            LOGGER.error("Failed to parse version [" + this.rawVersion + "]", e);
+            LOGGER.error("Failed to parse version [{}]", this.rawVersion, e);
             this.elements.add(new Element(this.rawVersion));
         }
     }

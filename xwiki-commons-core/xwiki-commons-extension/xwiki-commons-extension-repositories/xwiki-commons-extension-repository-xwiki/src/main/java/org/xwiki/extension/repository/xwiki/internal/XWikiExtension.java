@@ -186,7 +186,7 @@ public class XWikiExtension extends AbstractRatingExtension
             try {
                 addRepository(toExtensionRepositoryDescriptor(restRepository, factory));
             } catch (URISyntaxException e) {
-                LOGGER.warn("Failed to parse the repository: {}", ExceptionUtils.getRootCauseMessage(e));
+                LOGGER.warn("Failed to parse the repository: [{}]", ExceptionUtils.getRootCauseMessage(e));
             }
         }
 
@@ -221,7 +221,7 @@ public class XWikiExtension extends AbstractRatingExtension
         try {
             return new URL(urlString);
         } catch (MalformedURLException e) {
-            LOGGER.warn("Failed to parse URL [{}] in {}: {}", urlString, location,
+            LOGGER.warn("Failed to parse URL [{}] in [{}]: [{}]", urlString, location,
                 ExceptionUtils.getRootCauseMessage(e));
 
             return null;

@@ -321,7 +321,7 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
             try {
                 repository = getRepository(repositoryDescriptor);
             } catch (ExtensionRepositoryException e) {
-                this.logger.warn("Invalid repository [{}] in extension dependency [{}]: {}", repositoryDescriptor,
+                this.logger.warn("Invalid repository [{}] in extension dependency [{}]: [{}]", repositoryDescriptor,
                     extensionDependency, ExceptionUtils.getRootCauseMessage(e));
 
                 continue;
@@ -334,7 +334,7 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
                     repository.getDescriptor(), e1);
             } catch (ResolveException e2) {
                 this.logger.warn(
-                    "Unexpected error when trying to find extension dependency [{}] " + "in repository [{}]: {}",
+                    "Unexpected error when trying to find extension dependency [{}] in repository [{}]: [{}]",
                     extensionDependency, repository.getDescriptor(), ExceptionUtils.getRootCauseMessage(e2));
 
                 lastException = e2;

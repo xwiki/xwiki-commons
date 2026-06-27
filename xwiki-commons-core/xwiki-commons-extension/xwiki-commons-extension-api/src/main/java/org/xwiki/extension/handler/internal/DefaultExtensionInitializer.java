@@ -210,7 +210,7 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
                     }
                 } catch (Throwable e) {
                     if (dependency.isOptional()) {
-                        this.logger.warn("Failed to initialize dependency [{}]: {}", dependency,
+                        this.logger.warn("Failed to initialize dependency [{}]: [{}]", dependency,
                             ExceptionUtils.getRootCauseMessage(e));
                     } else {
                         throw new ExtensionException(String.format("Failed to initialize dependency [%s]", dependency),

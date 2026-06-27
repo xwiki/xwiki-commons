@@ -465,7 +465,7 @@ class S3MultipartUploadHelperTest
      */
     private void assertInitializationLog(int index)
     {
-        assertEquals("Initialized multipart upload for key test/key with upload ID: test-upload-id",
+        assertEquals("Initialized multipart upload for key [test/key] with upload ID: [test-upload-id]",
             this.logCapture.getMessage(index));
     }
 
@@ -477,7 +477,7 @@ class S3MultipartUploadHelperTest
      */
     private void assertCompletedPartLog(int index, int partNumber)
     {
-        assertEquals(String.format("Added completed part %d for upload ID: test-upload-id", partNumber),
+        assertEquals(String.format("Added completed part [%d] for upload ID: [test-upload-id]", partNumber),
             this.logCapture.getMessage(index));
     }
 
@@ -488,7 +488,7 @@ class S3MultipartUploadHelperTest
      */
     private void assertCompletionLog(int index)
     {
-        assertEquals("Completed multipart upload for key test/key with upload ID: test-upload-id",
+        assertEquals("Completed multipart upload for key [test/key] with upload ID: [test-upload-id]",
             this.logCapture.getMessage(index));
     }
 
@@ -499,7 +499,7 @@ class S3MultipartUploadHelperTest
      */
     private void assertAbortLog(int index)
     {
-        assertEquals("Aborted multipart upload for key test/key with upload ID: test-upload-id",
+        assertEquals("Aborted multipart upload for key [test/key] with upload ID: [test-upload-id]",
             this.logCapture.getMessage(index));
     }
 

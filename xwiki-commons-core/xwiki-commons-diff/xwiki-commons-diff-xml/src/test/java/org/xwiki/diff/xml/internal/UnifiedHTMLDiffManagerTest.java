@@ -139,9 +139,12 @@ class UnifiedHTMLDiffManagerTest
 
         this.unifiedHTMLDiffManager.diff("<p>one</p>", "<p>two</p>", this.config);
 
-        assertEquals("Failed to apply filter before diff.", this.logCapture.getMessage(0));
-        assertEquals("Failed to apply filter before diff.", this.logCapture.getMessage(1));
-        assertEquals("Failed to apply filter after diff.", this.logCapture.getMessage(2));
+        assertEquals("Failed to apply filter before diff: [RuntimeException: before alice failed!]",
+            this.logCapture.getMessage(0));
+        assertEquals("Failed to apply filter before diff: [RuntimeException: before alice failed!]",
+            this.logCapture.getMessage(1));
+        assertEquals("Failed to apply filter after diff: [RuntimeException: after alice failed!]",
+            this.logCapture.getMessage(2));
 
         verify(bob, times(2)).before(any(Document.class));
         verify(bob).after(any(Document.class));

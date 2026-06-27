@@ -96,7 +96,7 @@ public class XWikiEndpointDispatcher extends Endpoint implements EndpointCompone
             try {
                 session.close(closeReason);
             } catch (IOException e) {
-                this.logger.warn("Failed to close the session.", e);
+                this.logger.warn("Failed to close the session: [{}]", ExceptionUtils.getRootCauseMessage(e));
             }
         }
     }

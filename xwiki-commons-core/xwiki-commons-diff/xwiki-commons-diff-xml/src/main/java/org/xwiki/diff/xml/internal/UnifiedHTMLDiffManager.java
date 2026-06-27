@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
@@ -146,7 +147,7 @@ public class UnifiedHTMLDiffManager implements XMLDiffManager, Initializable
             try {
                 filter.before(document);
             } catch (Exception e) {
-                this.logger.warn("Failed to apply filter before diff.", e);
+                this.logger.warn("Failed to apply filter before diff: [{}]", ExceptionUtils.getRootCauseMessage(e));
             }
         }
         return document;
@@ -158,7 +159,7 @@ public class UnifiedHTMLDiffManager implements XMLDiffManager, Initializable
             try {
                 filter.after(document);
             } catch (Exception e) {
-                this.logger.warn("Failed to apply filter after diff.", e);
+                this.logger.warn("Failed to apply filter after diff: [{}]", ExceptionUtils.getRootCauseMessage(e));
             }
         }
         return document;

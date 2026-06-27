@@ -22,6 +22,7 @@ package org.xwiki.store.blob.internal;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.store.blob.BlobPath;
@@ -117,7 +118,8 @@ class S3KeyMapper
             // Prepend the separator to mark it as an absolute path.
             return BlobPath.parse(PATH_SEPARATOR + pathStr);
         } catch (IllegalArgumentException e) {
-            LOGGER.warn("Invalid blob path from S3 key: {}", s3Key, e);
+            LOGGER.warn("Invalid blob path from S3 key: [{}]: [{}]", s3Key,
+                ExceptionUtils.getRootCauseMessage(e));
             return null;
         }
     }

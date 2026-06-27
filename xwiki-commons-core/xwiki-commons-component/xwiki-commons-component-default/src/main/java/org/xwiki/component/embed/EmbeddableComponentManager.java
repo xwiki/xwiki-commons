@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import jakarta.inject.Provider;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.collection.internal.PriorityEntries;
@@ -876,7 +877,8 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         try {
             removeComponent(role, hint);
         } catch (Exception e) {
-            this.logger.warn("Instance released but disposal failed. Some resources may not have been released.", e);
+            this.logger.warn("Instance released but disposal failed. Some resources may not have been released: [{}]",
+                ExceptionUtils.getRootCauseMessage(e));
         }
     }
 

@@ -94,7 +94,7 @@ class JSONToolTest
         assertNull(this.tool.parse("This is not the JSON you are looking for..."));
 
         assertTrue(this.logCapture.getMessage(0)
-            .startsWith("Failed to parse JSON [This is not the JSON you are ...]: "
+            .startsWith("Failed to parse JSON [This is not the JSON you are ...]: ["
                 + "JsonParseException: Unrecognized token 'This': was expecting (JSON String, Number, Array, Object or "
                 + "token 'null', 'true' or 'false')"));
     }
