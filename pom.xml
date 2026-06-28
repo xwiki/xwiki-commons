@@ -123,9 +123,9 @@
 
     <!-- JUnit -->
     <junit.version>4.13.2</junit.version>
-    <junit5.version>5.14.4</junit5.version>
-    <junit.platform.version>1.14.4</junit.platform.version>
-    <junit.vintage.version>${junit5.version}</junit.vintage.version>
+    <junit6.version>6.1.1</junit6.version>
+    <junit.platform.version>${junit6.version}</junit.platform.version>
+    <junit.vintage.version>${junit6.version}</junit.vintage.version>
 
     <surefire.version>3.5.6</surefire.version>
     <failsafe.version>${surefire.version}</failsafe.version>
@@ -1389,12 +1389,12 @@
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter</artifactId>
-        <version>${junit5.version}</version>
+        <version>${junit6.version}</version>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-api</artifactId>
-        <version>${junit5.version}</version>
+        <version>${junit6.version}</version>
       </dependency>
       <dependency>
         <groupId>org.junit.platform</groupId>
