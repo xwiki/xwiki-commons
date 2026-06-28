@@ -60,7 +60,7 @@ class S3ClientManagerTest
     private S3BlobStoreConfiguration configuration;
 
     @RegisterExtension
-    private final LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO);
+    private final LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO, "org.xwiki.store.blob");
 
     /**
      * Helper method to configure the mock with standard test values.
