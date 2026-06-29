@@ -231,7 +231,22 @@
               </differences>
             </revapi.differences>
             -->
-            
+            <revapi.differences>
+              <justification>Not a breakage</justification>
+              <criticality>allowed</criticality>
+              <differences>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.annotation.attributeValueChanged</code>
+                  <old>class org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScm</old>
+                  <new>class org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScm</new>
+                  <annotationType>javax.xml.bind.annotation.XmlType</annotationType>
+                  <attribute>propOrder</attribute>
+                  <oldValue>{"connection", "developerConnection", "url"}</oldValue>
+                  <newValue>{"connection", "developerConnection", "url", "tag"}</newValue>
+                </item>
+              </differences>
+            </revapi.differences>
           </analysisConfiguration>
         </configuration>
       </plugin>
