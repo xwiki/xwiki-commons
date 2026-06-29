@@ -324,7 +324,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
         Collection<URL> jars = getJARs();
 
-        this.logger.debug("Found the following JARs: [{}]", jars);
+        this.logger.debug("Found the following JARs: {}", jars);
 
         ////////////////////
         // Try to find associated xed files
