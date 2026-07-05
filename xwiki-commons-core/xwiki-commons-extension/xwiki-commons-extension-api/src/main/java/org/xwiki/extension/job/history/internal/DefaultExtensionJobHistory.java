@@ -173,6 +173,11 @@ public class DefaultExtensionJobHistory implements ExtensionJobHistory, Initiali
         for (File historyFile : getHistoryFiles()) {
             try {
                 List<ExtensionJobHistoryRecord> storedRecords = this.serializer.read(historyFile);
+                if (storedRecords == null) {
+                    this.logger.warn("Ignoring malformed extension job history file [{}].",
+                        historyFile.getAbsolutePath());
+                    continue;
+                }
                 Collections.reverse(storedRecords);
                 this.records.addAll(storedRecords);
             } catch (Exception e) {
