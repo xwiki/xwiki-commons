@@ -44,6 +44,11 @@
     {
       "matchPackagePrefixes": ["org.xwiki.commons:"],
       "enabled": false
+    },
+    // Ignore Byte Buddy versions ending with -jdk5 (they only make sense for project which need to support Java < 8)
+    {
+      "matchPackageNames": ["net.bytebuddy:byte-buddy"],
+      "allowedVersions": "!/-jdk5$/"
     }
   ]
 }
