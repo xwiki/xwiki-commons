@@ -19,10 +19,9 @@
  */
 package org.xwiki.netflux.internal;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.xwiki.component.annotation.Component;
 
 /**
@@ -69,7 +68,7 @@ public class IdGenerator
     {
         StringBuilder hexString = new StringBuilder();
         while (hexString.length() < length) {
-            hexString.append(Integer.toHexString(ThreadLocalRandom.current().nextInt()));
+            hexString.append(Integer.toHexString(RandomUtils.secure().randomInt()));
         }
         return hexString.toString().substring(0, length);
     }
