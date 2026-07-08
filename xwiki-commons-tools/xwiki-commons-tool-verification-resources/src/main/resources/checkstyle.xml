@@ -242,12 +242,6 @@
       <property name="accessModifiers" value="public"/>
     </module>
 
-    <module name="JavadocStyle">
-      <!-- Disabled since it's buggy, see
-           https://forum.xwiki.org/t/disable-the-html-check-from-the-javadocstyle-rule/9513 -->
-      <property name="checkHtml" value="false"/>
-    </module>
-
     <module name="JavadocType">
       <property name="scope" value="public"/>
       <property name="versionFormat" value="\$Id.*\$"/>
