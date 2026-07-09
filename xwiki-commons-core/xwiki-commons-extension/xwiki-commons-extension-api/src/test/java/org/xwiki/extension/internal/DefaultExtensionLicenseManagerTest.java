@@ -64,7 +64,7 @@ class DefaultExtensionLicenseManagerTest
     @Test
     void getLicenses()
     {
-        assertTrue(this.licenseManager.getLicenses().size() > 0);
+        assertTrue(!this.licenseManager.getLicenses().isEmpty());
     }
 
     @Test

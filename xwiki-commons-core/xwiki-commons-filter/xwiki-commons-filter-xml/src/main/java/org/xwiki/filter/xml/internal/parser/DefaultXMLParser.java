@@ -439,7 +439,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
                 block.fireEndEvent(this.filter);
             } else {
-                if (block.getParametersList().size() == 0
+                if (block.getParametersList().isEmpty()
                     && this.filterDescriptor.getElement(qName).getParameters().length > 0) {
                     if (this.content != null && this.content.length() > 0) {
                         block.setParameter(0,

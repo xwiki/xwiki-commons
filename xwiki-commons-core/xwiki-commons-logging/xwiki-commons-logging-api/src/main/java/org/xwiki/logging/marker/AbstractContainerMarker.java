@@ -116,7 +116,7 @@ public abstract class AbstractContainerMarker implements ContainerMarker
     @Override
     public synchronized boolean hasReferences()
     {
-        return this.references != null && this.references.size() > 0;
+        return this.references != null && !this.references.isEmpty();
     }
 
     @Override
