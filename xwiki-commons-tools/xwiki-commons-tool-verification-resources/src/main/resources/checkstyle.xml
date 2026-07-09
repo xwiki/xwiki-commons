@@ -221,6 +221,8 @@
 
     <module name="JavadocMethod">
       <property name="accessModifiers" value="public"/>
+      <!-- To allow {@return...} -->
+      <property name="allowInlineReturn" value="true"/>
     </module>
 
     <module name="MissingJavadocMethod"/>
