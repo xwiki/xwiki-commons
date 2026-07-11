@@ -87,10 +87,21 @@ import org.xwiki.tool.extension.internal.ExtensionMojoCoreExtensionRepository;
 import org.xwiki.tool.extension.internal.MavenBuildConfigurationSource;
 import org.xwiki.tool.extension.internal.MavenBuildExtensionRepository;
 
+/**
+ * Various helpers used by the XWiki Maven plugins that need to manipulate XWiki extensions: resolving them from a
+ * Maven project or artifact, converting them to the extension model, storing them in the local extension repository,
+ * computing install plans, installing them and serializing their descriptors.
+ *
+ * @version $Id$
+ */
 @Component(roles = ExtensionMojoHelper.class)
 @Singleton
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class ExtensionMojoHelper implements AutoCloseable
 {
+    private static final String FAILED_RESOLVE_DEPENDENCIES =
+        "Failed to resolve dependencies for project [%s] dependencies";
+
     private MavenProject project;
 
     @Inject
@@ -150,16 +161,37 @@ public class ExtensionMojoHelper implements AutoCloseable
 
     private File permanentDirectory;
 
+    /**
+     * Public for technical reasons; {@link #create(MavenProject, File)} should be used instead to obtain a properly
+     * initialized instance.
+     */
+    public ExtensionMojoHelper()
+    {
+    }
+
+    /**
+     * Creates and initializes a new helper backed by a fresh embedded XWiki component manager and execution context,
+     * with the default extension repositories disabled.
+     *
+     * @param project the Maven project for which extensions are manipulated
+     * @param permanentDirectory the directory used as the permanent directory of the embedded XWiki environment (where
+     *  the local and installed extension repositories are stored); when {@code null} the {@code data/} sub-directory
+     *  of the project build directory is used
+     * @return the initialized helper
+     * @throws MojoExecutionException if the configuration source, the execution context or the helper component cannot
+     *  be initialized
+     */
     public static ExtensionMojoHelper create(MavenProject project, File permanentDirectory)
         throws MojoExecutionException
     {
-        if (permanentDirectory == null) {
-            permanentDirectory = new File(project.getBuild().getDirectory(), "data/");
+        File directory = permanentDirectory;
+        if (directory == null) {
+            directory = new File(project.getBuild().getDirectory(), "data/");
         }
 
         // Create and initialize a Component Manager
         EmbeddableComponentManager embeddableComponentManager =
-            (EmbeddableComponentManager) org.xwiki.environment.System.initialize(permanentDirectory);
+            (EmbeddableComponentManager) org.xwiki.environment.System.initialize(directory);
 
         // Disable default repositories
         try {
@@ -186,17 +218,9 @@ public class ExtensionMojoHelper implements AutoCloseable
             throw new MojoExecutionException("Failed to get ExtensionMojoHelper component", e);
         }
         extensionMojoHelper.project = project;
-        extensionMojoHelper.permanentDirectory = permanentDirectory;
+        extensionMojoHelper.permanentDirectory = directory;
 
         return extensionMojoHelper;
-    }
-
-    /**
-     * Public for technical reason, {@link #create(MavenProject, File)} should be used instead.
-     */
-    public ExtensionMojoHelper()
-    {
-
     }
 
     /**
@@ -223,6 +247,15 @@ public class ExtensionMojoHelper implements AutoCloseable
         }
     }
 
+    /**
+     * Initializes the Maven related state and the extension repository backed by the build, so that artifacts can be
+     * resolved.
+     *
+     * @param session the current Maven session
+     * @param localRepository the Maven local repository used to resolve artifacts
+     * @param plexusContainer the Plexus container used to look up Maven components
+     * @throws MojoExecutionException if the underlying components cannot be initialized
+     */
     public void initalize(MavenSession session, ArtifactRepository localRepository, PlexusContainer plexusContainer)
         throws MojoExecutionException
     {
@@ -248,6 +281,12 @@ public class ExtensionMojoHelper implements AutoCloseable
         this.repositories.addRepository(this.extensionRepository);
     }
 
+    /**
+     * Sets the overrides applied to the metadata of the extensions produced by this helper, for example to force a
+     * version, features or custom properties.
+     *
+     * @param extensionOverrides the overrides to apply
+     */
     public void setExtensionOverrides(List<ExtensionOverride> extensionOverrides)
     {
         this.extensionOverrides = extensionOverrides;
@@ -258,6 +297,9 @@ public class ExtensionMojoHelper implements AutoCloseable
         org.xwiki.environment.System.dispose(this.componentManager);
     }
 
+    /**
+     * {@return the component manager backing this helper}
+     */
     public ComponentManager getComponentManager()
     {
         return this.componentManager;
@@ -271,11 +313,18 @@ public class ExtensionMojoHelper implements AutoCloseable
         disposeComponents();
     }
 
+    /**
+     * {@return the permanent directory of the embedded XWiki environment used by this helper}
+     */
     public File getPermanentDirectory()
     {
         return this.permanentDirectory;
     }
 
+    /**
+     * @return the local extension repository, looked up and cached on first access
+     * @throws MojoExecutionException if the local extension repository component cannot be looked up
+     */
     public LocalExtensionRepository getLocalExtensionRepository() throws MojoExecutionException
     {
         if (this.localExtensionRepository == null) {
@@ -290,6 +339,10 @@ public class ExtensionMojoHelper implements AutoCloseable
         return this.localExtensionRepository;
     }
 
+    /**
+     * @return the installed extension repository, looked up and cached on first access
+     * @throws MojoExecutionException if the installed extension repository component cannot be looked up
+     */
     public InstalledExtensionRepository getInstalledExtensionRepository() throws MojoExecutionException
     {
         if (this.installedExtensionRepository == null) {
@@ -304,11 +357,22 @@ public class ExtensionMojoHelper implements AutoCloseable
         return this.installedExtensionRepository;
     }
 
+    /**
+     * {@return the core extension repository used to expose the build artifacts as core extensions}
+     */
     public ExtensionMojoCoreExtensionRepository getExtensionMojoCoreExtensionRepository()
     {
         return (ExtensionMojoCoreExtensionRepository) this.coreExtensionRepository;
     }
 
+    /**
+     * Builds the {@link MavenProject} corresponding to the passed artifact, without executing any plugin and using the
+     * remote repositories configured for the currently built project.
+     *
+     * @param artifact the artifact whose project (POM) is built
+     * @return the resolved Maven project
+     * @throws MojoExecutionException if the project cannot be built
+     */
     public MavenProject getMavenProject(Artifact artifact) throws MojoExecutionException
     {
         try {
@@ -329,14 +393,26 @@ public class ExtensionMojoHelper implements AutoCloseable
         }
     }
 
+    /**
+     * Resolves the passed artifact as an XWiki extension, with the configured overrides applied.
+     *
+     * @param artifact the artifact to convert into an extension
+     * @return the extension corresponding to the artifact
+     * @throws MojoExecutionException if the artifact's project cannot be built
+     */
     public Extension getExtension(Artifact artifact) throws MojoExecutionException
     {
-        MavenProject project = getMavenProject(artifact);
+        MavenProject mavenProject = getMavenProject(artifact);
 
-        return toExtension(toArtifactModel(artifact, project.getModel()));
+        return toExtension(toArtifactModel(artifact, mavenProject.getModel()));
     }
 
     /**
+     * Converts the passed artifact and its Maven model into an XWiki extension, with the configured overrides applied.
+     *
+     * @param artifact the artifact providing the classifier and type of the extension
+     * @param model the Maven model providing the extension metadata
+     * @return the extension, with overrides applied
      * @since 17.9.0RC1
      * @since 17.4.6
      * @since 16.10.13
@@ -346,6 +422,12 @@ public class ExtensionMojoHelper implements AutoCloseable
         return toExtension(toArtifactModel(artifact, model));
     }
 
+    /**
+     * Converts the passed artifact model into an XWiki extension, with the configured overrides applied.
+     *
+     * @param model the artifact model to convert
+     * @return the extension, with overrides applied
+     */
     public Extension toExtension(ArtifactModel model)
     {
         Extension extension = this.extensionConverter.convert(Extension.class, model);
@@ -364,6 +446,13 @@ public class ExtensionMojoHelper implements AutoCloseable
         return extension;
     }
 
+    /**
+     * Resolves the passed artifact as an extension and stores it in the local extension repository.
+     *
+     * @param artifact the artifact to resolve and store
+     * @return the stored local extension
+     * @throws MojoExecutionException if the artifact cannot be resolved or stored
+     */
     public LocalExtension storeExtension(Artifact artifact) throws MojoExecutionException
     {
         Extension extension = getExtension(artifact);
@@ -371,6 +460,13 @@ public class ExtensionMojoHelper implements AutoCloseable
         return storeExtension(extension);
     }
 
+    /**
+     * Stores the passed extension in the local extension repository, unless it is already stored there.
+     *
+     * @param extension the extension to store
+     * @return the matching local extension, either the already stored one or the newly stored one
+     * @throws MojoExecutionException if the extension cannot be stored
+     */
     public LocalExtension storeExtension(Extension extension) throws MojoExecutionException
     {
         LocalExtension localExtension = getLocalExtensionRepository().getLocalExtension(extension.getId());
@@ -386,11 +482,25 @@ public class ExtensionMojoHelper implements AutoCloseable
         return localExtension;
     }
 
+    /**
+     * Resolves the dependencies of the current project and stores them in the local extension repository, resolving
+     * all the dependencies together.
+     *
+     * @throws MojoExecutionException if the dependencies cannot be resolved or stored
+     */
     public void storeExtensionDependencies() throws MojoExecutionException
     {
         storeExtensionDependencies(false);
     }
 
+    /**
+     * Resolves the dependencies of the current project and stores them in the local extension repository.
+     *
+     * @param isolate when {@code true} each dependency is resolved independently from the others, otherwise all the
+     *  dependencies are resolved together
+     * @throws MojoExecutionException if the dependencies cannot be resolved or stored, or if the resulting plan
+     *  contains an unexpected action
+     */
     public void storeExtensionDependencies(boolean isolate) throws MojoExecutionException
     {
         // Resolve dependencies
@@ -402,8 +512,8 @@ public class ExtensionMojoHelper implements AutoCloseable
                 if (action.getAction() == Action.INSTALL) {
                     storeExtension(action.getExtension());
                 } else if (action.getAction() != Action.NONE) {
-                    throw new MojoExecutionException("Unexpected action [" + action
-                        + "] when storing dependencies of project [" + this.project + "]");
+                    throw new MojoExecutionException("Unexpected action [%s] when storing dependencies of project [%s]"
+                        .formatted(action, this.project));
                 }
             }
         }
@@ -422,6 +532,14 @@ public class ExtensionMojoHelper implements AutoCloseable
         return (ExtensionPlan) installPlanJob.getStatus();
     }
 
+    /**
+     * Computes the install plan for the extension corresponding to the passed model on the given namespace.
+     *
+     * @param model the artifact model to compute the install plan for
+     * @param namespace the namespace on which to compute the install plan (for example {@code wiki:xwiki})
+     * @return the computed install plan
+     * @throws MojoExecutionException if the install plan cannot be computed
+     */
     public ExtensionPlan createInstallPlan(ArtifactModel model, String namespace) throws MojoExecutionException
     {
         Extension extension = toExtension(model);
@@ -435,12 +553,21 @@ public class ExtensionMojoHelper implements AutoCloseable
         // Deal with errors
         if (status.getError() != null) {
             throw new MojoExecutionException(
-                "Failed to create an install plan for Maven model [" + model.getModel() + "]", status.getError());
+                "Failed to create an install plan for Maven model [%s]".formatted(model.getModel()), status.getError());
         }
 
         return status;
     }
 
+    /**
+     * Computes the install plans for the dependencies of the passed project.
+     *
+     * @param project the project whose dependencies are resolved
+     * @param isolate when {@code true} a separate plan is computed for each dependency, otherwise a single plan is
+     *  computed for all of them
+     * @return the list of computed install plans
+     * @throws MojoExecutionException if a plan cannot be computed
+     */
     public List<ExtensionPlan> resolveDependencies(MavenProject project, boolean isolate) throws MojoExecutionException
     {
         if (isolate) {
@@ -457,7 +584,7 @@ public class ExtensionMojoHelper implements AutoCloseable
                 // Deal with errors
                 if (status.getError() != null) {
                     throw new MojoExecutionException(
-                        "Failed to resolve dependencies for project [" + project + "] dependencies", status.getError());
+                        FAILED_RESOLVE_DEPENDENCIES.formatted(project), status.getError());
                 }
 
                 plans.add(status);
@@ -469,6 +596,13 @@ public class ExtensionMojoHelper implements AutoCloseable
         }
     }
 
+    /**
+     * Computes a single install plan for all the dependencies of the passed project.
+     *
+     * @param project the project whose dependencies are resolved
+     * @return the computed install plan
+     * @throws MojoExecutionException if the plan cannot be computed
+     */
     public ExtensionPlan resolveDependencies(MavenProject project) throws MojoExecutionException
     {
         InstallRequest installRequest = new InstallRequest();
@@ -483,12 +617,23 @@ public class ExtensionMojoHelper implements AutoCloseable
         // Deal with errors
         if (status.getError() != null) {
             throw new MojoExecutionException(
-                "Failed to resolve dependencies for project [" + project + "] dependencies", status.getError());
+                FAILED_RESOLVE_DEPENDENCIES.formatted(project), status.getError());
         }
 
         return status;
     }
 
+    /**
+     * Resolves the passed artifact as an extension, stores it and registers it as installed on the given namespace.
+     *
+     * @param artifact the artifact to resolve and register
+     * @param namespace the namespace on which the extension is registered as installed, or {@code null} for the root
+     *  namespace
+     * @param dependency {@code true} if the extension is registered as a dependency of another extension
+     * @param properties the custom install properties to associate with the installed extension
+     * @return the registered installed extension
+     * @throws MojoExecutionException if the extension cannot be resolved, stored or registered
+     */
     public InstalledExtension registerInstalledExtension(Artifact artifact, String namespace, boolean dependency,
         Map<String, Object> properties) throws MojoExecutionException
     {
@@ -498,6 +643,15 @@ public class ExtensionMojoHelper implements AutoCloseable
     }
 
     /**
+     * Stores the passed extension and registers it as installed on the given namespace.
+     *
+     * @param extension the extension to register
+     * @param namespace the namespace on which the extension is registered as installed, or {@code null} for the root
+     *  namespace
+     * @param dependency {@code true} if the extension is registered as a dependency of another extension
+     * @param properties the custom install properties to associate with the installed extension
+     * @return the registered installed extension
+     * @throws MojoExecutionException if the extension cannot be stored or registered
      * @since 18.0.0RC1
      * @since 17.10.3
      */
@@ -515,10 +669,18 @@ public class ExtensionMojoHelper implements AutoCloseable
     }
 
     /**
+     * Registers the passed flavors and their dependencies as installed on the given namespace, installing JAR type
+     * dependencies on the root namespace.
+     *
+     * @param flavors the flavors to register as installed
+     * @param namespace the namespace on which the flavors are registered as installed (for example
+     *  {@code wiki:xwiki})
+     * @throws MojoExecutionException if the install plan cannot be computed or an extension cannot be registered
      * @since 18.0.0RC1
      * @since 17.10.3
      */
-    public void registerInstalledFlavors(List<ExtensionDescription> flavors, String namespace) throws MojoExecutionException
+    public void registerInstalledFlavors(List<ExtensionDescription> flavors, String namespace)
+        throws MojoExecutionException
     {
         InstallRequest installRequest = new InstallRequest();
 
@@ -533,7 +695,8 @@ public class ExtensionMojoHelper implements AutoCloseable
         installRequest.setRewriter(rewriter);
 
         for (ExtensionDescription extensionDescription : flavors) {
-            installRequest.addExtension(new ExtensionId(extensionDescription.getId(), extensionDescription.getVersion()));
+            installRequest.addExtension(
+                new ExtensionId(extensionDescription.getId(), extensionDescription.getVersion()));
         }
 
         ExtensionPlan plan = createInstallPlan(installRequest, false);
@@ -541,7 +704,7 @@ public class ExtensionMojoHelper implements AutoCloseable
         // Deal with errors
         if (plan.getError() != null) {
             throw new MojoExecutionException(
-                "Failed to create an install plan for extensions [" + flavors + "]", plan.getError());
+                "Failed to create an install plan for extensions [%s]".formatted(flavors), plan.getError());
         }
 
         for (ExtensionPlanAction action : plan.getActions()) {
@@ -549,11 +712,20 @@ public class ExtensionMojoHelper implements AutoCloseable
                 registerInstalledExtension(action.getExtension(), action.getNamespace(), false, Collections.emptyMap());
             } else if (action.getAction() != Action.NONE) {
                 throw new MojoExecutionException(
-                    "Unexpected action [" + action + "] when registering installed extensions");
+                    "Unexpected action [%s] when registering installed extensions".formatted(action));
             }
         }
     }
 
+    /**
+     * Installs the passed extensions on the given namespace.
+     *
+     * @param artifacts the extensions to install
+     * @param namespace the namespace on which to install the extensions, or {@code null} for the root namespace
+     * @param properties the custom install properties to associate with the installed extensions
+     * @return the executed install job
+     * @throws MojoExecutionException if the installation fails
+     */
     public Job install(Collection<ExtensionArtifact> artifacts, String namespace, Map<String, Object> properties)
         throws MojoExecutionException
     {
@@ -562,6 +734,16 @@ public class ExtensionMojoHelper implements AutoCloseable
         return install(artifacts, installRequest, namespace, properties);
     }
 
+    /**
+     * Installs the passed extensions on the given namespace, using the provided install request.
+     *
+     * @param artifacts the extensions to add to the install request
+     * @param installRequest the install request to complete and execute
+     * @param namespace the namespace on which to install the extensions, or {@code null} for the root namespace
+     * @param properties the custom install properties to associate with the installed extensions
+     * @return the executed install job
+     * @throws MojoExecutionException if the installation fails
+     */
     public Job install(Collection<ExtensionArtifact> artifacts, InstallRequest installRequest, String namespace,
         Map<String, Object> properties) throws MojoExecutionException
     {
@@ -573,6 +755,15 @@ public class ExtensionMojoHelper implements AutoCloseable
         return install(installRequest, namespace, properties);
     }
 
+    /**
+     * Installs the passed artifact as an extension on the given namespace.
+     *
+     * @param artifact the artifact to install
+     * @param namespace the namespace on which to install the extension, or {@code null} for the root namespace
+     * @param properties the custom install properties to associate with the installed extension
+     * @return the executed install job
+     * @throws MojoExecutionException if the installation fails
+     */
     public Job install(Artifact artifact, String namespace, Map<String, Object> properties)
         throws MojoExecutionException
     {
@@ -584,6 +775,15 @@ public class ExtensionMojoHelper implements AutoCloseable
         return install(installRequest, namespace, properties);
     }
 
+    /**
+     * Executes the passed install request on the given namespace.
+     *
+     * @param installRequest the install request to execute
+     * @param namespace the namespace on which to install the extensions, or {@code null} for the root namespace
+     * @param properties the custom install properties to associate with the installed extensions, or {@code null}
+     * @return the executed install job
+     * @throws MojoExecutionException if the installation fails
+     */
     public Job install(InstallRequest installRequest, String namespace, Map<String, Object> properties)
         throws MojoExecutionException
     {
@@ -607,6 +807,16 @@ public class ExtensionMojoHelper implements AutoCloseable
         return installJob;
     }
 
+    /**
+     * Serializes the descriptor of the extension corresponding to the passed artifact to the given file.
+     *
+     * @param path the file to write the extension descriptor to
+     * @param artifact the artifact whose extension descriptor is serialized
+     * @throws MojoExecutionException if the artifact's project cannot be built
+     * @throws IOException if the descriptor cannot be written
+     * @throws ParserConfigurationException if the descriptor XML document cannot be created
+     * @throws TransformerException if the descriptor XML cannot be serialized
+     */
     public void serializeExtension(File path, Artifact artifact)
         throws MojoExecutionException, IOException, ParserConfigurationException, TransformerException
     {
@@ -616,12 +826,30 @@ public class ExtensionMojoHelper implements AutoCloseable
         serializeExtension(path, artifact, mavenProject.getModel());
     }
 
+    /**
+     * Serializes the descriptor of the extension corresponding to the passed artifact and Maven model to the given
+     * file.
+     *
+     * @param path the file to write the extension descriptor to
+     * @param artifact the artifact providing the classifier and type of the extension
+     * @param model the Maven model providing the extension metadata
+     * @throws IOException if the descriptor cannot be written
+     * @throws ParserConfigurationException if the descriptor XML document cannot be created
+     * @throws TransformerException if the descriptor XML cannot be serialized
+     */
     public void serializeExtension(File path, Artifact artifact, Model model)
         throws IOException, ParserConfigurationException, TransformerException
     {
         serializeExtension(path, toArtifactModel(artifact, model));
     }
 
+    /**
+     * Combines the passed Maven model with the classifier and type of the passed artifact into an artifact model.
+     *
+     * @param artifact the artifact providing the classifier and type
+     * @param model the Maven model providing the metadata
+     * @return the resulting artifact model
+     */
     public ArtifactModel toArtifactModel(Artifact artifact, Model model)
     {
         ArtifactModel artifactModel = new ArtifactModel(model);
@@ -631,6 +859,15 @@ public class ExtensionMojoHelper implements AutoCloseable
         return artifactModel;
     }
 
+    /**
+     * Serializes the descriptor of the extension corresponding to the passed artifact model to the given file.
+     *
+     * @param path the file to write the extension descriptor to
+     * @param artifactModel the artifact model to serialize
+     * @throws IOException if the descriptor cannot be written
+     * @throws ParserConfigurationException if the descriptor XML document cannot be created
+     * @throws TransformerException if the descriptor XML cannot be serialized
+     */
     public void serializeExtension(File path, ArtifactModel artifactModel)
         throws IOException, ParserConfigurationException, TransformerException
     {
@@ -640,6 +877,15 @@ public class ExtensionMojoHelper implements AutoCloseable
         serializeExtension(path, mavenExtension);
     }
 
+    /**
+     * Serializes the descriptor of the passed extension to the given file, unless that file already exists.
+     *
+     * @param path the file to write the extension descriptor to
+     * @param mavenExtension the extension whose descriptor is serialized
+     * @throws IOException if the descriptor cannot be written
+     * @throws ParserConfigurationException if the descriptor XML document cannot be created
+     * @throws TransformerException if the descriptor XML cannot be serialized
+     */
     public void serializeExtension(File path, Extension mavenExtension)
         throws IOException, ParserConfigurationException, TransformerException
     {
@@ -651,6 +897,12 @@ public class ExtensionMojoHelper implements AutoCloseable
         }
     }
 
+    /**
+     * Applies the configured {@link ExtensionOverride overrides} to the passed extension, updating its version,
+     * features and properties when a matching override is found.
+     *
+     * @param extension the extension to modify in place
+     */
     public void override(MutableExtension extension)
     {
         if (this.extensionOverrides != null) {
@@ -687,6 +939,14 @@ public class ExtensionMojoHelper implements AutoCloseable
         }
     }
 
+    /**
+     * Serializes the descriptor of the extension corresponding to the passed artifact into the given directory, using
+     * the WAR plugin naming convention ({@code artifactId-baseVersion[-classifier].xed}).
+     *
+     * @param artifact the artifact whose extension descriptor is serialized
+     * @param directory the directory in which the {@code .xed} descriptor file is created
+     * @throws MojoExecutionException if the descriptor cannot be written
+     */
     public void serializeExtension(Artifact artifact, File directory) throws MojoExecutionException
     {
         // Get path
@@ -705,10 +965,19 @@ public class ExtensionMojoHelper implements AutoCloseable
         try {
             serializeExtension(path, artifact);
         } catch (Exception e) {
-            throw new MojoExecutionException("Failed to write descriptor for artifact [" + artifact + "]", e);
+            throw new MojoExecutionException("Failed to write descriptor for artifact [%s]".formatted(artifact), e);
         }
     }
 
+    /**
+     * Serializes the descriptors of the passed artifacts into the given directory, skipping optional artifacts.
+     *
+     * @param artifacts the artifacts whose extension descriptors are serialized
+     * @param directory the directory in which the {@code .xed} descriptor files are created
+     * @param type the artifact type to restrict serialization to (for example {@code jar}), or {@code null} to
+     *  serialize artifacts of any type
+     * @throws MojoExecutionException if a descriptor cannot be written
+     */
     public void serializeExtensions(Collection<Artifact> artifacts, File directory, String type)
         throws MojoExecutionException
     {
@@ -722,11 +991,22 @@ public class ExtensionMojoHelper implements AutoCloseable
         }
     }
 
+    /**
+     * {@return the configuration source backed by the Maven build}
+     */
     public MavenBuildConfigurationSource getMavenBuildConfigurationSource()
     {
         return (MavenBuildConfigurationSource) this.configurationSource;
     }
 
+    /**
+     * Collects the transitive Maven artifacts of the passed extension artifacts, applying the dependency management
+     * of the current project and excluding {@code system} scoped dependencies.
+     *
+     * @param input the root extension artifacts to collect the dependencies of
+     * @return the collected set of artifacts, or {@code null} if {@code input} is {@code null}
+     * @throws MojoExecutionException if the artifacts cannot be resolved
+     */
     public Set<Artifact> collectMavenArtifacts(List<ExtensionArtifact> input) throws MojoExecutionException
     {
         if (input != null) {

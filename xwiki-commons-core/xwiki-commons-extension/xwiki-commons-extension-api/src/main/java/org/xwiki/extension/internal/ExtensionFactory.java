@@ -57,6 +57,7 @@ import org.xwiki.extension.version.internal.DefaultVersionConstraint;
  */
 @Component(roles = ExtensionFactory.class)
 @Singleton
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class ExtensionFactory
 {
     private static final ExtensionPattern NULL_PATTERN = new DefaultExtensionPattern((Pattern) null);
@@ -183,7 +184,7 @@ public class ExtensionFactory
      */
     public ExtensionPattern getExtensionPattern(String idPattern)
     {
-        if (idPattern == null || idPattern.equals(".*")) {
+        if (idPattern == null || ".*".equals(idPattern)) {
             return NULL_PATTERN;
         }
 

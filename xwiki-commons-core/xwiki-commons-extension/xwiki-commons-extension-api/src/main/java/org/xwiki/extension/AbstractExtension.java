@@ -212,6 +212,7 @@ public abstract class AbstractExtension implements MutableExtension
      * @return the field value or null if none could be found
      */
     @Override
+    @SuppressWarnings({"checkstyle:ReturnCount", "checkstyle:CyclomaticComplexity"})
     public <T> T get(String fieldName)
     {
         switch (fieldName.toLowerCase()) {

@@ -74,6 +74,11 @@ public final class NamespaceUtils
             return Namespace.ROOT;
         }
 
+        return parseNamespace(namespace);
+    }
+
+    private static Namespace parseNamespace(String namespace)
+    {
         boolean escaped = false;
         StringBuilder typeBuilder = null;
         for (int i = 0; i < namespace.length(); ++i) {
@@ -81,26 +86,19 @@ public final class NamespaceUtils
             if (escaped) {
                 typeBuilder.append(c);
                 escaped = false;
-            } else {
-                if (c == '\\') {
-                    if (typeBuilder == null) {
-                        typeBuilder = new StringBuilder();
-                        if (i > 0) {
-                            typeBuilder.append(namespace, 0, i);
-                        }
+            } else if (c == '\\') {
+                if (typeBuilder == null) {
+                    typeBuilder = new StringBuilder();
+                    if (i > 0) {
+                        typeBuilder.append(namespace, 0, i);
                     }
-                    escaped = true;
-                } else if (c == ':') {
-                    String type;
-                    if (typeBuilder != null) {
-                        type = typeBuilder.toString();
-                    } else {
-                        type = namespace.substring(0, i);
-                    }
-                    return new Namespace(type, namespace.substring(i + 1));
-                } else if (typeBuilder != null) {
-                    typeBuilder.append(c);
                 }
+                escaped = true;
+            } else if (c == ':') {
+                String type = typeBuilder != null ? typeBuilder.toString() : namespace.substring(0, i);
+                return new Namespace(type, namespace.substring(i + 1));
+            } else if (typeBuilder != null) {
+                typeBuilder.append(c);
             }
         }
 

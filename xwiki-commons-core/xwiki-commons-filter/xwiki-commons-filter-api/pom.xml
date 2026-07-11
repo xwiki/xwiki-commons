@@ -83,16 +83,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <!-- Apply the Checkstyle configurations defined in the top level pom.xml file -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <excludes>
-            org/xwiki/filter/internal/input/InputSourceConverter.java
-          </excludes>
-        </configuration>
-      </plugin>
       <!-- Add test source root for executing generated tests -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

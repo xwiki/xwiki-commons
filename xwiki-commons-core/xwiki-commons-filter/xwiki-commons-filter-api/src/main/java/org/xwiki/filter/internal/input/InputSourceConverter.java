@@ -87,27 +87,32 @@ public class InputSourceConverter extends AbstractConverter<InputSource>
         } else if (value instanceof URL) {
             inputSource = new DefaultURLInputSource((URL) value);
         } else {
-            ParameterizedType componentRole =
-                TypeUtils.parameterize(org.xwiki.filter.input.InputSourceConverter.class, value.getClass());
-
-            ComponentManager componentManager = this.contextComponentManagerProvider.get();
-
-            if (componentManager.hasComponent(componentRole)) {
-                try {
-                    org.xwiki.filter.input.InputSourceConverter converter = componentManager.getInstance(componentRole);
-
-                    inputSource = converter.convert(value);
-                } catch (ComponentLookupException e) {
-                    throw new ConversionException(
-                        "Failed to get the input source converter component for type [" + value.getClass() + "]", e);
-                }
-            } else {
-                // Fallback on the String logic
-                inputSource = fromString(value.toString());
-            }
+            inputSource = fromObject(value);
         }
 
         return (G) inputSource;
+    }
+
+    private InputSource fromObject(Object value)
+    {
+        ParameterizedType componentRole =
+            TypeUtils.parameterize(org.xwiki.filter.input.InputSourceConverter.class, value.getClass());
+
+        ComponentManager componentManager = this.contextComponentManagerProvider.get();
+
+        if (componentManager.hasComponent(componentRole)) {
+            try {
+                org.xwiki.filter.input.InputSourceConverter converter = componentManager.getInstance(componentRole);
+
+                return converter.convert(value);
+            } catch (ComponentLookupException e) {
+                throw new ConversionException(
+                    "Failed to get the input source converter component for type [%s]".formatted(value.getClass()), e);
+            }
+        } else {
+            // Fallback on the String logic
+            return fromString(value.toString());
+        }
     }
 
     private InputSource fromString(String source)
@@ -115,7 +120,7 @@ public class InputSourceConverter extends AbstractConverter<InputSource>
         try {
             return this.parser.parse(source);
         } catch (FilterException e) {
-            throw new ConversionException("Failed to parse the inut source reference [" + source + "]", e);
+            throw new ConversionException("Failed to parse the inut source reference [%s]".formatted(source), e);
         }
     }
 }

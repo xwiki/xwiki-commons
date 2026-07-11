@@ -40,6 +40,18 @@ public class ExtensionConverterParser
     private StringBuilder builder;
 
     /**
+     * @param value the slash-separated serialized string to parse element by element through {@link #next(boolean)}
+     */
+    public ExtensionConverterParser(String value)
+    {
+        this.value = value;
+        this.length = value.length();
+        this.begin = 0;
+        this.end = 0;
+        this.elementCount = 0;
+    }
+
+    /**
      * @param value the value to escape
      * @return the escaped value
      */
@@ -52,7 +64,14 @@ public class ExtensionConverterParser
         return value.replace("\\", "\\\\").replace("/", "\\/");
     }
 
-    public static final String toString(Object... elements)
+    /**
+     * Serializes the passed elements into a single string, joining them with {@code /} and escaping any {@code /} or
+     * {@code \} they contain (except in the last element, which does not need escaping).
+     *
+     * @param elements the elements to serialize; a {@code null} element is serialized as an empty value
+     * @return the slash-separated serialized form, parseable back through {@link #next(boolean)}
+     */
+    public static String toString(Object... elements)
     {
         StringBuilder builder = new StringBuilder();
 
@@ -81,21 +100,10 @@ public class ExtensionConverterParser
     }
 
     /**
-     * @param value the value to parse
-     */
-    public ExtensionConverterParser(String value)
-    {
-        this.value = value;
-        this.length = value.length();
-        this.begin = 0;
-        this.end = 0;
-        this.elementCount = 0;
-    }
-
-    /**
      * @param separator if true, stop at next separator, otherwise go to the end of the string
      * @return the new element
      */
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     public String next(boolean separator)
     {
         if (this.elementCount == 0 && this.length == 0) {

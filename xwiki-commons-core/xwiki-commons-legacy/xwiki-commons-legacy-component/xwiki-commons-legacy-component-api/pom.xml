@@ -61,21 +61,6 @@
   </dependencies>
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <executions>
-          <execution>
-            <!-- Specify the "default" execution id so that the "blocker" one is always executed -->
-            <id>default</id>
-            <configuration>
-              <excludes>
-                org/xwiki/component/logging/AbstractLogEnabled.java
-              </excludes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <!-- Apply Compatibility Aspects -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

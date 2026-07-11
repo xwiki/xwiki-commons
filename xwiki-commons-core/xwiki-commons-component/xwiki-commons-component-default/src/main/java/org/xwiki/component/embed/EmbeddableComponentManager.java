@@ -66,6 +66,8 @@ import org.xwiki.component.util.ReflectionUtils;
  * @version $Id$
  * @since 2.0M1
  */
+// The fan-out is inherent to a component manager, which necessarily references most of the component APIs.
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class EmbeddableComponentManager implements NamespacedComponentManager, Disposable
 {
     /**
@@ -78,7 +80,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         /**
          * Descriptor of the component.
          */
-        final ComponentDescriptor<R> descriptor;
+        private final ComponentDescriptor<R> descriptor;
 
         /**
          * Cached instance of the component. Lazily initialized when needed.
@@ -86,14 +88,14 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
          * This variable can be accesses and modified by many different threads at the same time so we make it volatile
          * to ensure it's really shared and sync between all of them and not in each thread memory.
          */
-        volatile R instance;
+        private volatile R instance;
 
         /**
          * Flag used when computing the disposal order.
          */
-        boolean disposing = false;
+        private boolean disposing;
 
-        boolean constructing = false;
+        private boolean constructing;
 
         ComponentEntry(ComponentDescriptor<R> descriptor, R instance)
         {
@@ -118,7 +120,6 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
     {
         ComponentEntries()
         {
-            super();
         }
 
         ComponentEntries(int initialCapacity)
@@ -222,6 +223,10 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
      */
     private ServiceLoader<LifecycleHandler> lifecycleHandlers = ServiceLoader.load(LifecycleHandler.class);
 
+    /**
+     * Creates a component manager that is not associated with any namespace (its namespace is {@code null}), and
+     * registers itself as a {@link ComponentManager} component so that it can be looked up like any other component.
+     */
     public EmbeddableComponentManager()
     {
         registerThis();
@@ -312,7 +317,8 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
                 instance = getParent().getInstance(roleType, roleHint);
             } else {
                 throw new ComponentLookupException(
-                    "Can't find descriptor for the component with type [" + roleType + "] and hint [" + roleHint + "]");
+                    "Can't find descriptor for the component with type [%s] and hint [%s]".formatted(roleType,
+                        roleHint));
             }
         } else if (getParent() != null) {
             // Get parent descriptor
@@ -429,9 +435,8 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
             return getComponentInstance(roleEntry);
         } catch (Exception | Error e) {
             if (roleEntry.descriptor.isMandatory()) {
-                throw new ComponentLookupException("Failed to lookup component with type ["
-                    + roleEntry.descriptor.getRoleType() + "] and hint [" + roleEntry.descriptor.getRoleHint() + "]",
-                    e);
+                throw new ComponentLookupException("Failed to lookup component with type [%s] and hint [%s]"
+                    .formatted(roleEntry.descriptor.getRoleType(), roleEntry.descriptor.getRoleHint()), e);
             } else {
                 this.logger.error("Failed to lookup component with type [{}] and hint [{}]",
                     roleEntry.descriptor.getRoleType(), roleEntry.descriptor.getRoleHint(), e);

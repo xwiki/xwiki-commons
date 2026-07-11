@@ -49,6 +49,7 @@ import org.xwiki.observation.WrappedThreadEventListener;
  * @version $Id$
  * @since 7.4M1
  */
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public abstract class AbstractJobStatus<R extends Request> implements JobStatus, CancelableJobStatus
 {
     /**

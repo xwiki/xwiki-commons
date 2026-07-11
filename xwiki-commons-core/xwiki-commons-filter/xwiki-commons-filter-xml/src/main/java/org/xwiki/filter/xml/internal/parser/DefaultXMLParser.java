@@ -68,6 +68,9 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
      */
     protected static final Logger LOGGER = LoggerFactory.getLogger(DefaultXMLParser.class);
 
+    private static final String LOG_UNKNOWN_PARAMETER =
+        "Unknown element parameter [{}] (=[{}]) in block [{}] (available parameters are {})";
+
     private ParameterManager parameterManager;
 
     private ConverterManager stringConverter;
@@ -78,30 +81,65 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
     private Deque<Block> blockStack = new LinkedList<>();
 
-    private int elementDepth = 0;
+    private int elementDepth;
 
     private StringBuilder content;
 
     private XMLConfiguration configuration;
 
+    /**
+     * Holds the state accumulated while parsing a single XML element (a "block"): its name, the matching filter
+     * element descriptor and the parameters collected before the corresponding filter event is fired.
+     */
     public static class Block
     {
+        private static final String ERROR_UNKNOWN_EVENT =
+            "Failed to invoke unknown event with name [%s] and parameters [%s]";
+
+        /**
+         * The name of the XML element this block represents.
+         */
         public String name;
 
+        /**
+         * The descriptor of the filter element matching this block, or {@code null} when the element is unknown.
+         */
         public FilterElementDescriptor filterElement;
 
-        public boolean beginSent = false;
+        /**
+         * {@code true} when the begin event has already been sent for this block.
+         */
+        public boolean beginSent;
 
+        /**
+         * The positional (indexed) parameters collected for this block.
+         */
         public List<Object> parameters = new ArrayList<>();
 
+        /**
+         * The named parameters collected for this block.
+         */
         public FilterEventParameters namedParameters = new FilterEventParameters();
 
+        /**
+         * The DOM builder used to accumulate complex (element) parameter values, or {@code null} when none is being
+         * built.
+         */
         public Sax2Dom parametersDOMBuilder;
 
+        /**
+         * The XML element depth at which this block starts.
+         */
         public int elementDepth;
 
         private Object[] parametersTable;
 
+        /**
+         * @param name the name of the XML element this block represents
+         * @param listenerElement the descriptor of the filter element matching this block, or {@code null} when the
+         *  element is unknown
+         * @param elementDepth the XML element depth at which this block starts
+         */
         public Block(String name, FilterElementDescriptor listenerElement, int elementDepth)
         {
             this.name = name;
@@ -109,16 +147,32 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             this.elementDepth = elementDepth;
         }
 
+        /**
+         * @return {@code true} when this block is a container, that is either an unknown element or a filter element
+         *  declaring a begin method
+         */
         public boolean isContainer()
         {
             return this.filterElement == null || this.filterElement.getBeginMethod() != null;
         }
 
+        /**
+         * Sets a named parameter.
+         *
+         * @param name the name of the parameter
+         * @param value the value of the parameter
+         */
         public void setParameter(String name, Object value)
         {
             this.namedParameters.put(name, value);
         }
 
+        /**
+         * Sets a positional parameter, filling any missing lower indexes with their default value.
+         *
+         * @param index the 0-based index of the parameter
+         * @param value the value of the parameter
+         */
         public void setParameter(int index, Object value)
         {
             for (int i = this.parameters.size(); i <= index; ++i) {
@@ -129,11 +183,17 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             this.parametersTable = null;
         }
 
+        /**
+         * @return the list of positional parameters collected for this block
+         */
         public List<Object> getParametersList()
         {
             return this.parameters;
         }
 
+        /**
+         * @return the positional parameters collected for this block as an array
+         */
         public Object[] getParametersTable()
         {
             if (this.parametersTable == null) {
@@ -147,6 +207,12 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             return this.parametersTable;
         }
 
+        /**
+         * Fires the begin event for this block on the passed listener.
+         *
+         * @param listener the filter listener to notify
+         * @throws SAXException when firing the event fails
+         */
         public void fireBeginEvent(Object listener) throws SAXException
         {
             if (this.filterElement != null) {
@@ -155,13 +221,18 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                 try {
                     ((UnknownFilter) listener).beginUnknwon(this.name, this.namedParameters);
                 } catch (Exception e) {
-                    throw new SAXException("Failed to invoke unknown event with name [" + this.name
-                        + "] and parameters [" + this.namedParameters + "]", e);
+                    throw new SAXException(ERROR_UNKNOWN_EVENT.formatted(this.name, this.namedParameters), e);
                 }
             }
             this.beginSent = true;
         }
 
+        /**
+         * Fires the end event for this block on the passed listener.
+         *
+         * @param listener the filter listener to notify
+         * @throws SAXException when firing the event fails
+         */
         public void fireEndEvent(Object listener) throws SAXException
         {
             if (this.filterElement != null) {
@@ -170,12 +241,17 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                 try {
                     ((UnknownFilter) listener).endUnknwon(this.name, this.namedParameters);
                 } catch (Exception e) {
-                    throw new SAXException("Failed to invoke unknown event with name [" + this.name
-                        + "] and parameters [" + this.namedParameters + "]", e);
+                    throw new SAXException(ERROR_UNKNOWN_EVENT.formatted(this.name, this.namedParameters), e);
                 }
             }
         }
 
+        /**
+         * Fires the on event for this block on the passed listener.
+         *
+         * @param listener the filter listener to notify
+         * @throws SAXException when firing the event fails
+         */
         public void fireOnEvent(Object listener) throws SAXException
         {
             if (this.filterElement != null) {
@@ -184,30 +260,29 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                 try {
                     ((UnknownFilter) listener).onUnknwon(this.name, this.namedParameters);
                 } catch (Exception e) {
-                    throw new SAXException("Failed to invoke unknown event with name [" + this.name
-                        + "] and parameters [" + this.namedParameters + "]", e);
+                    throw new SAXException(ERROR_UNKNOWN_EVENT.formatted(this.name, this.namedParameters), e);
                 }
             }
         }
 
         private void fireEvent(Method eventMethod, Object listener) throws SAXException
         {
-            Object[] parameters = getParametersTable();
+            Object[] parametersArray = getParametersTable();
             Class<?>[] methodParameters = eventMethod.getParameterTypes();
 
             Object[] properParameters;
             // Missing parameters
-            if (methodParameters.length > parameters.length) {
+            if (methodParameters.length > parametersArray.length) {
                 properParameters = new Object[methodParameters.length];
                 for (int i = 0; i < methodParameters.length; ++i) {
-                    if (i < parameters.length) {
-                        properParameters[i] = parameters[i];
+                    if (i < parametersArray.length) {
+                        properParameters[i] = parametersArray[i];
                     } else {
                         properParameters[i] = this.filterElement.getParameters()[i].getDefaultValue();
                     }
                 }
             } else {
-                properParameters = parameters;
+                properParameters = parametersArray;
             }
 
             // Invalid primitive
@@ -227,14 +302,21 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             try {
                 eventMethod.invoke(listener, properParameters);
             } catch (InvocationTargetException e) {
-                throw new SAXException("Event [" + eventMethod + "] thrown exception",
+                throw new SAXException("Event [%s] thrown exception".formatted(eventMethod),
                     e.getCause() instanceof Exception ? (Exception) e.getCause() : e);
             } catch (Exception e) {
-                throw new SAXException("Failed to invoke event [" + eventMethod + "]", e);
+                throw new SAXException("Failed to invoke event [%s]".formatted(eventMethod), e);
             }
         }
     }
 
+    /**
+     * @param listener the filter listener to send the parsed events to
+     * @param listenerDescriptor the descriptor of the filter listener, used to resolve elements and parameters
+     * @param stringConverter the converter used to convert string parameter values to their target type
+     * @param parameterManager the manager used to unserialize complex (element) parameter values
+     * @param configuration the XML configuration to use; when {@code null} a default {@link XMLConfiguration} is used
+     */
     public DefaultXMLParser(Object listener, FilterDescriptor listenerDescriptor, ConverterManager stringConverter,
         ParameterManager parameterManager, XMLConfiguration configuration)
     {
@@ -306,7 +388,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
                 setParameter(block, filterParameter, value);
             } else {
-                LOGGER.warn("Unknown element parameter [{}] (=[{}]) in block [{}] (available parameters are {})",
+                LOGGER.warn(LOG_UNKNOWN_PARAMETER,
                     name, value, block.name, Arrays.asList(block.filterElement.getParameters()));
 
                 block.setParameter(name, value);
@@ -318,7 +400,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                 if (filterParameter != null) {
                     setParameter(block, filterParameter, value);
                 } else {
-                    LOGGER.warn("Unknown element parameter [{}] (=[{}]) in block [{}] (available parameters are {})",
+                    LOGGER.warn(LOG_UNKNOWN_PARAMETER,
                         name, value, block.name, Arrays.asList(block.filterElement.getParameters()));
 
                     block.setParameter(name, value);
@@ -373,6 +455,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
     }
 
     @Override
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
     {
         Block currentBlock = this.blockStack.isEmpty() ? null : this.blockStack.peek();
@@ -422,6 +505,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
     }
 
     @Override
+    @SuppressWarnings({ "checkstyle:CyclomaticComplexity", "checkstyle:NestedIfDepth" })
     public void endElement(String uri, String localName, String qName) throws SAXException
     {
         --this.elementDepth;

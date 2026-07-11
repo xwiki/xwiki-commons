@@ -59,11 +59,14 @@ import org.xwiki.logging.tail.LogTailResult;
  * @since 11.9RC1
  */
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implements Disposable
 {
     protected static final String FAILED_STORE_LOG = "Failed to store the log";
 
     protected static final String FILE_EXTENSION = ".log";
+
+    private static final String FAILED_RETRIEVE_LOG = "Faile to retrieve log for [{}]";
 
     @Inject
     protected org.slf4j.Logger componentLogger;
@@ -95,7 +98,7 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
         @Override
         public String toString()
         {
-            return this.position + ":" + this.level;
+            return "%s:%s".formatted(this.position, this.level);
         }
     }
 
@@ -119,7 +122,7 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
             try {
                 return getLogEvent(this.current++);
             } catch (Exception e) {
-                throw new RuntimeException("Failed to get log event in [" + logFile + "]", e);
+                throw new RuntimeException("Failed to get log event in [%s]".formatted(logFile), e);
             }
         }
     }
@@ -333,7 +336,7 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
                 }
             }
         } catch (Exception e) {
-            this.componentLogger.error("Faile to retrieve log for [{}]", this.logFile, e);
+            this.componentLogger.error(FAILED_RETRIEVE_LOG, this.logFile, e);
 
             return null;
         }
@@ -447,7 +450,7 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
             try {
                 getLogEvents(toIndex, fromIndex, from, events);
             } catch (Exception e) {
-                this.componentLogger.error("Faile to retrieve log for [{}]", this.logFile, e);
+                this.componentLogger.error(FAILED_RETRIEVE_LOG, this.logFile, e);
             }
 
             return new ListLogTailResult(events);

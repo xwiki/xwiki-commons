@@ -124,6 +124,9 @@ import org.xwiki.jakartabridge.servlet.internal.JavaxToJakartaWriteListener;
  * @version $Id$
  * @since 17.0.0RC1
  */
+// This bridge converts every servlet API type between the javax and jakarta namespaces, so referencing all of
+// them (a high fan-out) is inherent to its purpose.
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public final class JakartaServletBridge
 {
     private JakartaServletBridge()

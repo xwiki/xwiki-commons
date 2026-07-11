@@ -61,10 +61,12 @@ import org.xwiki.observation.ObservationManager;
  * Base class for {@link Job} implementations.
  *
  * @param <R> the request type associated to the job
+ * @param <S> the status type associated to the job
  * @version $Id$
  * @since 7.4M1
  */
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public abstract class AbstractJob<R extends Request, S extends JobStatus> implements Job
 {
     private static final BeginTranslationMarker LOG_BEGIN = new BeginTranslationMarker("job.log.begin");
@@ -207,7 +209,8 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
                     try {
                         this.executionContextManagerProvider.get().initialize(context);
                     } catch (ExecutionContextException e) {
-                        throw new RuntimeException("Failed to initialize Job [" + this + "] execution context", e);
+                        throw new RuntimeException("Failed to initialize Job [%s] execution context".formatted(this),
+                            e);
                     }
 
                     // Restore stored context
@@ -215,8 +218,8 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
                         try {
                             this.contextStore.restore(storedContext);
                         } catch (ComponentLookupException e) {
-                            throw new RuntimeException("Failed to restore context requested for the job [" + this + "]",
-                                e);
+                            throw new RuntimeException(
+                                "Failed to restore context requested for the job [%s]".formatted(this), e);
                         }
                     }
                 }
@@ -362,8 +365,8 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
 
                 return constructor.newInstance(request);
             } catch (Exception e) {
-                throw new RuntimeException("Failed to convert the input request [" + request + "] into the expected ["
-                    + propertiesType + "] type.");
+                throw new RuntimeException("Failed to convert the input request [%s] into the expected [%s] type."
+                    .formatted(request, propertiesType));
             }
         }
 

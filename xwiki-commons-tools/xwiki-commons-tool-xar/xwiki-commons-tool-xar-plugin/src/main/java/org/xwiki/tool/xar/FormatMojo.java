@@ -49,6 +49,8 @@ import static org.xwiki.tool.xar.internal.XMLUtils.getSAXReader;
 @Mojo(name = "format", threadSafe = true)
 public class FormatMojo extends AbstractVerifyMojo
 {
+    private static final String XPATH_ORIGINAL_METADATA_AUTHOR = "xwikidoc/originalMetadataAuthor";
+
     /**
      * If false then don't pretty print the XML.
      */
@@ -107,13 +109,15 @@ public class FormatMojo extends AbstractVerifyMojo
         getLog().info(String.format("  Formatting [%s/%s]... ok", parentName, file.getName()));
     }
 
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS", "checkstyle:NPathComplexity",
+        "checkstyle:ExecutableStatementCount"})
     private void format(String filePath, Document domdoc, Locale defaultLocale) throws DocumentException
     {
         Node node = domdoc.selectSingleNode("xwikidoc/author");
         if (node != null) {
             node.setText(AUTHOR);
         }
-        node = domdoc.selectSingleNode("xwikidoc/originalMetadataAuthor");
+        node = domdoc.selectSingleNode(XPATH_ORIGINAL_METADATA_AUTHOR);
         if (node != null) {
             node.setText(AUTHOR);
         }
@@ -191,7 +195,7 @@ public class FormatMojo extends AbstractVerifyMojo
             removeNodes("xwikidoc//attachment/date", domdoc);
         }
         if (!this.skipAuthors && !this.skipAuthorsDocumentList.contains(documentName)) {
-            removeNodes("xwikidoc/originalMetadataAuthor", domdoc);            
+            removeNodes(XPATH_ORIGINAL_METADATA_AUTHOR, domdoc);
         }
     }
 

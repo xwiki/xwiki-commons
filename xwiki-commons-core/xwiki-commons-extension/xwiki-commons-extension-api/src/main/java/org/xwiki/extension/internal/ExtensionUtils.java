@@ -60,6 +60,7 @@ import org.xwiki.properties.converter.ConversionException;
  * @version $Id$
  * @since 8.2RC1
  */
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public final class ExtensionUtils
 {
     /**
@@ -148,6 +149,7 @@ public final class ExtensionUtils
      * "add" an object in a readonly {@link Set}. This method return a new Set which contains the passed set and object
      * to add.
      * 
+     * @param <T> the type of the elements in the {@link Set}
      * @param readonly the {@link Set} to add an object to
      * @param obj the object to add
      * @return the new {@link Set}
@@ -168,7 +170,7 @@ public final class ExtensionUtils
      * @param extension the extension from which to extract custom property
      * @param propertySuffix the property suffix
      * @return the value
-     * @ @since 8.3M1
+     * @since 8.3M1
      */
     public static <T> T importProperty(MutableExtension extension, String propertySuffix)
     {
@@ -269,7 +271,7 @@ public final class ExtensionUtils
                 } else if (ttype == StreamTokenizer.TT_EOF) {
                     break;
                 } else {
-                    throw new ConversionException("Encountered token of type " + ttype + " parsing elements.");
+                    throw new ConversionException("Encountered token of type %s parsing elements.".formatted(ttype));
                 }
             }
 

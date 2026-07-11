@@ -129,22 +129,6 @@
           <goalPrefix>extension</goalPrefix>
         </configuration>
       </plugin>
-      <plugin>
-        <!-- Exclude some classes from checkstyle till we fix the violations -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <executions>
-          <execution>
-            <!-- Specify the "default" execution id so that the "blocker" one is always executed -->
-            <id>default</id>
-            <configuration>
-              <excludes>
-                **/ExtensionMojoHelper.java
-              </excludes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
   <profiles>

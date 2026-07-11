@@ -29,6 +29,8 @@ import org.xwiki.component.phase.LogEnabled;
  * @deprecated starting with 3.1M2 use {@link javax.inject.Inject} annotation to get injected a SLF4J Logger instead
  */
 @Deprecated
+// This class is public API and instantiable, so it cannot be made abstract without breaking backward compatibility.
+@SuppressWarnings("checkstyle:AbstractClassName")
 public class AbstractLogEnabled implements LogEnabled
 {
     private static final Logger VOID_LOGGER = new VoidLogger();
@@ -43,10 +45,10 @@ public class AbstractLogEnabled implements LogEnabled
 
     protected Logger getLogger()
     {
-        Logger logger = VOID_LOGGER;
+        Logger result = VOID_LOGGER;
         if (this.logger != null) {
-            logger = this.logger;
+            result = this.logger;
         }
-        return logger;
+        return result;
     }
 }

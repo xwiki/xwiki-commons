@@ -73,6 +73,9 @@ import edu.emory.mathcs.util.classloader.ResourceHandle;
  * @deprecated since 12.5RC1
  */
 @Deprecated
+// The non-private fields of this class and its nested finder are read directly across the (de)serialization and
+// finder boundaries; keeping them non-private is part of this re-exported legacy API.
+@SuppressWarnings("checkstyle:VisibilityModifier")
 public class URIClassLoader extends ExtendedURLClassLoader
 {
     final URIResourceFinder finder;
@@ -175,6 +178,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
      * @exception ClassNotFoundException if the class could not be found
      */
     @Override
+    @SuppressWarnings("checkstyle:MultipleStringLiterals")
     protected Class<?> findClass(final String name) throws ClassNotFoundException
     {
         try {
@@ -205,7 +209,8 @@ public class URIClassLoader extends ExtendedURLClassLoader
     {
         int i = name.lastIndexOf('.');
         URL url = h.getCodeSourceURL();
-        if (i != -1) { // check package
+        // check package
+        if (i != -1) {
             String pkgname = name.substring(0, i);
             // check if package already loaded
             Package pkg = getPackage(pkgname);
@@ -224,7 +229,8 @@ public class URIClassLoader extends ExtendedURLClassLoader
                 if (!ok) {
                     throw new SecurityException("sealing violation: " + name);
                 }
-            } else { // package not yet defined
+            } else {
+                // package not yet defined
                 if (man != null) {
                     definePackage(pkgname, man, url);
                 } else {
@@ -243,6 +249,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
     /**
      * returns true if the specified package name is sealed according to the given manifest.
      */
+    @SuppressWarnings("checkstyle:InnerAssignment")
     private boolean isSealed(String name, Manifest man)
     {
         String path = name.replace('.', '/').concat("/");
@@ -376,10 +383,12 @@ public class URIClassLoader extends ExtendedURLClassLoader
         if (idx == -1) {
             path = "";
             simplename = name;
-        } else if (idx == name.length() - 1) { // name.endsWith('/')
+        } else if (idx == name.length() - 1) {
+            // name.endsWith('/')
             throw new IllegalArgumentException(name);
         } else {
-            path = name.substring(0, idx + 1); // including '/'
+            // including '/'
+            path = name.substring(0, idx + 1);
             simplename = name.substring(idx + 1);
         }
         return getResourceHandle(path + System.mapLibraryName(simplename));
@@ -411,18 +420,18 @@ public class URIClassLoader extends ExtendedURLClassLoader
 
         final URLStreamHandlerFactory handlerFactory;
 
-        public URIResourceFinder(URI[] uris, URLStreamHandlerFactory handlerFactory)
+        URIResourceFinder(URI[] uris, URLStreamHandlerFactory handlerFactory)
         {
             this.handlerFactory = handlerFactory;
             try {
                 this.loader =
                     new ResourceLoader(handlerFactory != null ? handlerFactory.createURLStreamHandler("jar") : null);
-                URL[] urls = new URL[uris.length];
+                URL[] newUrls = new URL[uris.length];
                 for (int i = 0; i < uris.length; i++) {
-                    urls[i] = new URL(null, uris[i].toString(),
+                    newUrls[i] = new URL(null, uris[i].toString(),
                         handlerFactory != null ? handlerFactory.createURLStreamHandler(uris[i].getScheme()) : null);
                 }
-                this.urls = urls;
+                this.urls = newUrls;
             } catch (MalformedURLException e) {
                 throw new IllegalArgumentException(e.getMessage());
             }
@@ -434,10 +443,10 @@ public class URIClassLoader extends ExtendedURLClassLoader
                 URL url = new URL(null, uri.toString(), this.handlerFactory != null ? this.handlerFactory
                     .createURLStreamHandler(uri.getScheme()) : null);
                 int len = this.urls.length;
-                URL[] urls = new URL[len + 1];
-                System.arraycopy(this.urls, 0, urls, 0, len);
-                urls[len] = url;
-                this.urls = urls;
+                URL[] newUrls = new URL[len + 1];
+                System.arraycopy(this.urls, 0, newUrls, 0, len);
+                newUrls[len] = url;
+                this.urls = newUrls;
             } catch (MalformedURLException e) {
                 throw new IllegalArgumentException(e.getMessage());
             }

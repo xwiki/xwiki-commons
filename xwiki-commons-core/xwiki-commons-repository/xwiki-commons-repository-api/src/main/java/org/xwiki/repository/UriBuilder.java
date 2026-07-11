@@ -47,18 +47,38 @@ public class UriBuilder implements Cloneable
 
     private String fragment;
 
+    /**
+     * Creates a builder initialized from the passed base URI, then appends the passed path to it.
+     *
+     * @param base the base URI to start from, providing the scheme, host, port, user information, path, query and
+     *  fragment; must not be {@code null}
+     * @param path the path to append to the base URI (for example {@code /rest/wikis}); slashes at the junction are
+     *  normalized so a single {@code /} separates it from the base path; may be {@code null} or empty to append
+     *  nothing, and may contain {@code {variable}} placeholders resolved when {@link #build(Object...)} is called
+     * @throws IllegalArgumentException if {@code base} is {@code null}
+     */
     public UriBuilder(URI base, String path)
     {
         uri(base);
         path(path);
     }
 
+    /**
+     * Creates a builder initialized from the passed base URI, then appends the passed path to it.
+     *
+     * @param base the base URI as a string to parse and start from (for example
+     *  {@code http://localhost:8080/xwiki}); must not be {@code null} and must be a valid URI
+     * @param path the path to append to the base URI (for example {@code /rest/wikis}); slashes at the junction are
+     *  normalized so a single {@code /} separates it from the base path; may be {@code null} or empty to append
+     *  nothing, and may contain {@code {variable}} placeholders resolved when {@link #build(Object...)} is called
+     * @throws IllegalArgumentException if {@code base} is {@code null} or is not a valid URI
+     */
     public UriBuilder(String base, String path)
     {
         try {
             uri(new URI(base));
         } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Invalid base URI [" + base + "]", e);
+            throw new IllegalArgumentException("Invalid base URI [%s]".formatted(base), e);
         }
 
         path(path);
@@ -70,27 +90,20 @@ public class UriBuilder implements Cloneable
             throw new IllegalArgumentException("The URI must not be null");
         }
 
-        if (uri.getScheme() != null) {
-            this.scheme = uri.getScheme();
-        }
-        if (uri.getHost() != null) {
-            this.host = uri.getHost();
-        }
+        this.scheme = selectNonNull(uri.getScheme(), this.scheme);
+        this.host = selectNonNull(uri.getHost(), this.host);
         if (uri.getPort() > 0) {
             this.port = uri.getPort();
         }
-        if (uri.getRawUserInfo() != null) {
-            this.userInfo = uri.getRawUserInfo();
-        }
-        if (uri.getRawPath() != null) {
-            this.path = uri.getRawPath();
-        }
-        if (uri.getRawQuery() != null) {
-            this.query = uri.getRawQuery();
-        }
-        if (uri.getRawFragment() != null) {
-            this.fragment = uri.getRawFragment();
-        }
+        this.userInfo = selectNonNull(uri.getRawUserInfo(), this.userInfo);
+        this.path = selectNonNull(uri.getRawPath(), this.path);
+        this.query = selectNonNull(uri.getRawQuery(), this.query);
+        this.fragment = selectNonNull(uri.getRawFragment(), this.fragment);
+    }
+
+    private static <T> T selectNonNull(T value, T fallback)
+    {
+        return value != null ? value : fallback;
     }
 
     private void path(String path)
@@ -109,27 +122,38 @@ public class UriBuilder implements Cloneable
                 this.path = stringBuilder;
             }
 
-            if (this.path.length() == 0 || this.path.charAt(this.path.length() - 1) != '/') {
-                if (path.charAt(0) != '/') {
-                    stringBuilder.append('/');
-                }
+            appendPath(stringBuilder, path);
+        }
+    }
 
-                stringBuilder.append(path);
+    private void appendPath(StringBuilder stringBuilder, String path)
+    {
+        if (this.path.length() == 0 || this.path.charAt(this.path.length() - 1) != '/') {
+            if (path.charAt(0) != '/') {
+                stringBuilder.append('/');
+            }
+
+            stringBuilder.append(path);
+        } else {
+            int i = 0;
+            for (; i < path.length() && path.charAt(i) == '/'; ++i) {
+                // Nothing to do, the for loop already has all the required code
+            }
+
+            if (i > 0) {
+                stringBuilder.append(path.substring(i));
             } else {
-                int i = 0;
-                for (; i < path.length() && path.charAt(i) == '/'; ++i) {
-                    // Nothing to do, the for loop already has all the required code
-                }
-
-                if (i > 0) {
-                    stringBuilder.append(path.substring(i));
-                } else {
-                    stringBuilder.append(path);
-                }
+                stringBuilder.append(path);
             }
         }
     }
 
+    /**
+     * URL-encodes the passed value using the {@code UTF-8} charset, as done by {@link java.net.URLEncoder}.
+     *
+     * @param toEncode the value to encode; may be {@code null}
+     * @return the URL-encoded value, or {@code null} if the passed value was {@code null}
+     */
     public static String encode(String toEncode)
     {
         String result = null;
@@ -145,6 +169,16 @@ public class UriBuilder implements Cloneable
         return result;
     }
 
+    /**
+     * Adds a query parameter to the URI being built, appending one {@code name=value} pair for each passed value
+     * (both name and values are URL-encoded). Successive calls accumulate parameters.
+     *
+     * @param name the name of the query parameter (for example {@code media})
+     * @param values the values to associate with the parameter name, one {@code name=value} pair being added per
+     *  value; each value is converted through its {@link Object#toString()}
+     * @return this builder, to allow chaining calls
+     * @throws IllegalArgumentException if the passed values array is {@code null}
+     */
     public UriBuilder queryParam(String name, Object... values) throws IllegalArgumentException
     {
         if (values == null) {
@@ -176,9 +210,32 @@ public class UriBuilder implements Cloneable
         return this;
     }
 
+    /**
+     * Builds the final URI, resolving in order each {@code {variable}} placeholder found in the path with the passed
+     * values.
+     *
+     * @param values the values used to resolve the path variables, in the order the {@code {variable}} placeholders
+     *  appear in the path; each value is URL-encoded
+     * @return the built URI, assembled from the scheme, authority, path, query and fragment
+     * @throws IllegalArgumentException if the resulting string is not a valid URI
+     */
     public URI build(Object... values)
     {
         final StringBuilder stb = new StringBuilder();
+
+        appendSchemeAndAuthority(stb);
+        appendPathValues(stb, values);
+        appendQueryAndFragment(stb);
+
+        try {
+            return new URI(stb.toString());
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Failed to build the URI", e);
+        }
+    }
+
+    private void appendSchemeAndAuthority(StringBuilder stb)
+    {
         if (this.scheme != null) {
             stb.append(this.scheme);
             stb.append("://");
@@ -194,38 +251,49 @@ public class UriBuilder implements Cloneable
             stb.append(':');
             stb.append(this.port);
         }
+    }
 
+    private void appendPathValues(StringBuilder stb, Object... values)
+    {
         String resolvePath = formatPath(values);
         if (resolvePath != null) {
-            if (stb.length() > 0) {
-                if (resolvePath.length() == 0 || resolvePath.charAt(0) != '/') {
-                    stb.append('/');
-                }
+            if (stb.length() > 0 && (resolvePath.length() == 0 || resolvePath.charAt(0) != '/')) {
+                stb.append('/');
             }
             stb.append(resolvePath);
         }
+    }
 
-        String query = this.query != null ? this.query.toString() : null;
-        if (query != null) {
+    private void appendQueryAndFragment(StringBuilder stb)
+    {
+        String queryString = this.query != null ? this.query.toString() : null;
+        if (queryString != null) {
             stb.append('?');
-            stb.append(query);
+            stb.append(queryString);
         }
         if (this.fragment != null) {
             stb.append('#');
             stb.append(this.fragment);
         }
-
-        try {
-            return new URI(stb.toString());
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Failed to build the URI", e);
-        }
     }
 
+    /**
+     * Indicates whether the passed character is an <em>unreserved</em> character as defined by
+     * <a href="https://www.rfc-editor.org/rfc/rfc3986#section-2.3">RFC 3986</a>, that is a letter, a digit or one
+     * of {@code -}, {@code .}, {@code _} and {@code ~}.
+     *
+     * @param character the character to check
+     * @return {@code true} if the passed character is unreserved and therefore does not need to be percent-encoded
+     *  in a URI, {@code false} otherwise
+     */
     public static boolean isUnreserved(char character)
     {
-        return Character.isLetter(character) || Character.isDigit(character) || (character == '-')
-            || (character == '.') || (character == '_') || (character == '~');
+        return Character.isLetter(character) || Character.isDigit(character) || isUnreservedSymbol(character);
+    }
+
+    private static boolean isUnreservedSymbol(char character)
+    {
+        return character == '-' || character == '.' || character == '_' || character == '~';
     }
 
     private String formatPath(Object[] values)

@@ -85,8 +85,15 @@ import org.xml.sax.ext.LexicalHandler;
  * </p>
  *
  * @version $Id$
- * @author Carlos Amengual
  */
+// This class is copied verbatim from CSS4J (https://github.com/css4j/xml-dtd). To keep the divergence from upstream
+// minimal we suppress the Checkstyle checks it triggers rather than restructuring it.
+// See https://github.com/css4j/xml-dtd/issues/7
+@SuppressWarnings({ "checkstyle:AbstractClassName", "checkstyle:AvoidNoArgumentSuperConstructorCall",
+    "checkstyle:ConstantName", "checkstyle:CyclomaticComplexity", "checkstyle:EqualsAvoidNull",
+    "checkstyle:ExecutableStatementCount", "checkstyle:ExplicitInitialization", "checkstyle:IllegalType",
+    "checkstyle:InnerAssignment", "checkstyle:JavaNCSS", "checkstyle:MethodLength",
+    "checkstyle:MultipleStringLiterals", "checkstyle:NPathComplexity", "checkstyle:ParameterAssignment" })
 public class LocalEntityResolver implements EntityResolver2
 {
     private static final DTDLoader dtdLoader = createDTDLoader();

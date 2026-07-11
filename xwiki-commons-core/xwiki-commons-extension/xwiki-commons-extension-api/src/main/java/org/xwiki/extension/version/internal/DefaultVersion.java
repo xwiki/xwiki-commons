@@ -107,9 +107,9 @@ public class DefaultVersion implements Version
         /**
          * @param rawVersion the string representation of the version
          */
-        public Tokenizer(String rawVersion)
+        Tokenizer(String rawVersion)
         {
-            this.rawVersion = (rawVersion.length() > 0) ? rawVersion : "0";
+            this.rawVersion = (!rawVersion.isEmpty()) ? rawVersion : "0";
         }
 
         /**
@@ -131,6 +131,7 @@ public class DefaultVersion implements Version
         /**
          * @return move to the next token
          */
+        @SuppressWarnings("checkstyle:CyclomaticComplexity")
         public boolean next()
         {
             final int n = this.rawVersion.length();
@@ -262,13 +263,7 @@ public class DefaultVersion implements Version
          */
         private Type versionType = Type.STABLE;
 
-        private boolean isInteger(String number)
-        {
-            return number.length() < MAX_INTEGER_LENGTH
-                || (number.length() == MAX_INTEGER_LENGTH && MAX_INTEGER_STRING.compareTo(number) >= 0);
-        }
-
-        public Element(String token)
+        Element(String token)
         {
             this.elementType = ElementType.STRING;
             this.value = token;
@@ -277,7 +272,7 @@ public class DefaultVersion implements Version
         /**
          * @param tokenizer the token from which to create the version element
          */
-        public Element(Tokenizer tokenizer)
+        Element(Tokenizer tokenizer)
         {
             String token = tokenizer.getToken();
             if (tokenizer.isNumber()) {
@@ -308,6 +303,12 @@ public class DefaultVersion implements Version
                     this.value = lowerCaseToken;
                 }
             }
+        }
+
+        private boolean isInteger(String number)
+        {
+            return number.length() < MAX_INTEGER_LENGTH
+                || (number.length() == MAX_INTEGER_LENGTH && MAX_INTEGER_STRING.compareTo(number) >= 0);
         }
 
         /**

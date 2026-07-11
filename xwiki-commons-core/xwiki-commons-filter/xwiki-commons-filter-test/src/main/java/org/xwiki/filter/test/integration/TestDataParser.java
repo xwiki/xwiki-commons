@@ -29,6 +29,9 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Parses test data defined using the following syntax, shown with this example: {@code
  * .configuration <key=value>
@@ -46,8 +49,22 @@ import java.util.regex.Pattern;
  */
 public class TestDataParser
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestDataParser.class);
+
     private static final Pattern PATTERN_VARIABLE = Pattern.compile("(\\\\)?(\\$\\{\\{\\{(.*)\\}\\}\\})");
 
+    private static final String UTF8 = "UTF-8";
+
+    private static final String CONFIGURATION = ".configuration";
+
+    /**
+     * Replaces every {@code ${{{name}}}} variable found in the passed source with the value of the system property
+     * of that name. A variable whose system property is not set is left untouched, and a variable escaped with a
+     * leading backslash (for example {@code \${{{name}}}}) is emitted verbatim with the backslash removed.
+     *
+     * @param source the source text possibly containing {@code ${{{name}}}} variables to interpret
+     * @return the source text with its non-escaped variables replaced by the matching system property values
+     */
     public static String interpret(String source)
     {
         StringBuilder result = new StringBuilder();
@@ -57,9 +74,9 @@ public class TestDataParser
         int current = 0;
         while (matcher.find()) {
             if (matcher.group(1) == null) {
-                String var = matcher.group(3);
+                String variableName = matcher.group(3);
 
-                String value = System.getProperty(var);
+                String value = System.getProperty(variableName);
                 if (value != null) {
                     result.append(source, current, matcher.start());
                     result.append(value);
@@ -78,12 +95,23 @@ public class TestDataParser
         return result.toString();
     }
 
+    /**
+     * Parses the test data read from the passed stream, extracting the {@code .configuration}, {@code .input} and
+     * {@code .expect} entries as described in the class documentation.
+     *
+     * @param source the stream to read the test data from; it is read as {@code UTF-8} regardless of the system
+     *  encoding
+     * @param resourceName the name of the resource being parsed, used only for reporting (for example in skip
+     *  warnings)
+     * @return the parsed test data, holding the collected inputs, expectations and configuration
+     * @throws IOException if reading the source stream fails
+     */
     public TestResourceData parse(InputStream source, String resourceName) throws IOException
     {
         TestResourceData data = new TestResourceData();
 
         // Resources should always be encoded as UTF-8, to reduce the dependency on the system encoding
-        BufferedReader reader = new BufferedReader(new InputStreamReader(source, "UTF-8"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(source, UTF8));
 
         // Read each line and look for lines starting with ".". When this happens it means we've found a separate
         // test case.
@@ -100,16 +128,12 @@ public class TestDataParser
             for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                 if (line.startsWith(".")) {
                     if (line.startsWith(".#")) {
-                        // Ignore comments and print it to the stdout if it's a todo.
+                        // Ignore comments and log it if it's a todo.
                         if (line.toLowerCase().contains("todo")) {
-                            System.out.println(line);
+                            LOGGER.info(line);
                         }
-                    } else if (line.startsWith(".configuration")) {
-                        int keyIndex = ".configuration".length() + 1;
-                        int index = line.indexOf('=', ".configuration".length() + 1);
-                        if (index != -1) {
-                            configuration.put(line.substring(keyIndex, index), line.substring(index + 1));
-                        }
+                    } else if (line.startsWith(CONFIGURATION)) {
+                        parseConfiguration(line, configuration);
                     } else {
                         if (!skip) {
                             saveData(data, action, typeId, buffer, configuration);
@@ -132,9 +156,8 @@ public class TestDataParser
                         skip = false;
                         if (st.hasMoreTokens()) {
                             skip = true;
-                            System.out.println("[WARNING] Skipping test for [" + typeId + "] in resource ["
-                                + resourceName + "] since it has been marked as skipped in the test. This needs to be "
-                                + "reviewed and fixed.");
+                            LOGGER.warn("Skipping test for [{}] in resource [{}] since it has been marked as skipped "
+                                + "in the test. This needs to be reviewed and fixed.", typeId, resourceName);
                         }
                     }
                 } else {
@@ -153,6 +176,15 @@ public class TestDataParser
         return data;
     }
 
+    private void parseConfiguration(String line, Map<String, String> configuration)
+    {
+        int keyIndex = CONFIGURATION.length() + 1;
+        int index = line.indexOf('=', CONFIGURATION.length() + 1);
+        if (index != -1) {
+            configuration.put(line.substring(keyIndex, index), line.substring(index + 1));
+        }
+    }
+
     private void saveData(TestResourceData data, String action, String typeId, StringBuilder buffer,
         Map<String, String> configuration)
     {
@@ -163,11 +195,11 @@ public class TestDataParser
                 buffer.setLength(buffer.length() - 1);
             }
 
-            if (action.equalsIgnoreCase("input")) {
+            if ("input".equalsIgnoreCase(action)) {
                 addInput(data, typeId, buffer, configuration);
-            } else if (action.equalsIgnoreCase("expect")) {
+            } else if ("expect".equalsIgnoreCase(action)) {
                 addExpect(data, typeId, buffer, configuration);
-            } else if (action.equalsIgnoreCase("inputexpect")) {
+            } else if ("inputexpect".equalsIgnoreCase(action)) {
                 addExpect(data, typeId, buffer, configuration);
                 addInput(data, typeId, buffer, configuration);
             }
@@ -179,19 +211,20 @@ public class TestDataParser
         InputTestConfiguration inputConfiguration = new InputTestConfiguration(typeId, buffer.toString());
 
         // Default properties
-        inputConfiguration.setEncoding("UTF-8");
+        inputConfiguration.setEncoding(UTF8);
 
         inputConfiguration.putAll(configuration);
 
         data.inputs.add(inputConfiguration);
     }
 
-    private void addExpect(TestResourceData data, String typeId, StringBuilder buffer, Map<String, String> configuration)
+    private void addExpect(TestResourceData data, String typeId, StringBuilder buffer,
+        Map<String, String> configuration)
     {
         ExpectTestConfiguration expectTestConfiguration = new ExpectTestConfiguration(typeId, buffer.toString());
 
         // Default properties
-        expectTestConfiguration.setEncoding("UTF-8");
+        expectTestConfiguration.setEncoding(UTF8);
 
         expectTestConfiguration.putAll(configuration);
 

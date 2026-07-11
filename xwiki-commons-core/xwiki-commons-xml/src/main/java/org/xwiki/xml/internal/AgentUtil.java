@@ -40,8 +40,13 @@ import java.util.zip.GZIPInputStream;
  * User agent utility methods.
  *
  * @version $Id$
- * @author Carlos Amengual
  */
+// This class is copied verbatim from CSS4J (https://github.com/css4j/carte-util). To keep the divergence from
+// upstream minimal we suppress the Checkstyle checks it triggers rather than restructuring it.
+// See https://github.com/css4j/xml-dtd/issues/7
+@SuppressWarnings({ "checkstyle:CyclomaticComplexity", "checkstyle:EqualsAvoidNull",
+    "checkstyle:HideUtilityClassConstructor", "checkstyle:MissingJavadocMethod", "checkstyle:NestedIfDepth",
+    "checkstyle:ParameterAssignment" })
 public class AgentUtil
 {
     /**

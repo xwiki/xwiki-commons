@@ -69,6 +69,7 @@ import org.xwiki.logging.marker.TranslationMarker;
  * @version $Id$
  * @since 4.0M1
  */
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends JobStatus> extends AbstractJob<R, S>
     implements GroupedJob
 {

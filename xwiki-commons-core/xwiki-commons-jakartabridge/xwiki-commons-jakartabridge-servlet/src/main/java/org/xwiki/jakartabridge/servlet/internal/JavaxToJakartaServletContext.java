@@ -46,6 +46,8 @@ import org.xwiki.jakartabridge.servlet.JakartaServletBridge;
  * @version $Id$
  * @since 17.0.0RC1
  */
+// Wrapping the whole ServletContext API between the javax and jakarta namespaces implies a high fan-out.
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class JavaxToJakartaServletContext extends AbstractJavaxToJakartaWrapper<jakarta.servlet.ServletContext>
     implements ServletContext
 {
@@ -239,7 +241,8 @@ public class JavaxToJakartaServletContext extends AbstractJavaxToJakartaWrapper<
     @Override
     public Dynamic addServlet(String servletName, Servlet servlet)
     {
-        return JakartaServletBridge.toJavax(this.jakarta.addServlet(servletName, JakartaServletBridge.toJakarta(servlet)));
+        return JakartaServletBridge
+            .toJavax(this.jakarta.addServlet(servletName, JakartaServletBridge.toJakarta(servlet)));
     }
 
     @Override

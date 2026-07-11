@@ -90,16 +90,35 @@ import org.xwiki.xml.stax.StAXUtils;
  * @version $Id$
  * @since 4.0M1
  */
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class XWikiExtensionRepository extends AbstractExtensionRepository
     implements AdvancedSearchable, RatableExtensionRepository
 {
+    /**
+     * The version {@code 1.0} of the repository REST protocol.
+     */
     public static final Version VERSION10 = new DefaultVersion(Resources.VERSION10);
 
+    /**
+     * The version {@code 1.1} of the repository REST protocol.
+     */
     public static final Version VERSION11 = new DefaultVersion(Resources.VERSION11);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XWikiExtensionRepository.class);
 
     private static final ObjectFactory EXTENSION_OBJECT_FACTORY = new ObjectFactory();
+
+    private static final String PROPERTY_AUTH_USER = "auth.user";
+
+    private static final String HEADER_ACCEPT = "Accept";
+
+    private static final String MEDIA_TYPE_XML = "application/xml";
+
+    private static final String ERROR_BUILD_REST_URL = "Failed to build REST URL";
+
+    private static final String ERROR_INVALID_ANSWER = "Invalid answer [%s] from the server when requesting [%s]";
+
+    private static final String ERROR_SEARCH_PATTERN = "Failed to search extensions based on pattern [%s]";
 
     private final transient XWikiExtensionRepositoryFactory repositoryFactory;
 
@@ -127,6 +146,14 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
 
     private boolean sortable;
 
+    /**
+     * @param repositoryDescriptor the description of the repository to connect to
+     * @param repositoryFactory the factory used to create the JAXB marshaller and unmarshaller for the REST protocol
+     * @param licenseManager the manager used to resolve the licenses of the resolved extensions
+     * @param httpClientFactory the factory used to create the HTTP client talking to the remote repository
+     * @param factory the factory used to create the various extension related objects
+     * @throws Exception if the repository descriptor URI is invalid
+     */
     public XWikiExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
         XWikiExtensionRepositoryFactory repositoryFactory, ExtensionLicenseManager licenseManager,
         HttpClientFactory httpClientFactory, ExtensionFactory factory) throws Exception
@@ -150,7 +177,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         this.searchUriBuider = createUriBuilder(Resources.SEARCH);
 
         // Setup preemptive authentication
-        if (getDescriptor().getProperty("auth.user") != null) {
+        if (getDescriptor().getProperty(PROPERTY_AUTH_USER) != null) {
             // Create AuthCache instance
             AuthCache authCache = new BasicAuthCache();
             // Generate BASIC scheme object and add it to the local
@@ -243,11 +270,11 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         try {
             url = builder.build(values).toString();
         } catch (Exception e) {
-            throw new IOException("Failed to build REST URL", e);
+            throw new IOException(ERROR_BUILD_REST_URL, e);
         }
 
         HttpGet getMethod = new HttpGet(url);
-        getMethod.addHeader("Accept", "application/xml");
+        getMethod.addHeader(HEADER_ACCEPT, MEDIA_TYPE_XML);
 
         CloseableHttpResponse response = getResponse(getMethod);
 
@@ -262,7 +289,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
                 // Close the response since it's not going to be returned
                 closeBadResponse(response);
 
-                throw new IOException(String.format("Invalid answer [%s] from the server when requesting [%s]",
+                throw new IOException(String.format(ERROR_INVALID_ANSWER,
                     response.getStatusLine().getStatusCode(), getMethod.getURI()));
             }
         }
@@ -277,11 +304,11 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         try {
             url = builder.build(values).toString();
         } catch (Exception e) {
-            throw new IOException("Failed to build REST URL", e);
+            throw new IOException(ERROR_BUILD_REST_URL, e);
         }
 
         HttpPost postMethod = new HttpPost(url);
-        postMethod.addHeader("Accept", "application/xml");
+        postMethod.addHeader(HEADER_ACCEPT, MEDIA_TYPE_XML);
 
         StringEntity entity =
             new StringEntity(content, ContentType.create(ContentType.APPLICATION_XML.getMimeType(), Consts.UTF_8));
@@ -293,7 +320,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             // Close the response since it's not going to be returned
             closeBadResponse(response);
 
-            throw new IOException(String.format("Invalid answer [%s] from the server when requesting [%s]",
+            throw new IOException(String.format(ERROR_INVALID_ANSWER,
                 response.getStatusLine().getStatusCode(), postMethod.getURI()));
         }
 
@@ -305,7 +332,8 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         CloseableHttpResponse response;
         try {
             CloseableHttpClient httpClient = this.httpClientFactory
-                .createClient(getDescriptor().getProperty("auth.user"), getDescriptor().getProperty("auth.password"));
+                .createClient(getDescriptor().getProperty(PROPERTY_AUTH_USER),
+                    getDescriptor().getProperty("auth.password"));
             if (this.localContext != null) {
                 response = httpClient.execute(method, this.localContext);
             } else {
@@ -332,6 +360,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         return getRESTObject(postRESTResource(builder, writer.toString(), values));
     }
 
+    @SuppressWarnings("checkstyle:NestedTryDepth")
     protected <T> T getRESTObject(CloseableHttpResponse response)
         throws IllegalStateException, IOException, JAXBException, XMLStreamException
     {
@@ -362,9 +391,10 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         try {
             return resolve(extensionId.getId(), extensionId.getVersion());
         } catch (ResourceNotFoundException e) {
-            throw new ExtensionNotFoundException("Could not find extension [" + extensionId + "]", e);
+            throw new ExtensionNotFoundException("Could not find extension [%s]".formatted(extensionId), e);
         } catch (Exception e) {
-            throw new ResolveException("Failed to create extension object for extension [" + extensionId + "]", e);
+            throw new ResolveException(
+                "Failed to create extension object for extension [%s]".formatted(extensionId), e);
         }
     }
 
@@ -385,10 +415,10 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             return resolve(extensionDependency.getId(), version);
         } catch (ResourceNotFoundException e) {
             throw new ExtensionNotFoundException(
-                "Could not find any extension to match dependency [" + extensionDependency + "]", e);
+                "Could not find any extension to match dependency [%s]".formatted(extensionDependency), e);
         } catch (Exception e) {
             throw new ResolveException(
-                "Failed to create extension object for extension dependency [" + extensionDependency + "]", e);
+                "Failed to create extension object for extension dependency [%s]".formatted(extensionDependency), e);
         }
     }
 
@@ -409,7 +439,8 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         ExtensionVersions versions = resolveExtensionVersions(id, versionConstraint, 0, -1, false);
         if (versions.getExtensionVersionSummaries().isEmpty()) {
             throw new ExtensionNotFoundException(
-                "Can't find any version with id [" + id + "] matching version constraint [" + versionConstraint + "]");
+                "Can't find any version with id [%s] matching version constraint [%s]".formatted(id,
+                    versionConstraint));
         }
 
         return new DefaultVersion(versions.getExtensionVersionSummaries()
@@ -431,9 +462,9 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         try {
             return (ExtensionVersions) getRESTObject(builder, id);
         } catch (ResourceNotFoundException e) {
-            throw new ExtensionNotFoundException("Could not find extension with id [" + id + "]", e);
+            throw new ExtensionNotFoundException("Could not find extension with id [%s]".formatted(id), e);
         } catch (Exception e) {
-            throw new ResolveException("Failed to find version for extension id [" + id + "]", e);
+            throw new ResolveException("Failed to find version for extension id [%s]".formatted(id), e);
         }
     }
 
@@ -467,7 +498,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         try {
             restExtensions = (ExtensionsSearchResult) getRESTObject(builder);
         } catch (Exception e) {
-            throw new SearchException("Failed to search extensions based on pattern [" + pattern + "]", e);
+            throw new SearchException(ERROR_SEARCH_PATTERN.formatted(pattern), e);
         }
 
         List<Extension> extensions = new ArrayList<>(restExtensions.getExtensions().size());
@@ -511,7 +542,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         try {
             restExtensions = (ExtensionsSearchResult) postRESTObject(builder, restQuery);
         } catch (Exception e) {
-            throw new SearchException("Failed to search extensions based on pattern [" + query.getQuery() + "]", e);
+            throw new SearchException(ERROR_SEARCH_PATTERN.formatted(query.getQuery()), e);
         }
 
         List<Extension> extensions = new ArrayList<>(restExtensions.getExtensions().size());
@@ -545,10 +576,10 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
                 this.licenseManager, this.factory).getRating();
         } catch (ResourceNotFoundException e) {
             throw new ExtensionNotFoundException(
-                "Could not find extension with id [" + extensionId + "] and version [" + extensionVersion + "]", e);
+                "Could not find extension with id [%s] and version [%s]".formatted(extensionId, extensionVersion), e);
         } catch (Exception e) {
             throw new ResolveException(
-                "Failed to create extension object for extension [" + extensionId + ":" + extensionVersion + "]", e);
+                "Failed to create extension object for extension [%s:%s]".formatted(extensionId, extensionVersion), e);
         }
     }
 }

@@ -76,6 +76,7 @@ import org.xwiki.properties.ConverterManager;
 @Component
 @Named("maven")
 @Singleton
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class MavenExtensionScanner extends AbstractExtensionScanner
 {
     @Inject
@@ -174,7 +175,7 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
                     descriptorURL = new URL(path + descriptor);
                 } else {
                     // Probably a jar
-                    descriptorURL = new URL("jar:" + jarURL.toExternalForm() + "!/" + descriptor);
+                    descriptorURL = new URL("jar:%s!/%s".formatted(jarURL.toExternalForm(), descriptor));
                 }
             } catch (MalformedURLException e) {
                 // Not supposed to happen (would mean there is a bug in Reflections)
@@ -240,6 +241,8 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
     }
 
     @Override
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS", "checkstyle:NPathComplexity",
+        "checkstyle:ExecutableStatementCount"})
     public void guess(Map<String, DefaultCoreExtension> extensions, Collection<URL> jars,
         DefaultCoreExtensionRepository repository)
     {
@@ -326,11 +329,11 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
                         DefaultMavenExtensionDependency.getScope(extensionDependency));
                 }
 
-                String dependencyId = dependency.getGroupId() + ':' + dependency.getArtifactId();
+                String dependencyId = "%s:%s".formatted(dependency.getGroupId(), dependency.getArtifactId());
 
                 DefaultCoreExtension coreExtension = extensions.get(dependencyId);
                 if (coreExtension == null) {
-                    String dependencyFileName = dependency.getArtifactId() + '-' + dependency.getVersion();
+                    String dependencyFileName = "%s-%s".formatted(dependency.getArtifactId(), dependency.getVersion());
                     if (dependency.getClassifier() != null) {
                         dependencyFileName += '-' + dependency.getClassifier();
                         dependencyId += ':' + dependency.getClassifier();
@@ -366,7 +369,8 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
     {
         Matcher matcher = MavenUtils.PARSER_ID.matcher(id);
         if (!matcher.matches()) {
-            throw new ResolveException("Bad id [" + id + "], expected format is <groupId>:<artifactId>[:<classifier>]");
+            throw new ResolveException(
+                "Bad id [%s], expected format is <groupId>:<artifactId>[:<classifier>]".formatted(id));
         }
 
         Dependency dependency = new Dependency();
@@ -396,8 +400,8 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
         } else {
             Matcher matcher = MavenUtils.PARSER_ID.matcher(extension.getId().getId());
             if (!matcher.matches()) {
-                throw new ResolveException("Bad id " + extension.getId().getId()
-                    + ", expected format is <groupId>:<artifactId>[:<classifier>]");
+                throw new ResolveException("Bad id %s, expected format is <groupId>:<artifactId>[:<classifier>]"
+                    .formatted(extension.getId().getId()));
             }
             artifactId = matcher.group(2);
         }

@@ -62,20 +62,28 @@ import org.xwiki.extension.version.VersionConstraint;
  */
 @Component
 @Singleton
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class DefaultInstalledExtensionRepository extends AbstractInstalledExtensionRepository<DefaultInstalledExtension>
     implements Initializable
 {
+    private static final String ID_INSTALLED = "installed";
+
+    private static final String ERROR_VALIDATE_DEPENDENCY =
+        "Unknown problem when validating installed extension dependency [%s] on namespace [%s]";
+
+    private static final String ERROR_MODIFY_DESCRIPTOR = "Failed to modify extension descriptor";
+
     private static class InstalledRootFeature
     {
-        DefaultInstalledExtension extension;
+        private DefaultInstalledExtension extension;
 
-        final Set<DefaultInstalledExtension> invalidExtensions = new HashSet<>();
+        private final Set<DefaultInstalledExtension> invalidExtensions = new HashSet<>();
 
-        final String namespace;
+        private final String namespace;
 
-        final Set<DefaultInstalledExtension> backwardDependencies = new HashSet<>();
+        private final Set<DefaultInstalledExtension> backwardDependencies = new HashSet<>();
 
-        Set<DefaultInstalledExtension> optionalBackwardDependencies = this.backwardDependencies;
+        private Set<DefaultInstalledExtension> optionalBackwardDependencies = this.backwardDependencies;
 
         InstalledRootFeature(String namespace)
         {
@@ -111,9 +119,9 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
 
     private static class InstalledFeature
     {
-        final InstalledRootFeature root;
+        private final InstalledRootFeature root;
 
-        final ExtensionId feature;
+        private final ExtensionId feature;
 
         InstalledFeature(InstalledRootFeature root, ExtensionId feature)
         {
@@ -121,6 +129,9 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
             this.feature = feature;
         }
     }
+
+    @Inject
+    protected ExtensionManagerConfiguration configuration;
 
     /**
      * Used to access all local extensions.
@@ -134,20 +145,17 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
     @Inject
     private transient CoreExtensionRepository coreExtensionRepository;
 
-    @Inject
-    protected ExtensionManagerConfiguration configuration;
-
     /**
      * The installed extensions sorted by provided feature and namespace.
      * <p>
-     * <feature, <namespace, extension>>
+     * {@code <feature, <namespace, extension>>}
      */
     private Map<String, Map<String, InstalledFeature>> extensionNamespaceByFeature = new ConcurrentHashMap<>();
 
     /**
      * Temporary map used only during init.
      * <p>
-     * <feature, <namespace, extensions>>
+     * {@code <feature, <namespace, extensions>>}
      */
     private Map<String, Map<String, Set<LocalExtension>>> localInstalledExtensionsCache;
 
@@ -156,7 +164,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
     @Override
     public void initialize() throws InitializationException
     {
-        setDescriptor(new DefaultExtensionRepositoryDescriptor("installed", "installed",
+        setDescriptor(new DefaultExtensionRepositoryDescriptor(ID_INSTALLED, ID_INSTALLED,
             this.localRepository.getDescriptor().getURI()));
 
         // Wait for all installed extension to be registered
@@ -242,6 +250,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
      * @param localExtension the extension to validate
      * @param dependencies true if dependencies should be validated
      */
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     private void validateExtension(LocalExtension localExtension, boolean dependencies)
     {
         Collection<String> namespaces = DefaultInstalledExtension.getNamespaces(localExtension);
@@ -347,7 +356,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
                     }
 
                     throw new InvalidExtensionException(String.format(
-                        "Unknown problem when validating installed extension dependency [%s] on namespace [%s]",
+                        ERROR_VALIDATE_DEPENDENCY,
                         dependency, namespace), e);
                 }
             }
@@ -370,6 +379,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
      * @return the corresponding {@link DefaultInstalledExtension}
      * @throws InvalidExtensionException when the passed extension is fond invalid
      */
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity"})
     private DefaultInstalledExtension validateExtension(LocalExtension localExtension, String namespace,
         ExtensionPlanContext extensionContext) throws InvalidExtensionException
     {
@@ -392,7 +402,8 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
 
         // Validate dependencies
         InvalidExtensionException dependencyException = null;
-        for (ExtensionDependency dependency : localExtension.getDependencies()) {
+        for (ExtensionDependency initialDependency : localExtension.getDependencies()) {
+            ExtensionDependency dependency = initialDependency;
             try {
                 // Is ignored
                 if (this.configuration.isIgnoredDependency(dependency)) {
@@ -415,7 +426,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
                             dependencyException = (InvalidExtensionException) e;
                         } else {
                             dependencyException = new InvalidExtensionException(String.format(
-                                "Unknown problem when validating installed extension dependency [%s] on namespace [%s]",
+                                ERROR_VALIDATE_DEPENDENCY,
                                 dependency, namespace), e);
                         }
                     }
@@ -531,13 +542,15 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
             this.localRepository.setProperties(installedExtension.getLocalExtension(),
                 installedExtension.getProperties());
         } catch (Exception e) {
-            throw new InstallException("Failed to modify extension descriptor", e);
+            throw new InstallException(ERROR_MODIFY_DESCRIPTOR, e);
         }
 
         // VALID
         boolean valid = isValid(installedExtension, namespace, extensionContext);
-        // It's not really possible to be sure if a dependency is valid or not at this level so we don't take into account invalid results
-        // TODO: find a better way to make sure dependency validity is fully accurately evaluated since it's possible to have dependency marked as valid while there are actually invalid
+        // It's not really possible to be sure if a dependency is valid or not at this level so we don't take into
+        // account invalid results
+        // TODO: find a better way to make sure dependency validity is fully accurately evaluated since it's possible
+        // to have dependency marked as valid while there are actually invalid
         if (valid || !dependency) {
             installedExtension.setValid(namespace, valid);
         }
@@ -778,7 +791,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
                 this.localRepository.setProperties(installedExtension.getLocalExtension(),
                     installedExtension.getProperties());
             } catch (Exception e) {
-                throw new InstallException("Failed to modify extension descriptor", e);
+                throw new InstallException(ERROR_MODIFY_DESCRIPTOR, e);
             }
         } else {
             LocalExtension localExtension = this.localRepository.getLocalExtension(extension.getId());
@@ -818,7 +831,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
             this.localRepository.setProperties(installedExtension.getLocalExtension(),
                 installedExtension.getProperties());
         } catch (Exception e) {
-            throw new UninstallException("Failed to modify extension descriptor", e);
+            throw new UninstallException(ERROR_MODIFY_DESCRIPTOR, e);
         }
 
         // Clean caches

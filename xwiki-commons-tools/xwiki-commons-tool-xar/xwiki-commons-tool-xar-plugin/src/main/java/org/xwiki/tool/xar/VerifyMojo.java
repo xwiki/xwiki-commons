@@ -108,6 +108,8 @@ public class VerifyMojo extends AbstractVerifyMojo
     private Map<Pattern, Pattern> titlePatterns;
 
     @Override
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS", "checkstyle:NPathComplexity",
+        "checkstyle:ExecutableStatementCount"})
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         if (this.skip) {
@@ -195,7 +197,7 @@ public class VerifyMojo extends AbstractVerifyMojo
             // Verification 11: Verify that Translations documents don't use GLOBAL or USER visibility
             if (!this.translationVisibilitySkip && xdoc.containsTranslations()) {
                 for (String visibility : xdoc.getTranslationVisibilities()) {
-                    if (visibility.equals("USER") || visibility.equals("GLOBAL")) {
+                    if ("USER".equals(visibility) || "GLOBAL".equals(visibility)) {
                         errors.add(String.format("[%s] ([%s]) page contains a translation using a wrong visibility "
                             + "[%s]. Consider using a [WIKI] visibility.", file.getName(), xdoc.getReference(),
                             visibility));
@@ -231,7 +233,8 @@ public class VerifyMojo extends AbstractVerifyMojo
             // Verification 17: Verify that translated page name matches the locale
             Locale locale = guessLocaleFromName(file);
             if (!locale.equals(xdoc.getLocale())) {
-                errors.add(String.format("[%s] ([%s]) translated page name does not match its locale [%s] (expected [%s])",
+                errors.add(String.format(
+                    "[%s] ([%s]) translated page name does not match its locale [%s] (expected [%s])",
                     file.getName(), xdoc.getReference(), xdoc.getLocale(), locale));
             }
 

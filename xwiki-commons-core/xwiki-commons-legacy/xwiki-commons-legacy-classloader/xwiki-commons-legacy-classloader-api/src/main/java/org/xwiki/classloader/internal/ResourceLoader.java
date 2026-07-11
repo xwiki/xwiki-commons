@@ -178,6 +178,8 @@ public class ResourceLoader
         return new ResourceEnumeration<>(sources.clone(), name, false);
     }
 
+    @SuppressWarnings({"checkstyle:ReturnCount", "checkstyle:ParameterAssignment",
+        "checkstyle:MultipleStringLiterals", "checkstyle:AnonInnerLength"})
     private ResourceHandle getResource(final URL source, String name, Set<URL> visitedJars, Set<URL> skip)
     {
         name = ResourceUtils.canonizePath(name);
@@ -243,6 +245,7 @@ public class ResourceLoader
                     try {
                         getInputStream().close();
                     } catch (IOException e) {
+                        // Ignored: the input stream is closed on a best-effort basis.
                     }
                 }
             };
@@ -330,6 +333,7 @@ public class ResourceLoader
         return new ResourceEnumeration<>(sources.clone(), name, true);
     }
 
+    @SuppressWarnings({"checkstyle:ReturnCount", "checkstyle:ParameterAssignment"})
     private URL findResource(final URL source, String name, Set<URL> visitedJars, Set<URL> skip)
     {
         URL url;
@@ -378,6 +382,7 @@ public class ResourceLoader
      * @param url the URL to test
      * @return true if the URL points to a directory, false otherwise
      */
+    @SuppressWarnings("checkstyle:MultipleStringLiterals")
     protected static boolean isDir(URL url)
     {
         String file = url.getFile();
@@ -388,9 +393,11 @@ public class ResourceLoader
     {
         private ResourceLoader loader;
 
-        private URL source; // "real" jar file path
+        // "real" jar file path
+        private URL source;
 
-        private URL base; // "jar:{base}!/"
+        // "jar:{base}!/"
+        private URL base;
 
         private JarFile jar;
 
@@ -411,6 +418,8 @@ public class ResourceLoader
             this.base = new URL("jar", "", -1, source + "!/", loader.jarHandler);
         }
 
+        @SuppressWarnings({"checkstyle:ReturnCount", "checkstyle:CyclomaticComplexity",
+            "checkstyle:NPathComplexity"})
         ResourceHandle getResource(String name, Set<URL> visited, Set<URL> skip)
         {
             visited.add(this.source);
@@ -498,6 +507,8 @@ public class ResourceLoader
             Arrays.sort(this.index);
         }
 
+        @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity",
+            "checkstyle:ExecutableStatementCount", "checkstyle:ParameterAssignment"})
         public JarFile getJarFileIfPossiblyContains(String name) throws IOException
         {
             Map<URL, List<String>> indexes;
@@ -536,13 +547,13 @@ public class ResourceLoader
                 URLConnection connection = this.base.openConnection();
                 this.perm = connection.getPermission();
 
-                JarFile jar = ((java.net.JarURLConnection) connection).getJarFile();
+                JarFile loadedJar = ((java.net.JarURLConnection) connection).getJarFile();
 
                 // conservatively check if index is accurate, that is, does not
                 // contain entries which are not in the JAR file
                 if (this.index != null) {
                     Set<String> indices = new HashSet<>(Arrays.asList(this.index));
-                    Enumeration<JarEntry> entries = jar.entries();
+                    Enumeration<JarEntry> entries = loadedJar.entries();
                     while (entries.hasMoreElements()) {
                         JarEntry entry = entries.nextElement();
                         String indexEntry = entry.getName();
@@ -558,11 +569,11 @@ public class ResourceLoader
                             + indices);
                     }
                 }
-                this.jar = jar;
+                this.jar = loadedJar;
 
-                this.classPath = parseClassPath(jar, this.source);
+                this.classPath = parseClassPath(loadedJar, this.source);
 
-                indexes = parseJarIndex(this.source, jar);
+                indexes = parseJarIndex(this.source, loadedJar);
                 indexes.remove(this.source);
 
                 if (!indexes.isEmpty()) {
@@ -576,8 +587,8 @@ public class ResourceLoader
                     if (url.toExternalForm().equals(this.source.toExternalForm())) {
                         continue;
                     }
-                    List<String> index = entry.getValue();
-                    this.loader.getJarInfo(url).setIndex(index);
+                    List<String> jarIndex = entry.getValue();
+                    this.loader.getJarInfo(url).setIndex(jarIndex);
                 }
             } finally {
                 synchronized (this) {
@@ -631,6 +642,8 @@ public class ResourceLoader
         return jinfo;
     }
 
+    // Simple package-private data holder whose final fields are read directly; keeping them non-private is API.
+    @SuppressWarnings("checkstyle:VisibilityModifier")
     private static class JarResourceHandle extends ResourceHandle
     {
         final JarFile jar;
@@ -782,6 +795,7 @@ public class ResourceLoader
         return cpList.toArray(new URL[cpList.size()]);
     }
 
+    @SuppressWarnings("checkstyle:VisibilityModifier")
     private class ResourceEnumeration<T> implements Enumeration<T>
     {
         final URL[] urls;

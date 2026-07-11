@@ -70,9 +70,13 @@ import org.xwiki.extension.version.Version;
  */
 @Component
 @Singleton
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchableExtensionRepository
     implements ExtensionRepositoryManager, Initializable
 {
+    private static final String LOG_EXTENSION_DEPENDENCY_NOT_FOUND =
+        "Could not find extension dependency [{}] in repository [{}]";
+
     /**
      * Used to lookup {@link ExtensionRepositoryFactory}s.
      */
@@ -107,7 +111,7 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
 
         private int priority;
 
-        public ExtensionRepositoryEntry(ExtensionRepository repository, int priority)
+        ExtensionRepositoryEntry(ExtensionRepository repository, int priority)
         {
             this.repository = repository;
             this.priority = priority;
@@ -302,6 +306,7 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
     }
 
     @Override
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity"})
     public Extension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
         Set<ExtensionRepositoryDescriptor> checkedRepositories = new HashSet<>();
@@ -330,7 +335,7 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
             try {
                 return repository.resolve(extensionDependency);
             } catch (ExtensionNotFoundException e1) {
-                this.logger.debug("Could not find extension dependency [{}] in repository [{}]", extensionDependency,
+                this.logger.debug(LOG_EXTENSION_DEPENDENCY_NOT_FOUND, extensionDependency,
                     repository.getDescriptor(), e1);
             } catch (ResolveException e2) {
                 this.logger.warn(
@@ -353,7 +358,7 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
             try {
                 return repository.resolve(extensionDependency);
             } catch (ExtensionNotFoundException e1) {
-                this.logger.debug("Could not find extension dependency [{}] in repository [{}]", extensionDependency,
+                this.logger.debug(LOG_EXTENSION_DEPENDENCY_NOT_FOUND, extensionDependency,
                     repository.getDescriptor(), e1);
             } catch (ResolveException e2) {
                 this.logger.error("Unexpected error when trying to find extension dependency [{}] in repository [{}]",

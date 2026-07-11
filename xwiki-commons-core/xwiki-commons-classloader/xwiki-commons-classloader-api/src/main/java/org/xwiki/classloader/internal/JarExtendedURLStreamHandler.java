@@ -57,11 +57,30 @@ import org.xwiki.environment.Environment;
 @Component
 @Named(JarExtendedURLStreamHandler.PROTOCOL)
 @Singleton
+// The lower part of this class is copied verbatim from sun.net.www.protocol.jar.Handler and does not follow the XWiki
+// code style. Since it must stay aligned with the JDK source it is not reformatted, hence the checks suppressed below.
+@SuppressWarnings({
+    "checkstyle:OperatorWrap",
+    "checkstyle:ParameterAssignment",
+    "checkstyle:LeftCurly",
+    "checkstyle:MultipleStringLiterals",
+    "checkstyle:WhitespaceAround",
+    "checkstyle:WhitespaceAfter",
+    "checkstyle:InnerAssignment",
+    "checkstyle:MultipleVariableDeclarations",
+    "checkstyle:NeedBraces"
+})
 public class JarExtendedURLStreamHandler extends URLStreamHandler
     implements ExtendedURLStreamHandler, Initializable, Disposable
 {
+    /**
+     * The protocol handled by this handler.
+     */
     public static final String PROTOCOL = "jar";
 
+    /**
+     * The path, relative to the temporary directory, where the jars are extracted.
+     */
     public static final String JARS_FOLDER = "classloader/jars/";
 
     @Inject
@@ -146,6 +165,13 @@ public class JarExtendedURLStreamHandler extends URLStreamHandler
         return -1;
     }
 
+    /**
+     * Checks whether the passed specification is a nested JAR URL, which is not supported.
+     *
+     * @param spec the URL specification to check, for example {@code jar:file:/some.jar!/entry}
+     * @return an error message when {@code spec} is a nested JAR URL (that is when it starts with {@code jar:}),
+     *  or {@code null} when it is supported
+     */
     public String checkNestedProtocol(String spec) {
         if (spec.regionMatches(true, 0, "jar:", 0, 4)) {
             return "Nested JAR URLs are not supported";
@@ -244,6 +270,10 @@ public class JarExtendedURLStreamHandler extends URLStreamHandler
 
     /**
      * Returns a canonical version of the specified string.
+     *
+     * @param file the file part of a URL to canonize, for example {@code /a/b/../c}
+     * @return the canonized string, with embedded {@code /../} and {@code /./} sequences and trailing {@code /.}
+     *  and {@code /..} resolved
      */
     public static String canonizeString(String file) {
         int len = file.length();

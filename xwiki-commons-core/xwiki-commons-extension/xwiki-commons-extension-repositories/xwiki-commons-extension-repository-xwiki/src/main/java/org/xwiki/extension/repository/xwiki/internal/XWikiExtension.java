@@ -67,10 +67,19 @@ import org.xwiki.extension.repository.xwiki.model.jaxb.Property;
  * @version $Id$
  * @since 4.0M1
  */
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class XWikiExtension extends AbstractRatingExtension
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(XWikiExtension.class);
 
+    /**
+     * @param repository the repository this extension comes from
+     * @param restExtension the REST representation of the extension to convert into an {@link Extension}
+     * @param licenseManager the manager used to resolve the licenses declared by the extension
+     * @param factory the factory used to create the various extension related objects
+     */
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS", "checkstyle:NPathComplexity",
+        "checkstyle:ExecutableStatementCount"})
     public XWikiExtension(XWikiExtensionRepository repository, ExtensionVersion restExtension,
         ExtensionLicenseManager licenseManager, ExtensionFactory factory)
     {

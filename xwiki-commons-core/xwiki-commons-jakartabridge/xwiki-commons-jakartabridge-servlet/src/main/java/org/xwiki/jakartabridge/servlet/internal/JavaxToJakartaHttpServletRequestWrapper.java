@@ -51,6 +51,8 @@ import org.xwiki.jakartabridge.servlet.JakartaServletBridge;
  * @version $Id$
  * @since 17.0.0RC1
  */
+// Wrapping the whole HttpServletRequest API between the javax and jakarta namespaces implies a high fan-out.
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class JavaxToJakartaHttpServletRequestWrapper<R extends jakarta.servlet.http.HttpServletRequestWrapper>
     extends HttpServletRequestWrapper implements JavaxToJakartaWrapper<R>
 {

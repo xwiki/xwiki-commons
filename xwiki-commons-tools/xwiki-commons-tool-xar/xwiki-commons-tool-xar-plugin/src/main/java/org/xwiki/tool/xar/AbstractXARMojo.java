@@ -54,6 +54,7 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  * 
  * @version $Id$
  */
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 abstract class AbstractXARMojo extends AbstractMojo
 {
     /**
@@ -344,8 +345,8 @@ abstract class AbstractXARMojo extends AbstractMojo
      */
     protected File getResourcesDirectory()
     {
-        String resourcesLocation =
-            (this.project.getBasedir().getAbsolutePath() + "/src/main/resources").replace("/", File.separator);
+        String resourcesLocation = "%s/src/main/resources".formatted(this.project.getBasedir().getAbsolutePath())
+            .replace("/", File.separator);
         return new File(resourcesLocation);
     }
 }

@@ -317,11 +317,29 @@ public class ComponentAnnotationLoader
         return descriptors;
     }
 
+    /**
+     * Finds the roles implemented by the passed component, by looking for the {@link Role} (or the legacy
+     * {@link ComponentRole}) annotation, as well as {@code Provider} interfaces, on its implemented interfaces and
+     * its superclasses.
+     *
+     * @param componentClass the component implementation class for which to find the role types
+     * @return the discovered role types, without duplicates
+     */
     public Set<Type> findComponentRoleTypes(Class<?> componentClass)
     {
         return findComponentRoleTypes(componentClass, null);
     }
 
+    /**
+     * Finds the roles implemented by the passed component, by looking for the {@link Role} (or the legacy
+     * {@link ComponentRole}) annotation, as well as {@code Provider} interfaces, on its implemented interfaces and
+     * its superclasses.
+     *
+     * @param componentClass the component implementation class for which to find the role types
+     * @param parameters the actual type arguments to substitute for the component class type variables when it is
+     *  generic, used to resolve parameterized role types; may be {@code null} when the class has no type parameters
+     * @return the discovered role types, without duplicates
+     */
     public Set<Type> findComponentRoleTypes(Class<?> componentClass, Type[] parameters)
     {
         // Note: We use a Set to ensure that we don't register duplicate roles.
@@ -336,71 +354,81 @@ public class ComponentAnnotationLoader
             // Auto-discover roles by looking for a @Role annotation or a @Provider one in both the superclass
             // and implemented interfaces.
             for (Type interfaceType : getGenericInterfaces(componentClass)) {
-                Class<?> interfaceClass;
-                Type[] interfaceParameters;
-
-                if (interfaceType instanceof ParameterizedType) {
-                    ParameterizedType interfaceParameterizedType = (ParameterizedType) interfaceType;
-
-                    interfaceClass = ReflectionUtils.getTypeClass(interfaceType);
-                    Type[] variableParameters = interfaceParameterizedType.getActualTypeArguments();
-
-                    interfaceParameters =
-                        ReflectionUtils.resolveSuperArguments(variableParameters, componentClass, parameters);
-
-                    if (interfaceParameters == null) {
-                        interfaceType = interfaceClass;
-                    } else if (interfaceParameters != variableParameters) {
-                        interfaceType =
-                            new DefaultParameterizedType(interfaceParameterizedType.getOwnerType(), interfaceClass,
-                                interfaceParameters);
-                    }
-                } else if (interfaceType instanceof Class) {
-                    interfaceClass = (Class<?>) interfaceType;
-                    interfaceParameters = null;
-                } else {
-                    continue;
-                }
-
-                // Handle superclass of interfaces
-                types.addAll(findComponentRoleTypes(interfaceClass, interfaceParameters));
-
-                // Handle interfaces directly declared in the passed component class
-                if (ReflectionUtils.getDirectAnnotation(Role.class, interfaceClass) != null) {
-                    types.add(interfaceType);
-                }
-
-                // Handle javax.inject.Provider (retro-compatibility since **17.0.0RC1**)
-                if (javax.inject.Provider.class.isAssignableFrom(interfaceClass)) {
-                    types.add(interfaceType);
-                }
-                // Handle jakarta.inject.Provider
-                if (Provider.class.isAssignableFrom(interfaceClass)) {
-                    types.add(interfaceType);
-                }
-
-                // Handle ComponentRole (retro-compatibility since 4.0M1)
-                if (ReflectionUtils.getDirectAnnotation(ComponentRole.class, interfaceClass) != null) {
-                    types.add(interfaceClass);
-                }
+                addInterfaceRoleTypes(types, interfaceType, componentClass, parameters);
             }
 
             // Note that we need to look into the superclass since the super class can itself implements an interface
             // that has the @Role annotation.
-            Type superType = componentClass.getGenericSuperclass();
-            if (superType != null && superType != Object.class) {
-                if (superType instanceof ParameterizedType) {
-                    ParameterizedType superParameterizedType = (ParameterizedType) superType;
-                    types.addAll(findComponentRoleTypes((Class) superParameterizedType.getRawType(), ReflectionUtils
-                        .resolveSuperArguments(superParameterizedType.getActualTypeArguments(), componentClass,
-                            parameters)));
-                } else if (superType instanceof Class) {
-                    types.addAll(findComponentRoleTypes((Class) superType, null));
-                }
-            }
+            addSuperclassRoleTypes(types, componentClass, parameters);
         }
 
         return types;
+    }
+
+    private void addInterfaceRoleTypes(Set<Type> types, Type interfaceType, Class<?> componentClass, Type[] parameters)
+    {
+        Class<?> interfaceClass;
+        Type resolvedInterfaceType = interfaceType;
+
+        if (interfaceType instanceof ParameterizedType) {
+            ParameterizedType interfaceParameterizedType = (ParameterizedType) interfaceType;
+
+            interfaceClass = ReflectionUtils.getTypeClass(interfaceType);
+            Type[] variableParameters = interfaceParameterizedType.getActualTypeArguments();
+
+            Type[] interfaceParameters =
+                ReflectionUtils.resolveSuperArguments(variableParameters, componentClass, parameters);
+
+            if (interfaceParameters == null) {
+                resolvedInterfaceType = interfaceClass;
+            } else if (interfaceParameters != variableParameters) {
+                resolvedInterfaceType =
+                    new DefaultParameterizedType(interfaceParameterizedType.getOwnerType(), interfaceClass,
+                        interfaceParameters);
+            }
+
+            types.addAll(findComponentRoleTypes(interfaceClass, interfaceParameters));
+        } else if (interfaceType instanceof Class) {
+            interfaceClass = (Class<?>) interfaceType;
+
+            types.addAll(findComponentRoleTypes(interfaceClass, null));
+        } else {
+            return;
+        }
+
+        // Handle interfaces directly declared in the passed component class
+        if (ReflectionUtils.getDirectAnnotation(Role.class, interfaceClass) != null) {
+            types.add(resolvedInterfaceType);
+        }
+
+        // Handle javax.inject.Provider (retro-compatibility since **17.0.0RC1**)
+        if (javax.inject.Provider.class.isAssignableFrom(interfaceClass)) {
+            types.add(resolvedInterfaceType);
+        }
+        // Handle jakarta.inject.Provider
+        if (Provider.class.isAssignableFrom(interfaceClass)) {
+            types.add(resolvedInterfaceType);
+        }
+
+        // Handle ComponentRole (retro-compatibility since 4.0M1)
+        if (ReflectionUtils.getDirectAnnotation(ComponentRole.class, interfaceClass) != null) {
+            types.add(interfaceClass);
+        }
+    }
+
+    private void addSuperclassRoleTypes(Set<Type> types, Class<?> componentClass, Type[] parameters)
+    {
+        Type superType = componentClass.getGenericSuperclass();
+        if (superType != null && superType != Object.class) {
+            if (superType instanceof ParameterizedType) {
+                ParameterizedType superParameterizedType = (ParameterizedType) superType;
+                types.addAll(findComponentRoleTypes((Class) superParameterizedType.getRawType(), ReflectionUtils
+                    .resolveSuperArguments(superParameterizedType.getActualTypeArguments(), componentClass,
+                        parameters)));
+            } else if (superType instanceof Class) {
+                types.addAll(findComponentRoleTypes((Class) superType, null));
+            }
+        }
     }
 
     /**

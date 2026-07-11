@@ -83,6 +83,7 @@ public class DefaultDiffManager implements DiffManager
     }
 
     @Override
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     public <E> MergeResult<E> merge(List<E> commonAncestor, List<E> next, List<E> current,
         MergeConfiguration<E> configuration) throws MergeException
     {
@@ -285,6 +286,8 @@ public class DefaultDiffManager implements DiffManager
      * @param configuration the configuration of the merge behavior
      * @throws MergeException failed to merge
      */
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS", "checkstyle:NPathComplexity",
+        "checkstyle:ExecutableStatementCount", "checkstyle:NestedIfDepth"})
     private <E> void merge(DefaultMergeResult<E> mergeResult, List<E> commonAncestor, List<E> next, List<E> current,
         Patch<E> patchNext, Patch<E> patchCurrent, MergeConfiguration<E> configuration)
         throws MergeException

@@ -68,14 +68,18 @@ import org.xwiki.properties.converter.AbstractConverter;
 
 /**
  * Create an {@link Extension} from a Maven {@link Model}.
- * 
+ *
+ * @param <T> the type of the object this converter produces
  * @version $Id$
  * @since 10.9
  * @since 10.8
  */
+@SuppressWarnings({"checkstyle:ClassFanOutComplexity", "checkstyle:AbstractClassName"})
 public class AbstractModelConverter<T> extends AbstractConverter<T>
 {
     private static final String PROP_OPTIONAL_INCLUDED = "optionalIncluded";
+
+    private static final String REGEX_WILDCARD = ".*";
 
     private static final Set<String> XWIKI_GROUPS = new HashSet<>(Arrays.asList("org.xwiki", "com.xwiki"));
 
@@ -105,6 +109,8 @@ public class AbstractModelConverter<T> extends AbstractConverter<T>
         return false;
     }
 
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS", "checkstyle:NPathComplexity",
+        "checkstyle:ExecutableStatementCount", "checkstyle:MethodLength", "checkstyle:BooleanExpressionComplexity"})
     protected DefaultMavenExtension convertToExtension(Model model, String groupId, String artifactId,
         String classifier, String type, String versionString)
     {
@@ -286,12 +292,13 @@ public class AbstractModelConverter<T> extends AbstractConverter<T>
                 if (MavenUtils.WILDCARD.equals(exclusionArtifactId)) {
                     idPattern = null;
                 } else {
-                    idPattern =
-                        Pattern.compile(MavenUtils.toExtensionId(".*", Pattern.quote(exclusionArtifactId), null));
+                    idPattern = Pattern
+                        .compile(MavenUtils.toExtensionId(REGEX_WILDCARD, Pattern.quote(exclusionArtifactId), null));
                 }
             } else {
                 if (MavenUtils.WILDCARD.equals(exclusionArtifactId)) {
-                    idPattern = Pattern.compile(MavenUtils.toExtensionId(Pattern.quote(exclusionGroupId), ".*", null));
+                    idPattern = Pattern
+                        .compile(MavenUtils.toExtensionId(Pattern.quote(exclusionGroupId), REGEX_WILDCARD, null));
                 } else {
                     idPattern = Pattern.compile(MavenUtils.toExtensionId(exclusionGroupId, exclusionArtifactId, null),
                         Pattern.LITERAL);

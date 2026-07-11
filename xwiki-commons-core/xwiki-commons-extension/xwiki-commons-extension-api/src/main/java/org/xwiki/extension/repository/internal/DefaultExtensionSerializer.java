@@ -89,6 +89,7 @@ import org.xwiki.extension.repository.internal.local.DefaultLocalExtensionReposi
  */
 @Component
 @Singleton
+@SuppressWarnings({"checkstyle:ClassFanOutComplexity", "checkstyle:MultipleStringLiterals"})
 public class DefaultExtensionSerializer implements ExtensionSerializer
 {
     private static final String ELEMENT_ID = "id";
@@ -200,6 +201,10 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     @Deprecated
     private static final String ELEMENT_NNAMESPACE = "namespace";
 
+    protected Map<String, ExtensionPropertySerializer> serializerById;
+
+    protected Map<Class<?>, ExtensionPropertySerializer> serializerByClass;
+
     @Inject
     private ExtensionLicenseManager licenseManager;
 
@@ -211,46 +216,40 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
      */
     private DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
-    protected Map<String, ExtensionPropertySerializer> serializerById;
-
-    protected Map<Class<?>, ExtensionPropertySerializer> serializerByClass;
-
     {
-        {
-            this.serializerById = new HashMap<>();
-            this.serializerByClass = new LinkedHashMap<>();
+        this.serializerById = new HashMap<>();
+        this.serializerByClass = new LinkedHashMap<>();
 
-            StringExtensionPropertySerializer stringSerializer = new StringExtensionPropertySerializer();
-            IntegerExtensionPropertySerializer integerSerializer = new IntegerExtensionPropertySerializer();
-            BooleanExtensionPropertySerializer booleanSerializer = new BooleanExtensionPropertySerializer();
-            DateExtensionPropertySerializer dateSerializer = new DateExtensionPropertySerializer();
-            URLExtensionPropertySerializer urlSerializer = new URLExtensionPropertySerializer();
-            CollectionExtensionPropertySerializer collectionSerializer =
-                new CollectionExtensionPropertySerializer(this.serializerById, this.serializerByClass);
-            SetExtensionPropertySerializer setSerializer =
-                new SetExtensionPropertySerializer(this.serializerById, this.serializerByClass);
-            StringKeyMapExtensionPropertySerializer mapSerializer =
-                new StringKeyMapExtensionPropertySerializer(this.serializerById, this.serializerByClass);
+        StringExtensionPropertySerializer stringSerializer = new StringExtensionPropertySerializer();
+        IntegerExtensionPropertySerializer integerSerializer = new IntegerExtensionPropertySerializer();
+        BooleanExtensionPropertySerializer booleanSerializer = new BooleanExtensionPropertySerializer();
+        DateExtensionPropertySerializer dateSerializer = new DateExtensionPropertySerializer();
+        URLExtensionPropertySerializer urlSerializer = new URLExtensionPropertySerializer();
+        CollectionExtensionPropertySerializer collectionSerializer =
+            new CollectionExtensionPropertySerializer(this.serializerById, this.serializerByClass);
+        SetExtensionPropertySerializer setSerializer =
+            new SetExtensionPropertySerializer(this.serializerById, this.serializerByClass);
+        StringKeyMapExtensionPropertySerializer mapSerializer =
+            new StringKeyMapExtensionPropertySerializer(this.serializerById, this.serializerByClass);
 
-            this.serializerById.put(null, stringSerializer);
-            this.serializerById.put("", stringSerializer);
-            this.serializerById.put(integerSerializer.getType(), integerSerializer);
-            this.serializerById.put(booleanSerializer.getType(), booleanSerializer);
-            this.serializerById.put(dateSerializer.getType(), dateSerializer);
-            this.serializerById.put(urlSerializer.getType(), urlSerializer);
-            this.serializerById.put(collectionSerializer.getType(), collectionSerializer);
-            this.serializerById.put(setSerializer.getType(), setSerializer);
-            this.serializerById.put(mapSerializer.getType(), mapSerializer);
+        this.serializerById.put(null, stringSerializer);
+        this.serializerById.put("", stringSerializer);
+        this.serializerById.put(integerSerializer.getType(), integerSerializer);
+        this.serializerById.put(booleanSerializer.getType(), booleanSerializer);
+        this.serializerById.put(dateSerializer.getType(), dateSerializer);
+        this.serializerById.put(urlSerializer.getType(), urlSerializer);
+        this.serializerById.put(collectionSerializer.getType(), collectionSerializer);
+        this.serializerById.put(setSerializer.getType(), setSerializer);
+        this.serializerById.put(mapSerializer.getType(), mapSerializer);
 
-            this.serializerByClass.put(String.class, stringSerializer);
-            this.serializerByClass.put(Integer.class, integerSerializer);
-            this.serializerByClass.put(Boolean.class, booleanSerializer);
-            this.serializerByClass.put(Date.class, dateSerializer);
-            this.serializerByClass.put(URL.class, urlSerializer);
-            this.serializerByClass.put(Set.class, setSerializer);
-            this.serializerByClass.put(Collection.class, collectionSerializer);
-            this.serializerByClass.put(Map.class, mapSerializer);
-        }
+        this.serializerByClass.put(String.class, stringSerializer);
+        this.serializerByClass.put(Integer.class, integerSerializer);
+        this.serializerByClass.put(Boolean.class, booleanSerializer);
+        this.serializerByClass.put(Date.class, dateSerializer);
+        this.serializerByClass.put(URL.class, urlSerializer);
+        this.serializerByClass.put(Set.class, setSerializer);
+        this.serializerByClass.put(Collection.class, collectionSerializer);
+        this.serializerByClass.put(Map.class, mapSerializer);
     }
 
     @Override
@@ -317,6 +316,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         return nodeList.getLength() > 0 ? nodeList.item(0).getTextContent() : null;
     }
 
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS", "checkstyle:NPathComplexity",
+        "checkstyle:ExecutableStatementCount", "checkstyle:MethodLength"})
     private void loadExtensionDescriptor(MutableExtension extension, Element extensionElement)
         throws InvalidExtensionException
     {

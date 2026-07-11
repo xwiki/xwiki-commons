@@ -70,6 +70,11 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
 
     private static final Pattern VALID_ELEMENTNAME = Pattern.compile("[A-Za-z][A-Za-z0-9:_.-]*");
 
+    /**
+     * Prefix used to build the element/attribute name of a parameter identified by its index only.
+     */
+    private static final String INDEX_NAME_PREFIX = "_";
+
     private final XMLStreamWriter xmlStreamWriter;
 
     private final ParameterManager parameterManager;
@@ -80,6 +85,15 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
 
     private final XMLConfiguration configuration;
 
+    /**
+     * @param result the destination the produced XML is written to
+     * @param parameterManager the manager used to serialize complex (element) parameter values
+     * @param descriptor the descriptor of the filter, used to resolve elements and parameters
+     * @param converter the converter used to convert simple parameter values to strings
+     * @param configuration the XML configuration to use; when {@code null} a default {@link XMLConfiguration} is used
+     * @throws XMLStreamException when the underlying XML stream writer cannot be created
+     * @throws FactoryConfigurationError when the XML output factory cannot be configured
+     */
     public DefaultXMLSerializer(Result result, ParameterManager parameterManager, FilterDescriptor descriptor,
         ConverterManager converter, XMLConfiguration configuration) throws XMLStreamException, FactoryConfigurationError
     {
@@ -116,6 +130,7 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
         return blockName;
     }
 
+    @SuppressWarnings({ "checkstyle:CyclomaticComplexity", "checkstyle:NestedIfDepth" })
     private void writeInlineParameters(List<Object> parameters, FilterElementDescriptor element)
         throws XMLStreamException
     {
@@ -137,7 +152,7 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
                             attributeName = null;
                         }
                     } else {
-                        attributeName = "_" + filterParameter.getIndex();
+                        attributeName = INDEX_NAME_PREFIX + filterParameter.getIndex();
                     }
 
                     if (attributeName != null) {
@@ -293,6 +308,7 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
         return write;
     }
 
+    @SuppressWarnings({ "checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity", "checkstyle:NestedIfDepth" })
     private void writeParameters(List<Object> parameters, FilterElementDescriptor descriptor) throws XMLStreamException
     {
         if (parameters != null && !parameters.isEmpty()) {
@@ -323,12 +339,12 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
                         if (isValidParameterElementName(filterParameter.getName())) {
                             elementName = filterParameter.getName();
                         } else {
-                            elementName = "_" + filterParameter.getIndex();
+                            elementName = INDEX_NAME_PREFIX + filterParameter.getIndex();
                             attributeName = this.configuration.getAttributeParameterName();
                             attributeValue = filterParameter.getName();
                         }
                     } else {
-                        elementName = "_" + filterParameter.getIndex();
+                        elementName = INDEX_NAME_PREFIX + filterParameter.getIndex();
                     }
 
                     this.xmlStreamWriter.writeStartElement(elementName);

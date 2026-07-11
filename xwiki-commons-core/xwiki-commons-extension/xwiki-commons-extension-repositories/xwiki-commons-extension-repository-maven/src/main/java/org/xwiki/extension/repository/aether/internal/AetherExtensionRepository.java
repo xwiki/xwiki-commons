@@ -122,6 +122,7 @@ import org.xwiki.properties.converter.Converter;
  * @version $Id$
  * @since 4.0M1
  */
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class AetherExtensionRepository extends AbstractExtensionRepository
 {
     protected static final Logger LOGGER = LoggerFactory.getLogger(AetherExtensionRepository.class);
@@ -157,6 +158,22 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     protected static final GenericVersionScheme AETHERVERSIONSCHEME = new GenericVersionScheme();
 
     private static final String ECONTEXT_SESSION = "maven.systeSession";
+
+    private static final String TYPE_MAVEN = "maven";
+
+    private static final String WILDCARD = "*";
+
+    private static final String ERROR_UNSUPPORTED = "Unsupported";
+
+    private static final String ERROR_INVALID_EXTENSION_ID = "Invalid extension id";
+
+    private static final String ERROR_INVALID_VERSION = "Invalid version [%s]";
+
+    private static final String ERROR_RESOLVE_VERSION_RANGE = "Failed to resolve version range";
+
+    private static final String ERROR_CREATE_SESSION = "Failed to create the repository system session";
+
+    private static final String ERROR_RESOLVE_ARTIFACT = "Failed to resolve artifact [%s] descriptor";
 
     protected final PlexusContainer plexusContainer;
 
@@ -198,6 +215,14 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     protected boolean snaphotAllowed;
 
+    /**
+     * @param repositoryDescriptor the description of the repository to connect to
+     * @param repositoryFactory the factory used to create the repository system session and temporary files
+     * @param aetherRepository the Aether representation of the remote repository to connect to
+     * @param plexusContainer the Plexus container used to look up the Maven and Aether components
+     * @param componentManager the component manager used to look up the various XWiki components
+     * @throws Exception if one of the required components cannot be found
+     */
     public AetherExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
         AetherExtensionRepositoryFactory repositoryFactory, RemoteRepository aetherRepository,
         PlexusContainer plexusContainer, ComponentManager componentManager) throws Exception
@@ -239,16 +264,25 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return BooleanUtils.toBoolean(property);
     }
 
+    /**
+     * {@return the Aether representation of the remote repository this repository connects to}
+     */
     public RemoteRepository getRemoteRepository()
     {
         return this.remoteRepository;
     }
 
+    /**
+     * {@return the Aether repository system used to resolve and download artifacts}
+     */
     public RepositorySystem getRepositorySystem()
     {
         return this.repositorySystem;
     }
 
+    /**
+     * {@return the provider of Aether repository connectors used to download artifacts}
+     */
     public RepositoryConnectorProvider getRepositoryConnectorProvider()
     {
         return this.repositoryConnectorProvider;
@@ -279,7 +313,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         try {
             session = this.repositoryFactory.createRepositorySystemSession();
         } catch (Exception e) {
-            throw new ResolveException("Failed to create the repository system session", e);
+            throw new ResolveException(ERROR_CREATE_SESSION, e);
         }
 
         // Add HTTP headers separately from the rest of the configuration of the session as they have to be
@@ -310,7 +344,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         try {
             session = pushSession();
         } catch (ResolveException e) {
-            throw new IOException("Failed to create the repository system session", e);
+            throw new IOException(ERROR_CREATE_SESSION, e);
         }
 
         File file;
@@ -341,7 +375,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
                 getRepositoryConnectorProvider().newRepositoryConnector(session, repository)) {
                 connector.get(Arrays.asList(download), null);
             } catch (NoRepositoryConnectorException e) {
-                throw new IOException("Failed to download artifact [" + artifact + "]", e);
+                throw new IOException("Failed to download artifact [%s]".formatted(artifact), e);
             }
 
             // Check if the download succeeded
@@ -358,22 +392,22 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
                 download.getException());
         }
 
-        throw new IOException("Failed to download file for artifact [" + artifact + "]", exception);
+        throw new IOException("Failed to download file for artifact [%s]".formatted(artifact), exception);
     }
 
     @Override
     public Extension resolve(ExtensionId extensionId) throws ResolveException
     {
         try {
-            if (getDescriptor().getType().equals("maven") && this.mavenDescriptorReader != null) {
+            if (getDescriptor().getType().equals(TYPE_MAVEN) && this.mavenDescriptorReader != null) {
                 return resolveMaven(extensionId);
             } else {
                 // FIXME: impossible to resolve extension type as well as most of the information with pure Aether API
-                throw new ResolveException("Unsupported");
+                throw new ResolveException(ERROR_UNSUPPORTED);
             }
         } catch (InvalidExtensionIdException e) {
             // In case the id is invalid behave as if the extension simply did not exist (which is true anyway)
-            throw new ExtensionNotFoundException("Invalid extension id", e);
+            throw new ExtensionNotFoundException(ERROR_INVALID_EXTENSION_ID, e);
         }
     }
 
@@ -381,19 +415,20 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     public Extension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
         try {
-            if (getDescriptor().getType().equals("maven") && this.mavenDescriptorReader != null) {
+            if (getDescriptor().getType().equals(TYPE_MAVEN) && this.mavenDescriptorReader != null) {
                 return resolveMaven(extensionDependency);
             } else {
                 // FIXME: impossible to resolve extension type as well as most of the information with pure Aether API
-                throw new ResolveException("Unsupported");
+                throw new ResolveException(ERROR_UNSUPPORTED);
             }
         } catch (InvalidExtensionIdException e) {
             // In case the id is invalid behave as if the extension simply did not exist (which is true anyway)
-            throw new ExtensionNotFoundException("Invalid extension id", e);
+            throw new ExtensionNotFoundException(ERROR_INVALID_EXTENSION_ID, e);
         }
     }
 
     @Override
+    @SuppressWarnings("checkstyle:NPathComplexity")
     public IterableResult<Version> resolveVersions(String id, int offset, int nb) throws ResolveException
     {
         Artifact artifact;
@@ -401,7 +436,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             artifact = AetherUtils.createArtifact(id, "(,)");
         } catch (InvalidExtensionIdException e) {
             // In case the id is invalid behave as if the extension simply did not exist (which is true anyway)
-            throw new ExtensionNotFoundException("Invalid extension id", e);
+            throw new ExtensionNotFoundException(ERROR_INVALID_EXTENSION_ID, e);
         }
 
         List<org.eclipse.aether.version.Version> versions;
@@ -409,13 +444,13 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         try {
             versions = resolveVersions(artifact, session);
         } catch (Exception e) {
-            throw new ResolveException("Failed to resolve versions for id [" + id + "]", e);
+            throw new ResolveException("Failed to resolve versions for id [%s]".formatted(id), e);
         } finally {
             popSession();
         }
 
         if (versions.isEmpty()) {
-            throw new ExtensionNotFoundException("No versions available for id [" + id + "]");
+            throw new ExtensionNotFoundException("No versions available for id [%s]".formatted(id));
         }
 
         if (nb == 0 || offset >= versions.size()) {
@@ -433,6 +468,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return new CollectionIterableResult<>(versions.size(), offset, result);
     }
 
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity"})
     private org.eclipse.aether.version.Version resolveVersionConstraint(String id, VersionConstraint versionConstraint,
         RepositorySystemSession session) throws ResolveException
     {
@@ -441,7 +477,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             try {
                 return AETHERVERSIONSCHEME.parseVersion(versionConstraint.getVersion().getValue());
             } catch (InvalidVersionSpecificationException e) {
-                throw new ResolveException("Invalid version [" + versionConstraint.getVersion() + "]", e);
+                throw new ResolveException(ERROR_INVALID_VERSION.formatted(versionConstraint.getVersion()), e);
             }
         }
 
@@ -451,7 +487,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             try {
                 return AETHERVERSIONSCHEME.parseVersion(strictVersion.getValue());
             } catch (InvalidVersionSpecificationException e) {
-                throw new ResolveException("Invalid version [" + versionConstraint.getVersion() + "]", e);
+                throw new ResolveException(ERROR_INVALID_VERSION.formatted(versionConstraint.getVersion()), e);
             }
         }
 
@@ -476,7 +512,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         if (commonVersions == null || commonVersions.isEmpty()) {
             throw new ExtensionNotFoundException(
-                "No versions available for id [" + id + "] and version constraint [" + versionConstraint + "]");
+                "No versions available for id [%s] and version constraint [%s]".formatted(id, versionConstraint));
         }
 
         return commonVersions.get(commonVersions.size() - 1);
@@ -491,12 +527,12 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         try {
             versions = resolveVersions(artifact, session);
         } catch (Exception e) {
-            throw new ResolveException("Failed to resolve version range", e);
+            throw new ResolveException(ERROR_RESOLVE_VERSION_RANGE, e);
         }
 
         if (versions.isEmpty()) {
             throw new ExtensionNotFoundException(
-                "No versions available for id [" + id + "] and version range [" + versionRange + "]");
+                "No versions available for id [%s] and version range [%s]".formatted(id, versionRange));
         }
 
         return versions;
@@ -509,12 +545,12 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             List<org.eclipse.aether.version.Version> versions = resolveVersions(artifact, session);
 
             if (versions.isEmpty()) {
-                throw new ExtensionNotFoundException("No versions available for artifact [" + artifact + "]");
+                throw new ExtensionNotFoundException("No versions available for artifact [%s]".formatted(artifact));
             }
 
             return versions.get(versions.size() - 1);
         } catch (Exception e) {
-            throw new ResolveException("Failed to resolve version range", e);
+            throw new ResolveException(ERROR_RESOLVE_VERSION_RANGE, e);
         }
     }
 
@@ -604,6 +640,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         }
     }
 
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity",
+        "checkstyle:ExecutableStatementCount"})
     private AetherExtension resolveMaven(Artifact artifact, String targetMavenType, RepositorySystemSession session)
         throws ResolveException
     {
@@ -615,12 +653,12 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         } catch (ArtifactResolutionException e1) {
             if (e1.getResult() != null && !e1.getResult().getExceptions().isEmpty()
                 && e1.getResult().getExceptions().get(0) instanceof ArtifactNotFoundException) {
-                throw new ExtensionNotFoundException("Could not find artifact [" + artifact + "] descriptor", e1);
+                throw new ExtensionNotFoundException("Could not find artifact [%s] descriptor".formatted(artifact), e1);
             } else {
-                throw new ResolveException("Failed to resolve artifact [" + artifact + "] descriptor", e1);
+                throw new ResolveException(ERROR_RESOLVE_ARTIFACT.formatted(artifact), e1);
             }
         } catch (Exception e2) {
-            throw new ResolveException("Failed to resolve artifact [" + artifact + "] descriptor", e2);
+            throw new ResolveException(ERROR_RESOLVE_ARTIFACT.formatted(artifact), e2);
         }
 
         Model model;
@@ -631,7 +669,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         }
 
         if (model == null) {
-            throw new ResolveException("Failed to resolve artifact [" + artifact + "] descriptor");
+            throw new ResolveException(ERROR_RESOLVE_ARTIFACT.formatted(artifact));
         }
 
         // Relocation
@@ -666,9 +704,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         Artifact fileArtifact = new DefaultArtifact(pomArtifact.getGroupId(), pomArtifact.getArtifactId(),
             artifact.getClassifier(), artifactExtension, pomArtifact.getVersion());
 
-        // When the file extension is different from the default one in needs to be included in the extension id
-        boolean includeExtension = false;
-
         // Resolve the extension type
         String extensionType;
         try {
@@ -680,9 +715,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             } else {
                 // Otherwise relies on the target type extension
                 extensionType = this.extensionTypeConverter.mavenExtensionToExtensionType(artifactExtension);
-
-                // Since it's not the default, we also need to include the type in the extension
-                includeExtension = true;
             }
         } catch (Exception e) {
             throw new ResolveException("Failed to resolve the extension type", e);
@@ -807,7 +839,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private Exclusion convert(org.apache.maven.model.Exclusion exclusion)
     {
-        return new Exclusion(exclusion.getGroupId(), exclusion.getArtifactId(), "*", "*");
+        return new Exclusion(exclusion.getGroupId(), exclusion.getArtifactId(), WILDCARD, WILDCARD);
     }
 
     private Artifact resolveVersion(Artifact artifact, List<RemoteRepository> repositories,

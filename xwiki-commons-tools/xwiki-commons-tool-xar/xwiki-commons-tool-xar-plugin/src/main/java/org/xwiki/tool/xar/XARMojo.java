@@ -64,9 +64,19 @@ import static org.xwiki.tool.xar.internal.XMLUtils.getSAXReader;
  *
  * @version $Id$
  */
-@Mojo(name = "xar", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
+@Mojo(name = "xar", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE,
+    threadSafe = true)
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class XARMojo extends AbstractXARMojo
 {
+    private static final String XAR_TYPE = "xar";
+
+    private static final String TYPE_ATTRIBUTE = "type";
+
+    private static final String CRLF = "\r\n";
+
+    private static final String ID_FORMAT = "%s:%s";
+
     /**
      * Indicate if XAR dependencies should be included in the produced XAR package.
      */
@@ -124,7 +134,7 @@ public class XARMojo extends AbstractXARMojo
         }
 
         File xarFile = new File(this.project.getBuild().getDirectory(),
-            this.project.getArtifactId() + "-" + this.project.getVersion() + ".xar");
+            "%s-%s.xar".formatted(this.project.getArtifactId(), this.project.getVersion()));
 
         ZipArchiver archiver = new ZipArchiver();
         archiver.setEncoding(this.encoding);
@@ -180,6 +190,8 @@ public class XARMojo extends AbstractXARMojo
         return fileNames.length != 0;
     }
 
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS",
+        "checkstyle:ExecutableStatementCount"})
     private void performTransformations() throws Exception
     {
         if (this.transformations == null) {
@@ -234,17 +246,19 @@ public class XARMojo extends AbstractXARMojo
                             break;
 
                         case INSERT_ATTACHMENT_CONTENT:
-                            if(content != null) {
-                                node.selectSingleNode("filesize").setText(Long.toString(content.length(),10));
-                                node.selectSingleNode("content").setText( "\r\n" +
-                                    new String(
-                                        Base64.getMimeEncoder().encode(FileUtils.readFileToByteArray(content))) + "\r\n");
+                            if (content != null) {
+                                node.selectSingleNode("filesize").setText(Long.toString(content.length(), 10));
+                                node.selectSingleNode("content").setText(CRLF
+                                    + new String(Base64.getMimeEncoder().encode(
+                                        FileUtils.readFileToByteArray(content)))
+                                    + CRLF);
                             }
                             break;
 
                         case INSERT_TEXT:
-                            if( content != null) {
-                                node.setText(FileUtils.readFileToString(content, Charset.forName(transformation.getCharset())));
+                            if (content != null) {
+                                node.setText(FileUtils.readFileToString(content,
+                                    Charset.forName(transformation.getCharset())));
                             }
                             break;
 
@@ -267,7 +281,7 @@ public class XARMojo extends AbstractXARMojo
                     writer.close();
                 }
             } else {
-                getLog().warn("Can't find any node matching the xpath [" + transformation.getXpath() + "]");
+                getLog().warn("Can't find any node matching the xpath [%s]".formatted(transformation.getXpath()));
             }
         }
     }
@@ -278,8 +292,8 @@ public class XARMojo extends AbstractXARMojo
             Set<Artifact> artifacts = this.project.getArtifacts();
             if (artifacts != null) {
                 for (Artifact artifact : artifacts) {
-                    if (!artifact.isOptional() && "xar".equals(artifact.getType())) {
-                        String id = String.format("%s:%s", artifact.getGroupId(), artifact.getArtifactId());
+                    if (!artifact.isOptional() && XAR_TYPE.equals(artifact.getType())) {
+                        String id = String.format(ID_FORMAT, artifact.getGroupId(), artifact.getArtifactId());
                         if (id.equals(transformation.getArtifact())) {
                             unpackXARToOutputDirectory(artifact, new String[] { transformation.getFile() },
                                 new String[] {});
@@ -300,7 +314,7 @@ public class XARMojo extends AbstractXARMojo
         Set<Artifact> artifacts = this.project.getArtifacts();
         if (artifacts != null) {
             for (Artifact artifact : artifacts) {
-                if (!artifact.isOptional() && "xar".equals(artifact.getType())) {
+                if (!artifact.isOptional() && XAR_TYPE.equals(artifact.getType())) {
                     unpackXARToOutputDirectory(artifact, getIncludes(), getExcludes());
                 }
             }
@@ -381,7 +395,7 @@ public class XARMojo extends AbstractXARMojo
         infoElement.add(el);
 
         el = new DOMElement("extensionId");
-        el.addText(this.project.getGroupId() + ':' + this.project.getArtifactId());
+        el.addText(ID_FORMAT.formatted(this.project.getGroupId(), this.project.getArtifactId()));
         infoElement.add(el);
 
         el = new DOMElement("version");
@@ -414,9 +428,9 @@ public class XARMojo extends AbstractXARMojo
                 // Add configured properties
                 XAREntry cfgEntry = getEntryMap().get(reference);
                 if (cfgEntry != null && cfgEntry.getType() != null) {
-                    element.addAttribute("type", cfgEntry.getType());
+                    element.addAttribute(TYPE_ATTRIBUTE, cfgEntry.getType());
                 } else if (defaultEntryType != null) {
-                    element.addAttribute("type", defaultEntryType);
+                    element.addAttribute(TYPE_ATTRIBUTE, defaultEntryType);
                 }
 
                 filesElement.add(element);
@@ -467,7 +481,7 @@ public class XARMojo extends AbstractXARMojo
 
                 XAREntry entry = new XAREntry();
                 entry.setDocument(currentElement.getText());
-                entry.setType(currentElement.attributeValue("type"));
+                entry.setType(currentElement.attributeValue(TYPE_ATTRIBUTE));
 
                 result.put(entry.getDocument(), entry);
             }
@@ -488,6 +502,13 @@ public class XARMojo extends AbstractXARMojo
         return getXarEntriesMapFromXML(file).keySet();
     }
 
+    /**
+     * Gets the list of document names from a 'package.xml'-like document.
+     *
+     * @param stream the XML document to parse
+     * @return the list of document names contained in the XML document
+     * @throws Exception if the XML document is invalid or it contains no document list or it doesn't exist
+     */
     public static Collection<String> getDocumentNamesFromXML(InputStream stream) throws Exception
     {
         return getXarEntriesMapFromXML(stream).keySet();
