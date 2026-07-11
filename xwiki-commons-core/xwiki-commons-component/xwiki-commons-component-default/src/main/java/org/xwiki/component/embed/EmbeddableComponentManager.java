@@ -31,6 +31,7 @@ import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 import jakarta.inject.Provider;
 
@@ -85,10 +86,11 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         /**
          * Cached instance of the component. Lazily initialized when needed.
          * <p>
-         * This variable can be accesses and modified by many different threads at the same time so we make it volatile
-         * to ensure it's really shared and sync between all of them and not in each thread memory.
+         * This reference can be accessed and modified by many different threads at the same time so we hold it in an
+         * {@link AtomicReference} to ensure it's really shared and synchronized between all of them and not kept in each
+         * thread's memory.
          */
-        private volatile R instance;
+        private final AtomicReference<R> instance = new AtomicReference<>();
 
         /**
          * Flag used when computing the disposal order.
@@ -100,7 +102,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         ComponentEntry(ComponentDescriptor<R> descriptor, R instance)
         {
             this.descriptor = descriptor;
-            this.instance = instance;
+            this.instance.set(instance);
         }
 
         @Override
@@ -133,7 +135,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
 
             try {
                 for (ComponentEntry<R> entry : this.map.values()) {
-                    if (entry.instance == instance) {
+                    if (entry.instance.get() == instance) {
                         return entry;
                     }
                 }
@@ -707,14 +709,14 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         ComponentDescriptor<T> descriptor = componentEntry.descriptor;
 
         if (descriptor.getInstantiationStrategy() == ComponentInstantiationStrategy.SINGLETON) {
-            if (componentEntry.instance != null) {
+            if (componentEntry.instance.get() != null) {
                 // If the instance exists return it
-                instance = componentEntry.instance;
+                instance = componentEntry.instance.get();
             } else {
                 synchronized (componentEntry) {
                     // Re-check in case it has been created while we were waiting
-                    if (componentEntry.instance != null) {
-                        instance = componentEntry.instance;
+                    if (componentEntry.instance.get() != null) {
+                        instance = componentEntry.instance.get();
                     } else if (componentEntry.constructing) {
                         throw new ComponentLookupException(
                             "Detected component construction cycle for component [%s] of hint [%s]."
@@ -722,11 +724,11 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
                     } else {
                         componentEntry.constructing = true;
                         try {
-                            componentEntry.instance = createInstance(descriptor);
+                            componentEntry.instance.set(createInstance(descriptor));
                         } finally {
                             componentEntry.constructing = false;
                         }
-                        instance = componentEntry.instance;
+                        instance = componentEntry.instance.get();
                     }
                 }
             }
@@ -829,14 +831,14 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         // Make sure the singleton component instance can't be "lost" (impossible to dispose because returned but not
         // stored).
         synchronized (componentEntry) {
-            Object instance = componentEntry.instance;
+            Object instance = componentEntry.instance.get();
 
             // Give a chance to the component to clean up
             if (instance instanceof Disposable) {
                 ((Disposable) instance).dispose();
             }
 
-            componentEntry.instance = null;
+            componentEntry.instance.set(null);
         }
     }
 
@@ -860,7 +862,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
 
                 // We don't want the component manager to dispose itself just because it's not registered as component*
                 // anymore
-                if (componentEntry.instance != this) {
+                if (componentEntry.instance.get() != this) {
                     // clean any resource associated to the component instance and descriptor
                     releaseComponentEntry(componentEntry);
                 }
@@ -928,7 +930,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         // Exclude this component
         RoleHint<ComponentManager> cmRoleHint = new RoleHint<>(ComponentManager.class);
         ComponentEntry<?> cmEntry = getComponentEntry(cmRoleHint.getRoleType(), cmRoleHint.getHint());
-        if (cmEntry != null && cmEntry.instance == this) {
+        if (cmEntry != null && cmEntry.instance.get() == this) {
             cmEntry.disposing = false;
             keys.remove(cmRoleHint);
         }
@@ -944,7 +946,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
 
             private int getPriority(RoleHint<?> rh)
             {
-                Object instance = getComponentEntry(rh.getRoleType(), rh.getHint()).instance;
+                Object instance = getComponentEntry(rh.getRoleType(), rh.getHint()).instance.get();
                 if (instance == null) {
                     // The component has not been instantiated yet. We don't need to dispose it in this case... :)
                     // Return the default priority since it doesn't matter.
@@ -961,11 +963,11 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
             ComponentEntry<?> componentEntry = getComponentEntry(key.getRoleType(), key.getHint());
 
             synchronized (componentEntry) {
-                Object instance = componentEntry.instance;
+                Object instance = componentEntry.instance.get();
 
                 // Protection to prevent infinite recursion in case a component implementation points to this
                 // instance.
-                if (instance instanceof Disposable && componentEntry.instance != this) {
+                if (instance instanceof Disposable && componentEntry.instance.get() != this) {
                     try {
                         SHUTDOWN_LOGGER.debug("Disposing component [{}]...", instance.getClass().getName());
                         ((Disposable) instance).dispose();
