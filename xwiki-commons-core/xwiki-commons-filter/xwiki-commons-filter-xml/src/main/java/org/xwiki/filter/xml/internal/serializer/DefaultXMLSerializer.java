@@ -130,52 +130,59 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
         return blockName;
     }
 
-    @SuppressWarnings({ "checkstyle:CyclomaticComplexity", "checkstyle:NestedIfDepth" })
     private void writeInlineParameters(List<Object> parameters, FilterElementDescriptor element)
         throws XMLStreamException
     {
         for (int i = 0; i < parameters.size(); ++i) {
             Object parameterValue = parameters.get(i);
 
-            if (parameterValue != null) {
-                FilterElementParameterDescriptor<?> filterParameter = element.getParameters()[i];
-
-                if (!Objects.equals(filterParameter.getDefaultValue(), parameterValue)) {
-                    Class<?> typeClass = ReflectionUtils.getTypeClass(filterParameter.getType());
-
-                    String attributeName;
-
-                    if (filterParameter.getName() != null) {
-                        if (isValidParameterAttributeName(filterParameter.getName())) {
-                            attributeName = filterParameter.getName();
-                        } else {
-                            attributeName = null;
-                        }
-                    } else {
-                        attributeName = INDEX_NAME_PREFIX + filterParameter.getIndex();
-                    }
-
-                    if (attributeName != null) {
-                        if (parameterValue instanceof String) {
-                            // Multiline attributes are really not easy to read
-                            if (!((String) parameterValue).contains("\n")) {
-                                this.xmlStreamWriter.writeAttribute(attributeName, (String) parameterValue);
-
-                                parameters.set(filterParameter.getIndex(), null);
-                            }
-                        } else if (XMLUtils.isSimpleType(typeClass)) {
-                            this.xmlStreamWriter.writeAttribute(attributeName,
-                                this.converter.<String>convert(String.class, parameterValue));
-
-                            parameters.set(filterParameter.getIndex(), null);
-                        } else if (Objects.equals(XMLUtils.emptyValue(typeClass), parameterValue)) {
-                            this.xmlStreamWriter.writeAttribute(attributeName, "");
-
-                            parameters.set(filterParameter.getIndex(), null);
-                        }
-                    }
-                }
+            if (parameterValue == null) {
+                continue;
             }
+
+            FilterElementParameterDescriptor<?> filterParameter = element.getParameters()[i];
+
+            if (Objects.equals(filterParameter.getDefaultValue(), parameterValue)) {
+                continue;
+            }
+
+            String attributeName = getInlineParameterAttributeName(filterParameter);
+            if (attributeName != null) {
+                writeInlineParameter(parameters, filterParameter, attributeName, parameterValue);
+            }
+        }
+    }
+
+    private String getInlineParameterAttributeName(FilterElementParameterDescriptor<?> filterParameter)
+    {
+        if (filterParameter.getName() != null) {
+            return isValidParameterAttributeName(filterParameter.getName()) ? filterParameter.getName() : null;
+        }
+
+        return INDEX_NAME_PREFIX + filterParameter.getIndex();
+    }
+
+    private void writeInlineParameter(List<Object> parameters, FilterElementParameterDescriptor<?> filterParameter,
+        String attributeName, Object parameterValue) throws XMLStreamException
+    {
+        Class<?> typeClass = ReflectionUtils.getTypeClass(filterParameter.getType());
+
+        if (parameterValue instanceof String) {
+            // Multiline attributes are really not easy to read
+            if (!((String) parameterValue).contains("\n")) {
+                this.xmlStreamWriter.writeAttribute(attributeName, (String) parameterValue);
+
+                parameters.set(filterParameter.getIndex(), null);
+            }
+        } else if (XMLUtils.isSimpleType(typeClass)) {
+            this.xmlStreamWriter.writeAttribute(attributeName,
+                this.converter.<String>convert(String.class, parameterValue));
+
+            parameters.set(filterParameter.getIndex(), null);
+        } else if (Objects.equals(XMLUtils.emptyValue(typeClass), parameterValue)) {
+            this.xmlStreamWriter.writeAttribute(attributeName, "");
+
+            parameters.set(filterParameter.getIndex(), null);
         }
     }
 
@@ -308,67 +315,74 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
         return write;
     }
 
-    @SuppressWarnings({ "checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity", "checkstyle:NestedIfDepth" })
     private void writeParameters(List<Object> parameters, FilterElementDescriptor descriptor) throws XMLStreamException
     {
-        if (parameters != null && !parameters.isEmpty()) {
-            boolean writeContainer = false;
+        if (parameters == null || parameters.isEmpty()) {
+            return;
+        }
 
-            for (Object parameter : parameters) {
-                if (parameter != null) {
-                    writeContainer = true;
-                    break;
-                }
-            }
+        boolean writeContainer = false;
 
-            if (writeContainer) {
-                this.xmlStreamWriter.writeStartElement(this.configuration.getElementParameters());
-            }
-
-            for (int i = 0; i < parameters.size(); ++i) {
-                Object parameterValue = parameters.get(i);
-
-                FilterElementParameterDescriptor<?> filterParameter = descriptor.getParameters()[i];
-
-                if (shouldWriteParameter(parameterValue, filterParameter)) {
-                    String elementName;
-                    String attributeName = null;
-                    String attributeValue = null;
-
-                    if (filterParameter.getName() != null) {
-                        if (isValidParameterElementName(filterParameter.getName())) {
-                            elementName = filterParameter.getName();
-                        } else {
-                            elementName = INDEX_NAME_PREFIX + filterParameter.getIndex();
-                            attributeName = this.configuration.getAttributeParameterName();
-                            attributeValue = filterParameter.getName();
-                        }
-                    } else {
-                        elementName = INDEX_NAME_PREFIX + filterParameter.getIndex();
-                    }
-
-                    this.xmlStreamWriter.writeStartElement(elementName);
-
-                    if (attributeName != null) {
-                        this.xmlStreamWriter.writeAttribute(attributeName, attributeValue);
-                    }
-                    if (descriptor.getParameters()[i].getType() == Object.class
-                        && parameterValue.getClass() != String.class) {
-                        this.xmlStreamWriter.writeAttribute(this.configuration.getAttributeParameterType(),
-                            parameterValue.getClass().getCanonicalName());
-                    }
-
-                    this.parameterManager.serialize(descriptor.getParameters()[i].getType(), parameterValue,
-                        this.xmlStreamWriter);
-
-                    this.xmlStreamWriter.writeEndElement();
-                }
-            }
-
-            if (writeContainer) {
-                this.xmlStreamWriter.writeEndElement();
+        for (Object parameter : parameters) {
+            if (parameter != null) {
+                writeContainer = true;
+                break;
             }
         }
+
+        if (writeContainer) {
+            this.xmlStreamWriter.writeStartElement(this.configuration.getElementParameters());
+        }
+
+        for (int i = 0; i < parameters.size(); ++i) {
+            Object parameterValue = parameters.get(i);
+
+            FilterElementParameterDescriptor<?> filterParameter = descriptor.getParameters()[i];
+
+            if (shouldWriteParameter(parameterValue, filterParameter)) {
+                writeParameter(descriptor, i, parameterValue, filterParameter);
+            }
+        }
+
+        if (writeContainer) {
+            this.xmlStreamWriter.writeEndElement();
+        }
+    }
+
+    private void writeParameter(FilterElementDescriptor descriptor, int index, Object parameterValue,
+        FilterElementParameterDescriptor<?> filterParameter) throws XMLStreamException
+    {
+        String elementName;
+        String attributeName = null;
+        String attributeValue = null;
+
+        if (filterParameter.getName() != null) {
+            if (isValidParameterElementName(filterParameter.getName())) {
+                elementName = filterParameter.getName();
+            } else {
+                elementName = INDEX_NAME_PREFIX + filterParameter.getIndex();
+                attributeName = this.configuration.getAttributeParameterName();
+                attributeValue = filterParameter.getName();
+            }
+        } else {
+            elementName = INDEX_NAME_PREFIX + filterParameter.getIndex();
+        }
+
+        this.xmlStreamWriter.writeStartElement(elementName);
+
+        if (attributeName != null) {
+            this.xmlStreamWriter.writeAttribute(attributeName, attributeValue);
+        }
+        if (descriptor.getParameters()[index].getType() == Object.class
+            && parameterValue.getClass() != String.class) {
+            this.xmlStreamWriter.writeAttribute(this.configuration.getAttributeParameterType(),
+                parameterValue.getClass().getCanonicalName());
+        }
+
+        this.parameterManager.serialize(descriptor.getParameters()[index].getType(), parameterValue,
+            this.xmlStreamWriter);
+
+        this.xmlStreamWriter.writeEndElement();
     }
 
     @Override

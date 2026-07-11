@@ -505,7 +505,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
     }
 
     @Override
-    @SuppressWarnings({ "checkstyle:CyclomaticComplexity", "checkstyle:NestedIfDepth" })
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     public void endElement(String uri, String localName, String qName) throws SAXException
     {
         --this.elementDepth;
@@ -524,14 +524,13 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                 block.fireEndEvent(this.filter);
             } else {
                 if (block.getParametersList().isEmpty()
-                    && this.filterDescriptor.getElement(qName).getParameters().length > 0) {
-                    if (this.content != null && this.content.length() > 0) {
-                        block.setParameter(0,
-                            this.stringConverter.convert(
-                                this.filterDescriptor.getElement(qName).getParameters()[0].getType(),
-                                this.content.toString()));
-                        this.content = null;
-                    }
+                    && this.filterDescriptor.getElement(qName).getParameters().length > 0
+                    && this.content != null && this.content.length() > 0) {
+                    block.setParameter(0,
+                        this.stringConverter.convert(
+                            this.filterDescriptor.getElement(qName).getParameters()[0].getType(),
+                            this.content.toString()));
+                    this.content = null;
                 }
 
                 block.fireOnEvent(this.filter);

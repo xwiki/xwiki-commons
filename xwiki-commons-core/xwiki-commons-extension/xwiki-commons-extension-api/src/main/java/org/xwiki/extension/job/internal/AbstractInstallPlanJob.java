@@ -529,7 +529,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
         }
     }
 
-    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity", "checkstyle:NestedIfDepth"})
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity"})
     private ExtensionDependency checkInstalledDependency(InstalledExtension installedExtension,
         ExtensionDependency extensionDependency, VersionConstraint versionConstraint, String namespace)
         throws InstallException
@@ -542,11 +542,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
                 ExtensionId feature = installedExtension.getExtensionFeature(extensionDependency.getId());
 
                 if (versionConstraint.isCompatible(feature.getVersion())) {
-                    if (getRequest().isVerbose()) {
-                        this.logger.info(
-                            "There is already an installed extension [{}] covering extension dependency [{}]",
-                            installedExtension.getId(), extensionDependency.toString());
-                    }
+                    logExistingDependencyCoverage(installedExtension, extensionDependency);
 
                     return null;
                 }
@@ -594,6 +590,15 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
         }
 
         return targetDependency;
+    }
+
+    private void logExistingDependencyCoverage(InstalledExtension installedExtension,
+        ExtensionDependency extensionDependency)
+    {
+        if (getRequest().isVerbose()) {
+            this.logger.info("There is already an installed extension [{}] covering extension dependency [{}]",
+                installedExtension.getId(), extensionDependency.toString());
+        }
     }
 
     /**

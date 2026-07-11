@@ -89,7 +89,7 @@ import org.xwiki.extension.repository.internal.local.DefaultLocalExtensionReposi
  */
 @Component
 @Singleton
-@SuppressWarnings({"checkstyle:ClassFanOutComplexity", "checkstyle:MultipleStringLiterals"})
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class DefaultExtensionSerializer implements ExtensionSerializer
 {
     private static final String ELEMENT_ID = "id";
@@ -106,7 +106,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private static final String ELEMENT_LLCONTENT = "content";
 
-    private static final String ELEMENT_NAME = "name";
+    private static final String ELEMENT_NAME = ELEMENT_LLNAME;
 
     private static final String ELEMENT_SUMMARY = "summary";
 
@@ -120,7 +120,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private static final String ELEMENT_AAUTHOR = "author";
 
-    private static final String ELEMENT_AANAME = "name";
+    private static final String ELEMENT_AANAME = ELEMENT_LLNAME;
 
     private static final String ELEMENT_AAURL = "url";
 
@@ -128,7 +128,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private static final String ELEMENT_CCOMPONENT = "component";
 
-    private static final String ELEMENT_CCTYPE = "type";
+    private static final String ELEMENT_CCTYPE = ELEMENT_TYPE;
 
     private static final String ELEMENT_CCHINT = "hint";
 
@@ -142,7 +142,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private static final String ELEMENT_URI = "uri";
 
-    private static final String ELEMENT_RTYPE = "type";
+    private static final String ELEMENT_RTYPE = ELEMENT_TYPE;
 
     private static final String ELEMENT_DDEPENDENCY = "dependency";
 
@@ -156,9 +156,9 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private static final String ELEMENT_EFFEATURE = "feature";
 
-    private static final String ELEMENT_EFFID = "feature";
+    private static final String ELEMENT_EFFID = ELEMENT_EFFEATURE;
 
-    private static final String ELEMENT_EFFVERSION = "version";
+    private static final String ELEMENT_EFFVERSION = ELEMENT_VERSION;
 
     private static final String ELEMENT_ALLOWEDNAMESPACES = "allowednamespaces";
 
@@ -174,15 +174,15 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private static final String ELEMENT_SCPATH = "path";
 
-    private static final String ELEMENT_SURL = "url";
+    private static final String ELEMENT_SURL = ELEMENT_AAURL;
 
     private static final String ELEMENT_STAG = "tag";
 
     private static final String ELEMENT_ISSUEMANAGEMENT = "issuemanagement";
 
-    private static final String ELEMENT_ISYSTEM = "system";
+    private static final String ELEMENT_ISYSTEM = ELEMENT_SCSYSTEM;
 
-    private static final String ELEMENT_IURL = "url";
+    private static final String ELEMENT_IURL = ELEMENT_AAURL;
 
     private static final String ELEMENT_PROPERTIES = "properties";
 
@@ -190,7 +190,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     private static final String ELEMENT_FEATURES = "features";
 
     @Deprecated
-    private static final String ELEMENT_FFEATURE = "feature";
+    private static final String ELEMENT_FFEATURE = ELEMENT_EFFEATURE;
 
     @Deprecated
     private static final String ELEMENT_INSTALLED = "installed";
@@ -199,7 +199,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     private static final String ELEMENT_NAMESPACES = "namespaces";
 
     @Deprecated
-    private static final String ELEMENT_NNAMESPACE = "namespace";
+    private static final String ELEMENT_NNAMESPACE = ELEMENT_ANNAMESPACE;
 
     protected Map<String, ExtensionPropertySerializer> serializerById;
 
