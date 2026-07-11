@@ -119,7 +119,7 @@ class LogCaptureExtensionTest
         }
     }
 
-    public static class SampleSpecificLoggerTestCase
+    static class SampleSpecificLoggerTestCase
     {
         private static final Logger CAPTURED_LOGGER = LoggerFactory.getLogger("org.xwiki.test.captured.Class");
 
@@ -145,7 +145,7 @@ class LogCaptureExtensionTest
         }
     }
 
-    public static class SampleSeveralLogCaptureExtensionTestCase
+    static class SampleSeveralLogCaptureExtensionTestCase
     {
         private static final Logger CAPTURED_LOGGER = LoggerFactory.getLogger("org.xwiki.test.captured.Class");
 

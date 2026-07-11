@@ -255,7 +255,7 @@ public class LogCaptureExtension implements BeforeAllCallback, AfterAllCallback,
             // Reinitialize completely Logback
             LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
             context.reset();
-            name = Logger.ROOT_LOGGER_NAME;
+            name = org.slf4j.Logger.ROOT_LOGGER_NAME;
         }
 
         // Configure the logger to use our list appender and to log at the level asked.

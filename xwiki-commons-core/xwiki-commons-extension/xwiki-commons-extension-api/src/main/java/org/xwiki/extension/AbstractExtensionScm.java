@@ -57,6 +57,9 @@ public abstract class AbstractExtensionScm implements ExtensionScm
      * @param developerConnection the write connection
      * @param tag the tag corresponding to the extension's version
      */
+    // Keep this constructor public: reducing its visibility to protected would break backward compatibility
+    // (a source/binary incompatible change flagged by Revapi).
+    @SuppressWarnings("java:S5993")
     public AbstractExtensionScm(String url, ExtensionScmConnection connection,
         ExtensionScmConnection developerConnection, String tag)
     {

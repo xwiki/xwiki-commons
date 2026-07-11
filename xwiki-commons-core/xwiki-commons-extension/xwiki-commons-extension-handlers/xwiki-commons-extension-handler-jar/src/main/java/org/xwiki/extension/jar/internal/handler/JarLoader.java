@@ -91,8 +91,8 @@ public class JarLoader implements Initializable
 
             // Make sure to send events only when the extension is fully ready
             QueueComponentEventManager queueComponentEventManager;
-            if (componentEventManager instanceof QueueComponentEventManager) {
-                queueComponentEventManager = (QueueComponentEventManager) componentEventManager;
+            if (componentEventManager instanceof QueueComponentEventManager queuedComponentEventManager) {
+                queueComponentEventManager = queuedComponentEventManager;
                 if (queueComponentEventManager.isQueued()) {
                     // If already stacked don't do anything (and more importantly don't disabled queueing)
                     queueComponentEventManager = null;
