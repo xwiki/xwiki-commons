@@ -304,9 +304,9 @@
     <antlr4.version>4.13.2</antlr4.version>
 
     <!-- Versions of Node related tools -->
-    <node.version>v24.15.0</node.version>
-    <npm.version>11.13.0</npm.version>
-    <pnpm.version>10.33.2</pnpm.version>
+    <node.version>v24.18.0</node.version>
+    <npm.version>12.0.1</npm.version>
+    <pnpm.version>11.13.1</pnpm.version>
 
     <webdrivermanager.version>6.3.4</webdrivermanager.version>
 
