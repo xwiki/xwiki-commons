@@ -19,8 +19,7 @@
  */
 package org.xwiki.extension.index;
 
-import javax.annotation.Nullable;
-
+import org.jspecify.annotations.Nullable;
 import org.xwiki.extension.rating.RatingExtension;
 
 /**

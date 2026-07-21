@@ -247,6 +247,30 @@
                 </item>
               </differences>
             </revapi.differences>
+            <revapi.differences>
+              <justification>Nullability annotation migrated from the abandoned JSR-305
+                javax.annotation.Nullable to its JSpecify equivalent org.jspecify.annotations.Nullable. This is a
+                static-analysis metadata change only: the method signature is unchanged, so it is not a binary
+                incompatibility (code already compiled against this API keeps working without recompilation) and
+                nullability annotations are not read reflectively at runtime.</justification>
+              <criticality>allowed</criticality>
+              <differences>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.annotation.removed</code>
+                  <old>method java.lang.Boolean org.xwiki.extension.index.IndexedExtension::isCompatible(java.lang.String)</old>
+                  <new>method java.lang.Boolean org.xwiki.extension.index.IndexedExtension::isCompatible(java.lang.String)</new>
+                  <annotation>@javax.annotation.Nullable</annotation>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.annotation.removed</code>
+                  <old>method java.lang.Boolean org.xwiki.extension.wrap.WrappingIndexedExtension&lt;T extends org.xwiki.extension.Extension&gt;::isCompatible(java.lang.String)</old>
+                  <new>method java.lang.Boolean org.xwiki.extension.wrap.WrappingIndexedExtension&lt;T extends org.xwiki.extension.Extension&gt;::isCompatible(java.lang.String)</new>
+                  <annotation>@javax.annotation.Nullable</annotation>
+                </item>
+              </differences>
+            </revapi.differences>
           </analysisConfiguration>
         </configuration>
       </plugin>

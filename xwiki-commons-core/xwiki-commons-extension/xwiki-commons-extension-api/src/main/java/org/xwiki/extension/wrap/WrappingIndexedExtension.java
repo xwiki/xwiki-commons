@@ -19,8 +19,7 @@
  */
 package org.xwiki.extension.wrap;
 
-import javax.annotation.Nullable;
-
+import org.jspecify.annotations.Nullable;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.index.IndexedExtension;
 
