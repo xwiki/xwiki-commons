@@ -49,6 +49,9 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.emory.mathcs.util.classloader.ResourceHandle;
 import edu.emory.mathcs.util.classloader.ResourceUtils;
 
@@ -88,6 +91,8 @@ import edu.emory.mathcs.util.classloader.ResourceUtils;
 @Deprecated
 public class ResourceLoader
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceLoader.class);
+
     private static final String JAR_INDEX_ENTRY_NAME = "META-INF/INDEX.LIST";
 
     private URLStreamHandler jarHandler;
@@ -245,7 +250,9 @@ public class ResourceLoader
                     try {
                         getInputStream().close();
                     } catch (IOException e) {
-                        // Ignored: the input stream is closed on a best-effort basis.
+                        // Closed on a best-effort basis; log at debug level for diagnostics only.
+                        LOGGER.debug("Failed to close the input stream. Root cause: [{}]",
+                            e.getMessage());
                     }
                 }
             };
@@ -471,15 +478,16 @@ public class ResourceLoader
                 if (visited.contains(cpUrl)) {
                     continue;
                 }
-                JarInfo depJInfo;
                 try {
-                    depJInfo = this.loader.getJarInfo(cpUrl);
+                    JarInfo depJInfo = this.loader.getJarInfo(cpUrl);
                     ResourceHandle rh = depJInfo.getResource(name, visited, skip);
                     if (rh != null) {
                         return rh;
                     }
                 } catch (MalformedURLException e) {
-                    // continue with other URLs
+                    // Skip this malformed dependency URL and continue with the other URLs.
+                    LOGGER.debug("Skipping malformed dependency URL [{}]. Root cause: [{}]", cpUrl,
+                        e.getMessage());
                 }
             }
 

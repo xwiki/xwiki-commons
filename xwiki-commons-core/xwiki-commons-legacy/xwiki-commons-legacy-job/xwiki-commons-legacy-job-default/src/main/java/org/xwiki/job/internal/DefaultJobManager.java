@@ -30,6 +30,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -82,6 +83,12 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
      */
     @Inject
     private ExecutionContextManager executionContextManager;
+
+    /**
+     * Used for logging.
+     */
+    @Inject
+    private Logger logger;
 
     /**
      * @see #getCurrentJob()
@@ -141,7 +148,10 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
 
             this.currentJob.run();
         } catch (InterruptedException e) {
-            // Thread has been stopped
+            // The thread has been stopped while waiting for a job: restore the interrupted status so that the
+            // run() loop can exit.
+            this.logger.debug("The Job Manager thread has been interrupted while waiting for a job", e);
+            Thread.currentThread().interrupt();
         } finally {
             this.execution.removeContext();
         }
@@ -180,7 +190,9 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
         try {
             job.join();
         } catch (InterruptedException e) {
-            // Ignore
+            // Interrupted while waiting for the job to finish: restore the interrupted status for the caller.
+            this.logger.debug("Interrupted while waiting for job [{}] to finish", job, e);
+            Thread.currentThread().interrupt();
         }
 
         return job;
