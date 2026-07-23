@@ -124,8 +124,6 @@
     <!-- JUnit -->
     <junit.version>4.13.2</junit.version>
     <junit6.version>6.1.1</junit6.version>
-    <junit.platform.version>${junit6.version}</junit.platform.version>
-    <junit.vintage.version>${junit6.version}</junit.vintage.version>
 
     <surefire.version>3.5.6</surefire.version>
     <failsafe.version>${surefire.version}</failsafe.version>
@@ -1399,22 +1397,22 @@
       <dependency>
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-launcher</artifactId>
-        <version>${junit.platform.version}</version>
+        <version>${junit6.version}</version>
       </dependency>
       <dependency>
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-engine</artifactId>
-        <version>${junit.platform.version}</version>
+        <version>${junit6.version}</version>
       </dependency>
       <dependency>
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-suite-api</artifactId>
-        <version>${junit.platform.version}</version>
+        <version>${junit6.version}</version>
       </dependency>
       <dependency>
         <groupId>org.junit.vintage</groupId>
         <artifactId>junit-vintage-engine</artifactId>
-        <version>${junit.vintage.version}</version>
+        <version>${junit6.version}</version>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
