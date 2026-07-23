@@ -27,14 +27,16 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.AssertionFailedError;
-
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
+import org.opentest4j.AssertionFailedError;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @version $Id$
@@ -91,14 +93,14 @@ public class ZIPFileAssertComparator implements FileAssertComparator
     @Override
     public void assertEquals(String message, File expected, File actual)
     {
-        Assertions.assertNotNull(expected);
-        Assertions.assertNotNull(actual);
+        assertNotNull(expected);
+        assertNotNull(actual);
 
-        Assertions.assertTrue(expected.exists(), "Expected file does not exist [" + expected.getAbsolutePath() + "]");
-        Assertions.assertTrue(actual.exists(), "Actual file does not exist [" + actual.getAbsolutePath() + "]");
+        assertTrue(expected.exists(), "Expected file does not exist [" + expected.getAbsolutePath() + "]");
+        assertTrue(actual.exists(), "Actual file does not exist [" + actual.getAbsolutePath() + "]");
 
-        Assertions.assertTrue(expected.canRead(), "Expected file not readable");
-        Assertions.assertTrue(actual.canRead(), "Actual file not readable");
+        assertTrue(expected.canRead(), "Expected file not readable");
+        assertTrue(actual.canRead(), "Actual file not readable");
 
         try {
             Map<String, byte[]> expectedMap = unzip(expected);

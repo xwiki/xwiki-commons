@@ -43,7 +43,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * See javadoc for {@link MockitoComponentMockingRule}.
+ * Registers a mocked component implementation in a {@link MockitoComponentManager}, automatically mocking all its
+ * injected dependencies. Used to set up components under test; see
+ * {@link org.xwiki.test.junit5.mockito.MockitoComponentManagerExtension} and {@code @ComponentTest} for the
+ * JUnit 5 entry point that relies on it.
  *
  * @param <T> the component role type that we're mocking
  * @version $Id$
