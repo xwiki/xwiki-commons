@@ -21,7 +21,9 @@ package org.xwiki.velocity.tools;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.Strings;
+import org.xwiki.stability.Unstable;
 import org.xwiki.text.StringUtils;
 
 /**
@@ -1271,5 +1273,28 @@ public class StringTool extends StringUtils
     public static boolean startsWithIgnoreCase(final CharSequence str, final CharSequence prefix)
     {
         return Strings.CI.startsWith(str, prefix);
+    }
+
+    /**
+     * Creates a secure random string whose length is the number of characters specified.
+     * Implementation is based on {@link RandomStringUtils} by getting a secure random generator with
+     * {@link RandomStringUtils#secure()}.
+     *
+     * <p>
+     * Characters will be chosen from the set of Latin alphabetic characters (a-z, A-Z) and the digits 0-9.
+     * </p>
+     *
+     * @param count the length of random string to create.
+     * @return the random string.
+     * @throws IllegalArgumentException if {@code count} &lt; 0.
+     * @see RandomStringUtils#nextAlphanumeric(int)
+     * @since 17.10.11
+     * @since 18.4.3
+     * @since 18.7.0RC1
+     */
+    @Unstable
+    public String nextAlphanumeric(final int count)
+    {
+        return RandomStringUtils.secure().nextAlphanumeric(count);
     }
 }
