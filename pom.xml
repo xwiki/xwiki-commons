@@ -2769,6 +2769,10 @@
             <excludePackageNames>*.internal, *.internal.*</excludePackageNames>
             <!-- Make sure javadoc has enough memory -->
             <maxmemory>1024m</maxmemory>
+            <!-- Don't generate offline cross-links (-linkoffline) to the Javadoc of reactor-dependency modules: we
+                 don't publish an aggregated Javadoc site (each module's Javadoc JAR is deployed independently and
+                 cross-module navigation goes through the custom project <url>), so these links serve no purpose. -->
+            <detectOfflineLinks>false</detectOfflineLinks>
             <!-- Enable all doclint checks by default -->
             <doclint>all</doclint>
             <!-- Specify the version of the code so that it doesn't depend on the Java version used to build XWiki -->
