@@ -2637,6 +2637,10 @@
             <complianceLevel>${xwiki.java.version}</complianceLevel>
             <!-- Avoid surprises. If a module needs annotation processing, it can enable it easily -->
             <proc>none</proc>
+            <!-- Fail the build on any AspectJ Xlint warning (e.g. weaving errors such as advice not applied,
+                 unmatched pointcuts, etc.) so that such problems are caught early instead of silently
+                 producing incorrectly-woven classes -->
+            <Xlint>error</Xlint>
           </configuration>
           <!-- Override so that we can use the AspectJ version we wish -->
           <dependencies>
