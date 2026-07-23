@@ -32,7 +32,9 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Legacy - Properties</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.55</xwiki.jacoco.instructionRatio>
+    <!-- This module now weaves and re-exports the whole xwiki-commons-properties artifact, so its bundle includes the
+         non-legacy classes which are tested in xwiki-commons-properties itself and not here. -->
+    <xwiki.jacoco.instructionRatio>0.25</xwiki.jacoco.instructionRatio>
     <!-- The features provided by this module so that it's found when resolving extension -->
     <xwiki.extension.features>org.xwiki.commons:xwiki-commons-properties</xwiki.extension.features>
     <!-- Name to display by the Extension Manager -->
