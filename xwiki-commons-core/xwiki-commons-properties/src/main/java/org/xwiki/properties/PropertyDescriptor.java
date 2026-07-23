@@ -85,13 +85,6 @@ public interface PropertyDescriptor
 
     /**
      * @return the field. If null if generally mean that the property is based on getter/setter.
-     * @deprecated since 4.2M1 use {@link #getField()} instead
-     */
-    @Deprecated
-    Field getFied();
-
-    /**
-     * @return the field. If null if generally mean that the property is based on getter/setter.
      * @since 4.2M1
      */
     Field getField();

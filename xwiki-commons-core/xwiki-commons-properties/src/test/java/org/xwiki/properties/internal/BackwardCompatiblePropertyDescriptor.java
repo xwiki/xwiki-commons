@@ -86,12 +86,6 @@ public class BackwardCompatiblePropertyDescriptor implements PropertyDescriptor
     }
 
     @Override
-    public Field getFied()
-    {
-        return propertyDescriptor.getFied();
-    }
-
-    @Override
     public Field getField()
     {
         return propertyDescriptor.getField();
