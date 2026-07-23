@@ -68,7 +68,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     private boolean mandatory;
 
     /**
-     * @see #getFied()
+     * @see #getField()
      */
     private Field field;
 
@@ -222,18 +222,11 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
 
     /**
      * @param field the {@link Field}.
-     * @see org.xwiki.properties.PropertyDescriptor#getFied()
+     * @see org.xwiki.properties.PropertyDescriptor#getField()
      */
     public void setField(Field field)
     {
         this.field = field;
-    }
-
-    @Override
-    @Deprecated
-    public Field getFied()
-    {
-        return getField();
     }
 
     @Override

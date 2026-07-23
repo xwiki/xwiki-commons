@@ -228,7 +228,24 @@
               </differences>
             </revapi.differences>
             -->
-            
+            <revapi.differences>
+              <justification>The deprecated typo-named method getFied() (deprecated since 4.2M1 in favour of
+                getField()) has been moved to the xwiki-commons-legacy-properties module, which re-adds it via AspectJ
+                for backward compatibility. Callers must now use getField() instead.</justification>
+              <criticality>allowed</criticality>
+              <differences>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.removed</code>
+                  <old>method java.lang.reflect.Field org.xwiki.properties.PropertyDescriptor::getFied()</old>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.removed</code>
+                  <old>method java.lang.reflect.Field org.xwiki.properties.internal.DefaultPropertyDescriptor::getFied()</old>
+                </item>
+              </differences>
+            </revapi.differences>
           </analysisConfiguration>
         </configuration>
       </plugin>
