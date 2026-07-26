@@ -24,7 +24,7 @@ import org.xwiki.observation.event.filter.AlwaysMatchingEventFilter;
 import org.xwiki.observation.event.filter.FixedNameEventFilter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * Unit tests for {@link FixedNameEventFilter}.
@@ -38,9 +38,9 @@ class FixedNameEventFilterTest
     {
         FixedNameEventFilter filter = new FixedNameEventFilter("filter");
 
-        assertFalse(filter.equals(null));
-        assertFalse(filter.equals(AlwaysMatchingEventFilter.INSTANCE));
-        assertFalse(filter.equals(new FixedNameEventFilter("filter2")));
+        assertNotEquals(null, filter);
+        assertNotEquals(filter, AlwaysMatchingEventFilter.INSTANCE);
+        assertNotEquals(filter, new FixedNameEventFilter("filter2"));
 
         assertEquals(filter, filter);
         assertEquals(filter, new FixedNameEventFilter("filter"));

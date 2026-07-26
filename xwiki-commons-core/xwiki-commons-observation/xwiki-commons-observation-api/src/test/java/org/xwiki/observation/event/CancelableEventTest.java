@@ -75,14 +75,14 @@ class CancelableEventTest
         assertEquals(event, event);
         assertEquals(event, new TestCancelableEvent());
 
-        assertFalse(event.equals(new TestCancelableEvent("name")));
-        assertFalse(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name"))));
-        assertFalse(event.equals(new TestCancelableEvent2()));
+        assertNotEquals(event, new TestCancelableEvent("name"));
+        assertNotEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name")));
+        assertNotEquals(event, new TestCancelableEvent2());
 
         // hashcode
 
         assertEquals(event.hashCode(), new TestCancelableEvent().hashCode());
-        assertFalse(event.equals(new TestCancelableEvent2()));
+        assertNotEquals(event, new TestCancelableEvent2());
 
         assertNotEquals(event.hashCode(), new TestCancelableEvent("name").hashCode());
         assertNotEquals(event.hashCode(), new TestCancelableEvent(new FixedNameEventFilter("name")).hashCode());
@@ -106,14 +106,14 @@ class CancelableEventTest
         assertEquals(event, event);
         assertEquals(event, new TestCancelableEvent());
 
-        assertFalse(event.equals(new TestCancelableEvent("name")));
-        assertFalse(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name"))));
-        assertFalse(event.equals(new TestCancelableEvent2()));
+        assertNotEquals(event, new TestCancelableEvent("name"));
+        assertNotEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name")));
+        assertNotEquals(event, new TestCancelableEvent2());
 
         // hashcode
 
         assertEquals(event.hashCode(), new TestCancelableEvent().hashCode());
-        assertFalse(event.equals(new TestCancelableEvent2()));
+        assertNotEquals(event, new TestCancelableEvent2());
 
         assertNotEquals(event.hashCode(), new TestCancelableEvent("name").hashCode());
         assertNotEquals(event.hashCode(), new TestCancelableEvent(new FixedNameEventFilter("name")).hashCode());
@@ -140,10 +140,10 @@ class CancelableEventTest
         assertEquals(event, new TestCancelableEvent("name"));
         assertEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name")));
 
-        assertFalse(event.equals(null));
-        assertFalse(event.equals(new TestCancelableEvent("name2")));
-        assertFalse(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name2"))));
-        assertFalse(event.equals(new TestCancelableEvent2()));
+        assertNotEquals(null, event);
+        assertNotEquals(event, new TestCancelableEvent("name2"));
+        assertNotEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name2")));
+        assertNotEquals(event, new TestCancelableEvent2());
 
         // hashcode
 
@@ -175,10 +175,10 @@ class CancelableEventTest
         assertEquals(event, new TestCancelableEvent("name"));
         assertEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name")));
 
-        assertFalse(event.equals(null));
-        assertFalse(event.equals(new TestCancelableEvent("name2")));
-        assertFalse(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name2"))));
-        assertFalse(event.equals(new TestCancelableEvent2()));
+        assertNotEquals(null, event);
+        assertNotEquals(event, new TestCancelableEvent("name2"));
+        assertNotEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name2")));
+        assertNotEquals(event, new TestCancelableEvent2());
 
         // hashcode
 
