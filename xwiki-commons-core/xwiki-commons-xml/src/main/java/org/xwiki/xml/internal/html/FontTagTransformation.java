@@ -81,12 +81,12 @@ public class FontTagTransformation extends TagTransformation
             builder.append(String.format("font-size:%s;", fontSizeCss));
         }
         if (attributes.containsKey(HTMLConstants.ATTRIBUTE_STYLE)
-            && attributes.get(HTMLConstants.ATTRIBUTE_STYLE).trim().length() == 0)
+            && attributes.get(HTMLConstants.ATTRIBUTE_STYLE).trim().isEmpty())
         {
             builder.append(attributes.get(HTMLConstants.ATTRIBUTE_STYLE));
         }
 
-        if (builder.length() > 0) {
+        if (!builder.isEmpty()) {
             result.put(HTMLConstants.ATTRIBUTE_STYLE, builder.toString());
         }
 

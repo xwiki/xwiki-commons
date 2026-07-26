@@ -49,7 +49,7 @@ public final class VersionUtils
      */
     public static boolean startsWith(String str, char c)
     {
-        return str.length() > 0 && str.charAt(0) == c;
+        return !str.isEmpty() && str.charAt(0) == c;
     }
 
     /**
@@ -59,7 +59,7 @@ public final class VersionUtils
      */
     public static boolean endsWith(String str, char c)
     {
-        return str.length() > 0 && str.charAt(str.length() - 1) == c;
+        return !str.isEmpty() && str.charAt(str.length() - 1) == c;
     }
 
     /**

@@ -525,7 +525,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             } else {
                 if (block.getParametersList().isEmpty()
                     && this.filterDescriptor.getElement(qName).getParameters().length > 0
-                    && this.content != null && this.content.length() > 0) {
+                    && this.content != null && !this.content.isEmpty()) {
                     block.setParameter(0,
                         this.stringConverter.convert(
                             this.filterDescriptor.getElement(qName).getParameters()[0].getType(),

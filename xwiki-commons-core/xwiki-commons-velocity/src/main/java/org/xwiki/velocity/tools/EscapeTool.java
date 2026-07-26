@@ -256,7 +256,7 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
         // Serialize null values as an empty string.
         String valueAsString = rawValue == null ? "" : String.valueOf(rawValue);
         String cleanValue = this.url(valueAsString);
-        if (queryStringBuilder.length() != 0) {
+        if (!queryStringBuilder.isEmpty()) {
             queryStringBuilder.append(AND);
         }
         queryStringBuilder.append(cleanKey).append(EQUALS).append(cleanValue);

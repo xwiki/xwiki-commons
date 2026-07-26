@@ -117,6 +117,6 @@ public class ListFilter extends AbstractHTMLFilter
     private boolean isAllowedInsideList(Node node)
     {
         return (node.getNodeType() != Node.ELEMENT_NODE || node.getNodeName().equalsIgnoreCase(TAG_LI))
-            && (node.getNodeType() != Node.TEXT_NODE || node.getNodeValue().trim().length() == 0);
+            && (node.getNodeType() != Node.TEXT_NODE || node.getNodeValue().trim().isEmpty());
     }
 }

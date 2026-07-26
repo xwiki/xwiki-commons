@@ -216,7 +216,7 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
             try (Stream<String> stream = Files.lines(this.resolvedComponentsTxtPath)) {
                 stream.forEach((line) -> {
                     // Make sure we don't include empty lines
-                    if (line.trim().length() > 0) {
+                    if (!line.trim().isEmpty()) {
                         try {
                             String[] chunks = line.split(":");
                             String componentName;

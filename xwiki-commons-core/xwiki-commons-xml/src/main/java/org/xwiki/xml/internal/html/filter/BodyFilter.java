@@ -126,7 +126,7 @@ public class BodyFilter extends AbstractHTMLFilter
         boolean result = true;
         if (currentNode.getNodeType() == Node.TEXT_NODE) {
             Text textNode = (Text) currentNode;
-            if (textNode.getNodeValue().trim().length() > 0) {
+            if (!textNode.getNodeValue().trim().isEmpty()) {
                 result = false;
             }
         } else if (currentNode.getNodeType() != Node.COMMENT_NODE) {

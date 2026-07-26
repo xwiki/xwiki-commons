@@ -180,7 +180,7 @@ public class DefaultVersionRangeCollection implements VersionRangeCollection
             StringBuilder buffer = new StringBuilder();
 
             for (VersionRange range : this.ranges) {
-                if (buffer.length() > 0) {
+                if (!buffer.isEmpty()) {
                     buffer.append(RANGE_SEPARATOR);
                 }
                 buffer.append(range);

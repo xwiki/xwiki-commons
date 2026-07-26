@@ -202,7 +202,7 @@ public class SAXEventWriter extends BaseXMLEventWriter
             // fire endElement
             String prefix = qName.getPrefix();
             String rawname;
-            if (prefix == null || prefix.length() == 0) {
+            if (prefix == null || prefix.isEmpty()) {
                 rawname = qName.getLocalPart();
             } else {
                 rawname = prefix + ':' + qName.getLocalPart();
@@ -241,7 +241,7 @@ public class SAXEventWriter extends BaseXMLEventWriter
             QName qName = event.getName();
             String prefix = qName.getPrefix();
             String rawname;
-            if (prefix == null || prefix.length() == 0) {
+            if (prefix == null || prefix.isEmpty()) {
                 rawname = qName.getLocalPart();
             } else {
                 rawname = prefix + ':' + qName.getLocalPart();
@@ -284,7 +284,7 @@ public class SAXEventWriter extends BaseXMLEventWriter
                 }
 
                 String qName = "xmlns";
-                if (prefix.length() == 0) {
+                if (prefix.isEmpty()) {
                     prefix = qName;
                 } else {
                     qName = qName + ':' + prefix;
@@ -304,7 +304,7 @@ public class SAXEventWriter extends BaseXMLEventWriter
             String localName = staxAttr.getName().getLocalPart();
             String prefix = staxAttr.getName().getPrefix();
             String qName;
-            if (prefix == null || prefix.length() == 0) {
+            if (prefix == null || prefix.isEmpty()) {
                 qName = localName;
             } else {
                 qName = prefix + ':' + localName;

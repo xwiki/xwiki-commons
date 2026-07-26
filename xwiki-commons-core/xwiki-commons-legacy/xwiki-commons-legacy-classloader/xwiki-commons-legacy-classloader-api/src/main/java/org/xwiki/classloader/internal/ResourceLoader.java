@@ -740,7 +740,7 @@ public class ResourceLoader
         // skip version-info
         do {
             line = reader.readLine();
-        } while (line != null && line.trim().length() > 0);
+        } while (line != null && !line.trim().isEmpty());
 
         URL currentURL;
         List<String> currentList = null;
@@ -757,7 +757,7 @@ public class ResourceLoader
 
             while (true) {
                 line = reader.readLine();
-                if (line == null || line.trim().length() == 0) {
+                if (line == null || line.trim().isEmpty()) {
                     break;
                 }
                 currentList.add(line);

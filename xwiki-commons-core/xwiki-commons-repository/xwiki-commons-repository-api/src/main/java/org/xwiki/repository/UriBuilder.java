@@ -128,7 +128,7 @@ public class UriBuilder implements Cloneable
 
     private void appendPath(StringBuilder stringBuilder, String path)
     {
-        if (this.path.length() == 0 || this.path.charAt(this.path.length() - 1) != '/') {
+        if (this.path.isEmpty() || this.path.charAt(this.path.length() - 1) != '/') {
             if (path.charAt(0) != '/') {
                 stringBuilder.append('/');
             }
@@ -199,7 +199,7 @@ public class UriBuilder implements Cloneable
         }
 
         for (Object value : values) {
-            if (queryBuilder.length() > 0) {
+            if (!queryBuilder.isEmpty()) {
                 queryBuilder.append('&');
             }
             queryBuilder.append(encodedName);
@@ -257,7 +257,7 @@ public class UriBuilder implements Cloneable
     {
         String resolvePath = formatPath(values);
         if (resolvePath != null) {
-            if (stb.length() > 0 && (resolvePath.length() == 0 || resolvePath.charAt(0) != '/')) {
+            if (!stb.isEmpty() && (resolvePath.isEmpty() || resolvePath.charAt(0) != '/')) {
                 stb.append('/');
             }
             stb.append(resolvePath);
@@ -314,7 +314,7 @@ public class UriBuilder implements Cloneable
                     varBuffer.append(c);
                 } else if (c == '}') {
                     // End of variable detected
-                    if (varBuffer.length() == 0) {
+                    if (varBuffer.isEmpty()) {
                         // TODO: log ?
                     } else {
                         Object varValue = values[valueId++];
