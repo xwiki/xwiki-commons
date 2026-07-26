@@ -555,7 +555,7 @@ public class ComponentAnnotationLoader
         String inputLine;
         while ((inputLine = in.readLine()) != null) {
             // Make sure we don't add empty lines
-            if (inputLine.trim().length() > 0) {
+            if (!inputLine.trim().isEmpty()) {
                 try {
                     String[] chunks = inputLine.split(":");
                     ComponentDeclaration componentDeclaration;

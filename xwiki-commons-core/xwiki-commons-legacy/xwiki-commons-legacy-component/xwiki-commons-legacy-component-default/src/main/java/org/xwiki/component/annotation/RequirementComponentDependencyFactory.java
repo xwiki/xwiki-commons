@@ -52,7 +52,7 @@ public class RequirementComponentDependencyFactory extends AbstractComponentDepe
 
             dependency.setRole(role);
 
-            if (requirement.value().trim().length() > 0) {
+            if (!requirement.value().trim().isEmpty()) {
                 dependency.setRoleHint(requirement.value());
             }
 

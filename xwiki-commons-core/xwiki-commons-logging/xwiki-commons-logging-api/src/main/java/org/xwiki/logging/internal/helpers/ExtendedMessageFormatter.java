@@ -77,7 +77,7 @@ public final class ExtendedMessageFormatter
             }
         }
 
-        if (lastElement.length() > 0 || parser.getCurrentMessageElement() instanceof MessageIndex) {
+        if (!lastElement.isEmpty() || parser.getCurrentMessageElement() instanceof MessageIndex) {
             messageList.add(lastElement.toString());
         }
 

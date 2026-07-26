@@ -74,7 +74,7 @@ public class EnumConverter extends AbstractConverter<Enum>
 
         int index = 1;
         for (Object enumValue : enumValues) {
-            if (valueList.length() > 0) {
+            if (!valueList.isEmpty()) {
                 if (++index == enumValues.length) {
                     valueList.append(" or ");
                 } else {

@@ -86,7 +86,7 @@ public class XWikiXMLWriter extends XMLWriter
     @Override
     protected void writeNodeText(Node node) throws IOException
     {
-        if (this.useFormat && node.getText().trim().length() == 0) {
+        if (this.useFormat && node.getText().trim().isEmpty()) {
             // Check if parent node contains non text nodes
             boolean containsNonTextNode = false;
             for (Node objectNode : node.getParent().content()) {

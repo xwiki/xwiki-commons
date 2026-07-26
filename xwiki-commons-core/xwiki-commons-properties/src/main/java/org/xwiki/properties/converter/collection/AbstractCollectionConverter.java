@@ -290,7 +290,7 @@ public abstract class AbstractCollectionConverter<T extends Collection> extends 
 
     protected void convertToString(Object element, StringBuilder sb)
     {
-        if (sb.length() > 0) {
+        if (!sb.isEmpty()) {
             sb.append(getDelimiters());
         }
 

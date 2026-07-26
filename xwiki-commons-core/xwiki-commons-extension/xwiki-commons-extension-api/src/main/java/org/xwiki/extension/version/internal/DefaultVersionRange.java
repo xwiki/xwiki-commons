@@ -161,8 +161,8 @@ public class DefaultVersionRange implements VersionRange
                     .format("Invalid version range [{0}], bounds may not contain additional ','", rawRange));
             }
 
-            this.lowerBound = parsedLowerBound.length() > 0 ? new DefaultVersion(parsedLowerBound) : null;
-            this.upperBound = parsedUpperBound.length() > 0 ? new DefaultVersion(parsedUpperBound) : null;
+            this.lowerBound = !parsedLowerBound.isEmpty() ? new DefaultVersion(parsedLowerBound) : null;
+            this.upperBound = !parsedUpperBound.isEmpty() ? new DefaultVersion(parsedUpperBound) : null;
 
             if (this.upperBound != null && this.lowerBound != null) {
                 if (this.upperBound.compareTo(this.lowerBound) < 0) {

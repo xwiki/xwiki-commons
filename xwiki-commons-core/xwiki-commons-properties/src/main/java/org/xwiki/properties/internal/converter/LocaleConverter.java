@@ -44,7 +44,7 @@ public class LocaleConverter extends AbstractConverter<Locale>
         Locale locale = null;
         if (value != null) {
             String valueString = value.toString();
-            if (valueString.length() == 0) {
+            if (valueString.isEmpty()) {
                 locale = Locale.ROOT;
             } else {
                 locale = LocaleUtils.toLocale(valueString);

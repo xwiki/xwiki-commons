@@ -372,7 +372,7 @@ public class DefaultVersionConstraint implements VersionConstraint
                     builder.append(getRangesInternal().get(0).getValue());
                 } else {
                     for (VersionRange range : getRangesInternal()) {
-                        if (builder.length() > 0) {
+                        if (!builder.isEmpty()) {
                             builder.append(RANGE_SEPARATOR);
                         }
                         builder.append('{');

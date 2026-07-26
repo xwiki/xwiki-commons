@@ -291,7 +291,7 @@ public class LogCaptureExtension implements BeforeAllCallback, AfterAllCallback,
         for (int i = this.assertionPosition + 1; i < this.listAppender.list.size(); i++) {
             // Has the message been asserted already?
             if (!this.assertedMessages.contains(i)) {
-                if (builder.length() > 0) {
+                if (!builder.isEmpty()) {
                     builder.append('\n');
                 }
                 builder.append(getLogEvent(i).getLevel());
@@ -299,7 +299,7 @@ public class LogCaptureExtension implements BeforeAllCallback, AfterAllCallback,
                 builder.append(getMessage(i));
             }
         }
-        if (builder.length() > 0) {
+        if (!builder.isEmpty()) {
             throw new AssertionError(String.format("Following messages must be asserted: [%s]", builder.toString()));
         }
     }

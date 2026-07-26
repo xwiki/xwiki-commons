@@ -213,7 +213,7 @@ public abstract class AbstractCollectionConverter extends AbstractConverter
         Collection collection = (Collection) value;
 
         for (Object element : collection) {
-            if (sb.length() > 0) {
+            if (!sb.isEmpty()) {
                 sb.append(getDelimiters());
             }
 

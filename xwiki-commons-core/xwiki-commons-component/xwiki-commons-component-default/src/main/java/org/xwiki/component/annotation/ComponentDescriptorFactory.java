@@ -121,7 +121,7 @@ public class ComponentDescriptorFactory
                 if (component != null && component.hints().length > 0) {
                     hints = component.hints();
                 } else {
-                    if (component != null && component.value().trim().length() > 0) {
+                    if (component != null && !component.value().trim().isEmpty()) {
                         hints = new String[] {component.value().trim()};
                     } else {
                         hints = new String[] {"default"};
