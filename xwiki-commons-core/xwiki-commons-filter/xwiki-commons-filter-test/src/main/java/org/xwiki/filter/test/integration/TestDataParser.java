@@ -111,11 +111,9 @@ public class TestDataParser
         TestResourceData data = new TestResourceData();
 
         // Resources should always be encoded as UTF-8, to reduce the dependency on the system encoding
-        BufferedReader reader = new BufferedReader(new InputStreamReader(source, UTF8));
-
         // Read each line and look for lines starting with ".". When this happens it means we've found a separate
         // test case.
-        try {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(source, UTF8))) {
             String action = null;
             String typeId = null;
             boolean skip = false;
@@ -168,9 +166,6 @@ public class TestDataParser
             if (!skip) {
                 saveData(data, action, typeId, buffer, configuration);
             }
-
-        } finally {
-            reader.close();
         }
 
         return data;

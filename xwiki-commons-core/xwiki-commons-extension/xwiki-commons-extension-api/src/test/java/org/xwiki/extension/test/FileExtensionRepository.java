@@ -167,19 +167,12 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
                     return name.startsWith(id + '-') && name.endsWith(".xed");
                 }
             })) {
-                FileInputStream fis = null;
-                try {
-                    fis = new FileInputStream(file);
-
+                try (FileInputStream fis = new FileInputStream(file)) {
                     DefaultLocalExtension localExtension =
                         this.extensionSerializer.loadLocalExtensionDescriptor(null, fis);
 
                     if (localExtension.getId().getId().equals(id)) {
                         versions.add(localExtension.getId().getVersion());
-                    }
-                } finally {
-                    if (fis != null) {
-                        fis.close();
                     }
                 }
             }

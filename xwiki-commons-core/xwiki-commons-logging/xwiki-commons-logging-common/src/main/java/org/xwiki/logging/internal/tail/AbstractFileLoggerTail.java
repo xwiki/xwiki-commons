@@ -322,15 +322,7 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
                 boolean open = open();
 
                 try {
-                    this.logStore.seek(indexEntry.position);
-
-                    Long toPosition =
-                        this.index.size() > index + 1 ? this.index.get(index + 1).position : this.logStore.length();
-
-                    BoundedInputStream stream = new BoundedInputStream(new InputStreamDataInput(this.logStore),
-                        toPosition - indexEntry.position);
-
-                    return read(stream);
+                    return readLogEvent(index, indexEntry);
                 } finally {
                     close(open);
                 }
@@ -339,6 +331,19 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
             this.componentLogger.error(FAILED_RETRIEVE_LOG, this.logFile, e);
 
             return null;
+        }
+    }
+
+    private LogEvent readLogEvent(int index, IndexEntry indexEntry) throws IOException
+    {
+        this.logStore.seek(indexEntry.position);
+
+        Long toPosition = this.index.size() > index + 1 ? this.index.get(index + 1).position : this.logStore.length();
+
+        try (BoundedInputStream stream = new BoundedInputStream(new InputStreamDataInput(this.logStore),
+            toPosition - indexEntry.position))
+        {
+            return read(stream);
         }
     }
 

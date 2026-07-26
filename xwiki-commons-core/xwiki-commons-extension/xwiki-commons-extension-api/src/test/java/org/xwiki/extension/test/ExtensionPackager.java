@@ -157,8 +157,7 @@ public class ExtensionPackager
         // Make sure the folder exists
         packageFile.getParentFile().mkdirs();
 
-        FileOutputStream fos = new FileOutputStream(packageFile);
-        try {
+        try (FileOutputStream fos = new FileOutputStream(packageFile)) {
             ZipOutputStream zos;
             if (type.equals("jar")) {
                 Manifest manifest = new Manifest();
@@ -187,8 +186,6 @@ public class ExtensionPackager
 
             // Register the extension
             this.extensionsFiles.put(new ExtensionId(id, version), packageFile);
-        } finally {
-            fos.close();
         }
     }
 
