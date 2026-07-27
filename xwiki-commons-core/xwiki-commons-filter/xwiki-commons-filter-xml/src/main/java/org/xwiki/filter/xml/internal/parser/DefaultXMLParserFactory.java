@@ -82,9 +82,8 @@ public class DefaultXMLParserFactory implements XMLParserFactory
     @Override
     public void parse(Source source, Object filter, XMLConfiguration configuration) throws XMLStreamException
     {
-        if (source instanceof StAXSource) {
+        if (source instanceof StAXSource staxSource) {
             // StAXSource is not supported by standard XMLInputFactory
-            StAXSource staxSource = (StAXSource) source;
             if (staxSource.getXMLEventReader() != null) {
                 XMLStreamUtils.copy(staxSource.getXMLEventReader(), createXMLEventWriter(filter, configuration));
             } else {

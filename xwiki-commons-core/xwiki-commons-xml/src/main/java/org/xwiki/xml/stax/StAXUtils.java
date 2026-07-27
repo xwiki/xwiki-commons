@@ -103,9 +103,8 @@ public final class StAXUtils
     {
         XMLStreamReader xmlStreamReader;
 
-        if (source instanceof StAXSource) {
+        if (source instanceof StAXSource staxSource) {
             // StAXSource is not supported by standard XMLInputFactory
-            StAXSource staxSource = (StAXSource) source;
             if (staxSource.getXMLStreamReader() != null) {
                 xmlStreamReader = staxSource.getXMLStreamReader();
             } else {
@@ -130,9 +129,8 @@ public final class StAXUtils
     {
         XMLEventReader xmlEventReader;
 
-        if (source instanceof StAXSource) {
+        if (source instanceof StAXSource staxSource) {
             // StAXSource is not supported by standard XMLInputFactory
-            StAXSource staxSource = (StAXSource) source;
             if (staxSource.getXMLEventReader() != null) {
                 xmlEventReader = staxSource.getXMLEventReader();
             } else {
@@ -171,13 +169,11 @@ public final class StAXUtils
     {
         XMLStreamWriter xmlStreamWriter;
 
-        if (result instanceof SAXResult) {
+        if (result instanceof SAXResult saxResult) {
             // SAXResult is not supported by the standard XMLOutputFactory
-            xmlStreamWriter =
-                new XMLEventStreamWriter(new SAXEventWriter(((SAXResult) result).getHandler()), XML_EVENT_FACTORY);
-        } else if (result instanceof StAXResult) {
+            xmlStreamWriter = new XMLEventStreamWriter(new SAXEventWriter(saxResult.getHandler()), XML_EVENT_FACTORY);
+        } else if (result instanceof StAXResult staxResult) {
             // XMLEventWriter is not supported as result of XMLOutputFactory#createXMLStreamWriter
-            StAXResult staxResult = (StAXResult) result;
             if (staxResult.getXMLStreamWriter() != null) {
                 xmlStreamWriter = staxResult.getXMLStreamWriter();
             } else {

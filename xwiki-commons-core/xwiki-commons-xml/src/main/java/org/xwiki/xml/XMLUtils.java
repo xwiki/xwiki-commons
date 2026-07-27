@@ -676,8 +676,8 @@ public final class XMLUtils
             serializer.getDomConfig().setParameter("xml-declaration", withXmlDeclaration);
             serializer.setNewLine(NEWLINE);
             String encoding = "UTF-8";
-            if (node instanceof Document) {
-                encoding = ((Document) node).getXmlEncoding();
+            if (node instanceof Document document) {
+                encoding = document.getXmlEncoding();
             } else if (node.getOwnerDocument() != null) {
                 encoding = node.getOwnerDocument().getXmlEncoding();
             }
@@ -747,8 +747,7 @@ public final class XMLUtils
     private static Source createSafeSource(Source originalSource) throws ParserConfigurationException, SAXException
     {
         Source safeSource;
-        if (originalSource instanceof StreamSource) {
-            StreamSource stream = (StreamSource) originalSource;
+        if (originalSource instanceof StreamSource stream) {
             InputSource inputSource;
             if (stream.getReader() == null) {
                 inputSource = new InputSource(stream.getInputStream());
@@ -758,8 +757,7 @@ public final class XMLUtils
             inputSource.setPublicId(stream.getPublicId());
             inputSource.setSystemId(originalSource.getSystemId());
             safeSource = new SAXSource(XML_READER_FACTORY.createXMLReader(), inputSource);
-        } else if (originalSource instanceof SAXSource) {
-            SAXSource originalSAXSource = (SAXSource) originalSource;
+        } else if (originalSource instanceof SAXSource originalSAXSource) {
             safeSource = new SAXSource(XML_READER_FACTORY.createXMLReader(), originalSAXSource.getInputSource());
             safeSource.setSystemId(originalSAXSource.getSystemId());
         } else {

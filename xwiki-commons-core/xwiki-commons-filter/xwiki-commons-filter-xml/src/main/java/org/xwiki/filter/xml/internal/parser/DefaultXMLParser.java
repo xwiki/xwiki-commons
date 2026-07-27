@@ -217,9 +217,9 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         {
             if (this.filterElement != null) {
                 fireEvent(this.filterElement.getBeginMethod(), listener);
-            } else if (listener instanceof UnknownFilter) {
+            } else if (listener instanceof UnknownFilter unknownFilter) {
                 try {
-                    ((UnknownFilter) listener).beginUnknwon(this.name, this.namedParameters);
+                    unknownFilter.beginUnknwon(this.name, this.namedParameters);
                 } catch (Exception e) {
                     throw new SAXException(ERROR_UNKNOWN_EVENT.formatted(this.name, this.namedParameters), e);
                 }
@@ -237,9 +237,9 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         {
             if (this.filterElement != null) {
                 fireEvent(this.filterElement.getEndMethod(), listener);
-            } else if (listener instanceof UnknownFilter) {
+            } else if (listener instanceof UnknownFilter unknownFilter) {
                 try {
-                    ((UnknownFilter) listener).endUnknwon(this.name, this.namedParameters);
+                    unknownFilter.endUnknwon(this.name, this.namedParameters);
                 } catch (Exception e) {
                     throw new SAXException(ERROR_UNKNOWN_EVENT.formatted(this.name, this.namedParameters), e);
                 }
@@ -256,9 +256,9 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         {
             if (this.filterElement != null) {
                 fireEvent(this.filterElement.getOnMethod(), listener);
-            } else if (listener instanceof UnknownFilter) {
+            } else if (listener instanceof UnknownFilter unknownFilter) {
                 try {
-                    ((UnknownFilter) listener).onUnknwon(this.name, this.namedParameters);
+                    unknownFilter.onUnknwon(this.name, this.namedParameters);
                 } catch (Exception e) {
                     throw new SAXException(ERROR_UNKNOWN_EVENT.formatted(this.name, this.namedParameters), e);
                 }
@@ -303,7 +303,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                 eventMethod.invoke(listener, properParameters);
             } catch (InvocationTargetException e) {
                 throw new SAXException("Event [%s] thrown exception".formatted(eventMethod),
-                    e.getCause() instanceof Exception ? (Exception) e.getCause() : e);
+                    e.getCause() instanceof Exception cause ? cause : e);
             } catch (Exception e) {
                 throw new SAXException("Failed to invoke event [%s]".formatted(eventMethod), e);
             }
@@ -414,15 +414,13 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
     {
         Type type = filterParameter.getType();
 
-        if (value instanceof Element) {
+        if (value instanceof Element element) {
             try {
-                block.setParameter(filterParameter.getIndex(), unserializeParameter(type, (Element) value));
+                block.setParameter(filterParameter.getIndex(), unserializeParameter(type, element));
             } catch (ClassNotFoundException e) {
                 throw new SAXException("Failed to parse property", e);
             }
-        } else if (value instanceof String) {
-            String stringValue = (String) value;
-
+        } else if (value instanceof String stringValue) {
             Class<?> typeClass = ReflectionUtils.getTypeClass(type);
 
             if (typeClass == String.class || typeClass == Object.class) {

@@ -73,8 +73,8 @@ public abstract class AbstractXMLOutputFilterStream<P extends XMLOutputPropertie
 
         Result xmlResult;
 
-        if (target instanceof ResultOutputTarget) {
-            xmlResult = ((ResultOutputTarget) target).getResult();
+        if (target instanceof ResultOutputTarget resultOutputTarget) {
+            xmlResult = resultOutputTarget.getResult();
         } else {
             XMLStreamWriter xmlStreamWriter = XMLOutputFilterStreamUtils.createXMLStreamWriter(xmlfactory, properties);
 
@@ -104,8 +104,8 @@ public abstract class AbstractXMLOutputFilterStream<P extends XMLOutputPropertie
     @Override
     public void close() throws IOException
     {
-        if (this.filter instanceof Closeable) {
-            ((Closeable) this.filter).close();
+        if (this.filter instanceof Closeable closeable) {
+            closeable.close();
         }
 
         this.properties.getTarget().close();

@@ -566,8 +566,8 @@ public class LocalEntityResolver implements EntityResolver2
 
             if (invalidPath && !isValidContentType(conType)) {
                 // Disconnect
-                if (con instanceof HttpURLConnection) {
-                    ((HttpURLConnection) con).disconnect();
+                if (con instanceof HttpURLConnection httpCon) {
+                    httpCon.disconnect();
                 }
                 String msg = enturl.toExternalForm();
                 if (conType != null) {

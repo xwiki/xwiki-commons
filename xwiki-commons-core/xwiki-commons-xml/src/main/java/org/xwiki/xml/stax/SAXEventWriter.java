@@ -77,11 +77,11 @@ public class SAXEventWriter extends BaseXMLEventWriter
         this.filter = new XMLFilterImplEx();
         this.filter.setContentHandler(handler);
 
-        if (handler instanceof LexicalHandler) {
-            this.filter.setLexicalHandler((LexicalHandler) handler);
+        if (handler instanceof LexicalHandler lexicalHandler) {
+            this.filter.setLexicalHandler(lexicalHandler);
         }
-        if (handler instanceof ErrorHandler) {
-            this.filter.setErrorHandler((ErrorHandler) handler);
+        if (handler instanceof ErrorHandler errorHandler) {
+            this.filter.setErrorHandler(errorHandler);
         }
     }
 
