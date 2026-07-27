@@ -40,19 +40,19 @@ class LogEventTest
     {
         LogEvent logEvent = new LogEvent(null, LogLevel.ERROR, "", null, null);
 
-        assertEquals(logEvent.getMessageElements(), Arrays.asList(""));
+        assertEquals(Arrays.asList(""), logEvent.getMessageElements());
 
         logEvent = new LogEvent(null, LogLevel.ERROR, "", ArrayUtils.EMPTY_OBJECT_ARRAY, null);
 
-        assertEquals(logEvent.getMessageElements(), Arrays.asList(""));
+        assertEquals(Arrays.asList(""), logEvent.getMessageElements());
 
         logEvent = new LogEvent(null, LogLevel.ERROR, "message", ArrayUtils.EMPTY_OBJECT_ARRAY, null);
 
-        assertEquals(logEvent.getMessageElements(), Arrays.asList("message"));
+        assertEquals(Arrays.asList("message"), logEvent.getMessageElements());
 
         logEvent = new LogEvent(null, LogLevel.ERROR, "message {}", new Object[]{ "" }, null);
 
-        assertEquals(logEvent.getMessageElements(), Arrays.asList("message ", ""));
+        assertEquals(Arrays.asList("message ", ""), logEvent.getMessageElements());
     }
 
     @Test
@@ -64,6 +64,6 @@ class LogEventTest
 
         logEvent.log(queue);
 
-        assertEquals(logEvent.getMessage(), "message");
+        assertEquals("message", logEvent.getMessage());
     }
 }

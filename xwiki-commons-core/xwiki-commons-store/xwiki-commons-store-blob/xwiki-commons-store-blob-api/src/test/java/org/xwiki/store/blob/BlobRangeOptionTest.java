@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link BlobRangeOption}.
@@ -98,8 +98,8 @@ class BlobRangeOptionTest
         BlobRangeOption second = BlobRangeOption.between(5, 9);
         BlobRangeOption different = BlobRangeOption.from(5);
 
-        assertTrue(first.equals(second));
+        assertEquals(first, second);
         assertEquals(first.hashCode(), second.hashCode());
-        assertFalse(first.equals(different));
+        assertNotEquals(first, different);
     }
 }

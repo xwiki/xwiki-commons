@@ -53,8 +53,8 @@ class ActionExecutionEventTest
         assertEquals(event, event);
         assertEquals(event, new ActionExecutionEvent("action"));
 
-        assertFalse(event.equals(new ActionExecutionEvent("action2")));
-        assertFalse(event.equals(AllEvent.ALLEVENT));
+        assertNotEquals(event, new ActionExecutionEvent("action2"));
+        assertNotEquals(event, AllEvent.ALLEVENT);
 
         // hashcode
 

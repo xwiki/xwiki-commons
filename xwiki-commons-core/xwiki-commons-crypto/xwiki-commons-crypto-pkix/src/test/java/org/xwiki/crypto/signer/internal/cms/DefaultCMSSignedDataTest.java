@@ -253,7 +253,7 @@ class DefaultCMSSignedDataTest extends AbstractPKIXTest
                 .addSignature(result.getSignatures().iterator().next())
         );
 
-        result = this.verifier.verify(signature2, text, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
+        this.verifier.verify(signature2, text, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
 
         assertArrayEquals(signature, signature2);
     }

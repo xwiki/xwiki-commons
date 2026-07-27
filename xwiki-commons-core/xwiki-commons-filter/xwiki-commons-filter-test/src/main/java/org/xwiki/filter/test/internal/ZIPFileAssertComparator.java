@@ -66,9 +66,7 @@ public class ZIPFileAssertComparator implements FileAssertComparator
     {
         Map<String, byte[]> zipContent = new HashMap<>();
 
-        ZipFile zipFile = new ZipFile(filename);
-
-        try {
+        try (ZipFile zipFile = new ZipFile(filename)) {
             Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
             while (entries.hasMoreElements()) {
                 ZipArchiveEntry entry = entries.nextElement();
@@ -80,8 +78,6 @@ public class ZIPFileAssertComparator implements FileAssertComparator
                     inputStream.close();
                 }
             }
-        } finally {
-            zipFile.close();
         }
 
         return zipContent;

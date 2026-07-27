@@ -237,7 +237,6 @@ public abstract class AbstractSymmetricCipherFactoryTest
         if (forEncryption || tmp != null) {
             assertNotNull(tmp);
             System.arraycopy(tmp, 0, result, len, tmp.length);
-            len += tmp.length;
         }
 
         return result;

@@ -91,8 +91,7 @@ public abstract class AbstractFilterDescriptorManagerTest
 
         assertNotNull(filterElement);
 
-        FilterElementParameterDescriptor<?> parameter0 = filterElement.getParameters()[0];
-        parameter0 = filterElement.getParameter("param0");
+        FilterElementParameterDescriptor<?> parameter0 = filterElement.getParameter("param0");
 
         assertEquals("param0", parameter0.getName());
         assertEquals(0, parameter0.getIndex());
@@ -106,8 +105,7 @@ public abstract class AbstractFilterDescriptorManagerTest
 
         assertNotNull(filterElement);
 
-        FilterElementParameterDescriptor<?> parameter0 = filterElement.getParameters()[0];
-        parameter0 = filterElement.getParameter("namedParam");
+        FilterElementParameterDescriptor<?> parameter0 = filterElement.getParameter("namedParam");
 
         assertNotNull(parameter0);
 
@@ -124,8 +122,7 @@ public abstract class AbstractFilterDescriptorManagerTest
 
         assertNotNull(filterElement);
 
-        FilterElementParameterDescriptor<?> parameter0 = filterElement.getParameters()[0];
-        parameter0 = filterElement.getParameter("namedParam");
+        FilterElementParameterDescriptor<?> parameter0 = filterElement.getParameter("namedParam");
 
         assertNotNull(parameter0);
 

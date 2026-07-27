@@ -99,7 +99,7 @@ public class Utils
         logger.error(MarkerFactory.getMarker("marker" + index), "msg{}", index++);
         logger.error(MarkerFactory.getMarker("marker" + index), "{}{}", "msg", index++);
         logger.error(MarkerFactory.getMarker("marker" + index), "{}{}{}{}", "m", "s", "g", index++);
-        logger.error(MarkerFactory.getMarker("marker" + index), "msg" + index, new Exception("msg" + index++));
+        logger.error(MarkerFactory.getMarker("marker" + index), "msg" + index, new Exception("msg" + index));
         logger.error(LogEvent.MARKER_END, "ERROR");
     }
 
@@ -111,7 +111,7 @@ public class Utils
         index = validateLogger(index, LogLevel.DEBUG, logs);
         index = validateLogger(index, LogLevel.INFO, logs);
         index = validateLogger(index, LogLevel.WARN, logs);
-        index = validateLogger(index, LogLevel.ERROR, logs);
+        validateLogger(index, LogLevel.ERROR, logs);
     }
 
     private static int validateLogger(int index, LogLevel level, Iterator<LogEvent> logs)

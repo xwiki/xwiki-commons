@@ -26,6 +26,7 @@ import org.slf4j.MarkerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -108,8 +109,8 @@ class TranslationMarkerTest
         Marker otherMarker = MarkerFactory.getMarker("name");
 
         assertEquals(equalsTMarker.hashCode(), this.marker.hashCode());
-        assertFalse(this.marker.hashCode() == otherTMarker.hashCode());
-        assertFalse(this.marker.hashCode() == otherMarker.hashCode());
+        assertNotEquals(this.marker.hashCode(), otherTMarker.hashCode());
+        assertNotEquals(this.marker.hashCode(), otherMarker.hashCode());
     }
 
     @Test
@@ -120,7 +121,7 @@ class TranslationMarkerTest
         Marker otherMarker = MarkerFactory.getMarker("name");
 
         assertEquals(equalsTMarker, this.marker);
-        assertFalse(this.marker.equals(otherTMarker));
-        assertFalse(this.marker.equals(otherMarker));
+        assertNotEquals(this.marker, otherTMarker);
+        assertNotEquals(this.marker, otherMarker);
     }
 }

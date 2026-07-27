@@ -749,8 +749,8 @@ class FileSystemBlobStoreTest extends XWikiTempDirExtension
         assertNotEquals(store1.hashCode(), store3.hashCode());
 
         // Not equals to null or different type
-        assertNotEquals(store1, null);
-        assertNotEquals(store1, "string");
+        assertNotEquals(null, store1);
+        assertNotEquals("string", store1);
 
         // Self equality
         assertEquals(store1, store1);
