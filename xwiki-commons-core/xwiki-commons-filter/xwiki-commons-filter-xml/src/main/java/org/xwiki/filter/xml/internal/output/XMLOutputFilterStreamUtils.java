@@ -78,14 +78,14 @@ public final class XMLOutputFilterStreamUtils
 
         OutputTarget target = properties.getTarget();
 
-        if (target instanceof WriterOutputTarget) {
+        if (target instanceof WriterOutputTarget writerOutputTarget) {
             xmlStreamWriter =
-                getXMLOutputFactory(factory).createXMLStreamWriter(((WriterOutputTarget) target).getWriter());
-        } else if (target instanceof OutputStreamOutputTarget) {
+                getXMLOutputFactory(factory).createXMLStreamWriter(writerOutputTarget.getWriter());
+        } else if (target instanceof OutputStreamOutputTarget outputStreamOutputTarget) {
             xmlStreamWriter = getXMLOutputFactory(factory)
-                .createXMLStreamWriter(((OutputStreamOutputTarget) target).getOutputStream(), properties.getEncoding());
-        } else if (target instanceof ResultOutputTarget) {
-            xmlStreamWriter = StAXUtils.getXMLStreamWriter(((ResultOutputTarget) target).getResult());
+                .createXMLStreamWriter(outputStreamOutputTarget.getOutputStream(), properties.getEncoding());
+        } else if (target instanceof ResultOutputTarget resultOutputTarget) {
+            xmlStreamWriter = StAXUtils.getXMLStreamWriter(resultOutputTarget.getResult());
         } else {
             throw new FilterException("Unknown target type [" + target.getClass() + "]");
         }

@@ -79,13 +79,13 @@ public final class XMLInputFilterStreamUtils
 
         InputSource source = properties.getSource();
 
-        if (source instanceof ReaderInputSource) {
-            xmlEventReader = getXMLInputFactory(factory).createXMLEventReader(((ReaderInputSource) source).getReader());
-        } else if (source instanceof InputStreamInputSource) {
+        if (source instanceof ReaderInputSource readerInputSource) {
+            xmlEventReader = getXMLInputFactory(factory).createXMLEventReader(readerInputSource.getReader());
+        } else if (source instanceof InputStreamInputSource inputStreamInputSource) {
             xmlEventReader =
-                getXMLInputFactory(factory).createXMLEventReader(((InputStreamInputSource) source).getInputStream());
-        } else if (source instanceof SourceInputSource) {
-            xmlEventReader = StAXUtils.getXMLEventReader(((SourceInputSource) source).getSource());
+                getXMLInputFactory(factory).createXMLEventReader(inputStreamInputSource.getInputStream());
+        } else if (source instanceof SourceInputSource sourceInputSource) {
+            xmlEventReader = StAXUtils.getXMLEventReader(sourceInputSource.getSource());
         } else {
             throw new FilterException(UNKNOWN_SOURCE + source.getClass() + "]");
         }
@@ -107,13 +107,13 @@ public final class XMLInputFilterStreamUtils
 
         InputSource source = properties.getSource();
 
-        if (source instanceof ReaderInputSource) {
-            xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(((ReaderInputSource) source).getReader());
-        } else if (source instanceof InputStreamInputSource) {
+        if (source instanceof ReaderInputSource readerInputSource) {
+            xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(readerInputSource.getReader());
+        } else if (source instanceof InputStreamInputSource inputStreamInputSource) {
             xmlStreamReader =
-                XML_INPUT_FACTORY.createXMLStreamReader(((InputStreamInputSource) source).getInputStream());
-        } else if (source instanceof SourceInputSource) {
-            xmlStreamReader = StAXUtils.getXMLStreamReader(((SourceInputSource) source).getSource());
+                XML_INPUT_FACTORY.createXMLStreamReader(inputStreamInputSource.getInputStream());
+        } else if (source instanceof SourceInputSource sourceInputSource) {
+            xmlStreamReader = StAXUtils.getXMLStreamReader(sourceInputSource.getSource());
         } else {
             throw new FilterException(UNKNOWN_SOURCE + source.getClass() + "]");
         }

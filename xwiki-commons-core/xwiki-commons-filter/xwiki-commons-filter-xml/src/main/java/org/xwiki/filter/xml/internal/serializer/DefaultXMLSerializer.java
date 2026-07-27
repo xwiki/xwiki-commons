@@ -167,10 +167,10 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
     {
         Class<?> typeClass = ReflectionUtils.getTypeClass(filterParameter.getType());
 
-        if (parameterValue instanceof String) {
+        if (parameterValue instanceof String stringValue) {
             // Multiline attributes are really not easy to read
-            if (!((String) parameterValue).contains("\n")) {
-                this.xmlStreamWriter.writeAttribute(attributeName, (String) parameterValue);
+            if (!stringValue.contains("\n")) {
+                this.xmlStreamWriter.writeAttribute(attributeName, stringValue);
 
                 parameters.set(filterParameter.getIndex(), null);
             }

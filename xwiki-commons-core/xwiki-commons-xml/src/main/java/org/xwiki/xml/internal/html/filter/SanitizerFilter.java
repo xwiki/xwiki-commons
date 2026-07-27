@@ -152,9 +152,7 @@ public class SanitizerFilter extends AbstractHTMLFilter
         while (node != null) {
             boolean skipChildren = false;
 
-            if (node.getNodeType() == Node.ELEMENT_NODE && node instanceof Element) {
-                Element element = (Element) node;
-
+            if (node.getNodeType() == Node.ELEMENT_NODE && node instanceof Element element) {
                 currentNamespace = checkNamespace(element, parentNamespace.peek());
                 skipChildren = traversal.test(element, currentNamespace);
             } else if (node.getNodeType() == Node.COMMENT_NODE) {

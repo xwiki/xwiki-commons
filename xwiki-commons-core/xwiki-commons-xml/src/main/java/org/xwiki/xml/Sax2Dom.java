@@ -103,8 +103,8 @@ public class Sax2Dom implements ContentHandler, LexicalHandler
      */
     public Sax2Dom(Node root) throws ParserConfigurationException
     {
-        if (root instanceof Document) {
-            this.document = (Document) root;
+        if (root instanceof Document rootDocument) {
+            this.document = rootDocument;
             this.rootNode = root;
         } else if (root != null) {
             this.document = root.getOwnerDocument();
@@ -131,10 +131,10 @@ public class Sax2Dom implements ContentHandler, LexicalHandler
     {
         Element rootElement;
 
-        if (this.rootNode instanceof Element) {
-            rootElement = (Element) this.rootNode;
-        } else if (this.rootNode instanceof Document) {
-            rootElement = ((Document) this.rootNode).getDocumentElement();
+        if (this.rootNode instanceof Element element) {
+            rootElement = element;
+        } else if (this.rootNode instanceof Document rootDocument) {
+            rootElement = rootDocument.getDocumentElement();
         } else {
             rootElement = null;
         }
