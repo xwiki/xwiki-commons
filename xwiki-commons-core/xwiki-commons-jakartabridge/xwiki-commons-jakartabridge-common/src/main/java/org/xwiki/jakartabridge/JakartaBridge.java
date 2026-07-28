@@ -47,7 +47,6 @@ public final class JakartaBridge
     {
     }
 
-    //////////////////////////////////////////////////
     // Wrapped
 
     /**
@@ -98,7 +97,6 @@ public final class JakartaBridge
         return jakarta;
     }
 
-    //////////////////////////////////////////////////
     // Multi
 
     /**

@@ -109,8 +109,6 @@ class DefaultObservationManagerTest
         return listener;
     }
 
-    ///////////
-
     @Test
     void notifyWhenMatching()
     {

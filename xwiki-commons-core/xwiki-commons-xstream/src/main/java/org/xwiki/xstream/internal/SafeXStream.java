@@ -89,7 +89,6 @@ public class SafeXStream extends XStream implements Initializable
         return this.utils;
     }
 
-    ////////////////////////////////////////////////////////////////////
     // FIXME: Workaround for XStream security rules warning
 
     /*@Override
