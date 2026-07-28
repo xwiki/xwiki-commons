@@ -95,8 +95,14 @@ class S3BlobStoreFactoryTest
     @Named("context")
     private Provider<ComponentManager> componentManagerProvider;
 
+    // Scope the capture to our own logger even though we only capture INFO and above: without a logger name,
+    // LogCaptureExtension resets the whole Logback context and re-reads logback-test.xml around every test method.
+    // During that window the root logger is momentarily at Logback's default DEBUG level, and DEBUG statements from
+    // threads we don't control (such as the AWS SDK's "idle-connection-reaper" thread, which may still be alive from
+    // another test class in the same JVM) can slip through to the console and make an unrelated test fail on
+    // CaptureConsoleExtension.
     @RegisterExtension
-    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO);
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO, "org.xwiki.store.blob");
 
     private S3Client s3Client;
 
