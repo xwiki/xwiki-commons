@@ -456,7 +456,7 @@ public class HTMLDiffMarker extends AbstractXMLDiffMarker
         XPath xpath = XPathFactory.newInstance().newXPath();
         String expression = "//*[@" + DIFF_BLOCK_ATTRIBUTE + " = '" + DELETED + "']";
         try {
-            XMLDiffUtils.asList((NodeList) xpath.compile(expression).evaluate(node, XPathConstants.NODESET)).stream()
+            XMLDiffUtils.asList((NodeList) xpath.compile(expression).evaluate(node, XPathConstants.NODESET))
                 .forEach(this::insertRightBlock);
         } catch (XPathExpressionException e) {
             // This shouldn't happen.

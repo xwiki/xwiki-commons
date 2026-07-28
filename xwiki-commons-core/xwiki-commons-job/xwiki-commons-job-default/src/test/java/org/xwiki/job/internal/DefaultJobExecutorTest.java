@@ -143,7 +143,6 @@ class DefaultJobExecutorTest
         this.executor.execute(jobAB);
         this.executor.execute(job1);
 
-        ////////////////////
         // A and A/B
 
         assertSame(State.WAITING, jobA.getStatus().getState());
@@ -163,7 +162,6 @@ class DefaultJobExecutorTest
         assertSame(State.FINISHED, jobA.getStatus().getState());
         assertSame(State.FINISHED, jobAB.getStatus().getState());
 
-        ////////////////////
         // 1/2 and 1
 
         assertSame(State.WAITING, job12.getStatus().getState());
@@ -345,7 +343,6 @@ class DefaultJobExecutorTest
         jobAB2.lock();
         jobAB3.lock();
 
-        ////////////////////
         // A/B and A
 
         this.executor.execute(jobAB1);

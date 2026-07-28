@@ -71,12 +71,10 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
             (EntryEvictionConfiguration) getCacheConfiguration().get(EntryEvictionConfiguration.CONFIGURATIONID);
 
         if (eec != null && eec.getAlgorithm() == EntryEvictionConfiguration.Algorithm.LRU) {
-            ////////////////////
             // Eviction
             // Max entries
             customizeEvictionMaxEntries(builder, eec);
 
-            ////////////////////
             // Expiration
             // Wakeup interval
             customizeExpirationWakeUpInterval(builder, eec);

@@ -115,7 +115,6 @@ public class JarExtensionHandler extends AbstractExtensionHandler
             return true;
         }
 
-        ///////////////////////////////
         // But it's not the case for:
 
         // ** webjar.org releases (i.e. most of the webjars). We assume "org.webjars:*" id means it's a webjar

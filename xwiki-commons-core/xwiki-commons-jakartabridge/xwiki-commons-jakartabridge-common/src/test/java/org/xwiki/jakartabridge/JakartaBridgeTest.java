@@ -78,16 +78,12 @@ class JakartaBridgeTest
         assertNull(JakartaBridge.toJavax(null, null));
         assertNull(JakartaBridge.toJakarta(null, null));
 
-        ///
-
         TestJakarta jakarta = new DefaultTestJakarta();
 
         TestJavax javax = JakartaBridge.toJavax(jakarta, TestJavaxToJakarta::new);
 
         assertNotNull(javax);
         assertSame(jakarta, JakartaBridge.toJakarta(javax, TestJakartaToJavax::new));
-
-        ///
 
         javax = new DefaultTestJavax();
 

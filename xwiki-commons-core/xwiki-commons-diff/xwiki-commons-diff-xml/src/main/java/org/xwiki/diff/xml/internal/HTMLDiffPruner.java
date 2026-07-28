@@ -63,14 +63,14 @@ public class HTMLDiffPruner implements XMLDiffFilter
     public void after(Document document)
     {
         // Mark parents and siblings we want to keep by going upwards from the change blocks.
-        getElementsWithAttribute(document, HTMLDiffMarker.DIFF_BLOCK_ATTRIBUTE).stream()
+        getElementsWithAttribute(document, HTMLDiffMarker.DIFF_BLOCK_ATTRIBUTE)
             .forEach(this::markContextElements);
 
         // Iterate the tree top -> down and hide nodes we don't want to keep.
         hideNodesWeDontWantToKeep(document);
 
         // Remove the marker from the context nodes.
-        getElementsWithAttribute(document, DIFF_CONTEXT_ATTRIBUTE).stream().forEach(this::unmarkContextElement);
+        getElementsWithAttribute(document, DIFF_CONTEXT_ATTRIBUTE).forEach(this::unmarkContextElement);
     }
 
     private void markContextElements(Node diffBlock)
@@ -78,7 +78,7 @@ public class HTMLDiffPruner implements XMLDiffFilter
         Node node = diffBlock;
         while (node != null && node.getNodeType() == Node.ELEMENT_NODE) {
             markContextElement(node);
-            getContextSiblings(node).stream().forEach(this::markContextElement);
+            getContextSiblings(node).forEach(this::markContextElement);
             node = node.getParentNode();
         }
     }
@@ -109,7 +109,7 @@ public class HTMLDiffPruner implements XMLDiffFilter
         } else if (node.getNodeType() == Node.ELEMENT_NODE) {
             Element element = (Element) node;
             if (element.hasAttribute(DIFF_CONTEXT_ATTRIBUTE)) {
-                XMLDiffUtils.asList(element.getChildNodes()).stream().forEach(this::hideNodesWeDontWantToKeep);
+                XMLDiffUtils.asList(element.getChildNodes()).forEach(this::hideNodesWeDontWantToKeep);
             } else if (!element.hasAttribute(HTMLDiffMarker.DIFF_BLOCK_ATTRIBUTE)) {
                 element.setAttribute(DIFF_HIDDEN_ATTRIBUTE, String.valueOf(true));
             }

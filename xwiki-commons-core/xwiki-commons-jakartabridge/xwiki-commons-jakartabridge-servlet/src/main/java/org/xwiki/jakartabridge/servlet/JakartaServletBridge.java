@@ -133,7 +133,6 @@ public final class JakartaServletBridge
     {
     }
 
-    //////////////////////////////////////////////////
     // Wrapped
 
     /**
@@ -747,7 +746,6 @@ public final class JakartaServletBridge
         return JakartaBridge.toJavax(javax, JakartaToJavaxCookie::new);
     }
 
-    //////////////////////////////////////////////////
     // Converted
 
     /**
@@ -884,7 +882,6 @@ public final class JakartaServletBridge
             javax.getFileSizeThreshold());
     }
 
-    //////////////////////////////////////////////////
     // Multi
 
     /**
@@ -989,7 +986,6 @@ public final class JakartaServletBridge
             .collect(Collectors.toCollection(() -> EnumSet.noneOf(jakarta.servlet.DispatcherType.class)));
     }
 
-    //////////////////////////////////////////////////
     // Unsupported
 
     /**

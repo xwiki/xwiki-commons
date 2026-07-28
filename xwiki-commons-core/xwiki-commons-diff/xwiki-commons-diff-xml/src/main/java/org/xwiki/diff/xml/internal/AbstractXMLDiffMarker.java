@@ -189,11 +189,11 @@ public abstract class AbstractXMLDiffMarker implements XMLDiffMarker
         }
 
         // Mark the change blocks.
-        diffBlocks.stream().forEach(node -> this.markDiffBlock((Element) node));
+        diffBlocks.forEach(node -> this.markDiffBlock((Element) node));
 
         // Take into account only the outer most change blocks.
         Set<Node> nestedDiffBlocks = diffBlocks.stream().filter(this::hasDiffBlockParent).collect(Collectors.toSet());
-        nestedDiffBlocks.stream().forEach(node -> this.unmarkDiffBlock((Element) node));
+        nestedDiffBlocks.forEach(node -> this.unmarkDiffBlock((Element) node));
         diffBlocks.removeAll(nestedDiffBlocks);
 
         return acceptedPatches;
@@ -481,7 +481,7 @@ public abstract class AbstractXMLDiffMarker implements XMLDiffMarker
         XPath xpath = XPathFactory.newInstance().newXPath();
         String expression = "//" + getInlineMarkerElementName() + "[@" + TEXT_WRAPPER + "]";
         try {
-            XMLDiffUtils.asList((NodeList) xpath.compile(expression).evaluate(node, XPathConstants.NODESET)).stream()
+            XMLDiffUtils.asList((NodeList) xpath.compile(expression).evaluate(node, XPathConstants.NODESET))
                 .forEach(this::replaceWithChildren);
         } catch (XPathExpressionException e) {
             // This shouldn't happen but in case it does the text wrappers shouldn't case any problems (they just make
