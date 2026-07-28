@@ -24,7 +24,7 @@ import org.xwiki.observation.event.filter.AlwaysMatchingEventFilter;
 import org.xwiki.observation.event.filter.FixedNameEventFilter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -43,10 +43,16 @@ class AlwaysMatchingEventFilterTest
     }
 
     @Test
+    // This method verifies the equals() contract itself, so the assertions deliberately call equals()
+    // explicitly: the boolean form is what makes visible which object is the receiver and which argument
+    // it gets, including null and an instance of a foreign class. Using assertEquals()/assertNotEquals()
+    // would move that into JUnit's internals and would invite a later SonarQube S3415 "swap these
+    // arguments" change that silently stops testing the contract.
+    @SuppressWarnings("java:S5785")
     void testEquals()
     {
-        assertNotEquals(null, this.filter);
-        assertNotEquals(this.filter, new FixedNameEventFilter("filter"));
+        assertFalse(this.filter.equals(null));
+        assertFalse(this.filter.equals(new FixedNameEventFilter("filter")));
 
         assertEquals(this.filter, this.filter);
     }

@@ -26,7 +26,6 @@ import org.slf4j.MarkerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -102,6 +101,12 @@ class TranslationMarkerTest
     }
 
     @Test
+    // This method verifies the hashCode() contract itself, so the assertions deliberately compare the
+    // hash codes with ==: the boolean form is what makes visible which object is the receiver and which
+    // argument it gets. Using assertEquals()/assertNotEquals() would move that into JUnit's internals and
+    // would invite a later SonarQube S3415 "swap these arguments" change that silently stops testing the
+    // contract.
+    @SuppressWarnings("java:S5785")
     void testHashCode()
     {
         Marker equalsTMarker = new TranslationMarker("translation.key");
@@ -109,11 +114,17 @@ class TranslationMarkerTest
         Marker otherMarker = MarkerFactory.getMarker("name");
 
         assertEquals(equalsTMarker.hashCode(), this.marker.hashCode());
-        assertNotEquals(this.marker.hashCode(), otherTMarker.hashCode());
-        assertNotEquals(this.marker.hashCode(), otherMarker.hashCode());
+        assertFalse(this.marker.hashCode() == otherTMarker.hashCode());
+        assertFalse(this.marker.hashCode() == otherMarker.hashCode());
     }
 
     @Test
+    // This method verifies the equals() contract itself, so the assertions deliberately call equals()
+    // explicitly: the boolean form is what makes visible which object is the receiver and which argument
+    // it gets. Using assertEquals()/assertNotEquals() would move that into JUnit's internals and would
+    // invite a later SonarQube S3415 "swap these arguments" change that silently stops testing the
+    // contract.
+    @SuppressWarnings("java:S5785")
     void testEquals()
     {
         Marker equalsTMarker = new TranslationMarker("translation.key");
@@ -121,7 +132,7 @@ class TranslationMarkerTest
         Marker otherMarker = MarkerFactory.getMarker("name");
 
         assertEquals(equalsTMarker, this.marker);
-        assertNotEquals(this.marker, otherTMarker);
-        assertNotEquals(this.marker, otherMarker);
+        assertFalse(this.marker.equals(otherTMarker));
+        assertFalse(this.marker.equals(otherMarker));
     }
 }

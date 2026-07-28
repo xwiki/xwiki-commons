@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link BlobRangeOption}.
@@ -92,14 +92,20 @@ class BlobRangeOptionTest
     }
 
     @Test
+    // This method verifies the equals() contract itself, so the assertions deliberately call equals()
+    // explicitly: the boolean form is what makes visible which object is the receiver and which argument
+    // it gets. Using assertEquals()/assertNotEquals() would move that into JUnit's internals and would
+    // invite a later SonarQube S3415 "swap these arguments" change that silently stops testing the
+    // contract.
+    @SuppressWarnings("java:S5785")
     void equalsAndHashCode()
     {
         BlobRangeOption first = BlobRangeOption.withLength(5, 5);
         BlobRangeOption second = BlobRangeOption.between(5, 9);
         BlobRangeOption different = BlobRangeOption.from(5);
 
-        assertEquals(first, second);
+        assertTrue(first.equals(second));
         assertEquals(first.hashCode(), second.hashCode());
-        assertNotEquals(first, different);
+        assertFalse(first.equals(different));
     }
 }

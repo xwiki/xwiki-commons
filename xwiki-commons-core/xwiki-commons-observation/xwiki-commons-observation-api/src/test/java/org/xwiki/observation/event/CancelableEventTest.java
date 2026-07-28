@@ -58,6 +58,12 @@ class CancelableEventTest
     }
 
     @Test
+    // This method verifies the equals() contract itself, so the assertions deliberately call equals()
+    // explicitly: the boolean form is what makes visible which object is the receiver and which argument
+    // it gets, including an instance of a foreign class. Using assertEquals()/assertNotEquals() would move
+    // that into JUnit's internals and would invite a later SonarQube S3415 "swap these arguments" change
+    // that silently stops testing the contract.
+    @SuppressWarnings("java:S5785")
     void matchesEqualsHashcodeWhenDefaultConstructor()
     {
         TestCancelableEvent event = new TestCancelableEvent();
@@ -75,20 +81,26 @@ class CancelableEventTest
         assertEquals(event, event);
         assertEquals(event, new TestCancelableEvent());
 
-        assertNotEquals(event, new TestCancelableEvent("name"));
-        assertNotEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name")));
-        assertNotEquals(event, new TestCancelableEvent2());
+        assertFalse(event.equals(new TestCancelableEvent("name")));
+        assertFalse(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name"))));
+        assertFalse(event.equals(new TestCancelableEvent2()));
 
         // hashcode
 
         assertEquals(event.hashCode(), new TestCancelableEvent().hashCode());
-        assertNotEquals(event, new TestCancelableEvent2());
+        assertFalse(event.equals(new TestCancelableEvent2()));
 
         assertNotEquals(event.hashCode(), new TestCancelableEvent("name").hashCode());
         assertNotEquals(event.hashCode(), new TestCancelableEvent(new FixedNameEventFilter("name")).hashCode());
     }
 
     @Test
+    // This method verifies the equals() contract itself, so the assertions deliberately call equals()
+    // explicitly: the boolean form is what makes visible which object is the receiver and which argument
+    // it gets, including an instance of a foreign class. Using assertEquals()/assertNotEquals() would move
+    // that into JUnit's internals and would invite a later SonarQube S3415 "swap these arguments" change
+    // that silently stops testing the contract.
+    @SuppressWarnings("java:S5785")
     void matchesEqualsHashcodeWhenNull()
     {
         TestCancelableEvent event = new TestCancelableEvent((String) null);
@@ -106,20 +118,26 @@ class CancelableEventTest
         assertEquals(event, event);
         assertEquals(event, new TestCancelableEvent());
 
-        assertNotEquals(event, new TestCancelableEvent("name"));
-        assertNotEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name")));
-        assertNotEquals(event, new TestCancelableEvent2());
+        assertFalse(event.equals(new TestCancelableEvent("name")));
+        assertFalse(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name"))));
+        assertFalse(event.equals(new TestCancelableEvent2()));
 
         // hashcode
 
         assertEquals(event.hashCode(), new TestCancelableEvent().hashCode());
-        assertNotEquals(event, new TestCancelableEvent2());
+        assertFalse(event.equals(new TestCancelableEvent2()));
 
         assertNotEquals(event.hashCode(), new TestCancelableEvent("name").hashCode());
         assertNotEquals(event.hashCode(), new TestCancelableEvent(new FixedNameEventFilter("name")).hashCode());
     }
 
     @Test
+    // This method verifies the equals() contract itself, so the assertions deliberately call equals()
+    // explicitly: the boolean form is what makes visible which object is the receiver and which argument
+    // it gets, including null and an instance of a foreign class. Using assertEquals()/assertNotEquals()
+    // would move that into JUnit's internals and would invite a later SonarQube S3415 "swap these
+    // arguments" change that silently stops testing the contract.
+    @SuppressWarnings("java:S5785")
     void matchesEqualsHashcodeWhenFixedNameEvenFilterConstructor()
     {
         TestCancelableEvent event = new TestCancelableEvent(new FixedNameEventFilter("name"));
@@ -140,10 +158,10 @@ class CancelableEventTest
         assertEquals(event, new TestCancelableEvent("name"));
         assertEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name")));
 
-        assertNotEquals(null, event);
-        assertNotEquals(event, new TestCancelableEvent("name2"));
-        assertNotEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name2")));
-        assertNotEquals(event, new TestCancelableEvent2());
+        assertFalse(event.equals(null));
+        assertFalse(event.equals(new TestCancelableEvent("name2")));
+        assertFalse(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name2"))));
+        assertFalse(event.equals(new TestCancelableEvent2()));
 
         // hashcode
 
@@ -155,6 +173,12 @@ class CancelableEventTest
     }
 
     @Test
+    // This method verifies the equals() contract itself, so the assertions deliberately call equals()
+    // explicitly: the boolean form is what makes visible which object is the receiver and which argument
+    // it gets, including null and an instance of a foreign class. Using assertEquals()/assertNotEquals()
+    // would move that into JUnit's internals and would invite a later SonarQube S3415 "swap these
+    // arguments" change that silently stops testing the contract.
+    @SuppressWarnings("java:S5785")
     void matchesEqualsHashcodeWhenStringConstructor()
     {
         TestCancelableEvent event = new TestCancelableEvent("name");
@@ -175,10 +199,10 @@ class CancelableEventTest
         assertEquals(event, new TestCancelableEvent("name"));
         assertEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name")));
 
-        assertNotEquals(null, event);
-        assertNotEquals(event, new TestCancelableEvent("name2"));
-        assertNotEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name2")));
-        assertNotEquals(event, new TestCancelableEvent2());
+        assertFalse(event.equals(null));
+        assertFalse(event.equals(new TestCancelableEvent("name2")));
+        assertFalse(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name2"))));
+        assertFalse(event.equals(new TestCancelableEvent2()));
 
         // hashcode
 

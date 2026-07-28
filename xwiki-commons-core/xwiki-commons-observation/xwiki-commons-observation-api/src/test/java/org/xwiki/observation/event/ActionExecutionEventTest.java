@@ -34,6 +34,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ActionExecutionEventTest
 {
     @Test
+    // This method verifies the equals() contract itself, so the assertions deliberately call equals()
+    // explicitly: the boolean form is what makes visible which object is the receiver and which argument
+    // it gets, including an instance of a foreign class. Using assertEquals()/assertNotEquals() would move
+    // that into JUnit's internals and would invite a later SonarQube S3415 "swap these arguments" change
+    // that silently stops testing the contract.
+    @SuppressWarnings("java:S5785")
     void testActionExecutionEventString()
     {
         ActionExecutionEvent event = new ActionExecutionEvent("action");
@@ -53,8 +59,8 @@ class ActionExecutionEventTest
         assertEquals(event, event);
         assertEquals(event, new ActionExecutionEvent("action"));
 
-        assertNotEquals(event, new ActionExecutionEvent("action2"));
-        assertNotEquals(event, AllEvent.ALLEVENT);
+        assertFalse(event.equals(new ActionExecutionEvent("action2")));
+        assertFalse(event.equals(AllEvent.ALLEVENT));
 
         // hashcode
 
