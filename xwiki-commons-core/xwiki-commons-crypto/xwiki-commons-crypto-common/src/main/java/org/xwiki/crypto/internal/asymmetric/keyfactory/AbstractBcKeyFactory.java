@@ -131,8 +131,8 @@ public abstract class AbstractBcKeyFactory implements AsymmetricKeyFactory, Asym
     {
         try {
             // Optimization
-            if (key instanceof BcAsymmetricKeyParameters) {
-                String keyType = checkKeyType((BcAsymmetricKeyParameters) key);
+            if (key instanceof BcAsymmetricKeyParameters bcKey) {
+                String keyType = checkKeyType(bcKey);
                 if (keyType != null) {
                     throw new IllegalArgumentException(String.format(CLASS_ERROR, keyType, PUBLIC,
                         key.getClass().getName()));
@@ -153,15 +153,14 @@ public abstract class AbstractBcKeyFactory implements AsymmetricKeyFactory, Asym
     {
         try {
             // Optimization
-            if (key instanceof BcAsymmetricKeyParameters) {
-                String keyType = checkKeyType((BcAsymmetricKeyParameters) key);
+            if (key instanceof BcAsymmetricKeyParameters bcKey) {
+                String keyType = checkKeyType(bcKey);
                 if (keyType != null) {
                     throw new IllegalArgumentException(String.format(CLASS_ERROR, keyType, PRIVATE,
                         key.getClass().getName()));
                 }
 
-                return generatePrivate(PrivateKeyInfoFactory.createPrivateKeyInfo(
-                    ((BcAsymmetricKeyParameters) key).getParameters()));
+                return generatePrivate(PrivateKeyInfoFactory.createPrivateKeyInfo(bcKey.getParameters()));
             }
 
             // Fallback

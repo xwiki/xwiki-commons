@@ -168,8 +168,8 @@ public class BcX509CertifiedPublicKey implements X509CertifiedPublicKey
         Signer signer = null;
 
         // Optimisation
-        if (this.signerFactory instanceof BcSignerFactory) {
-            signer = ((BcSignerFactory) this.signerFactory).getInstance(false, publicKey, tbsCert.getSignature());
+        if (this.signerFactory instanceof BcSignerFactory bcSignerFactory) {
+            signer = bcSignerFactory.getInstance(false, publicKey, tbsCert.getSignature());
         } else {
             try {
                 signer =

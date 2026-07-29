@@ -102,10 +102,10 @@ public class DefaultKeyFactory extends AbstractBcKeyFactory
 
     private ASN1ObjectIdentifier getAlgorithmId(ASN1Object keyInfo)
     {
-        if (keyInfo instanceof PrivateKeyInfo) {
-            return ((PrivateKeyInfo) keyInfo).getPrivateKeyAlgorithm().getAlgorithm();
-        } else if (keyInfo instanceof SubjectPublicKeyInfo) {
-            return ((SubjectPublicKeyInfo) keyInfo).getAlgorithm().getAlgorithm();
+        if (keyInfo instanceof PrivateKeyInfo privateKey) {
+            return privateKey.getPrivateKeyAlgorithm().getAlgorithm();
+        } else if (keyInfo instanceof SubjectPublicKeyInfo publicKey) {
+            return publicKey.getAlgorithm().getAlgorithm();
         } else {
             throw new IllegalArgumentException("Asymmetric key expected but received: " + keyInfo.getClass().getName());
         }
@@ -129,8 +129,8 @@ public class DefaultKeyFactory extends AbstractBcKeyFactory
     {
         AsymmetricKeyFactory factory = getKeyFactory(privateKeyInfo);
 
-        if (factory instanceof AsymmetricKeyInfoConverter) {
-            return ((AsymmetricKeyInfoConverter) factory).generatePrivate(privateKeyInfo);
+        if (factory instanceof AsymmetricKeyInfoConverter converter) {
+            return converter.generatePrivate(privateKeyInfo);
         }
 
         return factory.toKey(fromPKCS8(privateKeyInfo.getEncoded()));
@@ -141,8 +141,8 @@ public class DefaultKeyFactory extends AbstractBcKeyFactory
     {
         AsymmetricKeyFactory factory = getKeyFactory(publicKeyInfo);
 
-        if (factory instanceof AsymmetricKeyInfoConverter) {
-            return ((AsymmetricKeyInfoConverter) factory).generatePublic(publicKeyInfo);
+        if (factory instanceof AsymmetricKeyInfoConverter converter) {
+            return converter.generatePublic(publicKeyInfo);
         }
 
         return factory.toKey(fromX509(publicKeyInfo.getEncoded()));

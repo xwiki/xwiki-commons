@@ -42,8 +42,8 @@ public class DistinguishedName implements PrincipalIndentifier, BcPrincipalIdent
      */
     public DistinguishedName(Object name)
     {
-        if (name instanceof String) {
-            this.dn = new X500Name((String) name);
+        if (name instanceof String stringName) {
+            this.dn = new X500Name(stringName);
         } else {
             this.dn = X500Name.getInstance(name);
         }
@@ -80,8 +80,8 @@ public class DistinguishedName implements PrincipalIndentifier, BcPrincipalIdent
         }
 
         X500Name name;
-        if (o instanceof BcPrincipalIdentifier) {
-            name = ((BcPrincipalIdentifier) o).getX500Name();
+        if (o instanceof BcPrincipalIdentifier bcPrincipal) {
+            name = bcPrincipal.getX500Name();
         } else {
             name = new X500Name(((PrincipalIndentifier) o).getName());
         }

@@ -155,8 +155,8 @@ public final class BcStoreUtils
     {
         SignerId id = signer.getSID();
 
-        if (provider instanceof BcStoreX509CertificateProvider) {
-            X509CertificateHolder cert = ((BcStoreX509CertificateProvider) provider).getCertificate(id);
+        if (provider instanceof BcStoreX509CertificateProvider bcProvider) {
+            X509CertificateHolder cert = bcProvider.getCertificate(id);
             return (cert != null) ? BcUtils.convertCertificate(factory, cert) : null;
         }
 

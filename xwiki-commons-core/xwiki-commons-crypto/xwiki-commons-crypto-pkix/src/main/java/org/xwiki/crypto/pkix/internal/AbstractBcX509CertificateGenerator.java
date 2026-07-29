@@ -108,8 +108,8 @@ public abstract class AbstractBcX509CertificateGenerator implements CertificateG
         PrincipalIndentifier issuerName;
         CertifiedPublicKey issuer = null;
 
-        if (this.signer instanceof CertifyingSigner) {
-            issuer = ((CertifyingSigner) this.signer).getCertifier();
+        if (this.signer instanceof CertifyingSigner certifyingSigner) {
+            issuer = certifyingSigner.getCertifier();
             issuerName = issuer.getSubject();
         } else {
             issuerName = subjectName;

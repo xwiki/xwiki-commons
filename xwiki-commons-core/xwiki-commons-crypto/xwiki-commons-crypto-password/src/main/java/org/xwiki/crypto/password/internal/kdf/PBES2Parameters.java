@@ -85,12 +85,11 @@ public class PBES2Parameters
      */
     public static PBES2Parameters getInstance(Object obj)
     {
-        if (obj instanceof PBES2Parameters) {
-            return (PBES2Parameters) obj;
+        if (obj instanceof PBES2Parameters pbes2Parameters) {
+            return pbes2Parameters;
         }
-        if (obj instanceof org.bouncycastle.asn1.pkcs.PBES2Parameters) {
-            return new PBES2Parameters(((org.bouncycastle.asn1.pkcs.PBES2Parameters) obj).getKeyDerivationFunc(),
-                ((org.bouncycastle.asn1.pkcs.PBES2Parameters) obj).getEncryptionScheme());
+        if (obj instanceof org.bouncycastle.asn1.pkcs.PBES2Parameters bcParameters) {
+            return new PBES2Parameters(bcParameters.getKeyDerivationFunc(), bcParameters.getEncryptionScheme());
         }
         if (obj != null) {
             return new PBES2Parameters(ASN1Sequence.getInstance(obj));

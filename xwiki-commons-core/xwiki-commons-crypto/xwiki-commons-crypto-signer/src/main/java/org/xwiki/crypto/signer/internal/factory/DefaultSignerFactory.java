@@ -62,8 +62,8 @@ public class DefaultSignerFactory extends AbstractSignerFactory implements BcSig
     {
         SignerFactory factory = getFactory(algId.getAlgorithm().getId());
 
-        if (factory instanceof BcSignerFactory) {
-            return ((BcSignerFactory) factory).getInstance(forSigning, parameters, algId);
+        if (factory instanceof BcSignerFactory bcFactory) {
+            return bcFactory.getInstance(forSigning, parameters, algId);
         }
 
         try {

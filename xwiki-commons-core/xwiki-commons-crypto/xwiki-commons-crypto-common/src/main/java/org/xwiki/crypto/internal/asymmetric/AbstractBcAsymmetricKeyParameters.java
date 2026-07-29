@@ -59,8 +59,8 @@ public abstract class AbstractBcAsymmetricKeyParameters implements AsymmetricKey
     public boolean equals(Object obj)
     {
         return this == obj
-            || (obj instanceof BcAsymmetricKeyParameters
-            && EqualsBuilder.reflectionEquals(this.parameters, ((BcAsymmetricKeyParameters) obj).getParameters()));
+            || (obj instanceof BcAsymmetricKeyParameters bcObj
+            && EqualsBuilder.reflectionEquals(this.parameters, bcObj.getParameters()));
     }
 
     @Override

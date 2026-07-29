@@ -98,8 +98,8 @@ public class BcPBES2CipherFactory extends AbstractBcPBES2CipherFactory
     private PasswordBasedCipher getBcPBES2PasswordBasedCipher(PasswordBasedCipherFactory pbecf, boolean forEncryption,
         byte[] password, ASN1Encodable parameters)
     {
-        if (pbecf instanceof AbstractBcPBES2CipherFactory) {
-            return ((AbstractBcPBES2CipherFactory) pbecf).getInstance(forEncryption, password, parameters);
+        if (pbecf instanceof AbstractBcPBES2CipherFactory bcFactory) {
+            return bcFactory.getInstance(forEncryption, password, parameters);
         }
         return null;
     }

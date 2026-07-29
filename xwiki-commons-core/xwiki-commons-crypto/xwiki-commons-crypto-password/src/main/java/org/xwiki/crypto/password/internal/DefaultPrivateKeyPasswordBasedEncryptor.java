@@ -90,8 +90,8 @@ public class DefaultPrivateKeyPasswordBasedEncryptor implements PrivateKeyPasswo
         PasswordBasedCipherFactory factory = getPBEFactory(algId.getAlgorithm().getId());
 
         // Optimization
-        if (factory instanceof AbstractBcPBCipherFactory) {
-            return ((AbstractBcPBCipherFactory) factory).getInstance(false, password, algId);
+        if (factory instanceof AbstractBcPBCipherFactory bcFactory) {
+            return bcFactory.getInstance(false, password, algId);
         }
 
         return factory.getInstance(false, password, algId.getEncoded());
@@ -159,8 +159,8 @@ public class DefaultPrivateKeyPasswordBasedEncryptor implements PrivateKeyPasswo
         AlgorithmIdentifier algId;
 
         // Optimization
-        if (cipher instanceof AbstractBcPBCipher) {
-            algId = ((AbstractBcPBCipher) cipher).getPBEParameters();
+        if (cipher instanceof AbstractBcPBCipher bcCipher) {
+            algId = bcCipher.getPBEParameters();
         } else {
             algId = AlgorithmIdentifier.getInstance(cipher.getEncoded());
         }

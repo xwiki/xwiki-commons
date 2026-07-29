@@ -150,8 +150,8 @@ public final class BcExtensionUtils
 
         int i = 0;
         for (X509GeneralName name : genNames) {
-            if (name instanceof BcGeneralName) {
-                names[i++] = ((BcGeneralName) name).getGeneralName();
+            if (name instanceof BcGeneralName bcName) {
+                names[i++] = bcName.getGeneralName();
             } else {
                 throw new IllegalArgumentException("Unexpected general name: " + name.getClass().toString());
             }

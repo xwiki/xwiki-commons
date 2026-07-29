@@ -68,13 +68,13 @@ public class BcPBES2Rc2CipherFactory extends AbstractBcPBES2CipherFactory
 
         if (kdf.getKeySize() < 0 || !isSupportedKeySize(kdf.getKeySize())) {
             KeyParameter keyPass;
-            if (password instanceof KeyWithIVParameters) {
-                keyPass = ((KeyWithIVParameters) password).getKeyParameter();
+            if (password instanceof KeyWithIVParameters ivPassword) {
+                keyPass = ivPassword.getKeyParameter();
             } else {
                 keyPass = (KeyParameter) password;
             }
-            if (keyPass instanceof RC2KeyParameters) {
-                kdf.overrideKeySize((((RC2KeyParameters) keyPass).getEffectiveBits() + 7) / 8);
+            if (keyPass instanceof RC2KeyParameters rc2KeyPass) {
+                kdf.overrideKeySize((rc2KeyPass.getEffectiveBits() + 7) / 8);
             } else {
                 kdf.overrideKeySize(getKeySize());
             }
@@ -89,23 +89,21 @@ public class BcPBES2Rc2CipherFactory extends AbstractBcPBES2CipherFactory
     {
         KeyWithIVParameters params;
 
-        if (password instanceof KeyWithIVParameters) {
-            KeyParameter passkey = ((KeyWithIVParameters) password).getKeyParameter();
-            if (passkey instanceof RC2KeyParameters) {
+        if (password instanceof KeyWithIVParameters ivPassword) {
+            KeyParameter passkey = ivPassword.getKeyParameter();
+            if (passkey instanceof RC2KeyParameters rc2Passkey) {
                 params = new KeyWithIVParameters(
-                    new RC2KeyParameters(kdf.derive(passkey.getKey()).getKey(),
-                        ((RC2KeyParameters) passkey).getEffectiveBits()),
-                    ((KeyWithIVParameters) password).getIV());
+                    new RC2KeyParameters(kdf.derive(passkey.getKey()).getKey(), rc2Passkey.getEffectiveBits()),
+                    ivPassword.getIV());
             } else {
-                params = new KeyWithIVParameters(kdf.derive(((KeyWithIVParameters) password).getKey()),
-                    ((KeyWithIVParameters) password).getIV());
+                params = new KeyWithIVParameters(kdf.derive(ivPassword.getKey()), ivPassword.getIV());
             }
-        } else if (password instanceof RC2KeyParameters) {
+        } else if (password instanceof RC2KeyParameters rc2Password) {
             params = kdf.derive(((KeyParameter) password).getKey(), getIVSize());
             params = new KeyWithIVParameters(new RC2KeyParameters(params.getKey(),
-                ((RC2KeyParameters) password).getEffectiveBits()), params.getIV());
-        } else if (password instanceof KeyParameter) {
-            params = kdf.derive(((KeyParameter) password).getKey(), getIVSize());
+                rc2Password.getEffectiveBits()), params.getIV());
+        } else if (password instanceof KeyParameter keyPassword) {
+            params = kdf.derive(keyPassword.getKey(), getIVSize());
         } else {
             throw new IllegalArgumentException("Invalid cipher parameters for RC2 password based cipher: "
                 + password.getClass().getName());
@@ -147,8 +145,8 @@ public class BcPBES2Rc2CipherFactory extends AbstractBcPBES2CipherFactory
     {
         KeyParameter keyParams = parameters.getKeyParameter();
         int keySize;
-        if (keyParams instanceof RC2KeyParameters) {
-            keySize = ((RC2KeyParameters) keyParams).getEffectiveBits();
+        if (keyParams instanceof RC2KeyParameters rc2KeyParams) {
+            keySize = rc2KeyParams.getEffectiveBits();
         } else {
             keySize = keyParams.getKey().length * 8;
         }

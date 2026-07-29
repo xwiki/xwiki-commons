@@ -71,11 +71,10 @@ public class BcDHKeyPairGenerator extends AbstractBcKeyPairGenerator
     {
         org.bouncycastle.crypto.params.DHParameters keyGenParams;
 
-        if (parameters instanceof DHKeyParametersGenerationParameters) {
-            keyGenParams = BcDHKeyParameterGenerator.getDhParameters(this.random.get(),
-                (DHKeyParametersGenerationParameters) parameters);
-        } else if (parameters instanceof DHKeyGenerationParameters) {
-            keyGenParams = getDhParameters((DHKeyGenerationParameters) parameters);
+        if (parameters instanceof DHKeyParametersGenerationParameters generationParameters) {
+            keyGenParams = BcDHKeyParameterGenerator.getDhParameters(this.random.get(), generationParameters);
+        } else if (parameters instanceof DHKeyGenerationParameters dhParameters) {
+            keyGenParams = getDhParameters(dhParameters);
         } else {
             throw new IllegalArgumentException("Invalid parameters for DSA key generator: "
                 + parameters.getClass().getName());

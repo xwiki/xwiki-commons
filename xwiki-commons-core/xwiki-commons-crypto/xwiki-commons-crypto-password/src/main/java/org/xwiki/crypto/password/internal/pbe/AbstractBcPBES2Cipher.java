@@ -57,8 +57,8 @@ public abstract class AbstractBcPBES2Cipher extends AbstractBcPBCipher
     {
         KeyDerivationFunc kdfParams;
 
-        if (getKeyDerivationFunction() instanceof AbstractBcKDF) {
-            kdfParams = ((AbstractBcKDF) getKeyDerivationFunction()).getKeyDerivationFunction();
+        if (getKeyDerivationFunction() instanceof AbstractBcKDF bcKdf) {
+            kdfParams = bcKdf.getKeyDerivationFunction();
         } else {
             kdfParams = KeyDerivationFunc.getInstance(getKeyDerivationFunction().getEncoded());
         }

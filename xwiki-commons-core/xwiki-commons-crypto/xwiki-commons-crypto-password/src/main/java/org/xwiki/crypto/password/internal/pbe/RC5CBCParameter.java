@@ -112,8 +112,8 @@ public class RC5CBCParameter extends ASN1Object
      */
     public static RC5CBCParameter getInstance(Object obj)
     {
-        if (obj instanceof RC5CBCParameter) {
-            return (RC5CBCParameter) obj;
+        if (obj instanceof RC5CBCParameter parameter) {
+            return parameter;
         }
         if (obj != null) {
             return new RC5CBCParameter(ASN1Sequence.getInstance(obj));

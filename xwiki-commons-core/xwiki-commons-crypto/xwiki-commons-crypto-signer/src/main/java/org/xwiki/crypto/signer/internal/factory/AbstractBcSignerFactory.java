@@ -90,8 +90,8 @@ public abstract class AbstractBcSignerFactory extends AbstractSignerFactory impl
      */
     protected org.bouncycastle.crypto.CipherParameters getBcCipherParameter(AsymmetricCipherParameters parameters)
     {
-        if (parameters instanceof BcAsymmetricKeyParameters) {
-            return ((BcAsymmetricKeyParameters) parameters).getParameters();
+        if (parameters instanceof BcAsymmetricKeyParameters bcParameters) {
+            return bcParameters.getParameters();
         }
 
         // TODO: convert parameters to compatible ones

@@ -56,8 +56,8 @@ public abstract class AbstractBcX509ExtensionBuilder implements X509ExtensionBui
         }
 
         // Optimisation
-        if (extensionSet instanceof BcX509Extensions) {
-            Extensions exts = ((BcX509Extensions) extensionSet).getExtensions();
+        if (extensionSet instanceof BcX509Extensions bcExtensions) {
+            Extensions exts = bcExtensions.getExtensions();
             @SuppressWarnings("unchecked")
             Enumeration<ASN1ObjectIdentifier> oids = exts.oids();
             while (oids.hasMoreElements()) {

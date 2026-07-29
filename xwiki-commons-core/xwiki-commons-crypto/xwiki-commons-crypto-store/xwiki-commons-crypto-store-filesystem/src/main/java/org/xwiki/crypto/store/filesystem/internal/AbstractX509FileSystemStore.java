@@ -142,8 +142,8 @@ public abstract class AbstractX509FileSystemStore
      */
     protected File getStoreFile(StoreReference store)
     {
-        if (store instanceof FileStoreReference) {
-            return ((FileStoreReference) store).getFile();
+        if (store instanceof FileStoreReference fileStore) {
+            return fileStore.getFile();
         }
         throw new IllegalArgumentException(String.format("Unsupported store reference [%s] for this implementation.",
             store.getClass().getName()));
@@ -157,7 +157,7 @@ public abstract class AbstractX509FileSystemStore
      */
     protected boolean isMulti(StoreReference store)
     {
-        return !(store instanceof FileStoreReference) || ((FileStoreReference) store).isMulti();
+        return !(store instanceof FileStoreReference fileStore) || fileStore.isMulti();
     }
 
     /**
@@ -169,8 +169,8 @@ public abstract class AbstractX509FileSystemStore
      */
     protected X509CertifiedPublicKey getPublicKey(CertifiedPublicKey publicKey)
     {
-        if (publicKey instanceof X509CertifiedPublicKey) {
-            return (X509CertifiedPublicKey) publicKey;
+        if (publicKey instanceof X509CertifiedPublicKey x509PublicKey) {
+            return x509PublicKey;
         }
 
         throw new IllegalArgumentException(String.format("Unsupported certificate [%s], expecting X509 certificates.",

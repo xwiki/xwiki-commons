@@ -79,8 +79,8 @@ public class BcDSAKeyPairGenerator extends AbstractBcKeyPairGenerator
         if (parameters instanceof DSAKeyParametersGenerationParameters) {
             keyGenParams = getDsaParameters((DSAKeyGenerationParameters)
                 this.parametersGenerator.generate((DSAKeyParametersGenerationParameters) parameters));
-        } else if (parameters instanceof DSAKeyGenerationParameters) {
-            keyGenParams = getDsaParameters((DSAKeyGenerationParameters) parameters);
+        } else if (parameters instanceof DSAKeyGenerationParameters dsaParameters) {
+            keyGenParams = getDsaParameters(dsaParameters);
         } else {
             throw new IllegalArgumentException("Invalid parameters for DSA key generator: "
                 + parameters.getClass().getName());

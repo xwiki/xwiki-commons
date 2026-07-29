@@ -103,8 +103,8 @@ public class ScryptKDFParams extends ASN1Object
      */
     public static ScryptKDFParams getInstance(Object obj)
     {
-        if (obj instanceof ScryptKDFParams) {
-            return (ScryptKDFParams) obj;
+        if (obj instanceof ScryptKDFParams params) {
+            return params;
         }
         if (obj != null) {
             return new ScryptKDFParams(ASN1Sequence.getInstance(obj));
