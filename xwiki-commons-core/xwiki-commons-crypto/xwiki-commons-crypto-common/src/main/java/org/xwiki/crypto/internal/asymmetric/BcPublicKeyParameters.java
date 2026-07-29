@@ -64,14 +64,11 @@ public class BcPublicKeyParameters extends AbstractBcAsymmetricKeyParameters imp
      */
     public SubjectPublicKeyInfo getSubjectPublicKeyInfo() throws IOException
     {
-        if (this.parameters instanceof RSAKeyParameters) {
-            RSAKeyParameters params = (RSAKeyParameters) this.parameters;
-
+        if (this.parameters instanceof RSAKeyParameters params) {
             return new SubjectPublicKeyInfo(
                 new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, DERNull.INSTANCE),
                 new RSAPublicKey(params.getModulus(), params.getExponent()));
-        } else if (this.parameters instanceof DSAPublicKeyParameters) {
-            DSAPublicKeyParameters params = (DSAPublicKeyParameters) this.parameters;
+        } else if (this.parameters instanceof DSAPublicKeyParameters params) {
             DSAParameters dsaParams = params.getParameters();
             DSAParameter algParams = null;
 

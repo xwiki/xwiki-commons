@@ -56,8 +56,8 @@ public abstract class AbstractBcPssSignerFactory extends AbstractBcSignerFactory
     {
         if (parameters instanceof AsymmetricKeyParameters) {
             return new PSSSigner(getCipherEngine(), new SHA1Digest(), 20);
-        } else if (parameters instanceof PssSignerParameters) {
-            PssParameters pssParams = ((PssSignerParameters) parameters).getPssParameters();
+        } else if (parameters instanceof PssSignerParameters pssSignerParameters) {
+            PssParameters pssParams = pssSignerParameters.getPssParameters();
             Digest digest = getDigestFactory(pssParams.getHashAlgorithm()).getDigestInstance();
 
             return new PSSSigner(getCipherEngine(), digest,
@@ -74,14 +74,14 @@ public abstract class AbstractBcPssSignerFactory extends AbstractBcSignerFactory
     {
         AsymmetricKeyParameters keyParams = null;
 
-        if (parameters instanceof AsymmetricKeyParameters) {
-            keyParams = (AsymmetricKeyParameters) parameters;
-        } else if (parameters instanceof PssSignerParameters) {
-            keyParams = ((PssSignerParameters) parameters).getKeyParameters();
+        if (parameters instanceof AsymmetricKeyParameters asymmetricParameters) {
+            keyParams = asymmetricParameters;
+        } else if (parameters instanceof PssSignerParameters pssSignerParameters) {
+            keyParams = pssSignerParameters.getKeyParameters();
         }
 
-        if (keyParams instanceof BcAsymmetricKeyParameters) {
-            return ((BcAsymmetricKeyParameters) keyParams).getParameters();
+        if (keyParams instanceof BcAsymmetricKeyParameters bcKeyParams) {
+            return bcKeyParams.getParameters();
         }
 
         // TODO: convert parameters to compatible ones

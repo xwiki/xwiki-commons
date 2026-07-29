@@ -149,12 +149,12 @@ public class X509KeyFileSystemStore extends AbstractX509FileSystemStore implemen
         try (BufferedReader in = new BufferedReader(new FileReader(file))) {
             Object obj;
             while ((obj = readObject(in, password)) != null) {
-                if (obj instanceof X509CertifiedPublicKey) {
-                    cert = (X509CertifiedPublicKey) obj;
+                if (obj instanceof X509CertifiedPublicKey certifiedKey) {
+                    cert = certifiedKey;
                     continue;
                 }
-                if (obj instanceof PrivateKeyParameters) {
-                    key = ((PrivateKeyParameters) obj);
+                if (obj instanceof PrivateKeyParameters privateKeyParameters) {
+                    key = privateKeyParameters;
                 }
             }
         } catch (IOException e) {
@@ -194,8 +194,8 @@ public class X509KeyFileSystemStore extends AbstractX509FileSystemStore implemen
                 try (BufferedReader in = new BufferedReader(new FileReader(keyfile))) {
                     Object obj;
                     while ((obj = readObject(in, password)) != null) {
-                        if (obj instanceof PrivateKeyParameters) {
-                            return new CertifiedKeyPair(((PrivateKeyParameters) obj), certificate);
+                        if (obj instanceof PrivateKeyParameters privateKeyParameters) {
+                            return new CertifiedKeyPair(privateKeyParameters, certificate);
                         }
                     }
                 }

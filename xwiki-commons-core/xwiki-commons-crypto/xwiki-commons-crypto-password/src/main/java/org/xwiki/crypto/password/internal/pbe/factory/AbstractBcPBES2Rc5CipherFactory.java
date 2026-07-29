@@ -52,18 +52,17 @@ public abstract class AbstractBcPBES2Rc5CipherFactory extends AbstractBcPBES2Cip
     {
         KeyWithIVParameters params = null;
 
-        if (password instanceof KeyWithIVParameters) {
-            KeyParameter passkey = ((KeyWithIVParameters) password).getKeyParameter();
-            if (passkey instanceof RC5KeyParameters) {
+        if (password instanceof KeyWithIVParameters ivPassword) {
+            KeyParameter passkey = ivPassword.getKeyParameter();
+            if (passkey instanceof RC5KeyParameters rc5Passkey) {
                 params = new KeyWithIVParameters(
-                    new RC5KeyParameters(kdf.derive(passkey.getKey()).getKey(),
-                        ((RC5KeyParameters) passkey).getRounds()),
-                    ((KeyWithIVParameters) password).getIV());
+                    new RC5KeyParameters(kdf.derive(passkey.getKey()).getKey(), rc5Passkey.getRounds()),
+                    ivPassword.getIV());
             }
-        } else if (password instanceof RC5KeyParameters) {
+        } else if (password instanceof RC5KeyParameters rc5Password) {
             params = kdf.derive(((KeyParameter) password).getKey(), getIVSize());
             params = new KeyWithIVParameters(new RC5KeyParameters(params.getKey(),
-                ((RC5KeyParameters) password).getRounds()), params.getIV());
+                rc5Password.getRounds()), params.getIV());
         }
 
         if (params == null) {

@@ -121,8 +121,8 @@ public class PBKDF2Params extends ASN1Object
 
         if (e.hasMoreElements()) {
             Object obj = e.nextElement();
-            if (obj instanceof ASN1Integer) {
-                this.keyLength = (ASN1Integer) obj;
+            if (obj instanceof ASN1Integer keyLengthInteger) {
+                this.keyLength = keyLengthInteger;
                 if (e.hasMoreElements()) {
                     this.prf = AlgorithmIdentifier.getInstance(obj);
                 } else {
@@ -146,12 +146,11 @@ public class PBKDF2Params extends ASN1Object
      */
     public static PBKDF2Params getInstance(Object obj)
     {
-        if (obj instanceof PBKDF2Params) {
-            return (PBKDF2Params) obj;
+        if (obj instanceof PBKDF2Params pbkdf2Params) {
+            return pbkdf2Params;
         }
 
-        if (obj instanceof org.bouncycastle.asn1.pkcs.PBKDF2Params) {
-            org.bouncycastle.asn1.pkcs.PBKDF2Params params = (org.bouncycastle.asn1.pkcs.PBKDF2Params) obj;
+        if (obj instanceof org.bouncycastle.asn1.pkcs.PBKDF2Params params) {
             if (params.getKeyLength() != null) {
                 return new PBKDF2Params(params.getSalt(),
                     params.getIterationCount().intValue(), params.getKeyLength().intValue());

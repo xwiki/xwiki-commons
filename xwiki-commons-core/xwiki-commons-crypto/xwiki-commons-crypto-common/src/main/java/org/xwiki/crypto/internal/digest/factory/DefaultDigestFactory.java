@@ -100,8 +100,8 @@ public class DefaultDigestFactory extends AbstractBcDigestFactory implements Dig
     {
         final Digest digest = getFactory(algorithmIdentifier.getAlgorithm()).getInstance();
 
-        if (digest instanceof DigestCalculator) {
-            return (DigestCalculator) digest;
+        if (digest instanceof DigestCalculator digestCalculator) {
+            return digestCalculator;
         } else {
             return new DigestCalculator()
             {

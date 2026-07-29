@@ -71,8 +71,8 @@ public class BcRsaSsaPssSignerFactory extends AbstractBcPssSignerFactory
         } else {
             RSASSAPSSparams pssParams = RSASSAPSSparams.getInstance(algId.getParameters());
 
-            if (parameters instanceof AsymmetricKeyParameters) {
-                return getInstance(forSigning, new PssSignerParameters((AsymmetricKeyParameters) parameters,
+            if (parameters instanceof AsymmetricKeyParameters keyParameters) {
+                return getInstance(forSigning, new PssSignerParameters(keyParameters,
                     pssParams.getHashAlgorithm().getAlgorithm().getId(),
                     AlgorithmIdentifier
                         .getInstance(pssParams.getMaskGenAlgorithm().getParameters()).getAlgorithm().getId(),
@@ -89,8 +89,8 @@ public class BcRsaSsaPssSignerFactory extends AbstractBcPssSignerFactory
     {
         if (parameters instanceof AsymmetricKeyParameters) {
             return new AlgorithmIdentifier(PKCSObjectIdentifiers.id_RSASSA_PSS, DERNull.INSTANCE);
-        } else if (parameters instanceof PssSignerParameters) {
-            PssParameters pssParams = ((PssSignerParameters) parameters).getPssParameters();
+        } else if (parameters instanceof PssSignerParameters pssSignerParameters) {
+            PssParameters pssParams = pssSignerParameters.getPssParameters();
             BcDigestFactory factory = getDigestFactory(pssParams.getHashAlgorithm());
 
             return new AlgorithmIdentifier(PKCSObjectIdentifiers.id_RSASSA_PSS, new RSASSAPSSparams(

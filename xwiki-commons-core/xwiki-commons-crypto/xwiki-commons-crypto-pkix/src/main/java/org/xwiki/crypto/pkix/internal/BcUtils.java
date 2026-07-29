@@ -68,8 +68,8 @@ public final class BcUtils
      */
     public static X509CertificateHolder getX509CertificateHolder(CertifiedPublicKey cert)
     {
-        if (cert instanceof BcX509CertifiedPublicKey) {
-            return ((BcX509CertifiedPublicKey) cert).getX509CertificateHolder();
+        if (cert instanceof BcX509CertifiedPublicKey bcCert) {
+            return bcCert.getX509CertificateHolder();
         } else {
             try {
                 return new X509CertificateHolder(cert.getEncoded());
@@ -89,8 +89,8 @@ public final class BcUtils
      */
     public static AsymmetricKeyParameter getAsymmetricKeyParameter(PublicKeyParameters publicKey)
     {
-        if (publicKey instanceof BcAsymmetricKeyParameters) {
-            return ((BcAsymmetricKeyParameters) publicKey).getParameters();
+        if (publicKey instanceof BcAsymmetricKeyParameters bcPublicKey) {
+            return bcPublicKey.getParameters();
         } else {
             try {
                 return PublicKeyFactory.createKey(publicKey.getEncoded());
@@ -111,8 +111,8 @@ public final class BcUtils
     public static SubjectPublicKeyInfo getSubjectPublicKeyInfo(PublicKeyParameters publicKey)
     {
         try {
-            if (publicKey instanceof BcPublicKeyParameters) {
-                return ((BcPublicKeyParameters) publicKey).getSubjectPublicKeyInfo();
+            if (publicKey instanceof BcPublicKeyParameters bcPublicKey) {
+                return bcPublicKey.getSubjectPublicKeyInfo();
             } else {
                 return SubjectPublicKeyInfoFactory.createSubjectPublicKeyInfo(getAsymmetricKeyParameter(publicKey));
             }
@@ -196,8 +196,8 @@ public final class BcUtils
      */
     public static X500Name getX500Name(PrincipalIndentifier principal)
     {
-        if (principal instanceof BcPrincipalIdentifier) {
-            return ((BcPrincipalIdentifier) principal).getX500Name();
+        if (principal instanceof BcPrincipalIdentifier bcPrincipal) {
+            return bcPrincipal.getX500Name();
         } else {
             return new X500Name(principal.getName());
         }
@@ -211,8 +211,8 @@ public final class BcUtils
      */
     public static AlgorithmIdentifier getSignerAlgoritmIdentifier(Signer signer)
     {
-        if (signer instanceof ContentSigner) {
-            return ((ContentSigner) signer).getAlgorithmIdentifier();
+        if (signer instanceof ContentSigner contentSigner) {
+            return contentSigner.getAlgorithmIdentifier();
         } else {
             return AlgorithmIdentifier.getInstance(signer.getEncoded());
         }
@@ -232,8 +232,8 @@ public final class BcUtils
             return null;
         }
 
-        if (certFactory instanceof BcX509CertificateFactory) {
-            return ((BcX509CertificateFactory) certFactory).convert(cert);
+        if (certFactory instanceof BcX509CertificateFactory bcCertFactory) {
+            return bcCertFactory.convert(cert);
         } else {
             try {
                 return certFactory.decode(cert.getEncoded());

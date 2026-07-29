@@ -111,8 +111,8 @@ public class BcStoreX509CertificateProvider implements CertificateProvider
             Collection<?> matches = this.store.getMatches(selector);
             Collection<CertifiedPublicKey> result = new ArrayList<>(matches.size());
             for (Object holder : matches) {
-                if (holder instanceof X509CertificateHolder) {
-                    result.add(BcUtils.convertCertificate(this.factory, (X509CertificateHolder) holder));
+                if (holder instanceof X509CertificateHolder certificateHolder) {
+                    result.add(BcUtils.convertCertificate(this.factory, certificateHolder));
                 }
             }
             return (!result.isEmpty()) ? result : null;

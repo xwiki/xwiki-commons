@@ -89,11 +89,10 @@ public abstract class AbstractBcPBES2CipherFactory extends AbstractBcPBCipherFac
     {
         SymmetricCipherParameters params;
 
-        if (password instanceof KeyWithIVParameters) {
-            params = new KeyWithIVParameters(kdf.derive(((KeyWithIVParameters) password).getKey()),
-                ((KeyWithIVParameters) password).getIV());
-        } else if (password instanceof KeyParameter) {
-            params = kdf.derive(((KeyParameter) password).getKey(), getIVSize());
+        if (password instanceof KeyWithIVParameters ivPassword) {
+            params = new KeyWithIVParameters(kdf.derive(ivPassword.getKey()), ivPassword.getIV());
+        } else if (password instanceof KeyParameter keyPassword) {
+            params = kdf.derive(keyPassword.getKey(), getIVSize());
         } else {
             throw new IllegalArgumentException("Invalid cipher parameters for this password based cipher: "
                 + password.getClass().getName());
@@ -142,8 +141,8 @@ public abstract class AbstractBcPBES2CipherFactory extends AbstractBcPBCipherFac
         KeyDerivationFunctionFactory kdfFactory = safeGetKDFFactory();
 
         // Optimization
-        if (kdfFactory instanceof AbstractBcKDFFactory) {
-            return ((AbstractBcKDFFactory) kdfFactory).getInstance(func);
+        if (kdfFactory instanceof AbstractBcKDFFactory bcKdfFactory) {
+            return bcKdfFactory.getInstance(func);
         }
 
         // Generic fallback

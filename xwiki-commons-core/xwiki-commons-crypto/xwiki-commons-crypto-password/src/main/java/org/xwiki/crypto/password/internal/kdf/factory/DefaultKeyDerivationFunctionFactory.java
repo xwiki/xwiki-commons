@@ -76,8 +76,8 @@ public class DefaultKeyDerivationFunctionFactory extends AbstractBcKDFFactory
 
     private KeyDerivationFunction getBcInstance(KeyDerivationFunctionFactory factory, KeyDerivationFunc func)
     {
-        if (factory instanceof AbstractBcKDFFactory) {
-            return ((AbstractBcKDFFactory) factory).getInstance(func);
+        if (factory instanceof AbstractBcKDFFactory bcFactory) {
+            return bcFactory.getInstance(func);
         }
         return null;
     }
