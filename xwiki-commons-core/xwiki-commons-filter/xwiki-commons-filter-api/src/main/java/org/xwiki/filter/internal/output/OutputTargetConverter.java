@@ -73,12 +73,12 @@ public class OutputTargetConverter extends AbstractConverter<OutputTarget>
 
         if (value instanceof String) {
             outputTarget = fromString(value.toString());
-        } else if (value instanceof OutputStream) {
-            outputTarget = new DefaultOutputStreamOutputTarget((OutputStream) value);
-        } else if (value instanceof File) {
-            outputTarget = new DefaultFileOutputTarget((File) value);
-        } else if (value instanceof Writer) {
-            outputTarget = new DefaultWriterOutputTarget((Writer) value);
+        } else if (value instanceof OutputStream outputStream) {
+            outputTarget = new DefaultOutputStreamOutputTarget(outputStream);
+        } else if (value instanceof File file) {
+            outputTarget = new DefaultFileOutputTarget(file);
+        } else if (value instanceof Writer writer) {
+            outputTarget = new DefaultWriterOutputTarget(writer);
         } else {
             ParameterizedType componentRole =
                 TypeUtils.parameterize(org.xwiki.filter.output.OutputTargetConverter.class, value.getClass());

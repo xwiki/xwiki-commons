@@ -101,8 +101,8 @@ public class JobGroupPath implements Serializable
     @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof JobGroupPath) {
-            return this.path.equals(((JobGroupPath) obj).getPath());
+        if (obj instanceof JobGroupPath jobGroupPath) {
+            return this.path.equals(jobGroupPath.getPath());
         }
 
         return false;

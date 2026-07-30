@@ -68,8 +68,8 @@ public class PushLevelProgressEvent extends AbstractProgressEvent
     @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof PushLevelProgressEvent) {
-            return this.steps == ((PushLevelProgressEvent) obj).steps;
+        if (obj instanceof PushLevelProgressEvent pushLevelProgressEvent) {
+            return this.steps == pushLevelProgressEvent.steps;
         }
 
         return false;

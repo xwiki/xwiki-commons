@@ -97,8 +97,8 @@ public final class FilterUtils
 
         if (elementDescriptor != null && elementDescriptor.getBeginMethod() != null) {
             sendEvent(elementDescriptor.getBeginMethod(), elementDescriptor, filter, parameters);
-        } else if (filter instanceof UnknownFilter) {
-            ((UnknownFilter) filter).beginUnknwon(id, parameters);
+        } else if (filter instanceof UnknownFilter unknownFilter) {
+            unknownFilter.beginUnknwon(id, parameters);
         } else {
             return false;
         }
@@ -123,8 +123,8 @@ public final class FilterUtils
 
         if (elementDescriptor != null && elementDescriptor.getEndMethod() != null) {
             sendEvent(elementDescriptor.getEndMethod(), elementDescriptor, filter, parameters);
-        } else if (filter instanceof UnknownFilter) {
-            ((UnknownFilter) filter).endUnknwon(id, parameters);
+        } else if (filter instanceof UnknownFilter unknownFilter) {
+            unknownFilter.endUnknwon(id, parameters);
         } else {
             return false;
         }
@@ -149,8 +149,8 @@ public final class FilterUtils
 
         if (elementDescriptor != null && elementDescriptor.getOnMethod() != null) {
             sendEvent(elementDescriptor.getOnMethod(), elementDescriptor, filter, parameters);
-        } else if (filter instanceof UnknownFilter) {
-            ((UnknownFilter) filter).onUnknwon(id, parameters);
+        } else if (filter instanceof UnknownFilter unknownFilter) {
+            unknownFilter.onUnknwon(id, parameters);
         } else {
             return false;
         }

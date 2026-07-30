@@ -313,8 +313,8 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
     public void setLoggerTail(LoggerTail loggerTail)
     {
         this.loggerTail = loggerTail;
-        if (this.loggerTail instanceof LogQueue) {
-            this.logs = (LogQueue) this.loggerTail;
+        if (this.loggerTail instanceof LogQueue logQueue) {
+            this.logs = logQueue;
         }
     }
 

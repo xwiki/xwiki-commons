@@ -191,9 +191,7 @@ public class Message implements Serializable, CharSequence
      */
     public String getTranslationKey()
     {
-        if (getMarker() instanceof ContainerMarker) {
-            ContainerMarker containerMarker = (ContainerMarker) getMarker();
-
+        if (getMarker() instanceof ContainerMarker containerMarker) {
             TranslationMarker translationMarker = containerMarker.get(TranslationMarker.NAME);
 
             if (translationMarker != null) {
@@ -231,8 +229,8 @@ public class Message implements Serializable, CharSequence
         }
 
         if (object.getClass() != getClass()) {
-            if (object instanceof String) {
-                return equals((String) object);
+            if (object instanceof String stringValue) {
+                return equals(stringValue);
             } else {
                 return false;
             }

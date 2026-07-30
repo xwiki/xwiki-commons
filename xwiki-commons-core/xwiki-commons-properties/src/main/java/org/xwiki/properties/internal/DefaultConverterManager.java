@@ -92,8 +92,8 @@ public class DefaultConverterManager implements ConverterManager
         }
 
         // Handle wildcards (<? extends OtherType>)
-        if (targetType instanceof WildcardType) {
-            Type[] upperBounds = ((WildcardType) targetType).getUpperBounds();
+        if (targetType instanceof WildcardType wildcardType) {
+            Type[] upperBounds = wildcardType.getUpperBounds();
 
             if (upperBounds.length == 0) {
                 // If the asked type is <?>, don't convert anything
@@ -237,9 +237,7 @@ public class DefaultConverterManager implements ConverterManager
     {
         StringBuilder sb = new StringBuilder(getTypeName(type));
 
-        if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) type;
-
+        if (type instanceof ParameterizedType parameterizedType) {
             Type[] generics = parameterizedType.getActualTypeArguments();
             if (generics.length > 0) {
                 sb.append('<');

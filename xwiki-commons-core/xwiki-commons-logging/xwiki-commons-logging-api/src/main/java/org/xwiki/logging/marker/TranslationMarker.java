@@ -88,7 +88,7 @@ public class TranslationMarker extends AbstractContainerMarker
             return true;
         }
 
-        return other instanceof TranslationMarker
-            && this.translationKey.equals(((TranslationMarker) other).getTranslationKey());
+        return other instanceof TranslationMarker translationMarker
+            && this.translationKey.equals(translationMarker.getTranslationKey());
     }
 }

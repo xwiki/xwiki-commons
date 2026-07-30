@@ -177,8 +177,8 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
         this.status = createNewStatus(this.request);
 
         // Create a filesystem log tail if the status is supposed to be serialized (to avoid creating too much files)
-        if (this.status instanceof AbstractJobStatus && JobUtils.isSerializable(this.status)) {
-            ((AbstractJobStatus) this.status).setLoggerTail(this.store.createLoggerTail(request.getId(), false));
+        if (this.status instanceof AbstractJobStatus abstractJobStatus && JobUtils.isSerializable(this.status)) {
+            abstractJobStatus.setLoggerTail(this.store.createLoggerTail(request.getId(), false));
         }
     }
 
@@ -265,11 +265,11 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
 
         this.observationManager.notify(new JobStartedEvent(getRequest().getId(), getType(), this.request), this);
 
-        if (this.status instanceof AbstractJobStatus) {
+        if (this.status instanceof AbstractJobStatus abstractJobStatus) {
             ((AbstractJobStatus<R>) this.status).setStartDate(new Date());
             ((AbstractJobStatus<R>) this.status).setState(JobStatus.State.RUNNING);
 
-            ((AbstractJobStatus) this.status).startListening();
+            abstractJobStatus.startListening();
         }
 
         if (getRequest().isVerbose()) {
@@ -292,9 +292,9 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
         this.lock.lock();
 
         try {
-            if (this.status instanceof AbstractJobStatus) {
+            if (this.status instanceof AbstractJobStatus abstractJobStatus) {
                 // Store error
-                ((AbstractJobStatus) this.status).setError(error);
+                abstractJobStatus.setError(error);
             }
 
             // Give a chance to any listener to do custom action associated to the job
@@ -310,15 +310,15 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
                 }
             }
 
-            if (this.status instanceof AbstractJobStatus) {
+            if (this.status instanceof AbstractJobStatus abstractJobStatus) {
                 // Indicate when the job ended
-                ((AbstractJobStatus) this.status).setEndDate(new Date());
+                abstractJobStatus.setEndDate(new Date());
 
                 // Stop updating job status (progress, log, etc.)
-                ((AbstractJobStatus) this.status).stopListening();
+                abstractJobStatus.stopListening();
 
                 // Update job state
-                ((AbstractJobStatus) this.status).setState(JobStatus.State.FINISHED);
+                abstractJobStatus.setState(JobStatus.State.FINISHED);
             }
 
             // Release threads waiting for job being done

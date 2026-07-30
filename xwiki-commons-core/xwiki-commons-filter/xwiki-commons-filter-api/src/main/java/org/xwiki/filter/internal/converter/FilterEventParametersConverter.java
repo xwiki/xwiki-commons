@@ -50,11 +50,11 @@ public class FilterEventParametersConverter extends AbstractConverter<FilterEven
 
         FilterEventParameters parameters;
 
-        if (value instanceof FilterEventParameters) {
-            parameters = (FilterEventParameters) value;
-        } else if (value instanceof Map) {
+        if (value instanceof FilterEventParameters filterEventParameters) {
+            parameters = filterEventParameters;
+        } else if (value instanceof Map map) {
             parameters = new FilterEventParameters();
-            parameters.putAll((Map) value);
+            parameters.putAll(map);
         } else {
             String parametersString = value.toString().trim();
 

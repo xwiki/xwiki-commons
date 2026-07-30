@@ -56,11 +56,10 @@ public abstract class AbstractComponentDependencyFactory implements ComponentDep
     {
         Type type = field.getGenericType();
 
-        if (type instanceof ParameterizedType) {
-            ParameterizedType pType = (ParameterizedType) type;
+        if (type instanceof ParameterizedType pType) {
             Type[] types = pType.getActualTypeArguments();
-            if (types.length > 0 && types[types.length - 1] instanceof Class) {
-                return (Class) types[types.length - 1];
+            if (types.length > 0 && types[types.length - 1] instanceof Class clazz) {
+                return clazz;
             }
         }
 
