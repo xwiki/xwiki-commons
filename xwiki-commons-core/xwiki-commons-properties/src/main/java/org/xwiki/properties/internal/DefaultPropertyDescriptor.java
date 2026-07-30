@@ -164,8 +164,8 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     public Class<?> getPropertyClass()
     {
         Class<?> clazz;
-        if (this.propertyType instanceof Class) {
-            clazz = (Class) this.propertyType;
+        if (this.propertyType instanceof Class propertyClass) {
+            clazz = propertyClass;
         } else if (this.propertyType instanceof ParameterizedType) {
             clazz = (Class) ((ParameterizedType) this.propertyType).getRawType();
         } else {

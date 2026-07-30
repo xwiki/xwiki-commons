@@ -370,9 +370,7 @@ public class ComponentAnnotationLoader
         Class<?> interfaceClass;
         Type resolvedInterfaceType = interfaceType;
 
-        if (interfaceType instanceof ParameterizedType) {
-            ParameterizedType interfaceParameterizedType = (ParameterizedType) interfaceType;
-
+        if (interfaceType instanceof ParameterizedType interfaceParameterizedType) {
             interfaceClass = ReflectionUtils.getTypeClass(interfaceType);
             Type[] variableParameters = interfaceParameterizedType.getActualTypeArguments();
 
@@ -420,13 +418,12 @@ public class ComponentAnnotationLoader
     {
         Type superType = componentClass.getGenericSuperclass();
         if (superType != null && superType != Object.class) {
-            if (superType instanceof ParameterizedType) {
-                ParameterizedType superParameterizedType = (ParameterizedType) superType;
+            if (superType instanceof ParameterizedType superParameterizedType) {
                 types.addAll(findComponentRoleTypes((Class) superParameterizedType.getRawType(), ReflectionUtils
                     .resolveSuperArguments(superParameterizedType.getActualTypeArguments(), componentClass,
                         parameters)));
-            } else if (superType instanceof Class) {
-                types.addAll(findComponentRoleTypes((Class) superType, null));
+            } else if (superType instanceof Class superClass) {
+                types.addAll(findComponentRoleTypes(superClass, null));
             }
         }
     }

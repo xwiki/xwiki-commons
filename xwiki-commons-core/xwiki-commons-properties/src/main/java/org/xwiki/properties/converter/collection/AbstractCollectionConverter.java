@@ -100,12 +100,12 @@ public abstract class AbstractCollectionConverter<T extends Collection> extends 
         }
 
         Type elementType = null;
-        if (targetType instanceof ParameterizedType) {
-            elementType = ((ParameterizedType) targetType).getActualTypeArguments()[0];
+        if (targetType instanceof ParameterizedType parameterizedType) {
+            elementType = parameterizedType.getActualTypeArguments()[0];
         }
 
-        if (value instanceof Iterable) {
-            return this.<G>fromIterable(targetType, (Iterable) value, elementType);
+        if (value instanceof Iterable iterable) {
+            return this.<G>fromIterable(targetType, iterable, elementType);
         } else if (value.getClass().isArray()) {
             return this.<G>fromArray(targetType, value, elementType);
         } else {

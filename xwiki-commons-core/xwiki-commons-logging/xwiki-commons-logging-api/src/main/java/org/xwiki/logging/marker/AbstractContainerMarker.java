@@ -83,8 +83,8 @@ public abstract class AbstractContainerMarker implements ContainerMarker
                     return (M) marker;
                 }
 
-                if (marker instanceof ContainerMarker) {
-                    Marker targetMarker = ((ContainerMarker) marker).get(name);
+                if (marker instanceof ContainerMarker containerMarker) {
+                    Marker targetMarker = containerMarker.get(name);
 
                     if (targetMarker != null) {
                         return (M) targetMarker;

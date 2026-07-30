@@ -116,8 +116,8 @@ public class SystemType
         if (this == object) {
             result = true;
         } else {
-            if (object instanceof SystemType) {
-                result = Objects.equals(getId(), ((SystemType) object).getId());
+            if (object instanceof SystemType systemType) {
+                result = Objects.equals(getId(), systemType.getId());
             } else {
                 result = false;
             }

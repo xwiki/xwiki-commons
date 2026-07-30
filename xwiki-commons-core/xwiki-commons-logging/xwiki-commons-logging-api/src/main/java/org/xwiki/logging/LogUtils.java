@@ -108,9 +108,9 @@ public final class LogUtils
     {
         Object[] actualArray;
         Throwable throwable;
-        if (arguments.length > 0 && arguments[arguments.length - 1] instanceof Throwable) {
+        if (arguments.length > 0 && arguments[arguments.length - 1] instanceof Throwable lastThrowable) {
             actualArray = Arrays.copyOf(arguments, arguments.length - 1);
-            throwable = (Throwable) arguments[arguments.length - 1];
+            throwable = lastThrowable;
         } else {
             actualArray = arguments;
             throwable = null;
@@ -235,8 +235,8 @@ public final class LogUtils
      */
     public static Throwable getThrowable(Object... arguments)
     {
-        if (arguments.length > 0 && arguments[arguments.length - 1] instanceof Throwable) {
-            return (Throwable) arguments[arguments.length - 1];
+        if (arguments.length > 0 && arguments[arguments.length - 1] instanceof Throwable throwable) {
+            return throwable;
         }
 
         return null;

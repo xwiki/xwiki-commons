@@ -64,8 +64,8 @@ public class LogTreeNode extends BeginLogEvent implements Iterable<LogEvent>, Se
 
             LogEvent logEvent = this.currentIterator.next();
 
-            if (this.currentIterator == this.rootIterator && logEvent instanceof LogTreeNode) {
-                this.currentIterator = ((LogTreeNode) logEvent).iterator(true);
+            if (this.currentIterator == this.rootIterator && logEvent instanceof LogTreeNode logTreeNode) {
+                this.currentIterator = logTreeNode.iterator(true);
             }
 
             return logEvent;
@@ -139,8 +139,8 @@ public class LogTreeNode extends BeginLogEvent implements Iterable<LogEvent>, Se
         for (LogEvent logEvent : this) {
             ++size;
 
-            if (logEvent instanceof LogTreeNode) {
-                size += ((LogTreeNode) logEvent).size(true);
+            if (logEvent instanceof LogTreeNode logTreeNode) {
+                size += logTreeNode.size(true);
             }
         }
 
@@ -175,8 +175,8 @@ public class LogTreeNode extends BeginLogEvent implements Iterable<LogEvent>, Se
                 levelLogs.add(log);
             }
 
-            if (recurse && log instanceof LogTreeNode) {
-                levelLogs.addAll(((LogTreeNode) log).getLogs(level, true));
+            if (recurse && log instanceof LogTreeNode logTreeNode) {
+                levelLogs.addAll(logTreeNode.getLogs(level, true));
             }
         }
 
@@ -199,8 +199,8 @@ public class LogTreeNode extends BeginLogEvent implements Iterable<LogEvent>, Se
                 levelLogs.add(log);
             }
 
-            if (recurse && log instanceof LogTreeNode) {
-                levelLogs.addAll(((LogTreeNode) log).getLogsFrom(level, true));
+            if (recurse && log instanceof LogTreeNode logTreeNode) {
+                levelLogs.addAll(logTreeNode.getLogsFrom(level, true));
             }
         }
 

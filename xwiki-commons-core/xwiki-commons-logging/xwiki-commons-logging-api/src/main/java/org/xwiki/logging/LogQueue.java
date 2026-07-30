@@ -82,9 +82,9 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements LoggerT
     {
         Object[] actualArray;
         Throwable throwable;
-        if (arguments.length > 0 && arguments[arguments.length - 1] instanceof Throwable) {
+        if (arguments.length > 0 && arguments[arguments.length - 1] instanceof Throwable lastThrowable) {
             actualArray = Arrays.copyOf(arguments, arguments.length - 1);
-            throwable = (Throwable) arguments[arguments.length - 1];
+            throwable = lastThrowable;
         } else {
             actualArray = arguments;
             throwable = null;

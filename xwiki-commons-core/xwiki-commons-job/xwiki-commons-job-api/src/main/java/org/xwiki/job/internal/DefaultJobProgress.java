@@ -95,8 +95,8 @@ public class DefaultJobProgress implements EventListener, JobProgress
     @Override
     public void onEvent(Event event, Object source, Object message)
     {
-        if (event instanceof PushLevelProgressEvent) {
-            onPushLevelProgress(((PushLevelProgressEvent) event).getSteps(), source, false);
+        if (event instanceof PushLevelProgressEvent pushLevelProgressEvent) {
+            onPushLevelProgress(pushLevelProgressEvent.getSteps(), source, false);
         } else if (event instanceof PopLevelProgressEvent) {
             onPopLevelProgress(source);
         } else if (event instanceof StartStepProgressEvent) {

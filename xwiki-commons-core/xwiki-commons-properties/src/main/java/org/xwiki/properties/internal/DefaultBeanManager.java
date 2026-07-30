@@ -118,8 +118,7 @@ public class DefaultBeanManager implements BeanManager
         populateBean(bean, remainingValues);
 
         // If the bean implements RawProperties, inject remaining properties
-        if (!remainingValues.isEmpty() && bean instanceof RawProperties) {
-            RawProperties rawProperties = (RawProperties) bean;
+        if (!remainingValues.isEmpty() && bean instanceof RawProperties rawProperties) {
             for (Map.Entry<String, Object> entry : remainingValues.entrySet()) {
                 rawProperties.set(entry.getKey(), entry.getValue());
             }

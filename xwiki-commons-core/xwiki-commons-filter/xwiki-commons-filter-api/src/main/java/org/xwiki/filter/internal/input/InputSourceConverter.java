@@ -76,16 +76,16 @@ public class InputSourceConverter extends AbstractConverter<InputSource>
 
         if (value instanceof String) {
             inputSource = fromString(value.toString());
-        } else if (value instanceof InputStream) {
-            inputSource = new DefaultInputStreamInputSource((InputStream) value);
-        } else if (value instanceof byte[]) {
-            inputSource = new DefaultByteArrayInputSource((byte[]) value);
-        } else if (value instanceof File) {
-            inputSource = new DefaultFileInputSource((File) value);
-        } else if (value instanceof Reader) {
-            inputSource = new DefaultReaderInputSource((Reader) value);
-        } else if (value instanceof URL) {
-            inputSource = new DefaultURLInputSource((URL) value);
+        } else if (value instanceof InputStream inputStream) {
+            inputSource = new DefaultInputStreamInputSource(inputStream);
+        } else if (value instanceof byte[] bytes) {
+            inputSource = new DefaultByteArrayInputSource(bytes);
+        } else if (value instanceof File file) {
+            inputSource = new DefaultFileInputSource(file);
+        } else if (value instanceof Reader reader) {
+            inputSource = new DefaultReaderInputSource(reader);
+        } else if (value instanceof URL url) {
+            inputSource = new DefaultURLInputSource(url);
         } else {
             inputSource = fromObject(value);
         }

@@ -452,9 +452,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
     {
         ComponentEntry<?> entry = null;
 
-        if (roleType instanceof ParameterizedType) {
-            ParameterizedType parameterizedRoleType = (ParameterizedType) roleType;
-
+        if (roleType instanceof ParameterizedType parameterizedRoleType) {
             if (parameterizedRoleType.getRawType() == Provider.class) {
                 // Try to get the javax version of the provider
                 ParameterizedType javaxProviderType = new DefaultParameterizedType(null, javax.inject.Provider.class,
@@ -834,8 +832,8 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
             Object instance = componentEntry.instance.get();
 
             // Give a chance to the component to clean up
-            if (instance instanceof Disposable) {
-                ((Disposable) instance).dispose();
+            if (instance instanceof Disposable disposable) {
+                disposable.dispose();
             }
 
             componentEntry.instance.set(null);
@@ -967,10 +965,10 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
 
                 // Protection to prevent infinite recursion in case a component implementation points to this
                 // instance.
-                if (instance instanceof Disposable && componentEntry.instance.get() != this) {
+                if (instance instanceof Disposable disposable && componentEntry.instance.get() != this) {
                     try {
                         SHUTDOWN_LOGGER.debug("Disposing component [{}]...", instance.getClass().getName());
-                        ((Disposable) instance).dispose();
+                        disposable.dispose();
                         SHUTDOWN_LOGGER.debug("Component [{}] has been disposed", instance.getClass().getName());
                     } catch (ComponentLifecycleException e) {
                         this.logger.error("Failed to dispose component with role type [{}] and role hint [{}]",
