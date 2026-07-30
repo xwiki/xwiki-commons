@@ -2951,49 +2951,6 @@
             </dependency>
           </dependencies>
         </plugin>
-        <!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven
-             build itself.-->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.xwiki.commons</groupId>
-                    <artifactId>
-                      xwiki-commons-tool-remote-resource-plugin
-                    </artifactId>
-                    <versionRange>[10.5-SNAPSHOT,)</versionRange>
-                    <goals>
-                      <goal>process</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore/>
-                  </action>
-                </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.xwiki.platform</groupId>
-                    <artifactId>
-                      xwiki-platform-tool-packager-plugin
-                    </artifactId>
-                    <versionRange>[12.0-SNAPSHOT,)</versionRange>
-                    <goals>
-                      <goal>package</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore/>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
         <!-- Configure the Develocity cache to make some Maven plugin cacheable (since they're not recognized
              as cacheable by Develocity by default) -->
         <plugin>
