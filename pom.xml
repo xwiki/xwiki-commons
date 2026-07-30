@@ -2728,7 +2728,7 @@
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>6.0.2</version>
+          <version>6.1.0</version>
           <configuration>
             <!-- Don't display a warning for these project types -->
             <noWarningProjectTypes>pom</noWarningProjectTypes>
