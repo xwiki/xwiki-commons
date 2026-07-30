@@ -28,24 +28,11 @@
                 </pluginExecution>
                 <pluginExecution>
                   <pluginExecutionFilter>
-                    <groupId>org.xwiki.platform</groupId>
-                    <artifactId>xwiki-platform-tool-packager-plugin</artifactId>
-                    <versionRange>[1.0,)</versionRange>
-                    <goals>
-                      <goal>package</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore/>
-                  </action>
-                </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
                     <groupId>net.alchim31.maven</groupId>
                     <artifactId>yuicompressor-maven-plugin</artifactId>
                     <versionRange>[1.0,)</versionRange>
                     <goals>
-                      <goal>package</goal>
+                      <goal>compress</goal>
                     </goals>
                   </pluginExecutionFilter>
                   <action>
