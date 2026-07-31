@@ -197,9 +197,7 @@ public class JarExtendedURLStreamHandler extends URLStreamHandler
         // 1. absolute (jar:)
         // 2. relative (i.e. url + foo/bar/baz.ext)
         // 3. anchor-only (i.e. url + #foo), which we already did (refOnly)
-        boolean absoluteSpec = spec.length() >= 4
-                ? spec.regionMatches(true, 0, "jar:", 0, 4)
-                : false;
+        boolean absoluteSpec = spec.length() >= 4 && spec.regionMatches(true, 0, "jar:", 0, 4);
         spec = spec.substring(start, limit);
 
         String exceptionMessage = checkNestedProtocol(spec);

@@ -214,7 +214,7 @@ public class ComponentAnnotationProcessor extends AbstractXWikiProcessor<CtClass
                 throw new SpoonException(ioExceptionMessage, e);
             }
             try (Stream<String> stream = Files.lines(this.resolvedComponentsTxtPath)) {
-                stream.forEach((line) -> {
+                stream.forEach(line -> {
                     // Make sure we don't include empty lines
                     if (!line.trim().isEmpty()) {
                         try {

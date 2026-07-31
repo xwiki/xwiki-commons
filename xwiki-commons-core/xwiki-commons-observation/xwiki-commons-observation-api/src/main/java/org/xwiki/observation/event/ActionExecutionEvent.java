@@ -70,8 +70,8 @@ public class ActionExecutionEvent implements Event, Serializable
     @Override
     public boolean equals(Object object)
     {
-        if (object instanceof ActionExecutionEvent) {
-            return getActionName().equals(((ActionExecutionEvent) object).getActionName());
+        if (object instanceof ActionExecutionEvent actionExecutionEvent) {
+            return getActionName().equals(actionExecutionEvent.getActionName());
         }
         return getActionName().equals(object);
     }

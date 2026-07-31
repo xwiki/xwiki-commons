@@ -109,8 +109,8 @@ public class ObservationContextListener extends AbstractEventListener
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        if (event instanceof BeginEvent) {
-            pushCurrentEvent((BeginEvent) event);
+        if (event instanceof BeginEvent beginEvent) {
+            pushCurrentEvent(beginEvent);
         } else if (event instanceof EndEvent) {
             Deque<BeginEvent> events = getCurrentEvents();
 

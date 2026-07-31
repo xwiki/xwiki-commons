@@ -174,14 +174,7 @@ public class XARMojo extends AbstractXARMojo
             return false;
         }
 
-        FilenameFilter packageXmlFiler = new FilenameFilter()
-        {
-            @Override
-            public boolean accept(File dir, String name)
-            {
-                return (name.equals(PACKAGE_XML));
-            }
-        };
+        FilenameFilter packageXmlFiler = (dir, name) -> name.equals(PACKAGE_XML);
         String[] fileNames = resourcesDir.list(packageXmlFiler);
         if (fileNames == null) {
             throw new MojoExecutionException(
@@ -476,9 +469,7 @@ public class XARMojo extends AbstractXARMojo
         Map<String, XAREntry> result = new LinkedHashMap<>();
         Collection elements = filesElement.elements(FILE_TAG);
         for (Object item : elements) {
-            if (item instanceof Element) {
-                Element currentElement = (Element) item;
-
+            if (item instanceof Element currentElement) {
                 XAREntry entry = new XAREntry();
                 entry.setDocument(currentElement.getText());
                 entry.setType(currentElement.attributeValue(TYPE_ATTRIBUTE));

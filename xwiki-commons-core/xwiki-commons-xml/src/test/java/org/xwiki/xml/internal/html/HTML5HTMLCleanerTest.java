@@ -100,6 +100,7 @@ class HTML5HTMLCleanerTest extends DefaultHTMLCleanerTest
      * around as it was the case with HTML 4.
      */
     @Test
+    @Override
     void cleanNonXHTMLLists()
     {
         // Fixing invalid list item.

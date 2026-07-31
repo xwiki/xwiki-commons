@@ -74,8 +74,7 @@ public class SinceFormatCheck extends AbstractCheck
                 FullIdent ident = FullIdent.createFullIdent(ast.getLastChild().getPreviousSibling());
                 this.packageName = ident.getText();
                 return;
-            case TokenTypes.CLASS_DEF:
-            case TokenTypes.INTERFACE_DEF:
+            case TokenTypes.CLASS_DEF, TokenTypes.INTERFACE_DEF:
                 this.classOrInterfaceName = ast.findFirstToken(TokenTypes.IDENT).getText();
                 break;
         }

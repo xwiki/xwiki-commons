@@ -297,7 +297,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
             return true;
         }
 
-        return getParent() != null ? getParent().hasComponent(roleType, roleHint) : false;
+        return getParent() != null && getParent().hasComponent(roleType, roleHint);
     }
 
     @Override
@@ -765,7 +765,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
     {
         // Register new component
         ComponentEntries<T> entries =
-            this.componentEntries.computeIfAbsent(descriptor.getRoleType(), (k) -> new ComponentEntries());
+            this.componentEntries.computeIfAbsent(descriptor.getRoleType(), k -> new ComponentEntries());
         entries.put(descriptor, instance);
 
         // Send event about component registration

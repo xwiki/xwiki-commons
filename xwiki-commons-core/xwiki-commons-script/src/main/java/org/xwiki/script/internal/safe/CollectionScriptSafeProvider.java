@@ -55,9 +55,9 @@ public class CollectionScriptSafeProvider implements ScriptSafeProvider<Collecti
 
         if (unsafe instanceof Set) {
             if (unsafe instanceof LinkedHashSet) {
-                safe = new LinkedHashSet(unsafe.size());
+                safe = LinkedHashSet.newLinkedHashSet(unsafe.size());
             } else {
-                safe = new HashSet(unsafe.size());
+                safe = HashSet.newHashSet(unsafe.size());
             }
         } else {
             safe = new ArrayList(unsafe.size());

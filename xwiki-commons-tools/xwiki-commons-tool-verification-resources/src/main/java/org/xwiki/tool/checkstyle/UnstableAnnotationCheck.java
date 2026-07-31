@@ -100,11 +100,8 @@ public class UnstableAnnotationCheck extends AbstractCheck
                 FullIdent ident = FullIdent.createFullIdent(ast.getLastChild().getPreviousSibling());
                 this.packageName = ident.getText();
                 return;
-            case TokenTypes.CLASS_DEF:
-            case TokenTypes.INTERFACE_DEF:
-            case TokenTypes.ENUM_DEF:
-            case TokenTypes.RECORD_DEF:
-            case TokenTypes.ANNOTATION_DEF:
+            case TokenTypes.CLASS_DEF, TokenTypes.INTERFACE_DEF, TokenTypes.ENUM_DEF, TokenTypes.RECORD_DEF,
+                TokenTypes.ANNOTATION_DEF:
                 this.classOrInterfaceorEnumName = ast.findFirstToken(TokenTypes.IDENT).getText();
                 break;
         }

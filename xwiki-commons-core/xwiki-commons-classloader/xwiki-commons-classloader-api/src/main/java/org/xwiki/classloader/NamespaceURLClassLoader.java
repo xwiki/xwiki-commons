@@ -25,7 +25,6 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLStreamHandlerFactory;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 /**
  * An {@link ExtendedURLClassLoader} associated with a namespace. The namespace can be anything. For example it's used
@@ -56,7 +55,7 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
             }
-        }).collect(Collectors.toList()).toArray(new URL[0]), parent, namespace);
+        }).toList().toArray(new URL[0]), parent, namespace);
     }
 
     /**

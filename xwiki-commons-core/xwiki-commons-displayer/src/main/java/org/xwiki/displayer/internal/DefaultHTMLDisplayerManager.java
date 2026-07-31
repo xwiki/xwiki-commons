@@ -81,8 +81,9 @@ public class DefaultHTMLDisplayerManager implements HTMLDisplayerManager
 
             Type type = targetType;
             Type displayerType = new DefaultParameterizedType(null, HTMLDisplayer.class, type);
-            while (!componentManager.hasComponent(displayerType, roleHint) && type instanceof ParameterizedType) {
-                type = ((ParameterizedType) type).getRawType();
+            while (!componentManager.hasComponent(displayerType, roleHint)
+                && type instanceof ParameterizedType parameterizedType) {
+                type = parameterizedType.getRawType();
                 displayerType = new DefaultParameterizedType(null, HTMLDisplayer.class, type);
             }
             if (!componentManager.hasComponent(displayerType, roleHint)) {

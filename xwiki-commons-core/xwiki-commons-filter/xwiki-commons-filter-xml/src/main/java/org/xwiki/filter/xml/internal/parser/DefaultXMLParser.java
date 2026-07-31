@@ -393,18 +393,16 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
                 block.setParameter(name, value);
             }
-        } else if (!attribute || !isReservedBlockAttribute(name)) {
-            if (block.filterElement != null) {
-                FilterElementParameterDescriptor<?> filterParameter = block.filterElement.getParameter(name);
+        } else if ((!attribute || !isReservedBlockAttribute(name)) && block.filterElement != null) {
+            FilterElementParameterDescriptor<?> filterParameter = block.filterElement.getParameter(name);
 
-                if (filterParameter != null) {
-                    setParameter(block, filterParameter, value);
-                } else {
-                    LOGGER.warn(LOG_UNKNOWN_PARAMETER,
-                        name, value, block.name, Arrays.asList(block.filterElement.getParameters()));
+            if (filterParameter != null) {
+                setParameter(block, filterParameter, value);
+            } else {
+                LOGGER.warn(LOG_UNKNOWN_PARAMETER,
+                    name, value, block.name, Arrays.asList(block.filterElement.getParameters()));
 
-                    block.setParameter(name, value);
-                }
+                block.setParameter(name, value);
             }
         }
     }
@@ -459,11 +457,9 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         Block currentBlock = this.blockStack.isEmpty() ? null : this.blockStack.peek();
 
         if (onBlockElement(qName)) {
-            if (currentBlock != null) {
-                // send previous event
-                if (!currentBlock.beginSent) {
-                    currentBlock.fireBeginEvent(this.filter);
-                }
+            // send previous event
+            if (currentBlock != null && !currentBlock.beginSent) {
+                currentBlock.fireBeginEvent(this.filter);
             }
 
             // push new event
@@ -482,16 +478,14 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                 setParameter(block, attributeName, attributes.getValue(i), true);
             }
         } else {
-            if (onParametersElement(qName)) {
-                // starting a new block parameter
-                if (currentBlock.filterElement != null) {
-                    try {
-                        currentBlock.parametersDOMBuilder = new Sax2Dom();
-                    } catch (ParserConfigurationException e) {
-                        throw new SAXException("Failed to create new Sax2Dom handler", e);
-                    }
-                    currentBlock.parametersDOMBuilder.startDocument();
+            // starting a new block parameter
+            if (onParametersElement(qName) && currentBlock.filterElement != null) {
+                try {
+                    currentBlock.parametersDOMBuilder = new Sax2Dom();
+                } catch (ParserConfigurationException e) {
+                    throw new SAXException("Failed to create new Sax2Dom handler", e);
                 }
+                currentBlock.parametersDOMBuilder.startDocument();
             }
 
             if (currentBlock.parametersDOMBuilder != null) {

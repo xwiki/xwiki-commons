@@ -125,9 +125,7 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
 
     private String getBlockName(String eventName)
     {
-        String blockName = Character.toLowerCase(eventName.charAt(0)) + eventName.substring(1);
-
-        return blockName;
+        return Character.toLowerCase(eventName.charAt(0)) + eventName.substring(1);
     }
 
     private void writeInlineParameters(List<Object> parameters, FilterElementDescriptor element)

@@ -135,8 +135,8 @@ public class LogbackEventGenerator extends UnsynchronizedAppenderBase<ILoggingEv
     {
         Throwable throwable = null;
         IThrowableProxy throwableProxy = event.getThrowableProxy();
-        if (throwableProxy instanceof ThrowableProxy) {
-            throwable = ((ThrowableProxy) throwableProxy).getThrowable();
+        if (throwableProxy instanceof ThrowableProxy proxy) {
+            throwable = proxy.getThrowable();
         }
 
         try {

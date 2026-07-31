@@ -173,8 +173,7 @@ public class ComponentRegistrator
         for (Annotation annotation : annotations) {
             // Is the Annotation (or one of the Annotation annotating the Annotation) tagged with @ComponentList?
             // If so, then call the "value()" method to get the list of Component Declarations
-            if (annotation instanceof ComponentList) {
-                ComponentList componentListAnnotation = (ComponentList) annotation;
+            if (annotation instanceof ComponentList componentListAnnotation) {
                 for (Class<?> componentClass : componentListAnnotation.value()) {
                     componentDeclarations.add(new ComponentDeclaration(componentClass.getName()));
                 }

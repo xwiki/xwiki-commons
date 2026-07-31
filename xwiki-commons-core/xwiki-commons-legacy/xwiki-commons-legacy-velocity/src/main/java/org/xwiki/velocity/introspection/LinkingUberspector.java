@@ -112,8 +112,8 @@ public class LinkingUberspector extends UberspectImpl implements Uberspect, Runt
                 return;
             }
 
-            if (u instanceof RuntimeServicesAware) {
-                ((RuntimeServicesAware) u).setRuntimeServices(this.rsvc);
+            if (u instanceof RuntimeServicesAware runtimeServicesAware) {
+                runtimeServicesAware.setRuntimeServices(this.rsvc);
             }
 
             // Initialize the uberspector

@@ -86,7 +86,7 @@ public abstract class AbstractSymmetricCipherFactoryTest
         0x12, 0x34, 0x56, 0x78, 0x78, 0x56, 0x34, 0x12,
         0x12, 0x34, 0x56, 0x78, 0x78, 0x56, 0x34, 0x12 };
 
-    abstract protected CipherFactory getFactory();
+    protected abstract CipherFactory getFactory();
 
     protected String cipherAlgo;
     protected int blockSize;

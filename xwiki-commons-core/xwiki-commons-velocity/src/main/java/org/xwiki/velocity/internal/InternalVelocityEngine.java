@@ -209,9 +209,9 @@ public class InternalVelocityEngine implements VelocityEngine
         // Save some contextual metadata that needs to be restored
         Resource currentResource = null;
         List<Template> currentMacroLibraries = null;
-        if (context instanceof VelocityContext) {
-            currentResource = ((VelocityContext) context).getCurrentResource();
-            currentMacroLibraries = ((VelocityContext) context).getMacroLibraries();
+        if (context instanceof VelocityContext velocityContext) {
+            currentResource = velocityContext.getCurrentResource();
+            currentMacroLibraries = velocityContext.getMacroLibraries();
         }
 
         try {
@@ -225,8 +225,8 @@ public class InternalVelocityEngine implements VelocityEngine
             Context mergeContext = context != null ? context : this.velocityContextFactory.createContext();
 
             // Set current library template
-            if (context instanceof VelocityContext) {
-                ((VelocityContext) context).setMacroLibraries(List.of(templateEntry.getTemplate()));
+            if (context instanceof VelocityContext velocityContext) {
+                velocityContext.setMacroLibraries(List.of(templateEntry.getTemplate()));
             }
 
             // Execute the velocity script
@@ -239,9 +239,9 @@ public class InternalVelocityEngine implements VelocityEngine
             popNamespace(namespace);
 
             // Restore the current resource
-            if (context instanceof VelocityContext) {
-                ((VelocityContext) context).setCurrentResource(currentResource);
-                ((VelocityContext) context).setMacroLibraries(currentMacroLibraries);
+            if (context instanceof VelocityContext velocityContext) {
+                velocityContext.setCurrentResource(currentResource);
+                velocityContext.setMacroLibraries(currentMacroLibraries);
             }
 
             // Clean the introspection cache to avoid memory leak

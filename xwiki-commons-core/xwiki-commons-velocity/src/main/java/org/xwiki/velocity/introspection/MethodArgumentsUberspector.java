@@ -257,8 +257,7 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
                 } else if (TypeUtils.isInstance(arg, type)) {
                     // Give normal priority to compatible type
                     number += 1;
-                } else if (type instanceof Class) {
-                    Class typeClass = (Class) type;
+                } else if (type instanceof Class typeClass) {
                     if (isPrimitive(typeClass, arg)) {
                         // Class wrapper and corresponding primitive are interpreted as compatible type
                         number += 1;

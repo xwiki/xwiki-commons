@@ -20,7 +20,7 @@
 package org.xwiki.diff.display.internal;
 
 import java.lang.reflect.ParameterizedType;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -131,7 +131,7 @@ class ExtendedDiffDisplayerTest
         UnifiedDiffConfiguration<String, Character> config = unifiedDiffDisplayer.getDefaultConfiguration();
         config.setSplitter(charSplitter);
 
-        Map<Type, String> separators = new HashMap<>();
+        Map<Type, String> separators = new EnumMap<>(Type.class);
         separators.put(Type.ADDED, "+");
         separators.put(Type.DELETED, "-");
         separators.put(Type.UNMODIFIED, "");

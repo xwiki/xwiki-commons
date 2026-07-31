@@ -97,10 +97,8 @@ public class X509KeyFileSystemStore extends AbstractX509FileSystemStore implemen
 
         try {
             if (isMulti(store)) {
-                if (!file.exists()) {
-                    if (!file.mkdirs()) {
-                        throw new KeyStoreException(String.format("Error while creating path [%s]", file));
-                    }
+                if (!file.exists() && !file.mkdirs()) {
+                    throw new KeyStoreException(String.format("Error while creating path [%s]", file));
                 }
 
                 String filename = getCertIdentifier(certificate);
@@ -112,10 +110,8 @@ public class X509KeyFileSystemStore extends AbstractX509FileSystemStore implemen
                 byte[] encodedCertificate = certificate.getEncoded();
                 store(new BufferedWriter(new FileWriter(certfile)), CERTIFICATE, encodedCertificate);
             } else {
-                if (!file.exists()) {
-                    if (!file.createNewFile()) {
-                        throw new KeyStoreException(String.format("Error while creating file [%s]", file));
-                    }
+                if (!file.exists() && !file.createNewFile()) {
+                    throw new KeyStoreException(String.format("Error while creating file [%s]", file));
                 }
 
                 BufferedWriter out = new BufferedWriter(new FileWriter(file));

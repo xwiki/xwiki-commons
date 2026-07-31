@@ -188,7 +188,7 @@ public class DefaultXMLDiff implements XMLDiff
         Set<String> deletedKeys = new HashSet<>(left.keySet());
         deletedKeys.removeAll(right.keySet());
         if (!deletedKeys.isEmpty()) {
-            List<Node> deletedNodes = deletedKeys.stream().map(left::get).collect(Collectors.toList());
+            List<Node> deletedNodes = deletedKeys.stream().map(left::get).toList();
             patch.add(new DeleteDelta<>(new DefaultChunk<>(-1, deletedNodes),
                 new DefaultChunk<>(-1, Collections.emptyList())));
         }
@@ -196,7 +196,7 @@ public class DefaultXMLDiff implements XMLDiff
         Set<String> insertedKeys = new HashSet<>(right.keySet());
         insertedKeys.removeAll(left.keySet());
         if (!insertedKeys.isEmpty()) {
-            List<Node> insertedNodes = insertedKeys.stream().map(right::get).collect(Collectors.toList());
+            List<Node> insertedNodes = insertedKeys.stream().map(right::get).toList();
             patch.add(new InsertDelta<>(new DefaultChunk<>(-1, Collections.emptyList()),
                 new DefaultChunk<>(-1, insertedNodes)));
         }

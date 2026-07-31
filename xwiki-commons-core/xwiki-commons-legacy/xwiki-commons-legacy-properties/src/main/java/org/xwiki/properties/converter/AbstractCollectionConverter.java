@@ -94,8 +94,8 @@ public abstract class AbstractCollectionConverter extends AbstractConverter
     protected Object convertToType(Type targetType, Object value)
     {
         Type genericType = null;
-        if (targetType instanceof ParameterizedType) {
-            genericType = ((ParameterizedType) targetType).getActualTypeArguments()[0];
+        if (targetType instanceof ParameterizedType parameterizedType) {
+            genericType = parameterizedType.getActualTypeArguments()[0];
         }
 
         return parseElements(value.toString(), genericType);

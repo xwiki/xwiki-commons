@@ -20,7 +20,6 @@
 package org.xwiki.context.concurrent;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.context.Execution;
@@ -29,7 +28,9 @@ import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextManager;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Validate {@link ExecutionContextRunnable}.
@@ -42,15 +43,15 @@ class ExecutionContextRunnableTest
     void initializedExecutionContext() throws InterruptedException, ComponentLookupException,
         ExecutionContextException
     {
-        ComponentManager componentMangerMock = Mockito.mock(ComponentManager.class);
-        ExecutionContextManager executionContextManagerMock = Mockito.mock(ExecutionContextManager.class);
-        Execution executionMock = Mockito.mock(Execution.class);
+        ComponentManager componentMangerMock = mock(ComponentManager.class);
+        ExecutionContextManager executionContextManagerMock = mock(ExecutionContextManager.class);
+        Execution executionMock = mock(Execution.class);
 
-        Mockito.when(componentMangerMock.getInstance(ExecutionContextManager.class)).thenReturn(
+        when(componentMangerMock.getInstance(ExecutionContextManager.class)).thenReturn(
             executionContextManagerMock);
-        Mockito.when(componentMangerMock.getInstance(Execution.class)).thenReturn(executionMock);
+        when(componentMangerMock.getInstance(Execution.class)).thenReturn(executionMock);
 
-        Runnable runnableMock = Mockito.mock(Runnable.class);
+        Runnable runnableMock = mock(Runnable.class);
 
         Thread thread = new Thread(new ExecutionContextRunnable(runnableMock, componentMangerMock));
 

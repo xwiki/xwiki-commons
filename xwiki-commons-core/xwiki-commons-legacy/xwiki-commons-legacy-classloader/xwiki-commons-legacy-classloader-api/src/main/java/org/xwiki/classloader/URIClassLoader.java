@@ -258,10 +258,8 @@ public class URIClassLoader extends ExtendedURLClassLoader
         if (attr != null) {
             sealed = attr.getValue(Name.SEALED);
         }
-        if (sealed == null) {
-            if ((attr = man.getMainAttributes()) != null) {
-                sealed = attr.getValue(Name.SEALED);
-            }
+        if (sealed == null && (attr = man.getMainAttributes()) != null) {
+            sealed = attr.getValue(Name.SEALED);
         }
         return "true".equalsIgnoreCase(sealed);
     }

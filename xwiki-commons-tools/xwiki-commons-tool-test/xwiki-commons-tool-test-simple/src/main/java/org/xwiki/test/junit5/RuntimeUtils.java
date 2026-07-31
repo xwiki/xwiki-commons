@@ -58,7 +58,7 @@ public final class RuntimeUtils
             builder.directory(new File(System.getProperty("user.home")));
             Process process = builder.start();
             StreamGobbler streamGobbler =
-                new StreamGobbler(process.getInputStream(), (it) -> output.append('\n').append(it));
+                new StreamGobbler(process.getInputStream(), it -> output.append('\n').append(it));
             executor.submit(streamGobbler);
             process.waitFor();
             result = output.toString();

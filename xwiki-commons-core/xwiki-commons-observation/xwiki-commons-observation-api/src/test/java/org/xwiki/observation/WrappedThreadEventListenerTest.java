@@ -20,10 +20,11 @@
 package org.xwiki.observation;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.xwiki.observation.event.AllEvent;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests for {@link WrappedThreadEventListener}.
@@ -32,7 +33,7 @@ import static org.mockito.Mockito.never;
  */
 class WrappedThreadEventListenerTest
 {
-    private EventListener listenermock = Mockito.mock(EventListener.class);
+    private EventListener listenermock = mock(EventListener.class);
 
     @Test
     void testWrapp()
@@ -40,10 +41,10 @@ class WrappedThreadEventListenerTest
         WrappedThreadEventListener wrapper = new WrappedThreadEventListener(this.listenermock);
 
         wrapper.getName();
-        Mockito.verify(this.listenermock).getName();
+        verify(this.listenermock).getName();
 
         wrapper.getEvents();
-        Mockito.verify(this.listenermock).getEvents();
+        verify(this.listenermock).getEvents();
     }
 
     @Test
@@ -63,15 +64,15 @@ class WrappedThreadEventListenerTest
         Thread thread = new Thread(runnable);
         thread.start();
         thread.join();
-        Mockito.verify(this.listenermock, never()).onEvent(AllEvent.ALLEVENT, null, null);
+        verify(this.listenermock, never()).onEvent(AllEvent.ALLEVENT, null, null);
 
         wrapper.onEvent(AllEvent.ALLEVENT, null, null);
-        Mockito.verify(this.listenermock).onEvent(AllEvent.ALLEVENT, null, null);
+        verify(this.listenermock).onEvent(AllEvent.ALLEVENT, null, null);
 
         thread = new Thread(runnable);
         thread.start();
         thread.join();
-        Mockito.verify(this.listenermock).onEvent(AllEvent.ALLEVENT, null, null);
+        verify(this.listenermock).onEvent(AllEvent.ALLEVENT, null, null);
     }
 
     @Test
@@ -92,14 +93,14 @@ class WrappedThreadEventListenerTest
         Thread thread = new Thread(runnable);
         thread.start();
         thread.join();
-        Mockito.verify(this.listenermock, never()).onEvent(AllEvent.ALLEVENT, null, null);
+        verify(this.listenermock, never()).onEvent(AllEvent.ALLEVENT, null, null);
 
         wrapper.onEvent(AllEvent.ALLEVENT, null, null);
-        Mockito.verify(this.listenermock).onEvent(AllEvent.ALLEVENT, null, null);
+        verify(this.listenermock).onEvent(AllEvent.ALLEVENT, null, null);
 
         thread = new Thread(runnable);
         thread.start();
         thread.join();
-        Mockito.verify(this.listenermock).onEvent(AllEvent.ALLEVENT, null, null);
+        verify(this.listenermock).onEvent(AllEvent.ALLEVENT, null, null);
     }
 }

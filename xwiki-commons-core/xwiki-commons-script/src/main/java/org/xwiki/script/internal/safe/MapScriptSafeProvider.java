@@ -53,9 +53,9 @@ public class MapScriptSafeProvider implements ScriptSafeProvider<Map>
         Map safe;
 
         if (unsafe instanceof LinkedHashMap) {
-            safe = new LinkedHashMap(unsafe.size());
+            safe = LinkedHashMap.newLinkedHashMap(unsafe.size());
         } else {
-            safe = new HashMap(unsafe.size());
+            safe = HashMap.newHashMap(unsafe.size());
         }
 
         for (Map.Entry entry : (Set<Map.Entry>) unsafe.entrySet()) {

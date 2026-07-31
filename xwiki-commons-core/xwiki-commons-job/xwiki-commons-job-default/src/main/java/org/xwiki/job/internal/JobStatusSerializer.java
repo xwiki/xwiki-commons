@@ -82,14 +82,14 @@ public class JobStatusSerializer
         File tempFile = File.createTempFile(file.getName(), ".tmp", parent);
 
         try (OutputStream stream = getOutputStream(tempFile, isZip(file))) {
-            if (stream instanceof ArchiveOutputStream) {
-                ((ArchiveOutputStream) stream).putArchiveEntry(new ZipArchiveEntry("status.xml"));
+            if (stream instanceof ArchiveOutputStream archiveStream) {
+                archiveStream.putArchiveEntry(new ZipArchiveEntry("status.xml"));
             }
 
             write(status, stream);
 
-            if (stream instanceof ArchiveOutputStream) {
-                ((ArchiveOutputStream) stream).closeArchiveEntry();
+            if (stream instanceof ArchiveOutputStream archiveStream) {
+                archiveStream.closeArchiveEntry();
             }
         }
 
