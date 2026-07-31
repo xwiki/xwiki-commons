@@ -47,6 +47,7 @@ public class JavaxToJakartaRequestDispatcher extends AbstractJavaxToJakartaWrapp
     /**
      * @return the wrapped version
      */
+    @Override
     public jakarta.servlet.RequestDispatcher getJakarta()
     {
         return this.jakarta;

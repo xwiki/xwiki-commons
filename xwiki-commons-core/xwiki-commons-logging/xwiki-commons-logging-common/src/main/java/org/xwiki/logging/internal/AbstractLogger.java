@@ -58,9 +58,9 @@ public abstract class AbstractLogger implements Logger
     {
         Object[] actualArray;
         Throwable throwable;
-        if (arguments.length > 0 && arguments[arguments.length - 1] instanceof Throwable) {
+        if (arguments.length > 0 && arguments[arguments.length - 1] instanceof Throwable throwableArgument) {
             actualArray = Arrays.copyOf(arguments, arguments.length - 1);
-            throwable = (Throwable) arguments[arguments.length - 1];
+            throwable = throwableArgument;
         } else {
             actualArray = arguments;
             throwable = null;

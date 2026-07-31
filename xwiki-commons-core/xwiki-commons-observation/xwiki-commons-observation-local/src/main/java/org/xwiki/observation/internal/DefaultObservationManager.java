@@ -318,8 +318,8 @@ public class DefaultObservationManager implements ObservationManager
         // at runtime. Thus ideally we should make this Manager an Event Listener itself. However in order to avoid
         // circular dependencies issues and in order to be more performant we simply handle ComponentDescriptorEvents
         // here to add/remove Event Listeners.
-        if (event instanceof ComponentDescriptorEvent) {
-            onComponentEvent((ComponentDescriptorEvent) event, (ComponentManager) source,
+        if (event instanceof ComponentDescriptorEvent componentDescriptorEvent) {
+            onComponentEvent(componentDescriptorEvent, (ComponentManager) source,
                 (ComponentDescriptor<EventListener>) data);
         }
     }
@@ -372,12 +372,10 @@ public class DefaultObservationManager implements ObservationManager
     {
         try {
             if (componentEvent.getRoleType() == EventListener.class) {
-                if (componentEvent instanceof ComponentDescriptorAddedEvent) {
-                    onEventListenerComponentAdded((ComponentDescriptorAddedEvent) componentEvent, componentManager,
-                        descriptor);
-                } else if (componentEvent instanceof ComponentDescriptorRemovedEvent) {
-                    onEventListenerComponentRemoved((ComponentDescriptorRemovedEvent) componentEvent, componentManager,
-                        descriptor);
+                if (componentEvent instanceof ComponentDescriptorAddedEvent addedEvent) {
+                    onEventListenerComponentAdded(addedEvent, componentManager, descriptor);
+                } else if (componentEvent instanceof ComponentDescriptorRemovedEvent removedEvent) {
+                    onEventListenerComponentRemoved(removedEvent, componentManager, descriptor);
                 } else {
                     this.logger.warn("Ignoring unknown Component event [{}]", componentEvent.getClass().getName());
                 }

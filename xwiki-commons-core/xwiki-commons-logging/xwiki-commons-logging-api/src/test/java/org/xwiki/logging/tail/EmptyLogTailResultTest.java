@@ -19,7 +19,6 @@
  */
 package org.xwiki.logging.tail;
 
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +37,7 @@ class EmptyLogTailResultTest
     @Test
     void stream()
     {
-        assertTrue(this.tail.stream().collect(Collectors.toList()).isEmpty());
+        assertTrue(this.tail.stream().toList().isEmpty());
     }
 
     @Test

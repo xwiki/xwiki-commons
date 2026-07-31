@@ -42,7 +42,7 @@ public class LogbackUtils
     {
         ILoggerFactory loggerFactory = getLoggerFactory();
 
-        return loggerFactory instanceof LoggerContext ? (LoggerContext) loggerFactory : null;
+        return loggerFactory instanceof LoggerContext loggerContext ? loggerContext : null;
     }
 
     /**

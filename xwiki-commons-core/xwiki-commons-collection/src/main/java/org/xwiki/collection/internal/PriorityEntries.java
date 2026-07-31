@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * A concurrent storage for a Map where values are sorted both by comparison and time of insertion.
@@ -57,7 +56,7 @@ public class PriorityEntries<E extends Comparable<E>>
      */
     public PriorityEntries(int initialCapacity)
     {
-        this.map = new LinkedHashMap<>(initialCapacity);
+        this.map = LinkedHashMap.newLinkedHashMap(initialCapacity);
     }
 
     /**
@@ -130,7 +129,7 @@ public class PriorityEntries<E extends Comparable<E>>
             this.lock.readLock().lock();
 
             try {
-                result = this.map.values().stream().sorted().collect(Collectors.toList());
+                result = this.map.values().stream().sorted().toList();
                 // Only set the value if it's still null. If it's not null it means another thread already set it.
                 this.sorted.compareAndSet(null, result);
             } finally {

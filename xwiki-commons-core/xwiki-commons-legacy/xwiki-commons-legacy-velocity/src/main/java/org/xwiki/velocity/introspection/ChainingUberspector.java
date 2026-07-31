@@ -110,15 +110,15 @@ public class ChainingUberspector extends AbstractChainableUberspector implements
             }
 
             // Set the log and runtime services, if applicable
-            if (u instanceof RuntimeServicesAware) {
-                ((RuntimeServicesAware) u).setRuntimeServices(this.rsvc);
+            if (u instanceof RuntimeServicesAware runtimeServicesAware) {
+                runtimeServicesAware.setRuntimeServices(this.rsvc);
             }
 
             // Link it in the chain
-            if (u instanceof ChainableUberspector) {
-                ((ChainableUberspector) u).wrap(this.inner);
-            } else if (u instanceof org.apache.velocity.util.introspection.ChainableUberspector) {
-                ((org.apache.velocity.util.introspection.ChainableUberspector) u).wrap(this.inner);
+            if (u instanceof ChainableUberspector chainableUberspector) {
+                chainableUberspector.wrap(this.inner);
+            } else if (u instanceof org.apache.velocity.util.introspection.ChainableUberspector velocityChainable) {
+                velocityChainable.wrap(this.inner);
             }
             this.inner = u;
         }

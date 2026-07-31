@@ -191,8 +191,8 @@ public class UriBuilder implements Cloneable
         if (this.query == null) {
             queryBuilder = new StringBuilder();
             this.query = queryBuilder;
-        } else if (this.query instanceof StringBuilder) {
-            queryBuilder = (StringBuilder) this.query;
+        } else if (this.query instanceof StringBuilder existingBuilder) {
+            queryBuilder = existingBuilder;
         } else {
             queryBuilder = new StringBuilder(this.query);
             this.query = queryBuilder;

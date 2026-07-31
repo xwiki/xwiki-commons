@@ -90,17 +90,17 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
     private void customizeEvictionMaxEntries(ConfigurationBuilder builder, EntryEvictionConfiguration eec)
     {
         Object maxEntries = eec.get(LRUEvictionConfiguration.MAXENTRIES_ID);
-        if (maxEntries instanceof Number) {
+        if (maxEntries instanceof Number maxEntriesNumber) {
             builder.memory().whenFull(EvictionStrategy.REMOVE);
-            builder.memory().maxCount(((Number) maxEntries).longValue());
+            builder.memory().maxCount(maxEntriesNumber.longValue());
         }
 
     }
 
     private void customizeExpirationWakeUpInterval(ConfigurationBuilder builder, EntryEvictionConfiguration eec)
     {
-        if (eec.get(CONFX_EXPIRATION_WAKEUPINTERVAL) instanceof Number) {
-            builder.expiration().wakeUpInterval(((Number) eec.get(CONFX_EXPIRATION_WAKEUPINTERVAL)).longValue());
+        if (eec.get(CONFX_EXPIRATION_WAKEUPINTERVAL) instanceof Number wakeUpInterval) {
+            builder.expiration().wakeUpInterval(wakeUpInterval.longValue());
         }
     }
 
@@ -128,19 +128,13 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
         PersistenceConfiguration persistenceConfiguration = configuration.persistence();
 
         for (StoreConfiguration storeConfiguration : persistenceConfiguration.stores()) {
-            if (storeConfiguration instanceof SingleFileStoreConfiguration) {
-                SingleFileStoreConfiguration singleFileStoreConfiguration =
-                    (SingleFileStoreConfiguration) storeConfiguration;
-
+            if (storeConfiguration instanceof SingleFileStoreConfiguration singleFileStoreConfiguration) {
                 String location = singleFileStoreConfiguration.location();
 
                 if (StringUtils.isBlank(location)) {
                     return true;
                 }
-            } else if (storeConfiguration instanceof SoftIndexFileStoreConfiguration) {
-                SoftIndexFileStoreConfiguration softIndexFileStorage =
-                    (SoftIndexFileStoreConfiguration) storeConfiguration;
-
+            } else if (storeConfiguration instanceof SoftIndexFileStoreConfiguration softIndexFileStorage) {
                 String location = softIndexFileStorage.dataLocation();
 
                 if (StringUtils.isBlank(location)) {
@@ -164,14 +158,9 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
 
         if (containsIncompleteFileLoader(configuration)) {
             for (StoreConfigurationBuilder<?, ?> store : persistence.stores()) {
-                if (store instanceof SingleFileStoreConfigurationBuilder) {
-                    SingleFileStoreConfigurationBuilder singleFileStore = (SingleFileStoreConfigurationBuilder) store;
-
+                if (store instanceof SingleFileStoreConfigurationBuilder singleFileStore) {
                     singleFileStore.location(createTempDir());
-                } else if (store instanceof SoftIndexFileStoreConfigurationBuilder) {
-                    SoftIndexFileStoreConfigurationBuilder softIndexFileStorage =
-                        (SoftIndexFileStoreConfigurationBuilder) store;
-
+                } else if (store instanceof SoftIndexFileStoreConfigurationBuilder softIndexFileStorage) {
                     String location = createTempDir();
                     softIndexFileStorage.dataLocation(location);
                     softIndexFileStorage.indexLocation(location);

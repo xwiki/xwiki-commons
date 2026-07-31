@@ -137,11 +137,9 @@ public class DefaultConverterManager implements ConverterManager
             converter = getConverter(targetClass);
         }
 
-        if (converter == null) {
-            if (targetType instanceof Class && Enum.class.isAssignableFrom((Class<?>) targetType)) {
-                // It's an Enum
-                converter = (Converter<T>) this.enumConverter;
-            }
+        if (converter == null && targetType instanceof Class && Enum.class.isAssignableFrom((Class<?>) targetType)) {
+            // It's an Enum
+            converter = (Converter<T>) this.enumConverter;
         }
 
         return converter;

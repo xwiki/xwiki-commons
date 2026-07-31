@@ -50,7 +50,7 @@ public class LineSplitter implements Splitter<String, String>
             lines = Collections.emptyList();
         } else {
             lines = new ArrayList<>();
-            new BufferedReader(new StringReader(composite)).lines().forEach(line -> lines.add(line));
+            new BufferedReader(new StringReader(composite)).lines().forEach(lines::add);
             // This allows to differentiate two contents, one with a trailing new line and one without. Otherwise
             // they would be considered as having the same content.
             if (composite.endsWith("\n")) {

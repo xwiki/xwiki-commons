@@ -206,8 +206,8 @@ public class DefaultVelocityManager implements VelocityManager, Initializable
 
         // Make sure the velocity context support ScriptContext synchronization
         VelocityContext currentVelocityContext = getCurrentVelocityContext();
-        if (currentVelocityContext instanceof ScriptVelocityContext) {
-            velocityContext = (ScriptVelocityContext) currentVelocityContext;
+        if (currentVelocityContext instanceof ScriptVelocityContext scriptVelocityContext) {
+            velocityContext = scriptVelocityContext;
         } else {
             velocityContext = new ScriptVelocityContext(currentVelocityContext,
                 this.loggerConfiguration.isDeprecatedLogEnabled(), this.reservedBindings);

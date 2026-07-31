@@ -78,12 +78,12 @@ public abstract class AbstractEventListener implements EventListener
 
         this.events = new ArrayList<>();
         for (Object value : values) {
-            if (value instanceof Event) {
-                this.events.add((Event) value);
+            if (value instanceof Event eventValue) {
+                this.events.add(eventValue);
             } else if (value instanceof Iterable) {
                 ((Iterable<Event>) value).forEach(this.events::add);
-            } else if (value instanceof Event[]) {
-                for (Event event : (Event[]) value) {
+            } else if (value instanceof Event[] eventArray) {
+                for (Event event : eventArray) {
                     this.events.add(event);
                 }
             }

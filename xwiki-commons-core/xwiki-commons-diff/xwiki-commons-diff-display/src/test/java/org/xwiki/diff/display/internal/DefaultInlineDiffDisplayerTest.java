@@ -20,7 +20,7 @@
 package org.xwiki.diff.display.internal;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -145,7 +145,7 @@ class DefaultInlineDiffDisplayerTest
         DiffManager diffManager = this.componentManager.getInstance(DiffManager.class);
         DiffResult<Character> diffResult = diffManager.diff(previousChars, nextChars, null);
 
-        Map<Type, String> separators = new HashMap<>();
+        Map<Type, String> separators = new EnumMap<>(Type.class);
         separators.put(Type.ADDED, "+");
         separators.put(Type.DELETED, "-");
         separators.put(Type.UNMODIFIED, "");

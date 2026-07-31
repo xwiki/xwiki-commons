@@ -117,8 +117,8 @@ public class DefaultScriptSafeProvider implements ScriptSafeProvider
             } catch (ComponentLookupException e) {
                 this.logger.error("Failed to load safe provider for complete type [{}]", type, e);
             }
-        } else if (type instanceof ParameterizedType) {
-            Type rawType = ((ParameterizedType) type).getRawType();
+        } else if (type instanceof ParameterizedType parameterizedType) {
+            Type rawType = parameterizedType.getRawType();
             Type rawRole = new DefaultParameterizedType(null, ScriptSafeProvider.class, rawType);
 
             this.logger.debug("Could not find any safe provider for type [{}]. Trying with [{}]", type, rawType);

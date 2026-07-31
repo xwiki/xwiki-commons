@@ -143,7 +143,7 @@ public class DefaultBeanManager implements BeanManager
         Map<String, Object> alreadyPopulatedProperties = new HashMap<>();
 
         // Lower case provided properties to easily ignore properties name case
-        Map<String, String> lowerKeyMap = new HashMap<>(values.size());
+        Map<String, String> lowerKeyMap = HashMap.newHashMap(values.size());
         for (Map.Entry<String, ?> entry : values.entrySet()) {
             lowerKeyMap.put(entry.getKey().toLowerCase(), entry.getKey());
         }

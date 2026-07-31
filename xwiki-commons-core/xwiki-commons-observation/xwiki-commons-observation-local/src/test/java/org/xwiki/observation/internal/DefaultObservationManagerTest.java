@@ -303,7 +303,7 @@ class DefaultObservationManagerTest
             new ComponentDescriptorAddedEvent(EventListener.class, "onComponentEventWhenRuntimeExceptionInListener");
 
         // Important: initialize listener cache first so that we can reach the call to onComponentEvent().
-        this.manager.notify((Object) -> false, componentManager, null);
+        this.manager.notify(otherEvent -> false, componentManager, null);
 
         EventListener eventListener = componentManager.registerMockComponent(EventListener.class,
             "onComponentEventWhenRuntimeExceptionInListener");
@@ -402,7 +402,7 @@ class DefaultObservationManagerTest
             "onComponentEventWhenRuntimeExceptionInListener");
         when(eventListener.getName()).thenThrow(new RuntimeException("error"));
 
-        this.manager.notify((Object) -> false, componentManager, null);
+        this.manager.notify(otherEvent -> false, componentManager, null);
 
         assertEquals("Failed to add listener. Root cause: [RuntimeException: error]", logCapture.getMessage(0));
     }

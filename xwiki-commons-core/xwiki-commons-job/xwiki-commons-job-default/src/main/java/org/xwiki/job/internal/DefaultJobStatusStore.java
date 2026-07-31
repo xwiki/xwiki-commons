@@ -319,8 +319,8 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
                         try {
                             LoggerTail loggerTail = createLoggerTail(new File(folder, STATUS_LOG_PREFIX), true);
 
-                            if (status instanceof AbstractJobStatus) {
-                                ((AbstractJobStatus) status).setLoggerTail(loggerTail);
+                            if (status instanceof AbstractJobStatus abstractJobStatus) {
+                                abstractJobStatus.setLoggerTail(loggerTail);
                             }
                         } catch (Exception e) {
                             this.logger.error("Failed to load the job status log in [{}]", folder, e);

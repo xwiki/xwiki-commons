@@ -133,6 +133,7 @@ class ReflectionUtilsTest
             // This method is actually used by the getAllMethods reflection test
         }
 
+        @Override
         protected void protectedOverriddenMethod()
         {
             // This method is actually used by the getAllMethods reflection test

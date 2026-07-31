@@ -358,8 +358,7 @@ public class ResourceLoader
             final URLConnection conn;
             try {
                 conn = url.openConnection();
-                if (conn instanceof HttpURLConnection) {
-                    HttpURLConnection httpConn = (HttpURLConnection) conn;
+                if (conn instanceof HttpURLConnection httpConn) {
                     httpConn.setRequestMethod("HEAD");
                     if (httpConn.getResponseCode() >= 400) {
                         return null;
@@ -623,7 +622,7 @@ public class ResourceLoader
             }
         }
 
-        Map<String, URL[]> result = new HashMap<>(prefix2url.size());
+        Map<String, URL[]> result = HashMap.newHashMap(prefix2url.size());
 
         // replace lists with arrays
         for (Map.Entry<String, List<URL>> entry : prefix2url.entrySet()) {

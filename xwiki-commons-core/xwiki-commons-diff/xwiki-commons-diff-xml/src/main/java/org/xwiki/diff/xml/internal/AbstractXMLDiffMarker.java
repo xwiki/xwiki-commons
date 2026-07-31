@@ -137,7 +137,7 @@ public abstract class AbstractXMLDiffMarker implements XMLDiffMarker
         }
 
         List<Delta<Node>> attributesDeltas =
-            patch.stream().filter(delta -> delta.getPrevious().getIndex() < 0).collect(Collectors.toList());
+            patch.stream().filter(delta -> delta.getPrevious().getIndex() < 0).toList();
         if (attributesDeltas.size() == patch.size()) {
             // Only attribute changes.
             for (Delta<Node> delta : attributesDeltas) {
@@ -209,8 +209,8 @@ public abstract class AbstractXMLDiffMarker implements XMLDiffMarker
             diffBlocks.add(getDiffBlock(node));
         } else {
             Patch<Node> childrenPatch = (Patch<Node>) patch;
-            List<Delta<Node>> childrenDeltas = childrenPatch.stream()
-                .filter(delta -> delta.getPrevious().getIndex() >= 0).collect(Collectors.toList());
+            List<Delta<Node>> childrenDeltas =
+                childrenPatch.stream().filter(delta -> delta.getPrevious().getIndex() >= 0).toList();
             if (childrenDeltas.size() < patch.size()) {
                 // There are modified attributes.
                 diffBlocks.add(getDiffBlock(node));
@@ -378,13 +378,13 @@ public abstract class AbstractXMLDiffMarker implements XMLDiffMarker
     protected void applyPatch(Element parent, Patch<Node> patch)
     {
         List<Delta<Node>> attributesDeltas =
-            patch.stream().filter(delta -> delta.getPrevious().getIndex() < 0).collect(Collectors.toList());
+            patch.stream().filter(delta -> delta.getPrevious().getIndex() < 0).toList();
         if (!attributesDeltas.isEmpty()) {
             applyAttributesPatch(parent, attributesDeltas);
         }
 
         List<Delta<Node>> childrenDeltas =
-            patch.stream().filter(delta -> delta.getPrevious().getIndex() >= 0).collect(Collectors.toList());
+            patch.stream().filter(delta -> delta.getPrevious().getIndex() >= 0).toList();
         if (!childrenDeltas.isEmpty()) {
             applyChildrenPatch(parent, childrenDeltas);
         }

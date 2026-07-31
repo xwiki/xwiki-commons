@@ -106,7 +106,7 @@ public class LocalEntityResolver implements EntityResolver2
     // via registerSystemIdFilename
     private final HashMap<String, String> systemIdToFilename = new HashMap<String, String>(69, 0.4f);
 
-    private final HashMap<String, String> systemIdToPublicId = new HashMap<String, String>(14);
+    private final HashMap<String, String> systemIdToPublicId = HashMap.newHashMap(14);
 
     private ClassLoader loader = null;
 
@@ -304,7 +304,7 @@ public class LocalEntityResolver implements EntityResolver2
             "-//W3C//DTD SVG 1.0//EN");
 
         if (enableWhitelist) {
-            whitelist = new HashSet<>(1);
+            whitelist = HashSet.newHashSet(1);
         }
     }
 
@@ -321,7 +321,7 @@ public class LocalEntityResolver implements EntityResolver2
     {
         if (fqdn != null) {
             if (whitelist == null) {
-                whitelist = new HashSet<String>(4);
+                whitelist = HashSet.newHashSet(4);
             }
             whitelist.add(fqdn.toLowerCase(Locale.ROOT));
         }

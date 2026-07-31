@@ -280,11 +280,11 @@ public class InternalFilterTest
     {
         if (actual instanceof StringWriterOutputTarget) {
             assertEquals(expected.toString(), actual.toString());
-        } else if (actual instanceof ByteArrayOutputTarget) {
-            byte[] actualBytes = ((ByteArrayOutputTarget) actual).toByteArray();
+        } else if (actual instanceof ByteArrayOutputTarget byteArrayOutputTarget) {
+            byte[] actualBytes = byteArrayOutputTarget.toByteArray();
 
-            if (expected instanceof FileInputSource) {
-                FileAssert.assertEquals(((FileInputSource) expected).getFile(), actualBytes);
+            if (expected instanceof FileInputSource fileInputSource) {
+                FileAssert.assertEquals(fileInputSource.getFile(), actualBytes);
             } else {
                 byte[] expectedBytes = IOUtils.toByteArray(((InputStreamInputSource) expected).getInputStream());
                 expected.close();

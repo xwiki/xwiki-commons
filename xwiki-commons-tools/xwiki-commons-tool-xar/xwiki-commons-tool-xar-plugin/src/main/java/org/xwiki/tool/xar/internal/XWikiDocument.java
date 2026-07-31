@@ -355,12 +355,10 @@ public class XWikiDocument
             throw new DocumentException("Failed to parse the locale String [" + localeString + "]", e);
         }
 
-        if (validate) {
-            // Make sure the string uses the canonical format
-            if (!localeString.equals(locale.toString())) {
-                throw new DocumentException("Wrong locale format for [" + localeString + "], the expected value is ["
-                    + locale.toString() + "]");
-            }
+        // Make sure the string uses the canonical format
+        if (validate && !localeString.equals(locale.toString())) {
+            throw new DocumentException("Wrong locale format for [" + localeString + "], the expected value is ["
+                + locale.toString() + "]");
         }
 
         return locale;

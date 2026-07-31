@@ -20,7 +20,6 @@
 package org.xwiki.diff.xml.internal;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -90,8 +89,8 @@ public class HTMLImageEmbedder implements XMLDiffFilter
 
     private List<Element> getImages(Document document)
     {
-        return XMLDiffUtils.asList(document.getElementsByTagName("img")).stream().map(image -> (Element) image)
-            .collect(Collectors.toList());
+        return XMLDiffUtils.asList(document.getElementsByTagName("img")).stream()
+            .map(Element.class::cast).toList();
     }
 
     private void before(Element image)

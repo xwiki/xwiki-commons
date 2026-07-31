@@ -434,10 +434,10 @@ public class ExtensionMojoHelper implements AutoCloseable
 
         MutableExtension mutableExtension;
 
-        if (!(extension instanceof MutableExtension)) {
+        if (!(extension instanceof MutableExtension existingMutableExtension)) {
             mutableExtension = new DefaultLocalExtension(null, extension);
         } else {
-            mutableExtension = (MutableExtension) extension;
+            mutableExtension = existingMutableExtension;
         }
 
         // Apply overrides
@@ -983,10 +983,8 @@ public class ExtensionMojoHelper implements AutoCloseable
     {
         // Register dependencies
         for (Artifact artifact : artifacts) {
-            if (!artifact.isOptional()) {
-                if (type == null || type.equals(artifact.getType())) {
-                    serializeExtension(artifact, directory);
-                }
+            if (!artifact.isOptional() && (type == null || type.equals(artifact.getType()))) {
+                serializeExtension(artifact, directory);
             }
         }
     }
