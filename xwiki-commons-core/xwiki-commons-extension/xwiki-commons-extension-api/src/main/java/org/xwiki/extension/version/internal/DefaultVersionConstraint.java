@@ -123,9 +123,9 @@ public class DefaultVersionConstraint implements VersionConstraint
         for (VersionRangeCollection collection : ranges) {
             if (collection.getRanges().size() == 1) {
                 VersionRange range = collection.getRanges().iterator().next();
-                if (range instanceof DefaultVersionRange && ((DefaultVersionRange) range).getLowerBound() != null
-                    && ((DefaultVersionRange) range).getLowerBound()
-                        .equals(((DefaultVersionRange) range).getUpperBound())) {
+                if (range instanceof DefaultVersionRange defaultRange && defaultRange.getLowerBound() != null
+                    && defaultRange.getLowerBound()
+                        .equals(defaultRange.getUpperBound())) {
                     return collection;
                 }
 

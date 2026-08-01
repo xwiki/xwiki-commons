@@ -123,9 +123,7 @@ public abstract class AbstractExtensionPattern implements ExtensionPattern
 
         boolean equals;
 
-        if (obj instanceof ExtensionPattern) {
-            ExtensionPattern otherPattern = (ExtensionPattern) obj;
-
+        if (obj instanceof ExtensionPattern otherPattern) {
             EqualsBuilder builder = new EqualsBuilder();
 
             builder.append(getIdPattern() != null ? getIdPattern().pattern() : null,

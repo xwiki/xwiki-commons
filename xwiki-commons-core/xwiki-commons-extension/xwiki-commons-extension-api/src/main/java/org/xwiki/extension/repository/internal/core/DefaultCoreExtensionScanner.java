@@ -158,7 +158,6 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
     @Override
     public DefaultCoreExtension loadEnvironmentExtension(DefaultCoreExtensionRepository repository)
     {
-        //////////
         // XED
 
         URL xedURL = this.environment.getResource(XED_RESOURCE);
@@ -171,7 +170,6 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
             }
         }
 
-        //////////
         // Others
 
         for (ExtensionScanner scanner : this.scanners) {
@@ -182,7 +180,6 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
             }
         }
 
-        //////////
         // Could not find any valid descriptor
 
         this.logger.debug("No declared environmennt extension");
@@ -317,7 +314,6 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
     private void loadExtensionsFromClassloaders(Map<String, DefaultCoreExtension> extensions,
         DefaultCoreExtensionRepository repository)
     {
-        ////////////////////
         // Get all jar files
 
         this.logger.debug("Searching for JARs...");
@@ -326,7 +322,6 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
         this.logger.debug("Found the following JARs: {}", jars);
 
-        ////////////////////
         // Try to find associated xed files
 
         this.logger.debug("Loading JARs with associated XED files...");
@@ -335,7 +330,6 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
         this.logger.debug("Done loading JARs with associated XED files");
 
-        ////////////////////
         // Try with other scanners (for example find associated Maven files)
 
         this.logger.debug("Loading remaining JARs with registered scanners...");
@@ -346,7 +340,6 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
         this.logger.debug("Done loading JARs with registered scanners");
 
-        ////////////////////
         // Work some magic to guess the rest of the jar files
 
         this.logger.debug("Try to guess the id of some remaining JARs which don't have any know descriptor...");

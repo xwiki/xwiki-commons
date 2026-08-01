@@ -121,12 +121,9 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
     {
         private final InstalledRootFeature root;
 
-        private final ExtensionId feature;
-
-        InstalledFeature(InstalledRootFeature root, ExtensionId feature)
+        InstalledFeature(InstalledRootFeature root)
         {
             this.root = root;
-            this.feature = feature;
         }
     }
 
@@ -419,16 +416,14 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
                         new ExtensionPlanContext(extensionContext, localExtension));
                 }
             } catch (InvalidExtensionException | StackOverflowError e) {
-                if (!dependency.isOptional()) {
-                    // Continue to make sure all extensions are validated in the right order
-                    if (dependencyException == null) {
-                        if (e instanceof InvalidExtensionException) {
-                            dependencyException = (InvalidExtensionException) e;
-                        } else {
-                            dependencyException = new InvalidExtensionException(String.format(
-                                ERROR_VALIDATE_DEPENDENCY,
-                                dependency, namespace), e);
-                        }
+                // Continue to make sure all extensions are validated in the right order
+                if (!dependency.isOptional() && dependencyException == null) {
+                    if (e instanceof InvalidExtensionException invalidExtensionException) {
+                        dependencyException = invalidExtensionException;
+                    } else {
+                        dependencyException = new InvalidExtensionException(String.format(
+                            ERROR_VALIDATE_DEPENDENCY,
+                            dependency, namespace), e);
                     }
                 }
             }
@@ -440,7 +435,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
         }
 
         // Complete local extension installation
-        return localExtension instanceof DefaultInstalledExtension ? (DefaultInstalledExtension) localExtension
+        return localExtension instanceof DefaultInstalledExtension installedExtension ? installedExtension
             : addInstalledExtension(localExtension, namespace, true);
     }
 
@@ -709,7 +704,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
             }
 
             // Create new feature
-            installedFeature = new InstalledFeature(rootInstalledFeature, feature);
+            installedFeature = new InstalledFeature(rootInstalledFeature);
 
             // Add new feature
             installedExtensionsForFeature.put(namespace, installedFeature);

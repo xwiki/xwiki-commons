@@ -290,8 +290,8 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
         // Try configuration
         Object configurationValue = this.configuration.get().getProperty(CK_PREFIX + "recommendedVersions");
         if (configurationValue != null) {
-            if (configurationValue instanceof List) {
-                return (List) configurationValue;
+            if (configurationValue instanceof List list) {
+                return list;
             } else {
                 return ExtensionUtils.importPropertyStringList(configurationValue.toString(), true);
             }

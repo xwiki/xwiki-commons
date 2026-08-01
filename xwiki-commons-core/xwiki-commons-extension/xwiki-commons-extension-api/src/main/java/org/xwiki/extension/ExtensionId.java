@@ -111,9 +111,7 @@ public class ExtensionId implements Serializable, Comparable<ExtensionId>
     @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof ExtensionId) {
-            ExtensionId extensionId = (ExtensionId) obj;
-
+        if (obj instanceof ExtensionId extensionId) {
             return Objects.equals(extensionId.getId(), getId())
                 && Objects.equals(extensionId.getVersion(), getVersion());
         }
@@ -166,14 +164,8 @@ public class ExtensionId implements Serializable, Comparable<ExtensionId>
      */
     public boolean matches(ExtensionId extensionId)
     {
-        if (Objects.equals(getId(), extensionId.getId())) {
-            if (getVersion() == null || extensionId.getVersion() == null
-                || Objects.equals(getVersion(), extensionId.getVersion())) {
-                return true;
-            }
-        }
-
-        return false;
+        return Objects.equals(getId(), extensionId.getId()) && (getVersion() == null
+            || extensionId.getVersion() == null || Objects.equals(getVersion(), extensionId.getVersion()));
     }
 
     /**

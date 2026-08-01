@@ -77,9 +77,7 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
 
     public File getFile(ExtensionId extensionId, String type) throws UnsupportedEncodingException
     {
-        File extensionFile = new File(this.directory, getEncodedPath(extensionId, type));
-
-        return extensionFile;
+        return new File(this.directory, getEncodedPath(extensionId, type));
     }
 
     String getEncodedPath(ExtensionId extensionId, String type) throws UnsupportedEncodingException

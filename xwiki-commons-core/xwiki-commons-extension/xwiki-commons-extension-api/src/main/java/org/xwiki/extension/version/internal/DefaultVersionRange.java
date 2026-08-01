@@ -164,11 +164,10 @@ public class DefaultVersionRange implements VersionRange
             this.lowerBound = !parsedLowerBound.isEmpty() ? new DefaultVersion(parsedLowerBound) : null;
             this.upperBound = !parsedUpperBound.isEmpty() ? new DefaultVersion(parsedUpperBound) : null;
 
-            if (this.upperBound != null && this.lowerBound != null) {
-                if (this.upperBound.compareTo(this.lowerBound) < 0) {
-                    throw new InvalidVersionRangeException(MessageFormat.format(
-                        "Invalid version range [{0}], lower bound must not be greater than upper bound", rawRange));
-                }
+            if (this.upperBound != null && this.lowerBound != null
+                && this.upperBound.compareTo(this.lowerBound) < 0) {
+                throw new InvalidVersionRangeException(MessageFormat.format(
+                    "Invalid version range [{0}], lower bound must not be greater than upper bound", rawRange));
             }
         }
     }
@@ -210,8 +209,8 @@ public class DefaultVersionRange implements VersionRange
     @Override
     public boolean containsVersion(Version version)
     {
-        if (version instanceof DefaultVersion) {
-            return containsVersion((DefaultVersion) version);
+        if (version instanceof DefaultVersion defaultVersion) {
+            return containsVersion(defaultVersion);
         } else {
             return containsVersion(new DefaultVersion(version.getValue()));
         }
@@ -278,8 +277,8 @@ public class DefaultVersionRange implements VersionRange
         if (equals(otherRange)) {
             compatible = true;
         } else {
-            if (otherRange instanceof DefaultVersionRange) {
-                compatible = isCompatible((DefaultVersionRange) otherRange);
+            if (otherRange instanceof DefaultVersionRange defaultRange) {
+                compatible = isCompatible(defaultRange);
             } else {
                 try {
                     compatible = isCompatible(new DefaultVersionRange(otherRange.getValue()));
@@ -367,10 +366,8 @@ public class DefaultVersionRange implements VersionRange
     {
         int compare = version1.compareTo(version2);
 
-        if (compare == 0) {
-            if (included1 != included2) {
-                compare = included1 ? (upper ? -1 : 1) : (upper ? 1 : -1);
-            }
+        if (compare == 0 && included1 != included2) {
+            compare = included1 ? (upper ? -1 : 1) : (upper ? 1 : -1);
         }
 
         return compare;
@@ -387,17 +384,15 @@ public class DefaultVersionRange implements VersionRange
     {
         boolean compatible = true;
 
-        if (upper != null) {
-            if (lower != null) {
-                int comparison = upper.compareTo(lower);
+        if (upper != null && lower != null) {
+            int comparison = upper.compareTo(lower);
 
-                if (comparison > 0) {
-                    compatible = true;
-                } else if (comparison < 0) {
-                    compatible = false;
-                } else {
-                    compatible = upperInclusive && lowerInclusive;
-                }
+            if (comparison > 0) {
+                compatible = true;
+            } else if (comparison < 0) {
+                compatible = false;
+            } else {
+                compatible = upperInclusive && lowerInclusive;
             }
         }
 
@@ -434,11 +429,11 @@ public class DefaultVersionRange implements VersionRange
 
         boolean equals;
 
-        if (obj instanceof DefaultVersionRange) {
-            equals = equals((DefaultVersionRange) obj);
-        } else if (obj instanceof VersionRange) {
+        if (obj instanceof DefaultVersionRange defaultVersionRange) {
+            equals = equals(defaultVersionRange);
+        } else if (obj instanceof VersionRange versionRange) {
             try {
-                equals = equals(new DefaultVersionRange(((VersionRange) obj).getValue()));
+                equals = equals(new DefaultVersionRange(versionRange.getValue()));
             } catch (InvalidVersionRangeException e) {
                 equals = false;
             }

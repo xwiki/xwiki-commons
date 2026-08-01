@@ -113,10 +113,7 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
 
                     if (descriptorURL != null) {
                         try {
-                            DefaultCoreExtension coreExtension =
-                                parseMavenPom(descriptorURL, descriptorURL, repository);
-
-                            return coreExtension;
+                            return parseMavenPom(descriptorURL, descriptorURL, repository);
                         } catch (Exception e) {
                             this.logger.warn("Failed to parse extension descriptor [{}]: [{}]", descriptorURL,
                                 ExceptionUtils.getRootCauseMessage(e));
@@ -320,8 +317,8 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
             for (ExtensionDependency extensionDependency : dependencies) {
                 Dependency dependency;
 
-                if (extensionDependency instanceof MavenExtensionDependency) {
-                    dependency = ((MavenExtensionDependency) extensionDependency).getMavenDependency();
+                if (extensionDependency instanceof MavenExtensionDependency mavenExtensionDependency) {
+                    dependency = mavenExtensionDependency.getMavenDependency();
                 } else {
                     dependency = toMavenDependency(extensionDependency.getId(),
                         extensionDependency.getVersionConstraint().getValue(),
@@ -395,8 +392,8 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
     {
         String artifactId;
 
-        if (extension instanceof MavenExtension) {
-            artifactId = ((MavenExtension) extension).getMavenArtifactId();
+        if (extension instanceof MavenExtension mavenExtension) {
+            artifactId = mavenExtension.getMavenArtifactId();
         } else {
             Matcher matcher = MavenUtils.PARSER_ID.matcher(extension.getId().getId());
             if (!matcher.matches()) {

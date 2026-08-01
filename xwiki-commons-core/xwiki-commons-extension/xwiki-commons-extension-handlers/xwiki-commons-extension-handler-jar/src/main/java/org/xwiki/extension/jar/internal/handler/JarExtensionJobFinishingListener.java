@@ -328,13 +328,12 @@ public class JarExtensionJobFinishingListener extends AbstractEventListener
 
         for (InstalledExtension installedExtension : installedExtensions) {
             // Skip non JAR extensions
-            if (JarExtensionHandler.isSupported(installedExtension.getType())) {
-                if (namespace == null || !installedExtension.isInstalled(null)) {
-                    try {
-                        unloadJAR(installedExtension, namespace, reloadCollection.newExtensions);
-                    } catch (Exception e) {
-                        this.logger.error("Failed to unload installed extension [{}]", installedExtension, e);
-                    }
+            if (JarExtensionHandler.isSupported(installedExtension.getType())
+                && (namespace == null || !installedExtension.isInstalled(null))) {
+                try {
+                    unloadJAR(installedExtension, namespace, reloadCollection.newExtensions);
+                } catch (Exception e) {
+                    this.logger.error("Failed to unload installed extension [{}]", installedExtension, e);
                 }
             }
         }

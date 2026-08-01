@@ -96,9 +96,7 @@ public class DefaultExtensionComponent implements ExtensionComponent
             return true;
         }
 
-        if (obj instanceof ExtensionComponent) {
-            ExtensionComponent otherAuthor = (ExtensionComponent) obj;
-
+        if (obj instanceof ExtensionComponent otherAuthor) {
             return Strings.CS.equals(getRoleType(), otherAuthor.getRoleType())
                 && Strings.CS.equals(getRoleHint(), otherAuthor.getRoleHint());
         } else {

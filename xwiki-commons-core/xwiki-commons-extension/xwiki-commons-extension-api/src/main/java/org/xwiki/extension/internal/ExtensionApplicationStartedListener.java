@@ -93,9 +93,10 @@ public class ExtensionApplicationStartedListener implements EventListener
         // Update core extension informations
         // Only if enabled and only if there is any remote extension repositories enabled
         CoreExtensionRepository coreExtensions = this.coreExtensionsProvider.get();
-        if (coreExtensions instanceof DefaultCoreExtensionRepository && this.configuration.get().resolveCoreExtensions()
+        if (coreExtensions instanceof DefaultCoreExtensionRepository coreExtensionRepository
+            && this.configuration.get().resolveCoreExtensions()
             && !this.repositoryManagerProvider.get().getRepositories().isEmpty()) {
-            ((DefaultCoreExtensionRepository) coreExtensions).updateExtensions();
+            coreExtensionRepository.updateExtensions();
         }
     }
 }

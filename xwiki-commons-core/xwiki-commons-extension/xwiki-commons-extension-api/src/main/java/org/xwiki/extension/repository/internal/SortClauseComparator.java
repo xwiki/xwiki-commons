@@ -64,8 +64,8 @@ public class SortClauseComparator implements Comparator<Extension>
         Object value1 = o1.get(sortClause.getField());
         Object value2 = o2.get(sortClause.getField());
 
-        if (value1 instanceof Comparable && value2 instanceof Comparable) {
-            return ObjectUtils.compare((Comparable) value1, (Comparable) value2)
+        if (value1 instanceof Comparable comparable1 && value2 instanceof Comparable comparable2) {
+            return ObjectUtils.compare(comparable1, comparable2)
                 + (sortClause.getOrder() == ORDER.ASC ? 1 : -1);
         }
 

@@ -101,7 +101,7 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
     /**
      * The standard repositories.
      */
-    private Map<String, ExtensionRepository> standardRepositories = new HashMap<>(3);
+    private Map<String, ExtensionRepository> standardRepositories = HashMap.newHashMap(3);
 
     @Override
     public void initialize() throws InitializationException
@@ -127,10 +127,9 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
     @Override
     public boolean exists(ExtensionId extensionId)
     {
-        if (!this.installedExtensionRepository.exists(extensionId)) {
-            if (!this.localExtensionRepository.exists(extensionId)) {
-                return this.repositoryManager.exists(extensionId);
-            }
+        if (!this.installedExtensionRepository.exists(extensionId)
+            && !this.localExtensionRepository.exists(extensionId)) {
+            return this.repositoryManager.exists(extensionId);
         }
 
         return true;

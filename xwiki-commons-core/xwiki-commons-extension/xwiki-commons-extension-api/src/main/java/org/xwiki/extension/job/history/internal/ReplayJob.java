@@ -129,8 +129,8 @@ public class ReplayJob extends AbstractJob<ReplayRequest, ReplayJobStatus> imple
     private void replay(ExtensionJobHistoryRecord record) throws ComponentLookupException
     {
         // Make sure the executed job log end up in the replay job log
-        if (record.getRequest() instanceof AbstractRequest) {
-            ((AbstractRequest) record.getRequest()).setStatusLogIsolated(false);
+        if (record.getRequest() instanceof AbstractRequest request) {
+            request.setStatusLogIsolated(false);
         }
 
         Job job = this.componentManager.getInstance(Job.class, record.getJobType());

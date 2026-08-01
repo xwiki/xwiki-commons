@@ -578,10 +578,9 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         XWikiRepositorySystemSession session = pushSession();
         try {
-            if (extensionDependency instanceof AetherExtensionDependency) {
-                artifact = ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact();
-                targetMavenType = ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact()
-                    .getExtension();
+            if (extensionDependency instanceof AetherExtensionDependency aetherExtensionDependency) {
+                artifact = aetherExtensionDependency.getAetherDependency().getArtifact();
+                targetMavenType = aetherExtensionDependency.getAetherDependency().getArtifact().getExtension();
 
                 // Find the right version
                 if (!extensionDependency.getVersionConstraint().getRanges().isEmpty()) {
@@ -832,9 +831,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             exclusions.add(convert(exclusion));
         }
 
-        Dependency result = new Dependency(artifact, dependency.getScope(), dependency.isOptional(), exclusions);
-
-        return result;
+        return new Dependency(artifact, dependency.getScope(), dependency.isOptional(), exclusions);
     }
 
     private Exclusion convert(org.apache.maven.model.Exclusion exclusion)
@@ -935,8 +932,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         // Add other repositories (and filter first one)
         for (ExtensionRepository extensionRepository : extensionRepositories) {
-            if (extensionRepository instanceof AetherExtensionRepository) {
-                RemoteRepository repository = ((AetherExtensionRepository) extensionRepository).getRemoteRepository();
+            if (extensionRepository instanceof AetherExtensionRepository aetherRepository) {
+                RemoteRepository repository = aetherRepository.getRemoteRepository();
 
                 if (this.remoteRepository != repository) {
                     reposirories.add(repository);

@@ -105,9 +105,7 @@ public class DefaultExtensionSupportPlan implements ExtensionSupportPlan
             return true;
         }
 
-        if (obj instanceof ExtensionSupportPlan) {
-            ExtensionSupportPlan otherSupportPlan = (ExtensionSupportPlan) obj;
-
+        if (obj instanceof ExtensionSupportPlan otherSupportPlan) {
             EqualsBuilder builder = new EqualsBuilder();
 
             builder.append(getSupporter(), otherSupportPlan.getSupporter());

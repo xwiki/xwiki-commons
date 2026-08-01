@@ -103,9 +103,7 @@ public class DefaultExtensionAuthor implements ExtensionAuthor
             return true;
         }
 
-        if (obj instanceof ExtensionAuthor) {
-            ExtensionAuthor otherAuthor = (ExtensionAuthor) obj;
-
+        if (obj instanceof ExtensionAuthor otherAuthor) {
             return Strings.CS.equals(this.name, otherAuthor.getName())
                 && Objects.equals(getURLString(), otherAuthor.getURLString());
         } else {

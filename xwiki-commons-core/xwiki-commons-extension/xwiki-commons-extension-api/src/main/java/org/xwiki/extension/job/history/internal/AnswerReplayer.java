@@ -57,8 +57,8 @@ public class AnswerReplayer extends AbstractEventListener
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        if (source instanceof ReplayJobStatus) {
-            replayAnswer((QuestionAskedEvent) event, (ReplayJobStatus) source);
+        if (source instanceof ReplayJobStatus replayJobStatus) {
+            replayAnswer((QuestionAskedEvent) event, replayJobStatus);
         }
     }
 

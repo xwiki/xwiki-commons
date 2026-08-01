@@ -171,10 +171,9 @@ public abstract class AbstractInstalledExtensionRepository<E extends InstalledEx
                 }
             } else {
                 for (String namespace : namespaces) {
-                    if (installedExtension.isInstalled(namespace)) {
-                        if (RepositoryUtils.matches(patternMatcher, query.getFilters(), installedExtension)) {
-                            result.add(installedExtension);
-                        }
+                    if (installedExtension.isInstalled(namespace)
+                        && RepositoryUtils.matches(patternMatcher, query.getFilters(), installedExtension)) {
+                        result.add(installedExtension);
                     }
                 }
             }

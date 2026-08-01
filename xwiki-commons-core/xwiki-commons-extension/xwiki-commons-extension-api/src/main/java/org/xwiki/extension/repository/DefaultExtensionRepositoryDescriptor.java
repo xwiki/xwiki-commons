@@ -167,9 +167,7 @@ public class DefaultExtensionRepositoryDescriptor implements ExtensionRepository
     @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof ExtensionRepositoryDescriptor) {
-            ExtensionRepositoryDescriptor repository = (ExtensionRepositoryDescriptor) obj;
-
+        if (obj instanceof ExtensionRepositoryDescriptor repository) {
             return Objects.equals(getId(), repository.getId()) && Objects.equals(getType(), repository.getType())
                 && Objects.equals(getURI(), repository.getURI())
                 && Objects.equals(getProperties(), repository.getProperties());

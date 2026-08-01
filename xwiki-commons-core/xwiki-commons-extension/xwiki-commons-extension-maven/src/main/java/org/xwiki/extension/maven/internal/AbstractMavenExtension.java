@@ -129,9 +129,7 @@ public abstract class AbstractMavenExtension extends AbstractExtension implement
     {
         super(repository, extension);
 
-        if (extension instanceof MavenExtension) {
-            MavenExtension mavenExtension = (MavenExtension) extension;
-
+        if (extension instanceof MavenExtension mavenExtension) {
             setMavenArtifactId(mavenExtension.getMavenArtifactId());
             setMavenGroupId(mavenExtension.getMavenGroupId());
         }

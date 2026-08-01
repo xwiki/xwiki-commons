@@ -76,9 +76,7 @@ public class DefaultExtensionSupporter implements ExtensionSupporter
             return true;
         }
 
-        if (obj instanceof ExtensionSupporter) {
-            ExtensionSupporter otherSupporter = (ExtensionSupporter) obj;
-
+        if (obj instanceof ExtensionSupporter otherSupporter) {
             return Strings.CS.equals(this.name, otherSupporter.getName())
                 && Objects.equals(Objects.toString(getURL()), Objects.toString(otherSupporter.getURL()));
         } else {
