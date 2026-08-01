@@ -431,11 +431,11 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                         block.setParameter(filterParameter.getIndex(), XMLUtils.emptyValue(typeClass));
                     }
 
-                    LOGGER.warn("Unsuported conversion to type [{}] for value [{}]", type, value);
+                    LOGGER.warn("Unsupported conversion to type [{}] for value [{}]", type, value);
                 }
             }
         } else {
-            LOGGER.warn("Unsuported type [{}] for value [{}]", value.getClass(), value);
+            LOGGER.warn("Unsupported type [{}] for value [{}]", value.getClass(), value);
         }
     }
 
@@ -588,7 +588,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         FilterElementDescriptor element = this.filterDescriptor.getElement(blockName);
 
         if (element == null) {
-            LOGGER.warn("Uknown filter element [{}]", blockName);
+            LOGGER.warn("Unknown filter element [{}]", blockName);
         }
 
         return new Block(qName, element, this.elementDepth);

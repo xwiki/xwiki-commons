@@ -117,7 +117,7 @@ public class ObservationContextListener extends AbstractEventListener
             if (events != null && !events.isEmpty()) {
                 events.pop();
             } else {
-                this.logger.error("Can't find any begin event corresponding to [{}]", event);
+                this.logger.warn("Can't find any begin event corresponding to [{}]", event);
             }
         }
     }

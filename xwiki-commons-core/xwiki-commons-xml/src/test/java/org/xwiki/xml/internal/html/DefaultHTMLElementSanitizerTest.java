@@ -58,12 +58,12 @@ import static org.mockito.Mockito.when;
 @DefaultHTMLElementSanitizerComponentList
 class DefaultHTMLElementSanitizerTest
 {
-    private static final String EXPECTED_ERROR_LOADING_FOO =
+    private static final String EXPECTED_WARNING_LOADING_FOO =
         "Couldn't load the configured HTMLElementSanitizer with hint [foo], falling back to "
             + "the default secure implementation: [ComponentLookupException: Can't find descriptor for the "
             + "component with type [interface org.xwiki.xml.html.HTMLElementSanitizer] and hint [foo]]";
 
-    private static final String EXPECTED_ERROR_LOADING_FOO_FROM_EXECUTION = "Couldn't load the HTMLElementSanitizer "
+    private static final String EXPECTED_WARNING_LOADING_FOO_FROM_EXECUTION = "Couldn't load the HTMLElementSanitizer "
         + "with hint [foo] from the execution context, falling back to the configured implementation: "
         + "[ComponentLookupException: Can't find descriptor for the component with type "
         + "[interface org.xwiki.xml.html.HTMLElementSanitizer] and hint [foo]]";
@@ -73,7 +73,7 @@ class DefaultHTMLElementSanitizerTest
     private static final String INSECURE = "insecure";
 
     @RegisterExtension
-    private final LogCaptureExtension logCaptureExtension = new LogCaptureExtension(LogLevel.ERROR);
+    private final LogCaptureExtension logCaptureExtension = new LogCaptureExtension(LogLevel.WARN);
 
     @MockComponent
     @Named("restricted")
@@ -114,7 +114,7 @@ class DefaultHTMLElementSanitizerTest
 
         HTMLElementSanitizer htmlElementSanitizer = componentManager.getInstance(HTMLElementSanitizer.class);
 
-        assertEquals(EXPECTED_ERROR_LOADING_FOO, this.logCaptureExtension.getMessage(0));
+        assertEquals(EXPECTED_WARNING_LOADING_FOO, this.logCaptureExtension.getMessage(0));
         assertFalse(htmlElementSanitizer.isElementAllowed(FOO));
     }
 
@@ -130,7 +130,7 @@ class DefaultHTMLElementSanitizerTest
         assertEquals("Couldn't initialize the default secure HTMLElementSanitizer",
             exception.getCause().getMessage());
 
-        assertEquals(EXPECTED_ERROR_LOADING_FOO, this.logCaptureExtension.getMessage(0));
+        assertEquals(EXPECTED_WARNING_LOADING_FOO, this.logCaptureExtension.getMessage(0));
     }
 
     @Test
@@ -169,6 +169,6 @@ class DefaultHTMLElementSanitizerTest
 
         assertFalse(htmlElementSanitizer.isElementAllowed(FOO));
 
-        assertEquals(EXPECTED_ERROR_LOADING_FOO_FROM_EXECUTION, this.logCaptureExtension.getMessage(0));
+        assertEquals(EXPECTED_WARNING_LOADING_FOO_FROM_EXECUTION, this.logCaptureExtension.getMessage(0));
     }
 }

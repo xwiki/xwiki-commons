@@ -91,7 +91,7 @@ public class DefaultHTMLElementSanitizer implements HTMLElementSanitizer, Initia
         try {
             result = componentManager.getInstance(HTMLElementSanitizer.class, hint);
         } catch (ComponentLookupException e) {
-            this.logger.error("Couldn't load the configured HTMLElementSanitizer with hint [{}], falling back to the "
+            this.logger.warn("Couldn't load the configured HTMLElementSanitizer with hint [{}], falling back to the "
                 + "default secure implementation: [{}]", hint, ExceptionUtils.getRootCauseMessage(e));
             result = componentManager.getInstance(HTMLElementSanitizer.class, SecureHTMLElementSanitizer.HINT);
         }
@@ -111,7 +111,7 @@ public class DefaultHTMLElementSanitizer implements HTMLElementSanitizer, Initia
             try {
                 result = this.componentManagerProvider.get().getInstance(HTMLElementSanitizer.class, hint);
             } catch (ComponentLookupException e) {
-                this.logger.error("Couldn't load the HTMLElementSanitizer with hint [{}] from the execution context, "
+                this.logger.warn("Couldn't load the HTMLElementSanitizer with hint [{}] from the execution context, "
                     + "falling back to the configured implementation: [{}]", hint,
                     ExceptionUtils.getRootCauseMessage(e));
             }
