@@ -74,8 +74,7 @@ public final class VersionUtils
         for (VersionRangeCollection collection : ranges) {
             if (collection.getRanges().size() == 1) {
                 VersionRange range = collection.getRanges().iterator().next();
-                if (range instanceof DefaultVersionRange) {
-                    DefaultVersionRange defaultRange = (DefaultVersionRange) range;
+                if (range instanceof DefaultVersionRange defaultRange) {
                     Version lowerBound = defaultRange.getLowerBound();
                     if (lowerBound != null && (lowerBound.equals(defaultRange.getUpperBound()))) {
                         return lowerBound;

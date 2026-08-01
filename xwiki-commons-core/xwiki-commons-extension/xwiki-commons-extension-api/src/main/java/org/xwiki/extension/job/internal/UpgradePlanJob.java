@@ -185,10 +185,9 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
             }
 
             // Only upgrade beta if the current is beta etc.
-            if (extension.getId().getVersion().getType().ordinal() <= version.getType().ordinal()) {
-                if (tryInstallExtension(new ExtensionId(extension.getId().getId(), version), namespace)) {
-                    break;
-                }
+            if (extension.getId().getVersion().getType().ordinal() <= version.getType().ordinal()
+                && tryInstallExtension(new ExtensionId(extension.getId().getId(), version), namespace)) {
+                break;
             }
         }
     }

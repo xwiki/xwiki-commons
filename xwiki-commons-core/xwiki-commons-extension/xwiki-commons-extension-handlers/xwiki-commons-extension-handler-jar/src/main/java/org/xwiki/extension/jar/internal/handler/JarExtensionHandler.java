@@ -123,11 +123,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler
         }
         // ** contrib extensions which support version of XWiki older than 9.0RC1. We support a custom property which
         // does not have any effect on older versions of XWiki
-        if (JarExtensionHandler.WEBJAR.equals(extension.getProperty(JarExtensionHandler.PROPERTY_TYPE))) {
-            return true;
-        }
-
-        return false;
+        return JarExtensionHandler.WEBJAR.equals(extension.getProperty(JarExtensionHandler.PROPERTY_TYPE));
     }
 
     @Override

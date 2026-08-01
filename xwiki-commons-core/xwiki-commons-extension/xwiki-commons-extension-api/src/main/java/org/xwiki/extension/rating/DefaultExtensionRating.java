@@ -84,8 +84,7 @@ public class DefaultExtensionRating implements ExtensionRating
             return true;
         }
 
-        if (obj instanceof ExtensionRating) {
-            ExtensionRating rating = (ExtensionRating) obj;
+        if (obj instanceof ExtensionRating rating) {
             return this.totalVotes == rating.getTotalVotes() && this.averageVote == rating.getAverageVote()
                 && this.repository == rating.getRepository();
         } else {

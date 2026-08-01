@@ -20,7 +20,6 @@
 package org.xwiki.extension.job.history.internal;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -183,14 +182,8 @@ public class DefaultExtensionJobHistory implements ExtensionJobHistory, Initiali
 
     private List<File> getHistoryFiles()
     {
-        File[] files = this.config.getStorage().listFiles(new FileFilter()
-        {
-            @Override
-            public boolean accept(File file)
-            {
-                return file.isFile() && file.getName().endsWith(".xml");
-            }
-        });
+        File[] files =
+            this.config.getStorage().listFiles(file -> file.isFile() && file.getName().endsWith(".xml"));
         List<File> fileList = files != null ? Arrays.asList(files) : Collections.<File>emptyList();
         Collections.sort(fileList, Collections.reverseOrder());
         return fileList;

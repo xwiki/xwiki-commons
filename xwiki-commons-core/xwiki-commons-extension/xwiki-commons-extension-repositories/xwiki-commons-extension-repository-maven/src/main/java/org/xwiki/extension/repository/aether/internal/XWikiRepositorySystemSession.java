@@ -201,9 +201,8 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
      */
     public void setUserAgent(String userAgent)
     {
-        if (this.session instanceof DefaultRepositorySystemSession) {
-            ((DefaultRepositorySystemSession) this.session).setConfigProperty(ConfigurationProperties.USER_AGENT,
-                userAgent);
+        if (this.session instanceof DefaultRepositorySystemSession defaultSession) {
+            defaultSession.setConfigProperty(ConfigurationProperties.USER_AGENT, userAgent);
         }
     }
 
@@ -212,9 +211,9 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
      */
     public void addConfigurationProperties(Map<String, ?> properties)
     {
-        if (this.session instanceof DefaultRepositorySystemSession) {
+        if (this.session instanceof DefaultRepositorySystemSession defaultSession) {
             for (Map.Entry<String, ?> entry : properties.entrySet()) {
-                ((DefaultRepositorySystemSession) this.session).setConfigProperty(entry.getKey(), entry.getValue());
+                defaultSession.setConfigProperty(entry.getKey(), entry.getValue());
             }
         }
     }

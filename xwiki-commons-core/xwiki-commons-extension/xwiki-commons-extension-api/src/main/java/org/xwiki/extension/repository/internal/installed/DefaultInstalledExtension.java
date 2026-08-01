@@ -436,7 +436,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
 
             Map<String, Map<String, Object>> newNamespaces;
             if (namespaces != null) {
-                newNamespaces = new LinkedHashMap<>(namespaces.size());
+                newNamespaces = LinkedHashMap.newLinkedHashMap(namespaces.size());
                 for (Map.Entry<String, Map<String, Object>> entry : namespaces.entrySet()) {
                     if (!namespace.equals(entry.getKey())) {
                         newNamespaces.put(entry.getKey(), entry.getValue());

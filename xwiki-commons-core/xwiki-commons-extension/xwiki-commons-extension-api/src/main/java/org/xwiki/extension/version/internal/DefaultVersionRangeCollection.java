@@ -202,8 +202,8 @@ public class DefaultVersionRangeCollection implements VersionRangeCollection
         for (VersionRange versionRange : this.ranges) {
             boolean compatible;
 
-            if (otherRange instanceof VersionRangeCollection) {
-                compatible = ((VersionRangeCollection) otherRange).isCompatible(versionRange);
+            if (otherRange instanceof VersionRangeCollection rangeCollection) {
+                compatible = rangeCollection.isCompatible(versionRange);
             } else {
                 compatible = versionRange.isCompatible(otherRange);
             }

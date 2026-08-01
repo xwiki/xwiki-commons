@@ -59,9 +59,9 @@ public class DefaultExtensionSession implements ExtensionSession
     public void dispose()
     {
         for (Map.Entry<String, Object> entry : this.map.entrySet()) {
-            if (entry.getValue() instanceof Closeable) {
+            if (entry.getValue() instanceof Closeable closeable) {
                 try {
-                    ((Closeable) entry.getValue()).close();
+                    closeable.close();
                 } catch (IOException e) {
                     LOGGER.warn("Failed to close the value associated with the key [{}]: [{}]", entry.getKey(),
                         ExceptionUtils.getRootCauseMessage(e));

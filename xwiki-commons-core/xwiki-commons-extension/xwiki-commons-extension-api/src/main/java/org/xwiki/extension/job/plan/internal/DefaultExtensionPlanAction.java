@@ -155,8 +155,7 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
 
         boolean equals;
 
-        if (obj instanceof ExtensionPlanAction) {
-            ExtensionPlanAction epa = (ExtensionPlanAction) obj;
+        if (obj instanceof ExtensionPlanAction epa) {
             equals = this.extension.equals(epa.getExtension()) && Objects.equals(this.namespace, epa.getNamespace());
         } else {
             equals = false;

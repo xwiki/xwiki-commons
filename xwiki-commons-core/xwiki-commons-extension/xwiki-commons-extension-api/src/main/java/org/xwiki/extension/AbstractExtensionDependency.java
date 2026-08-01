@@ -343,9 +343,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
 
         boolean equals;
 
-        if (obj instanceof ExtensionDependency) {
-            ExtensionDependency otherDependency = (ExtensionDependency) obj;
-
+        if (obj instanceof ExtensionDependency otherDependency) {
             EqualsBuilder builder = new EqualsBuilder();
 
             builder.append(getId(), otherDependency.getId());

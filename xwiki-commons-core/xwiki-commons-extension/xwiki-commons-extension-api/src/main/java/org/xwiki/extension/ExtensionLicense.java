@@ -80,8 +80,7 @@ public class ExtensionLicense
             return true;
         }
 
-        if (obj instanceof ExtensionLicense) {
-            ExtensionLicense license = (ExtensionLicense) obj;
+        if (obj instanceof ExtensionLicense license) {
             // No need to take care of the content, if it's the same name, it's the same license
             return Strings.CS.equals(getName(), license.getName());
         }

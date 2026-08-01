@@ -433,12 +433,11 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
                 return true;
             }
 
-            if (existingNode.versionConstraint != null) {
-                if (!existingNode.versionConstraint.isCompatible(extensionId.getVersion())) {
-                    throw new InstallException(
-                        String.format("Extension feature [%s] is incompatible with existing constraint [%s]",
-                            extensionId, existingNode.versionConstraint));
-                }
+            if (existingNode.versionConstraint != null
+                && !existingNode.versionConstraint.isCompatible(extensionId.getVersion())) {
+                throw new InstallException(
+                    String.format("Extension feature [%s] is incompatible with existing constraint [%s]",
+                        extensionId, existingNode.versionConstraint));
             }
         }
 
@@ -549,12 +548,11 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
             }
 
             // If incompatible root extension fail
-            if (namespace != null && installedExtension.isInstalled(null)) {
-                if (!getRequest().isRootModificationsAllowed()) {
-                    throw new InstallException(
-                        String.format("Dependency [%s] is incompatible with installed root extension [%s]",
-                            extensionDependency, installedExtension.getId()));
-                }
+            if (namespace != null && installedExtension.isInstalled(null)
+                && !getRequest().isRootModificationsAllowed()) {
+                throw new InstallException(
+                    String.format("Dependency [%s] is incompatible with installed root extension [%s]",
+                        extensionDependency, installedExtension.getId()));
             }
 
             // If not compatible with it, try to merge dependencies constraint of all backward dependencies to find a
@@ -716,9 +714,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
             installMandatoryExtensionDependency(extensionDependency, null, parentBranch, extensionContext, parents);
 
             return;
-        } else if (plannedResult instanceof ModifableExtensionPlanNode) {
-            ModifableExtensionPlanNode existingNode = (ModifableExtensionPlanNode) plannedResult;
-
+        } else if (plannedResult instanceof ModifableExtensionPlanNode existingNode) {
             // Already exists in the plan but we don't trust it (might have been previously been installed with totally
             // different managed dependencies and a ton of exclusions) so we check the dependencies anyway
             List<ModifableExtensionPlanNode> children =
@@ -895,13 +891,11 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
     private ModifableExtensionPlanNode installExtension(ExtensionId extensionId, boolean dependency, String namespace)
         throws InstallException
     {
-        // Check if the feature is a root extension
-        if (namespace != null) {
-            // Check if the extension already exist on root, throw exception if not allowed
-            if (checkRootExtension(extensionId.getId())) {
-                // Restart install on root
-                return installExtension(extensionId, dependency, null);
-            }
+        // Check if the feature is a root extension, and if it already exists on root throw an exception if
+        // it is not allowed
+        if (namespace != null && checkRootExtension(extensionId.getId())) {
+            // Restart install on root
+            return installExtension(extensionId, dependency, null);
         }
 
         this.progressManager.pushLevelProgress(2, this);
@@ -943,8 +937,8 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
     private Extension resolveExtension(ExtensionId extensionId) throws InstallException
     {
         // Check if the extension is already resolved
-        if (extensionId instanceof AbstractExtensionRequest.ExtensionExtensionId) {
-            return ((AbstractExtensionRequest.ExtensionExtensionId) extensionId).getExtension();
+        if (extensionId instanceof AbstractExtensionRequest.ExtensionExtensionId extensionExtensionId) {
+            return extensionExtensionId.getExtension();
         }
 
         // Check if the extension is already in local repository
@@ -1035,12 +1029,10 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
 
         // Check if the namespace is compatible with the Extension
         if (!allowed) {
-            if (namespace != null) {
-                if (getRequest().isRootModificationsAllowed()) {
-                    // Try to install it on root namespace
-                    return installExtension(sourceExtension, rewrittenExtension, dependency, null, initialDependency,
-                        extensionContext, parents);
-                }
+            if (namespace != null && getRequest().isRootModificationsAllowed()) {
+                // Try to install it on root namespace
+                return installExtension(sourceExtension, rewrittenExtension, dependency, null, initialDependency,
+                    extensionContext, parents);
             }
 
             // Extension is not allowed on target namespace
@@ -1052,14 +1044,12 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
         // Check if the extension is already in the install plan
         checkExistingPlanNodeExtension(rewrittenExtension, namespace);
 
-        // Check if the extension matches a root extension
-        if (namespace != null) {
-            // Check if the extension already exist on root, throw exception if not allowed
-            if (checkRootExtension(rewrittenExtension)) {
-                // Restart install on root
-                return installExtension(sourceExtension, rewrittenExtension, dependency, null, initialDependency,
-                    extensionContext, parents);
-            }
+        // Check if the extension matches a root extension, and if it already exists on root throw an exception
+        // if it is not allowed
+        if (namespace != null && checkRootExtension(rewrittenExtension)) {
+            // Restart install on root
+            return installExtension(sourceExtension, rewrittenExtension, dependency, null, initialDependency,
+                extensionContext, parents);
         }
 
         // Check if the extension is already installed

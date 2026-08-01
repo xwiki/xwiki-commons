@@ -138,8 +138,8 @@ public class ExtensionJobHistoryRecorder extends AbstractEventListener
 
     private List<String> getActualJobId(JobStatus jobStatus)
     {
-        if (jobStatus instanceof ReplayJobStatus) {
-            ExtensionJobHistoryRecord currentRecord = ((ReplayJobStatus) jobStatus).getCurrentRecord();
+        if (jobStatus instanceof ReplayJobStatus replayJobStatus) {
+            ExtensionJobHistoryRecord currentRecord = replayJobStatus.getCurrentRecord();
             return currentRecord != null ? currentRecord.getRequest().getId() : null;
         } else {
             return jobStatus.getRequest().getId();

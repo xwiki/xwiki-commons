@@ -124,19 +124,12 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
     public void updateExtensions()
     {
         // Start a background thread to get more details about the found extensions
-        Thread thread = new Thread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                // Gather more metadata about found incomplete core extensions from registered repositories
-                DefaultCoreExtensionRepository.this.scanner
-                    .updateExtensions(DefaultCoreExtensionRepository.this.extensions.values());
+        Thread thread = new Thread(() -> {
+            // Gather more metadata about found incomplete core extensions from registered repositories
+            this.scanner.updateExtensions(this.extensions.values());
 
-                // Update the features index in case new features came in with the update
-                DefaultCoreExtensionRepository.this.extensions.values()
-                    .forEach(DefaultCoreExtensionRepository.this::addExtensionFeatures);
-            }
+            // Update the features index in case new features came in with the update
+            this.extensions.values().forEach(this::addExtensionFeatures);
         });
 
         thread.setPriority(Thread.MIN_PRIORITY);
@@ -198,12 +191,8 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
     {
         Extension extension = getCoreExtension(extensionId.getId());
 
-        if (extension == null
-            || (extensionId.getVersion() != null && !extension.getId().getVersion().equals(extensionId.getVersion()))) {
-            return false;
-        }
-
-        return true;
+        return extension != null
+            && (extensionId.getVersion() == null || extension.getId().getVersion().equals(extensionId.getVersion()));
     }
 
     @Override

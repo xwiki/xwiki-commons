@@ -322,8 +322,7 @@ public final class MavenUtils
 
         // Resolve properties
         for (Map.Entry<Object, Object> entry : model.getProperties().entrySet()) {
-            if (entry.getValue() instanceof String) {
-                String value = (String) entry.getValue();
+            if (entry.getValue() instanceof String value) {
                 entry.setValue(value.replace("${project.version}", model.getVersion()));
             }
         }

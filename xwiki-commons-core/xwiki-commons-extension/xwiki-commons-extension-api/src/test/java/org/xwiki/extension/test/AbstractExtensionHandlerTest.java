@@ -301,7 +301,7 @@ public abstract class AbstractExtensionHandlerTest
         boolean rootModifications)
     {
         InstallRequest installRequest = new InstallRequest();
-        extensionIds.stream().forEach(id -> installRequest.addExtension(id));
+        extensionIds.forEach(installRequest::addExtension);
         if (namespaces != null) {
             for (String namespace : namespaces) {
                 installRequest.addNamespace(namespace);

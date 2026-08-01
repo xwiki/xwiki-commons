@@ -90,8 +90,7 @@ public abstract class AbstractExtensionScmConnection implements ExtensionScmConn
             return true;
         }
 
-        if (obj instanceof ExtensionScmConnection) {
-            ExtensionScmConnection connection = (ExtensionScmConnection) obj;
+        if (obj instanceof ExtensionScmConnection connection) {
             return Strings.CS.equals(this.system, connection.getSystem())
                 && Strings.CS.equals(this.path, connection.getPath());
         }

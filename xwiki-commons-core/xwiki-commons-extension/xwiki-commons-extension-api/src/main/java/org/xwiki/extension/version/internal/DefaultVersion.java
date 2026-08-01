@@ -338,8 +338,7 @@ public class DefaultVersion implements Version
                     case STRING:
                         rel = 1;
                         break;
-                    case INT:
-                    case QUALIFIER:
+                    case INT, QUALIFIER:
                         rel = (Integer) this.value;
                         break;
                     default:
@@ -349,8 +348,7 @@ public class DefaultVersion implements Version
                 rel = this.elementType.compareTo(that.elementType);
                 if (rel == 0) {
                     switch (this.elementType) {
-                        case INT:
-                        case QUALIFIER:
+                        case INT, QUALIFIER:
                             rel = (Integer) this.value - (Integer) that.value;
                             break;
                         case STRING:
@@ -368,7 +366,7 @@ public class DefaultVersion implements Version
         @Override
         public boolean equals(Object obj)
         {
-            return (obj instanceof Element) && compareTo((Element) obj) == 0;
+            return (obj instanceof Element element) && compareTo(element) == 0;
         }
 
         @Override
@@ -513,10 +511,10 @@ public class DefaultVersion implements Version
 
         boolean equals;
 
-        if (obj instanceof DefaultVersion) {
-            equals = equals((DefaultVersion) obj);
-        } else if (obj instanceof Version) {
-            equals = equals(new DefaultVersion(((Version) obj).getValue()));
+        if (obj instanceof DefaultVersion defaultVersion) {
+            equals = equals(defaultVersion);
+        } else if (obj instanceof Version version) {
+            equals = equals(new DefaultVersion(version.getValue()));
         } else {
             equals = false;
         }
@@ -548,8 +546,8 @@ public class DefaultVersion implements Version
             return 0;
         }
 
-        if (version instanceof DefaultVersion) {
-            return compareTo((DefaultVersion) version);
+        if (version instanceof DefaultVersion defaultVersion) {
+            return compareTo(defaultVersion);
         } else {
             return compareTo(new DefaultVersion(version.getValue()));
         }

@@ -222,26 +222,21 @@ public abstract class AbstractExtension implements MutableExtension
                 return (T) getId().getId();
             case FIELD_VERSION:
                 return (T) getId().getVersion();
-            case FIELD_FEATURE:
-            case FIELD_FEATURES:
+            case FIELD_FEATURE, FIELD_FEATURES:
                 return (T) ExtensionIdConverter.toStringList(getExtensionFeatures());
-            case FIELD_EXTENSIONFEATURE:
-            case FIELD_EXTENSIONFEATURES:
+            case FIELD_EXTENSIONFEATURE, FIELD_EXTENSIONFEATURES:
                 return (T) getExtensionFeatures();
             case FIELD_SUMMARY:
                 return (T) getSummary();
             case FIELD_DESCRIPTION:
                 return (T) getDescription();
-            case FIELD_AUTHOR:
-            case FIELD_AUTHORS:
+            case FIELD_AUTHOR, FIELD_AUTHORS:
                 return (T) getAuthors();
-            case FIELD_COMPONENT:
-            case FIELD_COMPONENTS:
+            case FIELD_COMPONENT, FIELD_COMPONENTS:
                 return (T) getComponents();
             case FIELD_CATEGORY:
                 return (T) getCategory();
-            case FIELD_LICENSE:
-            case FIELD_LICENSES:
+            case FIELD_LICENSE, FIELD_LICENSES:
                 return (T) getLicenses();
             case FIELD_NAME:
                 return (T) getName();
@@ -249,9 +244,7 @@ public abstract class AbstractExtension implements MutableExtension
                 return (T) getType();
             case FIELD_WEBSITE:
                 return (T) getWebSite();
-            case FIELD_NAMESPACES:
-            case FIELD_ALLOWEDNAMESPACE:
-            case FIELD_ALLOWEDNAMESPACES:
+            case FIELD_NAMESPACES, FIELD_ALLOWEDNAMESPACE, FIELD_ALLOWEDNAMESPACES:
                 return (T) getAllowedNamespaces();
             case FIELD_SCM:
                 return (T) getScm();
@@ -364,7 +357,7 @@ public abstract class AbstractExtension implements MutableExtension
         this.featuresMap = Collections.unmodifiableMap(map);
 
         // Retro compatibility
-        Set<String> list = new LinkedHashSet<>(this.featuresMap.size());
+        Set<String> list = LinkedHashSet.newLinkedHashSet(this.featuresMap.size());
         for (ExtensionId extensionId : this.featuresMap.values()) {
             list.add(extensionId.getId());
         }
@@ -746,7 +739,7 @@ public abstract class AbstractExtension implements MutableExtension
     @Override
     public boolean equals(Object obj)
     {
-        return this == obj || (obj instanceof Extension && getId().equals(((Extension) obj).getId()));
+        return this == obj || (obj instanceof Extension extension && getId().equals(extension.getId()));
     }
 
     @Override

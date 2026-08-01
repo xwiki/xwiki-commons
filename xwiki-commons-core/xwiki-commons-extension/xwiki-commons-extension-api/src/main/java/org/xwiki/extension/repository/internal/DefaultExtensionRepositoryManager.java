@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -167,7 +166,7 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
         entryStream = entryStream.sorted();
 
         // Convert to list of ExtensionRepository
-        this.repositories = entryStream.map(ExtensionRepositoryEntry::getRepository).collect(Collectors.toList());
+        this.repositories = entryStream.map(ExtensionRepositoryEntry::getRepository).toList();
     }
 
     @Override
@@ -429,7 +428,7 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
     public boolean isFilterable()
     {
         for (ExtensionRepository repository : this.repositories) {
-            if (repository instanceof AdvancedSearchable && ((AdvancedSearchable) repository).isFilterable()) {
+            if (repository instanceof AdvancedSearchable advancedSearchable && advancedSearchable.isFilterable()) {
                 return true;
             }
         }
@@ -441,7 +440,7 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
     public boolean isSortable()
     {
         for (ExtensionRepository repository : this.repositories) {
-            if (repository instanceof AdvancedSearchable && ((AdvancedSearchable) repository).isSortable()) {
+            if (repository instanceof AdvancedSearchable advancedSearchable && advancedSearchable.isSortable()) {
                 return true;
             }
         }

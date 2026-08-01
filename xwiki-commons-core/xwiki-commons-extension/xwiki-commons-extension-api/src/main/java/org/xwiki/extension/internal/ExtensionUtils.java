@@ -207,10 +207,10 @@ public final class ExtensionUtils
 
         if (obj == null) {
             return def;
-        } else if (obj instanceof Collection) {
-            return (Collection) obj;
-        } else if (obj instanceof String[]) {
-            return Arrays.asList((String[]) obj);
+        } else if (obj instanceof Collection collection) {
+            return collection;
+        } else if (obj instanceof String[] strings) {
+            return Arrays.asList(strings);
         } else {
             return importPropertyStringList(obj.toString(), true);
         }

@@ -289,10 +289,8 @@ public final class RepositoryUtils
             if (matches(patternMatcher, elementValue)) {
                 return true;
             }
-        } else if (filter.getComparison() == COMPARISON.EQUAL) {
-            if (filterValue.equals(elementValue)) {
-                return true;
-            }
+        } else if (filter.getComparison() == COMPARISON.EQUAL && filterValue.equals(elementValue)) {
+            return true;
         }
 
         return false;
@@ -327,13 +325,7 @@ public final class RepositoryUtils
      */
     public static boolean matches(Pattern patternMatcher, Object element)
     {
-        if (element != null) {
-            if (patternMatcher.matcher(element.toString().toLowerCase()).matches()) {
-                return true;
-            }
-        }
-
-        return false;
+        return element != null && patternMatcher.matcher(element.toString().toLowerCase()).matches();
     }
 
     /**
@@ -460,14 +452,10 @@ public final class RepositoryUtils
     {
         IterableResult<Extension> result;
 
-        if (repository instanceof Searchable) {
-            if (repository instanceof AdvancedSearchable) {
-                AdvancedSearchable searchableRepository = (AdvancedSearchable) repository;
-
-                result = searchableRepository.search(query);
+        if (repository instanceof Searchable searchableRepository) {
+            if (repository instanceof AdvancedSearchable advancedSearchableRepository) {
+                result = advancedSearchableRepository.search(query);
             } else {
-                Searchable searchableRepository = (Searchable) repository;
-
                 result = searchableRepository.search(query.getQuery(), query.getOffset(), query.getLimit());
             }
 

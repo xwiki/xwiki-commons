@@ -91,8 +91,8 @@ public final class PathUtils
     {
         URLConnection connection = descriptorURL.openConnection();
 
-        if (connection instanceof JarURLConnection) {
-            return fixURL(((JarURLConnection) connection).getJarFileURL());
+        if (connection instanceof JarURLConnection jarConnection) {
+            return fixURL(jarConnection.getJarFileURL());
         }
 
         return descriptorURL;

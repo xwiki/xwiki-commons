@@ -71,8 +71,7 @@ public abstract class AbstractExtensionIssueManagement implements ExtensionIssue
             return true;
         }
 
-        if (obj instanceof ExtensionIssueManagement) {
-            ExtensionIssueManagement issueManagement = (ExtensionIssueManagement) obj;
+        if (obj instanceof ExtensionIssueManagement issueManagement) {
             return Strings.CS.equals(this.system, issueManagement.getSystem())
                 && Strings.CS.equals(this.url, issueManagement.getURL());
         }
