@@ -20,6 +20,7 @@
 package org.xwiki.velocity.introspection;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.velocity.util.ClassUtils;
 import org.apache.velocity.util.RuntimeServicesAware;
 import org.apache.velocity.util.introspection.Uberspect;
@@ -83,7 +84,7 @@ public class ChainingUberspector extends AbstractChainableUberspector implements
         if (this.inner == null) {
             this.log.error("No chained uberspectors defined! "
                 + "This uberspector is just a placeholder that relies on a real uberspector "
-                + "to actually allow method calls. Using SecureUberspect instead as a fallback.");
+                + "to actually allow method calls. Using SecureUberspector instead as a fallback.");
             initializeUberspector(SecureUberspector.class.getCanonicalName());
         }
         // Initialize all the uberspectors in the chain
@@ -137,22 +138,20 @@ public class ChainingUberspector extends AbstractChainableUberspector implements
         try {
             o = ClassUtils.getNewInstance(classname);
         } catch (ClassNotFoundException cnfe) {
-            this.log.warn(String.format(
-                "The specified uberspector [%s]" + " does not exist or is not accessible to the current classloader.",
-                classname));
+            this.log.warn("The specified uberspector [{}] does not exist or is not accessible to the current "
+                + "classloader.", classname);
         } catch (IllegalAccessException e) {
-            this.log.warn(
-                String.format("The specified uberspector [%s] does not have a public default constructor.", classname));
+            this.log.warn("The specified uberspector [{}] does not have a public default constructor.", classname);
         } catch (InstantiationException e) {
-            this.log.warn(String.format("The specified uberspector [%s] cannot be instantiated.", classname));
+            this.log.warn("The specified uberspector [{}] cannot be instantiated.", classname);
         } catch (ExceptionInInitializerError e) {
-            this.log.warn(
-                String.format("Exception while instantiating the Uberspector [%s]: %s", classname, e.getMessage()));
+            this.log.warn("Exception while instantiating the Uberspector [{}]: [{}]", classname,
+                ExceptionUtils.getRootCauseMessage(e));
         }
 
         if (!(o instanceof Uberspect)) {
             if (o != null) {
-                this.log.warn("The specified class for Uberspect [{}] does not implement {}", classname,
+                this.log.warn("The specified class for Uberspect [{}] does not implement [{}]", classname,
                     Uberspect.class.getName());
             }
             return null;

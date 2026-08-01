@@ -137,7 +137,7 @@ class StandardEnvironmentTest
 
         assertEquals(2, this.logCapture.size());
         assertEquals(Level.WARN, this.logCapture.getLogEvent(0).getLevel());
-        assertEquals("No permanent directory configured, fallbacking to temporary directory. You should set the "
+        assertEquals("No permanent directory configured, falling back to the temporary directory. You should set the "
                 + "\"environment.permanentDirectory\" configuration property in the xwiki.properties file.",
             this.logCapture.getMessage(0));
         assertEquals(Level.INFO, this.logCapture.getLogEvent(1).getLevel());

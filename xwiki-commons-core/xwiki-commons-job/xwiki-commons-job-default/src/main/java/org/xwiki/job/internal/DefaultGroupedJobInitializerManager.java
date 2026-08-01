@@ -135,8 +135,8 @@ public class DefaultGroupedJobInitializerManager implements GroupedJobInitialize
                         currentPath = currentPath.getParent();
                     }
                 } catch (ComponentLookupException e) {
-                    this.logger.error("Error while loading GroupedJobInitializer component: [{}]",
-                        ExceptionUtils.getRootCauseMessage(e));
+                    this.logger.warn("Error while loading GroupedJobInitializer component, falling back to the "
+                        + "default one: [{}]", ExceptionUtils.getRootCauseMessage(e));
                 }
             }
         }

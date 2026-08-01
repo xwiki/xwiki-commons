@@ -122,7 +122,7 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
                                 ExceptionUtils.getRootCauseMessage(e));
                         }
                     } else {
-                        this.logger.warn("Can't find resource file [{}] which contains distribution informations.",
+                        this.logger.warn("Can't find resource file [{}] which contains distribution information.",
                             descriptorPath);
                     }
                 }
@@ -179,7 +179,7 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
                 }
             } catch (MalformedURLException e) {
                 // Not supposed to happen (would mean there is a bug in Reflections)
-                this.logger.error("Failed to access resource [{}] from jar [{}]", descriptor, jarURL);
+                this.logger.error("Failed to access resource [{}] from jar [{}]", descriptor, jarURL, e);
                 continue;
             }
 

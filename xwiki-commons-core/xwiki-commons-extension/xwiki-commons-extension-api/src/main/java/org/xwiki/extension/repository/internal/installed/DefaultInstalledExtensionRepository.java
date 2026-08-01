@@ -670,7 +670,8 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
                     }
                 } catch (Exception e) {
                     this.logger.error(
-                        "Failed to update the backward dependency index dependency [{}] referenced by extension [{}]",
+                        "Failed to update the backward dependency index for dependency [{}] referenced by extension "
+                            + "[{}]",
                         dependency, installedExtension.getId(), e);
                 }
             }

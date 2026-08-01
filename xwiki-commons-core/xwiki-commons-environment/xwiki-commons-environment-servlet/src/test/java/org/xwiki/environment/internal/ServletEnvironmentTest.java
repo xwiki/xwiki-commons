@@ -622,8 +622,8 @@ class ServletEnvironmentTest
             this.environment.getPermanentDirectory().getCanonicalFile());
 
         // Also verify that we log a warning!
-        verify(logger).warn("No permanent directory configured, fallbacking to temporary directory. You should set "
-            + "the \"environment.permanentDirectory\" configuration property in the xwiki.properties file.");
+        verify(logger).warn("No permanent directory configured, falling back to the temporary directory. You should "
+            + "set the \"environment.permanentDirectory\" configuration property in the xwiki.properties file.");
         verify(logger).info("Using permanent directory [{}]", this.servletTmpDir.getCanonicalFile());
     }
 

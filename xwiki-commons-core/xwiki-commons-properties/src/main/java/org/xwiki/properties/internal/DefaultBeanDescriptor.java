@@ -126,7 +126,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                 defaultInstance = constructor.newInstance();
             } catch (Exception e) {
                 LOGGER.debug("Failed to create a new default instance for class [{}]. The BeanDescriptor will not "
-                    + "contains any default value information.", getBeanClass().getName(), e);
+                    + "contain any default value information.", getBeanClass().getName(), e);
             }
         }
 

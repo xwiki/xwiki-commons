@@ -185,7 +185,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
         //////////
         // Could not find any valid descriptor
 
-        this.logger.debug("No declared environmennt extension");
+        this.logger.debug("No declared environment extension");
 
         return null;
     }
@@ -349,13 +349,13 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
         ////////////////////
         // Work some magic to guess the rest of the jar files
 
-        this.logger.debug("Try to guess the id of some remaining JARs which don't have any know descriptor...");
+        this.logger.debug("Try to guess the id of some remaining JARs which don't have any known descriptor...");
 
         for (ExtensionScanner scanner : this.scanners) {
             scanner.guess(extensions, jars, repository);
         }
 
-        this.logger.debug("Done guessing the id of remaning JARs which don't have any know descriptor");
+        this.logger.debug("Done guessing the id of remaining JARs which don't have any known descriptor");
     }
 
     private void fromXED(Map<String, DefaultCoreExtension> extensions, Collection<URL> jars,
