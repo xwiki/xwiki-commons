@@ -36,8 +36,8 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectComponentManager;
 import org.xwiki.test.junit5.mockito.MockComponent;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 /**
@@ -73,11 +73,7 @@ class TimedInterruptGroovyCompilationCustomizerTest
         ScriptEngine engine = manager.getEngineByName("groovy");
 
         // Simulate an infinite loop to verify that we timeout after 1 second
-        try {
-            engine.eval("while (true) {}");
-            fail("Should have thrown an exception here");
-        } catch (ScriptException e) {
-            assertTrue(e.getMessage().contains("Execution timed out after 1 seconds."));
-        }
+        ScriptException exception = assertThrows(ScriptException.class, () -> engine.eval("while (true) {}"));
+        assertTrue(exception.getMessage().contains("Execution timed out after 1 seconds."));
     }
 }

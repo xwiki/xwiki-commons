@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit tests for {@link AbstractPartialStringMessageHandler}.
@@ -77,42 +77,30 @@ class PartialBinaryMessageHandlerTest
     @Test
     void onMessageExceedingMaxSize()
     {
-        CollectingPartialBinaryMessageHandler handler = new CollectingPartialBinaryMessageHandler(5);
-        assertEquals(0, handler.getMessages().size());
+        CollectingPartialBinaryMessageHandler firstPartHandler = new CollectingPartialBinaryMessageHandler(5);
+        assertEquals(0, firstPartHandler.getMessages().size());
 
-        try {
-            // Exceed the maximum message size on the first message part.
-            handler.onMessage(new byte[] {1, 2, 3, 4, 5, 6}, false);
-            fail(
-                "Expected an IllegalStateException to be thrown since the message size exceeds the configured limit of [5].");
-        } catch (IllegalStateException e) {
-            assertEquals("Message size exceeds the configured limit of [5].", e.getMessage());
-        }
+        // Exceed the maximum message size on the first message part.
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> firstPartHandler.onMessage(new byte[] {1, 2, 3, 4, 5, 6}, false));
+        assertEquals("Message size exceeds the configured limit of [5].", exception.getMessage());
 
-        handler = new CollectingPartialBinaryMessageHandler(5);
-        assertEquals(0, handler.getMessages().size());
+        CollectingPartialBinaryMessageHandler intermediatePartHandler = new CollectingPartialBinaryMessageHandler(5);
+        assertEquals(0, intermediatePartHandler.getMessages().size());
 
-        handler.onMessage(new byte[] {1, 2, 3}, false);
-        try {
-            // Exceed the maximum message size on an intermediate message part.
-            handler.onMessage(new byte[] {4, 5, 6}, false);
-            fail(
-                "Expected an IllegalStateException to be thrown since the message size exceeds the configured limit of [5].");
-        } catch (IllegalStateException e) {
-            assertEquals("Message size exceeds the configured limit of [5].", e.getMessage());
-        }
+        intermediatePartHandler.onMessage(new byte[] {1, 2, 3}, false);
+        // Exceed the maximum message size on an intermediate message part.
+        exception = assertThrows(IllegalStateException.class,
+            () -> intermediatePartHandler.onMessage(new byte[] {4, 5, 6}, false));
+        assertEquals("Message size exceeds the configured limit of [5].", exception.getMessage());
 
-        handler = new CollectingPartialBinaryMessageHandler(5);
-        assertEquals(0, handler.getMessages().size());
+        CollectingPartialBinaryMessageHandler finalPartHandler = new CollectingPartialBinaryMessageHandler(5);
+        assertEquals(0, finalPartHandler.getMessages().size());
 
-        handler.onMessage(new byte[] {1, 2, 3}, false);
-        try {
-            // Exceed the maximum message size on the final message part.
-            handler.onMessage(new byte[] {4, 5, 6}, true);
-            fail(
-                "Expected an IllegalStateException to be thrown since the message size exceeds the configured limit of [5].");
-        } catch (IllegalStateException e) {
-            assertEquals("Message size exceeds the configured limit of [5].", e.getMessage());
-        }
+        finalPartHandler.onMessage(new byte[] {1, 2, 3}, false);
+        // Exceed the maximum message size on the final message part.
+        exception = assertThrows(IllegalStateException.class,
+            () -> finalPartHandler.onMessage(new byte[] {4, 5, 6}, true));
+        assertEquals("Message size exceeds the configured limit of [5].", exception.getMessage());
     }
 }
