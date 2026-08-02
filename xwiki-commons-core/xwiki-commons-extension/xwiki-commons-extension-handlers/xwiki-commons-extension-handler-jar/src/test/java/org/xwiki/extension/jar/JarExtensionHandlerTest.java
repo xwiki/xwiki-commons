@@ -64,6 +64,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -399,12 +400,7 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Type extensionRole1 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
 
         // try to install again
-        try {
-            install(extensionId);
-            fail("installExtension should have failed");
-        } catch (InstallException expected) {
-            // expected
-        }
+        assertThrows(InstallException.class, () -> install(extensionId));
 
         // actual uninstall test
         LocalExtension localExtension = uninstall(extensionId);
@@ -504,12 +500,7 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, NAMESPACE);
 
-        try {
-            install(extensionId, NAMESPACE);
-            fail("installExtension should have failed");
-        } catch (InstallException expected) {
-            // expected
-        }
+        assertThrows(InstallException.class, () -> install(extensionId, NAMESPACE));
 
         // actual uninstall test
         LocalExtension localExtension = uninstall(extensionId);

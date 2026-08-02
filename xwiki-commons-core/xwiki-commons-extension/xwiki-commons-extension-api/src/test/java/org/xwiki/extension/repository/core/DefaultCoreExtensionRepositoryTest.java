@@ -51,7 +51,7 @@ import org.xwiki.test.junit5.mockito.MockComponent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 
@@ -179,23 +179,13 @@ class DefaultCoreExtensionRepositoryTest
     @Test
     void resolve() throws ResolveException
     {
-        try {
-            this.coreExtensionRepository.resolve(new ExtensionId("unexistingextension", "version"));
-
-            fail("Resolve should have failed");
-        } catch (ResolveException expected) {
-            // expected
-        }
+        assertThrows(ResolveException.class,
+            () -> this.coreExtensionRepository.resolve(new ExtensionId("unexistingextension", "version")));
 
         this.coreExtensionRepository.addExtension("existingextension", new DefaultVersion("version"));
 
-        try {
-            this.coreExtensionRepository.resolve(new ExtensionId("existingextension", "wrongversion"));
-
-            fail("Resolve should have failed");
-        } catch (ResolveException expected) {
-            // expected
-        }
+        assertThrows(ResolveException.class,
+            () -> this.coreExtensionRepository.resolve(new ExtensionId("existingextension", "wrongversion")));
 
         Extension extension = this.coreExtensionRepository.resolve(new ExtensionId("existingextension", "version"));
 

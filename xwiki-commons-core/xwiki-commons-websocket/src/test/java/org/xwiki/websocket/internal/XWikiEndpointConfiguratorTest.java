@@ -35,7 +35,7 @@ import org.xwiki.websocket.WebSocketContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -74,12 +74,9 @@ class XWikiEndpointConfiguratorTest
         when(this.contextComponentManager.getInstance(EndpointComponent.class, String.class.getName()))
             .thenThrow(new ComponentLookupException("test"));
 
-        try {
-            this.configurator.getEndpointInstance(String.class);
-            fail();
-        } catch (InstantiationException e) {
-            assertEquals("ComponentLookupException: test", e.getMessage());
-        }
+        InstantiationException exception =
+            assertThrows(InstantiationException.class, () -> this.configurator.getEndpointInstance(String.class));
+        assertEquals("ComponentLookupException: test", exception.getMessage());
     }
 
     @Test
