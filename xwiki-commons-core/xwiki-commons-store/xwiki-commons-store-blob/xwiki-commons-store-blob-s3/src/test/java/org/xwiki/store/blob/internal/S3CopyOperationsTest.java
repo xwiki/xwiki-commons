@@ -45,7 +45,9 @@ import org.xwiki.test.junit5.mockito.MockComponent;
 
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadRequest;
+import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadResponse;
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
+import software.amazon.awssdk.services.s3.model.CopyObjectResponse;
 import software.amazon.awssdk.services.s3.model.CopyPartResult;
 import software.amazon.awssdk.services.s3.model.CreateMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.CreateMultipartUploadResponse;
@@ -221,7 +223,8 @@ class S3CopyOperationsTest
         when(headResponse.metadata()).thenReturn(Map.of());
         when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
 
-        when(this.s3Client.copyObject(any(CopyObjectRequest.class))).thenReturn(mock());
+        CopyObjectResponse copyObjectResponseMock = mock();
+        when(this.s3Client.copyObject(any(CopyObjectRequest.class))).thenReturn(copyObjectResponseMock);
 
         Blob result = this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore,
             this.targetPath);
@@ -318,8 +321,9 @@ class S3CopyOperationsTest
         when(this.s3Client.uploadPartCopy(any(UploadPartCopyRequest.class)))
             .thenReturn(part1Response, part2Response);
 
+        CompleteMultipartUploadResponse completeMultipartUploadResponseMock = mock();
         when(this.s3Client.completeMultipartUpload(any(CompleteMultipartUploadRequest.class)))
-            .thenReturn(mock());
+            .thenReturn(completeMultipartUploadResponseMock);
 
         Blob result = this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore,
             this.targetPath);
@@ -417,7 +421,8 @@ class S3CopyOperationsTest
         when(headResponse.contentLength()).thenReturn(4_096L);
         when(headResponse.metadata()).thenReturn(Map.of());
         when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
-        when(this.s3Client.copyObject(any(CopyObjectRequest.class))).thenReturn(mock());
+        CopyObjectResponse copyObjectResponseMock = mock();
+        when(this.s3Client.copyObject(any(CopyObjectRequest.class))).thenReturn(copyObjectResponseMock);
 
         this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath,
             writeMode);
@@ -499,7 +504,9 @@ class S3CopyOperationsTest
         when(partResult.eTag()).thenReturn("part-etag");
         when(partResponse.copyPartResult()).thenReturn(partResult);
         when(this.s3Client.uploadPartCopy(any(UploadPartCopyRequest.class))).thenReturn(partResponse);
-        when(this.s3Client.completeMultipartUpload(any(CompleteMultipartUploadRequest.class))).thenReturn(mock());
+        CompleteMultipartUploadResponse completeMultipartUploadResponseMock = mock();
+        when(this.s3Client.completeMultipartUpload(any(CompleteMultipartUploadRequest.class)))
+            .thenReturn(completeMultipartUploadResponseMock);
 
         this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath,
             writeMode);
@@ -525,7 +532,8 @@ class S3CopyOperationsTest
         when(headResponse.metadata()).thenReturn(Map.of());
         when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
 
-        when(this.s3Client.copyObject(any(CopyObjectRequest.class))).thenReturn(mock());
+        CopyObjectResponse copyObjectResponseMock = mock();
+        when(this.s3Client.copyObject(any(CopyObjectRequest.class))).thenReturn(copyObjectResponseMock);
 
         this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath);
 

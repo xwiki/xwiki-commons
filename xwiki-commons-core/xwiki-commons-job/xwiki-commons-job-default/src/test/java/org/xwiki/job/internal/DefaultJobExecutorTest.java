@@ -42,7 +42,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -199,7 +198,7 @@ class DefaultJobExecutorTest
         when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
 
         JobGroupPath jobGroupPathA = new JobGroupPath(Collections.singletonList("A"));
-        when(this.groupedJobInitializerManager.getGroupedJobInitializer(eq(jobGroupPathA)))
+        when(this.groupedJobInitializerManager.getGroupedJobInitializer(jobGroupPathA))
             .thenReturn(groupedJobInitializer);
 
         groupedJobInitializer = mock();
@@ -207,7 +206,7 @@ class DefaultJobExecutorTest
         when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
 
         JobGroupPath jobGroupPathAB = new JobGroupPath(Arrays.asList("A", "B"));
-        when(this.groupedJobInitializerManager.getGroupedJobInitializer(eq(jobGroupPathAB)))
+        when(this.groupedJobInitializerManager.getGroupedJobInitializer(jobGroupPathAB))
             .thenReturn(groupedJobInitializer);
 
         TestBasicGroupedJob jobA1 = groupedJob("A");
@@ -317,7 +316,7 @@ class DefaultJobExecutorTest
         when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
 
         JobGroupPath jobGroupPathA = new JobGroupPath(Collections.singletonList("A"));
-        when(this.groupedJobInitializerManager.getGroupedJobInitializer(eq(jobGroupPathA)))
+        when(this.groupedJobInitializerManager.getGroupedJobInitializer(jobGroupPathA))
             .thenReturn(groupedJobInitializer);
 
         groupedJobInitializer = mock();
@@ -325,7 +324,7 @@ class DefaultJobExecutorTest
         when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
 
         JobGroupPath jobGroupPathAB = new JobGroupPath(Arrays.asList("A", "B"));
-        when(this.groupedJobInitializerManager.getGroupedJobInitializer(eq(jobGroupPathAB)))
+        when(this.groupedJobInitializerManager.getGroupedJobInitializer(jobGroupPathAB))
             .thenReturn(groupedJobInitializer);
 
         TestBasicGroupedJob jobA1 = groupedJob("A");

@@ -74,7 +74,8 @@ public abstract class AbstractExtensionHandlerTest
         // it's not available in all components.
         if (!this.componentManager.hasComponent(CacheFactory.class, "infinispan")) {
             CacheFactory infinispan = this.componentManager.registerMockComponent(CacheFactory.class, "infinispan");
-            when(infinispan.newCache(any())).thenReturn(mock(Cache.class));
+            Cache cacheMock = mock(Cache.class);
+            when(infinispan.newCache(any())).thenReturn(cacheMock);
         }
     }
 
