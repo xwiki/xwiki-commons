@@ -198,7 +198,7 @@ public final class XMLUtils
             implementation =
                 (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS 3.0");
         } catch (Exception ex) {
-            LOGGER.warn("Cannot initialize the XML Script Service: [{}]", ex.getMessage());
+            LOGGER.warn("Cannot initialize the XML Script Service: [{}]", ExceptionUtils.getRootCauseMessage(ex));
         }
         LS_IMPL = implementation;
 
@@ -640,7 +640,7 @@ public final class XMLUtils
             }
             return p.parse(source);
         } catch (Exception ex) {
-            LOGGER.warn("Cannot parse XML document: [{}]", ex.getMessage());
+            LOGGER.warn("Cannot parse XML document: [{}]", ExceptionUtils.getRootCauseMessage(ex));
             return null;
         }
     }
@@ -685,7 +685,7 @@ public final class XMLUtils
             serializer.write(node, output);
             return result.toString();
         } catch (Exception ex) {
-            LOGGER.warn("Failed to serialize node to XML String: [{}]", ex.getMessage());
+            LOGGER.warn("Failed to serialize node to XML String: [{}]", ExceptionUtils.getRootCauseMessage(ex));
             return "";
         }
     }
@@ -707,7 +707,7 @@ public final class XMLUtils
                 XMLUtils.createTransformerFactory().newTransformer(xslt).transform(safeXMLSource, result);
                 return output.toString();
             } catch (Exception ex) {
-                LOGGER.warn("Failed to apply XSLT transformation: [{}]", ex.getMessage());
+                LOGGER.warn("Failed to apply XSLT transformation: [{}]", ExceptionUtils.getRootCauseMessage(ex));
             }
         }
         return null;

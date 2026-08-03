@@ -30,6 +30,7 @@ import org.apache.commons.codec.net.BCodec;
 import org.apache.commons.codec.net.QCodec;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.text.translate.CharSequenceTranslator;
 import org.apache.commons.text.translate.LookupTranslator;
@@ -279,7 +280,7 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
         try {
             return new CSSIdentifierSerializer().serialize(identifier);
         } catch (IllegalArgumentException e) {
-            LOGGER.warn("Failed to escape CSS identifier. Root cause: [{}]", e.getMessage());
+            LOGGER.warn("Failed to escape CSS identifier. Root cause: [{}]", ExceptionUtils.getRootCauseMessage(e));
             return null;
         }
     }

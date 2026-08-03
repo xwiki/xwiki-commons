@@ -66,7 +66,7 @@ public final class RuntimeUtils
             // If we fail because of debugging code we shouldn't throw anything or it may hide the root cause.
             // Just log it so that we can fix it.
             String message = String.format("Error in debugging code when executing command [%s]", command);
-            LOGGER.error(message, e);
+            LOGGER.error("Error in debugging code when executing command [{}]", command, e);
             result = message;
         }
         return result;
