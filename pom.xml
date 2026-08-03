@@ -859,11 +859,6 @@
         <artifactId>failureaccess</artifactId>
         <version>${guava.failureaccess.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.jspecify</groupId>
-        <artifactId>jspecify</artifactId>
-        <version>1.0.0</version>
-      </dependency>
 
       <!-- Groovy engine. Used in both commons and platform -->
       <dependency>
@@ -1496,6 +1491,11 @@
         <groupId>com.github.ben-manes.caffeine</groupId>
         <artifactId>caffeine</artifactId>
         <version>3.1.8</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jspecify</groupId>
+        <artifactId>jspecify</artifactId>
+        <version>1.0.1</version>
       </dependency>
       <dependency>
         <groupId>org.checkerframework</groupId>
