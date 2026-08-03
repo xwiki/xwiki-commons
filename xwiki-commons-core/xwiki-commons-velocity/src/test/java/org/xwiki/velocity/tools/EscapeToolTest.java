@@ -251,7 +251,8 @@ class EscapeToolTest
         // Invalid character U+0000 (the exception must be caught)
         assertNull(this.tool.css("a\u0000b"));
 
-        assertEquals("Failed to escape CSS identifier. Root cause: [Invalid character: the input contains U+0000.]",
+        assertEquals("Failed to escape CSS identifier. "
+            + "Root cause: [IllegalArgumentException: Invalid character: the input contains U+0000.]",
             this.logCapture.getMessage(0));
     }
 

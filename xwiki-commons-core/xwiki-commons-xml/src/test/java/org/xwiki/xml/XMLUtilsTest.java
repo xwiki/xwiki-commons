@@ -405,8 +405,7 @@ class XMLUtilsTest
 
         assertEquals(1, logCapture.size());
         assertEquals(Level.WARN, logCapture.getLogEvent(0).getLevel());
-        assertEquals("Failed to apply XSLT transformation: [javax.xml.transform.TransformerException: "
-            + "com.sun.org.apache.xml.internal.utils.WrappedRuntimeException: Invalid url protocol: file]",
+        assertEquals("Failed to apply XSLT transformation: [WrappedRuntimeException: Invalid url protocol: file]",
             logCapture.getMessage(0));
     }
 
@@ -436,8 +435,7 @@ class XMLUtilsTest
 
         assertEquals(1, logCapture.size());
         assertEquals(Level.WARN, logCapture.getLogEvent(0).getLevel());
-        assertEquals("Failed to apply XSLT transformation: [javax.xml.transform.TransformerException: "
-                + "com.sun.org.apache.xml.internal.utils.WrappedRuntimeException: Invalid url protocol: file]",
+        assertEquals("Failed to apply XSLT transformation: [WrappedRuntimeException: Invalid url protocol: file]",
             logCapture.getMessage(0));
     }
 
@@ -500,8 +498,7 @@ class XMLUtilsTest
 
         assertEquals(1, logCapture.size());
         assertEquals(Level.WARN, logCapture.getLogEvent(0).getLevel());
-        assertEquals("Failed to apply XSLT transformation: [javax.xml.transform.TransformerException: "
-            + "com.sun.org.apache.xml.internal.utils.WrappedRuntimeException: Invalid url protocol: jar]",
+        assertEquals("Failed to apply XSLT transformation: [WrappedRuntimeException: Invalid url protocol: jar]",
             logCapture.getMessage(0));
     }
 
@@ -537,8 +534,8 @@ class XMLUtilsTest
 
         // We use a regex match, because the thousands delimiter depends on locale (e.g. can be "." or ",")
         assertThat(logCapture.getMessage(0), matchesPattern(
-            "\\QFailed to apply XSLT transformation: [javax.xml.transform.TransformerException: "
-            + "com.sun.org.apache.xml.internal.utils.WrappedRuntimeException: The parser has encountered more than "
+            "\\QFailed to apply XSLT transformation: [WrappedRuntimeException: "
+            + "The parser has encountered more than "
             + "\"100\\E.\\Q000\" entity expansions in this document; this is the limit imposed by the application.]"
             + "\\E"));
     }

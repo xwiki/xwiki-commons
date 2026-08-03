@@ -71,6 +71,8 @@ import org.xwiki.component.util.ReflectionUtils;
 @SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class EmbeddableComponentManager implements NamespacedComponentManager, Disposable
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddableComponentManager.class);
+
     /**
      * Logger to use to log shutdown information (opposite of initialization).
      */
@@ -218,7 +220,6 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
 
     private ConcurrentMap<Type, ComponentEntries> componentEntries = new ConcurrentHashMap<>();
 
-    private Logger logger = LoggerFactory.getLogger(EmbeddableComponentManager.class);
 
     /**
      * Finds all lifecycle handlers to use when instantiating a Component.
@@ -280,7 +281,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
             }
         } catch (ComponentLookupException e) {
             // Should never happen
-            this.logger.error("Failed to lookup ComponentManagerInitializer components", e);
+            LOGGER.error("Failed to lookup ComponentManagerInitializer components", e);
         }
     }
 
@@ -440,7 +441,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
                 throw new ComponentLookupException("Failed to lookup component with type [%s] and hint [%s]"
                     .formatted(roleEntry.descriptor.getRoleType(), roleEntry.descriptor.getRoleHint()), e);
             } else {
-                this.logger.error("Failed to lookup component with type [{}] and hint [{}]",
+                LOGGER.error("Failed to lookup component with type [{}] and hint [{}]",
                     roleEntry.descriptor.getRoleType(), roleEntry.descriptor.getRoleHint(), e);
             }
         }
@@ -882,7 +883,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         try {
             removeComponent(role, hint);
         } catch (Exception e) {
-            this.logger.warn("Instance released but disposal failed. Some resources may not have been released: [{}]",
+            LOGGER.warn("Instance released but disposal failed. Some resources may not have been released: [{}]",
                 ExceptionUtils.getRootCauseMessage(e));
         }
     }
@@ -971,7 +972,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
                         disposable.dispose();
                         SHUTDOWN_LOGGER.debug("Component [{}] has been disposed", instance.getClass().getName());
                     } catch (ComponentLifecycleException e) {
-                        this.logger.error("Failed to dispose component with role type [{}] and role hint [{}]",
+                        LOGGER.error("Failed to dispose component with role type [{}] and role hint [{}]",
                             componentEntry.descriptor.getRoleType(), componentEntry.descriptor.getRoleHint(), e);
                     }
                 }
