@@ -125,13 +125,18 @@ public class DefaultJobProgress implements EventListener, JobProgress
     /**
      * Close current step.
      */
+    @SuppressWarnings("java:S2629")
     private void onEndStepProgress(Object source)
     {
         // Try to find the right step based on the source
         DefaultJobProgressStep step = findStep(this.currentStep, source);
 
         if (step == null) {
-            LOGGER.warn("Could not find any matching step for source [{}]. Ignoring EndStepProgress.", source);
+            // Build the String on purpose (see SafeMessageConverter): log arguments are kept as
+            // objects in the captured LogEvent and XStream-serialized into the job log, where an
+            // arbitrary source would bloat the log file and be read back as null.
+            LOGGER.warn("Could not find any matching step for source [{}]. Ignoring EndStepProgress.",
+                String.valueOf(source));
 
             return;
         }
@@ -177,6 +182,7 @@ public class DefaultJobProgress implements EventListener, JobProgress
     /**
      * Called when a {@link PopLevelProgressEvent} is fired.
      */
+    @SuppressWarnings("java:S2629")
     private void onPopLevelProgress(Object source)
     {
         DefaultJobProgressStep parent = this.currentStep.getParent();
@@ -192,8 +198,11 @@ public class DefaultJobProgress implements EventListener, JobProgress
         DefaultJobProgressStep level = findLevel(this.currentStep.getParent(), source);
 
         if (level == null) {
+            // Build the String on purpose (see SafeMessageConverter): log arguments are kept as
+            // objects in the captured LogEvent and XStream-serialized into the job log, where an
+            // arbitrary source would bloat the log file and be read back as null.
             LOGGER.warn("Could not find any matching step level for source [{}]. Ignoring PopLevelProgressEvent.",
-                source);
+                String.valueOf(source));
 
             return;
         }

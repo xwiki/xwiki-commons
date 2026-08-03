@@ -167,7 +167,11 @@ public class ComponentAnnotationLoader
             // Look for ComponentRole annotations and register one component per ComponentRole found
             Set<Type> componentRoleTypes = findComponentRoleTypes(componentClass);
             if (componentRoleTypes.isEmpty()) {
-                LOGGER.warn("The component implemented by class [{}] does not have any role type", componentClass);
+                // Pass the name rather than the Class on purpose: log arguments are kept as objects in the
+                // captured LogEvent and XStream-serialized into the job log (see SafeMessageConverter), and a
+                // class coming from an extension jar cannot always be resolved when that log is read back.
+                LOGGER.warn("The component implemented by class [{}] does not have any role type",
+                    componentClass.getName());
             } else {
                 for (Type componentRoleType : componentRoleTypes) {
                     for (ComponentDescriptor<?> componentDescriptor : this.factory.createComponentDescriptors(
