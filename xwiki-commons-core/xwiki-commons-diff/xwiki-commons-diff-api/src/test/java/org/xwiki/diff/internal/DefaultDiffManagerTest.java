@@ -1670,7 +1670,6 @@ class DefaultDiffManagerTest
         DefaultChunk<E> previousNextChunk = new DefaultChunk<>(previousNextIndex, previousNext);
         DefaultChunk<E> nextChunk = new DefaultChunk<>(nextIndex, nextNext);
 
-        Delta<E> currentDelta;
         return new DefaultConflict<>(conflictIndex,
             createDelta(currentType, previousCurrentChunk, currentChunk),
             createDelta(nextType, previousNextChunk, nextChunk));

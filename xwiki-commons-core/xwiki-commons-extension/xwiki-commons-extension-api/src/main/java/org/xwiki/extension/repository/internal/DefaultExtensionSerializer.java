@@ -520,7 +520,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         if (dependencyIdNode != null) {
             Node dependencyVersionNode = getNode(dependencyNode, ELEMENT_VERSION);
             Node dependencyOptionalNode = getNode(dependencyNode, ELEMENT_DDOPTIONAL);
-            Map<String, Object> properties = parseProperties((Element) dependencyNode);
+            Map<String, Object> properties = parseProperties(dependencyNode);
 
             Collection<ExtensionRepositoryDescriptor> repositories = loadRepositories(dependencyNode);
             Collection<ExtensionPattern> exclusions = loadExclusions(dependencyNode);

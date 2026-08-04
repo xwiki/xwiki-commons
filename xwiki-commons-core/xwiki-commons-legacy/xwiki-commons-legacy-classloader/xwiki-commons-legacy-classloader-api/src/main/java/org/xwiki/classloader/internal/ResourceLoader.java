@@ -30,6 +30,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.nio.charset.StandardCharsets;
 import java.security.Permission;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
@@ -730,7 +731,7 @@ public class ResourceLoader
             return Collections.emptyMap();
         }
         InputStream is = jar.getInputStream(entry);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 
         Map<URL, List<String>> result = new LinkedHashMap<>();
 

@@ -25,6 +25,8 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.xwiki.crypto.BinaryStringEncoder;
 import org.xwiki.crypto.internal.LineWrapperOutputStream;
@@ -38,7 +40,7 @@ import org.xwiki.crypto.internal.LineWrapperOutputStream;
 public abstract class AbstractBinaryStringEncoder implements BinaryStringEncoder
 {
     /** Charset used for String <-> byte[] conversion. */
-    private static final String CHARSET = "UTF-8";
+    private static final Charset CHARSET = StandardCharsets.UTF_8;
 
     abstract InternalBinaryStringEncoder getEncoder();
 

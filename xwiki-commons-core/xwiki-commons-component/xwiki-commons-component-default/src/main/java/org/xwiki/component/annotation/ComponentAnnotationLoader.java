@@ -27,6 +27,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -77,7 +79,7 @@ public class ComponentAnnotationLoader
     /**
      * The encoding used to parse component list files.
      */
-    private static final String COMPONENT_LIST_ENCODING = "UTF-8";
+    private static final Charset COMPONENT_LIST_ENCODING = StandardCharsets.UTF_8;
 
     /**
      * Logger to use for logging...
