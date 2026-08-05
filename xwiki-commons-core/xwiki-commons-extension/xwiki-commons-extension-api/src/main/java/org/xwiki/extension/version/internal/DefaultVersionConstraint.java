@@ -403,7 +403,7 @@ public class DefaultVersionConstraint implements VersionConstraint
             return true;
         }
 
-        if (obj == null || !(obj instanceof VersionConstraint)) {
+        if (!(obj instanceof VersionConstraint)) {
             return false;
         }
 

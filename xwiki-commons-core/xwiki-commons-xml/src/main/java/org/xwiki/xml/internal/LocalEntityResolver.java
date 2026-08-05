@@ -102,6 +102,8 @@ public class LocalEntityResolver implements EntityResolver2
 
     private static final String XHTML1_TRA_SYSTEMID = "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd";
 
+    private static final String XHTML5_ENT_FILENAME = "/xhtml5.ent";
+
     // The map is sized to have room for one additional mapping
     // via registerSystemIdFilename
     private final HashMap<String, String> systemIdToFilename = new HashMap<String, String>(69, 0.4f);
@@ -134,20 +136,16 @@ public class LocalEntityResolver implements EntityResolver2
     {
         super();
 
-        systemIdToFilename.put("https://www.w3.org/TR/html5/entities.dtd",
-            "/xhtml5.ent");
+        systemIdToFilename.put("https://www.w3.org/TR/html5/entities.dtd", XHTML5_ENT_FILENAME);
         systemIdToFilename.put("http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd",
             "/xhtml1-strict.dtd");
-        systemIdToFilename.put("http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd",
-            "/xhtml1-transitional.dtd");
+        systemIdToFilename.put(XHTML1_TRA_SYSTEMID, "/xhtml1-transitional.dtd");
         systemIdToFilename.put("http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd",
             "/xhtml11.dtd");
         systemIdToFilename.put("http://www.w3.org/MarkUp/DTD/xhtml11.dtd",
             "/xhtml11.dtd");
-        systemIdToFilename.put("http://www.w3.org/MarkUp/DTD/xhtml-lat1.ent",
-            "/xhtml5.ent");
-        systemIdToFilename.put("http://www.w3.org/TR/xhtml11/DTD/xhtml-lat1.ent",
-            "/xhtml5.ent");
+        systemIdToFilename.put("http://www.w3.org/MarkUp/DTD/xhtml-lat1.ent", XHTML5_ENT_FILENAME);
+        systemIdToFilename.put("http://www.w3.org/TR/xhtml11/DTD/xhtml-lat1.ent", XHTML5_ENT_FILENAME);
         systemIdToFilename.put("http://www.w3.org/MarkUp/DTD/xhtml-symbol.ent",
             "/xhtml-symbol.ent");
         systemIdToFilename.put("http://www.w3.org/TR/xhtml11/DTD/xhtml-symbol.ent",
@@ -277,8 +275,7 @@ public class LocalEntityResolver implements EntityResolver2
         //
         systemIdToPublicId.put("http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd",
             "-//W3C//DTD XHTML 1.0 Strict//EN");
-        systemIdToPublicId.put("http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd",
-            "-//W3C//DTD XHTML 1.0 Transitional//EN");
+        systemIdToPublicId.put(XHTML1_TRA_SYSTEMID, XHTML1_TRA_PUBLICID);
         systemIdToPublicId.put("http://www.w3.org/MarkUp/DTD/xhtml11.dtd",
             "-//W3C//DTD XHTML 1.1//EN");
         systemIdToPublicId.put("http://www.w3.org/TR/xhtml11/DTD/xhtml-lat1.ent",
@@ -621,9 +618,12 @@ public class LocalEntityResolver implements EntityResolver2
     protected boolean isInvalidPath(String path)
     {
         int len = path.length();
-        String ext;
-        return len < 5 || (!(ext = path.substring(len - 4)).equalsIgnoreCase(".dtd") && !ext.equalsIgnoreCase(".ent")
-            && !ext.equalsIgnoreCase(".mod"));
+        if (len < 5) {
+            return true;
+        }
+
+        String ext = path.substring(len - 4);
+        return !ext.equalsIgnoreCase(".dtd") && !ext.equalsIgnoreCase(".ent") && !ext.equalsIgnoreCase(".mod");
     }
 
     /**

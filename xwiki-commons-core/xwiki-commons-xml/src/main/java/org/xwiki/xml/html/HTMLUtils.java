@@ -85,7 +85,7 @@ public final class HTMLUtils
          * Regex for a character reference as defined in:
          * https://www.w3.org/TR/WD-xml-lang-970630#dt-charref.
          */
-        private static final String CHARACTER_REFERENCE = "&amp;#[0-9]+;|&amp;#x[0-9a-fA-F]+;";
+        private static final String CHARACTER_REFERENCE = "&amp;#\\d+;|&amp;#x[0-9a-fA-F]+;";
 
         /**
          * Regex to recognize a character reference Entity.

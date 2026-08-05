@@ -75,7 +75,7 @@ class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     }
 
     @Test
-    public void checkWithUnstableOkAtMethodLevel() throws Exception
+    void checkWithUnstableOkAtMethodLevel() throws Exception
     {
         final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
 

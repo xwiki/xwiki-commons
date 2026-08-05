@@ -29,6 +29,7 @@ import java.nio.charset.Charset;
 import java.nio.file.attribute.FileTime;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -597,9 +598,7 @@ public class XARMojo extends AbstractXARMojo
     {
         File[] files = sourceDir.listFiles();
         if (files != null) {
-            for (File currentFile : files) {
-                fileQueue.add(currentFile);
-            }
+            Collections.addAll(fileQueue, files);
         } else {
             throw new MojoExecutionException(String.format("Couldn't get list of files in source dir [%s]", sourceDir));
         }

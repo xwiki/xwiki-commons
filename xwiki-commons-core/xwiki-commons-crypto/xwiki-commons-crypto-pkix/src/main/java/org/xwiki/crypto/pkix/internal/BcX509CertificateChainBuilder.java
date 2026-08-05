@@ -112,7 +112,7 @@ public class BcX509CertificateChainBuilder implements CertificateChainBuilder
 
     private CertifiedPublicKey validatedIssuer(X509CertifiedPublicKey cert, CertifiedPublicKey issuerCert)
     {
-        if (issuerCert == null || !(issuerCert instanceof X509CertifiedPublicKey)) {
+        if (!(issuerCert instanceof X509CertifiedPublicKey)) {
             return null;
         }
 

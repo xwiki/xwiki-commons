@@ -281,7 +281,8 @@ public class JarExtendedURLStreamHandler extends URLStreamHandler
     }
 
     private static String doCanonize(String file) {
-        int i, lim;
+        int i;
+        int lim;
 
         // Remove embedded /../
         while ((i = file.indexOf("/../")) >= 0) {

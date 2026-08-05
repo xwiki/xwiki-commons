@@ -123,11 +123,6 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
             && !this.configuration.getAttributeParameterName().equals(parameterName);
     }
 
-    private String getBlockName(String eventName)
-    {
-        return Character.toLowerCase(eventName.charAt(0)) + eventName.substring(1);
-    }
-
     private void writeInlineParameters(List<Object> parameters, FilterElementDescriptor element)
         throws XMLStreamException
     {

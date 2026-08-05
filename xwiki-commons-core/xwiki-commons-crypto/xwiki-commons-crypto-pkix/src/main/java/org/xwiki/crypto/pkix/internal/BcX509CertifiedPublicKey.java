@@ -217,7 +217,7 @@ public class BcX509CertifiedPublicKey implements X509CertifiedPublicKey
         if (this == cert) {
             return true;
         }
-        if (cert == null || !(cert instanceof X509CertifiedPublicKey)) {
+        if (!(cert instanceof X509CertifiedPublicKey)) {
             return false;
         }
 

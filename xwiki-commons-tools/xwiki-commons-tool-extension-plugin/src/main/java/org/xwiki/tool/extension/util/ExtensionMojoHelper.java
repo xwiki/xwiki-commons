@@ -157,8 +157,6 @@ public class ExtensionMojoHelper implements AutoCloseable
 
     private List<ExtensionOverride> extensionOverrides;
 
-    private MavenBuildExtensionRepository extensionRepository;
-
     private File permanentDirectory;
 
     /**
@@ -276,9 +274,9 @@ public class ExtensionMojoHelper implements AutoCloseable
         this.projectBuilder = this.plexusContainer.lookup(ProjectBuilder.class);
         this.repositorySystem = this.plexusContainer.lookup(RepositorySystem.class);
 
-        this.extensionRepository =
+        MavenBuildExtensionRepository extensionRepository =
             new MavenBuildExtensionRepository(this.session, this.plexusContainer, this.componentManager);
-        this.repositories.addRepository(this.extensionRepository);
+        this.repositories.addRepository(extensionRepository);
     }
 
     /**
