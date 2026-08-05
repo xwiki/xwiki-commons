@@ -286,8 +286,7 @@ class ReflectionUtilsTest
         type = String.class;
         assertEquals("java.lang.String", ReflectionUtils.serializeType(type));
 
-        Map<String, List<Integer>> stringListMap = new HashMap<>();
-        assertEquals("java.util.HashMap", ReflectionUtils.serializeType(stringListMap.getClass()));
+        assertEquals("java.util.HashMap", ReflectionUtils.serializeType(HashMap.class));
 
         assertNull(ReflectionUtils.serializeType(null));
     }

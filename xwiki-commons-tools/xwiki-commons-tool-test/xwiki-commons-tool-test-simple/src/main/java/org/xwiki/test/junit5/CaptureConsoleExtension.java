@@ -44,9 +44,6 @@ public class CaptureConsoleExtension implements BeforeAllCallback, BeforeEachCal
 {
     private static final String CAPTURECONSOLESKIP_PROPERTY = "xwiki.surefire.captureconsole.skip";
 
-    private static final ExtensionContext.Namespace NAMESPACE =
-        ExtensionContext.Namespace.create(CaptureConsoleExtension.class);
-
     private static final String ALL = "all";
 
     private static final String EACH = "each";
@@ -159,10 +156,5 @@ public class CaptureConsoleExtension implements BeforeAllCallback, BeforeEachCal
             skip = Boolean.parseBoolean(value);
         }
         return skip;
-    }
-
-    private static ExtensionContext.Store getStore(ExtensionContext context)
-    {
-        return context.getRoot().getStore(NAMESPACE);
     }
 }

@@ -98,7 +98,7 @@ public class DefaultHTMLDisplayerManager implements HTMLDisplayerManager
             return component;
         } catch (ComponentLookupException e) {
             throw new HTMLDisplayerException("Failed to initialized the HTML displayer for target type [" + targetType
-                + "] and role [" + String.valueOf(roleHint) + "]", e);
+                + "] and role [" + roleHint + "]", e);
         }
     }
 

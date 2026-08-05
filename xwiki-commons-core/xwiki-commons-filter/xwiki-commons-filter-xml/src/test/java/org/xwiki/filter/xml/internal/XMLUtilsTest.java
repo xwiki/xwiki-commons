@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  *
  * @version $Id$
  */
-public class XMLUtilsTest
+class XMLUtilsTest
 {
     static class TestClass
     {

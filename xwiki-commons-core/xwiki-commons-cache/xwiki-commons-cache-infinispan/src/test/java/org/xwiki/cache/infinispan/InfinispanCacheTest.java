@@ -54,13 +54,13 @@ class InfinispanCacheTest extends AbstractEvictionGenericTestCache
     @RegisterExtension
     public LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
-    public InfinispanCacheTest()
+    InfinispanCacheTest()
     {
         super("infinispan", true);
     }
 
     @AfterEach
-    public void afterEach()
+    void afterEach()
     {
         // Remove when https://jira.xwiki.org/browse/XCOMMONS-2151 is fixed
         this.logCapture.ignoreAllMessages(List.of(

@@ -231,7 +231,7 @@ public class DefaultVersionRangeCollection implements VersionRangeCollection
             return true;
         }
 
-        if (obj == null || !(obj instanceof DefaultVersionRangeCollection)) {
+        if (!(obj instanceof DefaultVersionRangeCollection)) {
             return false;
         }
 
