@@ -163,9 +163,7 @@ public class ExecutionContextProperty implements Cloneable
                     "cloneValue attribute was set on property [%s], "
                         + "but the value had class [%s] which has no public clone method", getKey(),
                     getValue().getClass().getName()));
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
+            } catch (InvocationTargetException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         } else {

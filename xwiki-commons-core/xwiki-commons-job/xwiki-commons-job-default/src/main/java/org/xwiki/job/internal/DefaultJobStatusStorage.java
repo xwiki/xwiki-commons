@@ -47,7 +47,7 @@ public class DefaultJobStatusStorage implements JobStatusStorage
     @Override
     public JobStatus getJobStatus(String id)
     {
-        return getJobStatus(id != null ? Arrays.asList(id) : (List<String>) null);
+        return getJobStatus(id != null ? Arrays.asList(id) : null);
     }
 
     @Override

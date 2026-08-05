@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -113,7 +114,7 @@ public class TestDataParser
         // Resources should always be encoded as UTF-8, to reduce the dependency on the system encoding
         // Read each line and look for lines starting with ".". When this happens it means we've found a separate
         // test case.
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(source, UTF8))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(source, StandardCharsets.UTF_8))) {
             String action = null;
             String typeId = null;
             boolean skip = false;

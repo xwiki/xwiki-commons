@@ -595,7 +595,7 @@ public class VelocityParser
 
         boolean escaped = false;
 
-        for (; i < array.length;) {
+        while (i < array.length) {
             if (!escaped) {
                 if (array[i] == '\\') {
                     escaped = true;

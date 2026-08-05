@@ -48,6 +48,6 @@ public class ArrayListConverter extends AbstractCollectionConverter<ArrayList>
     @Override
     protected <G extends ArrayList> ArrayList newCollection(Type targetType)
     {
-        return (G) new ArrayList<>();
+        return new ArrayList<>();
     }
 }

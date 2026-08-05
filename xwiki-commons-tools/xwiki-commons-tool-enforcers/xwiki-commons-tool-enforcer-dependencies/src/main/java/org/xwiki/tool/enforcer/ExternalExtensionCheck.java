@@ -100,10 +100,7 @@ public class ExternalExtensionCheck extends AbstractPomCheck
     private boolean isXWikiCoreCommitterExtension(Model model)
     {
         String groupId = model.getGroupId();
-        if (CORE_GROUP_IDS.contains(groupId)) {
-            return true;
-        }
-        return false;
+        return CORE_GROUP_IDS.contains(groupId);
     }
 
     /**

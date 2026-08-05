@@ -294,7 +294,7 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
                 } catch (ConversionException e) {
                     // TODO: remove that hack when String -> Map support is added to xwiki-properties
                     if (ReflectionUtils.getTypeClass(type) == Map.class && ((String) defaultValue).isEmpty()) {
-                        defaultValue = Collections.EMPTY_MAP;
+                        defaultValue = Collections.emptyMap();
                     } else {
                         throw e;
                     }
