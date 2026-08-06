@@ -77,7 +77,7 @@ class DefaultVelocityConfigurationTest
     }
 
     @Test
-    void getPropertiesReturnsDefaultProperties() throws Exception
+    void getPropertiesReturnsDefaultProperties()
     {
         // Verify that the secure uberspector is set by default
         assertEquals(

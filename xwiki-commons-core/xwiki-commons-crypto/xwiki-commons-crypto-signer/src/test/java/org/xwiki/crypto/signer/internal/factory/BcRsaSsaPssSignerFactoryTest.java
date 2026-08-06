@@ -145,7 +145,7 @@ class BcRsaSsaPssSignerFactoryTest
         assertSignatureVerification(signer, verifier);
     }
 
-    private void progressiveUpdateSignature(Signer signer, byte[] bytes, int blockSize) throws Exception
+    private void progressiveUpdateSignature(Signer signer, byte[] bytes, int blockSize)
     {
         signer.update(bytes, 0, blockSize + 1);
         signer.update(bytes, blockSize + 1, blockSize - 1);

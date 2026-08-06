@@ -20,7 +20,6 @@
 package org.xwiki.diff.display.internal;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -71,7 +70,7 @@ class DefaultUnifiedDiffDisplayerIntegrationTest
     @InjectComponentManager
     private MockitoComponentManager componentManager;
 
-    private List<String> readLines(String path) throws IOException
+    private List<String> readLines(String path)
     {
         InputStream stream = DefaultUnifiedDiffDisplayerTest.class.getResourceAsStream('/' + path);
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));

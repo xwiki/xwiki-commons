@@ -84,7 +84,7 @@ class HistoryKeeperTest
     }
 
     @Test
-    void onUserMessage() throws Exception
+    void onUserMessage()
     {
         // Message size too small.
         this.historyKeeper.onUserMessage(this.user, List.of(0, 1, 2));

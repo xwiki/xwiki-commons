@@ -28,7 +28,6 @@ import java.util.Iterator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ResolveException;
@@ -111,7 +110,7 @@ class DefaultExtensionRepositoryManagerTest
     }
 
     @Test
-    void getRepository() throws ExtensionRepositoryException, ComponentLookupException
+    void getRepository() throws ExtensionRepositoryException
     {
         this.manager.addRepository(this.descriptor);
 

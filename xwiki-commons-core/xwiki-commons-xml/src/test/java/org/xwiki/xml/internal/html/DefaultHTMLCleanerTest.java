@@ -410,7 +410,7 @@ public class DefaultHTMLCleanerTest
      * href="https://jira.xwiki.org/browse/XWIKI-9753">XWIKI-9753</a>).
      */
     @Test
-    void cleanSVGTags() throws Exception
+    void cleanSVGTags()
     {
         String input = """
             <p>before</p>
@@ -586,7 +586,7 @@ public class DefaultHTMLCleanerTest
      * @see <a href="https://jira.xwiki.org/browse/XCOMMONS-1293">XCOMMONS-1293</a>
      */
     @Test
-    void verifyIFRAMECleaning() throws Exception
+    void verifyIFRAMECleaning()
     {
         // TODO: these 2 lines need to be changed to the following when https://jira.xwiki.org/browse/XCOMMONS-1292 is
         // fixed:

@@ -19,7 +19,6 @@
  */
 package org.xwiki.extension.internal;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -68,7 +67,7 @@ class DefaultExtensionLicenseManagerTest
     }
 
     @Test
-    void getLicense() throws IOException
+    void getLicense()
     {
         ExtensionLicense license = this.licenseManager.getLicense("Apache License 2.0");
 

@@ -19,7 +19,6 @@
  */
 package org.xwiki.logging;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
@@ -163,7 +162,7 @@ class LogQueueTest
     }
 
     @Test
-    void getLogEvents() throws IOException
+    void getLogEvents()
     {
         LogQueue queue = new LogQueue();
 

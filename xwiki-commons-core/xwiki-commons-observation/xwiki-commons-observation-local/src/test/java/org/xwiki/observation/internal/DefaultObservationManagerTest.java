@@ -322,7 +322,7 @@ class DefaultObservationManagerTest
     }
 
     @Test
-    void addListenersWithoutSamePriorities() throws Exception
+    void addListenersWithoutSamePriorities()
     {
         Event event = mock(Event.class);
         when(event.matches(event)).thenReturn(true);
