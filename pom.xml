@@ -60,6 +60,11 @@
     <!-- The highest Java version officially supported by this version of XWiki -->
     <xwiki.java.version.support>25</xwiki.java.version.support>
 
+    <!-- Javadoc -->
+    <!-- Base directory in which the Javadoc plugin generates its apidocs/ subdirectory. Shared between the plugin
+         configuration and the release profile, which pre-creates apidocs/ to always get a Javadoc JAR. -->
+    <xwiki.javadoc.outputDirectory>${project.build.directory}</xwiki.javadoc.outputDirectory>
+
     <!-- Javax/Jakarta APIs -->
     <!-- Mail -->
     <javax.mail.version>1.6.2</javax.mail.version>
@@ -2767,7 +2772,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.10.0</version>
+          <version>3.12.0</version>
           <configuration>
             <!-- Always exclude the internal package since it's not user-public -->
             <excludePackageNames>*.internal, *.internal.*</excludePackageNames>
@@ -2783,6 +2788,10 @@
             <release>${xwiki.java.version}</release>
             <!-- Only display warnings and errors -->
             <quiet>true</quiet>
+            <!-- The plugin generates the Javadoc into <outputDirectory>/apidocs and only builds the Javadoc JAR when
+                 that directory exists. Pin the location so that the release profile can pre-create it and get a
+                 Javadoc JAR even for modules with nothing to document. -->
+            <outputDirectory>${xwiki.javadoc.outputDirectory}</outputDirectory>
           </configuration>
         </plugin>
         <!-- We don't use site plugin but we org.apache.maven.plugins.enforcer.RequirePluginVersions enforcer rule
@@ -3136,11 +3145,13 @@
               </execution>
             </executions>
           </plugin>
-          <!-- Because of https://issues.apache.org/jira/browse/MJAVADOC-329 we need to find a workaround to create a
-               Javadoc JAR to satisfy the Maven Central Repository requirements. We do this by creating an apidocs/ dir
-               in the target directory.
-               Note that even though this "hack" is only needed for java projects having all their sources in the
-               internal packages we put it here in the top level POM to not have to duplicate it at lots of places. -->
+          <!-- The Maven Central Repository requires a Javadoc JAR for every deployed artifact, but the Javadoc plugin
+               skips the JAR ("No Javadoc in project. Archive not created.") when it has nothing to document, which is
+               the case for the modules having all their classes in an internal package since those are excluded from
+               the Javadoc. The plugin archives ${xwiki.javadoc.outputDirectory}/apidocs and only checks that this
+               directory exists, so pre-creating it is enough to also get a (nearly empty) Javadoc JAR for them.
+               Note that even though this is only needed for the modules having all their sources in internal packages
+               we put it here in the top level POM to not have to duplicate it at lots of places. -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
@@ -3150,7 +3161,7 @@
                 <phase>generate-resources</phase>
                 <configuration>
                   <target>
-                    <mkdir dir="${project.build.directory}/apidocs"/>
+                    <mkdir dir="${xwiki.javadoc.outputDirectory}/apidocs"/>
                   </target>
                 </configuration>
                 <goals>
