@@ -117,7 +117,7 @@ class ReplayJobTest
     }
 
     @Test
-    void getGroupPath() throws Exception
+    void getGroupPath()
     {
         InstallRequest installOnTech = new InstallRequest();
         installOnTech.addNamespace("wiki:tech");

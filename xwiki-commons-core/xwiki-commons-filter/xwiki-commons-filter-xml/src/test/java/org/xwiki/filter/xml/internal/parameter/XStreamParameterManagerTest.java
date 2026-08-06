@@ -19,7 +19,6 @@
  */
 package org.xwiki.filter.xml.internal.parameter;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -34,7 +33,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.junit.jupiter.api.Test;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
@@ -64,8 +62,7 @@ class XStreamParameterManagerTest
     }
 
     @Test
-    void testSerializeUnknownMapImplementation()
-        throws ComponentLookupException, XMLStreamException, FactoryConfigurationError, IOException
+    void testSerializeUnknownMapImplementation() throws XMLStreamException, FactoryConfigurationError
     {
         Map<String, String> customMap = new HashMap()
         {
@@ -76,8 +73,7 @@ class XStreamParameterManagerTest
     }
 
     @Test
-    void testSerializeUnknowncollectionImplementation()
-        throws ComponentLookupException, XMLStreamException, FactoryConfigurationError, IOException
+    void testSerializeUnknowncollectionImplementation() throws XMLStreamException, FactoryConfigurationError
     {
         Collection<String> customMap = new ArrayList()
         {
@@ -88,8 +84,7 @@ class XStreamParameterManagerTest
     }
 
     @Test
-    void testSerializeUnknownListImplementation()
-        throws ComponentLookupException, XMLStreamException, FactoryConfigurationError, IOException
+    void testSerializeUnknownListImplementation() throws XMLStreamException, FactoryConfigurationError
     {
         List<String> customMap = new ArrayList()
         {

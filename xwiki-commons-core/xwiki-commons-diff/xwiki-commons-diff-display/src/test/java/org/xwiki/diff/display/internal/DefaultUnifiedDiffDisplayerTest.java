@@ -511,9 +511,8 @@ class DefaultUnifiedDiffDisplayerTest
      *
      * @param fileName the file name
      * @return the lines from the specified file
-     * @throws IOException if reading the file fails
      */
-    private static List<String> readLines(String fileName) throws IOException
+    private static List<String> readLines(String fileName)
     {
         InputStream stream = DefaultUnifiedDiffDisplayerTest.class.getResourceAsStream('/' + fileName);
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));

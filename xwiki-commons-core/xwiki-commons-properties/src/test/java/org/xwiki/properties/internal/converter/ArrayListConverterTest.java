@@ -53,7 +53,7 @@ class ArrayListConverterTest
     private DefaultConverterManager converterManager;
 
     @Test
-    void convertFromString() throws Exception
+    void convertFromString()
     {
         assertEquals(Arrays.asList("1", "2", "3"), this.converterManager.convert(ArrayList.class, "1, 2, 3"));
     }
