@@ -505,7 +505,7 @@ public class DefaultDiffManager implements DiffManager
         if (startOffset >= 0 && startOffset <= endOffset && endOffset <= list.size()) {
             result = new ArrayList<>(list.subList(startOffset, endOffset));
         } else {
-            this.logger.warn("Trying to extract data from a list [{}] with wrong start offset [{}] and end offset "
+            this.logger.info("Trying to extract data from a list [{}] with wrong start offset [{}] and end offset "
                 + "[{}].", list, startOffset, endOffset);
         }
         return result;
