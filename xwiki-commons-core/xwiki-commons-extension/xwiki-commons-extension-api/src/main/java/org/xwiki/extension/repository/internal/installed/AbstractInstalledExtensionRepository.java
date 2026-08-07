@@ -264,7 +264,7 @@ public abstract class AbstractInstalledExtensionRepository<E extends InstalledEx
 
             return true;
         } catch (ResolveException e) {
-            this.logger.warn("Failed to get backward dependencies for id [{}] on namespace [{}]: [{}]",
+            this.logger.error("Failed to get backward dependencies for id [{}] on namespace [{}]: [{}]",
                 dependencyExtension.getId(), namespace, ExceptionUtils.getRootCauseMessage(e));
         }
 
