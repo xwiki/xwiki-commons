@@ -198,8 +198,9 @@ class BlobPathTest
     @Test
     void resolveAbsoluteRejectsTraversalOutsideRoot()
     {
-        assertThrows(IllegalArgumentException.class,
-            () -> BlobPath.root().resolve(BlobPath.relative("..")));
+        BlobPath root = BlobPath.root();
+        BlobPath relative = BlobPath.relative("..");
+        assertThrows(IllegalArgumentException.class, () -> root.resolve(relative));
     }
 
     @Test

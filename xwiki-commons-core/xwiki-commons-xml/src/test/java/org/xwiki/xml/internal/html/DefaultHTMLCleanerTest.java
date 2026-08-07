@@ -320,7 +320,7 @@ public class DefaultHTMLCleanerTest
      * Verify that the restricted parameter forbids dangerous attributes and tags.
      */
     @Test
-    void restrictedAttributesAndTags() throws Exception
+    void restrictedAttributesAndTags()
     {
         Map<String, String> parameters = new HashMap<>(this.cleanerConfiguration.getParameters());
         parameters.put("restricted", "true");

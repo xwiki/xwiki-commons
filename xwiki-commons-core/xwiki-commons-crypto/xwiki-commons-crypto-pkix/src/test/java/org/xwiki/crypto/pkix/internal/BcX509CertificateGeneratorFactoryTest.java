@@ -147,15 +147,6 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
         setupTest();
     }
 
-/*
-    private void dumpCert(CertifiedPublicKey certificate) throws Exception {
-        BinaryStringEncoder base64encoder = mocker.getInstance(BinaryStringEncoder.class, "Base64");
-        System.out.println("-----BEGIN CERTIFICATE-----");
-        System.out.println(base64encoder.encode(certificate.getEncoded(), 64));
-        System.out.println("-----END CERTIFICATE-----");
-    }
-*/
-
     private X509CertifiedPublicKey checkSelfSigned(CertifiedPublicKey certificate, int version) throws Exception
     {
         assertEquals(new DistinguishedName("CN=Test"), certificate.getIssuer());
@@ -167,8 +158,6 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
 
         assertInstanceOf(X509CertifiedPublicKey.class, certificate);
         X509CertifiedPublicKey x509cert = (X509CertifiedPublicKey) certificate;
-
-        //dumpCert(certificate);
 
         assertEquals(version, x509cert.getVersionNumber());
 
@@ -193,8 +182,6 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
 
         assertInstanceOf(X509CertifiedPublicKey.class, certificate);
         X509CertifiedPublicKey x509cert = (X509CertifiedPublicKey) certificate;
-
-        //dumpCert(certificate);
 
         assertEquals(version, x509cert.getVersionNumber());
 
@@ -270,8 +257,6 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
                     ))
                 .generate(new DistinguishedName("CN=Test CA"), rsaPublicKey,
                     new X509CertificateParameters());
-
-        //dumpCert(caCertificate);
 
         CertifiedPublicKey certificate =
             this.factory.getInstance(
@@ -403,8 +388,6 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
                 .generate(new DistinguishedName("CN=Test CA"), rsaPublicKey,
                     new X509CertificateParameters());
 
-        //dumpCert(caCertificate);
-
         X509CertifiedPublicKey caKey = (X509CertifiedPublicKey) caCertificate;
 
         this.builder = this.componentManager.getInstance(X509ExtensionBuilder.class);
@@ -421,8 +404,6 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
         CertifiedPublicKey interCAcert =
             generator.generate(new DistinguishedName("CN=Test Intermediate CA"), interCaDsaPublicKey,
                 new X509CertificateParameters());
-
-        //dumpCert(interCAcert);
 
         assertTrue(interCAcert.isSignedBy(rsaPublicKey), "Signature should match Root CA key.");
         assertEquals(caCertificate.getSubject(), interCAcert.getIssuer());
@@ -465,8 +446,6 @@ class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
                             })
                         .build()
                 ));
-
-        //dumpCert(certificate);
 
         assertTrue(certificate.isSignedBy(interCaDsaPublicKey), "Signature should match intermediate CA key.");
         assertEquals(interCAcert.getSubject(), certificate.getIssuer());

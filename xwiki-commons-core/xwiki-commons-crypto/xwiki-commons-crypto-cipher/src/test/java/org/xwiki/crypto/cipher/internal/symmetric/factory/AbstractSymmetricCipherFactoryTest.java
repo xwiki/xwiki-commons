@@ -341,8 +341,9 @@ public abstract class AbstractSymmetricCipherFactoryTest
     public void cipherWithWrongParameters()
     {
         WrongParameters parameters = new WrongParameters();
+        CipherFactory factory = getFactory();
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-            () -> getFactory().getInstance(true, parameters));
+            () -> factory.getInstance(true, parameters));
         assertEquals("Invalid parameters for cipher: " + WrongParameters.class.getName(), ex.getMessage());
     }
 
@@ -353,8 +354,9 @@ public abstract class AbstractSymmetricCipherFactoryTest
     public void cipherWithAsymmetricParameters()
     {
         AsymmetricParameters parameters = new AsymmetricParameters();
+        CipherFactory factory = getFactory();
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-            () -> getFactory().getInstance(true, parameters));
+            () -> factory.getInstance(true, parameters));
         assertEquals("Unexpected parameters received for a symmetric cipher: " + AsymmetricParameters.class.getName(),
             ex.getMessage());
     }
