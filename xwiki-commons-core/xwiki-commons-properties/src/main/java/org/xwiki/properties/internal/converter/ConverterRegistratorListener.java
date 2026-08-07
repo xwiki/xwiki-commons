@@ -113,7 +113,7 @@ public class ConverterRegistratorListener extends AbstractEventListener implemen
         try {
             this.componentManager.registerComponent(componentDescriptor, this.listConverter);
         } catch (ComponentRepositoryException e) {
-            this.logger.error("Failed to register a List converter for type [{}]", collectionClass, e);
+            this.logger.error("Failed to register a List converter for type [{}]", collectionClass);
         }
     }
 
@@ -128,7 +128,7 @@ public class ConverterRegistratorListener extends AbstractEventListener implemen
         try {
             this.componentManager.registerComponent(componentDescriptor, this.setConverter);
         } catch (ComponentRepositoryException e) {
-            this.logger.error("Failed to register a Set converter for type [{}]", collectionClass, e);
+            this.logger.error("Failed to register a Set converter for type [{}]", collectionClass);
         }
     }
 

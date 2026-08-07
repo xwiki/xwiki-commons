@@ -142,7 +142,7 @@ public class JarExtendedURLStreamHandler extends URLStreamHandler
             try {
                 FileUtils.deleteDirectory(this.jarsDirectory);
             } catch (IOException e) {
-                this.logger.error("Failed to delete folder [{}]", this.jarsDirectory, e);
+                this.logger.error("Failed to delete folder [{}]", this.jarsDirectory);
             }
         }
     }
