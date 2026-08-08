@@ -393,7 +393,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
                 if (getRequest().isVerbose()) {
                     this.logger.info(
                         "There is already a core extension feature [{}] ([{}]) covering extension dependency [{}]",
-                        feature, coreExtension.getId(), extensionDependency.toString());
+                        feature, coreExtension.getId(), extensionDependency);
                 }
 
                 ModifableExtensionPlanNode node =
@@ -595,7 +595,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
     {
         if (getRequest().isVerbose()) {
             this.logger.info("There is already an installed extension [{}] covering extension dependency [{}]",
-                installedExtension.getId(), extensionDependency.toString());
+                installedExtension.getId(), extensionDependency);
         }
     }
 
@@ -683,10 +683,10 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
         if (getRequest().isVerbose()) {
             if (namespace != null) {
                 this.logger.info(LOG_RESOLVEDEPENDENCY_NAMESPACE,
-                    "Resolving extension dependency [{}] on namespace [{}]", extensionDependency.toString(), namespace);
+                    "Resolving extension dependency [{}] on namespace [{}]", extensionDependency, namespace);
             } else {
                 this.logger.info(LOG_RESOLVEDEPENDENCY, "Resolving extension dependency [{}] on all namespaces",
-                    extensionDependency.toString());
+                    extensionDependency);
             }
         }
 
