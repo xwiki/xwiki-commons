@@ -423,13 +423,13 @@ class InstallJobTest extends AbstractExtensionHandlerTest
     @Test
     void upgradeWithExtractDependencyVersion() throws Throwable
     {
-        ExtensionId EXTENSION_1 = new ExtensionId("exactexactdependencyversion", "1.0");
-        ExtensionId EXTENSION_2 = new ExtensionId("exactexactdependencyversion", "2.0");
+        ExtensionId extensionId1 = new ExtensionId("exactexactdependencyversion", "1.0");
+        ExtensionId extensionId2 = new ExtensionId("exactexactdependencyversion", "2.0");
 
-        install(EXTENSION_1);
-        InstalledExtension extension2 = install(EXTENSION_2);
+        install(extensionId1);
+        InstalledExtension extension2 = install(extensionId2);
 
-        assertNull(this.installedExtensionRepository.getInstalledExtension(EXTENSION_1));
+        assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId1));
         assertTrue(extension2.isValid(null));
     }
 }
