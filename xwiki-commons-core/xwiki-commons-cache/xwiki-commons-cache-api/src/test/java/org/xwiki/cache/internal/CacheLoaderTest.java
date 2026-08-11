@@ -228,6 +228,14 @@ class CacheLoaderTest
         assertTrue(executorService.awaitTermination(10, TimeUnit.SECONDS));
     }
 
+    private static Map<?, ?> getCurrentLoads(CacheLoaderGroup group) throws Exception
+    {
+        Field currentLoadsField = ReflectionUtils.getField(CacheLoaderGroup.class, "currentLoads");
+        currentLoadsField.setAccessible(true);
+
+        return (Map<?, ?>) currentLoadsField.get(group);
+    }
+
     private static void verifyLoad(String key, String value, CacheLoader<String, Exception> cacheLoader)
         throws Exception
     {
@@ -657,7 +665,8 @@ class CacheLoaderTest
     @Test
     void testRecursiveCallWithException() throws Exception
     {
-        CacheLoader<String, Exception> cacheLoader = new CacheLoader<>();
+        CacheLoaderGroup group = new CacheLoaderGroup();
+        CacheLoader<String, Exception> cacheLoader = new CacheLoader<>(group);
 
         FailableBiConsumer<String, String, Exception> setter = mock();
         FailableBiConsumer<String, String, Exception> setter2 = mock();
@@ -676,15 +685,13 @@ class CacheLoaderTest
         verifyNoInteractions(setter2);
 
         // Get the internal cache loader map and check that it is empty.
-        Field currentLoadsField = ReflectionUtils.getField(CacheLoader.class, "currentLoads");
-        currentLoadsField.setAccessible(true);
-        Map<?, ?> currentLoads = (Map<?, ?>) currentLoadsField.get(cacheLoader);
+        Map<?, ?> currentLoads = getCurrentLoads(group);
         assertTrue(currentLoads.isEmpty(), "CacheLoader should be empty after exception: " + currentLoads);
 
         // Get the internal thread local and check that it has been cleared.
-        Field threadLocalField = ReflectionUtils.getField(CacheLoader.class, "currentLoad");
+        Field threadLocalField = ReflectionUtils.getField(CacheLoaderGroup.class, "currentLoad");
         threadLocalField.setAccessible(true);
-        ThreadLocal<?> threadLocal = (ThreadLocal<?>) threadLocalField.get(cacheLoader);
+        ThreadLocal<?> threadLocal = (ThreadLocal<?>) threadLocalField.get(group);
         assertNull(threadLocal.get(), "ThreadLocal should be empty after exception: " + threadLocal.get());
     }
 
@@ -736,7 +743,8 @@ class CacheLoaderTest
     @Test
     void setterThrowsValueReturnedAndLoaderEntryRemoved() throws Exception
     {
-        CacheLoader<String, Exception> cacheLoader = new CacheLoader<>();
+        CacheLoaderGroup group = new CacheLoaderGroup();
+        CacheLoader<String, Exception> cacheLoader = new CacheLoader<>(group);
 
         FailableFunction<String, String, Exception> loader = mock();
         when(loader.apply(KEY)).thenReturn(VALUE);
@@ -752,10 +760,7 @@ class CacheLoaderTest
         verify(setter).accept(KEY, VALUE);
 
         // LoaderEntry should be removed from currentLoads
-        Field currentLoadsField = ReflectionUtils.getField(CacheLoader.class, "currentLoads");
-        currentLoadsField.setAccessible(true);
-        Map<?, ?> currentLoads = (Map<?, ?>) currentLoadsField.get(cacheLoader);
-        assertTrue(currentLoads.isEmpty(), "LoaderEntry should be removed after setter exception");
+        assertTrue(getCurrentLoads(group).isEmpty(), "LoaderEntry should be removed after setter exception");
 
         // Assert error log
         assertTrue(
