@@ -417,7 +417,7 @@ public final class RepositoryUtils
                 }
             } catch (Exception e) {
                 LOGGER.error("Failed to search on repository [{}] with query [{}]. Ignore and go to next repository.",
-                    repository.getDescriptor(), query, e);
+                    String.valueOf(repository.getDescriptor()), query, e);
             }
         }
 
