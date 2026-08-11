@@ -2875,6 +2875,13 @@
             </args>
             <verbose>true</verbose>
             <removeOldOutput>false</removeOldOutput>
+            <!-- Don't write the "Generated on: <date>" header into the generated sources
+                 (noFileHeader, xjc's -no-header) nor into META-INF/sun-jaxb.episode
+                 (removeCommentsFromEpisode, which noFileHeader does not cover): it is the build
+                 time, which makes every module using this plugin produce a different JAR on every
+                 build -->
+            <noFileHeader>true</noFileHeader>
+            <removeCommentsFromEpisode>true</removeCommentsFromEpisode>
             <plugins>
               <plugin>
                 <groupId>org.jvnet.jaxb</groupId>
