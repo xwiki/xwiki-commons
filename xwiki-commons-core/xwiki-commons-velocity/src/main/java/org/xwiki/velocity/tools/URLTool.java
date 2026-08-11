@@ -50,12 +50,7 @@ public class URLTool
         if (query != null) {
             for (NameValuePair params : URLEncodedUtils.parse(query, StandardCharsets.UTF_8)) {
                 String name = params.getName();
-                List<String> values = queryParams.get(name);
-                if (values == null) {
-                    values = new ArrayList<>();
-                    queryParams.put(name, values);
-                }
-                values.add(params.getValue());
+                queryParams.computeIfAbsent(name, key -> new ArrayList<>()).add(params.getValue());
             }
         }
         return queryParams;

@@ -197,10 +197,8 @@ public class InternalFilterTest
         }
 
         // Generate a source f it does not exist
-        if (!inputConfiguration.containsKey(FilterStreamConstants.PROPERTY_SOURCE)) {
-            inputConfiguration.put(FilterStreamConstants.PROPERTY_SOURCE,
-                new StringInputSource(inputTestConfiguration.buffer));
-        }
+        inputConfiguration.computeIfAbsent(FilterStreamConstants.PROPERTY_SOURCE,
+            key -> new StringInputSource(inputTestConfiguration.buffer));
 
         return inputConfiguration;
     }
@@ -223,14 +221,10 @@ public class InternalFilterTest
         }
 
         // Format by default
-        if (!outputConfiguration.containsKey(FilterStreamConstants.PROPERTY_FORMAT)) {
-            outputConfiguration.put(FilterStreamConstants.PROPERTY_FORMAT, true);
-        }
+        outputConfiguration.computeIfAbsent(FilterStreamConstants.PROPERTY_FORMAT, key -> true);
 
         // Encoding by default
-        if (!outputConfiguration.containsKey(FilterStreamConstants.PROPERTY_ENCODING)) {
-            outputConfiguration.put(FilterStreamConstants.PROPERTY_ENCODING, "UTF-8");
-        }
+        outputConfiguration.computeIfAbsent(FilterStreamConstants.PROPERTY_ENCODING, key -> "UTF-8");
 
         return outputConfiguration;
     }
