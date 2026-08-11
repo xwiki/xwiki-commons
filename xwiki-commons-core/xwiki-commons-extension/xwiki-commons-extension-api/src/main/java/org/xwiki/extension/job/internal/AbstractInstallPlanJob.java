@@ -379,6 +379,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
         }
     }
 
+    @SuppressWarnings("java:S2629")
     private boolean checkCoreDependency(ExtensionDependency extensionDependency,
         List<ModifableExtensionPlanNode> parentBranch) throws InstallException
     {
@@ -391,6 +392,9 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
                     .formatted(extensionDependency, feature, coreExtension));
             } else {
                 if (getRequest().isVerbose()) {
+                    // Build the String on purpose (see SafeMessageConverter): log arguments are kept as objects in
+                    // the captured LogEvent and XStream-serialized into the job log, and an ExtensionDependency
+                    // carries an unbounded Map<String, Object> of custom properties.
                     this.logger.info(
                         "There is already a core extension feature [{}] ([{}]) covering extension dependency [{}]",
                         feature, coreExtension.getId(), extensionDependency.toString());
@@ -590,10 +594,14 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
         return targetDependency;
     }
 
+    @SuppressWarnings("java:S2629")
     private void logExistingDependencyCoverage(InstalledExtension installedExtension,
         ExtensionDependency extensionDependency)
     {
         if (getRequest().isVerbose()) {
+            // Build the String on purpose (see SafeMessageConverter): log arguments are kept as objects in
+            // the captured LogEvent and XStream-serialized into the job log, and an ExtensionDependency
+            // carries an unbounded Map<String, Object> of custom properties.
             this.logger.info("There is already an installed extension [{}] covering extension dependency [{}]",
                 installedExtension.getId(), extensionDependency.toString());
         }
@@ -668,7 +676,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
      * @throws IncompatibleVersionConstraintException
      */
     @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity",
-        "checkstyle:ExecutableStatementCount"})
+        "checkstyle:ExecutableStatementCount", "java:S2629"})
     protected void installMandatoryExtensionDependency(ExtensionDependency extensionDependency, String namespace,
         List<ModifableExtensionPlanNode> parentBranch, ExtensionPlanContext extensionContext, Set<String> parents)
         throws InstallException, IncompatibleVersionConstraintException, ResolveException
@@ -681,6 +689,9 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
         }
 
         if (getRequest().isVerbose()) {
+            // Build the String on purpose (see SafeMessageConverter): log arguments are kept as objects in
+            // the captured LogEvent and XStream-serialized into the job log, and an ExtensionDependency
+            // carries an unbounded Map<String, Object> of custom properties.
             if (namespace != null) {
                 this.logger.info(LOG_RESOLVEDEPENDENCY_NAMESPACE,
                     "Resolving extension dependency [{}] on namespace [{}]", extensionDependency.toString(), namespace);
