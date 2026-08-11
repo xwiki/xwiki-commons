@@ -339,9 +339,10 @@ public class DefaultVersionRange implements VersionRange
     private int compareTo(Version version1, boolean included1, Version version2, boolean included2, boolean upper)
     {
         int compare;
+        int nullVersionOrder = upper ? 1 : -1;
 
         if (version1 == null) {
-            compare = version2 == null ? 0 : (upper ? 1 : -1);
+            compare = version2 == null ? 0 : nullVersionOrder;
         } else {
             if (version2 == null) {
                 compare = upper ? -1 : 1;
@@ -367,7 +368,8 @@ public class DefaultVersionRange implements VersionRange
         int compare = version1.compareTo(version2);
 
         if (compare == 0 && included1 != included2) {
-            compare = included1 ? (upper ? -1 : 1) : (upper ? 1 : -1);
+            int inclusionOrder = upper ? -1 : 1;
+            compare = included1 ? inclusionOrder : -inclusionOrder;
         }
 
         return compare;
