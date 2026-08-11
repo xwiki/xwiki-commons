@@ -614,12 +614,7 @@ public class ResourceLoader
         for (Map.Entry<URL, List<String>> entry : indexes.entrySet()) {
             URL url = entry.getKey();
             for (String prefix : entry.getValue()) {
-                List<URL> prefixList = prefix2url.get(prefix);
-                if (prefixList == null) {
-                    prefixList = new ArrayList<>();
-                    prefix2url.put(prefix, prefixList);
-                }
-                prefixList.add(url);
+                prefix2url.computeIfAbsent(prefix, key -> new ArrayList<>()).add(url);
             }
         }
 
