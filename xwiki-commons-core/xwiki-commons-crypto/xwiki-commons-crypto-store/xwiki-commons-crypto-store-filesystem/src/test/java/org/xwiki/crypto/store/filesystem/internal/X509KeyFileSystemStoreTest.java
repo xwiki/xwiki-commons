@@ -240,10 +240,10 @@ class X509KeyFileSystemStoreTest
     {
         FileUtils.writeStringToFile(FILE, FILE_CONTENT, StandardCharsets.UTF_8);
 
-        CertifiedKeyPair keyPair = store.retrieve(SINGLE_STORE_REF);
-        assertThat(keyPair, notNullValue());
-        assertThat(keyPair.getPrivateKey(), equalTo(privateKey));
-        assertThat(keyPair.getCertificate(), equalTo((CertifiedPublicKey) certificate));
+        CertifiedKeyPair retrievedKeyPair = store.retrieve(SINGLE_STORE_REF);
+        assertThat(retrievedKeyPair, notNullValue());
+        assertThat(retrievedKeyPair.getPrivateKey(), equalTo(privateKey));
+        assertThat(retrievedKeyPair.getCertificate(), equalTo((CertifiedPublicKey) certificate));
     }
 
     @Test
@@ -251,10 +251,10 @@ class X509KeyFileSystemStoreTest
     {
         FileUtils.writeStringToFile(FILE, ENCRYPTED_FILE_CONTENT, StandardCharsets.UTF_8);
 
-        CertifiedKeyPair keyPair = store.retrieve(SINGLE_STORE_REF, PASSWORD);
-        assertThat(keyPair, notNullValue());
-        assertThat(keyPair.getPrivateKey(), equalTo(privateKey));
-        assertThat(keyPair.getCertificate(), equalTo((CertifiedPublicKey) certificate));
+        CertifiedKeyPair retrievedKeyPair = store.retrieve(SINGLE_STORE_REF, PASSWORD);
+        assertThat(retrievedKeyPair, notNullValue());
+        assertThat(retrievedKeyPair.getPrivateKey(), equalTo(privateKey));
+        assertThat(retrievedKeyPair.getCertificate(), equalTo((CertifiedPublicKey) certificate));
     }
 
     @Test
@@ -264,10 +264,10 @@ class X509KeyFileSystemStoreTest
         FileUtils.writeStringToFile(KEY_FILE, KEY_FILE_CONTENT, StandardCharsets.UTF_8);
         FileUtils.writeStringToFile(CERT_FILE, CERTIFICATE_FILE_CONTENT, StandardCharsets.UTF_8);
 
-        CertifiedKeyPair keyPair = store.retrieve(MULTI_STORE_REF, certificate);
-        assertThat(keyPair, notNullValue());
-        assertThat(keyPair.getPrivateKey(), equalTo(privateKey));
-        assertThat(keyPair.getCertificate(), equalTo((CertifiedPublicKey) certificate));
+        CertifiedKeyPair retrievedKeyPair = store.retrieve(MULTI_STORE_REF, certificate);
+        assertThat(retrievedKeyPair, notNullValue());
+        assertThat(retrievedKeyPair.getPrivateKey(), equalTo(privateKey));
+        assertThat(retrievedKeyPair.getCertificate(), equalTo((CertifiedPublicKey) certificate));
     }
 
     @Test
@@ -277,10 +277,10 @@ class X509KeyFileSystemStoreTest
         FileUtils.writeStringToFile(KEY_FILE, ENCRYTEDKEY_FILE_CONTENT, StandardCharsets.UTF_8);
         FileUtils.writeStringToFile(CERT_FILE, CERTIFICATE_FILE_CONTENT, StandardCharsets.UTF_8);
 
-        CertifiedKeyPair keyPair = store.retrieve(MULTI_STORE_REF, certificate, PASSWORD);
-        assertThat(keyPair, notNullValue());
-        assertThat(keyPair.getPrivateKey(), equalTo(privateKey));
-        assertThat(keyPair.getCertificate(), equalTo((CertifiedPublicKey) certificate));
+        CertifiedKeyPair retrievedKeyPair = store.retrieve(MULTI_STORE_REF, certificate, PASSWORD);
+        assertThat(retrievedKeyPair, notNullValue());
+        assertThat(retrievedKeyPair.getPrivateKey(), equalTo(privateKey));
+        assertThat(retrievedKeyPair.getCertificate(), equalTo((CertifiedPublicKey) certificate));
     }
 
     @Test
@@ -288,8 +288,8 @@ class X509KeyFileSystemStoreTest
     {
         FileUtils.writeStringToFile(FILE, CERTIFICATE_FILE_CONTENT, StandardCharsets.UTF_8);
 
-        CertifiedKeyPair keyPair = store.retrieve(SINGLE_STORE_REF);
-        assertThat(keyPair, nullValue());
+        CertifiedKeyPair retrievedKeyPair = store.retrieve(SINGLE_STORE_REF);
+        assertThat(retrievedKeyPair, nullValue());
     }
 
     @Test
@@ -297,8 +297,8 @@ class X509KeyFileSystemStoreTest
     {
         FileUtils.writeStringToFile(FILE, KEY_FILE_CONTENT, StandardCharsets.UTF_8);
 
-        CertifiedKeyPair keyPair = store.retrieve(SINGLE_STORE_REF);
-        assertThat(keyPair, nullValue());
+        CertifiedKeyPair retrievedKeyPair = store.retrieve(SINGLE_STORE_REF);
+        assertThat(retrievedKeyPair, nullValue());
     }
 
     @Test
@@ -307,8 +307,8 @@ class X509KeyFileSystemStoreTest
         DIRECTORY.mkdirs();
         FileUtils.writeStringToFile(CERT_FILE, CERTIFICATE_FILE_CONTENT, StandardCharsets.UTF_8);
 
-        CertifiedKeyPair keyPair = store.retrieve(MULTI_STORE_REF, certificate);
-        assertThat(keyPair, nullValue());
+        CertifiedKeyPair retrievedKeyPair = store.retrieve(MULTI_STORE_REF, certificate);
+        assertThat(retrievedKeyPair, nullValue());
     }
 
     @Test
@@ -317,10 +317,10 @@ class X509KeyFileSystemStoreTest
         DIRECTORY.mkdirs();
         FileUtils.writeStringToFile(KEY_FILE, KEY_FILE_CONTENT, StandardCharsets.UTF_8);
 
-        CertifiedKeyPair keyPair = store.retrieve(MULTI_STORE_REF, certificate);
-        assertThat(keyPair, notNullValue());
-        assertThat(keyPair.getPrivateKey(), equalTo(privateKey));
-        assertThat(keyPair.getCertificate(), equalTo((CertifiedPublicKey) certificate));
+        CertifiedKeyPair retrievedKeyPair = store.retrieve(MULTI_STORE_REF, certificate);
+        assertThat(retrievedKeyPair, notNullValue());
+        assertThat(retrievedKeyPair.getPrivateKey(), equalTo(privateKey));
+        assertThat(retrievedKeyPair.getCertificate(), equalTo((CertifiedPublicKey) certificate));
     }
 
     @Test

@@ -560,13 +560,13 @@ class AetherDefaultRepositoryManagerTest
     @Test
     void resolveWithExternalParent() throws ResolveException
     {
-        ExtensionId extensionId = new ExtensionId("lgroupid:lartifactid", "version");
+        ExtensionId testExtensionId = new ExtensionId("lgroupid:lartifactid", "version");
 
-        Extension extension = this.repositoryManager.resolve(extensionId);
+        Extension extension = this.repositoryManager.resolve(testExtensionId);
 
         assertNotNull(extension);
-        assertEquals(extensionId.getId(), extension.getId().getId());
-        assertEquals(extensionId.getVersion(), extension.getId().getVersion());
+        assertEquals(testExtensionId.getId(), extension.getId().getId());
+        assertEquals(testExtensionId.getVersion(), extension.getId().getVersion());
         assertEquals("type", extension.getType());
         assertEquals("test-maven",
             extension.getRepository().getDescriptor().getId());
@@ -577,13 +577,13 @@ class AetherDefaultRepositoryManagerTest
     @Test
     void resolveWithEmptyScmAndIssueManagement() throws ResolveException
     {
-        ExtensionId extensionId = new ExtensionId("groupid:emptyscmandissuemanagement", "version");
+        ExtensionId testExtensionId = new ExtensionId("groupid:emptyscmandissuemanagement", "version");
 
-        Extension extension = this.repositoryManager.resolve(extensionId);
+        Extension extension = this.repositoryManager.resolve(testExtensionId);
 
         assertNotNull(extension);
-        assertEquals(extensionId.getId(), extension.getId().getId());
-        assertEquals(extensionId.getVersion(), extension.getId().getVersion());
+        assertEquals(testExtensionId.getId(), extension.getId().getId());
+        assertEquals(testExtensionId.getVersion(), extension.getId().getVersion());
         assertEquals("type", extension.getType());
         assertEquals("test-maven",
             extension.getRepository().getDescriptor().getId());
