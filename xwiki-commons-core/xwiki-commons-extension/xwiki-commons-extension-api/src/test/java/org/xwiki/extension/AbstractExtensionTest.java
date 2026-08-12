@@ -141,31 +141,31 @@ public class AbstractExtensionTest
     @Test
     void set()
     {
-        AbstractExtension extension = toExtension("id", "version", new ExtensionId("feature", "featureversion"));
+        AbstractExtension testExtension = toExtension("id", "version", new ExtensionId("feature", "featureversion"));
 
-        extension.addAuthor(AUTHOR1);
-        extension.addAuthor(AUTHOR2);
+        testExtension.addAuthor(AUTHOR1);
+        testExtension.addAuthor(AUTHOR2);
 
-        extension.addRepository(DESCRIPTOR1);
-        extension.addRepository(DESCRIPTOR2);
+        testExtension.addRepository(DESCRIPTOR1);
+        testExtension.addRepository(DESCRIPTOR2);
 
-        extension.addLicense(LICENSE1);
-        extension.addLicense(LICENSE2);
+        testExtension.addLicense(LICENSE1);
+        testExtension.addLicense(LICENSE2);
 
-        extension.addDependency(DEPENDENCY1);
-        extension.addDependency(DEPENDENCY2);
+        testExtension.addDependency(DEPENDENCY1);
+        testExtension.addDependency(DEPENDENCY2);
 
-        extension.addManagedDependency(DEPENDENCY1);
-        extension.addManagedDependency(DEPENDENCY2);
+        testExtension.addManagedDependency(DEPENDENCY1);
+        testExtension.addManagedDependency(DEPENDENCY2);
 
-        extension.addAllowedNamespace("namespace1");
-        extension.addAllowedNamespace("namespace2");
+        testExtension.addAllowedNamespace("namespace1");
+        testExtension.addAllowedNamespace("namespace2");
 
-        AbstractExtension cloneExtension = new TestExtension(extension);
+        AbstractExtension cloneExtension = new TestExtension(testExtension);
 
-        assertEquals(extension, cloneExtension);
-        assertEquals(extension.getId(), cloneExtension.getId());
-        assertEquals(new ArrayList<>(extension.getExtensionFeatures()),
+        assertEquals(testExtension, cloneExtension);
+        assertEquals(testExtension.getId(), cloneExtension.getId());
+        assertEquals(new ArrayList<>(testExtension.getExtensionFeatures()),
             new ArrayList<>(cloneExtension.getExtensionFeatures()));
         assertEquals(Arrays.asList(DESCRIPTOR1, DESCRIPTOR2), cloneExtension.getRepositories());
         assertEquals(Arrays.asList(AUTHOR1, AUTHOR2), cloneExtension.getAuthors());
@@ -178,21 +178,21 @@ public class AbstractExtensionTest
     @Test
     void equals()
     {
-        AbstractExtension extension = toExtension("id", "version");
-        AbstractExtension cloneExtension = new TestExtension(extension);
+        AbstractExtension testExtension = toExtension("id", "version");
+        AbstractExtension cloneExtension = new TestExtension(testExtension);
 
-        assertEquals(extension, cloneExtension);
+        assertEquals(testExtension, cloneExtension);
 
         cloneExtension.setCategory("othercategory");
 
-        assertEquals(extension, cloneExtension);
+        assertEquals(testExtension, cloneExtension);
 
         AbstractExtension extensionWithDifferentId = toExtension("otherid", "version");
 
-        assertNotEquals(extension, extensionWithDifferentId);
+        assertNotEquals(testExtension, extensionWithDifferentId);
 
         AbstractExtension extensionWithDifferentVersion = toExtension("id", "otherversion");
 
-        assertNotEquals(extension, extensionWithDifferentVersion);
+        assertNotEquals(testExtension, extensionWithDifferentVersion);
     }
 }

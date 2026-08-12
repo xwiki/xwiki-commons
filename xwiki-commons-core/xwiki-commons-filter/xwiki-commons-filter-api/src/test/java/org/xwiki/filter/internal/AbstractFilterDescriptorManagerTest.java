@@ -181,13 +181,13 @@ public abstract class AbstractFilterDescriptorManagerTest
     @Test
     void proxyFailing() throws FilterException
     {
-        UnknownFilter filter = mock(UnknownFilter.class);
-        doThrow(FilterException.class).when(filter).onUnknwon(any(), any());
+        UnknownFilter unknownFilter = mock(UnknownFilter.class);
+        doThrow(FilterException.class).when(unknownFilter).onUnknwon(any(), any());
 
         UnknownFilter proxyFilter =
-            this.manager.createFilterProxy(filter, UnknownFilter.class, FilterDescriptorManager.class);
+            this.manager.createFilterProxy(unknownFilter, UnknownFilter.class, FilterDescriptorManager.class);
 
-        assertNotSame(filter, proxyFilter);
+        assertNotSame(unknownFilter, proxyFilter);
 
         assertThrows(FilterException.class, () -> proxyFilter.onUnknwon(null, null));
     }

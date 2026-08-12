@@ -743,8 +743,8 @@ public class DefaultHTMLCleanerTest
     {
         CleanerProperties cleanerProperties = new CleanerProperties();
         cleanerProperties.setDeserializeEntities(true);
-        HtmlCleaner cleaner = new HtmlCleaner(cleanerProperties);
-        TagNode tagNode = cleaner.clean("<?xml version = \"1.0\"?><div foo=\"&amp;quot;\">&amp;quot;</div>");
+        HtmlCleaner htmlCleaner = new HtmlCleaner(cleanerProperties);
+        TagNode tagNode = htmlCleaner.clean("<?xml version = \"1.0\"?><div foo=\"&amp;quot;\">&amp;quot;</div>");
         List<? extends TagNode> divList = tagNode.getElementListByName("div", true);
         assertEquals(1, divList.size());
         assertEquals("&quot;", divList.get(0).getText().toString());
@@ -779,8 +779,8 @@ public class DefaultHTMLCleanerTest
         cleanerProperties.setDeserializeEntities(true);
         cleanerProperties.setTranslateSpecialEntities(false);
 
-        HtmlCleaner cleaner = new HtmlCleaner(cleanerProperties);
-        TagNode tagNode = cleaner.clean("<?xml version = \"1.0\"?>"
+        HtmlCleaner htmlCleaner = new HtmlCleaner(cleanerProperties);
+        TagNode tagNode = htmlCleaner.clean("<?xml version = \"1.0\"?>"
             + "<div foo=\"&#169;\">&#169;</div>"
             + "<div foo=\"baz&gt;buz\">boz&gt;buz</div>"
             + "<div foo=\"baz&buz\">boz&buz</div>");
