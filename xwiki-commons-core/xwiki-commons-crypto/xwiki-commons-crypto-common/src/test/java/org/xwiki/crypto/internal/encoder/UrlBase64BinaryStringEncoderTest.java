@@ -27,13 +27,13 @@ import org.xwiki.test.junit5.mockito.InjectMockComponents;
 public class UrlBase64BinaryStringEncoderTest extends AbstractBinaryStringEncoderTest
 {
     {
-        ENCODED_BYTES =
+        encodedBytes =
                   "S3J5cHRvZ3JhcGhpZSAodm9uIGdyaWVjaGlzY2g6IM66z4HPhc-Az4TPjM-CLCDi"
                 + "gJ52ZXJib3JnZW7igJwgdW5kIM6zz4HOrM-GzrXOuc69LCDigJ5zY2hyZWliZW7i"
                 + "gJwpIGlzdCBkaWUgV2lzc2Vuc2NoYWZ0IGRlciBWZXJzY2hsw7xzc2VsdW5nIHZv"
                 + "biBJbmZvcm1hdGlvbmVuLg..";
 
-        WRAPPED_ENCODED_BYTES =
+        wrappedEncodedBytes =
             """
             S3J5cHRvZ3JhcGhpZSAodm9uIGdyaWVjaGlzY2g6IM66z4HPhc-Az4TPjM-CLCDi
             gJ52ZXJib3JnZW7igJwgdW5kIM6zz4HOrM-GzrXOuc69LCDigJ5zY2hyZWliZW7i
