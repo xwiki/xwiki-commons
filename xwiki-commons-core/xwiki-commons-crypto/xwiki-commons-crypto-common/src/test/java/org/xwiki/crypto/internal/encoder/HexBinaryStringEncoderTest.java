@@ -27,14 +27,14 @@ import org.xwiki.test.junit5.mockito.InjectMockComponents;
 public class HexBinaryStringEncoderTest extends AbstractBinaryStringEncoderTest
 {
     {
-        ENCODED_BYTES =
+        encodedBytes =
                   "4b727970746f677261706869652028766f6e20677269656368697363683a20ce"
                 + "bacf81cf85cf80cf84cf8ccf822c20e2809e766572626f7267656ee2809c2075"
                 + "6e6420ceb3cf81ceaccf86ceb5ceb9cebd2c20e2809e73636872656962656ee2"
                 + "809c2920697374206469652057697373656e7363686166742064657220566572"
                 + "7363686cc3bc7373656c756e6720766f6e20496e666f726d6174696f6e656e2e";
 
-        WRAPPED_ENCODED_BYTES =
+        wrappedEncodedBytes =
             """
             4b727970746f677261706869652028766f6e20677269656368697363683a20ce
             bacf81cf85cf80cf84cf8ccf822c20e2809e766572626f7267656ee2809c2075

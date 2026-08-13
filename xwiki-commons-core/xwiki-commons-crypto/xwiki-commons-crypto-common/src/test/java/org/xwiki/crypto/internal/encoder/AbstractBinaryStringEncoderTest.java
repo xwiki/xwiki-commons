@@ -43,9 +43,9 @@ public abstract class AbstractBinaryStringEncoderTest
 
     private static byte[] BYTES;
 
-    protected String ENCODED_BYTES;
+    protected String encodedBytes;
 
-    protected String WRAPPED_ENCODED_BYTES;
+    protected String wrappedEncodedBytes;
 
     protected abstract BinaryStringEncoder getEncoder();
 
@@ -58,20 +58,20 @@ public abstract class AbstractBinaryStringEncoderTest
     @Test
     void encode() throws Exception
     {
-        assertThat(getEncoder().encode(BYTES), equalTo(ENCODED_BYTES));
-        assertThat(getEncoder().encode(BYTES, 64), equalTo(WRAPPED_ENCODED_BYTES));
+        assertThat(getEncoder().encode(BYTES), equalTo(encodedBytes));
+        assertThat(getEncoder().encode(BYTES, 64), equalTo(wrappedEncodedBytes));
         assertThat(getEncoder().encode(BYTES, 0, BYTES.length),
-            equalTo(ENCODED_BYTES));
+            equalTo(encodedBytes));
         assertThat(getEncoder().encode(BYTES, 0, BYTES.length, 64),
-            equalTo(WRAPPED_ENCODED_BYTES));
+            equalTo(wrappedEncodedBytes));
 
     }
 
     @Test
     void decode() throws Exception
     {
-        assertThat(getEncoder().decode(ENCODED_BYTES), equalTo(BYTES));
-        assertThat(getEncoder().decode(WRAPPED_ENCODED_BYTES), equalTo(BYTES));
+        assertThat(getEncoder().decode(encodedBytes), equalTo(BYTES));
+        assertThat(getEncoder().decode(wrappedEncodedBytes), equalTo(BYTES));
     }
 
     @Test
@@ -90,7 +90,7 @@ public abstract class AbstractBinaryStringEncoderTest
         encos.write(BYTES, 29, BYTES.length - 29);
         encos.close();
 
-        assertThat(baos.toString(), equalTo(ENCODED_BYTES));
+        assertThat(baos.toString(), equalTo(encodedBytes));
     }
 
     @Test
@@ -109,7 +109,7 @@ public abstract class AbstractBinaryStringEncoderTest
         encos.write(BYTES, 29, BYTES.length - 29);
         encos.close();
 
-        assertThat(baos.toString(), equalTo(WRAPPED_ENCODED_BYTES));
+        assertThat(baos.toString(), equalTo(wrappedEncodedBytes));
     }
 
     private int readAll(InputStream is, byte[] out) throws IOException
@@ -126,7 +126,7 @@ public abstract class AbstractBinaryStringEncoderTest
     @Test
     void decoderStream() throws Exception
     {
-        ByteArrayInputStream bais = new ByteArrayInputStream(ENCODED_BYTES.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(encodedBytes.getBytes());
         InputStream decis = getEncoder().getDecoderInputStream(bais);
         byte[] buf = new byte[187];
         assertThat(readAll(decis, buf), equalTo(BYTES.length));
@@ -138,7 +138,7 @@ public abstract class AbstractBinaryStringEncoderTest
     @Test
     void decoderWrappedStream() throws Exception
     {
-        ByteArrayInputStream bais = new ByteArrayInputStream(WRAPPED_ENCODED_BYTES.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(wrappedEncodedBytes.getBytes());
         InputStream decis = getEncoder().getDecoderInputStream(bais);
         byte[] buf = new byte[187];
         assertThat(readAll(decis, buf), equalTo(BYTES.length));
@@ -150,7 +150,7 @@ public abstract class AbstractBinaryStringEncoderTest
     @Test
     void decoderStreamNoMark() throws Exception
     {
-        ByteArrayInputStream bais = new ByteArrayInputStream(ENCODED_BYTES.getBytes()) {
+        ByteArrayInputStream bais = new ByteArrayInputStream(encodedBytes.getBytes()) {
             @Override
             public boolean markSupported()
             {
@@ -168,7 +168,7 @@ public abstract class AbstractBinaryStringEncoderTest
     @Test
     void decoderWrappedStreamNoMark() throws Exception
     {
-        ByteArrayInputStream bais = new ByteArrayInputStream(WRAPPED_ENCODED_BYTES.getBytes()) {
+        ByteArrayInputStream bais = new ByteArrayInputStream(wrappedEncodedBytes.getBytes()) {
             @Override
             public boolean markSupported()
             {
