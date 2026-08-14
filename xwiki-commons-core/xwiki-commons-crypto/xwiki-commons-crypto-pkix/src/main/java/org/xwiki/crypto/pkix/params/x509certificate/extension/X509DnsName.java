@@ -19,7 +19,7 @@
  */
 package org.xwiki.crypto.pkix.params.x509certificate.extension;
 
-import org.bouncycastle.asn1.DERIA5String;
+import org.bouncycastle.asn1.ASN1IA5String;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.xwiki.crypto.pkix.internal.extension.BcGeneralName;
 
@@ -54,7 +54,7 @@ public class X509DnsName implements X509StringGeneralName, BcGeneralName
             throw new IllegalArgumentException("Incompatible general name: " + name.getTagNo());
         }
 
-        this.domain = DERIA5String.getInstance(name.getName()).getString();
+        this.domain = ASN1IA5String.getInstance(name.getName()).getString();
     }
 
     /**

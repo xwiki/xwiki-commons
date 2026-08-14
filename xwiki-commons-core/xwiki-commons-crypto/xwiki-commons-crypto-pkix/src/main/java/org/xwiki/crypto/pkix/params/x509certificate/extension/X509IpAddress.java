@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
+import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.xwiki.crypto.pkix.internal.extension.BcGeneralName;
@@ -45,7 +46,7 @@ public class X509IpAddress implements X509StringGeneralName, BcGeneralName
     public X509IpAddress(String ipAddress)
     {
         GeneralName name = new GeneralName(GeneralName.iPAddress, ipAddress);
-        this.ipAddress = DEROctetString.getInstance(name.getName()).getOctets();
+        this.ipAddress = ASN1OctetString.getInstance(name.getName()).getOctets();
     }
 
     /**
@@ -88,7 +89,7 @@ public class X509IpAddress implements X509StringGeneralName, BcGeneralName
         if (name.getTagNo() != GeneralName.iPAddress) {
             throw new IllegalArgumentException("Incompatible general name: " + name.getTagNo());
         }
-        this.ipAddress = DEROctetString.getInstance(name.getName()).getOctets();
+        this.ipAddress = ASN1OctetString.getInstance(name.getName()).getOctets();
     }
 
     /**

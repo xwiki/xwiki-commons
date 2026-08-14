@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
@@ -308,7 +307,7 @@ abstract class AbstractXARMojo extends AbstractMojo
         AndArtifactFilter filters = new AndArtifactFilter();
 
         filters.add(new TypeArtifactFilter("xar"));
-        filters.add(new ScopeArtifactFilter(DefaultArtifact.SCOPE_RUNTIME));
+        filters.add(new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME));
 
         Set<Artifact> artifacts = pomProject.createArtifacts(this.factory, Artifact.SCOPE_TEST, filters);
 
