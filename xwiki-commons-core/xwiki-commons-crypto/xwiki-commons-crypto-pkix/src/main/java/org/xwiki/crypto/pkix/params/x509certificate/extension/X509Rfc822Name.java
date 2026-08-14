@@ -22,7 +22,7 @@ package org.xwiki.crypto.pkix.params.x509certificate.extension;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
-import org.bouncycastle.asn1.DERIA5String;
+import org.bouncycastle.asn1.ASN1IA5String;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.xwiki.crypto.pkix.internal.extension.BcGeneralName;
 
@@ -77,7 +77,7 @@ public class X509Rfc822Name implements X509StringGeneralName, BcGeneralName
      */
     public X509Rfc822Name(GeneralName name)
     {
-        this(DERIA5String.getInstance(name.getName()).getString());
+        this(ASN1IA5String.getInstance(name.getName()).getString());
 
         if (name.getTagNo() != GeneralName.rfc822Name) {
             throw new IllegalArgumentException("Incompatible general name: " + name.getTagNo());

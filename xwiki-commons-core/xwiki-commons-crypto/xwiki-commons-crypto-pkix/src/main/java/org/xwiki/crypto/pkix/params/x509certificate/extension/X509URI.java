@@ -24,7 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.bouncycastle.asn1.DERIA5String;
+import org.bouncycastle.asn1.ASN1IA5String;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.xwiki.crypto.pkix.internal.extension.BcGeneralName;
 
@@ -101,7 +101,7 @@ public class X509URI implements X509StringGeneralName, BcGeneralName
      */
     public X509URI(GeneralName name)
     {
-        this(DERIA5String.getInstance(name.getName()).getString());
+        this(ASN1IA5String.getInstance(name.getName()).getString());
 
         if (name.getTagNo() != GeneralName.uniformResourceIdentifier) {
             throw new IllegalArgumentException("Incompatible general name: " + name.getTagNo());
