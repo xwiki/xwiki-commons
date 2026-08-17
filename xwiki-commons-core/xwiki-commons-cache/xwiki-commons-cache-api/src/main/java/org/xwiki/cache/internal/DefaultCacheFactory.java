@@ -21,9 +21,9 @@ package org.xwiki.cache.internal;
 
 import javax.inject.Singleton;
 
-import org.xwiki.cache.CacheFactory;
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
+import org.xwiki.cache.CacheFactory;
 import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.component.annotation.Component;
 

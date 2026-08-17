@@ -21,6 +21,7 @@ package org.xwiki.crypto.cipher.internal.asymmetric.factory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.AsymmetricKeyFactory;

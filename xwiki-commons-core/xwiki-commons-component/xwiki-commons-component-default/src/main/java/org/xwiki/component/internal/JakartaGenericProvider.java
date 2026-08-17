@@ -19,9 +19,9 @@
  */
 package org.xwiki.component.internal;
 
-import org.xwiki.component.manager.ComponentManager;
-
 import jakarta.inject.Provider;
+
+import org.xwiki.component.manager.ComponentManager;
 
 /**
  * Default provider used when the Component Manager needs to inject a {@link Provider} field but no custom Provider has

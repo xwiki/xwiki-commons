@@ -28,7 +28,6 @@ import java.util.List;
 
 import jakarta.annotation.Priority;
 import jakarta.inject.Named;
-
 import jakarta.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
