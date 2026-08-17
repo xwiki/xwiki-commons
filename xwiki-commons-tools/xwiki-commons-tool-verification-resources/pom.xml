@@ -71,6 +71,10 @@
       <scope>test</scope>
       <version>${checkstyle.version}</version>
       <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
         <!-- Exclude some frequently upgraded dependencies to make easier to test with Checkstyle SNAPSHOT (Checkstyle project use XWiki to execute non-regression tests) -->
         <exclusion>
           <groupId>com.google.guava</groupId>
