@@ -21,12 +21,12 @@ package org.xwiki.websocket;
 
 import java.util.concurrent.Callable;
 
-import org.xwiki.component.annotation.Role;
-
 import jakarta.websocket.HandshakeResponse;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.HandshakeRequest;
 import jakarta.websocket.server.ServerEndpointConfig;
+
+import org.xwiki.component.annotation.Role;
 
 /**
  * Component used to initialize and bind a WebSocket execution context to a WebSocket session, and to run code within

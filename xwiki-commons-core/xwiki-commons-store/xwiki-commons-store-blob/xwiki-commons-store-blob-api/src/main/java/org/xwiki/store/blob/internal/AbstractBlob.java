@@ -25,10 +25,10 @@ import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.xwiki.store.blob.Blob;
+import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobStore;
 import org.xwiki.store.blob.BlobStoreException;
-import org.xwiki.store.blob.BlobOption;
 import org.xwiki.text.XWikiToStringBuilder;
 
 /**

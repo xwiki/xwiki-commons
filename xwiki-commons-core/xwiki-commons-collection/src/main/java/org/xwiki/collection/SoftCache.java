@@ -22,8 +22,8 @@ package org.xwiki.collection;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.collections4.map.ReferenceMap;
 import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
+import org.apache.commons.collections4.map.ReferenceMap;
 
 /**
  * A concurrent version of {@link ReferenceMap} with soft reference for both keys and values.

@@ -20,8 +20,8 @@
 package org.xwiki.observation.internal;
 
 import java.lang.reflect.Field;
-import java.util.Map;
 import java.util.Deque;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

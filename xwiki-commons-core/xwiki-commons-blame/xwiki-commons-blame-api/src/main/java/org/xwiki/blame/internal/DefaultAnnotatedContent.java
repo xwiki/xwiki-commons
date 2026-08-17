@@ -27,9 +27,9 @@ import java.util.NoSuchElementException;
 import org.xwiki.blame.AnnotatedContent;
 import org.xwiki.blame.AnnotatedElement;
 
-import com.github.difflib.patch.Chunk;
-import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.DiffUtils;
+import com.github.difflib.patch.AbstractDelta;
+import com.github.difflib.patch.Chunk;
 
 /**
  * Hold content during blame analysis and provides actual results.

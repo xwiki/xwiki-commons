@@ -21,8 +21,8 @@ package org.xwiki.crypto.internal.symmetric.generator;
 
 import org.junit.jupiter.api.Test;
 import org.xwiki.crypto.internal.DefaultSecureRandomProvider;
-import org.xwiki.crypto.params.generator.symmetric.GenericKeyGenerationParameters;
 import org.xwiki.crypto.params.generator.KeyGenerationParameters;
+import org.xwiki.crypto.params.generator.symmetric.GenericKeyGenerationParameters;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;

@@ -20,6 +20,7 @@
 package org.xwiki.websocket.internal;
 
 import javax.inject.Named;
+
 import jakarta.websocket.HandshakeResponse;
 import jakarta.websocket.server.HandshakeRequest;
 import jakarta.websocket.server.ServerEndpointConfig;

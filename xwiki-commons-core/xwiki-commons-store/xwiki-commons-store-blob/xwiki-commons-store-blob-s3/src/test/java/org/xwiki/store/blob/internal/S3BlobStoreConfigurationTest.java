@@ -21,6 +21,7 @@
 package org.xwiki.store.blob.internal;
 
 import jakarta.inject.Named;
+
 import org.junit.jupiter.api.Test;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.test.junit5.mockito.ComponentTest;

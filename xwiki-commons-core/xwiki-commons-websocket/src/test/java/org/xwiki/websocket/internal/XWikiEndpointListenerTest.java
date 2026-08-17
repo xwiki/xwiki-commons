@@ -22,6 +22,7 @@ package org.xwiki.websocket.internal;
 import java.util.Collections;
 
 import javax.inject.Named;
+
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.Endpoint;
 import jakarta.websocket.EndpointConfig;

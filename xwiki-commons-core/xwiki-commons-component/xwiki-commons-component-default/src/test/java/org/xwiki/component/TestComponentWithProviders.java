@@ -22,12 +22,12 @@ package org.xwiki.component;
 import java.util.List;
 import java.util.Map;
 
-import org.xwiki.component.annotation.Component;
-
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
 
 /**
  * Class used in several tests.

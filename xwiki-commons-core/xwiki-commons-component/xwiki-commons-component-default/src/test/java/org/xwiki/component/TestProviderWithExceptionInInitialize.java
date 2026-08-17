@@ -19,11 +19,11 @@
  */
 package org.xwiki.component;
 
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
-
 import jakarta.inject.Named;
 import jakarta.inject.Provider;
+
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
 
 /**
  * Class used in several tests.
