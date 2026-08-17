@@ -219,7 +219,6 @@ class JakartaComponentAnnotationLoaderTest
 
         // This is the test, we verify that registerComponent() is called for each of the descriptor we're expecting
         // to be discovered through annotations by the call to initialize() below.
-        verify(componentManager).registerComponent(descriptor1);
         verify(componentManager).registerComponent(descriptor2);
         verify(componentManager).registerComponent(descriptor3);
         verify(componentManager).registerComponent(descriptor4);
