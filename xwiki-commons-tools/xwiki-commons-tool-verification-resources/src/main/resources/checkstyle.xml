@@ -226,7 +226,21 @@
 
     <!--module name="ImportControl"/-->
 
-    <!--module name="ImportOrder"/-->
+    <!-- Enforce the import order defined in the Java code style, which is also what the IntelliJ IDEA and Eclipse
+         settings we ship produce: java, javax, jakarta, org, com, anything else, and finally the static imports.
+         Imports matching none of the "groups" prefixes land in an implicit trailing group, which is the "any other
+         imports" group of the code style. "separated" requires a blank line between two groups and forbids one inside
+         a group, and "sortStaticImportsAlphabetically" is needed for the order inside the static block to be checked
+         at all. "caseSensitive" is left to its default (true) since that's what the IDE settings produce.
+         Note: this same module is also declared in checkstyle-test.xml, which is the configuration applied to test
+         sources. -->
+    <module name="ImportOrder">
+      <property name="groups" value="java,javax,jakarta,org,com"/>
+      <property name="ordered" value="true"/>
+      <property name="separated" value="true"/>
+      <property name="option" value="bottom"/>
+      <property name="sortStaticImportsAlphabetically" value="true"/>
+    </module>
 
     <module name="Indentation"/>
 
