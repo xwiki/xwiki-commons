@@ -44,7 +44,7 @@ public class RequirementComponentDependencyFactory extends AbstractComponentDepe
             dependency.setName(field.getName());
 
             // Handle case of list or map
-            Class< ? > role = getFieldRole(field, requirement);
+            Class< ? > role = getFieldRole(field);
 
             if (role == null) {
                 return null;
@@ -69,10 +69,9 @@ public class RequirementComponentDependencyFactory extends AbstractComponentDepe
      * Extract component role from the field to inject.
      *
      * @param field the field to inject
-     * @param requirement the Requirement attribute
      * @return the role of the field to inject
      */
-    private Class<?> getFieldRole(Field field, Requirement requirement)
+    private Class<?> getFieldRole(Field field)
     {
         Class<?> role;
 

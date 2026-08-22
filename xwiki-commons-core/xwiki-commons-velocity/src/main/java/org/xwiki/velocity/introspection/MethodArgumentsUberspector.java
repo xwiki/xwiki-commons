@@ -196,7 +196,7 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
         }
 
         // Compare compatible number of parameters
-        value = compareMethodArguments(method1, method2, methodName, args);
+        value = compareMethodArguments(method1, method2, args);
         if (value != 0) {
             return value;
         }
@@ -220,7 +220,7 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
         return 0;
     }
 
-    private int compareMethodArguments(Method method1, Method method2, String methodName, Object[] args)
+    private int compareMethodArguments(Method method1, Method method2, Object[] args)
     {
         double compatibleArtgumentsCount1 = countCompatibleParameters(method1, args);
         double compatibleArtgumentsCount2 = countCompatibleParameters(method2, args);

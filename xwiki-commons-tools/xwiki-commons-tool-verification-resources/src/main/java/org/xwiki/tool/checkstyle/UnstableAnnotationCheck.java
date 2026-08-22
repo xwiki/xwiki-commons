@@ -121,7 +121,7 @@ public class UnstableAnnotationCheck extends AbstractCheck
                         TextBlock cmt = contents.getJavadocBefore(ast.getLineNo());
                         if (cmt != null) {
                             sinceVersions =
-                                extractSinceVersionsFromJavadoc(cmt.getText(), annotation, annotatedElementName);
+                                extractSinceVersionsFromJavadoc(cmt.getText(), annotatedElementName);
                         }
                         if (sinceVersions.isEmpty()) {
                             log(annotation.getLineNo(), annotation.getColumnNo(),
@@ -186,7 +186,7 @@ public class UnstableAnnotationCheck extends AbstractCheck
     /**
      * @return null if the since format is wrong
      */
-    private List<String> extractSinceVersionsFromJavadoc(String[] javadocLines, DetailAST annotation,
+    private List<String> extractSinceVersionsFromJavadoc(String[] javadocLines,
         String annotatedElementName)
     {
         List<String> sinceVersions = new ArrayList<>();
