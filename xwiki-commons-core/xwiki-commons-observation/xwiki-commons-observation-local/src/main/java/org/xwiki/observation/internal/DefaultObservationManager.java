@@ -374,8 +374,8 @@ public class DefaultObservationManager implements ObservationManager
             if (componentEvent.getRoleType() == EventListener.class) {
                 if (componentEvent instanceof ComponentDescriptorAddedEvent addedEvent) {
                     onEventListenerComponentAdded(addedEvent, componentManager, descriptor);
-                } else if (componentEvent instanceof ComponentDescriptorRemovedEvent removedEvent) {
-                    onEventListenerComponentRemoved(removedEvent, componentManager, descriptor);
+                } else if (componentEvent instanceof ComponentDescriptorRemovedEvent) {
+                    onEventListenerComponentRemoved(componentManager, descriptor);
                 } else {
                     this.logger.warn("Ignoring unknown Component event [{}]", componentEvent.getClass().getName());
                 }
@@ -422,11 +422,10 @@ public class DefaultObservationManager implements ObservationManager
     /**
      * An Event Listener Component has been dynamically unregistered in the system, remove it from our cache.
      *
-     * @param event the event object containing the removed component descriptor
      * @param componentManager the {@link ComponentManager} where the descriptor is registered
      * @param descriptor the component descriptor removed from the component manager
      */
-    private void onEventListenerComponentRemoved(ComponentDescriptorRemovedEvent event,
+    private void onEventListenerComponentRemoved(
         ComponentManager componentManager, ComponentDescriptor<?> descriptor)
     {
         EventListener removedEventListener = null;

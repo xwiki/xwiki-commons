@@ -78,7 +78,7 @@ public class HTMLDiffPruner implements XMLDiffFilter
         Node node = diffBlock;
         while (node != null && node.getNodeType() == Node.ELEMENT_NODE) {
             markContextElement(node);
-            getContextSiblings(node).forEach(this::markContextElement);
+            getContextSiblings().forEach(this::markContextElement);
             node = node.getParentNode();
         }
     }
@@ -96,7 +96,7 @@ public class HTMLDiffPruner implements XMLDiffFilter
         ((Element) node).removeAttribute(DIFF_CONTEXT_ATTRIBUTE);
     }
 
-    private List<Node> getContextSiblings(Node node)
+    private List<Node> getContextSiblings()
     {
         // TODO
         return Collections.emptyList();
