@@ -186,7 +186,7 @@ public interface JobStatus
 
     /**
      * @return the log sent during job execution
-     * @deprecated since 11.9RC1, use {@link #getLogTail()} instead
+     * @deprecated use {@link #getLogTail()} instead
      */
     @Deprecated(since = "11.9RC1")
     LogQueue getLog();
@@ -194,7 +194,7 @@ public interface JobStatus
     /**
      * @param level the level of the log
      * @return the log sent with the provided level
-     * @deprecated since 4.1RC1 use {@link LogQueue#getLogs(LogLevel)} instead
+     * @deprecated use {@link LogQueue#getLogs(LogLevel)} instead
      */
     @Deprecated(since = "4.1RC1")
     List<LogEvent> getLog(LogLevel level);

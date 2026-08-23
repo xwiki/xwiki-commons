@@ -97,7 +97,7 @@ public abstract class AbstractConverter<T> implements Converter<T>
      * @param type Data type to which this value should be converted.
      * @param value The input value to be converted.
      * @return The converted value.
-     * @deprecated since 3.0M1 overwrite {@link #convertToType(Type, Object)} instead
+     * @deprecated overwrite {@link #convertToType(Type, Object)} instead
      */
     @Deprecated(since = "3.0M1")
     protected <G extends T> G convertToType(Class<G> type, Object value)

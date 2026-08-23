@@ -25,7 +25,7 @@ package org.xwiki.extension.wrap;
  * @param <T> the type of the wrapped object
  * @version $Id$
  * @since 4.0M1
- * @deprecated since 7.2M1, use directly {@link org.xwiki.script.wrap.AbstractWrappingObject} instead
+ * @deprecated use directly {@link org.xwiki.script.wrap.AbstractWrappingObject} instead
  */
 @Deprecated(since = "7.2M1")
 public abstract class AbstractWrappingObject<T> extends org.xwiki.script.wrap.AbstractWrappingObject<T>

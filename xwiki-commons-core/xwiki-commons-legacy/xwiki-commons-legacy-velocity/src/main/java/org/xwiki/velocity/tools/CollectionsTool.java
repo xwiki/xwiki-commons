@@ -26,7 +26,7 @@ import java.util.List;
  *
  * @version $Id$
  * @since 4.0M1
- * @deprecated since 12.1RC1, use {@link org.xwiki.velocity.tools.CollectionTool} instead
+ * @deprecated use {@link org.xwiki.velocity.tools.CollectionTool} instead
  */
 @Deprecated(since = "12.1RC1")
 public class CollectionsTool extends CollectionTool

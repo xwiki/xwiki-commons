@@ -29,7 +29,7 @@ import org.xwiki.properties.converter.AbstractCollectionConverter;
 
 /**
  * @version $Id$
- * @deprecated since 5.2M1 use {@link SetConverter} instead
+ * @deprecated use {@link SetConverter} instead
  */
 @Component(hints = {"java.util.Set", "java.util.LinkedHashSet", "java.util.HashSet" })
 @Singleton

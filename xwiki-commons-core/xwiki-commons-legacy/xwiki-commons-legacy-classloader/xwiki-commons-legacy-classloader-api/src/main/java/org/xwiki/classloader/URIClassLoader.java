@@ -70,7 +70,7 @@ import edu.emory.mathcs.util.classloader.ResourceHandle;
  * @see java.io.File#toURI
  * @version $Id$d
  * @since 2.0.1
- * @deprecated since 12.5RC1
+ * @deprecated
  */
 @Deprecated(since = "12.5RC1")
 // The non-private fields of this class and its nested finder are read directly across the (de)serialization and

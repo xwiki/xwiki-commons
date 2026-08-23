@@ -31,7 +31,7 @@ package org.xwiki.job.event.status;
  *
  * @version $Id$
  * @since 4.0M1
- * @deprecated since 7.1M2, use {@link StartStepProgressEvent} instead
+ * @deprecated use {@link StartStepProgressEvent} instead
  */
 @Deprecated(since = "7.1M2")
 public class StepProgressEvent extends AbstractProgressEvent

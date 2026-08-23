@@ -29,7 +29,7 @@ import org.xwiki.job.event.status.JobStatus;
  *
  * @version $Id$
  * @since 4.0M1
- * @deprecated since 6.1M2, use {@link JobExecutor} instead
+ * @deprecated use {@link JobExecutor} instead
  */
 @Role
 @Deprecated(since = "6.1M2")

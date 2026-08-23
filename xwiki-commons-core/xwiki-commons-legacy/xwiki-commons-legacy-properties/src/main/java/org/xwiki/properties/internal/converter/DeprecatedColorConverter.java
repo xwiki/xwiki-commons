@@ -34,7 +34,7 @@ import org.xwiki.properties.converter.Converter;
  * 
  * @version $Id$
  * @since 2.0M2
- * @deprecated since 5.2M use {@link ColorConverter} instead
+ * @deprecated M use {@link ColorConverter} instead
  */
 @Component
 @Named("java.awt.Color")

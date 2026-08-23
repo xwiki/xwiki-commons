@@ -52,7 +52,7 @@ public interface MutableExtension extends Extension
 
     /**
      * @param features the extension ids also provided by this extension
-     * @deprecated since 8.0M1, use {@link #setExtensionFeatures(Collection)} instead
+     * @deprecated use {@link #setExtensionFeatures(Collection)} instead
      */
     @Deprecated(since = "8.0M1")
     void setFeatures(Collection<String> features);
@@ -61,7 +61,7 @@ public interface MutableExtension extends Extension
      * Add a new feature to the extension.
      *
      * @param feature a feature name
-     * @deprecated since 8.0M1, use {@link #addExtensionFeature(ExtensionId)} instead
+     * @deprecated use {@link #addExtensionFeature(ExtensionId)} instead
      */
     @Deprecated(since = "8.0M1")
     void addFeature(String feature);

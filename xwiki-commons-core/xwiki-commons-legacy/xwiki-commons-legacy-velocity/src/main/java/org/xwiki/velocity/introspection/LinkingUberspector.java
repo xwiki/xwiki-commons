@@ -59,7 +59,7 @@ import org.apache.velocity.util.introspection.VelPropertySet;
  * @see ChainingUberspector
  * @version $Id$
  * @since 1.5RC1
- * @deprecated since 8.0M1; chaining uberspectors is much more powerful, this class was never more than a proof of
+ * @deprecated chaining uberspectors is much more powerful, this class was never more than a proof of
  *             concept
  */
 @Deprecated(since = "8.0M1")

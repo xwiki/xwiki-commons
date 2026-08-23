@@ -93,7 +93,7 @@ public interface ExtensionPlanAction
 
     /**
      * @return the currently installed extension. Used when upgrading.
-     * @deprecated since 5.0RC1 used {@link #getPreviousExtensions()} instead
+     * @deprecated used {@link #getPreviousExtensions()} instead
      */
     @Deprecated(since = "5.0RC1")
     InstalledExtension getPreviousExtension();

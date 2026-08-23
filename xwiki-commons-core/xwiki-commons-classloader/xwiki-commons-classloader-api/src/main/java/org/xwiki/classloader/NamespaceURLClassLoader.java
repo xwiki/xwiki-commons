@@ -43,7 +43,7 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
      * @param uris the search path
      * @param parent the parent class loader
      * @param namespace see {@link #getNamespace()}
-     * @deprecated since 12.5RC1 prefer using
+     * @deprecated prefer using
      *             {@link NamespaceURLClassLoader#NamespaceURLClassLoader(URL[], ClassLoader, String)}.
      */
     @Deprecated(since = "12.5RC1")

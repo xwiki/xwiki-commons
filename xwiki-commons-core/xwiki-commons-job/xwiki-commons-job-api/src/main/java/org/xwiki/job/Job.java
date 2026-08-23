@@ -50,7 +50,7 @@ public interface Job extends Runnable
 
     /**
      * @param request start the job with provided request
-     * @deprecated since 5.1M2 use {@link #initialize(Request)} then {@link #run()} instead
+     * @deprecated use {@link #initialize(Request)} then {@link #run()} instead
      */
     @Deprecated(since = "5.1M2")
     void start(Request request);

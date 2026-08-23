@@ -33,7 +33,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * 
  * @version $Id$
  * @since 1.8.1
- * @deprecated starting with 3.1M1 use the JSR330 Inject and Named annotations instead
+ * @deprecated use the JSR330 Inject and Named annotations instead
  */
 @Documented
 @Retention(RUNTIME)

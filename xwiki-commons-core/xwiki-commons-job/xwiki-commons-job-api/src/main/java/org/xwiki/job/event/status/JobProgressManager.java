@@ -52,7 +52,7 @@ public interface JobProgressManager
      * Close the current step and start a new one.
      *
      * @param source the source to send with the event
-     * @deprecated since 7.1M2, use {@link #startStep(Object)} instead
+     * @deprecated use {@link #startStep(Object)} instead
      */
     @Deprecated(since = "7.1M2")
     void stepPropress(Object source);

@@ -25,7 +25,7 @@ package org.xwiki.component.logging;
  * logging is to extend {@link org.xwiki.component.logging.AbstractLogEnabled}.
  * 
  * @version $Id$
- * @deprecated starting with 3.1M2 use SLF4J instead
+ * @deprecated use SLF4J instead
  */
 @Deprecated(since = "3.1M2")
 public interface Logger

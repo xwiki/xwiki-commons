@@ -36,7 +36,7 @@ public abstract class AbstractComponentDependencyFactory implements ComponentDep
     /**
      * @param type the type for which to verify if it's a list or not
      * @return true if the type is a list (Collection or Map), false otherwise
-     * @deprecated since 4.0M1 it's useless
+     * @deprecated it's useless
      */
     @Deprecated(since = "4.0M1")
     protected boolean isDependencyOfListType(Class<?> type)

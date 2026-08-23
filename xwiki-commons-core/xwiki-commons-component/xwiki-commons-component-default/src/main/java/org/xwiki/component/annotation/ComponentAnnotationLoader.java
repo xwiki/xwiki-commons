@@ -71,7 +71,7 @@ public class ComponentAnnotationLoader
      * Location in the classloader of the file specifying which component implementation to use when several components
      * with the same role/hint are found.
      *
-     * @deprecated starting with 3.3M1 use the notion of priorities instead (see {@link ComponentDeclaration}).
+     * @deprecated use the notion of priorities instead (see {@link ComponentDeclaration}).
      */
     @Deprecated(since = "3.3M1")
     public static final String COMPONENT_OVERRIDE_LIST = "META-INF/component-overrides.txt";
@@ -461,7 +461,7 @@ public class ComponentAnnotationLoader
      *
      * @param componentClass the component implementation class for which to find the component roles it implements
      * @return the list of component role classes implemented
-     * @deprecated since 4.0M1 use {@link #findComponentRoleTypes(Class)} instead
+     * @deprecated use {@link #findComponentRoleTypes(Class)} instead
      */
     @Deprecated(since = "4.0M1")
     public Set<Class<?>> findComponentRoleClasses(Class<?> componentClass)

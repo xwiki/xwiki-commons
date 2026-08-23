@@ -49,7 +49,7 @@ public abstract class AbstractExtension implements MutableExtension
 
     /**
      * @see #getExtensionFeatures()
-     * @deprecated since 8.0M1, use {@link #featuresMap} instead
+     * @deprecated use {@link #featuresMap} instead
      */
     @Deprecated(since = "8.0M1")
     protected Set<String> features;

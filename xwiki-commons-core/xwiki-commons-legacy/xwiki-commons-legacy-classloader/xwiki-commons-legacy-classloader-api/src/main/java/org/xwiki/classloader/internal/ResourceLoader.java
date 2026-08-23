@@ -87,7 +87,7 @@ import edu.emory.mathcs.util.classloader.ResourceUtils;
  *
  * @version $Id$
  * @since 2.0.1
- * @deprecated Since 12.5RC1
+ * @deprecated
  */
 @Deprecated(since = "12.5RC1")
 public class ResourceLoader

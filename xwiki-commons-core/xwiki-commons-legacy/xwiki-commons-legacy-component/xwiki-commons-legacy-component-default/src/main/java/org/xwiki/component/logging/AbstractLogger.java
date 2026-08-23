@@ -26,7 +26,7 @@ import java.text.MessageFormat;
  * 
  * @version $Id$
  * @since 2.0M1
- * @deprecated starting with 3.1M2 use SLF4J instead
+ * @deprecated use SLF4J instead
  */
 @Deprecated(since = "3.1M2")
 public abstract class AbstractLogger implements Logger

@@ -30,7 +30,7 @@ import org.xwiki.observation.ObservationManager;
  * @param <R>
  * @version $Id$
  * @since 4.0M1
- * @deprecated since 7.4M1, use {@link org.xwiki.job.AbstractJobStatus} instead
+ * @deprecated use {@link org.xwiki.job.AbstractJobStatus} instead
  */
 @Deprecated(since = "7.4M1")
 public abstract class AbstractJobStatus<R extends Request> extends org.xwiki.job.AbstractJobStatus<R>

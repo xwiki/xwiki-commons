@@ -146,7 +146,7 @@ public interface InstalledExtension extends LocalExtension
      * possible to know which extension are not really required anymore.
      *
      * @return true if the the extension has been installed only because it was a dependency of another extension
-     * @deprecated since 4.3M1 use {@link #isDependency(String)} with <code>null</code> namespace instead
+     * @deprecated use {@link #isDependency(String)} with <code>null</code> namespace instead
      */
     @Deprecated(since = "4.3M1")
     boolean isDependency();

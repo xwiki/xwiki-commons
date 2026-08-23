@@ -166,7 +166,7 @@ public class DefaultJobProgress implements EventListener, JobProgress
     /**
      * Move progress to next step.
      * 
-     * @deprecated since 7.1M2, use {@link #onStartStepProgress(Message)} instead
+     * @deprecated use {@link #onStartStepProgress(Message)} instead
      */
     @Deprecated(since = "7.1M2")
     private void onStepProgress(Object source)

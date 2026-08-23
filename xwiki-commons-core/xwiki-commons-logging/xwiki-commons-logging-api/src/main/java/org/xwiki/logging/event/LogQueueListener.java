@@ -26,7 +26,7 @@ import org.xwiki.logging.LogQueue;
  *
  * @version $Id$
  * @since 3.2M3
- * @deprecated since 5.4M1, use {@link LoggerListener} instead
+ * @deprecated use {@link LoggerListener} instead
  */
 @Deprecated(since = "5.4M1")
 public class LogQueueListener extends LoggerListener

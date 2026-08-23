@@ -52,7 +52,7 @@ public interface PropertyDescriptor
 
     /**
      * @return the type of the property.
-     * @deprecated since 3.0M1 use {@link #getPropertyType()} instead
+     * @deprecated use {@link #getPropertyType()} instead
      */
     @Deprecated(since = "3.0M1")
     Class<?> getPropertyClass();

@@ -99,7 +99,7 @@ public interface VelocityEngine
      *
      * @param namespace the namespace for which to remove all cached Velocity macros
      * @since 2.4M2
-     * @deprecated since 10.5RC1, the macros are now stored in the execution context so this method does not make much
+     * @deprecated the macros are now stored in the execution context so this method does not make much
      *             sense anymore
      */
     @Deprecated(since = "10.5RC1")

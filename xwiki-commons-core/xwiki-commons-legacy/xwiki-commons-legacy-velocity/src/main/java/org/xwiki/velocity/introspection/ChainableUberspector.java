@@ -25,7 +25,7 @@ package org.xwiki.velocity.introspection;
  *
  * @version $Id$
  * @since 1.5M1
- * @deprecated since 8.0M1; this is now part of the official Velocity library, use
+ * @deprecated this is now part of the official Velocity library, use
  *             {@link org.apache.velocity.util.introspection.ChainableUberspector} instead
  */
 @Deprecated(since = "8.0M1")

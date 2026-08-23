@@ -24,7 +24,7 @@ package org.xwiki.extension.repository.xwiki;
  *
  * @version $Id$
  * @since 4.0M1
- * @deprecated since 4.2M1 use {@link org.xwiki.repository.Resources} instead
+ * @deprecated use {@link org.xwiki.repository.Resources} instead
  */
 @Deprecated(since = "4.2M1")
 public interface Resources extends org.xwiki.repository.Resources

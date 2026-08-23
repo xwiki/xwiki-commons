@@ -53,7 +53,7 @@ import org.apache.velocity.util.introspection.Uberspect;
  * @see ChainableUberspector
  * @version $Id$
  * @since 1.5M1
- * @deprecated since 8.0M1; Velocity supports the same functionality natively since 1.6; just move the configuration
+ * @deprecated Velocity supports the same functionality natively since 1.6; just move the configuration
  *             from {@code runtime.introspector.uberspect.chainClasses} to {@code runtime.introspector.uberspect}
  */
 @Deprecated(since = "8.0M1")
