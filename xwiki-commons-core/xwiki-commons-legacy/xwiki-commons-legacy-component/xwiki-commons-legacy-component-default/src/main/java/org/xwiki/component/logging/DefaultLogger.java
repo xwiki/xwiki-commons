@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @deprecated already deprecated since 3.1M2, use {@link javax.inject.Inject} annotation to get injected a SLF4J
  *             Logger instead
  */
-@Deprecated
+@Deprecated(since = "3.1M2")
 public class DefaultLogger extends AbstractLogger
 {
     /**

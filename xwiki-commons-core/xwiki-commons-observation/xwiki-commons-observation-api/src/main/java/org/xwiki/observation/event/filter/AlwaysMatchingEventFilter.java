@@ -44,7 +44,7 @@ public class AlwaysMatchingEventFilter implements EventFilter, Serializable
     /**
      * @deprecated since 6.0M1, use {@link #INSTANCE} instead
      */
-    @Deprecated
+    @Deprecated(since = "6.0M1")
     public AlwaysMatchingEventFilter()
     {
 

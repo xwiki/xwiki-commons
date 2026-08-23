@@ -42,7 +42,7 @@ public interface CompatibilityComponentManager
      * @throws ComponentLookupException in case the component cannot be found
      * @deprecated since 4.0M1 use {@code #getInstance(java.lang.reflect.Type)} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.0M1")
     <T> T lookup(Class<T> role) throws ComponentLookupException;
 
     /**
@@ -57,7 +57,7 @@ public interface CompatibilityComponentManager
      * @throws ComponentLookupException in case the component cannot be found
      * @deprecated since 4.0M1 use {@code #getInstance(java.lang.reflect.Type, String)} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.0M1")
     <T> T lookup(Class<T> role, String hint) throws ComponentLookupException;
 
     /**
@@ -69,7 +69,7 @@ public interface CompatibilityComponentManager
      * @throws ComponentLookupException if any error happen during component search
      * @deprecated since 4.0M1 use {@code #getInstanceList(java.lang.reflect.Type)} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.0M1")
     <T> List<T> lookupList(Class<T> role) throws ComponentLookupException;
 
     /**
@@ -81,7 +81,7 @@ public interface CompatibilityComponentManager
      * @throws ComponentLookupException if any error happen during component search
      * @deprecated since 4.0M1 use {@code #getInstanceMap(java.lang.reflect.Type)} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.0M1")
     <T> Map<String, T> lookupMap(Class<T> role) throws ComponentLookupException;
 
     /**
@@ -90,7 +90,7 @@ public interface CompatibilityComponentManager
      * @return true if the component is registered or false otherwise
      * @deprecated since 4.0M1 use {@code #hasComponent(Type)} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.0M1")
     <T> boolean hasComponent(Class<T> role);
 
     /**
@@ -101,7 +101,7 @@ public interface CompatibilityComponentManager
      * @return true if the component is registered for the passed hint or false otherwise
      * @deprecated since 4.0M1 use {@code #hasComponent(Type, String)} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.0M1")
     <T> boolean hasComponent(Class<T> role, String hint);
 
     /**
@@ -113,7 +113,7 @@ public interface CompatibilityComponentManager
      * @since 2.0M2
      * @deprecated since 4.0M1 use {@code #unregisterComponent(Type, String)} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.0M1")
     <T> void unregisterComponent(Class<T> role, String hint);
 
     /**
@@ -124,6 +124,6 @@ public interface CompatibilityComponentManager
      * @since 2.0M1
      * @deprecated since 4.0M1 use {@code #getComponentDescriptor(Type, String)} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.0M1")
     <T> ComponentDescriptor<T> getComponentDescriptor(Class<T> role, String hint);
 }

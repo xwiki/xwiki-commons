@@ -28,7 +28,7 @@ package org.xwiki.velocity.introspection;
  * @deprecated since 8.0M1; this is now part of the official Velocity library, use
  *             {@link org.apache.velocity.util.introspection.ChainableUberspector} instead
  */
-@Deprecated
+@Deprecated(since = "8.0M1")
 public interface ChainableUberspector extends org.apache.velocity.util.introspection.ChainableUberspector
 {
     // Everything is part of the super interface

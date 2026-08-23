@@ -37,7 +37,7 @@ import org.xwiki.configuration.ConfigurationSource;
 @Component
 @Named("configurationSource")
 @Singleton
-@Deprecated
+@Deprecated(since = "4.0M1")
 public class DeprecatedConfigurationSourceProvider implements Provider<ConfigurationSource>
 {
     /**

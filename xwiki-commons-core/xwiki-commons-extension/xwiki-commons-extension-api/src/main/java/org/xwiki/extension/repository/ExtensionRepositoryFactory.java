@@ -38,7 +38,7 @@ public interface ExtensionRepositoryFactory
      * @throws ExtensionRepositoryException failed to create a {@link ExtensionRepository} for the provided identifier
      * @deprecated since 4.3M1 use {@link #createRepository(ExtensionRepositoryDescriptor)}
      */
-    @Deprecated
+    @Deprecated(since = "4.3M1")
     ExtensionRepository createRepository(ExtensionRepositoryId repositoryId) throws ExtensionRepositoryException;
 
     /**

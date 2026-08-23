@@ -57,7 +57,7 @@ public abstract class AbstractExtensionRepository implements ExtensionRepository
      * @param id the repository identifier
      * @deprecated since 4.3M1 use {@link #AbstractExtensionRepository(ExtensionRepositoryDescriptor)} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.3M1")
     protected AbstractExtensionRepository(ExtensionRepositoryId id)
     {
         setId(new ExtensionRepositoryId(id));
@@ -76,7 +76,7 @@ public abstract class AbstractExtensionRepository implements ExtensionRepository
      * @param id the repository identifier
      * @deprecated since 4.3M1 use {@link #setDescriptor(ExtensionRepositoryDescriptor)} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.3M1")
     protected void setId(ExtensionRepositoryId id)
     {
         this.descriptor = id;

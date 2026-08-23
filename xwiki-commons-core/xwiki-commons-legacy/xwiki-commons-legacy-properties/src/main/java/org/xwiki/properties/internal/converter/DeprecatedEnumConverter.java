@@ -39,7 +39,7 @@ import org.xwiki.properties.converter.Converter;
 @Component
 @Named("enum")
 @Singleton
-@Deprecated
+@Deprecated(since = "5.2M1")
 public class DeprecatedEnumConverter extends AbstractConverter
 {
     /**

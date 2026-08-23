@@ -242,7 +242,7 @@ public interface Extension extends Comparable<Extension>
      * @return the extension ids also provided by this extension, an empty collection if there is none
      * @deprecated since 8.0M1, use {@link #getExtensionFeatures()} instead
      */
-    @Deprecated
+    @Deprecated(since = "8.0M1")
     Collection<String> getFeatures();
 
     /**

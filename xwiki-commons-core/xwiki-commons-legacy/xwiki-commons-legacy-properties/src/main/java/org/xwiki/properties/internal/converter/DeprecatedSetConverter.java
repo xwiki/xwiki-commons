@@ -33,7 +33,7 @@ import org.xwiki.properties.converter.AbstractCollectionConverter;
  */
 @Component(hints = {"java.util.Set", "java.util.LinkedHashSet", "java.util.HashSet" })
 @Singleton
-@Deprecated
+@Deprecated(since = "5.2M1")
 public class DeprecatedSetConverter extends AbstractCollectionConverter
 {
     @Override

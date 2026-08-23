@@ -43,7 +43,7 @@ public class DefaultJobStatus<R extends Request> extends AbstractJobStatus<R>
      * @deprecated since 9.2RC1, use
      *             {@link #DefaultJobStatus(String, Request, JobStatus, ObservationManager, LoggerManager)} instead
      */
-    @Deprecated
+    @Deprecated(since = "9.2RC1")
     public DefaultJobStatus(R request, JobStatus parentJobStatus, ObservationManager observationManager,
         LoggerManager loggerManager)
     {

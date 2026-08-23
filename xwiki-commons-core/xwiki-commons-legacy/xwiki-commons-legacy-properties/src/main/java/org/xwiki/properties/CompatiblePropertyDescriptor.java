@@ -33,7 +33,7 @@ public interface CompatiblePropertyDescriptor
      * @return the field. If null it generally means that the property is based on getter/setter.
      * @deprecated since 4.2M1 use {@link PropertyDescriptor#getField()} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.2M1")
     default Field getFied()
     {
         return ((PropertyDescriptor) this).getField();

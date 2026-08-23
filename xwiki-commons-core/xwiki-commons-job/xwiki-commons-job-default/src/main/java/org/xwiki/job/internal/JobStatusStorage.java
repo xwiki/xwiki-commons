@@ -32,7 +32,7 @@ import org.xwiki.job.event.status.JobStatus;
  * @deprecated since 6.1M2, use {@link org.xwiki.job.JobStatusStore} instead
  */
 @Role
-@Deprecated
+@Deprecated(since = "6.1M2")
 public interface JobStatusStorage
 {
     /**

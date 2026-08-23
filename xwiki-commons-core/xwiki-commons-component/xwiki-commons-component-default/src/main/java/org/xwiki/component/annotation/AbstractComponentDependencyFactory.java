@@ -38,7 +38,7 @@ public abstract class AbstractComponentDependencyFactory implements ComponentDep
      * @return true if the type is a list (Collection or Map), false otherwise
      * @deprecated since 4.0M1 it's useless
      */
-    @Deprecated
+    @Deprecated(since = "4.0M1")
     protected boolean isDependencyOfListType(Class<?> type)
     {
         return Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type);

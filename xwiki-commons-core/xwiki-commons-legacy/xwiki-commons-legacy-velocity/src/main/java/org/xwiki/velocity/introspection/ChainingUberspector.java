@@ -56,7 +56,7 @@ import org.apache.velocity.util.introspection.Uberspect;
  * @deprecated since 8.0M1; Velocity supports the same functionality natively since 1.6; just move the configuration
  *             from {@code runtime.introspector.uberspect.chainClasses} to {@code runtime.introspector.uberspect}
  */
-@Deprecated
+@Deprecated(since = "8.0M1")
 public class ChainingUberspector extends AbstractChainableUberspector implements Uberspect, RuntimeServicesAware
 {
     /** The key of the parameter that allows defining the list of chained uberspectors. */

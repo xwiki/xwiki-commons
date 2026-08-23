@@ -148,6 +148,6 @@ public interface InstalledExtension extends LocalExtension
      * @return true if the the extension has been installed only because it was a dependency of another extension
      * @deprecated since 4.3M1 use {@link #isDependency(String)} with <code>null</code> namespace instead
      */
-    @Deprecated
+    @Deprecated(since = "4.3M1")
     boolean isDependency();
 }

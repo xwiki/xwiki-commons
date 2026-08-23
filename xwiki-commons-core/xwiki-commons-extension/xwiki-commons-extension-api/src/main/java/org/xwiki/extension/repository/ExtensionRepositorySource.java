@@ -48,7 +48,7 @@ public interface ExtensionRepositorySource
      * @return the extension repositories identifiers
      * @deprecated since 4.3M1 use {@link #getExtensionRepositoryDescriptors()} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.3M1")
     Collection<ExtensionRepositoryId> getExtensionRepositories();
 
     /**

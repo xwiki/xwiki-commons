@@ -73,7 +73,7 @@ public class ComponentAnnotationLoader
      *
      * @deprecated starting with 3.3M1 use the notion of priorities instead (see {@link ComponentDeclaration}).
      */
-    @Deprecated
+    @Deprecated(since = "3.3M1")
     public static final String COMPONENT_OVERRIDE_LIST = "META-INF/component-overrides.txt";
 
     /**
@@ -463,7 +463,7 @@ public class ComponentAnnotationLoader
      * @return the list of component role classes implemented
      * @deprecated since 4.0M1 use {@link #findComponentRoleTypes(Class)} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.0M1")
     public Set<Class<?>> findComponentRoleClasses(Class<?> componentClass)
     {
         // Note: We use a Set to ensure that we don't register duplicate roles.

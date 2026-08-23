@@ -51,7 +51,7 @@ public interface ExtensionManagerConfiguration
      * @return the configured repositories
      * @deprecated since 4.3M1 use {@link #getExtensionRepositoryDescriptors()} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.3M1")
     Collection<ExtensionRepositoryId> getRepositories();
 
     /**

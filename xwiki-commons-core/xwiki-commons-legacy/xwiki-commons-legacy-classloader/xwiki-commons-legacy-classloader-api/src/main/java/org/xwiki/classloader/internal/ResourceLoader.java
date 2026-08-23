@@ -89,7 +89,7 @@ import edu.emory.mathcs.util.classloader.ResourceUtils;
  * @since 2.0.1
  * @deprecated Since 12.5RC1
  */
-@Deprecated
+@Deprecated(since = "12.5RC1")
 public class ResourceLoader
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceLoader.class);

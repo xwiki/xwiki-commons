@@ -102,7 +102,7 @@ public interface VelocityEngine
      * @deprecated since 10.5RC1, the macros are now stored in the execution context so this method does not make much
      *             sense anymore
      */
-    @Deprecated
+    @Deprecated(since = "10.5RC1")
     default void clearMacroNamespace(String namespace)
     {
         

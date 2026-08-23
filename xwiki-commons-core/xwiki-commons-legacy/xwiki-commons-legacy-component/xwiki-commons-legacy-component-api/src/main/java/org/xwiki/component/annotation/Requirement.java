@@ -39,7 +39,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target(FIELD)
 @Inherited
-@Deprecated
+@Deprecated(since = "3.1M1")
 public @interface Requirement
 {
     /**

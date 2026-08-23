@@ -30,7 +30,7 @@ import java.net.URI;
  * @since 4.0M1
  * @deprecated since 4.2M1 use {@link org.xwiki.repository.UriBuilder} instead
  */
-@Deprecated
+@Deprecated(since = "4.2M1")
 public class UriBuilder extends org.xwiki.repository.UriBuilder
 {
     /**

@@ -56,7 +56,7 @@ import org.xwiki.job.event.status.JobStatus;
  */
 @Component
 @Singleton
-@Deprecated
+@Deprecated(since = "6.1M2")
 public class DefaultJobManager implements JobManager, Runnable, Initializable
 {
     /**

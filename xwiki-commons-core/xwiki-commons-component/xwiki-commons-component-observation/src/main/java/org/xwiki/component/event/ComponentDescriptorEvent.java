@@ -35,7 +35,7 @@ public interface ComponentDescriptorEvent extends Event
      * @return the role of the component
      * @deprecated since 4.4MA use {@link #getRoleType()} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.4")
     Class<?> getRole();
 
     /**

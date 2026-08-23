@@ -46,7 +46,7 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
      * @deprecated since 12.5RC1 prefer using
      *             {@link NamespaceURLClassLoader#NamespaceURLClassLoader(URL[], ClassLoader, String)}.
      */
-    @Deprecated
+    @Deprecated(since = "12.5RC1")
     public NamespaceURLClassLoader(URI[] uris, ClassLoader parent, String namespace)
     {
         this(Arrays.stream(uris).map(uri -> {

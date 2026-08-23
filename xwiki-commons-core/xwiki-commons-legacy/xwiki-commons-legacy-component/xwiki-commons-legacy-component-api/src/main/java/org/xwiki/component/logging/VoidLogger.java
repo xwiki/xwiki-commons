@@ -29,7 +29,7 @@ package org.xwiki.component.logging;
  * @since 1.8RC3
  * @deprecated starting with 3.1M2 use SLF4J's NOPLogger instead: {@link org.slf4j.helpers.NOPLogger#NOP_LOGGER}
  */
-@Deprecated
+@Deprecated(since = "3.1M2")
 public class VoidLogger implements Logger
 {
     @Override

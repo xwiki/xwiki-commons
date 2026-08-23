@@ -163,7 +163,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
      * @deprecated since 9.2RC1, use
      *             {@link #AbstractJobStatus(String, Request, JobStatus, ObservationManager, LoggerManager)} instead
      */
-    @Deprecated
+    @Deprecated(since = "9.2RC1")
     public AbstractJobStatus(R request, JobStatus parentJobStatus, ObservationManager observationManager,
         LoggerManager loggerManager)
     {

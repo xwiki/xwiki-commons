@@ -90,7 +90,7 @@ public interface ExtensionManager
      * @throws ResolveException error when trying to resolve extension
      * @deprecated since 5.3M1, use {@link #resolveExtension(ExtensionDependency, String)} instead
      */
-    @Deprecated
+    @Deprecated(since = "5.3M1")
     Extension resolveExtension(ExtensionDependency extensionDependency) throws ResolveException;
 
     /**

@@ -27,7 +27,7 @@ package org.xwiki.component.logging;
  * @version $Id$
  * @deprecated starting with 3.1M2 use SLF4J instead
  */
-@Deprecated
+@Deprecated(since = "3.1M2")
 public interface Logger
 {
     /**

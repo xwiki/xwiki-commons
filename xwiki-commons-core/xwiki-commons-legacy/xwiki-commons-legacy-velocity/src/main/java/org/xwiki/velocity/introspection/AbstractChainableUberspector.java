@@ -29,7 +29,7 @@ package org.xwiki.velocity.introspection;
  * @deprecated since 8.0M1; this is now part of the official Velocity library, use
  *             {@link org.apache.velocity.util.introspection.AbstractChainableUberspector} instead
  */
-@Deprecated
+@Deprecated(since = "8.0M1")
 public abstract class AbstractChainableUberspector
     extends org.apache.velocity.util.introspection.AbstractChainableUberspector implements ChainableUberspector
 {

@@ -99,7 +99,7 @@ public abstract class AbstractConverter<T> implements Converter<T>
      * @return The converted value.
      * @deprecated since 3.0M1 overwrite {@link #convertToType(Type, Object)} instead
      */
-    @Deprecated
+    @Deprecated(since = "3.0M1")
     protected <G extends T> G convertToType(Class<G> type, Object value)
     {
         return this.<G>convertToType((Type) type, value);

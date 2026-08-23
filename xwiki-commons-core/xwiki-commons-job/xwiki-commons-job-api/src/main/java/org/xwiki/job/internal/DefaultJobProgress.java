@@ -168,7 +168,7 @@ public class DefaultJobProgress implements EventListener, JobProgress
      * 
      * @deprecated since 7.1M2, use {@link #onStartStepProgress(Message)} instead
      */
-    @Deprecated
+    @Deprecated(since = "7.1M2")
     private void onStepProgress(Object source)
     {
         onStartStepProgress(null, source);
