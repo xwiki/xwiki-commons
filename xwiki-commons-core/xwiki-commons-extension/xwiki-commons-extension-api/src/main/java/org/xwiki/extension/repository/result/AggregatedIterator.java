@@ -29,7 +29,7 @@ import java.util.Iterator;
  * @since 4.0M1
  * @deprecated since 8.4.6, 9.5, use {@link org.apache.commons.collections4.iterators.IteratorChain} instead
  */
-@Deprecated
+@Deprecated(since = "9.5")
 public class AggregatedIterator<T> implements Iterator<T>
 {
     /**
