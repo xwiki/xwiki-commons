@@ -34,12 +34,12 @@ import org.xwiki.properties.converter.Converter;
  * 
  * @version $Id$
  * @since 2.0M2
- * @deprecated since 5.2M1 use {@link EnumConverter} instead
+ * @deprecated use {@link EnumConverter} instead
  */
 @Component
 @Named("enum")
 @Singleton
-@Deprecated
+@Deprecated(since = "5.2M1")
 public class DeprecatedEnumConverter extends AbstractConverter
 {
     /**

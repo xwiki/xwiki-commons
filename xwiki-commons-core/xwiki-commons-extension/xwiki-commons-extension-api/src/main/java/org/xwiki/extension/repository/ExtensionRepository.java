@@ -85,8 +85,8 @@ public interface ExtensionRepository
 
     /**
      * @return the repository identifier.
-     * @deprecated since 4.3M1 use {@link #getDescriptor()} instead
+     * @deprecated use {@link #getDescriptor()} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.3M1")
     ExtensionRepositoryId getId();
 }

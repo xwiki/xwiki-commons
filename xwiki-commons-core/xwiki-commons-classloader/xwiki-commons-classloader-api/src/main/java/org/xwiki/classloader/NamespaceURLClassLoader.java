@@ -43,10 +43,10 @@ public class NamespaceURLClassLoader extends ExtendedURLClassLoader
      * @param uris the search path
      * @param parent the parent class loader
      * @param namespace see {@link #getNamespace()}
-     * @deprecated since 12.5RC1 prefer using
+     * @deprecated prefer using
      *             {@link NamespaceURLClassLoader#NamespaceURLClassLoader(URL[], ClassLoader, String)}.
      */
-    @Deprecated
+    @Deprecated(since = "12.5RC1")
     public NamespaceURLClassLoader(URI[] uris, ClassLoader parent, String namespace)
     {
         this(Arrays.stream(uris).map(uri -> {

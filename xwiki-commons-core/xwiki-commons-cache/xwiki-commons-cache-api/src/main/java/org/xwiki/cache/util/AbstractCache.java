@@ -54,9 +54,9 @@ public abstract class AbstractCache<T> implements Cache<T>
     protected final EventListenerList cacheEntryListeners = new EventListenerList();
 
     /**
-     * @deprecated since 8.3RC1, use {@link #AbstractCache(CacheConfiguration)} instead
+     * @deprecated use {@link #AbstractCache(CacheConfiguration)} instead
      */
-    @Deprecated
+    @Deprecated(since = "8.3RC1")
     public AbstractCache()
     {
         this(null);

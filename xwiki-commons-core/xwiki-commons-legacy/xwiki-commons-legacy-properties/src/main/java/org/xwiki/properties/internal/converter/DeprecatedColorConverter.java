@@ -34,12 +34,12 @@ import org.xwiki.properties.converter.Converter;
  * 
  * @version $Id$
  * @since 2.0M2
- * @deprecated since 5.2M use {@link ColorConverter} instead
+ * @deprecated use {@link ColorConverter} instead
  */
 @Component
 @Named("java.awt.Color")
 @Singleton
-@Deprecated
+@Deprecated(since = "5.2M1")
 public class DeprecatedColorConverter implements Converter
 {
     /**

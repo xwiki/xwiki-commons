@@ -30,9 +30,9 @@ import org.xwiki.job.Request;
  * @param <S> the status type associated to the job
  * @version $Id$
  * @since 5.0M1
- * @deprecated since 7.4M1, use {@link org.xwiki.job.AbstractJob} instead
+ * @deprecated use {@link org.xwiki.job.AbstractJob} instead
  */
-@Deprecated
+@Deprecated(since = "7.4M1")
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
 public abstract class AbstractJob<R extends Request, S extends org.xwiki.job.AbstractJobStatus<? super R>>
     extends org.xwiki.job.AbstractJob<R, S>

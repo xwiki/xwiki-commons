@@ -24,9 +24,9 @@ package org.xwiki.logging;
  *
  * @version $Id$
  * @since 5.0M2
- * @deprecated since 5.4M1, use {@link org.xwiki.logging.marker.TranslationMarker} instead
+ * @deprecated use {@link org.xwiki.logging.marker.TranslationMarker} instead
  */
-@Deprecated
+@Deprecated(since = "5.4M1")
 public class TranslationMarker extends org.xwiki.logging.marker.TranslationMarker
 {
     /**

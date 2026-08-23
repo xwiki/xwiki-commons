@@ -40,10 +40,10 @@ public class DefaultJobStatus<R extends Request> extends AbstractJobStatus<R>
      *            {@code null} if this job hasn't been started by another job (i.e. if this is not a sub-job)
      * @param observationManager the observation manager component
      * @param loggerManager the logger manager component
-     * @deprecated since 9.2RC1, use
+     * @deprecated use
      *             {@link #DefaultJobStatus(String, Request, JobStatus, ObservationManager, LoggerManager)} instead
      */
-    @Deprecated
+    @Deprecated(since = "9.2RC1")
     public DefaultJobStatus(R request, JobStatus parentJobStatus, ObservationManager observationManager,
         LoggerManager loggerManager)
     {

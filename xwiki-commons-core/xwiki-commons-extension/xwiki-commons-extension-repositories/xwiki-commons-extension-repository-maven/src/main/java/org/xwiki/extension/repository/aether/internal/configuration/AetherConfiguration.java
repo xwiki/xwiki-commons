@@ -32,8 +32,8 @@ public interface AetherConfiguration
 {
     /**
      * @return the local Maven repository
-     * @deprecated not used anymore since 6.0
+     * @deprecated not used anymore
      */
-    @Deprecated
+    @Deprecated(since = "6.0")
     File getLocalRepository();
 }

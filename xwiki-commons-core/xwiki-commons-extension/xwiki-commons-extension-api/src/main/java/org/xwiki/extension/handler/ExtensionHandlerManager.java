@@ -55,9 +55,9 @@ public interface ExtensionHandlerManager
      * @param namespace the namespace from where to uninstall the extension
      * @param request extra parameters
      * @throws UninstallException error when trying to uninstall the extension
-     * @deprecated since 5.0RC1 use {@link #uninstall(InstalledExtension, String, Request)} instead
+     * @deprecated use {@link #uninstall(InstalledExtension, String, Request)} instead
      */
-    @Deprecated
+    @Deprecated(since = "5.0RC1")
     void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException;
 
     /**
@@ -78,9 +78,9 @@ public interface ExtensionHandlerManager
      * @param namespace the namespace from where to uninstall the extension
      * @param request extra parameters
      * @throws InstallException error when trying to upgrade the extension
-     * @deprecated since 5.0RC1 use {@link #upgrade(Collection, LocalExtension, String, Request)} instead
+     * @deprecated use {@link #upgrade(Collection, LocalExtension, String, Request)} instead
      */
-    @Deprecated
+    @Deprecated(since = "5.0RC1")
     void upgrade(LocalExtension previousLocalExtension, LocalExtension newLocalExtension, String namespace,
         Request request) throws InstallException;
 

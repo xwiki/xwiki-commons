@@ -351,9 +351,9 @@ public final class XMLUtils
      * @return a new escaped {@code String}, {@code null} if {@code null} input
      * @see #escapeAttributeValue(String)
      * @see #escapeElementText(String)
-     * @deprecated since 12.8RC1, use {@link #escape(String)} instead
+     * @deprecated use {@link #escape(String)} instead
      */
-    @Deprecated
+    @Deprecated(since = "12.8RC1")
     public static String escape(Object content)
     {
         return escape(Objects.toString(content, null));
@@ -406,9 +406,9 @@ public final class XMLUtils
      * @param content the text to escape, may be {@code null}. The content is converted to {@code String} using
      * {@link String#valueOf(Object)} before escaping.
      * @return a new escaped {@code String}, {@code null} if {@code null} input
-     * @deprecated since 12.8RC1, use {@link #escapeAttributeValue(String)} instead
+     * @deprecated use {@link #escapeAttributeValue(String)} instead
      */
-    @Deprecated
+    @Deprecated(since = "12.8RC1")
     public static String escapeAttributeValue(Object content)
     {
         if (content == null) {
@@ -539,9 +539,9 @@ public final class XMLUtils
      * @param content the text to escape, may be {@code null}. The content is converted to {@code String} using
      * {@link String#valueOf(Object)} before escaping.
      * @return a new escaped {@code String}, {@code null} if {@code null} input
-     * @deprecated since 12.8RC1, use {@link #escapeElementText(String)} instead.
+     * @deprecated use {@link #escapeElementText(String)} instead.
      */
-    @Deprecated
+    @Deprecated(since = "12.8RC1")
     public static String escapeElementContent(Object content)
     {
         if (content == null) {
@@ -577,9 +577,9 @@ public final class XMLUtils
      * @param content the text to decode, may be {@code null}. The content is converted to {@code String} using
      * {@link String#valueOf(Object)} before escaping
      * @return unescaped content, {@code null} if {@code null} input
-     * @deprecated since 12.8RC1, use {@link org.apache.commons.text.StringEscapeUtils#unescapeXml(String)} instead
+     * @deprecated use {@link org.apache.commons.text.StringEscapeUtils#unescapeXml(String)} instead
      */
-    @Deprecated
+    @Deprecated(since = "12.8RC1")
     public static String unescape(Object content)
     {
         if (content == null) {

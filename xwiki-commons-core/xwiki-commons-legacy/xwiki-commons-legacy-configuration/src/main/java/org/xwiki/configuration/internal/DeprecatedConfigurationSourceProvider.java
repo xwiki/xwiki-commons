@@ -32,12 +32,12 @@ import org.xwiki.configuration.ConfigurationSource;
  * 
  * @version $Id$
  * @since 3.5M1
- * @deprecated since 4.0M1 use provider with default hint
+ * @deprecated use provider with default hint
  */
 @Component
 @Named("configurationSource")
 @Singleton
-@Deprecated
+@Deprecated(since = "4.0M1")
 public class DeprecatedConfigurationSourceProvider implements Provider<ConfigurationSource>
 {
     /**

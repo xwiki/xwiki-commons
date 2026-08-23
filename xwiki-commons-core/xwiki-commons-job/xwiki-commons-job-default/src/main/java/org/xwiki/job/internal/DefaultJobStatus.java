@@ -31,10 +31,10 @@ import org.xwiki.observation.ObservationManager;
  * @param <R> the request type associated to the job
  * @version $Id$
  * @since 4.0M1
- * @deprecated since 7.4M1, use {@link org.xwiki.job.DefaultJobStatus} instead
+ * @deprecated use {@link org.xwiki.job.DefaultJobStatus} instead
  */
 @Serializable
-@Deprecated
+@Deprecated(since = "7.4M1")
 public class DefaultJobStatus<R extends Request> extends AbstractJobStatus<R>
 {
     /**

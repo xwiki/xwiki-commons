@@ -80,9 +80,9 @@ public interface ExtensionHandler
      * @param namespace the namespace from where to uninstall the extension
      * @param request extra parameters
      * @throws InstallException error when trying to upgrade the extension
-     * @deprecated starting with 5.0RC1 use {@link #upgrade(Collection, LocalExtension, String, Request)}
+     * @deprecated use {@link #upgrade(Collection, LocalExtension, String, Request)}
      */
-    @Deprecated
+    @Deprecated(since = "5.0RC1")
     void upgrade(LocalExtension previousLocalExtension, LocalExtension newLocalExtension, String namespace,
         Request request) throws InstallException;
 

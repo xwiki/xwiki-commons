@@ -26,11 +26,11 @@ import org.xwiki.properties.converter.AbstractCollectionConverter;
 
 /**
  * @version $Id$
- * @deprecated since 5.2M1 use {@link CollectionConverter} instead
+ * @deprecated use {@link CollectionConverter} instead
  */
 @Component(hints = {"java.util.List", "java.util.Collection", "java.util.ArrayList" })
 @Singleton
-@Deprecated
+@Deprecated(since = "5.2M1")
 public class DeprecatedListConverter extends AbstractCollectionConverter
 {
 }

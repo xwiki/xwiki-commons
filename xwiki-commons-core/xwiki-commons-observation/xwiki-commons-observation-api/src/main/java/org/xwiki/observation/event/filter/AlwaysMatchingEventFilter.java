@@ -42,9 +42,9 @@ public class AlwaysMatchingEventFilter implements EventFilter, Serializable
     private static final long serialVersionUID = 1L;
 
     /**
-     * @deprecated since 6.0M1, use {@link #INSTANCE} instead
+     * @deprecated use {@link #INSTANCE} instead
      */
-    @Deprecated
+    @Deprecated(since = "6.0M1")
     public AlwaysMatchingEventFilter()
     {
 

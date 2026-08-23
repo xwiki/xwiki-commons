@@ -28,9 +28,9 @@ package org.xwiki.velocity.introspection;
  * @see ChainableUberspector
  * @version $Id$
  * @since 1.5M1
- * @deprecated since 10.5RC1, use {@link org.apache.velocity.util.introspection.DeprecatedCheckUberspector} instead
+ * @deprecated use {@link org.apache.velocity.util.introspection.DeprecatedCheckUberspector} instead
  */
-@Deprecated
+@Deprecated(since = "10.5RC1")
 public class DeprecatedCheckUberspector extends org.apache.velocity.util.introspection.DeprecatedCheckUberspector
 {
 }

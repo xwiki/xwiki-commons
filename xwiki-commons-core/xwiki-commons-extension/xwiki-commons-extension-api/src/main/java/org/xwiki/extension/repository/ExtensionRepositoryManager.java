@@ -55,9 +55,9 @@ public interface ExtensionRepositoryManager extends ExtensionRepository, Advance
      * @param repositoryId the repository identifier
      * @return the newly created repository
      * @throws ExtensionRepositoryException failed to create {@link ExtensionRepository} for provided identifier
-     * @deprecated since 4.3M1 use {@link #addRepository(ExtensionRepositoryDescriptor)} instead
+     * @deprecated use {@link #addRepository(ExtensionRepositoryDescriptor)} instead
      */
-    @Deprecated
+    @Deprecated(since = "4.3M1")
     ExtensionRepository addRepository(ExtensionRepositoryId repositoryId) throws ExtensionRepositoryException;
 
     /**
