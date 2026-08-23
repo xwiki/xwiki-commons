@@ -27,7 +27,7 @@ import java.util.Iterator;
  * @param <T> the type of the iterated values
  * @version $Id$
  * @since 4.0M1
- * @deprecated since 8.4.6, 9.5, use {@link org.apache.commons.collections4.iterators.IteratorChain} instead
+ * @deprecated use {@link org.apache.commons.collections4.iterators.IteratorChain} instead
  */
 @Deprecated(since = "9.5")
 public class AggregatedIterator<T> implements Iterator<T>
