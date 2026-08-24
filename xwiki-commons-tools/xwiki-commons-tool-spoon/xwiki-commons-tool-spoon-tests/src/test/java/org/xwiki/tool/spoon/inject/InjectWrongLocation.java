@@ -26,5 +26,6 @@ public class InjectWrongLocation
     @Inject
     public InjectWrongLocation()
     {
+        // Nothing to do, this constructor only exists to carry the misplaced annotation checked by the test.
     }
 }

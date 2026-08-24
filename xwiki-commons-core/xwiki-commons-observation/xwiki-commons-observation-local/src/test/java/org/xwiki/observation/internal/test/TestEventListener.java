@@ -45,6 +45,6 @@ public class TestEventListener extends AbstractEventListener
     @Override
     public void onEvent(Event arg0, Object arg1, Object arg2)
     {
-
+        // Nothing to do, this test listener only needs to be registered.
     }
 }

@@ -59,15 +59,18 @@ public class XWikiLoggerManager extends AbstractLoggerManager
     @Override
     public void returnComponentLogger(String arg0, String arg1)
     {
+        // Nothing to do, this manager only adapts the XWiki logging to the Plexus API.
     }
 
     @Override
     public void setThreshold(int arg0)
     {
+        // Nothing to do, this manager only adapts the XWiki logging to the Plexus API.
     }
 
     @Override
     public void setThresholds(int arg0)
     {
+        // Nothing to do, this manager only adapts the XWiki logging to the Plexus API.
     }
 }

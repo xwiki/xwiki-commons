@@ -223,12 +223,13 @@ public class Sax2Dom implements ContentHandler, LexicalHandler
     @Override
     public void endPrefixMapping(String prefix)
     {
-
+        // Nothing to do, this event is not needed to build the DOM.
     }
 
     @Override
     public void ignorableWhitespace(char[] ch, int start, int length)
     {
+        // Nothing to do, this event is not needed to build the DOM.
     }
 
     @Override
@@ -243,11 +244,13 @@ public class Sax2Dom implements ContentHandler, LexicalHandler
     @Override
     public void setDocumentLocator(Locator locator)
     {
+        // Nothing to do, this event is not needed to build the DOM.
     }
 
     @Override
     public void skippedEntity(String name)
     {
+        // Nothing to do, this event is not needed to build the DOM.
     }
 
     @Override
@@ -264,30 +267,36 @@ public class Sax2Dom implements ContentHandler, LexicalHandler
     @Override
     public void startCDATA()
     {
+        // Nothing to do, this event is not needed to build the DOM.
     }
 
     @Override
     public void endCDATA()
     {
+        // Nothing to do, this event is not needed to build the DOM.
     }
 
     @Override
     public void startEntity(java.lang.String name)
     {
+        // Nothing to do, this event is not needed to build the DOM.
     }
 
     @Override
     public void endEntity(String name)
     {
+        // Nothing to do, this event is not needed to build the DOM.
     }
 
     @Override
     public void startDTD(String name, String publicId, String systemId) throws SAXException
     {
+        // Nothing to do, this event is not needed to build the DOM.
     }
 
     @Override
     public void endDTD()
     {
+        // Nothing to do, this event is not needed to build the DOM.
     }
 }
