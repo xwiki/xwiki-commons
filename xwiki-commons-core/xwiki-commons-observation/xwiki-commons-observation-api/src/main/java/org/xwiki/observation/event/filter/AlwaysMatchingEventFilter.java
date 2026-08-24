@@ -47,7 +47,7 @@ public class AlwaysMatchingEventFilter implements EventFilter, Serializable
     @Deprecated(since = "6.0M1")
     public AlwaysMatchingEventFilter()
     {
-
+        // Nothing to do, this deprecated constructor is only kept for backward compatibility.
     }
 
     @Override

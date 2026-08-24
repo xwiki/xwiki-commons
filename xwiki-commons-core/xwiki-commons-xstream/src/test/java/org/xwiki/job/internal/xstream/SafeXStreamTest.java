@@ -96,10 +96,12 @@ class SafeXStreamTest
 
         private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
         {
+            // Nothing to do, this test fixture only needs the serialization hooks to exist.
         }
 
         private void readObjectNoData() throws ObjectStreamException
         {
+            // Nothing to do, this test fixture only needs the serialization hooks to exist.
         }
     }
 
@@ -152,7 +154,7 @@ class SafeXStreamTest
     {
         public NotSerializableObjectWithFailingToString()
         {
-
+            // Nothing to do, this test fixture only needs the serialization hooks to exist.
         }
 
         @Override

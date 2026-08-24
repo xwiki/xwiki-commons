@@ -127,6 +127,7 @@ class XWikiLogger implements org.codehaus.plexus.logging.Logger
     @Override
     public void setThreshold(int treshold)
     {
+        // Nothing to do, the level is controlled by the underlying XWiki logger.
     }
 
     @Override

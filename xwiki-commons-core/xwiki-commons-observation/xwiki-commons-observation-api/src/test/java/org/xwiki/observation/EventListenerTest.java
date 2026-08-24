@@ -55,6 +55,7 @@ class EventListenerTest
         @Override
         public void onEvent(Event event, Object source, Object data)
         {
+            // Nothing to do, this test listener does not need to react to events.
         }
     }
 

@@ -53,6 +53,6 @@ public class UnserializableJob extends AbstractJob<Request, UnserializableJobSta
     @Override
     protected void runInternal() throws Exception
     {
-
+        // Nothing to do, this job only exists to produce an unserializable status.
     }
 }
