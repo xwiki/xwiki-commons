@@ -19,6 +19,9 @@
  */
 package org.xwiki.extension.repository.local;
 
+import java.io.File;
+import java.util.ArrayList;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,9 +29,11 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.TestResources;
+import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
@@ -277,6 +282,46 @@ class DefaultLocalExtensionRepositoryTest
     }
 
     @Test
+    void removeExtensionDeletesTheExtensionFolder() throws Exception
+    {
+        ExtensionRepositoryManager repositoryManager =
+            this.componentManager.getInstance(ExtensionRepositoryManager.class);
+        Extension remoteExtension = repositoryManager.resolve(TestResources.REMOTE_NOTINSTALLED_ID);
+
+        // Storing an extension creates a <id>/<version>/ folder for it in the local repository
+        LocalExtension localExtension = this.localExtensionRepository.storeExtension(remoteExtension);
+
+        File extensionFolder = new File(getLocalRepositoryFolder(), TestResources.REMOTE_NOTINSTALLED_ID.getId());
+        assertTrue(extensionFolder.isDirectory());
+        // The version folder name is encoded, so get it from the file system rather than duplicating the encoding
+        File[] versionFolders = extensionFolder.listFiles();
+        assertEquals(1, versionFolders.length);
+        File versionFolder = versionFolders[0];
+        assertTrue(versionFolder.isDirectory());
+
+        this.localExtensionRepository.removeExtension(localExtension);
+
+        assertFalse(versionFolder.exists());
+        assertFalse(extensionFolder.exists());
+    }
+
+    @Test
+    void removeExtensionKeepsTheRepositoryRootFolder() throws Exception
+    {
+        File localRepositoryFolder = getLocalRepositoryFolder();
+
+        // Descriptors are loaded by scanning the repository recursively, so most of the test extensions are stored
+        // directly at its root. Removing all of them must not delete the repository itself.
+        for (LocalExtension localExtension : new ArrayList<>(this.localExtensionRepository.getLocalExtensions())) {
+            this.localExtensionRepository.removeExtension(localExtension);
+        }
+
+        assertEquals(0, this.localExtensionRepository.countExtensions());
+        assertTrue(localRepositoryFolder.isDirectory());
+        assertTrue(localRepositoryFolder.getParentFile().isDirectory());
+    }
+
+    @Test
     void resolveVersions() throws ResolveException
     {
         IterableResult<Version> versions =
@@ -285,5 +330,11 @@ class DefaultLocalExtensionRepositoryTest
         assertEquals(1, versions.getTotalHits());
         assertEquals(1, versions.getSize());
         assertEquals(TestResources.INSTALLED_ONNAMESPACE_ID.getVersion(), versions.iterator().next());
+    }
+
+    private File getLocalRepositoryFolder() throws ComponentLookupException
+    {
+        return this.componentManager.<ExtensionManagerConfiguration>getInstance(ExtensionManagerConfiguration.class)
+            .getLocalRepository();
     }
 }
