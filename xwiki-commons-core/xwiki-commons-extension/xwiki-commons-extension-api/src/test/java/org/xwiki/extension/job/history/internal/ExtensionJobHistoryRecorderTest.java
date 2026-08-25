@@ -109,10 +109,10 @@ class ExtensionJobHistoryRecorderTest
             ArgumentCaptor.forClass(ExtensionJobHistoryRecord.class);
         verify(this.history).addRecord(recordCaptor.capture());
 
-        ExtensionJobHistoryRecord record = recordCaptor.getValue();
-        assertEquals(job.getType(), record.getJobType());
-        assertSame(job.getRequest(), record.getRequest());
-        assertEquals(Collections.singletonMap(String.class.getName(), questionRecorder), record.getAnswers());
-        assertEquals(job.getStatus().getStartDate(), record.getStartDate());
+        ExtensionJobHistoryRecord historyRecord = recordCaptor.getValue();
+        assertEquals(job.getType(), historyRecord.getJobType());
+        assertSame(job.getRequest(), historyRecord.getRequest());
+        assertEquals(Collections.singletonMap(String.class.getName(), questionRecorder), historyRecord.getAnswers());
+        assertEquals(job.getStatus().getStartDate(), historyRecord.getStartDate());
     }
 }

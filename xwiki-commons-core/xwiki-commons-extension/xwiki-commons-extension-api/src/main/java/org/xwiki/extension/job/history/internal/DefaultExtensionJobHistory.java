@@ -67,19 +67,19 @@ public class DefaultExtensionJobHistory implements ExtensionJobHistory, Initiali
             logger.debug("Start extension job history saving thread.");
 
             while (!Thread.interrupted()) {
-                ExtensionJobHistoryRecord record;
+                ExtensionJobHistoryRecord historyRecord;
                 try {
-                    record = saveQueue.take();
+                    historyRecord = saveQueue.take();
                 } catch (InterruptedException e) {
                     logger.warn("Extension job history saving thread has been interrupted. Root cause [{}].",
                         ExceptionUtils.getRootCauseMessage(e));
-                    record = SAVE_QUEUE_END;
+                    historyRecord = SAVE_QUEUE_END;
                 }
 
-                if (record == SAVE_QUEUE_END) {
+                if (historyRecord == SAVE_QUEUE_END) {
                     break;
                 } else {
-                    save(record);
+                    save(historyRecord);
                 }
             }
 
@@ -125,10 +125,10 @@ public class DefaultExtensionJobHistory implements ExtensionJobHistory, Initiali
     }
 
     @Override
-    public void addRecord(ExtensionJobHistoryRecord record)
+    public void addRecord(ExtensionJobHistoryRecord historyRecord)
     {
-        this.records.offerFirst(record);
-        this.saveQueue.offer(record);
+        this.records.offerFirst(historyRecord);
+        this.saveQueue.offer(historyRecord);
     }
 
     @Override
@@ -144,19 +144,19 @@ public class DefaultExtensionJobHistory implements ExtensionJobHistory, Initiali
 
         List<ExtensionJobHistoryRecord> page = new ArrayList<>();
         while (iterator.hasNext() && (limit < 0 || page.size() < limit)) {
-            ExtensionJobHistoryRecord record = iterator.next();
-            if (filter.evaluate(record)) {
-                page.add(record);
+            ExtensionJobHistoryRecord historyRecord = iterator.next();
+            if (filter.evaluate(historyRecord)) {
+                page.add(historyRecord);
             }
         }
 
         return page;
     }
 
-    private void save(ExtensionJobHistoryRecord record)
+    private void save(ExtensionJobHistoryRecord historyRecord)
     {
         try {
-            this.serializer.append(record, new File(this.config.getStorage(), getFileName()));
+            this.serializer.append(historyRecord, new File(this.config.getStorage(), getFileName()));
         } catch (IOException e) {
             this.logger.error("Failed to save extension job history.", e);
         }

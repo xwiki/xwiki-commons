@@ -36,9 +36,9 @@ public interface ExtensionJobHistory
     /**
      * Adds a new record to the history.
      * 
-     * @param record the record to add
+     * @param historyRecord the record to add
      */
-    void addRecord(ExtensionJobHistoryRecord record);
+    void addRecord(ExtensionJobHistoryRecord historyRecord);
 
     /**
      * Returns the history records that match the given filter after the specified offset record.
