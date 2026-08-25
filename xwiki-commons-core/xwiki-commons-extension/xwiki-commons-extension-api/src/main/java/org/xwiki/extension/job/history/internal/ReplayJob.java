@@ -115,10 +115,10 @@ public class ReplayJob extends AbstractJob<ReplayRequest, ReplayJobStatus> imple
 
         try {
             int currentRecordNumber = 0;
-            for (ExtensionJobHistoryRecord record : records) {
+            for (ExtensionJobHistoryRecord historyRecord : records) {
                 this.progressManager.startStep(this);
                 this.status.setCurrentRecordNumber(currentRecordNumber++);
-                replay(record);
+                replay(historyRecord);
                 this.progressManager.endStep(this);
             }
         } finally {
@@ -126,15 +126,15 @@ public class ReplayJob extends AbstractJob<ReplayRequest, ReplayJobStatus> imple
         }
     }
 
-    private void replay(ExtensionJobHistoryRecord record) throws ComponentLookupException
+    private void replay(ExtensionJobHistoryRecord historyRecord) throws ComponentLookupException
     {
         // Make sure the executed job log end up in the replay job log
-        if (record.getRequest() instanceof AbstractRequest request) {
+        if (historyRecord.getRequest() instanceof AbstractRequest request) {
             request.setStatusLogIsolated(false);
         }
 
-        Job job = this.componentManager.getInstance(Job.class, record.getJobType());
-        job.initialize(record.getRequest());
+        Job job = this.componentManager.getInstance(Job.class, historyRecord.getJobType());
+        job.initialize(historyRecord.getRequest());
         ((AbstractJobStatus<?>) job.getStatus()).setParentJobStatus(this.getStatus());
         job.run();
     }
@@ -147,8 +147,8 @@ public class ReplayJob extends AbstractJob<ReplayRequest, ReplayJobStatus> imple
         }
 
         String targetNamespace = null;
-        for (ExtensionJobHistoryRecord record : records) {
-            Collection<String> namespaces = record.getRequest().getNamespaces();
+        for (ExtensionJobHistoryRecord historyRecord : records) {
+            Collection<String> namespaces = historyRecord.getRequest().getNamespaces();
             if (namespaces != null && namespaces.size() == 1) {
                 String namespace = namespaces.iterator().next();
                 if (targetNamespace == null) {

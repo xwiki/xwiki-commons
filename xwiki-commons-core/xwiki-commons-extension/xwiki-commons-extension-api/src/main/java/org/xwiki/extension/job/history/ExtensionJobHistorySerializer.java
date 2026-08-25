@@ -39,27 +39,27 @@ public interface ExtensionJobHistorySerializer
     /**
      * Serializes a given history record.
      * 
-     * @param record the history record to serialize
+     * @param historyRecord the history record to serialize
      * @return the string serialization of the given history record
      */
-    String serialize(ExtensionJobHistoryRecord record);
+    String serialize(ExtensionJobHistoryRecord historyRecord);
 
     /**
      * Serializes a given history record and passes the result to the given writer.
      * 
-     * @param record the history record to serialize
+     * @param historyRecord the history record to serialize
      * @param writer where to write the serialized history record
      */
-    void write(ExtensionJobHistoryRecord record, Writer writer);
+    void write(ExtensionJobHistoryRecord historyRecord, Writer writer);
 
     /**
      * Appends the serialization of a given history record to a specified partial history file.
      * 
-     * @param record the history record to serialize
+     * @param historyRecord the history record to serialize
      * @param historyFile the history file where to append the result
      * @throws IOException if it fails to append the serialized history record to the specified file
      */
-    void append(ExtensionJobHistoryRecord record, File historyFile) throws IOException;
+    void append(ExtensionJobHistoryRecord historyRecord, File historyFile) throws IOException;
 
     /**
      * Deserializes a list of history records.

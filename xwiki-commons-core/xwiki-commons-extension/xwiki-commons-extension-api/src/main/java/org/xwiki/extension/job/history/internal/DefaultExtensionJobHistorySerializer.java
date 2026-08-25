@@ -54,23 +54,23 @@ public class DefaultExtensionJobHistorySerializer implements ExtensionJobHistory
     private SafeXStream xstream;
 
     @Override
-    public String serialize(ExtensionJobHistoryRecord record)
+    public String serialize(ExtensionJobHistoryRecord historyRecord)
     {
-        return this.xstream.toXML(record);
+        return this.xstream.toXML(historyRecord);
     }
 
     @Override
-    public void write(ExtensionJobHistoryRecord record, Writer writer)
+    public void write(ExtensionJobHistoryRecord historyRecord, Writer writer)
     {
-        this.xstream.toXML(record, writer);
+        this.xstream.toXML(historyRecord, writer);
     }
 
     @Override
-    public void append(ExtensionJobHistoryRecord record, File historyFile) throws IOException
+    public void append(ExtensionJobHistoryRecord historyRecord, File historyFile) throws IOException
     {
         historyFile.getParentFile().mkdirs();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(historyFile, true))) {
-            write(record, writer);
+            write(historyRecord, writer);
         }
     }
 

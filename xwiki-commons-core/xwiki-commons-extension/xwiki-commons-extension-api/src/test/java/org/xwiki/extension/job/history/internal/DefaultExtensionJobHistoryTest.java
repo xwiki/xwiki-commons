@@ -92,9 +92,9 @@ class DefaultExtensionJobHistoryTest
         assertEquals(Arrays.asList(firstRecord), this.history.getRecords(new Predicate<ExtensionJobHistoryRecord>()
         {
             @Override
-            public boolean evaluate(ExtensionJobHistoryRecord record)
+            public boolean evaluate(ExtensionJobHistoryRecord historyRecord)
             {
-                return "install".equals(record.getJobType());
+                return "install".equals(historyRecord.getJobType());
             }
         }, null, -1));
     }
