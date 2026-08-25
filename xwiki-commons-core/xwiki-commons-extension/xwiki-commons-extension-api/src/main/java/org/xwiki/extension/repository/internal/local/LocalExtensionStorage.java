@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -311,7 +312,7 @@ public class LocalExtensionStorage
         // Delete the extension descriptor file
         try {
             Files.delete(extensionDescriptorFilePath);
-        } catch (FileNotFoundException e) {
+        } catch (NoSuchFileException e) {
             LOGGER.warn(
                 "Couldn't delete the extension descriptor file [{}] when removing extension [{}], "
                     + "because it doesn't exist. Root error: [{}]",
@@ -324,7 +325,7 @@ public class LocalExtensionStorage
             // Delete the extension file
             try {
                 Files.delete(extensionFile.getFile().toPath());
-            } catch (FileNotFoundException e) {
+            } catch (NoSuchFileException e) {
                 LOGGER.warn("Extension file [{}] was not found while removing [{}] extension",
                     extensionFile.getAbsolutePath(), extension.getId().getId());
             }
@@ -332,15 +333,20 @@ public class LocalExtensionStorage
 
         // Get the path to the folder that store the version of the extension being removed
         Path extensionVersionFolderPath = extensionDescriptorFilePath.getParent();
+        if (isProtectedFolder(extensionVersionFolderPath)) {
+            // The descriptor was located directly in the repository root folder, there is no version folder to delete
+            return;
+        }
+
         try {
             // Delete the extension version folder
-            Files.delete(extensionDescriptorFilePath);
+            Files.delete(extensionVersionFolderPath);
 
             // Try to delete the extension folder
             deleteExtensionFolderIfEmpty(extensionVersionFolderPath.getParent());
         } catch (DirectoryNotEmptyException e) {
             LOGGER.warn("Extension version folder [{}] was not empty after removing the extension [{}]. Keeping it.",
-                extensionDescriptorFilePath, extension.getId().getId());
+                extensionVersionFolderPath, extension.getId().getId());
         }
     }
 
@@ -350,8 +356,12 @@ public class LocalExtensionStorage
      * @param extensionFolderPath the path to the folder to delete
      * @throws IOException error (other than empty) when deleting the extension folder
      */
-    private static void deleteExtensionFolderIfEmpty(Path extensionFolderPath) throws IOException
+    private void deleteExtensionFolderIfEmpty(Path extensionFolderPath) throws IOException
     {
+        if (isProtectedFolder(extensionFolderPath)) {
+            return;
+        }
+
         try {
             Files.delete(extensionFolderPath);
         } catch (DirectoryNotEmptyException e) {
@@ -359,5 +369,25 @@ public class LocalExtensionStorage
             LOGGER.debug("Extension folder [{}] was not empty after removing the extension. Keeping it.",
                 extensionFolderPath);
         }
+    }
+
+    /**
+     * The repository root folder and anything outside of it must never be deleted. Descriptors are loaded by scanning
+     * the root folder recursively, so a descriptor can also be located directly at its root, in which case the folder
+     * containing it is the root folder itself and belongs to the repository rather than to the extension.
+     *
+     * @param folderPath the path to check
+     * @return true if the passed folder must be kept
+     */
+    private boolean isProtectedFolder(Path folderPath)
+    {
+        if (folderPath == null) {
+            return true;
+        }
+
+        Path rootFolderPath = this.rootFolder.toPath().toAbsolutePath().normalize();
+        Path normalizedFolderPath = folderPath.toAbsolutePath().normalize();
+
+        return normalizedFolderPath.equals(rootFolderPath) || !normalizedFolderPath.startsWith(rootFolderPath);
     }
 }
