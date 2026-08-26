@@ -50,7 +50,7 @@ public abstract class AbstractBcPBKDF2 extends AbstractBcKDF
      * @param parameters the parameter for initializing the generator.
      * @param algId the algorithm identifier of the pseudo random function used for this key derivation function.
      */
-    public AbstractBcPBKDF2(PBEParametersGenerator generator, PBKDF2Parameters parameters, AlgorithmIdentifier algId)
+    protected AbstractBcPBKDF2(PBEParametersGenerator generator, PBKDF2Parameters parameters, AlgorithmIdentifier algId)
     {
         this.generator = generator;
         this.parameters = parameters;

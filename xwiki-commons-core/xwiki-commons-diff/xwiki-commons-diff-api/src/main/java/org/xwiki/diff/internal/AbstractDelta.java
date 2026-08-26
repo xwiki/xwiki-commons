@@ -53,7 +53,7 @@ public abstract class AbstractDelta<E> implements Delta<E>
      * @param next the chunk after the modification
      * @param type the type of modification applied to the list
      */
-    public AbstractDelta(Chunk<E> previous, Chunk<E> next, Type type)
+    protected AbstractDelta(Chunk<E> previous, Chunk<E> next, Type type)
     {
         this.type = type;
         this.previous = previous;
@@ -65,7 +65,7 @@ public abstract class AbstractDelta<E> implements Delta<E>
      * @param revised the chunk after the modification
      * @param type the type of modification applied to the list
      */
-    public AbstractDelta(com.github.difflib.patch.Chunk<E> original, com.github.difflib.patch.Chunk<E> revised,
+    protected AbstractDelta(com.github.difflib.patch.Chunk<E> original, com.github.difflib.patch.Chunk<E> revised,
         Type type)
     {
         this.type = type;

@@ -48,7 +48,7 @@ public abstract class AbstractXMLInputFilterStream<P extends XMLInputProperties>
      * @since 9.5
      * @since 9.6RC1
      */
-    public AbstractXMLInputFilterStream(P parameters, XMLInputFactory xmlFactory)
+    protected AbstractXMLInputFilterStream(P parameters, XMLInputFactory xmlFactory)
     {
         this.parameters = parameters;
         this.xmlFactory = xmlFactory;

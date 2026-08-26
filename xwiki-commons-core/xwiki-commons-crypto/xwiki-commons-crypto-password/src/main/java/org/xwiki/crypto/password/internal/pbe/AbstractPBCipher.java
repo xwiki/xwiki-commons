@@ -53,7 +53,7 @@ public abstract class AbstractPBCipher implements PasswordBasedCipher
      * @param kdf the key derivation function used to derive the key of this cipher.
      * @param parameters the cipher parameter used.
      */
-    public AbstractPBCipher(Cipher cipher, KeyDerivationFunction kdf, SymmetricCipherParameters parameters)
+    protected AbstractPBCipher(Cipher cipher, KeyDerivationFunction kdf, SymmetricCipherParameters parameters)
     {
         this.cipher = cipher;
         this.kdf = kdf;

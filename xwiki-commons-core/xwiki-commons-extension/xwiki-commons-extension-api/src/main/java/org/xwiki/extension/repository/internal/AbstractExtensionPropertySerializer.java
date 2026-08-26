@@ -38,7 +38,7 @@ public abstract class AbstractExtensionPropertySerializer<T> implements Extensio
     /**
      * @param type the type identifier
      */
-    public AbstractExtensionPropertySerializer(String type)
+    protected AbstractExtensionPropertySerializer(String type)
     {
         this.type = type;
     }

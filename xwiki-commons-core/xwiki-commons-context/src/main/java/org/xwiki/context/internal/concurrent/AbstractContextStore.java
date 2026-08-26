@@ -53,7 +53,7 @@ public abstract class AbstractContextStore implements ContextStore
     /**
      * @param entries the supported entries
      */
-    public AbstractContextStore(String... entries)
+    protected AbstractContextStore(String... entries)
     {
         this.supportedEntries = Collections.unmodifiableList(Arrays.asList(entries));
     }
