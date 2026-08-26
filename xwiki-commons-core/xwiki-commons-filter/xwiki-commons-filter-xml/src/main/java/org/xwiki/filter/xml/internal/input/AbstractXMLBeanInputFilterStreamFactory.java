@@ -42,7 +42,7 @@ public abstract class AbstractXMLBeanInputFilterStreamFactory<P extends XMLInput
     /**
      * @param type the type of the filter stream
      */
-    public AbstractXMLBeanInputFilterStreamFactory(FilterStreamType type)
+    protected AbstractXMLBeanInputFilterStreamFactory(FilterStreamType type)
     {
         super(type);
     }

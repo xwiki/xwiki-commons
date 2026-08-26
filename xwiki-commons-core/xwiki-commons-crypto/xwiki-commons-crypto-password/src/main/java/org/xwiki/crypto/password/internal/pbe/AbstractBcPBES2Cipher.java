@@ -45,7 +45,7 @@ public abstract class AbstractBcPBES2Cipher extends AbstractBcPBCipher
      * @param kdf the key derivation function used to derive the key of this cipher.
      * @param parameters the cipher parameter used.
      */
-    public AbstractBcPBES2Cipher(Cipher cipher, KeyDerivationFunction kdf, SymmetricCipherParameters parameters)
+    protected AbstractBcPBES2Cipher(Cipher cipher, KeyDerivationFunction kdf, SymmetricCipherParameters parameters)
     {
         super(cipher, kdf, parameters);
     }

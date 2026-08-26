@@ -47,7 +47,7 @@ public abstract class AbstractXMLBeanOutputFilterStreamFactory<P extends XMLOutp
     /**
      * @param type the type of the filter stream
      */
-    public AbstractXMLBeanOutputFilterStreamFactory(FilterStreamType type)
+    protected AbstractXMLBeanOutputFilterStreamFactory(FilterStreamType type)
     {
         super(type);
     }

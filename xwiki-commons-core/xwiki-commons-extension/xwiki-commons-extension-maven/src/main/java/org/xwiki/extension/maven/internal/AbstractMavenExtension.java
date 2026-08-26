@@ -74,7 +74,7 @@ public abstract class AbstractMavenExtension extends AbstractExtension implement
      * @param version the maven artifact version
      * @param type the extension type
      */
-    public AbstractMavenExtension(ExtensionRepository repository, String groupId, String artifactId, String version,
+    protected AbstractMavenExtension(ExtensionRepository repository, String groupId, String artifactId, String version,
         String type)
     {
         super(repository, new ExtensionId(groupId + ':' + artifactId, version), type);
@@ -91,7 +91,7 @@ public abstract class AbstractMavenExtension extends AbstractExtension implement
      * @param type the extension type
      * @since 8.4
      */
-    public AbstractMavenExtension(ExtensionRepository repository, String groupId, String artifactId, Version version,
+    protected AbstractMavenExtension(ExtensionRepository repository, String groupId, String artifactId, Version version,
         String type)
     {
         this(repository, groupId, artifactId, null, version, type);
@@ -107,8 +107,8 @@ public abstract class AbstractMavenExtension extends AbstractExtension implement
      * @since 10.9
      * @since 10.8.1
      */
-    public AbstractMavenExtension(ExtensionRepository repository, String groupId, String artifactId, String classifier,
-        Version version, String type)
+    protected AbstractMavenExtension(ExtensionRepository repository, String groupId, String artifactId,
+        String classifier, Version version, String type)
     {
         super(repository, MavenUtils.toExtensionId(groupId, artifactId, classifier, version), type);
 
@@ -125,7 +125,7 @@ public abstract class AbstractMavenExtension extends AbstractExtension implement
      * @param repository the repository where this extension comes from
      * @param extension the extension to copy
      */
-    public AbstractMavenExtension(ExtensionRepository repository, Extension extension)
+    protected AbstractMavenExtension(ExtensionRepository repository, Extension extension)
     {
         super(repository, extension);
 

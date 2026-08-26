@@ -55,7 +55,7 @@ public abstract class AbstractXMLOutputFilterStream<P extends XMLOutputPropertie
      * @throws XMLStreamException when failing to create the XML writer
      * @throws IOException when failing to access the target
      */
-    public AbstractXMLOutputFilterStream(P properties, XMLOutputFactory xmlFactory)
+    protected AbstractXMLOutputFilterStream(P properties, XMLOutputFactory xmlFactory)
         throws FilterException, XMLStreamException, IOException
     {
         this.properties = properties;

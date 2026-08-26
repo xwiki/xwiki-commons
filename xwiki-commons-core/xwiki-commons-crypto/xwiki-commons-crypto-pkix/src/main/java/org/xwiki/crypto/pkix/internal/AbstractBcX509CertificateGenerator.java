@@ -62,7 +62,7 @@ public abstract class AbstractBcX509CertificateGenerator implements CertificateG
      * @param signerFactory the signer factory to be used by the certificate to verify signature.
      * @param random a random source.
      */
-    public AbstractBcX509CertificateGenerator(Signer signer, X509CertificateGenerationParameters parameters,
+    protected AbstractBcX509CertificateGenerator(Signer signer, X509CertificateGenerationParameters parameters,
         SignerFactory signerFactory, SecureRandom random)
     {
         this.signer = signer;

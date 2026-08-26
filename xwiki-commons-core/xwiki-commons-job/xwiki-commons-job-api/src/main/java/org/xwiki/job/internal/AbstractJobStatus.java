@@ -42,7 +42,7 @@ public abstract class AbstractJobStatus<R extends Request> extends org.xwiki.job
      * @param parentJobStatus the status of the parent job (i.e. the status of the job that started this one); pass
      *            {@code null} if this job hasn't been started by another job (i.e. if this is not a sub-job)
      */
-    public AbstractJobStatus(R request, ObservationManager observationManager, LoggerManager loggerManager,
+    protected AbstractJobStatus(R request, ObservationManager observationManager, LoggerManager loggerManager,
         JobStatus parentJobStatus)
     {
         super(null, request, parentJobStatus, observationManager, loggerManager);

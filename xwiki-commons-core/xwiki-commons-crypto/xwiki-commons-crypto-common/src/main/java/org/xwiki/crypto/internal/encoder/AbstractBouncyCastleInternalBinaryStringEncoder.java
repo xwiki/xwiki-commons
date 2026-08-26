@@ -45,7 +45,7 @@ public abstract class AbstractBouncyCastleInternalBinaryStringEncoder implements
      * @param blockSize the blocksize to report for encoding.
      * @param charSize the blocksize to report for decoding.
      */
-    public AbstractBouncyCastleInternalBinaryStringEncoder(Encoder encoder, int blockSize, int charSize)
+    protected AbstractBouncyCastleInternalBinaryStringEncoder(Encoder encoder, int blockSize, int charSize)
     {
         this.encoder = encoder;
         this.blockSize = blockSize;

@@ -38,7 +38,7 @@ public abstract class AbstractBcAsymmetricKeyParameters implements AsymmetricKey
      *
      * @param parameters a BC asymmetric key parameter.
      */
-    public AbstractBcAsymmetricKeyParameters(AsymmetricKeyParameter parameters)
+    protected AbstractBcAsymmetricKeyParameters(AsymmetricKeyParameter parameters)
     {
         this.parameters = parameters;
     }
