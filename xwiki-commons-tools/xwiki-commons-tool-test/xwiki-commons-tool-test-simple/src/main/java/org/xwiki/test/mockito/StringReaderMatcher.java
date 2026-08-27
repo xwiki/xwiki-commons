@@ -19,11 +19,13 @@
  */
 package org.xwiki.test.mockito;
 
+import java.io.IOException;
 import java.io.StringReader;
-import java.lang.reflect.Field;
+import java.io.UncheckedIOException;
+import java.util.Objects;
 
+import org.apache.commons.io.IOUtils;
 import org.mockito.ArgumentMatcher;
-import org.mockito.internal.matchers.Equality;
 
 /**
  * Match a StringReader parameter with a String.
@@ -46,19 +48,22 @@ public class StringReaderMatcher implements ArgumentMatcher<StringReader>
     @Override
     public boolean matches(StringReader argument)
     {
-        Field field;
-        try {
-            field = StringReader.class.getDeclaredField("str");
-        } catch (Exception e) {
-            return false;
+        if (argument == null) {
+            return this.str == null;
         }
 
-        field.setAccessible(true);
-
         try {
-            return Equality.areEqual(this.str, field.get(argument));
-        } catch (Exception e) {
-            return false;
+            // Remember the current position so that the code under test can still consume the reader, and so that
+            // this matcher can be called more than once for the same reader (Mockito matches on each invocation).
+            // The read ahead limit is unused by StringReader.
+            argument.mark(0);
+            String content = IOUtils.toString(argument);
+            argument.reset();
+
+            return Objects.equals(this.str, content);
+        } catch (IOException e) {
+            // A StringReader only fails when it's closed, which means the test itself is wrong.
+            throw new UncheckedIOException("Failed to read the matched reader", e);
         }
     }
 }
