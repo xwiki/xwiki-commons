@@ -98,6 +98,12 @@ jobs:
           fi
           BASE=$(git merge-base "origin/$PR_BASE" HEAD)
 
+          ## Prints the modules a pom declares outside of any profile, which are the ones held by the
+          ## reactor of a build activating no profile other than snapshot.
+          declared_modules() {
+            sed '/<profiles>/,/<\/profiles>/d' "$1/pom.xml" | sed -n 's|.*<module>\(.*\)</module>.*|\1|p'
+          }
+
           SELECTED=""
           FULL=""
           while IFS= read -r file; do
@@ -128,13 +134,30 @@ jobs:
             ## A file outside any module (.github, README...) holds nothing to compile or analyze.
             [ "$dir" != . ] || continue
 
-            ## Every ancestor aggregator is selected along with the module: sonar:sonar rebuilds the
-            ## project tree out of the reactor and fails the analysis with "<module> is orphan" when a
-            ## selected module's parent is missing from it.
+            ## Collect the module and its ancestors, checking on the way up that each is a module its
+            ## parent declares. Every ancestor is selected along with the module because sonar:sonar
+            ## rebuilds the project tree out of the reactor and fails the analysis with "<module> is
+            ## orphan" when a selected module's parent is missing from it. A module only a profile
+            ## activates -- a legacy module, a functional test module, a distribution module -- is
+            ## not in the reactor this workflow builds, so -pl would reject its path; a whole reactor
+            ## build does not analyze it either, so leaving it out changes nothing. The same check
+            ## discards the pom.xml an archetype ships as a resource, which is not a module at all.
+            CHAIN=""
+            REACHABLE=true
             while [ "$dir" != . ]; do
-              [ ! -f "$dir/pom.xml" ] || SELECTED=$(printf '%s\n%s' "$SELECTED" "$dir")
-              dir=$(dirname "$dir")
+              CHAIN=$(printf '%s\n%s' "$CHAIN" "$dir")
+              parent=$(dirname "$dir")
+              if [ ! -f "$parent/pom.xml" ] || ! declared_modules "$parent" | grep -qFx "$(basename "$dir")"; then
+                REACHABLE=false
+                break
+              fi
+              dir="$parent"
             done
+            if [ "$REACHABLE" = true ]; then
+              SELECTED="$SELECTED$CHAIN"
+            else
+              echo "Ignoring [$file]: no module of the reactor this workflow builds owns it"
+            fi
           done <<< "$(git diff --name-only "$BASE" HEAD)"
 
           if [ -n "$FULL" ]; then
@@ -152,8 +175,9 @@ jobs:
 
       ## Compile only. The analysis needs the bytecode, not the test results, and no coverage as long
       ## as the quality gate keeps its condition on the coverage of new code disabled. The snapshot
-      ## profile supplies the XWiki repositories the modules left out of the selection are downloaded
-      ## from, a runner having no settings.xml declaring them.
+      ## profile is what supplies the XWiki repositories the parent pom, the snapshots of the other
+      ## XWiki repositories and the modules left out of the selection are downloaded from, a runner
+      ## having no settings.xml declaring them.
       - name: Build
         env:
           MODULES: ${{ steps.modules.outputs.list }}
