@@ -69,16 +69,13 @@ public class BcDHKeyPairGenerator extends AbstractBcKeyPairGenerator
     @Override
     public AsymmetricKeyPair generate(KeyGenerationParameters parameters)
     {
-        org.bouncycastle.crypto.params.DHParameters keyGenParams;
-
-        if (parameters instanceof DHKeyParametersGenerationParameters generationParameters) {
-            keyGenParams = BcDHKeyParameterGenerator.getDhParameters(this.random.get(), generationParameters);
-        } else if (parameters instanceof DHKeyGenerationParameters dhParameters) {
-            keyGenParams = getDhParameters(dhParameters);
-        } else {
-            throw new IllegalArgumentException("Invalid parameters for DSA key generator: "
+        org.bouncycastle.crypto.params.DHParameters keyGenParams = switch (parameters) {
+            case DHKeyParametersGenerationParameters generationParameters ->
+                BcDHKeyParameterGenerator.getDhParameters(this.random.get(), generationParameters);
+            case DHKeyGenerationParameters dhParameters -> getDhParameters(dhParameters);
+            default -> throw new IllegalArgumentException("Invalid parameters for DSA key generator: "
                 + parameters.getClass().getName());
-        }
+        };
 
         AsymmetricCipherKeyPairGenerator generator = new DHKeyPairGenerator();
         generator.init(new org.bouncycastle.crypto.params.DHKeyGenerationParameters(this.random.get(),

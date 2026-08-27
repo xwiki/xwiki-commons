@@ -74,21 +74,16 @@ public final class XMLOutputFilterStreamUtils
     public static XMLStreamWriter createXMLStreamWriter(XMLOutputFactory factory, XMLOutputProperties properties)
         throws XMLStreamException, IOException, FilterException
     {
-        XMLStreamWriter xmlStreamWriter;
-
         OutputTarget target = properties.getTarget();
 
-        if (target instanceof WriterOutputTarget writerOutputTarget) {
-            xmlStreamWriter =
+        XMLStreamWriter xmlStreamWriter = switch (target) {
+            case WriterOutputTarget writerOutputTarget ->
                 getXMLOutputFactory(factory).createXMLStreamWriter(writerOutputTarget.getWriter());
-        } else if (target instanceof OutputStreamOutputTarget outputStreamOutputTarget) {
-            xmlStreamWriter = getXMLOutputFactory(factory)
+            case OutputStreamOutputTarget outputStreamOutputTarget -> getXMLOutputFactory(factory)
                 .createXMLStreamWriter(outputStreamOutputTarget.getOutputStream(), properties.getEncoding());
-        } else if (target instanceof ResultOutputTarget resultOutputTarget) {
-            xmlStreamWriter = StAXUtils.getXMLStreamWriter(resultOutputTarget.getResult());
-        } else {
-            throw new FilterException("Unknown target type [" + target.getClass() + "]");
-        }
+            case ResultOutputTarget resultOutputTarget -> StAXUtils.getXMLStreamWriter(resultOutputTarget.getResult());
+            default -> throw new FilterException("Unknown target type [" + target.getClass() + "]");
+        };
 
         if (properties.isFormat()) {
             xmlStreamWriter = new IndentingXMLStreamWriter(xmlStreamWriter);

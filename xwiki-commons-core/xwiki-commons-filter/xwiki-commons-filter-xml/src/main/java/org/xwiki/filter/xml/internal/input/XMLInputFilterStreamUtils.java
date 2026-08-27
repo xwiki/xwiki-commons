@@ -75,22 +75,16 @@ public final class XMLInputFilterStreamUtils
     public static XMLEventReader createXMLEventReader(XMLInputFactory factory, XMLInputProperties properties)
         throws XMLStreamException, IOException, FilterException
     {
-        XMLEventReader xmlEventReader;
-
         InputSource source = properties.getSource();
 
-        if (source instanceof ReaderInputSource readerInputSource) {
-            xmlEventReader = getXMLInputFactory(factory).createXMLEventReader(readerInputSource.getReader());
-        } else if (source instanceof InputStreamInputSource inputStreamInputSource) {
-            xmlEventReader =
+        return switch (source) {
+            case ReaderInputSource readerInputSource ->
+                getXMLInputFactory(factory).createXMLEventReader(readerInputSource.getReader());
+            case InputStreamInputSource inputStreamInputSource ->
                 getXMLInputFactory(factory).createXMLEventReader(inputStreamInputSource.getInputStream());
-        } else if (source instanceof SourceInputSource sourceInputSource) {
-            xmlEventReader = StAXUtils.getXMLEventReader(sourceInputSource.getSource());
-        } else {
-            throw new FilterException(UNKNOWN_SOURCE + source.getClass() + "]");
-        }
-
-        return xmlEventReader;
+            case SourceInputSource sourceInputSource -> StAXUtils.getXMLEventReader(sourceInputSource.getSource());
+            default -> throw new FilterException(UNKNOWN_SOURCE + source.getClass() + "]");
+        };
     }
 
     /**
@@ -103,22 +97,16 @@ public final class XMLInputFilterStreamUtils
     public static XMLStreamReader createXMLStreamReader(XMLInputProperties properties)
         throws XMLStreamException, IOException, FilterException
     {
-        XMLStreamReader xmlStreamReader;
-
         InputSource source = properties.getSource();
 
-        if (source instanceof ReaderInputSource readerInputSource) {
-            xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(readerInputSource.getReader());
-        } else if (source instanceof InputStreamInputSource inputStreamInputSource) {
-            xmlStreamReader =
+        return switch (source) {
+            case ReaderInputSource readerInputSource ->
+                XML_INPUT_FACTORY.createXMLStreamReader(readerInputSource.getReader());
+            case InputStreamInputSource inputStreamInputSource ->
                 XML_INPUT_FACTORY.createXMLStreamReader(inputStreamInputSource.getInputStream());
-        } else if (source instanceof SourceInputSource sourceInputSource) {
-            xmlStreamReader = StAXUtils.getXMLStreamReader(sourceInputSource.getSource());
-        } else {
-            throw new FilterException(UNKNOWN_SOURCE + source.getClass() + "]");
-        }
-
-        return xmlStreamReader;
+            case SourceInputSource sourceInputSource -> StAXUtils.getXMLStreamReader(sourceInputSource.getSource());
+            default -> throw new FilterException(UNKNOWN_SOURCE + source.getClass() + "]");
+        };
     }
 
     private static XMLInputFactory getXMLInputFactory(XMLInputFactory factory)
