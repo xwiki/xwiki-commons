@@ -45,7 +45,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ## SonarCloud derives the lines the pull request changed from the git history.
+          ## SonarCloud derives the lines the pull request changed from the git history, and the module
+          ## selection below diffs against the base branch.
           fetch-depth: 0
 
       ## The JDK to build with is the one the branch targets, which is the xwiki.java.version property
@@ -76,11 +77,88 @@ jobs:
           java-version: ${{ steps.java.outputs.version }}
           cache: maven
 
+      ## A pull request analysis only ever reports on the pull request's own new code, and every
+      ## condition of the XWiki quality gate is on a new code metric, so a module the pull request does
+      ## not change can neither contribute an issue nor fail the gate. Building and scanning the whole
+      ## reactor to analyze the few modules a pull request touches is therefore wasted work: the
+      ## modules owning the changed files are selected instead, and the rest of the reactor is resolved
+      ## from the snapshots the CI publishes rather than rebuilt. An empty selection means the whole
+      ## reactor, which is the fallback whenever the change cannot be narrowed down.
+      - name: Select the modules the pull request changes
+        id: modules
+        ## A branch name is chosen by whoever opens the pull request and ${{ }} is substituted into the
+        ## script before the shell runs it, so the base branch goes through the environment instead.
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.ref }}
+        run: |
+          if ! git rev-parse --verify --quiet "origin/$PR_BASE" > /dev/null; then
+            echo "Base branch [$PR_BASE] is not in the clone, building the whole reactor"
+            echo "list=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          BASE=$(git merge-base "origin/$PR_BASE" HEAD)
+
+          SELECTED=""
+          FULL=""
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
+
+            if [ "$(basename "$file")" = pom.xml ]; then
+              ## The root pom drives every module and an aggregator pom drives every module below it.
+              ## Which of them a change to either actually affects cannot be told from the diff.
+              if [ "$file" = pom.xml ]; then
+                FULL="the root pom changed"
+                break
+              fi
+              ## The pull request may have deleted the pom, in which case it is read from the base.
+              POM=$(git show "HEAD:$file" 2>/dev/null || git show "$BASE:$file" 2>/dev/null || true)
+              case "$POM" in
+                *"<packaging>pom</packaging>"*)
+                  FULL="the aggregator pom [$file] changed"
+                  break
+                  ;;
+              esac
+            fi
+
+            ## Walk up from the changed file to the module owning it.
+            dir=$(dirname "$file")
+            while [ "$dir" != . ] && [ ! -f "$dir/pom.xml" ]; do
+              dir=$(dirname "$dir")
+            done
+            ## A file outside any module (.github, README...) holds nothing to compile or analyze.
+            [ "$dir" != . ] || continue
+
+            ## Every ancestor aggregator is selected along with the module: sonar:sonar rebuilds the
+            ## project tree out of the reactor and fails the analysis with "<module> is orphan" when a
+            ## selected module's parent is missing from it.
+            while [ "$dir" != . ]; do
+              [ ! -f "$dir/pom.xml" ] || SELECTED=$(printf '%s\n%s' "$SELECTED" "$dir")
+              dir=$(dirname "$dir")
+            done
+          done <<< "$(git diff --name-only "$BASE" HEAD)"
+
+          if [ -n "$FULL" ]; then
+            echo "Building the whole reactor because $FULL"
+            echo "list=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          ## The root is always selected: sonar:sonar is an aggregator goal, so it runs on the top
+          ## level project of the reactor and fails with "Maven session does not declare a top level
+          ## project" without one. It is also where the analyzed sonar.projectKey comes from.
+          LIST=$(printf '.\n%s' "$SELECTED" | grep . | sort -u | paste -sd, -)
+          echo "Building $(tr ',' '\n' <<< "$LIST" | wc -l | tr -d ' ') of the reactor's modules:"
+          tr ',' '\n' <<< "$LIST" | sed 's/^/  /'
+          echo "list=$LIST" >> "$GITHUB_OUTPUT"
+
       ## Compile only. The analysis needs the bytecode, not the test results, and no coverage as long
-      ## as the quality gate keeps its condition on the coverage of new code disabled.
+      ## as the quality gate keeps its condition on the coverage of new code disabled. The snapshot
+      ## profile supplies the XWiki repositories the modules left out of the selection are downloaded
+      ## from, a runner having no settings.xml declaring them.
       - name: Build
+        env:
+          MODULES: ${{ steps.modules.outputs.list }}
         run: >
-          mvn -B -ntp -T 1C install -DskipTests
+          mvn -B -ntp -T 1C install -DskipTests -Psnapshot ${MODULES:+-pl "$MODULES"}
           -Dxwiki.checkstyle.skip=true -Dxwiki.revapi.skip=true
           -Dxwiki.enforcer.skip=true -Dxwiki.spoon.skip=true
 
@@ -96,8 +174,10 @@ jobs:
           PR_KEY: ${{ github.event.pull_request.number }}
           PR_BRANCH: ${{ github.event.pull_request.head.ref }}
           PR_BASE: ${{ github.event.pull_request.base.ref }}
+          MODULES: ${{ steps.modules.outputs.list }}
         run: >
-          mvn -B -ntp sonar:sonar -Dsonar.qualitygate.wait=true
+          mvn -B -ntp sonar:sonar -Psnapshot ${MODULES:+-pl "$MODULES"}
+          -Dsonar.qualitygate.wait=true
           -Dsonar.pullrequest.key="$PR_KEY"
           -Dsonar.pullrequest.branch="$PR_BRANCH"
           -Dsonar.pullrequest.base="$PR_BASE"
