@@ -78,10 +78,10 @@ public final class XMLInputFilterStreamUtils
         InputSource source = properties.getSource();
 
         return switch (source) {
-            case ReaderInputSource readerInputSource ->
-                getXMLInputFactory(factory).createXMLEventReader(readerInputSource.getReader());
-            case InputStreamInputSource inputStreamInputSource ->
-                getXMLInputFactory(factory).createXMLEventReader(inputStreamInputSource.getInputStream());
+            case ReaderInputSource readerSource ->
+                getXMLInputFactory(factory).createXMLEventReader(readerSource.getReader());
+            case InputStreamInputSource streamSource ->
+                getXMLInputFactory(factory).createXMLEventReader(streamSource.getInputStream());
             case SourceInputSource sourceInputSource -> StAXUtils.getXMLEventReader(sourceInputSource.getSource());
             default -> throw new FilterException(UNKNOWN_SOURCE + source.getClass() + "]");
         };
