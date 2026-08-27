@@ -1,0 +1,82 @@
+## ---------------------------------------------------------------------------
+## See the NOTICE file distributed with this work for additional
+## information regarding copyright ownership.
+##
+## This is free software; you can redistribute it and/or modify it
+## under the terms of the GNU Lesser General Public License as
+## published by the Free Software Foundation; either version 2.1 of
+## the License, or (at your option) any later version.
+##
+## This software is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+## Lesser General Public License for more details.
+##
+## You should have received a copy of the GNU Lesser General Public
+## License along with this software; if not, write to the Free
+## Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+## 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+## ---------------------------------------------------------------------------
+## Analyze each pull request with SonarCloud and fail when the pull request's quality gate fails, so
+## that a change introducing SonarQube issues is caught before it is merged instead of turning the
+## master quality gate red afterwards. This is not a duplicate of the ci.xwiki.org "quality" build:
+## that one analyzes master after the merge, with the tests and the coverage, whereas this one only
+## needs the bytecode of the changed code.
+name: SonarCloud PR analysis
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+## One analysis per pull request: a new commit makes the running one obsolete.
+concurrency:
+  group: sonar-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  analysis:
+    name: Analyze
+    ## A pull_request run from a fork gets no repository secrets, so the analysis has no token to
+    ## authenticate with. Skip those rather than fail them.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ## SonarCloud derives the lines the pull request changed from the git history.
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          ## Keep in sync with the xwiki.java.version property of the root pom.
+          java-version: 21
+          cache: maven
+
+      ## Compile only. The analysis needs the bytecode, not the test results, and no coverage as long
+      ## as the quality gate keeps its condition on the coverage of new code disabled.
+      - name: Build
+        run: >
+          mvn -B -ntp -T 1C install -DskipTests
+          -Dxwiki.checkstyle.skip=true -Dxwiki.revapi.skip=true
+          -Dxwiki.enforcer.skip=true -Dxwiki.spoon.skip=true
+
+      ## sonar.qualitygate.wait makes the goal wait for the server to process the report and fail the
+      ## job when the quality gate fails. Without it the job would pass whatever the analysis found.
+      ## The pull request properties go through the environment rather than being interpolated into the
+      ## command: a branch name is chosen by whoever opens the pull request, and ${{ }} is substituted
+      ## into the script before the shell runs it, so interpolating one lets a crafted branch name run
+      ## commands on the runner, where the token is.
+      - name: Analyze
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          PR_KEY: ${{ github.event.pull_request.number }}
+          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
+          PR_BASE: ${{ github.event.pull_request.base.ref }}
+        run: >
+          mvn -B -ntp sonar:sonar -Dsonar.qualitygate.wait=true
+          -Dsonar.pullrequest.key="$PR_KEY"
+          -Dsonar.pullrequest.branch="$PR_BRANCH"
+          -Dsonar.pullrequest.base="$PR_BASE"
