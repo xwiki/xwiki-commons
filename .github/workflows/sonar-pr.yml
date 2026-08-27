@@ -43,7 +43,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ## SonarCloud derives the lines the pull request changed from the git history.
           fetch-depth: 0
@@ -70,7 +70,7 @@ jobs:
           echo "Building with Java $VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: ${{ steps.java.outputs.version }}
