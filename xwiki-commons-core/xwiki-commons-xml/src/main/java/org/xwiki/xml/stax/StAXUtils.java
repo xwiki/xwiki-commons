@@ -167,23 +167,15 @@ public final class StAXUtils
      */
     public static XMLStreamWriter getXMLStreamWriter(XMLOutputFactory factory, Result result) throws XMLStreamException
     {
-        XMLStreamWriter xmlStreamWriter;
-
-        if (result instanceof SAXResult saxResult) {
+        return switch (result) {
             // SAXResult is not supported by the standard XMLOutputFactory
-            xmlStreamWriter = new XMLEventStreamWriter(new SAXEventWriter(saxResult.getHandler()), XML_EVENT_FACTORY);
-        } else if (result instanceof StAXResult staxResult) {
+            case SAXResult saxResult ->
+                new XMLEventStreamWriter(new SAXEventWriter(saxResult.getHandler()), XML_EVENT_FACTORY);
             // XMLEventWriter is not supported as result of XMLOutputFactory#createXMLStreamWriter
-            if (staxResult.getXMLStreamWriter() != null) {
-                xmlStreamWriter = staxResult.getXMLStreamWriter();
-            } else {
-                xmlStreamWriter = new XMLEventStreamWriter(staxResult.getXMLEventWriter(), XML_EVENT_FACTORY);
-            }
-        } else {
-            xmlStreamWriter = factory.createXMLStreamWriter(result);
-        }
-
-        return xmlStreamWriter;
+            case StAXResult staxResult -> staxResult.getXMLStreamWriter() != null ? staxResult.getXMLStreamWriter()
+                : new XMLEventStreamWriter(staxResult.getXMLEventWriter(), XML_EVENT_FACTORY);
+            case null, default -> factory.createXMLStreamWriter(result);
+        };
     }
 
     /**

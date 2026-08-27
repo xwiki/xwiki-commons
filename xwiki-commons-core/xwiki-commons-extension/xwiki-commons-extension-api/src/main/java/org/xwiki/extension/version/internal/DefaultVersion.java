@@ -509,17 +509,11 @@ public class DefaultVersion implements Version
             return true;
         }
 
-        boolean equals;
-
-        if (obj instanceof DefaultVersion defaultVersion) {
-            equals = equals(defaultVersion);
-        } else if (obj instanceof Version version) {
-            equals = equals(new DefaultVersion(version.getValue()));
-        } else {
-            equals = false;
-        }
-
-        return equals;
+        return switch (obj) {
+            case DefaultVersion defaultVersion -> equals(defaultVersion);
+            case Version version -> equals(new DefaultVersion(version.getValue()));
+            case null, default -> false;
+        };
     }
 
     /**

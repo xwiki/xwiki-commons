@@ -87,16 +87,13 @@ public abstract class AbstractBcPBES2CipherFactory extends AbstractBcPBCipherFac
     public PasswordBasedCipher getInstance(boolean forEncryption, SymmetricCipherParameters password,
         KeyDerivationFunction kdf)
     {
-        SymmetricCipherParameters params;
-
-        if (password instanceof KeyWithIVParameters ivPassword) {
-            params = new KeyWithIVParameters(kdf.derive(ivPassword.getKey()), ivPassword.getIV());
-        } else if (password instanceof KeyParameter keyPassword) {
-            params = kdf.derive(keyPassword.getKey(), getIVSize());
-        } else {
-            throw new IllegalArgumentException("Invalid cipher parameters for this password based cipher: "
-                + password.getClass().getName());
-        }
+        SymmetricCipherParameters params = switch (password) {
+            case KeyWithIVParameters ivPassword ->
+                new KeyWithIVParameters(kdf.derive(ivPassword.getKey()), ivPassword.getIV());
+            case KeyParameter keyPassword -> kdf.derive(keyPassword.getKey(), getIVSize());
+            default -> throw new IllegalArgumentException(
+                "Invalid cipher parameters for this password based cipher: " + password.getClass().getName());
+        };
 
         return getPasswordBasedCipher(forEncryption, kdf, params);
     }
