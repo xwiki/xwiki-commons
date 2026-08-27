@@ -61,7 +61,8 @@ public final class XMLInputFilterStreamUtils
     public static XMLEventReader createXMLEventReader(XMLInputProperties properties)
         throws XMLStreamException, IOException, FilterException
     {
-        return createXMLEventReader(XML_INPUT_FACTORY, properties);
+        // A null factory asks the other overload to apply its own default, instead of duplicating that choice here.
+        return createXMLEventReader(null, properties);
     }
 
     /**
