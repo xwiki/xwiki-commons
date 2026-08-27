@@ -20,6 +20,7 @@
 package org.xwiki.filter.xml.internal.input;
 
 import java.io.IOException;
+import java.io.StringReader;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -107,6 +108,23 @@ public final class XMLInputFilterStreamUtils
             case SourceInputSource sourceInputSource -> StAXUtils.getXMLStreamReader(sourceInputSource.getSource());
             default -> throw new FilterException(UNKNOWN_SOURCE + source.getClass() + "]");
         };
+    }
+
+    static XMLEventReader newTestReaderDirect(String content) throws XMLStreamException
+    {
+        XMLInputFactory factory = null;
+
+        return factory.createXMLEventReader(new StringReader(content));
+    }
+
+    private static XMLInputFactory nullTestFactory()
+    {
+        return null;
+    }
+
+    static XMLEventReader newTestReaderIndirect(String content) throws XMLStreamException
+    {
+        return nullTestFactory().createXMLEventReader(new StringReader(content));
     }
 
     private static XMLInputFactory getXMLInputFactory(XMLInputFactory factory)
