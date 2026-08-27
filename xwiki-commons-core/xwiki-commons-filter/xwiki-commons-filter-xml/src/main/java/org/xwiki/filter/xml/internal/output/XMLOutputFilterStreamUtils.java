@@ -60,7 +60,8 @@ public final class XMLOutputFilterStreamUtils
     public static XMLStreamWriter createXMLStreamWriter(XMLOutputProperties properties)
         throws XMLStreamException, IOException, FilterException
     {
-        return createXMLStreamWriter(XML_OUTPUT_FACTORY, properties);
+        // A null factory asks the other overload to apply its own default, instead of duplicating that choice here.
+        return createXMLStreamWriter(null, properties);
     }
 
     /**
