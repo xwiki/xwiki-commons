@@ -60,6 +60,14 @@
               <action>INSERT_ATTACHMENT_CONTENT</action>
               <content>src/main/resources/Blog/BlogBackground.png</content>
             </transformation>
+
+            <transformation>
+              <file>Blog/WebHome.xml</file>
+              <action>REPLACE</action>
+              <xpath>/xwikidoc/object/insertHereBlogXWikiClass</xpath>
+              <xml>src/main/resources/Blog/BlogClass.xwikiclass</xml>
+            </transformation>
+
           </transformations>
         </configuration>
       </plugin>
