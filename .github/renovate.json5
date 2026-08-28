@@ -17,34 +17,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
- {
-  // We want all suggestions right away
-  "prHourlyLimit" : 0,
-  "prConcurrentLimit" : 0,
-
-  // Create different pull request for each major upgrade
-  "separateMajorMinor": true,
-  "separateMultipleMajor": true,
+{
+  // The settings the XWiki repositories share. See https://github.com/xwiki/.github
+  "extends": ["github>xwiki/.github//renovate/default.json5"],
 
   // Skip Eclipse M2E special setup "dependency"
   // Skip jdom 1 since jdom 2 actually use a different id now
   // antlr 2 is not maintained anymore
+  // Renovate replaces the preset's "ignoreDeps" with this one rather than merging them, so the
+  // entry the preset already holds has to be repeated here.
   "ignoreDeps": ["org.eclipse.m2e:lifecycle-mapping", "org.jdom:jdom", "antlr:antlr"],
-
-  // Set a "dependencies" label on all pull requests created by Renovate
-  "labels": ["dependencies"],
 
   // Assign all upgrade pull requests by default to the one in charge of dispatching them
   assignees: [
     "tmortagne"
   ],
 
-  // There is no point trying to find update for commons dependencies
+  // Added to the rules of the preset, which already disables the commons dependencies.
   "packageRules": [
-    {
-      "matchPackagePrefixes": ["org.xwiki.commons:"],
-      "enabled": false
-    },
     // Ignore Byte Buddy versions ending with -jdk5 (they only make sense for project which need to support Java < 8)
     {
       "matchPackageNames": ["net.bytebuddy:byte-buddy"],
