@@ -439,6 +439,8 @@
     <module name="UnnecessaryParentheses"/>
     -->
 
+    <!-- Note: this same module is also declared in checkstyle-test.xml, which is the configuration applied to test
+         sources. -->
     <module name="UnusedImports"/>
 
     <module name="UnusedLocalVariable"/>

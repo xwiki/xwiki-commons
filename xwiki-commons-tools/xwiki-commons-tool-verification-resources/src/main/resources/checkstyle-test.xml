@@ -42,5 +42,11 @@
       <property name="option" value="bottom"/>
       <property name="sortStaticImportsAlphabetically" value="true"/>
     </module>
+
+    <!-- Forbid unused imports in test sources too: an unused import is just as much dead code in a test class as in a
+         main one, and leaving them behind makes the imports misleading about what the test actually exercises.
+         Note: this same module is also declared in checkstyle.xml, which is the configuration applied to main
+         sources. -->
+    <module name="UnusedImports"/>
   </module>
 </module>
