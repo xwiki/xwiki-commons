@@ -67,14 +67,7 @@ class DefaultExecutionContextManagerTest
                 context.setProperty("key", Arrays.asList("value"));
             }
         };
-        Provider<List<ExecutionContextInitializer>> provider = new Provider<List<ExecutionContextInitializer>>()
-        {
-            @Override
-            public List<ExecutionContextInitializer> get()
-            {
-                return Arrays.asList(initializer);
-            }
-        };
+        Provider<List<ExecutionContextInitializer>> provider = () -> Arrays.asList(initializer);
 
         ReflectionUtils.setFieldValue(contextManager, "initializerProvider", provider);
     }

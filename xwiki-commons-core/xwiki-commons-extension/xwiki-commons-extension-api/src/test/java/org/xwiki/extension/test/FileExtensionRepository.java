@@ -22,7 +22,6 @@ package org.xwiki.extension.test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -157,14 +156,8 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
         List<Version> versions = new LinkedList<>();
 
         try {
-            for (File file : this.directory.listFiles(new FilenameFilter()
-            {
-                @Override
-                public boolean accept(File dir, String name)
-                {
-                    return name.startsWith(id + '-') && name.endsWith(".xed");
-                }
-            })) {
+            for (File file : this.directory.listFiles(
+                (dir, name) -> name.startsWith(id + '-') && name.endsWith(".xed"))) {
                 try (FileInputStream fis = new FileInputStream(file)) {
                     DefaultLocalExtension localExtension =
                         this.extensionSerializer.loadLocalExtensionDescriptor(null, fis);

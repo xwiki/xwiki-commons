@@ -52,14 +52,7 @@ class WrappedThreadEventListenerTest
     {
         final WrappedThreadEventListener wrapper = new WrappedThreadEventListener(this.listenermock);
 
-        Runnable runnable = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                wrapper.onEvent(AllEvent.ALLEVENT, null, null);
-            }
-        };
+        Runnable runnable = () -> wrapper.onEvent(AllEvent.ALLEVENT, null, null);
 
         Thread thread = new Thread(runnable);
         thread.start();
@@ -81,14 +74,7 @@ class WrappedThreadEventListenerTest
         final WrappedThreadEventListener wrapper =
             new WrappedThreadEventListener(this.listenermock, Thread.currentThread());
 
-        Runnable runnable = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                wrapper.onEvent(AllEvent.ALLEVENT, null, null);
-            }
-        };
+        Runnable runnable = () -> wrapper.onEvent(AllEvent.ALLEVENT, null, null);
 
         Thread thread = new Thread(runnable);
         thread.start();
