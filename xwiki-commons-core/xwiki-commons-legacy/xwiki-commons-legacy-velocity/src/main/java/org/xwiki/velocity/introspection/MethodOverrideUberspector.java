@@ -130,6 +130,6 @@ public class MethodOverrideUberspector extends AbstractChainableUberspector
 
     private boolean canAccess(Method method, Object obj)
     {
-        return Modifier.isStatic(method.getModifiers()) ? method.canAccess(null) : method.canAccess(obj);
+        return method.canAccess(Modifier.isStatic(method.getModifiers()) ? null : obj);
     }
 }

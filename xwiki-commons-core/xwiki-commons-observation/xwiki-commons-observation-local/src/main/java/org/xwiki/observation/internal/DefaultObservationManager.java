@@ -129,7 +129,7 @@ public class DefaultObservationManager implements ObservationManager
         @Override
         public int compareTo(RegisteredListener other)
         {
-            return this.priority - other.priority;
+            return Integer.compare(this.priority, other.priority);
         }
     }
 

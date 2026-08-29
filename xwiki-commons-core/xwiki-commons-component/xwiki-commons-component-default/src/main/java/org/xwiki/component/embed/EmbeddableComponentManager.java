@@ -110,7 +110,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         @Override
         public int compareTo(ComponentEntry<R> other)
         {
-            return this.descriptor.getRoleTypePriority() - other.descriptor.getRoleTypePriority();
+            return Integer.compare(this.descriptor.getRoleTypePriority(), other.descriptor.getRoleTypePriority());
         }
 
         @Override
@@ -940,7 +940,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
             @Override
             public int compare(RoleHint<?> rh1, RoleHint<?> rh2)
             {
-                return getPriority(rh1) - getPriority(rh2);
+                return Integer.compare(getPriority(rh1), getPriority(rh2));
             }
 
             private int getPriority(RoleHint<?> rh)

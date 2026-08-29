@@ -119,7 +119,7 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
         @Override
         public int compareTo(ExtensionRepositoryEntry other)
         {
-            return this.priority - other.priority;
+            return Integer.compare(this.priority, other.priority);
         }
 
         public ExtensionRepository getRepository()
