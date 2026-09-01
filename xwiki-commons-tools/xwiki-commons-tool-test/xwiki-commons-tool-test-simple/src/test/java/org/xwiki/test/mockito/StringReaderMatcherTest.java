@@ -112,6 +112,7 @@ class StringReaderMatcherTest
         StringReader reader = new StringReader("content");
         reader.close();
 
-        assertThrows(UncheckedIOException.class, () -> new StringReaderMatcher("content").matches(reader));
+        StringReaderMatcher matcher = new StringReaderMatcher("content");
+        assertThrows(UncheckedIOException.class, () -> matcher.matches(reader));
     }
 }

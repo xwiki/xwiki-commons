@@ -375,7 +375,7 @@ public class DefaultObservationManager implements ObservationManager
                 if (componentEvent instanceof ComponentDescriptorAddedEvent addedEvent) {
                     onEventListenerComponentAdded(addedEvent, componentManager, descriptor);
                 } else if (componentEvent instanceof ComponentDescriptorRemovedEvent) {
-                    onEventListenerComponentRemoved(componentManager, descriptor);
+                    onEventListenerComponentRemoved(descriptor);
                 } else {
                     this.logger.warn("Ignoring unknown Component event [{}]", componentEvent.getClass().getName());
                 }
@@ -422,11 +422,9 @@ public class DefaultObservationManager implements ObservationManager
     /**
      * An Event Listener Component has been dynamically unregistered in the system, remove it from our cache.
      *
-     * @param componentManager the {@link ComponentManager} where the descriptor is registered
      * @param descriptor the component descriptor removed from the component manager
      */
-    private void onEventListenerComponentRemoved(
-        ComponentManager componentManager, ComponentDescriptor<?> descriptor)
+    private void onEventListenerComponentRemoved(ComponentDescriptor<?> descriptor)
     {
         EventListener removedEventListener = null;
         for (EventListener eventListener : getListenersByName().values()) {
