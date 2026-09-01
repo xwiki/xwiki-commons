@@ -223,9 +223,8 @@ public class MockitoComponentMocker<T>
      * Create mocks of injected dependencies and registers them against the Component Manager.
      *
      * @param descriptor the descriptor of the component under test
-     * @throws Exception if an error happened during registration
      */
-    private void registerMockDependencies(ComponentDescriptor<T> descriptor) throws Exception
+    private void registerMockDependencies(ComponentDescriptor<T> descriptor)
     {
         Collection<ComponentDependency<?>> dependencyDescriptors = descriptor.getComponentDependencies();
         for (ComponentDependency<?> dependencyDescriptor : dependencyDescriptors) {
