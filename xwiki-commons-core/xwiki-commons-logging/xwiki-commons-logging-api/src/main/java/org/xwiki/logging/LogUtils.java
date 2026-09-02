@@ -192,8 +192,8 @@ public final class LogUtils
             }
 
             // Add remaining arguments
-            if (arguments.size() < defaultArguments.length) {
-                arguments.addAll(Arrays.asList(defaultArguments).subList(arguments.size(), defaultArguments.length));
+            for (int index = arguments.size(); index < defaultArguments.length; ++index) {
+                arguments.add(defaultArguments[index]);
             }
 
             if (message instanceof LogEvent logEvent) {

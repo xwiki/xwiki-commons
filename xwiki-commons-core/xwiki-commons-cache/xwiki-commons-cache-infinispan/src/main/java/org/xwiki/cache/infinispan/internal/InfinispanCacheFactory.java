@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.io.IOUtils;
 import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
@@ -101,10 +102,12 @@ public class InfinispanCacheFactory implements CacheFactory, Initializable, Disp
 
         if (configurationStream != null) {
             // CacheManager initialization
-            try (configurationStream) {
+            try {
                 this.cacheManager = new DefaultCacheManager(configurationStream);
             } catch (IOException e) {
                 throw new InitializationException("Failed to create Infinispan cache manager", e);
+            } finally {
+                IOUtils.closeQuietly(configurationStream);
             }
         } else {
             this.cacheManager = new DefaultCacheManager();
