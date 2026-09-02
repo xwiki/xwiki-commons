@@ -165,6 +165,7 @@ public class ExtensionMojoHelper implements AutoCloseable
      */
     public ExtensionMojoHelper()
     {
+        // Empty on purpose: initialization is done by create(MavenProject, File).
     }
 
     /**

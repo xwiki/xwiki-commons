@@ -90,7 +90,7 @@ class GuiceCompatibilityTest
 
     @Component(staticRegistration = false)
     @Singleton
-    public static class GenericFieldRoleImpl<String> implements GenericFieldRole<String>
+    public static class GenericFieldRoleImpl<T> implements GenericFieldRole<T>
     {
     }
 

@@ -216,6 +216,10 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
      */
     private DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
+    /**
+     * Default constructor.
+     */
+    public DefaultExtensionSerializer()
     {
         this.serializerById = new HashMap<>();
         this.serializerByClass = new LinkedHashMap<>();
