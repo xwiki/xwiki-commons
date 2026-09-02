@@ -716,6 +716,7 @@ public class ResourceLoader
         @Override
         public void close()
         {
+            // Nothing to close: the JAR file this handle reads from is owned and cached by the loader.
         }
     }
 
