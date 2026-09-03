@@ -164,7 +164,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
      *             {@link #AbstractJobStatus(String, Request, JobStatus, ObservationManager, LoggerManager)} instead
      */
     @Deprecated(since = "9.2RC1")
-    public AbstractJobStatus(R request, JobStatus parentJobStatus, ObservationManager observationManager,
+    protected AbstractJobStatus(R request, JobStatus parentJobStatus, ObservationManager observationManager,
         LoggerManager loggerManager)
     {
         this(null, request, parentJobStatus, observationManager, loggerManager);
@@ -178,7 +178,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
      * @param observationManager the observation manager component
      * @param loggerManager the logger manager component
      */
-    public AbstractJobStatus(String jobType, R request, JobStatus parentJobStatus,
+    protected AbstractJobStatus(String jobType, R request, JobStatus parentJobStatus,
         ObservationManager observationManager, LoggerManager loggerManager)
     {
         this.jobType = jobType;

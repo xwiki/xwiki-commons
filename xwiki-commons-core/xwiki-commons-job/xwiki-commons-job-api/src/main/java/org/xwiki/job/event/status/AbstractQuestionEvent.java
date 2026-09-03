@@ -45,7 +45,7 @@ public abstract class AbstractQuestionEvent implements QuestionEvent
     /**
      * Creates an event that can be triggered by any type of question.
      */
-    public AbstractQuestionEvent()
+    protected AbstractQuestionEvent()
     {
         this(null);
     }
@@ -55,7 +55,7 @@ public abstract class AbstractQuestionEvent implements QuestionEvent
      * 
      * @param questionType the type of question that can trigger this event
      */
-    public AbstractQuestionEvent(String questionType)
+    protected AbstractQuestionEvent(String questionType)
     {
         this(questionType, null);
     }
@@ -67,7 +67,7 @@ public abstract class AbstractQuestionEvent implements QuestionEvent
      * @param questionType the type of question that can trigger this event
      * @param jobId the id of the job that raised the question that triggered this event
      */
-    public AbstractQuestionEvent(String questionType, List<String> jobId)
+    protected AbstractQuestionEvent(String questionType, List<String> jobId)
     {
         this.questionType = questionType;
         this.jobId = jobId;

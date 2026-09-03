@@ -67,7 +67,7 @@ public abstract class AbstractRequest implements Request
     /**
      * Default constructor.
      */
-    public AbstractRequest()
+    protected AbstractRequest()
     {
 
     }
@@ -75,7 +75,7 @@ public abstract class AbstractRequest implements Request
     /**
      * @param request the request to copy
      */
-    public AbstractRequest(Request request)
+    protected AbstractRequest(Request request)
     {
         setId(request.getId());
 

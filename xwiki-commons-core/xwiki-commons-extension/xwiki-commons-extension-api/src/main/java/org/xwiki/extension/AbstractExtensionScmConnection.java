@@ -40,7 +40,7 @@ public abstract class AbstractExtensionScmConnection implements ExtensionScmConn
      * @param system the system name
      * @param path the system specific path
      */
-    public AbstractExtensionScmConnection(String system, String path)
+    protected AbstractExtensionScmConnection(String system, String path)
     {
         this.system = system;
         this.path = path;
@@ -50,7 +50,7 @@ public abstract class AbstractExtensionScmConnection implements ExtensionScmConn
      * @param str the serialized scm connection
      * @since 9.0RC1
      */
-    public AbstractExtensionScmConnection(String str)
+    protected AbstractExtensionScmConnection(String str)
     {
         String tempPath = str;
 

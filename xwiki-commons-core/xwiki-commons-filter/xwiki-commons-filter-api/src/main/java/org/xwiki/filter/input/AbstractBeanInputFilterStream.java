@@ -48,7 +48,7 @@ public abstract class AbstractBeanInputFilterStream<P, F> implements BeanInputFi
     /**
      * Default constructor.
      */
-    public AbstractBeanInputFilterStream()
+    protected AbstractBeanInputFilterStream()
     {
     }
 
@@ -57,7 +57,7 @@ public abstract class AbstractBeanInputFilterStream<P, F> implements BeanInputFi
      * @param properties the properties of the stream
      * @throws FilterException when failing to create the stream
      */
-    public AbstractBeanInputFilterStream(FilterDescriptorManager filterDescriptorManager, P properties)
+    protected AbstractBeanInputFilterStream(FilterDescriptorManager filterDescriptorManager, P properties)
         throws FilterException
     {
         this.filterDescriptorManager = filterDescriptorManager;

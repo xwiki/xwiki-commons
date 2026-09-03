@@ -58,7 +58,7 @@ public abstract class AbstractBeanFilterStreamFactory<P> extends AbstractFilterS
      * Default constructor.
      * @param type the type of filter stream to use.
      */
-    public AbstractBeanFilterStreamFactory(FilterStreamType type)
+    protected AbstractBeanFilterStreamFactory(FilterStreamType type)
     {
         super(type);
     }

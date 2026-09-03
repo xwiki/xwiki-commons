@@ -53,7 +53,7 @@ public abstract class AbstractFilterableEvent implements FilterableEvent, Serial
      * {@link org.xwiki.observation.event.filter.AlwaysMatchingEventFilter}, meaning that this event will match any
      * other event of the same type.
      */
-    public AbstractFilterableEvent()
+    protected AbstractFilterableEvent()
     {
         this.eventFilter = AlwaysMatchingEventFilter.INSTANCE;
     }
@@ -64,7 +64,7 @@ public abstract class AbstractFilterableEvent implements FilterableEvent, Serial
      *
      * @param name a generic name that uniquely identifies an event type
      */
-    public AbstractFilterableEvent(String name)
+    protected AbstractFilterableEvent(String name)
     {
         // Assume null means everything
         this.eventFilter = name != null ? new FixedNameEventFilter(name) : AlwaysMatchingEventFilter.INSTANCE;
@@ -75,7 +75,7 @@ public abstract class AbstractFilterableEvent implements FilterableEvent, Serial
      *
      * @param eventFilter the filter to use for matching events
      */
-    public AbstractFilterableEvent(EventFilter eventFilter)
+    protected AbstractFilterableEvent(EventFilter eventFilter)
     {
         this.eventFilter = eventFilter;
     }

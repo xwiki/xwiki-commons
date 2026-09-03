@@ -53,7 +53,7 @@ public abstract class AbstractFilterStreamDescriptor implements FilterStreamDesc
      * @param name human readable name of filter input source type.
      * @param description the description of the filter
      */
-    public AbstractFilterStreamDescriptor(String name, String description)
+    protected AbstractFilterStreamDescriptor(String name, String description)
     {
         this.name = name;
         this.description = description;

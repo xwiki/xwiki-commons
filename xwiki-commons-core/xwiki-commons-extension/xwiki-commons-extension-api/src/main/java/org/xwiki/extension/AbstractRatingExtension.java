@@ -41,7 +41,7 @@ public abstract class AbstractRatingExtension extends AbstractRemoteExtension im
      * @param id the extension identifier
      * @param type the extension type
      */
-    public AbstractRatingExtension(ExtensionRepository repository, ExtensionId id, String type)
+    protected AbstractRatingExtension(ExtensionRepository repository, ExtensionId id, String type)
     {
         super(repository, id, type);
     }
@@ -52,7 +52,7 @@ public abstract class AbstractRatingExtension extends AbstractRemoteExtension im
      * @param repository the repository where this extension comes from
      * @param extension the extension to copy
      */
-    public AbstractRatingExtension(ExtensionRepository repository, Extension extension)
+    protected AbstractRatingExtension(ExtensionRepository repository, Extension extension)
     {
         super(repository, extension);
     }

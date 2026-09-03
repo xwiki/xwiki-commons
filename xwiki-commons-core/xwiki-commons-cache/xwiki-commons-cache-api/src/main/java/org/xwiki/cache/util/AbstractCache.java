@@ -57,7 +57,7 @@ public abstract class AbstractCache<T> implements Cache<T>
      * @deprecated use {@link #AbstractCache(CacheConfiguration)} instead
      */
     @Deprecated(since = "8.3RC1")
-    public AbstractCache()
+    protected AbstractCache()
     {
         this(null);
     }
@@ -65,7 +65,7 @@ public abstract class AbstractCache<T> implements Cache<T>
     /**
      * @param configuration the configuration of the cache
      */
-    public AbstractCache(CacheConfiguration configuration)
+    protected AbstractCache(CacheConfiguration configuration)
     {
         this.configuration = configuration;
     }

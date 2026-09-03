@@ -44,7 +44,7 @@ public abstract class AbstractEventListener implements EventListener
      *            registered with this list of events against the {@link ObservationManager}. When an event occurs, for
      *            each matching event in this list, the {@link #onEvent(Event, Object, Object)} method will be called.
      */
-    public AbstractEventListener(String name, List<? extends Event> events)
+    protected AbstractEventListener(String name, List<? extends Event> events)
     {
         this.name = name;
         this.events = (List) events;
@@ -57,7 +57,7 @@ public abstract class AbstractEventListener implements EventListener
      *            registered with this list of events against the {@link ObservationManager}. When an event occurs, for
      *            each matching event in this list, the {@link #onEvent(Event, Object, Object)} method will be called.
      */
-    public AbstractEventListener(String name, Event... events)
+    protected AbstractEventListener(String name, Event... events)
     {
         this.name = name;
         this.events = Arrays.asList(events);
@@ -72,7 +72,7 @@ public abstract class AbstractEventListener implements EventListener
      *            {@link #onEvent(Event, Object, Object)} method will be called.
      * @since 11.8RC1
      */
-    public AbstractEventListener(String name, Object... values)
+    protected AbstractEventListener(String name, Object... values)
     {
         this.name = name;
 

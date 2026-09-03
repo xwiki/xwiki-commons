@@ -45,7 +45,7 @@ public abstract class AbstractExtensionScm implements ExtensionScm
      * @param connection the read connection
      * @param developerConnection the write connection
      */
-    public AbstractExtensionScm(String url, ExtensionScmConnection connection,
+    protected AbstractExtensionScm(String url, ExtensionScmConnection connection,
         ExtensionScmConnection developerConnection)
     {
         this(url, connection, developerConnection, null);

@@ -48,7 +48,7 @@ public abstract class AbstractExtensionEvent implements ExtensionEvent
     /**
      * Default constructor.
      */
-    public AbstractExtensionEvent()
+    protected AbstractExtensionEvent()
     {
         this.noNamespace = true;
     }

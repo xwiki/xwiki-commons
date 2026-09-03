@@ -47,14 +47,14 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
     /**
      * Watches all roles (whenever a component is added it'll trigger this event).
      */
-    public AbstractComponentDescriptorEvent()
+    protected AbstractComponentDescriptorEvent()
     {
     }
 
     /**
      * @param role the component role to watch (all components matching this role will trigger this event)
      */
-    public AbstractComponentDescriptorEvent(Class<?> role)
+    protected AbstractComponentDescriptorEvent(Class<?> role)
     {
         this((Type) role);
     }
@@ -63,7 +63,7 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
      * @param roleType the component role type to watch (all components matching this role will trigger this event)
      * @since 4.4RC1
      */
-    public AbstractComponentDescriptorEvent(Type roleType)
+    protected AbstractComponentDescriptorEvent(Type roleType)
     {
         this.roleType = roleType;
     }
@@ -72,7 +72,7 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
      * @param role the component role to watch
      * @param roleHint the component rolehint to watch
      */
-    public AbstractComponentDescriptorEvent(Class<?> role, String roleHint)
+    protected AbstractComponentDescriptorEvent(Class<?> role, String roleHint)
     {
         this((Type) role, roleHint);
     }
@@ -82,7 +82,7 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
      * @param roleHint the component rolehint to watch
      * @since 4.4RC1
      */
-    public AbstractComponentDescriptorEvent(Type roleType, String roleHint)
+    protected AbstractComponentDescriptorEvent(Type roleType, String roleHint)
     {
         this.roleType = roleType;
         this.roleHint = roleHint;
