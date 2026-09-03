@@ -35,7 +35,7 @@ public abstract class AbstractBeanOutputFilterStream<P> implements BeanOutputFil
     /**
      * Default empty constructor.
      */
-    public AbstractBeanOutputFilterStream()
+    protected AbstractBeanOutputFilterStream()
     {
     }
 
@@ -44,7 +44,7 @@ public abstract class AbstractBeanOutputFilterStream<P> implements BeanOutputFil
      * @param properties the properties to be set.
      * @throws FilterException in case of problem when setting the properties.
      */
-    public AbstractBeanOutputFilterStream(P properties) throws FilterException
+    protected AbstractBeanOutputFilterStream(P properties) throws FilterException
     {
         setProperties(properties);
     }

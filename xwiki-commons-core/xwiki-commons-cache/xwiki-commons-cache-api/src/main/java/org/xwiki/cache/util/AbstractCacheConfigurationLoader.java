@@ -55,7 +55,7 @@ public abstract class AbstractCacheConfigurationLoader
      * @param configuration the XWiki cache API configuration.
      * @param defaultPropsId the default configuration identifier used to load cache configuration file.
      */
-    public AbstractCacheConfigurationLoader(CacheConfiguration configuration, String defaultPropsId)
+    protected AbstractCacheConfigurationLoader(CacheConfiguration configuration, String defaultPropsId)
     {
         this(configuration, null, defaultPropsId);
     }
@@ -65,7 +65,7 @@ public abstract class AbstractCacheConfigurationLoader
      * @param environment the environment, can be null
      * @param defaultPropsId the default configuration identifier used to load cache configuration file.
      */
-    public AbstractCacheConfigurationLoader(CacheConfiguration configuration, Environment environment,
+    protected AbstractCacheConfigurationLoader(CacheConfiguration configuration, Environment environment,
         String defaultPropsId)
     {
         this.configuration = (CacheConfiguration) configuration.clone();

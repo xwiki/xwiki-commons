@@ -46,7 +46,7 @@ public abstract class AbstractRemoteExtension extends AbstractExtension implemen
      * @param id the extension identifier
      * @param type the extension type
      */
-    public AbstractRemoteExtension(ExtensionRepository repository, ExtensionId id, String type)
+    protected AbstractRemoteExtension(ExtensionRepository repository, ExtensionId id, String type)
     {
         super(repository, id, type);
     }
@@ -57,7 +57,7 @@ public abstract class AbstractRemoteExtension extends AbstractExtension implemen
      * @param repository the repository where this extension comes from
      * @param extension the extension to copy
      */
-    public AbstractRemoteExtension(ExtensionRepository repository, Extension extension)
+    protected AbstractRemoteExtension(ExtensionRepository repository, Extension extension)
     {
         super(repository, extension);
     }

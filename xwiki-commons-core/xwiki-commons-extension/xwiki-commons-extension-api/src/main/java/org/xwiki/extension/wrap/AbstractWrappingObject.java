@@ -33,7 +33,7 @@ public abstract class AbstractWrappingObject<T> extends org.xwiki.script.wrap.Ab
     /**
      * @param wrapped the wrapped object
      */
-    public AbstractWrappingObject(T wrapped)
+    protected AbstractWrappingObject(T wrapped)
     {
         super(wrapped);
     }

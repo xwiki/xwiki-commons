@@ -123,7 +123,7 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     /**
      * Default constructor.
      */
-    public AbstractExtensionRequest()
+    protected AbstractExtensionRequest()
     {
         setProperty(PROPERTY_EXTENSIONS, new ArrayList<ExtensionId>());
         setProperty(PROPERTY_EXCLUDEDEXTENSIONS, new HashSet<ExtensionId>());
@@ -132,7 +132,7 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     /**
      * @param request the request to copy
      */
-    public AbstractExtensionRequest(Request request)
+    protected AbstractExtensionRequest(Request request)
     {
         super(request);
 

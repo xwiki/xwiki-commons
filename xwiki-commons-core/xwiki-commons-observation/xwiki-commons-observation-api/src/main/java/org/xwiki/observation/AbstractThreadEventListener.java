@@ -37,7 +37,7 @@ public abstract class AbstractThreadEventListener implements EventListener
     /**
      * Use {@link Thread#currentThread()}.
      */
-    public AbstractThreadEventListener()
+    protected AbstractThreadEventListener()
     {
         this.thread = Thread.currentThread();
     }
@@ -45,7 +45,7 @@ public abstract class AbstractThreadEventListener implements EventListener
     /**
      * @param thread the thread to match to receive events.
      */
-    public AbstractThreadEventListener(Thread thread)
+    protected AbstractThreadEventListener(Thread thread)
     {
         this.thread = thread;
     }

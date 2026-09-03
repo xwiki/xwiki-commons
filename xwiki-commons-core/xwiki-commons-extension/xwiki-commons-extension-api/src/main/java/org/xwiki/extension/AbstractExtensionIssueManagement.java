@@ -46,7 +46,7 @@ public abstract class AbstractExtensionIssueManagement implements ExtensionIssue
      * @param system the name of the issue management system (jira, bugzilla, etc.)
      * @param url the URL of that extension in the issues management system
      */
-    public AbstractExtensionIssueManagement(String system, String url)
+    protected AbstractExtensionIssueManagement(String system, String url)
     {
         this.system = system;
         this.url = url;

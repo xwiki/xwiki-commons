@@ -42,7 +42,7 @@ public abstract class AbstractExtensionPattern implements ExtensionPattern
      *
      * @param pattern a pattern to copy
      */
-    public AbstractExtensionPattern(ExtensionPattern pattern)
+    protected AbstractExtensionPattern(ExtensionPattern pattern)
     {
         this(pattern.getIdPattern());
     }
@@ -52,7 +52,7 @@ public abstract class AbstractExtensionPattern implements ExtensionPattern
      *
      * @param idPattern a regular expression matching all the ids to exclude, null to match everything
      */
-    public AbstractExtensionPattern(Pattern idPattern)
+    protected AbstractExtensionPattern(Pattern idPattern)
     {
         this.idPattern = idPattern;
     }
@@ -60,7 +60,7 @@ public abstract class AbstractExtensionPattern implements ExtensionPattern
     /**
      * @param id the exact id to exclude
      */
-    public AbstractExtensionPattern(String id)
+    protected AbstractExtensionPattern(String id)
     {
         this(Pattern.compile(id, Pattern.LITERAL));
     }

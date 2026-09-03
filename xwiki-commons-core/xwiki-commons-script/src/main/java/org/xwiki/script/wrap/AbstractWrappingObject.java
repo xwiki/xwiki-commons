@@ -36,7 +36,7 @@ public abstract class AbstractWrappingObject<T>
     /**
      * @param wrapped the wrapped object
      */
-    public AbstractWrappingObject(T wrapped)
+    protected AbstractWrappingObject(T wrapped)
     {
         this.wrapped = wrapped;
     }

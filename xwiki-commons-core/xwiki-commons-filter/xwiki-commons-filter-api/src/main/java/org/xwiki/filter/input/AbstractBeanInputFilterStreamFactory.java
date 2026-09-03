@@ -54,7 +54,7 @@ public abstract class AbstractBeanInputFilterStreamFactory<P, F> extends Abstrac
     /**
      * @param type the type of the filter stream
      */
-    public AbstractBeanInputFilterStreamFactory(FilterStreamType type)
+    protected AbstractBeanInputFilterStreamFactory(FilterStreamType type)
     {
         super(type);
     }

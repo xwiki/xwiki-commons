@@ -42,7 +42,7 @@ public abstract class AbstractSearchResult<T> implements IterableResult<T>
      * @param totalHits the total number of possible results without offset or maximum results limits
      * @param offset the index in the total number of possible search result where this extract starts
      */
-    public AbstractSearchResult(int totalHits, int offset)
+    protected AbstractSearchResult(int totalHits, int offset)
     {
         this.totalHits = totalHits;
         this.offset = offset;

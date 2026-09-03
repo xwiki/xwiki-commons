@@ -51,7 +51,7 @@ public abstract class AbstractContainerMarker implements ContainerMarker
      * @param name the name of the {@link Marker}
      * @param references the other associated markers
      */
-    public AbstractContainerMarker(String name, Marker... references)
+    protected AbstractContainerMarker(String name, Marker... references)
     {
         if (name == null) {
             throw new IllegalArgumentException("A marker name cannot be null");

@@ -36,7 +36,7 @@ public abstract class AbstractFilterStreamFactory implements FilterStreamFactory
      * Default constructor.
      * @param type the type of filter stream to use.
      */
-    public AbstractFilterStreamFactory(FilterStreamType type)
+    protected AbstractFilterStreamFactory(FilterStreamType type)
     {
         this.type = type;
     }

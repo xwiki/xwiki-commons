@@ -53,7 +53,7 @@ public abstract class AbstractWrappingExtension<E extends Extension> extends Abs
     /**
      * @param extension the wrapped extension
      */
-    public AbstractWrappingExtension(E extension)
+    protected AbstractWrappingExtension(E extension)
     {
         super(extension);
     }

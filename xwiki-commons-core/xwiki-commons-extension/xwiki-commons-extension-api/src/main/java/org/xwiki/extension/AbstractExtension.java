@@ -160,7 +160,7 @@ public abstract class AbstractExtension implements MutableExtension
      * @param id the extension identifier
      * @param type the extension type
      */
-    public AbstractExtension(ExtensionRepository repository, ExtensionId id, String type)
+    protected AbstractExtension(ExtensionRepository repository, ExtensionId id, String type)
     {
         this.repository = repository;
 
@@ -174,7 +174,7 @@ public abstract class AbstractExtension implements MutableExtension
      * @param repository the repository where this extension comes from
      * @param extension the extension to copy
      */
-    public AbstractExtension(ExtensionRepository repository, Extension extension)
+    protected AbstractExtension(ExtensionRepository repository, Extension extension)
     {
         this(repository, extension.getId(), extension.getType());
 

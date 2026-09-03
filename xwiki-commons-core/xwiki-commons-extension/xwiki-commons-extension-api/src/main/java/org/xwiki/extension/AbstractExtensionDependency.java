@@ -76,7 +76,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
      * @param dependency the extension dependency to copy
      * @since 7.3M1
      */
-    public AbstractExtensionDependency(ExtensionDependency dependency)
+    protected AbstractExtensionDependency(ExtensionDependency dependency)
     {
         this(dependency, null);
     }
@@ -87,7 +87,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
      * @param dependency the extension dependency to copy
      * @param versionConstraint the version constraint to set
      */
-    public AbstractExtensionDependency(ExtensionDependency dependency, VersionConstraint versionConstraint)
+    protected AbstractExtensionDependency(ExtensionDependency dependency, VersionConstraint versionConstraint)
     {
         this(dependency.getId(), versionConstraint != null ? versionConstraint : dependency.getVersionConstraint(),
             dependency.isOptional(), dependency.getProperties());
@@ -100,7 +100,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
      * @param id the id (or feature) of the extension dependency
      * @param versionConstraint the version constraint of the extension dependency
      */
-    public AbstractExtensionDependency(String id, VersionConstraint versionConstraint)
+    protected AbstractExtensionDependency(String id, VersionConstraint versionConstraint)
     {
         this(id, versionConstraint, false);
     }
@@ -111,7 +111,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
      * @param optional true if the dependency is optional
      * @since 9.6RC1
      */
-    public AbstractExtensionDependency(String id, VersionConstraint versionConstraint, boolean optional)
+    protected AbstractExtensionDependency(String id, VersionConstraint versionConstraint, boolean optional)
     {
         this(id, versionConstraint, optional, null);
     }
@@ -121,7 +121,8 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
      * @param versionConstraint the version constraint of the extension dependency
      * @param properties the custom properties of the extension dependency
      */
-    public AbstractExtensionDependency(String id, VersionConstraint versionConstraint, Map<String, Object> properties)
+    protected AbstractExtensionDependency(String id, VersionConstraint versionConstraint,
+        Map<String, Object> properties)
     {
         this.id = id;
         this.versionConstraint = versionConstraint;
@@ -136,7 +137,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
      * @param optional true if the dependency is optional
      * @param properties the custom properties of the extension dependency
      */
-    public AbstractExtensionDependency(String id, VersionConstraint versionConstraint, boolean optional,
+    protected AbstractExtensionDependency(String id, VersionConstraint versionConstraint, boolean optional,
         Map<String, Object> properties)
     {
         this.id = id;
