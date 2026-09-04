@@ -57,15 +57,17 @@ public interface Extension extends Comparable<Extension>
     /**
      * @see #getFeatures()
      * @since 7.0RC1
-     * @deprecated since 9.0RC1/8.4.2, use {@link #FIELD_EXTENSIONFEATURE} instead
+     * @deprecated use {@link #FIELD_EXTENSIONFEATURE} instead
      */
+    @Deprecated(since = "9.0RC1,8.4.2")
     String FIELD_FEATURE = "feature";
 
     /**
      * @see #getFeatures()
      * @since 7.0RC1
-     * @deprecated since 9.0RC1/8.4.2, use {@link #FIELD_EXTENSIONFEATURES} instead
+     * @deprecated use {@link #FIELD_EXTENSIONFEATURES} instead
      */
+    @Deprecated(since = "9.0RC1,8.4.2")
     String FIELD_FEATURES = "features";
 
     /**
