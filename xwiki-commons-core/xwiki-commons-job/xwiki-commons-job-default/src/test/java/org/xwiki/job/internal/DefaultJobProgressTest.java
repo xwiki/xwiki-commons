@@ -436,4 +436,27 @@ class DefaultJobProgressTest
             () -> step.addStep(mock(Message.class), mock(Object.class)));
         assertEquals("Step is closed", exception.getMessage());
     }
+
+    @Test
+    void getCurrentLevelOffsetWhenCurrentStepChangesConcurrently()
+    {
+        this.observation.notify(new PushLevelProgressEvent(2), null, null);
+        this.observation.notify(new StartStepProgressEvent(), null, null);
+        this.observation.notify(new StartStepProgressEvent(), null, null);
+
+        // Simulate the job thread moving the current step back to the root (whose parent is null) in between two
+        // reads of the current step, which is what happens when the job status is polled while the job progresses.
+        DefaultJobProgress concurrentProgress = new DefaultJobProgress()
+        {
+            private int callCount;
+
+            @Override
+            public DefaultJobProgressStep getCurrentStep()
+            {
+                return this.callCount++ == 0 ? DefaultJobProgressTest.this.progress.getCurrentStep() : getRootStep();
+            }
+        };
+
+        assertEquals(0.5D, concurrentProgress.getCurrentLevelOffset(), 0D);
+    }
 }
