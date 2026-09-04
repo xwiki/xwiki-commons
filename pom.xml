@@ -145,7 +145,7 @@
     <opentelemetry.version>1.65.0</opentelemetry.version>
 
     <!-- Byte Buddy -->
-    <bytebuddy.version>1.18.12</bytebuddy.version>
+    <bytebuddy.version>1.18.13</bytebuddy.version>
 
     <!-- AspectJ -->
     <aspectj.version>1.9.25.1</aspectj.version>
