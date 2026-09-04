@@ -255,7 +255,11 @@ public class DefaultJobProgress implements EventListener, JobProgress
     @Override
     public double getCurrentLevelOffset()
     {
-        return getCurrentStep().getParent() != null ? getCurrentStep().getParent().getOffset() : getOffset();
+        // Read the parent only once: the job thread mutates the current step while this is called from another
+        // thread (e.g. the job status REST resource), so reading it twice can yield a null parent after the check.
+        DefaultJobProgressStep parent = getCurrentStep().getParent();
+
+        return parent != null ? parent.getOffset() : getOffset();
     }
 
     @Override
