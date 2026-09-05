@@ -585,7 +585,7 @@ public class ResourceLoader
                 indexes.remove(this.source);
 
                 if (!indexes.isEmpty()) {
-                    this.package2url = package2url(indexes);
+                    this.package2url = toPackageIndex(indexes);
                 }
             }
             // just loaded the JAR - need to resolve the index
@@ -606,26 +606,64 @@ public class ResourceLoader
             }
             return this.jar;
         }
-    }
 
-    private static Map<String, URL[]> package2url(Map<URL, List<String>> indexes)
-    {
-        Map<String, List<URL>> prefix2url = new HashMap<>();
-        for (Map.Entry<URL, List<String>> entry : indexes.entrySet()) {
-            URL url = entry.getKey();
-            for (String prefix : entry.getValue()) {
-                prefix2url.computeIfAbsent(prefix, key -> new ArrayList<>()).add(url);
+        private static URL[] parseClassPath(JarFile jar, URL source) throws IOException
+        {
+            Manifest man = jar.getManifest();
+            if (man == null) {
+                return new URL[0];
             }
+            Attributes attr = man.getMainAttributes();
+            if (attr == null) {
+                return new URL[0];
+            }
+            String cp = attr.getValue(Attributes.Name.CLASS_PATH);
+            if (cp == null) {
+                return new URL[0];
+            }
+            StringTokenizer tokenizer = new StringTokenizer(cp);
+            List<URL> cpList = new ArrayList<>();
+            URI sourceURI = URI.create(source.toString());
+            while (tokenizer.hasMoreTokens()) {
+                String token = tokenizer.nextToken();
+                try {
+                    try {
+                        URI uri = new URI(token);
+                        if (!uri.isAbsolute()) {
+                            uri = sourceURI.resolve(uri);
+                        }
+                        cpList.add(uri.toURL());
+                    } catch (URISyntaxException e) {
+                        // tolerate malformed URIs for backward-compatibility
+                        URL url = new URL(source, token);
+                        cpList.add(url);
+                    }
+                } catch (MalformedURLException e) {
+                    throw new IOException(e.getMessage());
+                }
+            }
+            return cpList.toArray(new URL[cpList.size()]);
         }
 
-        Map<String, URL[]> result = HashMap.newHashMap(prefix2url.size());
+        private static Map<String, URL[]> toPackageIndex(Map<URL, List<String>> indexes)
+        {
+            Map<String, List<URL>> prefix2url = new HashMap<>();
+            for (Map.Entry<URL, List<String>> entry : indexes.entrySet()) {
+                URL url = entry.getKey();
+                for (String prefix : entry.getValue()) {
+                    prefix2url.computeIfAbsent(prefix, key -> new ArrayList<>()).add(url);
+                }
+            }
 
-        // replace lists with arrays
-        for (Map.Entry<String, List<URL>> entry : prefix2url.entrySet()) {
-            List<URL> list = entry.getValue();
-            result.put(entry.getKey(), list.toArray(new URL[list.size()]));
+            Map<String, URL[]> result = HashMap.newHashMap(prefix2url.size());
+
+            // replace lists with arrays
+            for (Map.Entry<String, List<URL>> entry : prefix2url.entrySet()) {
+                List<URL> list = entry.getValue();
+                result.put(entry.getKey(), list.toArray(new URL[list.size()]));
+            }
+            return result;
         }
-        return result;
     }
 
     private JarInfo getJarInfo(URL url) throws MalformedURLException
@@ -759,44 +797,6 @@ public class ResourceLoader
                 currentList.add(line);
             }
         }
-    }
-
-    private static URL[] parseClassPath(JarFile jar, URL source) throws IOException
-    {
-        Manifest man = jar.getManifest();
-        if (man == null) {
-            return new URL[0];
-        }
-        Attributes attr = man.getMainAttributes();
-        if (attr == null) {
-            return new URL[0];
-        }
-        String cp = attr.getValue(Attributes.Name.CLASS_PATH);
-        if (cp == null) {
-            return new URL[0];
-        }
-        StringTokenizer tokenizer = new StringTokenizer(cp);
-        List<URL> cpList = new ArrayList<>();
-        URI sourceURI = URI.create(source.toString());
-        while (tokenizer.hasMoreTokens()) {
-            String token = tokenizer.nextToken();
-            try {
-                try {
-                    URI uri = new URI(token);
-                    if (!uri.isAbsolute()) {
-                        uri = sourceURI.resolve(uri);
-                    }
-                    cpList.add(uri.toURL());
-                } catch (URISyntaxException e) {
-                    // tolerate malformed URIs for backward-compatibility
-                    URL url = new URL(source, token);
-                    cpList.add(url);
-                }
-            } catch (MalformedURLException e) {
-                throw new IOException(e.getMessage());
-            }
-        }
-        return cpList.toArray(new URL[cpList.size()]);
     }
 
     @SuppressWarnings("checkstyle:VisibilityModifier")
