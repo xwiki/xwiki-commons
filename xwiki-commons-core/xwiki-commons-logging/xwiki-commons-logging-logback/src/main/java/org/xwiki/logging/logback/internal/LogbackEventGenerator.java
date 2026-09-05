@@ -27,6 +27,8 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -142,7 +144,7 @@ public class LogbackEventGenerator extends UnsynchronizedAppenderBase<ILoggingEv
         try {
             LogLevel logLevel = this.utils.toLogLevel(event.getLevel());
 
-            LogEvent logevent = LogUtils.newLogEvent(event.getMarker(), logLevel, event.getMessage(),
+            LogEvent logevent = LogUtils.newLogEvent(getMarker(event), logLevel, event.getMessage(),
                 event.getArgumentArray(), throwable, event.getTimeStamp());
 
             getObservationManager().notify(logevent, event.getLoggerName(), null);
@@ -151,6 +153,32 @@ public class LogbackEventGenerator extends UnsynchronizedAppenderBase<ILoggingEv
         } catch (ComponentLookupException e) {
             this.logger.error("Can't find any implementation of [{}]", ObservationManager.class.getName(), e);
         }
+    }
+
+    /**
+     * A {@link LogEvent} holds a single marker while SLF4J lets a log call carry several of them, so the markers of the
+     * event are gathered under a detached one when there is more than one. The container is detached because the
+     * markers obtained from the {@link MarkerFactory} are shared instances that must not be given new references.
+     *
+     * @param event the Logback event being converted
+     * @return the marker to give to the {@link LogEvent}, or null when the log call carried none
+     */
+    private Marker getMarker(ILoggingEvent event)
+    {
+        List<Marker> markers = event.getMarkerList();
+
+        if (markers == null || markers.isEmpty()) {
+            return null;
+        }
+
+        if (markers.size() == 1) {
+            return markers.get(0);
+        }
+
+        Marker container = MarkerFactory.getDetachedMarker("xwiki.markers");
+        markers.forEach(container::add);
+
+        return container;
     }
 
     /**
