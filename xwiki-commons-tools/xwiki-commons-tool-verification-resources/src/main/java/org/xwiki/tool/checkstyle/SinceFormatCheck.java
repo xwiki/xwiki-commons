@@ -77,6 +77,9 @@ public class SinceFormatCheck extends AbstractCheck
             case TokenTypes.CLASS_DEF, TokenTypes.INTERFACE_DEF:
                 this.classOrInterfaceName = ast.findFirstToken(TokenTypes.IDENT).getText();
                 break;
+            default:
+                // Any other visited token (method, constructor, field, ...) is checked below.
+                break;
         }
 
         String elementName = ast.findFirstToken(TokenTypes.IDENT).getText();

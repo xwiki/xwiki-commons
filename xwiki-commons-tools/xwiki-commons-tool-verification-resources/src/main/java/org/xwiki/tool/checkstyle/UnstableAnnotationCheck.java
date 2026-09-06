@@ -104,6 +104,9 @@ public class UnstableAnnotationCheck extends AbstractCheck
                 TokenTypes.ANNOTATION_DEF:
                 this.classOrInterfaceorEnumName = ast.findFirstToken(TokenTypes.IDENT).getText();
                 break;
+            default:
+                // Any other visited token (method, constructor, field, ...) is checked below.
+                break;
         }
 
         if (AnnotationUtil.containsAnnotation(ast)) {
