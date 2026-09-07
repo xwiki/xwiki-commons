@@ -88,6 +88,9 @@ public class DefaultExtensionHandlerManager implements ExtensionHandlerManager
         }
     }
 
+    /**
+     * @deprecated use {@link #uninstall(InstalledExtension, String, Request)} instead
+     */
     @Override
     @Deprecated
     public void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException
@@ -115,6 +118,9 @@ public class DefaultExtensionHandlerManager implements ExtensionHandlerManager
         }
     }
 
+    /**
+     * @deprecated use {@link #upgrade(Collection, LocalExtension, String, Request)} instead
+     */
     @Override
     @Deprecated
     public void upgrade(LocalExtension previousLocalExtension, LocalExtension newLocalExtension, String namespace,

@@ -153,6 +153,9 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
         }
     }
 
+    /**
+     * @deprecated use {@link #resolveExtension(ExtensionDependency, String)} instead
+     */
     @Override
     @Deprecated
     public Extension resolveExtension(ExtensionDependency extensionDependency) throws ResolveException

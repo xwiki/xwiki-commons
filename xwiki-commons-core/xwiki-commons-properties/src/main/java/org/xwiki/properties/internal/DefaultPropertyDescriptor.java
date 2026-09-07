@@ -159,6 +159,9 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
         this.description = description;
     }
 
+    /**
+     * @deprecated use {@link #getPropertyType()} instead
+     */
     @Override
     @Deprecated
     public Class<?> getPropertyClass()

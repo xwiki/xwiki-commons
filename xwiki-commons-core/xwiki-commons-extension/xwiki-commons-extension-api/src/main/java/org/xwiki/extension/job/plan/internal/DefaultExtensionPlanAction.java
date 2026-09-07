@@ -102,6 +102,9 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
         return this.rewrittenExtension;
     }
 
+    /**
+     * @deprecated use {@link #getPreviousExtensions()} instead
+     */
     @Override
     @Deprecated
     public InstalledExtension getPreviousExtension()

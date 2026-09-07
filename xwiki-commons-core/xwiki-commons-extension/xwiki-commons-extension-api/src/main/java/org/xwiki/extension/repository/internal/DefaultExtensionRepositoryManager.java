@@ -169,6 +169,9 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
         this.repositories = entryStream.map(ExtensionRepositoryEntry::getRepository).toList();
     }
 
+    /**
+     * @deprecated use {@link #addRepository(ExtensionRepositoryDescriptor)} instead
+     */
     @Override
     @Deprecated
     public ExtensionRepository addRepository(ExtensionRepositoryId repositoryId) throws ExtensionRepositoryException

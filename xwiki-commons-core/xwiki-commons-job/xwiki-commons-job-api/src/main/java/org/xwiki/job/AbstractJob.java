@@ -426,6 +426,9 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
 
     // Deprecated
 
+    /**
+     * @deprecated use {@link #initialize(Request)} then {@link #run()} instead
+     */
     @Override
     @Deprecated
     public void start(Request request)

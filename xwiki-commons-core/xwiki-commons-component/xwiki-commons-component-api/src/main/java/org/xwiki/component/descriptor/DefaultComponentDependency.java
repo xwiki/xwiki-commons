@@ -165,6 +165,9 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
 
     // deprecated
 
+    /**
+     * @deprecated use {@link #getRoleType()} instead
+     */
     @Override
     @Deprecated(since = "4.0M1")
     public Class<?> getMappingType()
