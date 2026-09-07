@@ -37,6 +37,21 @@
     <xwiki.enforcer.valid-poms.skip>${xwiki.enforcer.skip}</xwiki.enforcer.valid-poms.skip>
     <!-- By default don't skip Spoon checks -->
     <xwiki.spoon.skip>false</xwiki.spoon.skip>
+    <!-- The javac lint categories to report, passed as -Xlint:<value>. By default all of them are reported. A
+         module can switch off the categories it cannot be clean for by prefixing them with a "-", e.g.
+         <xwiki.compiler.xlint>all,-deprecation</xwiki.compiler.xlint>.
+
+         Since -Xlint is a per-javac-invocation option and not a per-source-path one, this applies to every source
+         of the module. So use it only for modules where that is what we mean:
+         - modules whose very purpose is to call deprecated APIs (the legacy modules and the Jakarta bridges),
+         - modules that contain nothing but machine-generated sources.
+         A module that mixes generated and hand-written sources must not use this property, or its hand-written
+         sources would stop being checked too. Give the generated source root its own maven-compiler-plugin
+         execution with -Xlint:none instead, which keeps the hand-written ones fully checked; see
+         xwiki-rendering-wikimodel and xwiki-platform-query-jpql-parser for the two shapes this takes.
+
+         Anywhere else, a warning is real debt and is to be fixed in the code rather than silenced here. -->
+    <xwiki.compiler.xlint>all</xwiki.compiler.xlint>
     <!-- Tell SonarQube to not report usage of deprecated APIs in XWiki legacy code as it's fine there and in any
          case we don't want to take the risk to perform refactorings on legacy code. -->
     <sonar.issue.ignore.multicriteria>e1</sonar.issue.ignore.multicriteria>
@@ -55,7 +70,7 @@
             <!-- TODO: At some point, we should turn on failing on warnings since they can be real errors and they keep
                  growing on our build logs and we need to start addressing them -->
             <!--arg>-Werror</arg-->
-            <arg>-Xlint:all</arg>
+            <arg>-Xlint:${xwiki.compiler.xlint}</arg>
             <!-- Disable the javac warning when compiling for an older JVM. Note that this can result in class files
                  that do not work on the older platform since references to non-existent methods can get included.
                  However, it's hard to specify a generic location of the JRE that will work on all devs machines which
@@ -69,7 +84,9 @@
             <arg>-parameters</arg>
           </compilerArgs>
           <showWarnings>true</showWarnings>
-          <showDeprecation>true</showDeprecation>
+          <!-- Note that we don't set showDeprecation: deprecation warnings are already part of -Xlint above, and
+               showDeprecation would pass an unconditional -deprecation to javac, which wins over the
+               -Xlint:-deprecation that a module needs to be able to set. -->
           <!-- Tell the compiler to preserve parameter names in the bytecode -->
           <compilerArgument>-parameters</compilerArgument>
           <testCompilerArgument>-parameters</testCompilerArgument>
