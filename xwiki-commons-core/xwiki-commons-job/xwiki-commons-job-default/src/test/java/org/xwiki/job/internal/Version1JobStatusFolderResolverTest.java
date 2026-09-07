@@ -26,12 +26,14 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.xwiki.job.JobException;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 /**
@@ -58,19 +60,19 @@ class Version1JobStatusFolderResolverTest
     }
 
     @Test
-    void getFolderWithNullId()
+    void getFolderWithNullId() throws JobException
     {
         assertEquals(this.storageDir, this.resolver.getFolder(null));
     }
 
     @Test
-    void getFolderWithEmptyId()
+    void getFolderWithEmptyId() throws JobException
     {
         assertEquals(this.storageDir, this.resolver.getFolder(Collections.emptyList()));
     }
 
     @Test
-    void getFolderWithSingleElementId()
+    void getFolderWithSingleElementId() throws JobException
     {
         List<String> id = Collections.singletonList("element");
         File expected = new File(this.storageDir, "element");
@@ -78,7 +80,7 @@ class Version1JobStatusFolderResolverTest
     }
 
     @Test
-    void getFolderWithMultipleElementId()
+    void getFolderWithMultipleElementId() throws JobException
     {
         List<String> id = Arrays.asList("first", "second", "third");
         File expected = new File(new File(new File(this.storageDir, "first"), "second"), "third");
@@ -86,7 +88,7 @@ class Version1JobStatusFolderResolverTest
     }
 
     @Test
-    void getFolderWithNullElementInId()
+    void getFolderWithNullElementInId() throws JobException
     {
         List<String> id = Arrays.asList("first", null, "third");
         File expected = new File(new File(new File(this.storageDir, "first"), "&null"), "third");
@@ -94,7 +96,7 @@ class Version1JobStatusFolderResolverTest
     }
 
     @Test
-    void getFolderWithSpecialCharactersInId()
+    void getFolderWithSpecialCharactersInId() throws JobException
     {
         List<String> id = Arrays.asList("a/b", "c?d", "e&f");
         File expected = new File(new File(new File(this.storageDir, "a%2Fb"), "c%3Fd"), "e%26f");
@@ -102,7 +104,37 @@ class Version1JobStatusFolderResolverTest
     }
 
     @Test
-    void getFolderWithSpacesInId()
+    void getFolderWithParentReferenceInId()
+    {
+        // URL encoding leaves ".." untouched, so this encoding is the one that actually needs the protection of the
+        // base class.
+        JobException exception =
+            assertThrows(JobException.class, () -> this.resolver.getFolder(Collections.singletonList("..")));
+
+        assertEquals("The job id element [..] is going outside its parent folder", exception.getMessage());
+    }
+
+    @Test
+    void getFolderWithParentReferenceAmongOtherElementsInId()
+    {
+        List<String> id = Arrays.asList("first", "..", "third");
+
+        JobException exception = assertThrows(JobException.class, () -> this.resolver.getFolder(id));
+
+        assertEquals("The job id element [..] is going outside its parent folder", exception.getMessage());
+    }
+
+    @Test
+    void getFolderWithSeparatorsAroundParentReferenceInId() throws JobException
+    {
+        // The separators are encoded, so the whole element stays a single folder name and doesn't escape.
+        List<String> id = Collections.singletonList("../../etc");
+        File expected = new File(this.storageDir, "..%2F..%2Fetc");
+        assertEquals(expected, this.resolver.getFolder(id));
+    }
+
+    @Test
+    void getFolderWithSpacesInId() throws JobException
     {
         List<String> id = Collections.singletonList("element with spaces");
         File expected = new File(this.storageDir, "element+with+spaces");

@@ -22,10 +22,12 @@ package org.xwiki.job.internal;
 import java.io.File;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.xwiki.job.JobException;
 import org.xwiki.job.JobManagerConfiguration;
 
 /**
@@ -49,18 +51,33 @@ public abstract class AbstractJobStatusFolderResolver implements JobStatusFolder
     protected JobManagerConfiguration configuration;
 
     @Override
-    public File getFolder(List<String> id)
+    public File getFolder(List<String> id) throws JobException
     {
         File folder = getBaseFolder();
 
         if (id != null) {
             // Create a different folder for each element
             for (String fullIdElement : id) {
-                folder = addIDElement(fullIdElement, folder);
+                // Get the location of the current id element
+                File childFolder = addIDElement(fullIdElement, folder);
+
+                // Make sure the child is indeed a child.
+                if (!toComparablePath(childFolder).startsWith(toComparablePath(folder))) {
+                    throw new JobException(
+                        "The job id element [" + fullIdElement + "] is resolved outside its parent folder");
+                }
+
+                // Switch to the child folder
+                folder = childFolder;
             }
         }
 
         return folder;
+    }
+
+    private static Path toComparablePath(File folder)
+    {
+        return folder.toPath().toAbsolutePath().normalize();
     }
 
     protected String nullAwareURLEncode(String value)
