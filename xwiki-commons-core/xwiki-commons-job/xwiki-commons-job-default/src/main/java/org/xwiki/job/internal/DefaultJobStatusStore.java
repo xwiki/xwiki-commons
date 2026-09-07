@@ -43,6 +43,7 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.cache.Cache;
 import org.xwiki.cache.CacheException;
@@ -53,6 +54,7 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.job.AbstractJobStatus;
 import org.xwiki.job.DefaultJobStatus;
+import org.xwiki.job.JobException;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.JobStatusStore;
 import org.xwiki.job.event.status.JobStatus;
@@ -200,7 +202,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
     /**
      * Load jobs from directory.
-     * 
+     *
      * @throws IOException when failing to load statuses
      */
     private void repair() throws IOException
@@ -363,8 +365,9 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
      * @param id the id of the job
      * @param moveToCurrent if the job status should be moved from a previous to the current location
      * @return the folder where to store the job related informations
+     * @throws JobException when failing to get the job folder
      */
-    private File getAndMoveJobFolder(List<String> id, boolean moveToCurrent)
+    private File getAndMoveJobFolder(List<String> id, boolean moveToCurrent) throws JobException
     {
         JobStatusFolderResolver currentResolver = this.folderResolvers.get(0);
 
@@ -373,14 +376,19 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         if (moveToCurrent && !getStatusFile(folder).exists()) {
             File previousFolder = null;
             File previousStatusFile = null;
-            for (JobStatusFolderResolver folderResolver
-                : this.folderResolvers.subList(1, this.folderResolvers.size())) {
-                File f = folderResolver.getFolder(id);
-                File s = getStatusFile(f);
-                if (s.exists()) {
-                    previousFolder = f;
-                    previousStatusFile = s;
-                    break;
+            for (JobStatusFolderResolver folderResolver : this.folderResolvers.subList(1,
+                this.folderResolvers.size())) {
+                try {
+                    File f = folderResolver.getFolder(id);
+                    File s = getStatusFile(f);
+                    if (s.exists()) {
+                        previousFolder = f;
+                        previousStatusFile = s;
+                        break;
+                    }
+                } catch (Exception e) {
+                    this.logger.debug("Failed to get job folder for id [{}] when using resolver [{}]", id,
+                        folderResolver.getClass().getName(), e);
                 }
             }
 
@@ -392,7 +400,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         return folder;
     }
 
-    private File getJobLogBaseFile(List<String> id)
+    private File getJobLogBaseFile(List<String> id) throws JobException
     {
         return new File(getAndMoveJobFolder(id, true), STATUS_LOG_PREFIX);
     }
@@ -496,21 +504,32 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             // Delete the job status from all possible locations to ensure that when loading it again, it indeed
             // cannot be found anymore.
             for (JobStatusFolderResolver folderResolver : this.folderResolvers) {
-                File jobFolder = folderResolver.getFolder(id);
+                try {
+                    File jobFolder = folderResolver.getFolder(id);
 
-                if (jobFolder.isDirectory()) {
-                    try {
-                        deleteJobStatusFiles(jobFolder);
-                        cleanEmptyDirectories(jobFolder);
-                    } catch (IOException e) {
-                        this.logger.warn("Failed to delete job folder [{}]", jobFolder, e);
+                    if (jobFolder.isDirectory()) {
+                        deleteJobFolder(jobFolder);
                     }
+                } catch (Exception e) {
+                    this.logger.warn("Failed to get job folder for id [{}] when using resolver [{}]: [{}]", id,
+                        folderResolver.getClass().getName(), ExceptionUtils.getRootCauseMessage(e));
                 }
             }
 
             this.cache.remove(toUniqueString(id));
         } finally {
             this.writeLock.unlock();
+        }
+    }
+
+    private void deleteJobFolder(File jobFolder)
+    {
+        try {
+            deleteJobStatusFiles(jobFolder);
+            cleanEmptyDirectories(jobFolder);
+        } catch (IOException e) {
+            this.logger.warn("Failed to delete job folder [{}]: [{}]", jobFolder,
+                ExceptionUtils.getRootCauseMessage(e));
         }
     }
 

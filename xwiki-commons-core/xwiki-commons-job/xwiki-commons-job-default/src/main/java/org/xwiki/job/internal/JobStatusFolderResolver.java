@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.List;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.job.JobException;
 
 /**
  * Get the job folder for the job status and logs. The implementation with the highest priority, i.e., lowest
@@ -40,6 +41,7 @@ public interface JobStatusFolderResolver
     /**
      * @param jobID the ID of the job for which the folder shall be retrieved
      * @return the folder where the job status and log should be stored according to the resolver
+     * @throws JobException when failing to get the folder for the job status
      */
-    File getFolder(List<String> jobID);
+    File getFolder(List<String> jobID) throws JobException;
 }

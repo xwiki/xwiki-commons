@@ -21,6 +21,7 @@ package org.xwiki.job.internal;
 
 import java.io.File;
 import java.io.Serial;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +31,7 @@ import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.xwiki.cache.CacheManager;
@@ -52,10 +54,12 @@ import org.xwiki.logging.event.LogEvent;
 import org.xwiki.logging.internal.tail.XStreamFileLoggerTail;
 import org.xwiki.logging.marker.TranslationMarker;
 import org.xwiki.logging.tail.LoggerTail;
+import org.xwiki.test.LogLevel;
 import org.xwiki.test.TestEnvironment;
 import org.xwiki.test.XWikiTempDirUtil;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectComponentManager;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
@@ -102,6 +106,8 @@ class DefaultJobStatusStoreTest
     private static final List<String> ID = List.of("test");
 
     private static final String STATUS_XML_ZIP = "status.xml.zip";
+
+    private static final String STATUS_XML = "status.xml";
 
     @Serializable
     private static class SerializableCrossReferenceObject
@@ -236,6 +242,9 @@ class DefaultJobStatusStoreTest
 
     @MockComponent
     private CacheManager cacheManager;
+
+    @RegisterExtension
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
     private File storeDirectory;
 
@@ -423,6 +432,37 @@ class DefaultJobStatusStoreTest
     void removeNotExistingJobStatus()
     {
         assertDoesNotThrow(() -> this.store.remove(List.of("notexist")));
+    }
+
+    @Test
+    void getJobStatusWithIdEscapingTheStorageFolder()
+    {
+        // The id escapes the storage folder for some of the resolvers only, the store must skip those instead of
+        // failing.
+        assertNull(this.store.getJobStatus(List.of("..")));
+    }
+
+    @Test
+    void removeJobStatusWithIdEscapingTheStorageFolder() throws Exception
+    {
+        // A job id element that survives the encoding of a resolver must not make the store delete status files
+        // located outside of the storage folder.
+        File outsideStatusFile = new File(this.storeDirectory.getParentFile(), STATUS_XML);
+        FileUtils.write(outsideStatusFile, "outside", StandardCharsets.UTF_8);
+
+        try {
+            assertDoesNotThrow(() -> this.store.remove(List.of("..")));
+
+            assertTrue(outsideStatusFile.exists(),
+                "The status file located outside of the storage folder has been deleted.");
+
+            assertEquals("Failed to get job folder for id [[..]] when using resolver "
+                + "[org.xwiki.job.internal.Version1JobStatusFolderResolver]: "
+                + "[JobException: The job id element [..] is going outside its parent folder]",
+                this.logCapture.getMessage(0));
+        } finally {
+            FileUtils.deleteQuietly(outsideStatusFile);
+        }
     }
 
     @Test

@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.xwiki.job.JobException;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
@@ -81,31 +82,31 @@ class Version2JobStatusFolderResolverTest
     }
 
     @Test
-    void getFolderWithNullId()
+    void getFolderWithNullId() throws JobException
     {
         assertEquals(this.storageDir, this.resolver.getFolder(null));
     }
 
     @Test
-    void getFolderWithEmptyId()
+    void getFolderWithEmptyId() throws JobException
     {
         assertEquals(this.storageDir, this.resolver.getFolder(Collections.emptyList()));
     }
 
     @Test
-    void getFolderWithSingleElementId()
+    void getFolderWithSingleElementId() throws JobException
     {
         assertFolderPath(Collections.singletonList(ELEMENT));
     }
 
     @Test
-    void getFolderWithMultipleElementId()
+    void getFolderWithMultipleElementId() throws JobException
     {
         assertFolderPath(Arrays.asList(FIRST, SECOND, THIRD));
     }
 
     @Test
-    void getFolderWithNullElementInId()
+    void getFolderWithNullElementInId() throws JobException
     {
         List<String> id = Arrays.asList(FIRST, null, THIRD);
         String encodedFirst = encodeComponent(FIRST);
@@ -115,7 +116,7 @@ class Version2JobStatusFolderResolverTest
     }
 
     @Test
-    void getFolderWithLongIdElement()
+    void getFolderWithLongIdElement() throws JobException
     {
         // Create a string that will exceed 510 characters when Base64 encoded
         String element = "a".repeat(400);
@@ -132,23 +133,31 @@ class Version2JobStatusFolderResolverTest
     }
 
     @Test
-    void getFolderWithSpecialCharactersInId()
+    void getFolderWithSpecialCharactersInId() throws JobException
     {
         assertFolderPath(Arrays.asList(PATH_WITH_SLASH, PATH_WITH_QUESTION, PATH_WITH_AMPERSAND));
     }
 
     @Test
-    void getFolderWithNonAsciiCharactersInId()
+    void getFolderWithNonAsciiCharactersInId() throws JobException
     {
         assertFolderPath(Arrays.asList(ACCENTED, CHINESE, EMOJI));
+    }
+
+    @Test
+    void getFolderWithParentReferenceInId() throws JobException
+    {
+        // Base64 encoding never produces "..", so such an id element cannot escape the storage folder.
+        assertFolderPath(Arrays.asList(FIRST, "..", THIRD));
     }
 
     /**
      * Asserts that the resolver correctly builds the folder path for the given ID elements.
      *
      * @param idElements the list of ID elements to test
+     * @throws JobException if an error occurs while resolving the folder
      */
-    private void assertFolderPath(List<String> idElements)
+    private void assertFolderPath(List<String> idElements) throws JobException
     {
         File expected = this.storageDir;
         for (String element : idElements) {
