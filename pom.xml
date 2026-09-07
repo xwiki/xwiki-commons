@@ -2483,7 +2483,7 @@
             <!-- We want to show nested stack traces to see what is the real problem when a test fails! -->
             <trimStackTrace>false</trimStackTrace>
             <includes>
-              <include>**/*Test.class</include>
+              <include>**/*Test.java</include>
             </includes>
             <systemPropertyVariables>
               <!-- Used to automatically register our custom JUnit5 Extensions using the service loader mechanism.
