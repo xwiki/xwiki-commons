@@ -30,6 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.xwiki.job.JobException;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
@@ -73,19 +74,19 @@ class Version3JobStatusFolderResolverTest
     }
 
     @Test
-    void getFolderWithNullId()
+    void getFolderWithNullId() throws JobException
     {
         assertEquals(this.baseDir, this.resolver.getFolder(null));
     }
 
     @Test
-    void getFolderWithEmptyId()
+    void getFolderWithEmptyId() throws JobException
     {
         assertEquals(this.baseDir, this.resolver.getFolder(Collections.emptyList()));
     }
 
     @Test
-    void getFolderWithSingleElementId()
+    void getFolderWithSingleElementId() throws JobException
     {
         List<String> idElements = Collections.singletonList(ELEMENT_1);
         File expected = getExpectedFolder(idElements);
@@ -93,7 +94,7 @@ class Version3JobStatusFolderResolverTest
     }
 
     @Test
-    void getFolderWithMultipleElementId()
+    void getFolderWithMultipleElementId() throws JobException
     {
         List<String> idElements = Arrays.asList(FIRST, SECOND, THIRD);
         File expected = getExpectedFolder(idElements);
@@ -101,7 +102,7 @@ class Version3JobStatusFolderResolverTest
     }
 
     @Test
-    void getFolderWithNullElementInId()
+    void getFolderWithNullElementInId() throws JobException
     {
         List<String> id = Arrays.asList(FIRST, null, THIRD);
         File expected = getExpectedFolder(List.of(FIRST, "&null", THIRD));
@@ -109,7 +110,7 @@ class Version3JobStatusFolderResolverTest
     }
 
     @Test
-    void getFolderWithLongIdElement()
+    void getFolderWithLongIdElement() throws JobException
     {
         // Create a string that exceeds 255 characters
         String element = "a".repeat(400);
@@ -131,7 +132,7 @@ class Version3JobStatusFolderResolverTest
         "space inside, space%20inside",
         "CamelCase, %43amel%43ase"
     })
-    void getFolderWithSpecialCharactersInId(String idElement, String expectedEncodedElement)
+    void getFolderWithSpecialCharactersInId(String idElement, String expectedEncodedElement) throws JobException
     {
         List<String> id = Collections.singletonList(idElement);
         File expected = new File(this.baseDir, expectedEncodedElement);
@@ -139,7 +140,7 @@ class Version3JobStatusFolderResolverTest
     }
 
     @Test
-    void getFolderWithLongIdElementContainingSpecialChars()
+    void getFolderWithLongIdElementContainingSpecialChars() throws JobException
     {
         // Create a string that will exceed 255 characters when encoded and contains special characters
         String element = "a".repeat(230) + "*/" + ".".repeat(195);
@@ -159,6 +160,16 @@ class Version3JobStatusFolderResolverTest
             assertFalse(Strings.CS.contains(encodedElement, "*"));
             assertTrue(encodedElement.length() <= 255);
         }
+    }
+
+    @Test
+    void getFolderWithParentReferenceInId() throws JobException
+    {
+        // Periods at the beginning and at the end of an element are encoded, so such an id element cannot escape the
+        // storage folder.
+        List<String> id = Arrays.asList(FIRST, "..", THIRD);
+        File expected = getExpectedFolder(List.of(FIRST, "%2E%2E", THIRD));
+        assertEquals(expected, this.resolver.getFolder(id));
     }
 
     private File getExpectedFolder(List<String> idElements)
