@@ -275,6 +275,9 @@ public abstract class AbstractExtension implements MutableExtension
         this.id = id;
     }
 
+    /**
+     * @deprecated use {@link #getExtensionFeatures()} instead
+     */
     @Override
     @Deprecated
     public Collection<String> getFeatures()
@@ -282,6 +285,9 @@ public abstract class AbstractExtension implements MutableExtension
         return this.features != null ? this.features : Collections.emptyList();
     }
 
+    /**
+     * @deprecated use {@link #setExtensionFeatures(Collection)} instead
+     */
     @Override
     @Deprecated
     public void setFeatures(Collection<String> features)
@@ -294,6 +300,9 @@ public abstract class AbstractExtension implements MutableExtension
         setExtensionFeatures(extensionFeatures);
     }
 
+    /**
+     * @deprecated use {@link #addExtensionFeature(ExtensionId)} instead
+     */
     @Override
     @Deprecated
     public void addFeature(String feature)

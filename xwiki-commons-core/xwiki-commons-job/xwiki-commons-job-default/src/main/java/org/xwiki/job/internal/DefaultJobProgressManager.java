@@ -59,6 +59,9 @@ public class DefaultJobProgressManager implements JobProgressManager
         this.observationManager.notify(new PushLevelProgressEvent(steps), source);
     }
 
+    /**
+     * @deprecated use {@link #startStep(Object)} instead
+     */
     @Override
     @Deprecated
     public void stepPropress(Object source)

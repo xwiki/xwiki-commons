@@ -153,6 +153,9 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
         this.roleType = role;
     }
 
+    /**
+     * @deprecated use {@link #getRoleType()} instead
+     */
     @Override
     @Deprecated(since = "4.0M1")
     public Class<T> getRole()

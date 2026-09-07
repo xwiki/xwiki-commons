@@ -456,6 +456,9 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
         }
     }
 
+    /**
+     * @deprecated use {@link #isDependency(String)} with <code>null</code> namespace instead
+     */
     @Override
     @Deprecated
     public boolean isDependency()

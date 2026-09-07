@@ -97,6 +97,9 @@ public abstract class AbstractWrappingExtension<E extends Extension> extends Abs
         return getWrapped().getId();
     }
 
+    /**
+     * @deprecated use {@link #getExtensionFeatures()} instead
+     */
     @Override
     @Deprecated
     public Collection<String> getFeatures()
