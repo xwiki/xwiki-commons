@@ -34,6 +34,7 @@ import org.xwiki.component.annotation.Component;
  * 
  * @version $Id$
  * @since 3.3M1
+ * @deprecated use the {@link CacheFactory} registered with the {@code infinispan} hint instead
  */
 @Component
 @Named("infinispan/local")
