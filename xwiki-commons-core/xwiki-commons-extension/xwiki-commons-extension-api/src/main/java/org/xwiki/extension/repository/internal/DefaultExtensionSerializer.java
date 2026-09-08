@@ -189,6 +189,9 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     @Deprecated
     private static final String ELEMENT_FEATURES = "features";
 
+    /**
+     * @deprecated use {@link #ELEMENT_EFFEATURE} instead
+     */
     @Deprecated
     private static final String ELEMENT_FFEATURE = ELEMENT_EFFEATURE;
 
@@ -198,6 +201,9 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     @Deprecated
     private static final String ELEMENT_NAMESPACES = "namespaces";
 
+    /**
+     * @deprecated use {@link #ELEMENT_ANNAMESPACE} instead
+     */
     @Deprecated
     private static final String ELEMENT_NNAMESPACE = ELEMENT_ANNAMESPACE;
 

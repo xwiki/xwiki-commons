@@ -37,6 +37,7 @@ import org.xwiki.properties.ConverterManager;
  * 
  * @version $Id$
  * @since 3.0M1
+ * @deprecated use {@link org.xwiki.properties.converter.collection.AbstractCollectionConverter} instead
  */
 @Deprecated
 public abstract class AbstractCollectionConverter extends AbstractConverter
