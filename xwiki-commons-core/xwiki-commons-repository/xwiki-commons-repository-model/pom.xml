@@ -40,6 +40,10 @@
 
     <!-- Only contain generated sources for which we don't control the code style -->
     <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
+    <!-- The XSD documents some elements as deprecated, and XJC turns that into a javadoc @deprecated tag without
+         the matching @Deprecated annotation, and generates code that calls those deprecated accessors. Since the
+         sources are generated we cannot annotate or rework them. -->
+    <xwiki.compiler.xlint>all,-deprecation,-dep-ann</xwiki.compiler.xlint>
   </properties>
   <dependencies>
     <dependency>
