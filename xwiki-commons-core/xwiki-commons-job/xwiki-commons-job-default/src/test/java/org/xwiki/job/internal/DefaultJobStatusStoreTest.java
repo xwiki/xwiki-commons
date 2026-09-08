@@ -458,7 +458,7 @@ class DefaultJobStatusStoreTest
 
             assertEquals("Failed to get job folder for id [[..]] when using resolver "
                 + "[org.xwiki.job.internal.Version1JobStatusFolderResolver]: "
-                + "[JobException: The job id element [..] is going outside its parent folder]",
+                + "[JobException: The job id element [..] is resolved outside its parent folder]",
                 this.logCapture.getMessage(0));
         } finally {
             FileUtils.deleteQuietly(outsideStatusFile);

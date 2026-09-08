@@ -111,7 +111,7 @@ class Version1JobStatusFolderResolverTest
         JobException exception =
             assertThrows(JobException.class, () -> this.resolver.getFolder(Collections.singletonList("..")));
 
-        assertEquals("The job id element [..] is going outside its parent folder", exception.getMessage());
+        assertEquals("The job id element [..] is resolved outside its parent folder", exception.getMessage());
     }
 
     @Test
@@ -121,7 +121,7 @@ class Version1JobStatusFolderResolverTest
 
         JobException exception = assertThrows(JobException.class, () -> this.resolver.getFolder(id));
 
-        assertEquals("The job id element [..] is going outside its parent folder", exception.getMessage());
+        assertEquals("The job id element [..] is resolved outside its parent folder", exception.getMessage());
     }
 
     @Test
