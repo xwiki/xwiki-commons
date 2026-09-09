@@ -460,7 +460,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      * @deprecated use {@link #isDependency(String)} with <code>null</code> namespace instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "4.3M1")
     public boolean isDependency()
     {
         return isDependency(null);

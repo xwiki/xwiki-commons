@@ -157,7 +157,7 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
      * @deprecated use {@link #resolveExtension(ExtensionDependency, String)} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "5.3M1")
     public Extension resolveExtension(ExtensionDependency extensionDependency) throws ResolveException
     {
         try {

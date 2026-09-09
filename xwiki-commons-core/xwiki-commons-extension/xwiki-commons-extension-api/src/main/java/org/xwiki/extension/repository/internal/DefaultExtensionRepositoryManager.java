@@ -173,7 +173,7 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
      * @deprecated use {@link #addRepository(ExtensionRepositoryDescriptor)} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "4.3M1")
     public ExtensionRepository addRepository(ExtensionRepositoryId repositoryId) throws ExtensionRepositoryException
     {
         return addRepository((ExtensionRepositoryDescriptor) repositoryId);

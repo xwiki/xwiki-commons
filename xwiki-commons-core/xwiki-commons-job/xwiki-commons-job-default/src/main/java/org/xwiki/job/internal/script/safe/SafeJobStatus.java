@@ -78,7 +78,7 @@ public class SafeJobStatus<J extends JobStatus> extends AbstractSafeObject<J> im
      * @deprecated use {@link #getLogTail()} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "11.9RC1")
     public LogQueue getLog()
     {
         return getWrapped().getLog();
@@ -94,7 +94,7 @@ public class SafeJobStatus<J extends JobStatus> extends AbstractSafeObject<J> im
      * @deprecated use {@link LogQueue#getLogs(LogLevel)} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "4.1RC1")
     public List<LogEvent> getLog(LogLevel level)
     {
         return getWrapped().getLog(level);
