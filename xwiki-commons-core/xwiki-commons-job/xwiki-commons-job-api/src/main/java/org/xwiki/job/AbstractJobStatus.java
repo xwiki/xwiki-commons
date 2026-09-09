@@ -530,7 +530,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
      * @deprecated use {@link #getLogTail()} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "11.9RC1")
     public LogQueue getLog()
     {
         LogQueue logQueue = this.logs;
@@ -553,7 +553,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
      * @deprecated use {@link LogQueue#getLogs(LogLevel)} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "4.1RC1")
     public List<LogEvent> getLog(LogLevel level)
     {
         return getLogTail().getLogEvents(level).stream().filter(log -> log.getLevel() == level)

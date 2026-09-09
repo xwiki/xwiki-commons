@@ -101,7 +101,7 @@ public abstract class AbstractWrappingExtension<E extends Extension> extends Abs
      * @deprecated use {@link #getExtensionFeatures()} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "8.0M1")
     public Collection<String> getFeatures()
     {
         return ExtensionIdConverter.toStringList(getExtensionFeatures());

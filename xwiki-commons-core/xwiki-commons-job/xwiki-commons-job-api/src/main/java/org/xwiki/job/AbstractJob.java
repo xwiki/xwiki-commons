@@ -430,7 +430,7 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
      * @deprecated use {@link #initialize(Request)} then {@link #run()} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "5.1M2")
     public void start(Request request)
     {
         initialize(request);

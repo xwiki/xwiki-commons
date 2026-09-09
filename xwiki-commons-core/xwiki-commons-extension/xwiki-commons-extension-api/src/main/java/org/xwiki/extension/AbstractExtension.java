@@ -279,7 +279,7 @@ public abstract class AbstractExtension implements MutableExtension
      * @deprecated use {@link #getExtensionFeatures()} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "8.0M1")
     public Collection<String> getFeatures()
     {
         return this.features != null ? this.features : Collections.emptyList();
@@ -289,7 +289,7 @@ public abstract class AbstractExtension implements MutableExtension
      * @deprecated use {@link #setExtensionFeatures(Collection)} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "8.0M1")
     public void setFeatures(Collection<String> features)
     {
         List<ExtensionId> extensionFeatures = new ArrayList<>(features.size());
@@ -304,7 +304,7 @@ public abstract class AbstractExtension implements MutableExtension
      * @deprecated use {@link #addExtensionFeature(ExtensionId)} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "8.0M1")
     public void addFeature(String feature)
     {
         addExtensionFeature(new ExtensionId(feature, getId().getVersion()));

@@ -106,7 +106,7 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
      * @deprecated use {@link #getPreviousExtensions()} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "5.0RC1")
     public InstalledExtension getPreviousExtension()
     {
         return this.previousExtensions.isEmpty() ? null : this.previousExtensions.iterator().next();

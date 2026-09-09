@@ -63,7 +63,7 @@ public abstract class AbstractExtensionHandler implements ExtensionHandler
      * @deprecated use {@link #uninstall(InstalledExtension, String, Request)} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "5.0RC1")
     public void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException
     {
         uninstall((InstalledExtension) localExtension, namespace, request);
@@ -73,7 +73,7 @@ public abstract class AbstractExtensionHandler implements ExtensionHandler
      * @deprecated use {@link #upgrade(Collection, LocalExtension, String, Request)} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "5.0RC1")
     public void upgrade(LocalExtension previousLocalExtension, LocalExtension newLocalExtension, String namespace,
         Request request) throws InstallException
     {

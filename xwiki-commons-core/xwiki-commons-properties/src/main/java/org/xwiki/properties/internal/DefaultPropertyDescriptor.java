@@ -163,7 +163,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
      * @deprecated use {@link #getPropertyType()} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "3.0M1")
     public Class<?> getPropertyClass()
     {
         Class<?> clazz;

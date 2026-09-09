@@ -63,7 +63,7 @@ public class DefaultJobProgressManager implements JobProgressManager
      * @deprecated use {@link #startStep(Object)} instead
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "7.1M2")
     public void stepPropress(Object source)
     {
         this.observationManager.notify(StepProgressEvent.INSTANCE, source);
