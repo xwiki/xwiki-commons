@@ -20,9 +20,9 @@
 package org.xwiki.velocity.internal.util;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.collections4.SetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,39 +47,24 @@ public class VelocityParser
      * Reserved directive containing parameter(s) like #if.
      */
     public static final Set<String> VELOCITYDIRECTIVE_PARAM = Collections.unmodifiableSet(
-        union(VELOCITYDIRECTIVE_BEGIN, Set.of("set", "elseif", "evaluate", "include")));
+        SetUtils.union(VELOCITYDIRECTIVE_BEGIN, Set.of("set", "elseif", "evaluate", "include")));
 
     /**
      * Reserved directives without parameters like #else.
      */
     public static final Set<String> VELOCITYDIRECTIVE_NOPARAM = Collections.unmodifiableSet(
-        union(VELOCITYDIRECTIVE_END, Set.of("else", "break", "stop")));
+        SetUtils.union(VELOCITYDIRECTIVE_END, Set.of("else", "break", "stop")));
 
     /**
      * All the velocity reserved directives.
      */
-    public static final Set<String> VELOCITYDIRECTIVE_ALL = Collections.unmodifiableSet(
-        union(VELOCITYDIRECTIVE_PARAM, VELOCITYDIRECTIVE_NOPARAM));
+    public static final Set<String> VELOCITYDIRECTIVE_ALL =
+        Collections.unmodifiableSet(SetUtils.union(VELOCITYDIRECTIVE_PARAM, VELOCITYDIRECTIVE_NOPARAM));
 
     /**
      * The Logger to use for logging.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(VelocityParser.class);
-
-    /**
-     * @param directiveSets the sets of directives to merge
-     * @return a new set holding every directive of the passed sets
-     */
-    @SafeVarargs
-    private static Set<String> union(Set<String>... directiveSets)
-    {
-        Set<String> union = new HashSet<>();
-        for (Set<String> directiveSet : directiveSets) {
-            union.addAll(directiveSet);
-        }
-
-        return union;
-    }
 
     /**
      * Get any valid Velocity block starting with a sharp character (#if, #somemaccro(), ##comment etc.).
