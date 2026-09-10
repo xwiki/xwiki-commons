@@ -19,6 +19,7 @@
  */
 package org.xwiki.velocity.internal.util;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,55 +36,49 @@ public class VelocityParser
     /**
      * The directives which start a new level which will have to be close by a #end.
      */
-    public static final Set<String> VELOCITYDIRECTIVE_BEGIN = new HashSet<>();
+    public static final Set<String> VELOCITYDIRECTIVE_BEGIN = Set.of("if", "foreach", "literal", "macro", "define");
 
     /**
      * Close an opened level.
      */
-    public static final Set<String> VELOCITYDIRECTIVE_END = new HashSet<>();
+    public static final Set<String> VELOCITYDIRECTIVE_END = Set.of("end");
 
     /**
      * Reserved directive containing parameter(s) like #if.
      */
-    public static final Set<String> VELOCITYDIRECTIVE_PARAM = new HashSet<>();
+    public static final Set<String> VELOCITYDIRECTIVE_PARAM = Collections.unmodifiableSet(
+        union(VELOCITYDIRECTIVE_BEGIN, Set.of("set", "elseif", "evaluate", "include")));
 
     /**
      * Reserved directives without parameters like #else.
      */
-    public static final Set<String> VELOCITYDIRECTIVE_NOPARAM = new HashSet<>();
+    public static final Set<String> VELOCITYDIRECTIVE_NOPARAM = Collections.unmodifiableSet(
+        union(VELOCITYDIRECTIVE_END, Set.of("else", "break", "stop")));
 
     /**
      * All the velocity reserved directives.
      */
-    public static final Set<String> VELOCITYDIRECTIVE_ALL = new HashSet<>();
+    public static final Set<String> VELOCITYDIRECTIVE_ALL = Collections.unmodifiableSet(
+        union(VELOCITYDIRECTIVE_PARAM, VELOCITYDIRECTIVE_NOPARAM));
 
     /**
      * The Logger to use for logging.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(VelocityParser.class);
 
-    static {
-        VELOCITYDIRECTIVE_BEGIN.add("if");
-        VELOCITYDIRECTIVE_BEGIN.add("foreach");
-        VELOCITYDIRECTIVE_BEGIN.add("literal");
-        VELOCITYDIRECTIVE_BEGIN.add("macro");
-        VELOCITYDIRECTIVE_BEGIN.add("define");
+    /**
+     * @param directiveSets the sets of directives to merge
+     * @return a new set holding every directive of the passed sets
+     */
+    @SafeVarargs
+    private static Set<String> union(Set<String>... directiveSets)
+    {
+        Set<String> union = new HashSet<>();
+        for (Set<String> directiveSet : directiveSets) {
+            union.addAll(directiveSet);
+        }
 
-        VELOCITYDIRECTIVE_END.add("end");
-
-        VELOCITYDIRECTIVE_PARAM.addAll(VELOCITYDIRECTIVE_BEGIN);
-        VELOCITYDIRECTIVE_PARAM.add("set");
-        VELOCITYDIRECTIVE_PARAM.add("elseif");
-        VELOCITYDIRECTIVE_PARAM.add("evaluate");
-        VELOCITYDIRECTIVE_PARAM.add("include");
-
-        VELOCITYDIRECTIVE_NOPARAM.addAll(VELOCITYDIRECTIVE_END);
-        VELOCITYDIRECTIVE_NOPARAM.add("else");
-        VELOCITYDIRECTIVE_NOPARAM.add("break");
-        VELOCITYDIRECTIVE_NOPARAM.add("stop");
-
-        VELOCITYDIRECTIVE_ALL.addAll(VELOCITYDIRECTIVE_PARAM);
-        VELOCITYDIRECTIVE_ALL.addAll(VELOCITYDIRECTIVE_NOPARAM);
+        return union;
     }
 
     /**
