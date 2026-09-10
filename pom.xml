@@ -132,6 +132,8 @@
 
     <surefire.version>3.6.0</surefire.version>
     <failsafe.version>${surefire.version}</failsafe.version>
+    <skipTests>false</skipTests>
+    <skipITs>${skipTests}</skipITs>
 
     <!-- Mock libraries -->
     <mockito.version>5.23.0</mockito.version>
@@ -2528,6 +2530,7 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>${failsafe.version}</version>
           <configuration>
+            <skipITs>${skipITs}</skipITs>
             <!-- By default, we want to make sure we only run AllIT since that runs all the tests, and
                  starting/stopping XWiki only once for the whole suite -->
             <includes>
@@ -2539,8 +2542,11 @@
                  we need to know it in order to fix it! -->
             <failIfNoTests>true</failIfNoTests>
             <systemPropertyVariables>
+              <!-- Make skip* Maven properties available as system properties -->
+              <skipTests>${skipTests}</skipTests>
+              <skipITs>${skipITs}</skipITs>
               <!-- See description of the "xwiki.test.verifyRunningXWikiAtStart" property above. -->
-		          <xwiki.test.verifyRunningXWikiAtStart>${xwiki.test.verifyRunningXWikiAtStart}</xwiki.test.verifyRunningXWikiAtStart>
+              <xwiki.test.verifyRunningXWikiAtStart>${xwiki.test.verifyRunningXWikiAtStart}</xwiki.test.verifyRunningXWikiAtStart>
               <!-- Used to automatically register our custom JUnit5 Extensions using the service loader mechanism.
                    We also need to have the JAR containing our extensions visible to JUnit5's ClassLoader. This is
                    done in xwiki-commons-core/pom.xml and xwiki-platform/pom.xml as otherwise it would cause a cyclic
