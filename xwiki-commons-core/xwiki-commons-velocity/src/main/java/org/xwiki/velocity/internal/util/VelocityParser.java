@@ -19,9 +19,10 @@
  */
 package org.xwiki.velocity.internal.util;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
+import org.apache.commons.collections4.SetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,56 +36,35 @@ public class VelocityParser
     /**
      * The directives which start a new level which will have to be close by a #end.
      */
-    public static final Set<String> VELOCITYDIRECTIVE_BEGIN = new HashSet<>();
+    public static final Set<String> VELOCITYDIRECTIVE_BEGIN = Set.of("if", "foreach", "literal", "macro", "define");
 
     /**
      * Close an opened level.
      */
-    public static final Set<String> VELOCITYDIRECTIVE_END = new HashSet<>();
+    public static final Set<String> VELOCITYDIRECTIVE_END = Set.of("end");
 
     /**
      * Reserved directive containing parameter(s) like #if.
      */
-    public static final Set<String> VELOCITYDIRECTIVE_PARAM = new HashSet<>();
+    public static final Set<String> VELOCITYDIRECTIVE_PARAM = Collections.unmodifiableSet(
+        SetUtils.union(VELOCITYDIRECTIVE_BEGIN, Set.of("set", "elseif", "evaluate", "include")));
 
     /**
      * Reserved directives without parameters like #else.
      */
-    public static final Set<String> VELOCITYDIRECTIVE_NOPARAM = new HashSet<>();
+    public static final Set<String> VELOCITYDIRECTIVE_NOPARAM = Collections.unmodifiableSet(
+        SetUtils.union(VELOCITYDIRECTIVE_END, Set.of("else", "break", "stop")));
 
     /**
      * All the velocity reserved directives.
      */
-    public static final Set<String> VELOCITYDIRECTIVE_ALL = new HashSet<>();
+    public static final Set<String> VELOCITYDIRECTIVE_ALL =
+        Collections.unmodifiableSet(SetUtils.union(VELOCITYDIRECTIVE_PARAM, VELOCITYDIRECTIVE_NOPARAM));
 
     /**
      * The Logger to use for logging.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(VelocityParser.class);
-
-    static {
-        VELOCITYDIRECTIVE_BEGIN.add("if");
-        VELOCITYDIRECTIVE_BEGIN.add("foreach");
-        VELOCITYDIRECTIVE_BEGIN.add("literal");
-        VELOCITYDIRECTIVE_BEGIN.add("macro");
-        VELOCITYDIRECTIVE_BEGIN.add("define");
-
-        VELOCITYDIRECTIVE_END.add("end");
-
-        VELOCITYDIRECTIVE_PARAM.addAll(VELOCITYDIRECTIVE_BEGIN);
-        VELOCITYDIRECTIVE_PARAM.add("set");
-        VELOCITYDIRECTIVE_PARAM.add("elseif");
-        VELOCITYDIRECTIVE_PARAM.add("evaluate");
-        VELOCITYDIRECTIVE_PARAM.add("include");
-
-        VELOCITYDIRECTIVE_NOPARAM.addAll(VELOCITYDIRECTIVE_END);
-        VELOCITYDIRECTIVE_NOPARAM.add("else");
-        VELOCITYDIRECTIVE_NOPARAM.add("break");
-        VELOCITYDIRECTIVE_NOPARAM.add("stop");
-
-        VELOCITYDIRECTIVE_ALL.addAll(VELOCITYDIRECTIVE_PARAM);
-        VELOCITYDIRECTIVE_ALL.addAll(VELOCITYDIRECTIVE_NOPARAM);
-    }
 
     /**
      * Get any valid Velocity block starting with a sharp character (#if, #somemaccro(), ##comment etc.).
