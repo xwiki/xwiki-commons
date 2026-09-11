@@ -31,6 +31,7 @@ import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPut;
 import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.cookie.BasicCookieStore;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -55,6 +56,12 @@ public class XWikiHTTPClient implements Closeable
     private static final String DEFAULT_USER_AGENT = "XWiki";
 
     private final CloseableHttpClient client;
+
+    /**
+     * The cookies shared by all the requests executed by this client, so that the state associated with them on the
+     * server side (an authenticated session, for example) is kept between requests.
+     */
+    private final BasicCookieStore cookieStore = new BasicCookieStore();
 
     private XWikiCredentials defaultCredentials;
 
@@ -129,11 +136,18 @@ public class XWikiHTTPClient implements Closeable
     }
 
     /**
+     * Sets the credentials to use for the requests that don't specify any. The cookies are cleared along with them,
+     * see {@link #clearCookies()}: the server keeps the authenticated user in the session associated with the cookies
+     * of this client and that session wins over the credentials passed with the request, so the following requests
+     * would otherwise keep being executed as the previously authenticated user.
+     *
      * @param defaultCredentials the default credentials to use for requests
      */
     public void setDefaultCredentials(XWikiCredentials defaultCredentials)
     {
         this.defaultCredentials = defaultCredentials;
+
+        clearCookies();
     }
 
     /**
@@ -142,6 +156,18 @@ public class XWikiHTTPClient implements Closeable
     public XWikiCredentials getDefaultCredentials()
     {
         return this.defaultCredentials;
+    }
+
+    /**
+     * Removes all the cookies currently stored by this client, and thus the state the server associated with them, for
+     * example an authenticated session. Useful when reusing the same client for requests that should not share any
+     * state, typically requests executed on behalf of different users.
+     *
+     * @since 18.8.0RC1
+     */
+    public void clearCookies()
+    {
+        this.cookieStore.clear();
     }
 
     /**
@@ -202,36 +228,32 @@ public class XWikiHTTPClient implements Closeable
     /**
      * @param request the request to get the context for
      * @param credentials the credentials to use for the request
-     * @return the context to use for the request, or null if no authentication is needed (which cause the standard
-     *         HttpClient to use the default context)
+     * @return the context to use for the request, holding the cookies of this client and, when there are credentials,
+     *         the authentication to use
      * @throws IOException when failing to get the URI of the request
      */
     public HttpClientContext getHttpClientContext(HttpRequest request, XWikiCredentials credentials) throws IOException
     {
-        UsernamePasswordCredentials finalCredentials;
-        if (credentials == null) {
-            if (this.defaultCredentials != null) {
-                finalCredentials = new UsernamePasswordCredentials(this.defaultCredentials.getUserName(),
-                    this.defaultCredentials.getPassword().toCharArray());
-            } else {
-                // The only point of the context is to hold the credentials so if we don't have any we return null.
-                return null;
+        // Always pass the cookies of this client, so that they are shared by all the requests whether they are
+        // authenticated or not, and so that they can be cleared with #clearCookies().
+        ContextBuilder contextBuilder = ContextBuilder.create().useCookieStore(this.cookieStore);
+
+        XWikiCredentials finalCredentials = credentials != null ? credentials : this.defaultCredentials;
+        if (finalCredentials != null) {
+            URI uri;
+            try {
+                uri = request.getUri();
+            } catch (URISyntaxException e) {
+                // Should fail before arriving here
+                throw new IOException("Cannot get the URI of the request", e);
             }
-        } else {
-            finalCredentials =
-                new UsernamePasswordCredentials(credentials.getUserName(), credentials.getPassword().toCharArray());
+
+            contextBuilder.preemptiveBasicAuth(new HttpHost(uri.getScheme(), uri.getHost(), uri.getPort()),
+                new UsernamePasswordCredentials(finalCredentials.getUserName(),
+                    finalCredentials.getPassword().toCharArray()));
         }
 
-        URI uri;
-        try {
-            uri = request.getUri();
-        } catch (URISyntaxException e) {
-            // Should fail before arriving here
-            throw new IOException("Cannot get the URI of the request", e);
-        }
-
-        return ContextBuilder.create()
-            .preemptiveBasicAuth(new HttpHost(uri.getScheme(), uri.getHost(), uri.getPort()), finalCredentials).build();
+        return contextBuilder.build();
     }
 
     /**
