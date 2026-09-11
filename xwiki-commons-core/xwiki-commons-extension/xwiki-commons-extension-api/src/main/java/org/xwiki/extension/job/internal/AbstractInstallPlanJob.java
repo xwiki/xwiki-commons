@@ -1455,22 +1455,16 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
             if (namespace == null) {
                 for (Map.Entry<String, Collection<InstalledExtension>> entry : this.installedExtensionRepository
                     .getBackwardDependencies(installedExtension.getId(), true).entrySet()) {
-                    Set<InstalledExtension> namespaceBackwardDependencies = backwardDependencies.get(entry.getKey());
-                    if (namespaceBackwardDependencies == null) {
-                        namespaceBackwardDependencies = new LinkedHashSet<>();
-                        backwardDependencies.put(entry.getKey(), namespaceBackwardDependencies);
-                    }
+                    Set<InstalledExtension> namespaceBackwardDependencies =
+                        backwardDependencies.computeIfAbsent(entry.getKey(), key -> new LinkedHashSet<>());
 
                     namespaceBackwardDependencies.addAll(entry.getValue());
                 }
             } else {
                 for (InstalledExtension backwardDependency : this.installedExtensionRepository
                     .getBackwardDependencies(installedExtension.getId().getId(), namespace, true)) {
-                    Set<InstalledExtension> namespaceBackwardDependencies = backwardDependencies.get(namespace);
-                    if (namespaceBackwardDependencies == null) {
-                        namespaceBackwardDependencies = new LinkedHashSet<>();
-                        backwardDependencies.put(namespace, namespaceBackwardDependencies);
-                    }
+                    Set<InstalledExtension> namespaceBackwardDependencies =
+                        backwardDependencies.computeIfAbsent(namespace, key -> new LinkedHashSet<>());
 
                     namespaceBackwardDependencies.add(backwardDependency);
                 }
