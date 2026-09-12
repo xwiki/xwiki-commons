@@ -29,6 +29,9 @@ package org.xwiki.velocity.introspection;
  *             {@link org.apache.velocity.util.introspection.ChainableUberspector} instead
  */
 @Deprecated(since = "8.0M1")
+// The shadowing is deliberate: this deprecated interface exists only to keep the old name compiling against the
+// Velocity interface that replaced it, so renaming it would defeat its only purpose.
+@SuppressWarnings("java:S2176")
 public interface ChainableUberspector extends org.apache.velocity.util.introspection.ChainableUberspector
 {
     // Everything is part of the super interface

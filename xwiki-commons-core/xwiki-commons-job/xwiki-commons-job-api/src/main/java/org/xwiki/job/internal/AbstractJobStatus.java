@@ -33,6 +33,9 @@ import org.xwiki.observation.ObservationManager;
  * @deprecated use {@link org.xwiki.job.AbstractJobStatus} instead
  */
 @Deprecated(since = "7.4M1")
+// The shadowing is deliberate: this deprecated class exists only to keep the old name compiling against the
+// class that replaced it, so renaming it would defeat its only purpose.
+@SuppressWarnings("java:S2176")
 public abstract class AbstractJobStatus<R extends Request> extends org.xwiki.job.AbstractJobStatus<R>
 {
     /**

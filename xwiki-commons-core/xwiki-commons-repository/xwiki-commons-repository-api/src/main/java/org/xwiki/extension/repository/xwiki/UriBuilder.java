@@ -31,6 +31,9 @@ import java.net.URI;
  * @deprecated use {@link org.xwiki.repository.UriBuilder} instead
  */
 @Deprecated(since = "4.2M1")
+// The shadowing is deliberate: this deprecated class exists only to keep the old name compiling against the
+// class that replaced it, so renaming it would defeat its only purpose.
+@SuppressWarnings("java:S2176")
 public class UriBuilder extends org.xwiki.repository.UriBuilder
 {
     /**
