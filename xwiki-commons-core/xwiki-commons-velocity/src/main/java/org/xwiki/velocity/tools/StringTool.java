@@ -36,6 +36,10 @@ import org.xwiki.text.StringUtils;
  * @version $Id$
  * @since 15.7RC1
  */
+// The hiding is deliberate and is the whole point of this class: re-declaring the inherited statics is what lets
+// XWiki control which of them stay available to Velocity scripts (see the class Javadoc). The names are the
+// scripting API, so they cannot be changed either.
+@SuppressWarnings("java:S9149")
 public class StringTool extends StringUtils
 {
     /**
