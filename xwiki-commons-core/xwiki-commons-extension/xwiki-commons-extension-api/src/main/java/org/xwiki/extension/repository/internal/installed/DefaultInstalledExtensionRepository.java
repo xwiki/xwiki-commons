@@ -134,12 +134,22 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
      * Used to access all local extensions.
      */
     @Inject
+    // 'transient' is deliberate here: AbstractExtension keeps a non-transient reference to its
+    // repository and extensions are serialized with XStream inside job statuses. XStream honours
+    // 'transient' independently of java.io.Serializable, so removing it would pull the injected
+    // components and caches into that graph.
+    @SuppressWarnings("java:S2065")
     private transient LocalExtensionRepository localRepository;
 
     /**
      * Used to check for existing core extensions.
      */
     @Inject
+    // 'transient' is deliberate here: AbstractExtension keeps a non-transient reference to its
+    // repository and extensions are serialized with XStream inside job statuses. XStream honours
+    // 'transient' independently of java.io.Serializable, so removing it would pull the injected
+    // components and caches into that graph.
+    @SuppressWarnings("java:S2065")
     private transient CoreExtensionRepository coreExtensionRepository;
 
     /**

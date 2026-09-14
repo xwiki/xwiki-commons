@@ -62,6 +62,11 @@ public abstract class AbstractInstalledExtensionRepository<E extends InstalledEx
     extends AbstractCachedExtensionRepository<E> implements InstalledExtensionRepository
 {
     @Inject
+    // 'transient' is deliberate here: AbstractExtension keeps a non-transient reference to its
+    // repository and extensions are serialized with XStream inside job statuses. XStream honours
+    // 'transient' independently of java.io.Serializable, so removing it would pull the injected
+    // components and caches into that graph.
+    @SuppressWarnings("java:S2065")
     protected transient Logger logger;
 
     @Override
