@@ -31,7 +31,7 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectComponentManager;
 
 /**
- * Integration tests for {@link S3BlobStore} using MinIO container.
+ * Integration tests for {@link S3BlobStore} using a Silo container.
  *
  * @version $Id$
  * @since 17.10.0RC1

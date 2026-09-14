@@ -51,8 +51,8 @@ import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
 import static org.mockito.Mockito.when;
 
 /**
- * JUnit 5 extension that manages MinIO container lifecycle for blob store integration tests.
- * Can use either a MinIO container or an external S3-compatible endpoint configured via system properties.
+ * JUnit 5 extension that manages the S3 container lifecycle for blob store integration tests.
+ * Can use either a Silo container or an external S3-compatible endpoint configured via system properties.
  *
  * @version $Id$
  * @since 17.10.0RC1
@@ -61,7 +61,17 @@ public class BlobStoreExtension implements BeforeAllCallback, AfterAllCallback, 
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(BlobStoreExtension.class);
 
-    private static final String MINIO_IMAGE = "minio/minio:latest";
+    /**
+     * Silo is a maintained fork of the MinIO server, used since the {@code minio/minio} images are not published
+     * anymore. It keeps the MinIO ports, health check endpoint and {@code MINIO_*} environment variables, so it can
+     * be started with the MinIO Testcontainers module.
+     */
+    private static final String SILO_IMAGE = "pgsty/silo:latest";
+
+    /**
+     * The image the Testcontainers MinIO module expects, for which Silo is a drop-in replacement.
+     */
+    private static final String MINIO_IMAGE = "minio/minio";
 
     private static final String DEFAULT_BUCKET = "test-bucket";
 
@@ -94,8 +104,8 @@ public class BlobStoreExtension implements BeforeAllCallback, AfterAllCallback, 
             LOGGER.info("(*) Using external S3 endpoint: {}", externalEndpoint);
             container = createExternalContainer(externalEndpoint);
         } else {
-            LOGGER.info("(*) Starting MinIO container...");
-            container = createMinIOContainer(extensionContext);
+            LOGGER.info("(*) Starting Silo container...");
+            container = createSiloContainer(extensionContext);
         }
 
         // Create the test bucket
@@ -131,10 +141,10 @@ public class BlobStoreExtension implements BeforeAllCallback, AfterAllCallback, 
             return;
         }
 
-        MinIOContainer minioContainer = loadMinIOContainer(extensionContext);
-        if (minioContainer != null) {
-            LOGGER.info("(*) Stopping MinIO container...");
-            minioContainer.stop();
+        MinIOContainer siloContainer = loadSiloContainer(extensionContext);
+        if (siloContainer != null) {
+            LOGGER.info("(*) Stopping Silo container...");
+            siloContainer.stop();
         }
     }
 
@@ -164,20 +174,20 @@ public class BlobStoreExtension implements BeforeAllCallback, AfterAllCallback, 
         return new BlobStoreContainer(endpoint, bucket, accessKey, secretKey, region, pathStyleAccess);
     }
 
-    private BlobStoreContainer createMinIOContainer(ExtensionContext context)
+    private BlobStoreContainer createSiloContainer(ExtensionContext context)
     {
-        DockerImageName imageName = DockerImageName.parse(MINIO_IMAGE);
-        MinIOContainer minioContainer = new MinIOContainer(imageName);
-        minioContainer.start();
+        DockerImageName imageName = DockerImageName.parse(SILO_IMAGE).asCompatibleSubstituteFor(MINIO_IMAGE);
+        MinIOContainer siloContainer = new MinIOContainer(imageName);
+        siloContainer.start();
 
-        // Save the MinIO container separately so we can stop it later
-        getStore(context).put(MinIOContainer.class, minioContainer);
+        // Save the container separately so we can stop it later
+        getStore(context).put(MinIOContainer.class, siloContainer);
 
         return new BlobStoreContainer(
-            minioContainer.getS3URL(),
+            siloContainer.getS3URL(),
             DEFAULT_BUCKET,
-            minioContainer.getUserName(),
-            minioContainer.getPassword(),
+            siloContainer.getUserName(),
+            siloContainer.getPassword(),
             "us-east-1",
             true
         );
@@ -220,7 +230,7 @@ public class BlobStoreExtension implements BeforeAllCallback, AfterAllCallback, 
         return getStore(context).get(BlobStoreContainer.class, BlobStoreContainer.class);
     }
 
-    private MinIOContainer loadMinIOContainer(ExtensionContext context)
+    private MinIOContainer loadSiloContainer(ExtensionContext context)
     {
         return getStore(context).get(MinIOContainer.class, MinIOContainer.class);
     }
@@ -228,7 +238,7 @@ public class BlobStoreExtension implements BeforeAllCallback, AfterAllCallback, 
     private boolean isInNestedTest(ExtensionContext context)
     {
         // This method is going to be called for the top level test class but also for nested test classes. We want
-        // to start MinIO only once, and thus we only start it for the top level context.
+        // to start the container only once, and thus we only start it for the top level context.
         // Note: the top level context is the JUnitJupiterExtensionContext one, and it doesn't contain any test, and
         // thus we skip it.
         return context.getParent().get().getParent().isPresent();
