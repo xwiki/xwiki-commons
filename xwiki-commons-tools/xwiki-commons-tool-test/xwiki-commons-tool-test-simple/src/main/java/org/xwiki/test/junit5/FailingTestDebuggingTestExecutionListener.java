@@ -43,6 +43,9 @@ public class FailingTestDebuggingTestExecutionListener implements TestExecutionL
     private static final Logger LOGGER = LoggerFactory.getLogger(FailingTestDebuggingTestExecutionListener.class);
 
     @Override
+    // The whole point of this CI-only listener is to run these diagnostic commands and dump their
+    // output, so there is nothing to defer behind a level guard.
+    @SuppressWarnings("java:S2629")
     public void executionFinished(TestIdentifier testIdentifier, TestExecutionResult testExecutionResult)
     {
         if (testExecutionResult.getThrowable().isPresent() && isInCI()) {
