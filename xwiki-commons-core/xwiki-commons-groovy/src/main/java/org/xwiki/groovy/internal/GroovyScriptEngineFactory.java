@@ -45,6 +45,9 @@ import groovy.lang.GroovyClassLoader;
 @Component(roles = { ScriptEngineFactory.class })
 @Named("groovy")
 @Singleton
+// The shadowing is deliberate: this is a drop-in extension of the Groovy factory it replaces (see the class
+// Javadoc for why the replacement is needed), so it carries the same name on purpose.
+@SuppressWarnings("java:S2176")
 public class GroovyScriptEngineFactory extends org.codehaus.groovy.jsr223.GroovyScriptEngineFactory
 {
     /**
