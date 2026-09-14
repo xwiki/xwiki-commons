@@ -20,7 +20,6 @@
 package org.xwiki.job.internal;
 
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A specific concurrency implementation for managing Semaphore with Read/Write lock capabilities.
@@ -32,8 +31,19 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ReadWriteSemaphore
 {
-    private final AtomicInteger readCounter;
-    private final AtomicInteger writeCounter;
+    /**
+     * Protects {@link #readCounter} and {@link #writeCounter}: reading a counter and deciding, from that read, how
+     * many permits to acquire or release from {@link #semaphore} must happen as a single atomic step, otherwise
+     * concurrent callers can compute an inconsistent number of permits and permanently lose some, deadlocking every
+     * subsequent caller. The lock is only ever held for that bookkeeping, never while blocked in the semaphore
+     * itself, so a thread waiting for a permit never holds a lock another thread needs to release one.
+     */
+    private final Object countersLock = new Object();
+
+    private int readCounter;
+
+    private int writeCounter;
+
     private final Semaphore semaphore;
 
     /**
@@ -43,8 +53,6 @@ public class ReadWriteSemaphore
     public ReadWriteSemaphore(int poolSize)
     {
         this.semaphore = new Semaphore(poolSize, true);
-        this.readCounter = new AtomicInteger(0);
-        this.writeCounter = new AtomicInteger(0);
     }
 
     /**
@@ -53,13 +61,15 @@ public class ReadWriteSemaphore
      */
     public void lockWrite()
     {
-        this.writeCounter.incrementAndGet();
+        int permits;
 
-        if (this.writeCounter.get() == 1) {
-            this.semaphore.acquireUninterruptibly(this.readCounter.get() + 1);
-        } else {
-            this.semaphore.acquireUninterruptibly();
+        synchronized (this.countersLock) {
+            this.writeCounter++;
+
+            permits = this.writeCounter == 1 ? this.readCounter + 1 : 1;
         }
+
+        this.semaphore.acquireUninterruptibly(permits);
     }
 
     /**
@@ -68,13 +78,15 @@ public class ReadWriteSemaphore
      */
     public void unlockWrite()
     {
-        this.writeCounter.decrementAndGet();
+        int permits;
 
-        if (this.writeCounter.get() == 0) {
-            this.semaphore.release(this.readCounter.get() + 1);
-        } else {
-            this.semaphore.release();
+        synchronized (this.countersLock) {
+            this.writeCounter--;
+
+            permits = this.writeCounter == 0 ? this.readCounter + 1 : 1;
         }
+
+        this.semaphore.release(permits);
     }
 
     /**
@@ -83,9 +95,15 @@ public class ReadWriteSemaphore
      */
     public void lockRead()
     {
-        this.readCounter.incrementAndGet();
+        boolean needPermit;
 
-        if (this.writeCounter.get() > 0) {
+        synchronized (this.countersLock) {
+            this.readCounter++;
+
+            needPermit = this.writeCounter > 0;
+        }
+
+        if (needPermit) {
             this.semaphore.acquireUninterruptibly();
         }
     }
@@ -96,9 +114,15 @@ public class ReadWriteSemaphore
      */
     public void unlockRead()
     {
-        this.readCounter.decrementAndGet();
+        boolean hadPermit;
 
-        if (this.writeCounter.get() > 0) {
+        synchronized (this.countersLock) {
+            this.readCounter--;
+
+            hadPermit = this.writeCounter > 0;
+        }
+
+        if (hadPermit) {
             this.semaphore.release();
         }
     }
