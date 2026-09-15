@@ -19,10 +19,12 @@
  */
 package org.xwiki.classloader.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Enumeration;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -106,7 +108,7 @@ public final class ClassLoaderUtils
      * Returns an input stream for reading the specified resource.
      *
      * @param classloader the class loader in which to search for the resource
-     * @param resourcePath the path of the resource below the prefix
+     * @param resourcePath the path of the resource
      * @return An input stream for reading the resource; {@code null} if the resource could not be found, the resource
      *         is in a package that is not opened unconditionally, or access to the resource is denied by the security
      *         manager.
@@ -137,13 +139,10 @@ public final class ClassLoaderUtils
     }
 
     /**
-     * Finds the resource with the given name to which the given prefix is added.
-     * <p>
-     * This method is also making sure that the resource will remain below the given prefix (the given resource name
-     * contains path traversal syntax).
+     * Finds the resource with the given name.
      * 
      * @param classloader the class loader in which to search for the resource
-     * @param resourcePath the path of the resource below the prefix
+     * @param resourcePath the path of the resource
      * @return {@code URL} object for reading the resource; {@code null} if the resource could not be found, a
      *         {@code URL} could not be constructed to locate the resource, the resource is in a package that is not
      *         opened unconditionally, or access to the resource is denied by the security manager.
@@ -152,5 +151,46 @@ public final class ClassLoaderUtils
     public static URL getResource(ClassLoader classloader, String resourcePath)
     {
         return getResource(classloader, null, resourcePath);
+    }
+
+    /**
+     * Finds the resources with the given name to which the given prefix is added.
+     * <p>
+     * This method is also making sure that the resource will remain below the given prefix (the given resource name
+     * contains path traversal syntax).
+     *
+     * @param classLoader the class loader in which to search for the resource
+     * @param prefixPath the prefix of the path in which the resource should be found
+     * @param resourcePath the path of the resource below the prefix
+     * @return  An enumeration of URL objects for the resource. If no resources could be found, the enumeration will be
+     * empty. Resources that the class loader doesn't have access to will not be in the enumeration.
+     * @see ClassLoader#getResources(String)
+     * @since 18.9.0RC1
+     * @since 18.4.6
+     * @since 17.10.14
+     * @since 16.10.19
+     */
+    public static Enumeration<URL> getResources(ClassLoader classLoader, String prefixPath, String resourcePath)
+        throws IOException
+    {
+        return classLoader.getResources(resolveResourceName(prefixPath, resourcePath));
+    }
+
+    /**
+     * Finds the resources with the given name.
+     *
+     * @param classLoader the class loader in which to search for the resource
+     * @param resourcePath the path of the resource
+     * @return  An enumeration of URL objects for the resource. If no resources could be found, the enumeration will be
+     * empty. Resources that the class loader doesn't have access to will not be in the enumeration.
+     * @see ClassLoader#getResources(String)
+     * @since 18.9.0RC1
+     * @since 18.4.6
+     * @since 17.10.14
+     * @since 16.10.19
+     */
+    public static Enumeration<URL> getResources(ClassLoader classLoader, String resourcePath) throws IOException
+    {
+        return getResources(classLoader, null, resourcePath);
     }
 }
