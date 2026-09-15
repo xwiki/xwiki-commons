@@ -56,6 +56,9 @@ public class SafeTreeUnmarshaller extends ReferenceByXPathUnmarshaller
     }
 
     @Override
+    // Catching Throwable is deliberate here: this unmarshaller exists precisely to make XStream deserialization total,
+    // so an object that cannot be converted is read as null instead of failing the whole deserialization.
+    @SuppressWarnings("java:S1181")
     protected Object convert(Object parent, Class type, Converter converter)
     {
         try {

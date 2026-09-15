@@ -60,6 +60,9 @@ public class SafeTreeMarshaller extends ReferenceByXPathMarshaller
     }
 
     @Override
+    // Catching Throwable is deliberate here: this marshaller exists precisely to make XStream serialization total, so
+    // an item that cannot be serialized is skipped instead of failing the whole serialization.
+    @SuppressWarnings("java:S1181")
     public void convert(Object item, Converter converter)
     {
         if (this.utils.isSerializable(item)) {
