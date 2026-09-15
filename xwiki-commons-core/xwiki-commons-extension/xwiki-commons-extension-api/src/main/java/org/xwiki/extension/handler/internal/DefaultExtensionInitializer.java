@@ -87,6 +87,9 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
     }
 
     @Override
+    // Catching Throwable is deliberate here: an extension that fails to initialize, typically with a LinkageError, must
+    // not prevent the other extensions from being initialized.
+    @SuppressWarnings("java:S1181")
     public void initialize(String namespaceToInitialize, String type)
     {
         Map<String, Map<InstalledExtension, Boolean>> initializedExtensions = new HashMap<>();
@@ -184,6 +187,9 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
         }
     }
 
+    // Catching Throwable is deliberate here: an optional dependency that fails to initialize, typically with a
+    // LinkageError, must not prevent the extension from being initialized; a mandatory one is rethrown.
+    @SuppressWarnings("java:S1181")
     private void initializeExtensionDependencyInNamespace(InstalledExtension installedExtension,
         ExtensionDependency dependency, String namespace,
         Map<String, Map<InstalledExtension, Boolean>> initializedExtensions, ExtensionPlanContext extensionContext)
