@@ -131,7 +131,7 @@ public class DefaultVersion implements Version
         /**
          * @return move to the next token
          */
-        @SuppressWarnings("checkstyle:CyclomaticComplexity")
+        @SuppressWarnings({"checkstyle:CyclomaticComplexity", "java:S3776"})
         public boolean next()
         {
             final int n = this.rawVersion.length();

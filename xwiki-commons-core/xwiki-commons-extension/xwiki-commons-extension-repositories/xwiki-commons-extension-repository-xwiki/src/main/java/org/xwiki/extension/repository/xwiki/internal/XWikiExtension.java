@@ -79,7 +79,7 @@ public class XWikiExtension extends AbstractRatingExtension
      * @param factory the factory used to create the various extension related objects
      */
     @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS", "checkstyle:NPathComplexity",
-        "checkstyle:ExecutableStatementCount"})
+        "checkstyle:ExecutableStatementCount", "java:S3776"})
     public XWikiExtension(XWikiExtensionRepository repository, ExtensionVersion restExtension,
         ExtensionLicenseManager licenseManager, ExtensionFactory factory)
     {

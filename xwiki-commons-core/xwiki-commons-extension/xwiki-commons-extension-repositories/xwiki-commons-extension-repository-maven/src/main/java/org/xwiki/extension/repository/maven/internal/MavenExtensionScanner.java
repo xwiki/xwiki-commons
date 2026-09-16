@@ -239,7 +239,7 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
 
     @Override
     @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS", "checkstyle:NPathComplexity",
-        "checkstyle:ExecutableStatementCount"})
+        "checkstyle:ExecutableStatementCount", "java:S3776"})
     public void guess(Map<String, DefaultCoreExtension> extensions, Collection<URL> jars,
         DefaultCoreExtensionRepository repository)
     {

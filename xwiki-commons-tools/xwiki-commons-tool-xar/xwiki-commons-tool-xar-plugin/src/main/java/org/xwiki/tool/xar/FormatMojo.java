@@ -110,7 +110,7 @@ public class FormatMojo extends AbstractVerifyMojo
     }
 
     @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS", "checkstyle:NPathComplexity",
-        "checkstyle:ExecutableStatementCount"})
+        "checkstyle:ExecutableStatementCount", "java:S3776"})
     private void format(String filePath, Document domdoc, Locale defaultLocale) throws DocumentException
     {
         Node node = domdoc.selectSingleNode("xwikidoc/author");
