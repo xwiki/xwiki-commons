@@ -39,11 +39,17 @@
     <xwiki.spoon.skip>false</xwiki.spoon.skip>
     <!-- Tell SonarQube to not report usage of deprecated APIs in XWiki legacy code as it's fine there and in any
          case we don't want to take the risk to perform refactorings on legacy code. -->
-    <sonar.issue.ignore.multicriteria>e1</sonar.issue.ignore.multicriteria>
+    <sonar.issue.ignore.multicriteria>e1,e2</sonar.issue.ignore.multicriteria>
     <sonar.issue.ignore.multicriteria.e1.ruleKey>java:S1133</sonar.issue.ignore.multicriteria.e1.ruleKey>
     <sonar.issue.ignore.multicriteria.e1.resourceKey>
       **/xwiki-*-legacy-*/**/*.java
     </sonar.issue.ignore.multicriteria.e1.resourceKey>
+    <!-- Tell SonarQube to not report constant interfaces in XWiki legacy code: a legacy module exists precisely to
+         keep publishing an old API shape unchanged, so moving such constants elsewhere is not an option there. -->
+    <sonar.issue.ignore.multicriteria.e2.ruleKey>java:S1214</sonar.issue.ignore.multicriteria.e2.ruleKey>
+    <sonar.issue.ignore.multicriteria.e2.resourceKey>
+      **/xwiki-*-legacy-*/**/*.java
+    </sonar.issue.ignore.multicriteria.e2.resourceKey>
   </properties>
   <build>
     <defaultGoal>install</defaultGoal>
