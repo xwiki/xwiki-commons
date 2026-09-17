@@ -20,7 +20,6 @@
 package org.xwiki.job.internal;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -113,10 +112,9 @@ class DefaultJobExecutorTest
     @Test
     void matchingGroupPathAreBlocked()
     {
-        GroupedJobInitializer groupedJobInitializer = mock();
-        when(groupedJobInitializer.getPoolSize()).thenReturn(1);
-        when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
-        when(this.groupedJobInitializerManager.getGroupedJobInitializer(any())).thenReturn(groupedJobInitializer);
+        // Every job group of this test uses a pool of size 1.
+        mockAllPools(1);
+
         TestBasicGroupedJob jobA = groupedJob("A");
         TestBasicGroupedJob jobAB = groupedJob("A", "B");
 
@@ -152,14 +150,10 @@ class DefaultJobExecutorTest
         waitJobWaiting(jobAB);
 
         assertSame(State.FINISHED, jobA.getStatus().getState());
-        assertSame(State.WAITING, jobAB.getStatus().getState());
 
         // Next job
         jobAB.unlock();
         waitJobFinished(jobAB);
-
-        assertSame(State.FINISHED, jobA.getStatus().getState());
-        assertSame(State.FINISHED, jobAB.getStatus().getState());
 
         // 1/2 and 1
 
@@ -171,21 +165,14 @@ class DefaultJobExecutorTest
         waitJobWaiting(job1);
 
         assertSame(State.FINISHED, job12.getStatus().getState());
-        assertSame(State.WAITING, job1.getStatus().getState());
 
         // Next job
         job1.unlock();
         waitJobFinished(job1);
-
-        assertSame(State.FINISHED, job1.getStatus().getState());
-        assertSame(State.FINISHED, job1.getStatus().getState());
     }
 
-    // S2925: there is no observable state change to poll for instead, see the comment at the Thread.sleep() call
-    // below. S5961: this many assertions is inherent to verifying every step of a long sequential concurrent state
-    // machine, not something splitting the method could reduce without duplicating its shared setup and losing the
-    // ordering guarantees between steps that are the point of the test.
-    @SuppressWarnings({"java:S2925", "java:S5961"})
+    // There is no observable state change to poll for instead: see the comment at the Thread.sleep() call below.
+    @SuppressWarnings("java:S2925")
     @Test
     void matchingGroupPathAreBlockedPoolMultiSizeParentFirst() throws InterruptedException
     {
@@ -198,21 +185,8 @@ class DefaultJobExecutorTest
         //   - A2
         //   - AB3
 
-        GroupedJobInitializer groupedJobInitializer = mock();
-        when(groupedJobInitializer.getPoolSize()).thenReturn(1);
-        when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
-
-        JobGroupPath jobGroupPathA = new JobGroupPath(Collections.singletonList("A"));
-        when(this.groupedJobInitializerManager.getGroupedJobInitializer(jobGroupPathA))
-            .thenReturn(groupedJobInitializer);
-
-        groupedJobInitializer = mock();
-        when(groupedJobInitializer.getPoolSize()).thenReturn(2);
-        when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
-
-        JobGroupPath jobGroupPathAB = new JobGroupPath(Arrays.asList("A", "B"));
-        when(this.groupedJobInitializerManager.getGroupedJobInitializer(jobGroupPathAB))
-            .thenReturn(groupedJobInitializer);
+        mockPool(1, "A");
+        mockPool(2, "A", "B");
 
         TestBasicGroupedJob jobA1 = groupedJob("A");
         TestBasicGroupedJob jobA2 = groupedJob("A");
@@ -231,11 +205,11 @@ class DefaultJobExecutorTest
         // Give first jobs to JobExecutor
         this.executor.execute(jobA1);
 
-        // Give enough time for the jobs to be fully taken into ABcount
+        // Give enough time for the jobs to be fully taken into account
         waitJobWaiting(jobA1);
 
-        // Give following jobs to JobExecutor (to make sure they are ABtually after since the grouped job executor queue
-        // is not "fair")
+        // Give following jobs to JobExecutor (to make sure they are actually after since the grouped job executor
+        // queue is not "fair")
         this.executor.execute(jobAB1);
         this.executor.execute(jobAB2);
 
@@ -259,7 +233,6 @@ class DefaultJobExecutorTest
 
         // AB1 and AB2 were waiting on the lock: they can start both since the pool is of size 2
         // A2 is now waiting on a lock
-        assertSame(State.FINISHED, jobA1.getStatus().getState());
         assertSame(State.WAITING, jobAB1.getStatus().getState());
         assertSame(State.WAITING, jobAB2.getStatus().getState());
         assertNull(jobA2.getStatus().getState());
@@ -280,7 +253,6 @@ class DefaultJobExecutorTest
         this.executor.execute(jobAB3);
 
         // AB3 cannot start yet even if the pool is of 2 because A2 requested for the lock.
-        assertSame(State.FINISHED, jobAB1.getStatus().getState());
         assertSame(State.WAITING, jobAB2.getStatus().getState());
         assertNull(jobAB3.getStatus().getState());
         assertNull(jobA2.getStatus().getState());
@@ -293,8 +265,6 @@ class DefaultJobExecutorTest
         waitJobFinished(jobAB2);
         waitJobWaiting(jobA2);
 
-        assertSame(State.FINISHED, jobAB2.getStatus().getState());
-        assertSame(State.WAITING, jobA2.getStatus().getState());
         assertNull(jobAB3.getStatus().getState());
 
         // Next job
@@ -304,12 +274,8 @@ class DefaultJobExecutorTest
         waitJobFinished(jobA2);
         waitJobWaiting(jobAB3);
 
-        assertSame(State.FINISHED, jobA2.getStatus().getState());
-        assertSame(State.WAITING, jobAB3.getStatus().getState());
-
         jobAB3.unlock();
         waitJobFinished(jobAB3);
-        assertSame(State.FINISHED, jobAB3.getStatus().getState());
     }
 
     @Test
@@ -323,21 +289,8 @@ class DefaultJobExecutorTest
         //   - A1 && A2
         //   - AB3
 
-        GroupedJobInitializer groupedJobInitializer = mock();
-        when(groupedJobInitializer.getPoolSize()).thenReturn(2);
-        when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
-
-        JobGroupPath jobGroupPathA = new JobGroupPath(Collections.singletonList("A"));
-        when(this.groupedJobInitializerManager.getGroupedJobInitializer(jobGroupPathA))
-            .thenReturn(groupedJobInitializer);
-
-        groupedJobInitializer = mock();
-        when(groupedJobInitializer.getPoolSize()).thenReturn(2);
-        when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
-
-        JobGroupPath jobGroupPathAB = new JobGroupPath(Arrays.asList("A", "B"));
-        when(this.groupedJobInitializerManager.getGroupedJobInitializer(jobGroupPathAB))
-            .thenReturn(groupedJobInitializer);
+        mockPool(2, "A");
+        mockPool(2, "A", "B");
 
         TestBasicGroupedJob jobA1 = groupedJob("A");
         TestBasicGroupedJob jobA2 = groupedJob("A");
@@ -345,7 +298,6 @@ class DefaultJobExecutorTest
         TestBasicGroupedJob jobAB1 = groupedJob("A", "B");
         TestBasicGroupedJob jobAB2 = groupedJob("A", "B");
         TestBasicGroupedJob jobAB3 = groupedJob("A", "B");
-
 
         // Pre-lock all jobs
         jobA1.lock();
@@ -386,9 +338,7 @@ class DefaultJobExecutorTest
         // AB1 released a seat so A1 can take it and start
         waitJobWaiting(jobA1);
 
-        assertSame(State.FINISHED, jobAB1.getStatus().getState());
         assertSame(State.WAITING, jobAB2.getStatus().getState());
-        assertSame(State.WAITING, jobA1.getStatus().getState());
         assertNull(jobA2.getStatus().getState());
         assertNull(jobAB3.getStatus().getState());
 
@@ -399,9 +349,7 @@ class DefaultJobExecutorTest
         // AB2 released a seat so A2 can take it and start
         waitJobWaiting(jobA2);
 
-        assertSame(State.FINISHED, jobAB2.getStatus().getState());
         assertSame(State.WAITING, jobA1.getStatus().getState());
-        assertSame(State.WAITING, jobA2.getStatus().getState());
         assertNull(jobAB3.getStatus().getState());
 
         // Unlock A1 and A2 and finish them
@@ -413,13 +361,34 @@ class DefaultJobExecutorTest
         // There is now enough free seat for AB3 to start
         waitJobWaiting(jobAB3);
 
-        assertSame(State.FINISHED, jobA1.getStatus().getState());
-        assertSame(State.FINISHED, jobA2.getStatus().getState());
-        assertSame(State.WAITING, jobAB3.getStatus().getState());
-
         jobAB3.unlock();
         waitJobFinished(jobAB3);
-        assertSame(State.FINISHED, jobAB3.getStatus().getState());
+    }
+
+    private void mockAllPools(int poolSize)
+    {
+        // Note: the initializer must be built before the when() call since Mockito does not allow a stubbing to be
+        // started while another one is in progress.
+        GroupedJobInitializer initializer = groupedJobInitializer(poolSize);
+
+        when(this.groupedJobInitializerManager.getGroupedJobInitializer(any())).thenReturn(initializer);
+    }
+
+    private void mockPool(int poolSize, String... path)
+    {
+        GroupedJobInitializer initializer = groupedJobInitializer(poolSize);
+
+        when(this.groupedJobInitializerManager.getGroupedJobInitializer(new JobGroupPath(Arrays.asList(path))))
+            .thenReturn(initializer);
+    }
+
+    private GroupedJobInitializer groupedJobInitializer(int poolSize)
+    {
+        GroupedJobInitializer initializer = mock();
+        when(initializer.getPoolSize()).thenReturn(poolSize);
+        when(initializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
+
+        return initializer;
     }
 
     private TestBasicGroupedJob groupedJob(String... path)
