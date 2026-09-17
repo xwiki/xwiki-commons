@@ -181,8 +181,11 @@ class DefaultJobExecutorTest
         assertSame(State.FINISHED, job1.getStatus().getState());
     }
 
-    // There is no observable state change to poll for instead: see the comment at the Thread.sleep() call below.
-    @SuppressWarnings("java:S2925")
+    // S2925: there is no observable state change to poll for instead, see the comment at the Thread.sleep() call
+    // below. S5961: this many assertions is inherent to verifying every step of a long sequential concurrent state
+    // machine, not something splitting the method could reduce without duplicating its shared setup and losing the
+    // ordering guarantees between steps that are the point of the test.
+    @SuppressWarnings({"java:S2925", "java:S5961"})
     @Test
     void matchingGroupPathAreBlockedPoolMultiSizeParentFirst() throws InterruptedException
     {
