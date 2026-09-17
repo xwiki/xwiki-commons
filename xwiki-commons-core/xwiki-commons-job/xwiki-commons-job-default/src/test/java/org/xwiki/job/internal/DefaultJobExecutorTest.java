@@ -182,7 +182,7 @@ class DefaultJobExecutorTest
     }
 
     @Test
-    void matchingGroupPathAreBlockedPoolMultiSizeParentFirst()
+    void matchingGroupPathAreBlockedPoolMultiSizeParentFirst() throws InterruptedException
     {
         // Check the following setup:
         // Pool A of size 1 with 2 jobs (A1, A2)
@@ -263,6 +263,14 @@ class DefaultJobExecutorTest
         jobAB1.unlock();
 
         waitJobFinished(jobAB1);
+
+        // A2 was given to the executor above but, unlike a lock acquisition, there is no observable state change we
+        // can wait on to know its worker thread has actually reached (and registered itself on) the parent group's
+        // lock yet: it may still only be queued. Wait a bit to make it overwhelmingly likely that has happened
+        // before starting AB3, otherwise AB3's own registration could occasionally race ahead of A2's and this
+        // assertion would flicker.
+        // FIXME: We cannot use waitJobWaiting since the job itself is not started yet (blocked by previous jobs)
+        Thread.sleep(WAIT_VALUE);
 
         // Start AB3 only now to be sure it does not take the lock before A2.
         this.executor.execute(jobAB3);
