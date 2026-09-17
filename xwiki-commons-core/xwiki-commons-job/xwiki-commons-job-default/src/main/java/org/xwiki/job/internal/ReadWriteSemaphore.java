@@ -146,6 +146,9 @@ public class ReadWriteSemaphore
      * {@code acquireUninterruptibly} semantics this class previously relied on), while still restoring the thread's
      * interrupted status before returning so the caller is not left unable to observe it.
      */
+    // Both call sites (lockWrite() and lockRead()) already hold the monitor's lock, via a synchronized(this.monitor)
+    // block, before calling this private method.
+    @SuppressWarnings("java:S2273")
     private void waitUninterruptibly()
     {
         boolean interrupted = false;

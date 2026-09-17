@@ -181,6 +181,8 @@ class DefaultJobExecutorTest
         assertSame(State.FINISHED, job1.getStatus().getState());
     }
 
+    // There is no observable state change to poll for instead: see the comment at the Thread.sleep() call below.
+    @SuppressWarnings("java:S2925")
     @Test
     void matchingGroupPathAreBlockedPoolMultiSizeParentFirst() throws InterruptedException
     {
@@ -269,7 +271,6 @@ class DefaultJobExecutorTest
         // lock yet: it may still only be queued. Wait a bit to make it overwhelmingly likely that has happened
         // before starting AB3, otherwise AB3's own registration could occasionally race ahead of A2's and this
         // assertion would flicker.
-        // FIXME: We cannot use waitJobWaiting since the job itself is not started yet (blocked by previous jobs)
         Thread.sleep(WAIT_VALUE);
 
         // Start AB3 only now to be sure it does not take the lock before A2.
