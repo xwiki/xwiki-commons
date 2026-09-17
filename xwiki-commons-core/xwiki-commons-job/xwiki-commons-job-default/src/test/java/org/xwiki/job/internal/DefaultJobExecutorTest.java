@@ -39,7 +39,6 @@ import org.xwiki.test.junit5.mockito.MockComponent;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -86,6 +85,18 @@ class DefaultJobExecutorTest
         waitJobState(State.FINISHED, job);
     }
 
+    /**
+     * Waits until the passed job reaches the passed state, failing the test when it does not within
+     * {@link #WAIT_VALUE} milliseconds.
+     * <p>
+     * The timeout is raised by throwing rather than through {@code fail()} on purpose: this method is a barrier that
+     * drives the choreography to its next step, while what the test expects of each job is stated explicitly by the
+     * assertion that follows the wait. Using {@code fail()} here makes every call count as an assertion of the
+     * calling test, counting each checkpoint twice and making a test that only waits look like it verifies something.
+     *
+     * @param expected the state the job is expected to reach
+     * @param job the job to watch
+     */
     private void waitJobState(State expected, Job job)
     {
         int wait = 0;
@@ -99,14 +110,16 @@ class DefaultJobExecutorTest
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
-                fail("Job state monitor has been interrupted");
+                Thread.currentThread().interrupt();
+
+                throw new AssertionError("Job state monitor has been interrupted", e);
             }
 
             wait += 1;
         } while (wait < WAIT_VALUE);
 
-        fail(String.format("Job never reached expected state [%s]. Still [%s] after %s milliseconds",
-            expected, job.getStatus().getState(), WAIT_VALUE));
+        throw new AssertionError(String.format("Job never reached expected state [%s]. Still [%s] after %s "
+            + "milliseconds", expected, job.getStatus().getState(), WAIT_VALUE));
     }
 
     @Test
@@ -150,10 +163,14 @@ class DefaultJobExecutorTest
         waitJobWaiting(jobAB);
 
         assertSame(State.FINISHED, jobA.getStatus().getState());
+        assertSame(State.WAITING, jobAB.getStatus().getState());
 
         // Next job
         jobAB.unlock();
         waitJobFinished(jobAB);
+
+        assertSame(State.FINISHED, jobA.getStatus().getState());
+        assertSame(State.FINISHED, jobAB.getStatus().getState());
 
         // 1/2 and 1
 
@@ -165,10 +182,14 @@ class DefaultJobExecutorTest
         waitJobWaiting(job1);
 
         assertSame(State.FINISHED, job12.getStatus().getState());
+        assertSame(State.WAITING, job1.getStatus().getState());
 
         // Next job
         job1.unlock();
         waitJobFinished(job1);
+
+        assertSame(State.FINISHED, job12.getStatus().getState());
+        assertSame(State.FINISHED, job1.getStatus().getState());
     }
 
     // There is no observable state change to poll for instead: see the comment at the Thread.sleep() call below.
@@ -233,6 +254,7 @@ class DefaultJobExecutorTest
 
         // AB1 and AB2 were waiting on the lock: they can start both since the pool is of size 2
         // A2 is now waiting on a lock
+        assertSame(State.FINISHED, jobA1.getStatus().getState());
         assertSame(State.WAITING, jobAB1.getStatus().getState());
         assertSame(State.WAITING, jobAB2.getStatus().getState());
         assertNull(jobA2.getStatus().getState());
@@ -253,6 +275,7 @@ class DefaultJobExecutorTest
         this.executor.execute(jobAB3);
 
         // AB3 cannot start yet even if the pool is of 2 because A2 requested for the lock.
+        assertSame(State.FINISHED, jobAB1.getStatus().getState());
         assertSame(State.WAITING, jobAB2.getStatus().getState());
         assertNull(jobAB3.getStatus().getState());
         assertNull(jobA2.getStatus().getState());
@@ -265,6 +288,8 @@ class DefaultJobExecutorTest
         waitJobFinished(jobAB2);
         waitJobWaiting(jobA2);
 
+        assertSame(State.FINISHED, jobAB2.getStatus().getState());
+        assertSame(State.WAITING, jobA2.getStatus().getState());
         assertNull(jobAB3.getStatus().getState());
 
         // Next job
@@ -274,8 +299,12 @@ class DefaultJobExecutorTest
         waitJobFinished(jobA2);
         waitJobWaiting(jobAB3);
 
+        assertSame(State.FINISHED, jobA2.getStatus().getState());
+        assertSame(State.WAITING, jobAB3.getStatus().getState());
+
         jobAB3.unlock();
         waitJobFinished(jobAB3);
+        assertSame(State.FINISHED, jobAB3.getStatus().getState());
     }
 
     @Test
@@ -338,7 +367,9 @@ class DefaultJobExecutorTest
         // AB1 released a seat so A1 can take it and start
         waitJobWaiting(jobA1);
 
+        assertSame(State.FINISHED, jobAB1.getStatus().getState());
         assertSame(State.WAITING, jobAB2.getStatus().getState());
+        assertSame(State.WAITING, jobA1.getStatus().getState());
         assertNull(jobA2.getStatus().getState());
         assertNull(jobAB3.getStatus().getState());
 
@@ -349,7 +380,9 @@ class DefaultJobExecutorTest
         // AB2 released a seat so A2 can take it and start
         waitJobWaiting(jobA2);
 
+        assertSame(State.FINISHED, jobAB2.getStatus().getState());
         assertSame(State.WAITING, jobA1.getStatus().getState());
+        assertSame(State.WAITING, jobA2.getStatus().getState());
         assertNull(jobAB3.getStatus().getState());
 
         // Unlock A1 and A2 and finish them
@@ -361,8 +394,13 @@ class DefaultJobExecutorTest
         // There is now enough free seat for AB3 to start
         waitJobWaiting(jobAB3);
 
+        assertSame(State.FINISHED, jobA1.getStatus().getState());
+        assertSame(State.FINISHED, jobA2.getStatus().getState());
+        assertSame(State.WAITING, jobAB3.getStatus().getState());
+
         jobAB3.unlock();
         waitJobFinished(jobAB3);
+        assertSame(State.FINISHED, jobAB3.getStatus().getState());
     }
 
     private void mockAllPools(int poolSize)
