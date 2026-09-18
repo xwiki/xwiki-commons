@@ -19,9 +19,6 @@
  */
 package org.xwiki.job.internal;
 
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * A specific concurrency implementation for managing Semaphore with Read/Write lock capabilities.
  * This semaphore allows several process to access a resource in read only, but lock it for accessing it in write when
@@ -32,9 +29,41 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ReadWriteSemaphore
 {
-    private final AtomicInteger readCounter;
-    private final AtomicInteger writeCounter;
-    private final Semaphore semaphore;
+    /**
+     * Guards {@link #readCounter}, {@link #writeCounter} and {@link #activeWriters}, and is waited/notified on to
+     * block callers until the state allows them to proceed. A previous implementation tracked the same counters but
+     * encoded the write/read exclusion as a number of permits to acquire from a {@link java.util.concurrent.Semaphore}
+     * computed from a counter snapshot; a reader's snapshot at lock time could legitimately differ from the one
+     * still current at its own unlock time (readers and writers coming and going in between), so the permits taken
+     * and given back did not always match, permanently losing some and deadlocking every later caller. Expressing
+     * the invariant directly on the counters under one monitor removes that whole class of mismatch.
+     */
+    private final Object monitor = new Object();
+
+    private final int poolSize;
+
+    private int readCounter;
+
+    /**
+     * Incremented as soon as {@link #lockWrite()} is called, before the caller is actually granted write access, so
+     * that any {@link #lockRead()} called afterwards blocks behind it instead of possibly running ahead of an
+     * already-announced writer.
+     */
+    private int writeCounter;
+
+    private int activeWriters;
+
+    /**
+     * Ticket handed out, in {@link #lockWrite()} call order, to each writer waiting for a slot; paired with
+     * {@link #nextWriteTicketToServe}, this is what makes an earlier writer take priority over a later one once a
+     * slot frees up. Plain {@code wait()}/{@code notifyAll()} gives no such guarantee on its own: every writer
+     * waiting on {@link #monitor} wakes up and re-checks its condition in whatever order the JVM happens to grant
+     * them the monitor, which without a ticket could let a later writer take a slot a still-waiting earlier one was
+     * counting on.
+     */
+    private long nextWriteTicket;
+
+    private long nextWriteTicketToServe;
 
     /**
      * Create a semaphore with the given number of permits.
@@ -42,64 +71,101 @@ public class ReadWriteSemaphore
      */
     public ReadWriteSemaphore(int poolSize)
     {
-        this.semaphore = new Semaphore(poolSize, true);
-        this.readCounter = new AtomicInteger(0);
-        this.writeCounter = new AtomicInteger(0);
+        this.poolSize = poolSize;
     }
 
     /**
-     * Takes one permit on the semaphore for writing, but also takes as much permits as they are reader
-     * so we only allow reader or other writer depending on the semaphore size.
+     * Blocks until a slot is free, then takes it. Active readers and active writers share the same pool of slots
+     * (bounded by the configured pool size): a writer only has to wait for as many currently-active readers as it
+     * takes to free up a slot for it, not for every active reader to leave. Also immediately signals intent so that
+     * any reader calling {@link #lockRead()} afterwards waits behind this call instead of possibly being granted
+     * ahead of it. Writers are served in the order they called this method, so a slot freed up for an earlier
+     * writer cannot be taken by a later one instead.
      */
     public void lockWrite()
     {
-        this.writeCounter.incrementAndGet();
+        synchronized (this.monitor) {
+            this.writeCounter++;
 
-        if (this.writeCounter.get() == 1) {
-            this.semaphore.acquireUninterruptibly(this.readCounter.get() + 1);
-        } else {
-            this.semaphore.acquireUninterruptibly();
+            long myTicket = this.nextWriteTicket++;
+
+            while (myTicket != this.nextWriteTicketToServe || this.activeWriters + this.readCounter >= this.poolSize) {
+                waitUninterruptibly();
+            }
+
+            this.nextWriteTicketToServe++;
+            this.activeWriters++;
+
+            // Another writer next in line may already be able to proceed too (there can be more than one slot).
+            this.monitor.notifyAll();
         }
     }
 
     /**
-     * Release a permit in the semaphore. If the writer counter is now empty, then we also release as many permits as
-     * they are readers.
+     * Release a writer slot taken by {@link #lockWrite()}.
      */
     public void unlockWrite()
     {
-        this.writeCounter.decrementAndGet();
+        synchronized (this.monitor) {
+            this.activeWriters--;
+            this.writeCounter--;
 
-        if (this.writeCounter.get() == 0) {
-            this.semaphore.release(this.readCounter.get() + 1);
-        } else {
-            this.semaphore.release();
+            this.monitor.notifyAll();
         }
     }
 
     /**
-     * Increment the reader counter, and takes a permit in the semaphore only if there is already at least one writer
-     * on it: we ensure to block new readers if the semaphore is full already.
+     * Blocks until no writer is active or waiting, then registers as a reader. Readers are never bounded by the
+     * pool size, only mutually exclusive with writers.
      */
     public void lockRead()
     {
-        this.readCounter.incrementAndGet();
+        synchronized (this.monitor) {
+            while (this.writeCounter > 0) {
+                waitUninterruptibly();
+            }
 
-        if (this.writeCounter.get() > 0) {
-            this.semaphore.acquireUninterruptibly();
+            this.readCounter++;
         }
     }
 
     /**
-     * Decrement the reader counter, and release a permit in the semaphore only if there is already at least one writer
-     * because we took previously a permit for this reader.
+     * Release a read registration taken by {@link #lockRead()}.
      */
     public void unlockRead()
     {
-        this.readCounter.decrementAndGet();
+        synchronized (this.monitor) {
+            this.readCounter--;
 
-        if (this.writeCounter.get() > 0) {
-            this.semaphore.release();
+            this.monitor.notifyAll();
+        }
+    }
+
+    /**
+     * Wait on {@link #monitor} for a state change, without responding to interruption (matching the
+     * {@code acquireUninterruptibly} semantics this class previously relied on), while still restoring the thread's
+     * interrupted status before returning so the caller is not left unable to observe it.
+     */
+    // Both call sites (lockWrite() and lockRead()) already hold the monitor's lock, via a synchronized(this.monitor)
+    // block, before calling this private method.
+    @SuppressWarnings("java:S2273")
+    private void waitUninterruptibly()
+    {
+        boolean interrupted = false;
+
+        try {
+            while (true) {
+                try {
+                    this.monitor.wait();
+                    return;
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                }
+            }
+        } finally {
+            if (interrupted) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 }
