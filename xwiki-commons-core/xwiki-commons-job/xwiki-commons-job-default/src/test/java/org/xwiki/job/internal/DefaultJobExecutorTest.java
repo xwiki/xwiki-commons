@@ -20,7 +20,6 @@
 package org.xwiki.job.internal;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +39,6 @@ import org.xwiki.test.junit5.mockito.MockComponent;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -87,6 +85,18 @@ class DefaultJobExecutorTest
         waitJobState(State.FINISHED, job);
     }
 
+    /**
+     * Waits until the passed job reaches the passed state, failing the test when it does not within
+     * {@link #WAIT_VALUE} milliseconds.
+     * <p>
+     * The timeout is raised by throwing rather than through {@code fail()} on purpose: this method is a barrier that
+     * drives the choreography to its next step, while what the test expects of each job is stated explicitly by the
+     * assertion that follows the wait. Using {@code fail()} here makes every call count as an assertion of the
+     * calling test, counting each checkpoint twice and making a test that only waits look like it verifies something.
+     *
+     * @param expected the state the job is expected to reach
+     * @param job the job to watch
+     */
     private void waitJobState(State expected, Job job)
     {
         int wait = 0;
@@ -100,23 +110,24 @@ class DefaultJobExecutorTest
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
-                fail("Job state monitor has been interrupted");
+                Thread.currentThread().interrupt();
+
+                throw new AssertionError("Job state monitor has been interrupted", e);
             }
 
             wait += 1;
         } while (wait < WAIT_VALUE);
 
-        fail(String.format("Job never reached expected state [%s]. Still [%s] after %s milliseconds",
-            expected, job.getStatus().getState(), WAIT_VALUE));
+        throw new AssertionError(String.format("Job never reached expected state [%s]. Still [%s] after %s "
+            + "milliseconds", expected, job.getStatus().getState(), WAIT_VALUE));
     }
 
     @Test
     void matchingGroupPathAreBlocked()
     {
-        GroupedJobInitializer groupedJobInitializer = mock();
-        when(groupedJobInitializer.getPoolSize()).thenReturn(1);
-        when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
-        when(this.groupedJobInitializerManager.getGroupedJobInitializer(any())).thenReturn(groupedJobInitializer);
+        // Every job group of this test uses a pool of size 1.
+        mockAllPools(1);
+
         TestBasicGroupedJob jobA = groupedJob("A");
         TestBasicGroupedJob jobAB = groupedJob("A", "B");
 
@@ -177,12 +188,14 @@ class DefaultJobExecutorTest
         job1.unlock();
         waitJobFinished(job1);
 
-        assertSame(State.FINISHED, job1.getStatus().getState());
+        assertSame(State.FINISHED, job12.getStatus().getState());
         assertSame(State.FINISHED, job1.getStatus().getState());
     }
 
+    // There is no observable state change to poll for instead: see the comment at the Thread.sleep() call below.
+    @SuppressWarnings("java:S2925")
     @Test
-    void matchingGroupPathAreBlockedPoolMultiSizeParentFirst()
+    void matchingGroupPathAreBlockedPoolMultiSizeParentFirst() throws InterruptedException
     {
         // Check the following setup:
         // Pool A of size 1 with 2 jobs (A1, A2)
@@ -193,21 +206,8 @@ class DefaultJobExecutorTest
         //   - A2
         //   - AB3
 
-        GroupedJobInitializer groupedJobInitializer = mock();
-        when(groupedJobInitializer.getPoolSize()).thenReturn(1);
-        when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
-
-        JobGroupPath jobGroupPathA = new JobGroupPath(Collections.singletonList("A"));
-        when(this.groupedJobInitializerManager.getGroupedJobInitializer(jobGroupPathA))
-            .thenReturn(groupedJobInitializer);
-
-        groupedJobInitializer = mock();
-        when(groupedJobInitializer.getPoolSize()).thenReturn(2);
-        when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
-
-        JobGroupPath jobGroupPathAB = new JobGroupPath(Arrays.asList("A", "B"));
-        when(this.groupedJobInitializerManager.getGroupedJobInitializer(jobGroupPathAB))
-            .thenReturn(groupedJobInitializer);
+        mockPool(1, "A");
+        mockPool(2, "A", "B");
 
         TestBasicGroupedJob jobA1 = groupedJob("A");
         TestBasicGroupedJob jobA2 = groupedJob("A");
@@ -226,11 +226,11 @@ class DefaultJobExecutorTest
         // Give first jobs to JobExecutor
         this.executor.execute(jobA1);
 
-        // Give enough time for the jobs to be fully taken into ABcount
+        // Give enough time for the jobs to be fully taken into account
         waitJobWaiting(jobA1);
 
-        // Give following jobs to JobExecutor (to make sure they are ABtually after since the grouped job executor queue
-        // is not "fair")
+        // Give following jobs to JobExecutor (to make sure they are actually after since the grouped job executor
+        // queue is not "fair")
         this.executor.execute(jobAB1);
         this.executor.execute(jobAB2);
 
@@ -263,6 +263,13 @@ class DefaultJobExecutorTest
         jobAB1.unlock();
 
         waitJobFinished(jobAB1);
+
+        // A2 was given to the executor above but, unlike a lock acquisition, there is no observable state change we
+        // can wait on to know its worker thread has actually reached (and registered itself on) the parent group's
+        // lock yet: it may still only be queued. Wait a bit to make it overwhelmingly likely that has happened
+        // before starting AB3, otherwise AB3's own registration could occasionally race ahead of A2's and this
+        // assertion would flicker.
+        Thread.sleep(WAIT_VALUE);
 
         // Start AB3 only now to be sure it does not take the lock before A2.
         this.executor.execute(jobAB3);
@@ -311,21 +318,8 @@ class DefaultJobExecutorTest
         //   - A1 && A2
         //   - AB3
 
-        GroupedJobInitializer groupedJobInitializer = mock();
-        when(groupedJobInitializer.getPoolSize()).thenReturn(2);
-        when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
-
-        JobGroupPath jobGroupPathA = new JobGroupPath(Collections.singletonList("A"));
-        when(this.groupedJobInitializerManager.getGroupedJobInitializer(jobGroupPathA))
-            .thenReturn(groupedJobInitializer);
-
-        groupedJobInitializer = mock();
-        when(groupedJobInitializer.getPoolSize()).thenReturn(2);
-        when(groupedJobInitializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
-
-        JobGroupPath jobGroupPathAB = new JobGroupPath(Arrays.asList("A", "B"));
-        when(this.groupedJobInitializerManager.getGroupedJobInitializer(jobGroupPathAB))
-            .thenReturn(groupedJobInitializer);
+        mockPool(2, "A");
+        mockPool(2, "A", "B");
 
         TestBasicGroupedJob jobA1 = groupedJob("A");
         TestBasicGroupedJob jobA2 = groupedJob("A");
@@ -333,7 +327,6 @@ class DefaultJobExecutorTest
         TestBasicGroupedJob jobAB1 = groupedJob("A", "B");
         TestBasicGroupedJob jobAB2 = groupedJob("A", "B");
         TestBasicGroupedJob jobAB3 = groupedJob("A", "B");
-
 
         // Pre-lock all jobs
         jobA1.lock();
@@ -408,6 +401,32 @@ class DefaultJobExecutorTest
         jobAB3.unlock();
         waitJobFinished(jobAB3);
         assertSame(State.FINISHED, jobAB3.getStatus().getState());
+    }
+
+    private void mockAllPools(int poolSize)
+    {
+        // Note: the initializer must be built before the when() call since Mockito does not allow a stubbing to be
+        // started while another one is in progress.
+        GroupedJobInitializer initializer = groupedJobInitializer(poolSize);
+
+        when(this.groupedJobInitializerManager.getGroupedJobInitializer(any())).thenReturn(initializer);
+    }
+
+    private void mockPool(int poolSize, String... path)
+    {
+        GroupedJobInitializer initializer = groupedJobInitializer(poolSize);
+
+        when(this.groupedJobInitializerManager.getGroupedJobInitializer(new JobGroupPath(Arrays.asList(path))))
+            .thenReturn(initializer);
+    }
+
+    private GroupedJobInitializer groupedJobInitializer(int poolSize)
+    {
+        GroupedJobInitializer initializer = mock();
+        when(initializer.getPoolSize()).thenReturn(poolSize);
+        when(initializer.getDefaultPriority()).thenReturn(Thread.NORM_PRIORITY);
+
+        return initializer;
     }
 
     private TestBasicGroupedJob groupedJob(String... path)
