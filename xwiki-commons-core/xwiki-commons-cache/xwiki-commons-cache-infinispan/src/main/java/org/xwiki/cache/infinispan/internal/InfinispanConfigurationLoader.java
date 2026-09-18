@@ -22,14 +22,15 @@ package org.xwiki.cache.infinispan.internal;
 import org.apache.commons.lang3.StringUtils;
 import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
+import org.infinispan.configuration.cache.ExpirationConfiguration;
 import org.infinispan.configuration.cache.ExpirationConfigurationBuilder;
 import org.infinispan.configuration.cache.PersistenceConfiguration;
 import org.infinispan.configuration.cache.PersistenceConfigurationBuilder;
-import org.infinispan.configuration.cache.SingleFileStoreConfiguration;
-import org.infinispan.configuration.cache.SingleFileStoreConfigurationBuilder;
 import org.infinispan.configuration.cache.StoreConfiguration;
 import org.infinispan.configuration.cache.StoreConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
+import org.infinispan.persistence.file.SingleFileStoreConfiguration;
+import org.infinispan.persistence.file.SingleFileStoreConfigurationBuilder;
 import org.infinispan.persistence.sifs.configuration.SoftIndexFileStoreConfiguration;
 import org.infinispan.persistence.sifs.configuration.SoftIndexFileStoreConfigurationBuilder;
 import org.xwiki.cache.config.CacheConfiguration;
@@ -79,11 +80,11 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
             // Wakeup interval
             customizeExpirationWakeUpInterval(builder, eec);
 
+            // Lifespan (set before the max idle, which is validated against it)
+            customizeExpirationLifespan(builder, eec);
+
             // Max idle
             customizeExpirationMaxIdle(builder, eec);
-
-            // Lifespan
-            customizeExpirationLifespan(builder, eec);
         }
     }
 
@@ -107,7 +108,15 @@ public class InfinispanConfigurationLoader extends AbstractCacheConfigurationLoa
     private void customizeExpirationMaxIdle(ConfigurationBuilder builder, EntryEvictionConfiguration eec)
     {
         if (eec.getTimeToLive() > 0) {
-            builder.expiration().maxIdle(eec.getTimeToLive() * 1000L);
+            long maxIdle = eec.getTimeToLive() * 1000L;
+            long lifespan =
+                builder.expiration().attributes().attribute(ExpirationConfiguration.LIFESPAN).get().longValue();
+
+            // Infinispan refuses a max idle greater than or equal to the lifespan. Such a max idle would not have any
+            // effect anyway since an entry never outlives its lifespan, so it's simply ignored.
+            if (lifespan <= 0 || maxIdle < lifespan) {
+                builder.expiration().maxIdle(maxIdle);
+            }
         }
     }
 

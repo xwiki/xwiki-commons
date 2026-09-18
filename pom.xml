@@ -179,8 +179,8 @@
     <jaxb.tools.version>2.0.16</jaxb.tools.version>
 
     <!-- Infinispan and Protostream -->
-    <protostream.version>5.0.15.Final</protostream.version>
-    <infinispan.version>15.2.6.Final</infinispan.version>
+    <protostream.version>6.0.11</protostream.version>
+    <infinispan.version>16.2.3</infinispan.version>
 
     <!-- AWS SDK -->
     <aws.java.sdk.version>2.54.19</aws.java.sdk.version>
@@ -1616,13 +1616,6 @@
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-core</artifactId>
         <version>${infinispan.version}</version>
-        <exclusions>
-          <!-- Mistake in infinispan 15.2.x, fixed in 15.3+ -->
-          <exclusion>
-            <groupId>org.infinispan</groupId>
-            <artifactId>infinispan-commons-spi</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <!-- Docker -->

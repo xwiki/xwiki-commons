@@ -19,7 +19,6 @@
  */
 package org.xwiki.cache.infinispan.internal;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
@@ -28,7 +27,11 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
+import org.infinispan.commons.configuration.io.ConfigurationResourceResolvers;
+import org.infinispan.commons.dataconversion.MediaType;
 import org.infinispan.configuration.cache.Configuration;
+import org.infinispan.configuration.parsing.ConfigurationBuilderHolder;
+import org.infinispan.configuration.parsing.ParserRegistry;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.slf4j.Logger;
@@ -98,20 +101,26 @@ public class InfinispanCacheFactory implements CacheFactory, Initializable, Disp
             this.logger.debug("Can't find any Environment", e);
         }
 
+        ConfigurationBuilderHolder holder = new ConfigurationBuilderHolder();
+
+        // Infinispan metrics are collected through Micrometer, which XWiki does not provide. Disabling them before
+        // parsing the configuration file (which can enable them back) avoids a warning at startup about the missing
+        // Micrometer dependencies.
+        holder.getGlobalConfigurationBuilder().metrics().gauges(false).histograms(false);
+
         InputStream configurationStream = getConfigurationFileAsStream();
 
         if (configurationStream != null) {
-            // CacheManager initialization
             try {
-                this.cacheManager = new DefaultCacheManager(configurationStream);
-            } catch (IOException e) {
-                throw new InitializationException("Failed to create Infinispan cache manager", e);
+                new ParserRegistry().parse(configurationStream, holder, ConfigurationResourceResolvers.DEFAULT,
+                    MediaType.APPLICATION_XML);
             } finally {
                 IOUtils.closeQuietly(configurationStream);
             }
-        } else {
-            this.cacheManager = new DefaultCacheManager();
         }
+
+        // CacheManager initialization
+        this.cacheManager = new DefaultCacheManager(holder.validate());
     }
 
     @Override
