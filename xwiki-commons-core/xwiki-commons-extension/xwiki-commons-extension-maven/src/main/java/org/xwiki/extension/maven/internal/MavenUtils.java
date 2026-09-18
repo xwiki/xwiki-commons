@@ -20,8 +20,10 @@
 package org.xwiki.extension.maven.internal;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
@@ -57,6 +59,13 @@ public final class MavenUtils
      * The package containing maven informations in a jar file.
      */
     public static final String MAVENPACKAGE = "META-INF.maven";
+
+    /**
+     * The folder containing the Maven descriptors in a jar file.
+     * 
+     * @since 18.9.0RC1
+     */
+    public static final String MAVENDESCRIPTORFOLDER = "META-INF/maven/";
 
     /**
      * SNAPSHOT suffix in versions.
@@ -108,7 +117,9 @@ public final class MavenUtils
      */
     public static final String REPOSITORY_PROPERTY_SNAPSHOT = "maven.snapshot";
 
-    private static final String PROPERTY_REFERENCE_PREFIX = "$";
+    private static final String PROPERTY_REFERENCE_PREFIX = "${";
+
+    private static final String PROPERTY_REFERENCE_SUFFIX = "}";
 
     private MavenUtils()
     {
@@ -240,18 +251,8 @@ public final class MavenUtils
                     version = parent.getVersion();
                 }
             }
-        } else if (version.startsWith(PROPERTY_REFERENCE_PREFIX)) {
-            String propertyName = version.substring(2, version.length() - 1);
-
-            if ("project.version".equals(propertyName) || "pom.version".equals(propertyName)
-                || "version".equals(propertyName)) {
-                version = resolveVersion(mavenModel.getVersion(), mavenModel, false);
-            } else {
-                String value = mavenModel.getProperties().getProperty(propertyName);
-                if (value != null) {
-                    version = value;
-                }
-            }
+        } else {
+            version = resolveVersionProperty(version, mavenModel);
         }
 
         if (version == null) {
@@ -292,12 +293,11 @@ public final class MavenUtils
                     groupId = parent.getGroupId();
                 }
             }
-        } else if (groupId.startsWith(PROPERTY_REFERENCE_PREFIX)) {
-            String propertyName = groupId.substring(2, groupId.length() - 1);
+        } else {
+            String propertyName = getPropertyName(groupId);
 
-            String value = mavenModel.getProperties().getProperty(propertyName);
-            if (value != null) {
-                groupId = value;
+            if (propertyName != null) {
+                groupId = mavenModel.getProperties().getProperty(propertyName, groupId);
             }
         }
 
@@ -306,6 +306,101 @@ public final class MavenUtils
         }
 
         return groupId;
+    }
+
+    /**
+     * @param value the value which might be a property reference
+     * @return the name of the referenced property, or null if the value is not a property reference
+     */
+    private static String getPropertyName(String value)
+    {
+        if (value.startsWith(PROPERTY_REFERENCE_PREFIX) && value.endsWith(PROPERTY_REFERENCE_SUFFIX)
+            && value.length() > PROPERTY_REFERENCE_PREFIX.length() + PROPERTY_REFERENCE_SUFFIX.length()) {
+            return value.substring(PROPERTY_REFERENCE_PREFIX.length(),
+                value.length() - PROPERTY_REFERENCE_SUFFIX.length());
+        }
+
+        return null;
+    }
+
+    /**
+     * @param version the version to resolve, which might be a reference to a property
+     * @param mavenModel the Maven Model instance
+     * @return the resolved version, or the passed version when it's not a property which can be resolved
+     */
+    private static String resolveVersionProperty(String version, Model mavenModel)
+    {
+        String propertyName = getPropertyName(version);
+
+        if (propertyName == null) {
+            return version;
+        }
+
+        if ("project.version".equals(propertyName) || "pom.version".equals(propertyName)
+            || "version".equals(propertyName)) {
+            return resolveProjectVersion(version, mavenModel);
+        }
+
+        return mavenModel.getProperties().getProperty(propertyName, version);
+    }
+
+    /**
+     * @param modelVersion the version referencing the version of the project
+     * @param mavenModel the Maven Model instance
+     * @return the resolved version of the project
+     */
+    private static String resolveProjectVersion(String modelVersion, Model mavenModel)
+    {
+        // When it's the version of the model itself which references the version of the project, resolving it from
+        // the model would loop forever: the parent is then the only place where a version can be found
+        if (Objects.equals(modelVersion, mavenModel.getVersion())) {
+            Parent parent = mavenModel.getParent();
+
+            return parent != null ? parent.getVersion() : null;
+        }
+
+        return resolveVersion(mavenModel.getVersion(), mavenModel, false);
+    }
+
+    /**
+     * @param value the value to test
+     * @return true if the passed value is a Maven property reference which could not be resolved
+     * @since 18.9.0RC1
+     */
+    public static boolean isUnresolved(String value)
+    {
+        return value == null || value.startsWith(PROPERTY_REFERENCE_PREFIX);
+    }
+
+    /**
+     * Extract the group id and the artifact id from the location of a Maven descriptor embedded in a jar file, which
+     * Maven generates at {@code META-INF/maven/<groupId>/<artifactId>/pom.xml}. Those are always resolved, while the
+     * content of the {@code pom.xml} might be the raw one (in which case it can contain unresolved properties).
+     * 
+     * @param descriptorPath the path of the {@code pom.xml}
+     * @return the group id followed by the artifact id, or an empty array if the passed path does not follow the
+     *         standard Maven layout
+     * @since 18.9.0RC1
+     */
+    public static String[] parseDescriptorPath(String descriptorPath)
+    {
+        if (descriptorPath == null) {
+            return ArrayUtils.EMPTY_STRING_ARRAY;
+        }
+
+        int index = descriptorPath.lastIndexOf(MAVENDESCRIPTORFOLDER);
+        if (index == -1) {
+            return ArrayUtils.EMPTY_STRING_ARRAY;
+        }
+
+        String[] elements = StringUtils.split(descriptorPath.substring(index + MAVENDESCRIPTORFOLDER.length()), '/');
+
+        // Only <groupId>/<artifactId>/pom.xml is a standard descriptor location
+        if (elements.length != 3 || !elements[2].equals("pom.xml")) {
+            return ArrayUtils.EMPTY_STRING_ARRAY;
+        }
+
+        return new String[] {elements[0], elements[1]};
     }
 
     /**
