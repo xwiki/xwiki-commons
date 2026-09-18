@@ -53,6 +53,7 @@ import org.xwiki.environment.Environment;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.InvalidExtensionException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.maven.internal.DefaultMavenExtensionDependency;
 import org.xwiki.extension.maven.internal.MavenCoreExtension;
@@ -220,6 +221,10 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
             // Resolve Maven variables in critical places
             MavenUtils.resolveVariables(mavenModel);
 
+            // Resolve the identifier from the location of the descriptor when the descriptor itself does not
+            // provide a usable one
+            resolveIdFromLocation(mavenModel, descriptorURL);
+
             Extension mavenExtension = this.converter.convert(Extension.class, mavenModel);
 
             DefaultCoreExtension coreExtension = new MavenCoreExtension(repository, jarURL, mavenExtension);
@@ -234,6 +239,40 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
             return coreExtension;
         } finally {
             IOUtils.closeQuietly(descriptorStream);
+        }
+    }
+
+    /**
+     * The identifier found in a {@code pom.xml} embedded in a jar file cannot always be resolved from the model
+     * alone: some jars contain the raw {@code pom.xml} of the module, in which the group id or the artifact id can
+     * be a property (a self referencing one in the case of {@code ${project.artifactId}}). The location Maven uses
+     * for that descriptor, {@code META-INF/maven/<groupId>/<artifactId>/pom.xml}, always contains the resolved
+     * identifier.
+     * 
+     * @param model the model to complete
+     * @param descriptorURL the location of the descriptor
+     * @throws InvalidExtensionException when the identifier could not be resolved, in which case it's better to
+     *             ignore the descriptor than to register an extension with an unusable identifier
+     */
+    private void resolveIdFromLocation(Model model, URL descriptorURL) throws InvalidExtensionException
+    {
+        if (MavenUtils.isUnresolved(model.getGroupId()) || MavenUtils.isUnresolved(model.getArtifactId())) {
+            String[] mavenId = MavenUtils.parseDescriptorPath(descriptorURL.toExternalForm());
+
+            if (mavenId.length == 2) {
+                if (MavenUtils.isUnresolved(model.getGroupId())) {
+                    model.setGroupId(mavenId[0]);
+                }
+
+                if (MavenUtils.isUnresolved(model.getArtifactId())) {
+                    model.setArtifactId(mavenId[1]);
+                }
+            }
+
+            if (MavenUtils.isUnresolved(model.getGroupId()) || MavenUtils.isUnresolved(model.getArtifactId())) {
+                throw new InvalidExtensionException("Failed to resolve the identifier [%s:%s] of the extension"
+                    .formatted(model.getGroupId(), model.getArtifactId()));
+            }
         }
     }
 
