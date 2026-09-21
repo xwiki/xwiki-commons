@@ -92,6 +92,9 @@ public final class XMLUtils
          * @param exception the exception to be logged
          */
         @Override
+        // warn is always enabled in XWiki's default logging configuration, so guarding this call could
+        // never skip the evaluation of its argument.
+        @SuppressWarnings("java:S2629")
         public void fatalError(TransformerException exception) throws TransformerException
         {
             LOGGER.warn("Fatal error from xml transformer: [{}]", ExceptionUtils.getRootCauseMessage(exception));

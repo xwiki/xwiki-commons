@@ -24,7 +24,7 @@ package org.xwiki.filter.utils;
  * @since 6.2M1
  */
 // Old interface not describing a type, hard to remove for backward-compatibility reasons.
-@SuppressWarnings("checkstyle:InterfaceIsType")
+@SuppressWarnings({"checkstyle:InterfaceIsType", "java:S1214"})
 public interface FilterStreamConstants
 {
     // Standard properties
