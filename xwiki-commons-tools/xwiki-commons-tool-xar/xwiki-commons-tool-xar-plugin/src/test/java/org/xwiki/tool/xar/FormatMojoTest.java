@@ -34,6 +34,7 @@ import org.dom4j.io.SAXReader;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.xwiki.tool.xar.internal.XMLUtils.getSAXReader;
 
 /**
@@ -51,9 +52,7 @@ class FormatMojoTest
         mojo.defaultLanguage = "en";
 
         File file = new File("Some/Space/Document.xml");
-        List<File> files = Arrays.asList(
-            new File("Some/Space/Document.xml"),
-            new File("Some/Space/Document.fr.xml"));
+        List<File> files = Arrays.asList(new File("Some/Space/Document.xml"), new File("Some/Space/Document.fr.xml"));
 
         assertEquals(Locale.ENGLISH, mojo.guessDefaultLocale(file, files));
     }
@@ -118,9 +117,7 @@ class FormatMojoTest
 
         File file = new File("Space1/Document.xml");
         // Simulate a page with the same name and with a translation but in a different space.
-        List<File> files = Arrays.asList(
-            new File("Space2/Document.xml"),
-            new File("Space2/Document.fr.xml"));
+        List<File> files = Arrays.asList(new File("Space2/Document.xml"), new File("Space2/Document.fr.xml"));
 
         assertEquals(Locale.ROOT, mojo.guessDefaultLocale(file, files));
     }
@@ -146,7 +143,28 @@ class FormatMojoTest
         writer.setVersion("1.1");
         writer.write(domdoc);
         writer.close();
+        String actual = baos.toString(java.nio.charset.StandardCharsets.UTF_8);
 
-        assertEquals(expectedContent, baos.toString());
+        int offset = -1;
+        if (!expectedContent.equals(actual)) {
+            for (int i = 0; i < Math.min(((String) expectedContent).length(), ((String) actual).length()); i++) {
+                char c1 = expectedContent.charAt(i);
+                char c2 = actual.charAt(i);
+                if (c1 != c2) {
+                    offset = i;
+                    break;
+                }
+            }
+            String result = "";
+            if (offset != -1) {
+                result += "Offset of first difference: " + offset + " expected char: " + expectedContent.charAt(offset)
+                    + " (" + ((int) expectedContent.charAt(offset)) + ")" + " actual char: " + actual.charAt(offset)
+                    + " (" + ((int) actual.charAt(offset)) + ")" + System.lineSeparator();
+            }
+            result += "Expected:" + System.lineSeparator() + expectedContent + System.lineSeparator()
+                + System.lineSeparator() + " Does not match actual: " + System.lineSeparator() + actual
+                + System.lineSeparator() + System.lineSeparator();
+            assertTrue(false, result);
+        }
     }
 }
