@@ -90,7 +90,11 @@ import org.xwiki.xml.stax.StAXUtils;
  * @version $Id$
  * @since 4.0M1
  */
-@SuppressWarnings("checkstyle:ClassFanOutComplexity")
+// 'transient' is deliberate here: AbstractExtension keeps a non-transient reference to its
+// repository and extensions are serialized with XStream inside job statuses. XStream honours
+// 'transient' independently of java.io.Serializable, so removing it would pull the injected
+// components and caches into that graph.
+@SuppressWarnings({ "checkstyle:ClassFanOutComplexity", "java:S2065" })
 public class XWikiExtensionRepository extends AbstractExtensionRepository
     implements AdvancedSearchable, RatableExtensionRepository
 {
