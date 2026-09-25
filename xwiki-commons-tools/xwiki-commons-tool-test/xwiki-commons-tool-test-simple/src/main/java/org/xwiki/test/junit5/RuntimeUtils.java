@@ -47,6 +47,9 @@ public final class RuntimeUtils
      * @param command the command to execute (e.g. "docker ps -a")
      * @return the command result
      */
+    // Catching Throwable is deliberate here, as the comment in the catch block states: this is debugging code and it
+    // must never hide the root cause of the failure it is reporting on.
+    @SuppressWarnings("java:S1181")
     public static String run(String command)
     {
         String result;
