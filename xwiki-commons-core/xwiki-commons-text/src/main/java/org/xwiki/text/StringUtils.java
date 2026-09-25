@@ -27,6 +27,9 @@ package org.xwiki.text;
  * @version $Id$
  * @since 6.2
  */
+// The shadowing is deliberate: extending the Commons Lang class under its own name is what lets XWiki offer a
+// single Velocity binding for both sets of helpers (see the class Javadoc).
+@SuppressWarnings("java:S2176")
 public class StringUtils extends org.apache.commons.lang3.StringUtils
 {
     /**

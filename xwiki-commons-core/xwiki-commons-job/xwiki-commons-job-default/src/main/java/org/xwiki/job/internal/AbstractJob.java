@@ -34,6 +34,9 @@ import org.xwiki.job.Request;
  */
 @Deprecated(since = "7.4M1")
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
+// The shadowing is deliberate: this deprecated class exists only to keep the old name compiling against the
+// class that replaced it, so renaming it would defeat its only purpose.
+@SuppressWarnings("java:S2176")
 public abstract class AbstractJob<R extends Request, S extends org.xwiki.job.AbstractJobStatus<? super R>>
     extends org.xwiki.job.AbstractJob<R, S>
 {

@@ -29,6 +29,9 @@ import org.xwiki.component.annotation.Role;
  * @since 1.9M2
  */
 @Role
+// The shadowing is deliberate: this interface only makes the SAX one available as a component role, so it is the
+// same contract under the same name.
+@SuppressWarnings("java:S2176")
 public interface EntityResolver extends org.xml.sax.EntityResolver
 {
 }
