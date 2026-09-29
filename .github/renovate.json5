@@ -35,6 +35,18 @@
 
   // Added to the rules of the preset, which already disables the commons dependencies.
   "packageRules": [
+    // Add the URL to the XWiki Nexus public proxy. In theory, it's useless for xwiki-commons which only depends on Maven Central, but in practice Maven Central regularly block Renovate, so we use nexus.xwiki.org as fallback.
+    {
+      "matchDatasources": ["maven"],
+      "registryUrls": ["https://repo1.maven.org/maven2/", "https://nexus.xwiki.org/nexus/content/repositories/central/"]
+    },
+
+    // There is no point trying to find update for commons dependencies
+    {
+      "matchPackagePrefixes": ["org.xwiki.commons:"],
+      "enabled": false
+    }
+
     // Ignore Byte Buddy versions ending with -jdk5 (they only make sense for project which need to support Java < 8)
     {
       "matchPackageNames": ["net.bytebuddy:*"],
