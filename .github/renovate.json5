@@ -38,6 +38,8 @@
     // Add the URL to the XWiki Nexus public proxy. In theory, it's useless for xwiki-commons which only depends on Maven Central, but in practice Maven Central regularly block Renovate, so we use nexus.xwiki.org as fallback.
     {
       "matchDatasources": ["maven"],
+      // The direct Maven Central access is rejecting Mend Renovate way too often to be usable these days ("too many requests")
+      // "registryUrls": ["https://repo1.maven.org/maven2/", "https://nexus.xwiki.org/nexus/content/repositories/central/"]
       "registryUrls": ["https://nexus.xwiki.org/nexus/content/repositories/central/"]
     },
 
