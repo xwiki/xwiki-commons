@@ -136,7 +136,7 @@
     <skipITs>${skipTests}</skipITs>
 
     <!-- Mock libraries -->
-    <mockito.version>5.23.0</mockito.version>
+    <mockito.version>5.24.0</mockito.version>
 
     <!-- Testcontainers for integration tests -->
     <testcontainers.version>2.0.5</testcontainers.version>
