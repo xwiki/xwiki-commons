@@ -313,7 +313,7 @@
          pnpm command to bin/pnpm.mjs, which is not executable anymore, making nested pnpm calls fail. -->
     <pnpm.version>11.26.0</pnpm.version>
 
-    <webdrivermanager.version>6.3.4</webdrivermanager.version>
+    <webdrivermanager.version>6.4.0</webdrivermanager.version>
 
     <!-- The recommended version of known extensions to use -->
     <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]
