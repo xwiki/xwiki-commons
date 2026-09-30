@@ -1,0 +1,35 @@
+## ---------------------------------------------------------------------------
+## See the NOTICE file distributed with this work for additional
+## information regarding copyright ownership.
+##
+## This is free software; you can redistribute it and/or modify it
+## under the terms of the GNU Lesser General Public License as
+## published by the Free Software Foundation; either version 2.1 of
+## the License, or (at your option) any later version.
+##
+## This software is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+## Lesser General Public License for more details.
+##
+## You should have received a copy of the GNU Lesser General Public
+## License along with this software; if not, write to the Free
+## Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+## 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+## ---------------------------------------------------------------------------
+## Automatically backport merged pull requests that are labelled with a label containing "backport".
+## Everything but the trigger lives in the shared workflow, which every XWiki repository calls, so
+## that a change to how backporting works is made once. See https://github.com/xwiki/.github
+name: Automatic backport action
+
+on:
+  pull_request_target:
+    types: ["labeled", "closed"]
+
+jobs:
+  backport:
+    ## Referenced by branch and not by commit hash, on purpose: pinning would mean a pull request in
+    ## every repository for every change to the shared workflow, which is the duplication this
+    ## indirection removes. What pinning protects against, a third party repointing the ref under
+    ## us, does not apply to a repository the XWiki committers own themselves.
+    uses: xwiki/.github/.github/workflows/backport.yml@master
