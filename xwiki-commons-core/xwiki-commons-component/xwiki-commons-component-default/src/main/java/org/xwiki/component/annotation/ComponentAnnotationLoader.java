@@ -23,7 +23,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
@@ -451,59 +450,6 @@ public class ComponentAnnotationLoader
             throw new RuntimeException(String.format("Failed to get interface for [%s]", componentClass.getName()), e);
         }
         return interfaceTypes;
-    }
-
-    /**
-     * Finds the interfaces that implement component roles by looking recursively in all interfaces of the passed
-     * component implementation class. If the roles annotation value is specified then use the specified list instead of
-     * doing auto-discovery. Also note that we support component classes implementing JSR 330's
-     * {@link javax.inject.Provider} (and thus without a component role annotation).
-     *
-     * @param componentClass the component implementation class for which to find the component roles it implements
-     * @return the list of component role classes implemented
-     * @deprecated use {@link #findComponentRoleTypes(Class)} instead
-     */
-    @Deprecated(since = "4.0M1")
-    public Set<Class<?>> findComponentRoleClasses(Class<?> componentClass)
-    {
-        // Note: We use a Set to ensure that we don't register duplicate roles.
-        Set<Class<?>> classes = new LinkedHashSet<>();
-
-        Component component = componentClass.getAnnotation(Component.class);
-        if (component != null && component.roles().length > 0) {
-            classes.addAll(Arrays.asList(component.roles()));
-        } else {
-            // Look in both superclass and interfaces for @Role or javax.inject.Provider
-            for (Class<?> interfaceClass : componentClass.getInterfaces()) {
-                // Handle superclass of interfaces
-                classes.addAll(findComponentRoleClasses(interfaceClass));
-
-                // Handle interfaces directly declared in the passed component class
-                for (Annotation annotation : interfaceClass.getDeclaredAnnotations()) {
-                    if (annotation.annotationType() == ComponentRole.class) {
-                        classes.add(interfaceClass);
-                    }
-                }
-
-                // Handle javax.inject.Provider (retro-compatibility since **feature-deploy-jakarta**)
-                if (javax.inject.Provider.class.isAssignableFrom(interfaceClass)) {
-                    classes.add(interfaceClass);
-                }
-                // Handle jakarta.inject.Provider
-                if (Provider.class.isAssignableFrom(interfaceClass)) {
-                    classes.add(interfaceClass);
-                }
-            }
-
-            // Note that we need to look into the superclass since the super class can itself implements an interface
-            // that has the @Role annotation.
-            Class<?> superClass = componentClass.getSuperclass();
-            if (superClass != null && superClass != Object.class) {
-                classes.addAll(findComponentRoleClasses(superClass));
-            }
-        }
-
-        return classes;
     }
 
     /**
