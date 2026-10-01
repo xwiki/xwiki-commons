@@ -513,8 +513,8 @@ public class ComponentAnnotationLoader
 
         List<ComponentDeclaration> componentDeclarations = null;
 
-        for (ZipEntry entry = zis.getNextEntry(); entry != null
-            && (componentDeclarations == null); entry = zis.getNextEntry()) {
+        for (ZipEntry entry = zis.getNextEntry(); entry != null && componentDeclarations == null;
+            entry = zis.getNextEntry()) {
             if (entry.getName().equals(ComponentAnnotationLoader.COMPONENT_LIST)) {
                 componentDeclarations = getDeclaredComponents(zis);
             }
