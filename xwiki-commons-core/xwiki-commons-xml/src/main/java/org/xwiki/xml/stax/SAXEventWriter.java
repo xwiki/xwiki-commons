@@ -260,7 +260,7 @@ public class SAXEventWriter extends BaseXMLEventWriter
      * @return the StAX attributes converted to an org.xml.sax.Attributes
      */
     // SAX requires fairly complex code
-    @SuppressWarnings("checkstyle:CyclomaticComplexity")
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "java:S3776"})
     private Attributes getAttributes(StartElement event)
     {
         AttributesImpl attrs = new AttributesImpl();

@@ -453,7 +453,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
     }
 
     @Override
-    @SuppressWarnings("checkstyle:CyclomaticComplexity")
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "java:S3776"})
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
     {
         Block currentBlock = this.blockStack.isEmpty() ? null : this.blockStack.peek();
@@ -499,7 +499,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
     }
 
     @Override
-    @SuppressWarnings("checkstyle:CyclomaticComplexity")
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "java:S3776"})
     public void endElement(String uri, String localName, String qName) throws SAXException
     {
         --this.elementDepth;

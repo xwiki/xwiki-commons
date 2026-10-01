@@ -308,7 +308,7 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
     }
 
     @Override
-    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity"})
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity", "java:S3776"})
     public Extension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
         Set<ExtensionRepositoryDescriptor> checkedRepositories = new HashSet<>();

@@ -468,7 +468,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return new CollectionIterableResult<>(versions.size(), offset, result);
     }
 
-    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity"})
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity", "java:S3776"})
     private org.eclipse.aether.version.Version resolveVersionConstraint(String id, VersionConstraint versionConstraint,
         RepositorySystemSession session) throws ResolveException
     {
@@ -640,7 +640,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     }
 
     @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity",
-        "checkstyle:ExecutableStatementCount"})
+        "checkstyle:ExecutableStatementCount", "java:S3776"})
     private AetherExtension resolveMaven(Artifact artifact, String targetMavenType, RepositorySystemSession session)
         throws ResolveException
     {
