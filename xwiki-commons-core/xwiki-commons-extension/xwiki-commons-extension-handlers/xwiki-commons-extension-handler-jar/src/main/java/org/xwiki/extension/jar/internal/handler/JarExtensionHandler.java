@@ -188,6 +188,9 @@ public class JarExtensionHandler extends AbstractExtensionHandler
     }
 
     @Override
+    // Catching Throwable is deliberate here, as the comment in the catch block states: unregistering components usually
+    // fails with a LinkageError and that must not make the extension impossible to uninstall.
+    @SuppressWarnings("java:S1181")
     public void uninstall(InstalledExtension installedExtension, String namespace, Request request)
         throws UninstallException
     {
