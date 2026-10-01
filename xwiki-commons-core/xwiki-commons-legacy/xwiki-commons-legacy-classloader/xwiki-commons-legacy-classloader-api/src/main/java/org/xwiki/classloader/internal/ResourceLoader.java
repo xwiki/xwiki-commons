@@ -799,7 +799,9 @@ public class ResourceLoader
         }
     }
 
-    @SuppressWarnings("checkstyle:VisibilityModifier")
+    // Enumeration is imposed by the ClassLoader#getResources contract this loader implements, so it cannot be
+    // replaced with an Iterator.
+    @SuppressWarnings({ "checkstyle:VisibilityModifier", "java:S1150" })
     private class ResourceEnumeration<T> implements Enumeration<T>
     {
         final URL[] urls;

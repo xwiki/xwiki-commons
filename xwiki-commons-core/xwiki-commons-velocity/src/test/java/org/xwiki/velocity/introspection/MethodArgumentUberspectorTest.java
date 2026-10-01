@@ -126,6 +126,9 @@ class MethodArgumentUberspectorTest
         }
     }
 
+    // The methods below exist only to give the uberspector a set of candidate signatures to resolve against, so
+    // their parameters are deliberately unused: they are the very thing under test.
+    @SuppressWarnings("java:S1172")
     public class ExtendingClass extends InnerClass
     {
         public String method(List parameter)
