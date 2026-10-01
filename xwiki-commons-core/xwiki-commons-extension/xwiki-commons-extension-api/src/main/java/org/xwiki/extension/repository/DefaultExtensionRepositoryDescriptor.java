@@ -55,6 +55,10 @@ public class DefaultExtensionRepositoryDescriptor implements ExtensionRepository
      */
     private Map<String, String> properties = new HashMap<>();
 
+    // 'transient' is deliberate here: this cache is rebuilt on demand and must not be written out when
+    // the instance is serialized with XStream inside a job status or request, XStream honouring
+    // 'transient' independently of java.io.Serializable.
+    @SuppressWarnings("java:S2065")
     private transient int hashCode;
 
     /**

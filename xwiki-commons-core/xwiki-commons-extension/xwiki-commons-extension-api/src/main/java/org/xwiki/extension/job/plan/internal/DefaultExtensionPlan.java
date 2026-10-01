@@ -47,6 +47,10 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJo
      */
     // TODO: find a way to serialize before making DefaultExtensionPlan Serializable (the main issue is the Extension
     // objects in the nodes)
+    // 'transient' is deliberate here: the job status store serializes this class with XStream, which
+    // honours 'transient' independently of java.io.Serializable. Removing it would write this runtime
+    // state into the stored job status.
+    @SuppressWarnings("java:S2065")
     protected transient ExtensionPlanTree tree;
 
     /**
