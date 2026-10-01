@@ -99,19 +99,6 @@ class JakartaComponentAnnotationLoaderTest
     {
     }
 
-    // Verify backward compatibility for deprecated component-overrides.txt file
-    @Component(value = "deprecated")
-    @Singleton
-    public class DeprecatedSimpleRole implements NotGenericRole<String>
-    {
-    }
-
-    @Component(value = "deprecated")
-    @Singleton
-    public class DeprecatedOverrideRole implements NotGenericRole<String>
-    {
-    }
-
     @Component(staticRegistration = false)
     @Named("customprovider")
     @Singleton
@@ -195,9 +182,6 @@ class JakartaComponentAnnotationLoaderTest
     {
         ComponentManager componentManager = mock();
 
-        DefaultComponentDescriptor descriptor1 =
-            (DefaultComponentDescriptor) this.loader.getComponentsDescriptors(DeprecatedOverrideRole.class).getFirst();
-        descriptor1.setRoleHintPriority(0);
         ComponentDescriptor descriptor2 = this.loader.getComponentsDescriptors(RootComponentManager.class).getFirst();
         DefaultComponentDescriptor descriptor3 =
             (DefaultComponentDescriptor) this.loader.getComponentsDescriptors(OverrideRole.class).getFirst();
@@ -219,7 +203,6 @@ class JakartaComponentAnnotationLoaderTest
 
         // This is the test, we verify that registerComponent() is called for each of the descriptor we're expecting
         // to be discovered through annotations by the call to initialize() below.
-        verify(componentManager).registerComponent(descriptor1);
         verify(componentManager).registerComponent(descriptor2);
         verify(componentManager).registerComponent(descriptor3);
         verify(componentManager).registerComponent(descriptor4);
