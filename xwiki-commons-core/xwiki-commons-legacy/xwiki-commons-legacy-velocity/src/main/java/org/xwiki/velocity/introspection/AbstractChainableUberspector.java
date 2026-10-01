@@ -30,6 +30,9 @@ package org.xwiki.velocity.introspection;
  *             {@link org.apache.velocity.util.introspection.AbstractChainableUberspector} instead
  */
 @Deprecated(since = "8.0M1")
+// The shadowing is deliberate: this deprecated class exists only to keep the old name compiling against the
+// Velocity class that replaced it, so renaming it would defeat its only purpose.
+@SuppressWarnings("java:S2176")
 public abstract class AbstractChainableUberspector
     extends org.apache.velocity.util.introspection.AbstractChainableUberspector implements ChainableUberspector
 {
