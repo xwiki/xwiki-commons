@@ -340,9 +340,9 @@ public abstract class AbstractFileLoggerTail extends AbstractLoggerTail implemen
 
         Long toPosition = this.index.size() > index + 1 ? this.index.get(index + 1).position : this.logStore.length();
 
-        try (BoundedInputStream stream = new BoundedInputStream(new InputStreamDataInput(this.logStore),
-            toPosition - indexEntry.position))
-        {
+        try (BoundedInputStream stream =
+            BoundedInputStream.builder().setInputStream(new InputStreamDataInput(this.logStore))
+                .setMaxCount(toPosition - indexEntry.position).get())        {
             return read(stream);
         }
     }
