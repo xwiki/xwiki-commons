@@ -79,7 +79,7 @@
     <asm.version>9.7.1</asm.version>
 
     <!-- Guava -->
-    <guava.version>33.7.1-jre</guava.version>
+    <guava.version>33.7.2-jre</guava.version>
     <guava.failureaccess.version>1.0.3</guava.failureaccess.version>
 
     <!-- SLF4J API and implementation -->
