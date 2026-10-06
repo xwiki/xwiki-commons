@@ -31,6 +31,9 @@ package org.xwiki.velocity.introspection;
  * @deprecated use {@link org.apache.velocity.util.introspection.DeprecatedCheckUberspector} instead
  */
 @Deprecated(since = "10.5RC1")
+// The shadowing is deliberate: this deprecated class exists only to keep the old name compiling against the
+// Velocity class that replaced it, so renaming it would defeat its only purpose.
+@SuppressWarnings("java:S2176")
 public class DeprecatedCheckUberspector extends org.apache.velocity.util.introspection.DeprecatedCheckUberspector
 {
 }
