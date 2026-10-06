@@ -30,6 +30,10 @@ import org.xwiki.logging.Message;
  * @version $Id$
  * @since 7.1M2
  */
+// 'transient' is deliberate here: the progress is part of the job status, which the job status
+// store serializes with XStream. XStream honours 'transient' independently of java.io.Serializable,
+// so removing it would write this runtime state into the stored status.
+@SuppressWarnings("java:S2065")
 public class DefaultJobProgressStep implements JobProgressStep
 {
     // Not stored data (used only during progress)
