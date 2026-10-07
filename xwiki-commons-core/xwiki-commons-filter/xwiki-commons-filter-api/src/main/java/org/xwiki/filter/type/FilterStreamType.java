@@ -106,11 +106,20 @@ public class FilterStreamType implements Comparable<FilterStreamType>
     public static final FilterStreamType XWIKI_XAR_16 = new FilterStreamType(SystemType.XWIKI, DATA_XAR, "1.6");
 
     /**
+     * The XAR format in version 1.7.
+     *
+     * @since 17.10.14
+     * @since 18.2.0RC1
+     */
+    @Unstable
+    public static final FilterStreamType XWIKI_XAR_17 = new FilterStreamType(SystemType.XWIKI, DATA_XAR, "1.7");
+
+    /**
      * The XAR format in the current version.
      *
      * @since 7.2M1
      */
-    public static final FilterStreamType XWIKI_XAR_CURRENT = XWIKI_XAR_16;
+    public static final FilterStreamType XWIKI_XAR_CURRENT = XWIKI_XAR_17;
 
     /**
      * The database stream based on oldcore APIs.
