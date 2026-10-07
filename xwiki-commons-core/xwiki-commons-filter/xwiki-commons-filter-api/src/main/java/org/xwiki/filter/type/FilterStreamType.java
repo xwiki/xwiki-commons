@@ -108,6 +108,7 @@ public class FilterStreamType implements Comparable<FilterStreamType>
     /**
      * The XAR format in version 1.7.
      *
+     * @since 17.10.14
      * @since 18.2.0RC1
      */
     @Unstable
