@@ -58,15 +58,6 @@ import org.xwiki.websocket.AbstractPartialStringMessageHandler;
 @Singleton
 public class Netflux
 {
-    // The client side keeps the connection alive by sending a PING message from time to time, using a timer
-    // (setTimeout). The browsers are slowing down timers used by inactive tabs / windows (that don't have
-    // the user focus). This is called timer throttling and can go up to 1 minute, which means inactive browser tabs
-    // won't be able to send PING messages more often than every minute. For this reason, we set the session idle
-    // timeout a little bit higher than the timer throttling value to make sure the WebSocket connection is not closed
-    // in background tabs.
-    // See https://developer.chrome.com/blog/timer-throttling-in-chrome-88/
-    private static final long TIMEOUT_MILLISECONDS = 65000;
-
     private static final String NETFLUX_USER = "netflux.user";
 
     private static final String COMMAND_LEAVE = "LEAVE";
@@ -96,6 +87,12 @@ public class Netflux
     private Provider<LocalUserFactory> localUserFactoryProvider;
 
     @Inject
+    private NetfluxConfiguration configuration;
+
+    @Inject
+    private NetfluxPingPongManager pingPongManager;
+
+    @Inject
     private Logger logger;
 
     /**
@@ -104,8 +101,9 @@ public class Netflux
     public void onOpen(Session session)
     {
         synchronized (this.bigLock) {
-            // Close the session if we don't receive any message from the user in TIMEOUT_MILLISECONDS.
-            session.setMaxIdleTimeout(TIMEOUT_MILLISECONDS);
+            // Close the session if there's no activity for too long. The ping messages sent by the server (see below)
+            // keep the session active as long as the client answers them.
+            session.setMaxIdleTimeout(this.configuration.getMaxIdleTimeout());
 
             LocalUser user = getOrRegisterUser(session);
 
@@ -125,6 +123,8 @@ public class Netflux
                     }
                 }
             });
+
+            this.pingPongManager.startPinging(user);
         }
     }
 
@@ -136,6 +136,7 @@ public class Netflux
     {
         synchronized (this.bigLock) {
             LocalUser user = getOrRegisterUser(session);
+            this.pingPongManager.stopPinging(user);
 
             this.logger.debug("Last message from [{}] received [{}ms] ago. Session idle timeout is [{}].",
                 user.getName(), System.currentTimeMillis() - user.getTimeOfLastMessage(), session.getMaxIdleTimeout());
@@ -191,10 +192,8 @@ public class Netflux
 
         LocalUser user = getOrRegisterUser(session);
 
-        // The time of the last message received from a user was initially used to close expired sessions (i.e. sessions
-        // in which we haven't received any message in the past TIMEOUT_MILLISECONDS). This is now done by setting the
-        // max idle timeout of the session to TIMEOUT_MILLISECONDS. We still keep track of the time of the last message
-        // mostly for debugging purposes.
+        // Expired sessions are closed using the session max idle timeout and the server ping messages, so we keep track
+        // of the time of the last message received from a user mostly for debugging purposes.
         this.observation
             .notify(new NetfluxUserTimeOfLastMessageUpdateEvent(user.getName(), System.currentTimeMillis()), null);
 
@@ -390,7 +389,11 @@ public class Netflux
     {
         try {
             this.logger.debug("Sending to [{}] : [{}]", user.getName(), message);
-            user.getSession().getBasicRemote().sendText(message);
+            // The WebSocket API doesn't allow concurrent writes on the same session, and the ping messages are sent
+            // from a different thread (see NetfluxPingPongManager), so we hold the user lock while sending.
+            synchronized (user) {
+                user.getSession().getBasicRemote().sendText(message);
+            }
             return true;
         } catch (IOException e) {
             this.logger.debug("Sending failed.", e);

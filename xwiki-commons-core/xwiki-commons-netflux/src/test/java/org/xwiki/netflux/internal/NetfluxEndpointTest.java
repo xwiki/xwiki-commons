@@ -38,6 +38,7 @@ import org.xwiki.observation.internal.DefaultObservationManager;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.test.mockito.MockitoComponentManager;
 import org.xwiki.websocket.AbstractPartialStringMessageHandler;
 
@@ -62,6 +63,12 @@ class NetfluxEndpointTest
     @InjectMockComponents
     private NetfluxEndpoint endPoint;
 
+    @MockComponent
+    private NetfluxConfiguration configuration;
+
+    @MockComponent
+    private NetfluxPingPongManager pingPongManager;
+
     private final JsonConverter jsonConverter = new JsonConverter();
 
     @Captor
@@ -73,14 +80,18 @@ class NetfluxEndpointTest
         Bot historyKeeper = componentManager.registerMockComponent(Bot.class, "historyKeeper");
         when(historyKeeper.onJoinChannel(any(Channel.class))).thenReturn(true);
         when(historyKeeper.getId()).thenReturn("historyKeeper");
+        when(this.configuration.getMaxIdleTimeout()).thenReturn(75_000L);
 
         // Alice opens a new session.
         Session aliceSession = mockSession("alice");
         when(aliceSession.getId()).thenReturn("alisesession");
         this.endPoint.onOpen(aliceSession, null);
 
+        verify(aliceSession).setMaxIdleTimeout(75_000L);
         verify(aliceSession).addMessageHandler(this.messageHandlerCaptor.capture());
         AbstractPartialStringMessageHandler aliceMessageHandler = this.messageHandlerCaptor.getValue();
+        LocalUser alice = (LocalUser) aliceSession.getUserProperties().get("netflux.user");
+        verify(this.pingPongManager).startPinging(alice);
 
         // Bob opens a new session.
         Session bobSession = mockSession("bob");
@@ -89,6 +100,8 @@ class NetfluxEndpointTest
 
         verify(bobSession).addMessageHandler(this.messageHandlerCaptor.capture());
         AbstractPartialStringMessageHandler bobMessageHandler = this.messageHandlerCaptor.getValue();
+        LocalUser bob = (LocalUser) bobSession.getUserProperties().get("netflux.user");
+        verify(this.pingPongManager).startPinging(bob);
 
         // Create the first channel.
         ChannelStore channelStore = componentManager.getInstance(ChannelStore.class);
@@ -138,11 +151,9 @@ class NetfluxEndpointTest
         // Alice tries to leave a non-existing channel.
         aliceMessageHandler.onMessage(this.jsonConverter.encode(Arrays.asList(6, "LEAVE", "missing-channel")));
 
-        User alice = (User) aliceSession.getUserProperties().get("netflux.user");
         assertEquals(Set.of(firstChannel.getKey(), secondChannel.getKey()),
             alice.getChannels().stream().map(Channel::getKey).collect(Collectors.toSet()));
 
-        User bob = (User) bobSession.getUserProperties().get("netflux.user");
         assertEquals(Set.of(firstChannel.getKey(), secondChannel.getKey()),
             bob.getChannels().stream().map(Channel::getKey).collect(Collectors.toSet()));
 
@@ -154,6 +165,9 @@ class NetfluxEndpointTest
         // Close both sessions.
         this.endPoint.onClose(bobSession, new CloseReason(CloseReason.CloseCodes.GOING_AWAY, "Bye!"));
         this.endPoint.onError(aliceSession, null);
+
+        verify(this.pingPongManager).stopPinging(bob);
+        verify(this.pingPongManager).stopPinging(alice);
 
         assertEquals(0, firstChannel.getUsers().size());
         assertEquals(0, secondChannel.getUsers().size());
