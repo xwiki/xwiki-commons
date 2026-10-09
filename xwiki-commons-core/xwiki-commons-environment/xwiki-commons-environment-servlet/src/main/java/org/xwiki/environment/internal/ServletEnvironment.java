@@ -67,6 +67,7 @@ public class ServletEnvironment extends AbstractEnvironment
      * 
      * @since 18.2.0
      * @since 17.10.5
+     * @since 16.10.20
      */
     static final String ENCODED_RESOURCE_PATH = "/WEB-INF/resourcecheck/a%61b";
 
@@ -75,6 +76,7 @@ public class ServletEnvironment extends AbstractEnvironment
      * 
      * @since 18.2.0
      * @since 17.10.5
+     * @since 16.10.20
      */
     static final String DECODED_RESOURCE_CONTENT = "aab";
 
@@ -83,6 +85,7 @@ public class ServletEnvironment extends AbstractEnvironment
      * 
      * @since 18.2.0
      * @since 17.10.5
+     * @since 16.10.20
      */
     static final String ENCODED_RESOURCE_CONTENT = "a%61b";
 

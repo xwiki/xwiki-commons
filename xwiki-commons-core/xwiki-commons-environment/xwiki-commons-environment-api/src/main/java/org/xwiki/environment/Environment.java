@@ -70,6 +70,7 @@ public interface Environment
      * @param resourcePath the path of the resource to access, relative to the prefix
      * @return the resource location as a {@link URL}, or null if no resource with the provided path could be found (or
      *         if the resource path is trying to access a resource outside of the specified prefix)
+     * @since 16.10.20
      * @since 17.10.5
      * @since 18.2.0
      */
@@ -93,6 +94,7 @@ public interface Environment
      * @param resourcePath the path of the resource to access, relative to the prefix
      * @return the resource content as an {@link InputStream}, or null if no resource with the provided path could be
      *         found (or if the resource path is trying to access a resource outside of the specified prefix)
+     * @since 16.10.20
      * @since 17.10.5
      * @since 18.2.0
      */
@@ -107,6 +109,7 @@ public interface Environment
      * @param resourcePath the full path of the resource to access (eg "/somefile.properties")
      * @return the date of last modification of the resource file, or null if the resource does not exist or the date
      *         cannot be found
+     * @since 16.10.20
      * @since 17.10.5
      * @since 18.2.0
      */
@@ -121,6 +124,7 @@ public interface Environment
      * @param resourcePath the path of the resource to access, relative to the prefix
      * @return the date of last modification of the resource file, or null if the resource does not exist (or if the
      *         resource path is trying to access a resource outside of the specified prefix) or the date cannot be found
+     * @since 16.10.20
      * @since 17.10.5
      * @since 18.2.0
      */
