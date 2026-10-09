@@ -60,7 +60,7 @@ public class MockitoComponentManagerRule extends MockitoComponentManager impleme
      */
     // Checkstyle reports a "Throwing 'Throwable' is not allowed" error but we cannot do otherwise since throwing
     // Throwable is part of the JUnit method signature that we implement!
-    @SuppressWarnings("checkstyle:IllegalThrows")
+    @SuppressWarnings({"checkstyle:IllegalThrows", "java:S112"})
     protected void before(final Statement base, final FrameworkMethod method, final Object target) throws Throwable
     {
         initializeTest(target);
@@ -77,7 +77,7 @@ public class MockitoComponentManagerRule extends MockitoComponentManager impleme
      */
     // Checkstyle reports a "Throwing 'Throwable' is not allowed" error but we cannot do otherwise since throwing
     // Throwable is part of the JUnit method signature that we implement!
-    @SuppressWarnings("checkstyle:IllegalThrows")
+    @SuppressWarnings({"checkstyle:IllegalThrows", "java:S112"})
     protected void after(final Statement base, final FrameworkMethod method, final Object target) throws Throwable
     {
         shutdownTest();

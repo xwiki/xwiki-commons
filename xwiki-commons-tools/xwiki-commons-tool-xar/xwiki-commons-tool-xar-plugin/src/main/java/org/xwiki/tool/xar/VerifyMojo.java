@@ -109,7 +109,7 @@ public class VerifyMojo extends AbstractVerifyMojo
 
     @Override
     @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS", "checkstyle:NPathComplexity",
-        "checkstyle:ExecutableStatementCount"})
+        "checkstyle:ExecutableStatementCount", "java:S3776"})
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         if (this.skip) {

@@ -327,7 +327,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     }
 
     @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS", "checkstyle:NPathComplexity",
-        "checkstyle:ExecutableStatementCount", "checkstyle:MethodLength"})
+        "checkstyle:ExecutableStatementCount", "checkstyle:MethodLength", "java:S3776"})
     private void loadExtensionDescriptor(MutableExtension extension, Element extensionElement)
         throws InvalidExtensionException
     {
