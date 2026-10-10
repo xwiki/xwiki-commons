@@ -178,6 +178,16 @@ public class S3BlobStore extends AbstractBlobStore<S3BlobStoreProperties>
         return getProperties().getMultipartCopyPartSize();
     }
 
+    /**
+     * @return {@code true} if the S3 service supports conditional writes ({@code If-None-Match}), {@code false} if
+     *     blobs must be checked for existence before being created
+     * @since 18.9.0RC1
+     */
+    public boolean isConditionalWrites()
+    {
+        return getProperties().isConditionalWrites();
+    }
+
     @Override
     public boolean equals(Object o)
     {

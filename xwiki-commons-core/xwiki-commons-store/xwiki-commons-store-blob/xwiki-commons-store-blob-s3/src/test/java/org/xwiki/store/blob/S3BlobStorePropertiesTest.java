@@ -44,7 +44,9 @@ import org.xwiki.test.mockito.MockitoComponentManager;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
@@ -121,6 +123,20 @@ class S3BlobStorePropertiesTest
         assertEquals("test-prefix", props.getKeyPrefix());
         assertEquals(5L * 1024 * 1024, props.getMultipartUploadPartSize());
         assertEquals(10L * 1024 * 1024, props.getMultipartCopyPartSize());
+        assertTrue(props.isConditionalWrites());
+    }
+
+    @Test
+    void validateConditionalWritesCanBeDisabled() throws Exception
+    {
+        S3BlobStoreProperties props = new S3BlobStoreProperties();
+
+        Map<String, Object> parameters = createBaseParameters();
+        parameters.put(S3BlobStoreProperties.CONDITIONAL_WRITES, "false");
+
+        this.beanManager.populate(props, parameters);
+
+        assertFalse(props.isConditionalWrites());
     }
 
     @Test

@@ -59,6 +59,13 @@ public class S3BlobStoreProperties implements BlobStoreProperties
     public static final String MULTIPART_COPY_PART_SIZE = "s3.copyPartSizeBytes";
 
     /**
+     * The property ID indicating whether the S3 service supports conditional writes ({@code If-None-Match}).
+     *
+     * @since 18.9.0RC1
+     */
+    public static final String CONDITIONAL_WRITES = "s3.conditionalWrites";
+
+    /**
      * The minimum part size for S3 multipart uploads (5 MiB).
      */
     private static final long MIN_PART_SIZE = 5L * 1024 * 1024;
@@ -92,6 +99,11 @@ public class S3BlobStoreProperties implements BlobStoreProperties
     @Min(MIN_PART_SIZE)
     @Max(MAX_PART_SIZE)
     private long multipartCopyPartSize;
+
+    /**
+     * Whether to use conditional writes to create blobs only if they don't exist yet.
+     */
+    private boolean conditionalWrites = true;
 
     /**
      * Gets the S3 bucket name.
@@ -176,5 +188,32 @@ public class S3BlobStoreProperties implements BlobStoreProperties
     public void setMultipartCopyPartSize(long multipartCopyPartSize)
     {
         this.multipartCopyPartSize = multipartCopyPartSize;
+    }
+
+    /**
+     * Indicates whether the S3 service supports conditional requests on writes: {@code If-None-Match: *}, used to
+     * atomically create a blob only if it does not exist yet, and {@code x-amz-copy-source-if-match}, used to make
+     * sure the source of a copy did not change while it was being copied. When disabled, the store falls back to
+     * checking the existence of the blob before writing it, which is not atomic, and copies without the source check.
+     *
+     * @return {@code true} if conditional writes are used (the default), {@code false} otherwise
+     * @since 18.9.0RC1
+     */
+    public boolean isConditionalWrites()
+    {
+        return this.conditionalWrites;
+    }
+
+    /**
+     * Sets whether the S3 service supports conditional writes.
+     *
+     * @param conditionalWrites {@code true} to use conditional writes, {@code false} to use a non-atomic existence
+     *     check instead
+     * @since 18.9.0RC1
+     */
+    @PropertyId(CONDITIONAL_WRITES)
+    public void setConditionalWrites(boolean conditionalWrites)
+    {
+        this.conditionalWrites = conditionalWrites;
     }
 }

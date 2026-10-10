@@ -43,6 +43,9 @@ import software.amazon.awssdk.services.s3.model.AbortMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.CreateMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.CreateMultipartUploadResponse;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.UploadPartRequest;
@@ -55,6 +58,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -387,6 +391,131 @@ class S3BlobOutputStreamTest
         verify(this.s3Client).completeMultipartUpload(requestCaptor.capture());
         CompleteMultipartUploadRequest request = requestCaptor.getValue();
         assertEquals("*", request.ifNoneMatch());
+    }
+
+    @Test
+    void writeWithCreateNewModeWithoutConditionalWrites() throws IOException
+    {
+        // Without conditional writes, CREATE_NEW falls back to checking the existence of the object first.
+        when(this.s3Client.headObject(any(HeadObjectRequest.class)))
+            .thenThrow(NoSuchKeyException.builder().message("missing").build());
+
+        S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
+            this.blobPath, PART_SIZE, false, BlobWriteMode.CREATE_NEW);
+
+        byte[] data = "Test data".getBytes();
+        outputStream.write(data);
+        outputStream.close();
+
+        ArgumentCaptor<HeadObjectRequest> headCaptor = ArgumentCaptor.captor();
+        verify(this.s3Client).headObject(headCaptor.capture());
+        assertEquals(BUCKET_NAME, headCaptor.getValue().bucket());
+        assertEquals(S3_KEY, headCaptor.getValue().key());
+
+        ArgumentCaptor<PutObjectRequest> requestCaptor = ArgumentCaptor.captor();
+        verify(this.s3Client).putObject(requestCaptor.capture(), any(RequestBody.class));
+        assertNull(requestCaptor.getValue().ifNoneMatch());
+
+        assertArrayEquals(data, this.capturedPutObjectData);
+    }
+
+    @Test
+    void writeWithCreateNewModeWithoutConditionalWritesWhenObjectExists() throws IOException
+    {
+        when(this.s3Client.headObject(any(HeadObjectRequest.class)))
+            .thenReturn(HeadObjectResponse.builder().build());
+
+        S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
+            this.blobPath, PART_SIZE, false, BlobWriteMode.CREATE_NEW);
+
+        outputStream.write("Test data".getBytes());
+
+        IOException exception = assertThrows(IOException.class, outputStream::close);
+        assertThat(exception.getMessage(), containsString("Blob already exists"));
+        assertInstanceOf(BlobAlreadyExistsException.class, exception.getCause());
+        assertEquals(this.blobPath, ((BlobAlreadyExistsException) exception.getCause()).getBlobPath());
+
+        verify(this.s3Client, never()).putObject(any(PutObjectRequest.class), any(RequestBody.class));
+    }
+
+    @Test
+    void writeWithCreateNewModeWithoutConditionalWritesMultipart() throws IOException
+    {
+        // The existence is checked before the first part is uploaded and again before completing the upload.
+        when(this.s3Client.headObject(any(HeadObjectRequest.class)))
+            .thenThrow(NoSuchKeyException.builder().message("missing").build());
+        CreateMultipartUploadResponse createResponse = CreateMultipartUploadResponse.builder()
+            .uploadId(UPLOAD_ID)
+            .build();
+        when(this.s3Client.createMultipartUpload(any(CreateMultipartUploadRequest.class)))
+            .thenReturn(createResponse);
+
+        S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
+            this.blobPath, PART_SIZE, false, BlobWriteMode.CREATE_NEW);
+
+        byte[] data = new byte[PART_SIZE + 1000];
+        fillArray(data);
+        outputStream.write(data);
+        outputStream.close();
+
+        verify(this.s3Client, times(2)).headObject(any(HeadObjectRequest.class));
+        ArgumentCaptor<CompleteMultipartUploadRequest> requestCaptor = ArgumentCaptor.captor();
+        verify(this.s3Client).completeMultipartUpload(requestCaptor.capture());
+        assertNull(requestCaptor.getValue().ifNoneMatch());
+
+        assertEquals(2, this.capturedUploadPartData.size());
+    }
+
+    @Test
+    void writeWithCreateNewModeWithoutConditionalWritesMultipartWhenObjectExists()
+    {
+        // When the object already exists, no part is uploaded at all.
+        when(this.s3Client.headObject(any(HeadObjectRequest.class)))
+            .thenReturn(HeadObjectResponse.builder().build());
+
+        S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
+            this.blobPath, PART_SIZE, false, BlobWriteMode.CREATE_NEW);
+
+        byte[] data = new byte[PART_SIZE + 1000];
+        IOException exception = assertThrows(IOException.class, () -> outputStream.write(data));
+        assertInstanceOf(BlobAlreadyExistsException.class, exception.getCause());
+
+        verify(this.s3Client, never()).createMultipartUpload(any(CreateMultipartUploadRequest.class));
+        verify(this.s3Client, never()).uploadPart(any(UploadPartRequest.class), any(RequestBody.class));
+    }
+
+    @Test
+    void writeExplainsUnsupportedConditionalWrites() throws IOException
+    {
+        // Services without conditional write support answer 501 Not Implemented to If-None-Match.
+        S3Exception s3Exception = (S3Exception) S3Exception.builder()
+            .statusCode(501)
+            .message("A header you provided implies functionality that is not implemented")
+            .build();
+        when(this.s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
+            .thenThrow(s3Exception);
+
+        S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
+            this.blobPath, PART_SIZE, BlobWriteMode.CREATE_NEW);
+
+        outputStream.write("Test data".getBytes());
+
+        IOException exception = assertThrows(IOException.class, outputStream::close);
+        assertThat(exception.getMessage(), containsString("store.s3.conditionalWrites"));
+        assertSame(s3Exception, exception.getCause());
+    }
+
+    @Test
+    void writeWithReplaceModeNeverChecksExistence() throws IOException
+    {
+        S3BlobOutputStream outputStream = new S3BlobOutputStream(BUCKET_NAME, S3_KEY, this.s3Client,
+            this.blobPath, PART_SIZE, false, BlobWriteMode.REPLACE_EXISTING);
+
+        outputStream.write("Test data".getBytes());
+        outputStream.close();
+
+        verify(this.s3Client, never()).headObject(any(HeadObjectRequest.class));
+        verify(this.s3Client).putObject(any(PutObjectRequest.class), any(RequestBody.class));
     }
 
     @Test

@@ -33,6 +33,7 @@ import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobRangeOption;
 import org.xwiki.store.blob.BlobStoreException;
 import org.xwiki.store.blob.BlobWriteMode;
+import org.xwiki.store.blob.S3BlobStoreProperties;
 
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -119,9 +120,9 @@ public class S3Blob extends AbstractBlob<S3BlobStore>
     {
         BlobOptionSupport.validateSupportedOptions(SUPPORTED_OUTPUT_OPTIONS, options);
 
-        long partSizeBytes = this.getStore().getProperties().getMultipartUploadPartSize();
-        return new S3BlobOutputStream(this.bucketName, this.s3Key, this.s3Client,
-            getPath(), partSizeBytes, options);
+        S3BlobStoreProperties properties = this.getStore().getProperties();
+        return new S3BlobOutputStream(this.bucketName, this.s3Key, this.s3Client, getPath(),
+            properties.getMultipartUploadPartSize(), properties.isConditionalWrites(), options);
     }
 
     @Override
