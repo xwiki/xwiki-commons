@@ -47,6 +47,8 @@ import org.xwiki.test.junit5.mockito.InjectComponentManager;
 })
 class S3BlobStoreIT extends AbstractBlobStoreIT
 {
+    private static final String PROP_CONDITIONAL_WRITES = "xwiki.test.blobstore.s3.conditionalWrites";
+
     @InjectBlobStoreContainer
     private BlobStoreContainer container;
 
@@ -62,6 +64,8 @@ class S3BlobStoreIT extends AbstractBlobStoreIT
         // Set multipart sizes to 5MB to reduce storage requirements
         props.setMultipartUploadPartSize(5L * 1024 * 1024);
         props.setMultipartCopyPartSize(5L * 1024 * 1024);
+        // Allow running the tests against S3-compatible services that don't support conditional writes.
+        props.setConditionalWrites(Boolean.parseBoolean(System.getProperty(PROP_CONDITIONAL_WRITES, "true")));
 
         // Get the factory from the component manager as we cannot inject it directly because the S3 configuration is
         // initialized too late. Injecting a provider isn't supported by the test framework.

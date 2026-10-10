@@ -199,19 +199,33 @@ public class S3CopyOperations
                 .sourceKey(sourceKey)
                 .destinationBucket(targetStore.getBucketName())
                 .destinationKey(targetKey)
-                .metadataDirective(MetadataDirective.COPY)
-                .copySourceIfMatch(sourceETag);
+                .metadataDirective(MetadataDirective.COPY);
 
-            if (writeMode == BlobWriteMode.CREATE_NEW) {
-                builder.ifNoneMatch("*");
+            // Services that don't support conditional requests reject the source ETag precondition too (for example
+            // OVHcloud Object Storage answers 501 to x-amz-copy-source-if-match), so it is sent only when conditional
+            // requests are enabled. The existence of the target has already been checked; the If-None-Match condition
+            // makes that check atomic on services that support it.
+            if (targetStore.isConditionalWrites()) {
+                builder.copySourceIfMatch(sourceETag);
+                if (writeMode == BlobWriteMode.CREATE_NEW) {
+                    builder.ifNoneMatch(S3ConditionalWriteSupport.WILDCARD);
+                }
             }
 
             CopyObjectRequest copyRequest = builder.build();
 
             this.clientManager.getS3Client().copyObject(copyRequest);
         } catch (Exception e) {
-            throw new BlobStoreException("Failed to perform simple copy", e);
+            throw translateCopyFailure(e, targetPath, "Failed to perform simple copy");
         }
+    }
+
+    private BlobStoreException translateCopyFailure(Exception e, BlobPath targetPath, String genericMessage)
+    {
+        if (S3ConditionalWriteSupport.isNotImplemented(e)) {
+            return new BlobStoreException(S3ConditionalWriteSupport.getNotImplementedMessage(targetPath), e);
+        }
+        return new BlobStoreException(genericMessage, e);
     }
 
     /**
@@ -244,6 +258,7 @@ public class S3CopyOperations
                 s3Client,
                 targetPath,
                 headResponse.metadata(),
+                targetStore.isConditionalWrites(),
                 writeMode
             );
 
@@ -252,6 +267,7 @@ public class S3CopyOperations
             // Step 2: Copy parts using configured part size
             long objectSize = headResponse.contentLength();
             String sourceETag = headResponse.eTag();
+            boolean conditionalWrites = targetStore.isConditionalWrites();
             long partSizeBytes = targetStore.getMultipartPartCopySizeBytes();
             long bytePosition = 0;
 
@@ -261,18 +277,20 @@ public class S3CopyOperations
 
                 int partNumber = uploadHelper.getNextPartNumber();
 
-                UploadPartCopyRequest uploadPartCopyRequest = UploadPartCopyRequest.builder()
+                UploadPartCopyRequest.Builder partBuilder = UploadPartCopyRequest.builder()
                     .sourceBucket(sourceStore.getBucketName())
                     .sourceKey(sourceKey)
                     .destinationBucket(targetStore.getBucketName())
                     .destinationKey(targetKey)
                     .uploadId(uploadHelper.getUploadId())
                     .partNumber(partNumber)
-                    .copySourceRange(copySourceRange)
-                    .copySourceIfMatch(sourceETag)
-                    .build();
+                    .copySourceRange(copySourceRange);
+                // See performSimpleCopy() for why the source ETag precondition is conditional.
+                if (conditionalWrites) {
+                    partBuilder.copySourceIfMatch(sourceETag);
+                }
 
-                UploadPartCopyResponse uploadPartCopyResponse = s3Client.uploadPartCopy(uploadPartCopyRequest);
+                UploadPartCopyResponse uploadPartCopyResponse = s3Client.uploadPartCopy(partBuilder.build());
 
                 uploadHelper.addCompletedPart(uploadPartCopyResponse.copyPartResult().eTag());
 
@@ -288,7 +306,7 @@ public class S3CopyOperations
 
             success = true;
         } catch (Exception e) {
-            throw new BlobStoreException("Failed to perform multipart copy", e);
+            throw translateCopyFailure(e, targetPath, "Failed to perform multipart copy");
         } finally {
             // Abort the multipart upload on any kind of failure
             if (!success && uploadHelper != null) {

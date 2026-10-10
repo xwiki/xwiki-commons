@@ -29,6 +29,8 @@ import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
@@ -130,5 +132,21 @@ class S3BlobStoreConfigurationTest
 
         long expectedUploadPartSize = 10L * 1024L * 1024L;
         assertEquals(expectedUploadPartSize, this.configuration.getS3MultipartCopySizeBytes());
+    }
+
+    @Test
+    void isS3ConditionalWritesDefault()
+    {
+        when(this.configurationSource.getProperty("store.s3.conditionalWrites", true)).thenReturn(true);
+
+        assertTrue(this.configuration.isS3ConditionalWrites());
+    }
+
+    @Test
+    void isS3ConditionalWritesDisabled()
+    {
+        when(this.configurationSource.getProperty("store.s3.conditionalWrites", true)).thenReturn(false);
+
+        assertFalse(this.configuration.isS3ConditionalWrites());
     }
 }

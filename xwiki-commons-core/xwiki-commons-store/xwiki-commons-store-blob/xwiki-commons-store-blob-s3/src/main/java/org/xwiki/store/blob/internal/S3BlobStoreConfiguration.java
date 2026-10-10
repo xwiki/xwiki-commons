@@ -140,6 +140,21 @@ public class S3BlobStoreConfiguration
     }
 
     /**
+     * Indicates whether the S3 service supports conditional requests on writes ({@code If-None-Match} on uploads and
+     * {@code x-amz-copy-source-if-match} on copies). AWS S3, MinIO and SILO do, but other S3-compatible services do
+     * not implement all of them: OVHcloud Object Storage, for example, rejects copies with a source precondition with
+     * "501 Not Implemented". When disabled, blobs that must only be created if absent are checked for existence
+     * before being written, which is not atomic, and copies don't check that the source changed meanwhile.
+     *
+     * @return {@code true} to use conditional writes (the default), {@code false} to use a non-atomic existence check
+     * @since 18.9.0RC1
+     */
+    public boolean isS3ConditionalWrites()
+    {
+        return this.configurationSourceProvider.get().getProperty("store.s3.conditionalWrites", true);
+    }
+
+    /**
      * Returns the configured multipart upload part size in bytes. Defaults to 5 MB if not configured. Uploads above
      * this size will use multipart upload with parts of this size.
      *
