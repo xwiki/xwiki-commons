@@ -19,6 +19,9 @@
  */
 package org.xwiki.netflux.internal;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
 import jakarta.websocket.Session;
 
 /**
@@ -31,6 +34,8 @@ import jakarta.websocket.Session;
 public class LocalUser extends User
 {
     private final Session session;
+
+    private final Object sendLock = new Object();
 
     /**
      * Creates a new user with the specified name, using the given WebSocket session.
@@ -51,5 +56,35 @@ public class LocalUser extends User
     public Session getSession()
     {
         return this.session;
+    }
+
+    /**
+     * Sends a text message to the user. The WebSocket API doesn't allow concurrent writes on the same session, so the
+     * writes made through this user are serialized.
+     *
+     * @param message the message to send
+     * @throws IOException when sending the message fails
+     * @since 18.9.0RC1
+     */
+    public void sendText(String message) throws IOException
+    {
+        synchronized (this.sendLock) {
+            this.session.getBasicRemote().sendText(message);
+        }
+    }
+
+    /**
+     * Sends a ping to the user. The WebSocket API doesn't allow concurrent writes on the same session, so the writes
+     * made through this user are serialized.
+     *
+     * @param payload the ping payload
+     * @throws IOException when sending the ping fails
+     * @since 18.9.0RC1
+     */
+    public void sendPing(ByteBuffer payload) throws IOException
+    {
+        synchronized (this.sendLock) {
+            this.session.getBasicRemote().sendPing(payload);
+        }
     }
 }
