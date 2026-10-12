@@ -22,6 +22,7 @@ package org.xwiki.store.blob;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.store.blob.internal.S3BlobStore;
+import org.xwiki.store.blob.internal.S3BlobStoreConfiguration;
 import org.xwiki.store.blob.internal.S3BlobStoreFactory;
 import org.xwiki.store.blob.internal.S3ClientManager;
 import org.xwiki.store.blob.internal.S3CopyOperations;
@@ -62,10 +63,22 @@ class S3BlobStoreIT extends AbstractBlobStoreIT
         // Set multipart sizes to 5MB to reduce storage requirements
         props.setMultipartUploadPartSize(5L * 1024 * 1024);
         props.setMultipartCopyPartSize(5L * 1024 * 1024);
+        configure(this.componentManager.getInstance(S3BlobStoreConfiguration.class));
 
         // Get the factory from the component manager as we cannot inject it directly because the S3 configuration is
         // initialized too late. Injecting a provider isn't supported by the test framework.
         BlobStoreFactory factory = this.componentManager.getInstance(BlobStoreFactory.class, "s3");
         return factory.create(name, props);
+    }
+
+    /**
+     * Configure the conditional requests of the store under test. By default, the mocked configuration takes them from
+     * the container, which reads them from the system properties.
+     *
+     * @param configuration the mocked S3 configuration used by the store under test
+     */
+    protected void configure(S3BlobStoreConfiguration configuration)
+    {
+        // Keep the values of the container.
     }
 }

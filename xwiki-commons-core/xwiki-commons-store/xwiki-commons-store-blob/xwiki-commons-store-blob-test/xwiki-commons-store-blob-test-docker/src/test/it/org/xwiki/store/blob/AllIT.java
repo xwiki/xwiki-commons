@@ -43,6 +43,16 @@ class AllIT
     }
 
     @Nested
+    class NestedS3BlobStoreWithoutConditionalCopiesIT extends S3BlobStoreWithoutConditionalCopiesIT
+    {
+    }
+
+    @Nested
+    class NestedS3BlobStoreWithoutConditionalRequestsIT extends S3BlobStoreWithoutConditionalRequestsIT
+    {
+    }
+
+    @Nested
     class NestedCrossStoreBlobStoreIT extends CrossStoreBlobStoreIT
     {
     }

@@ -38,6 +38,12 @@ public enum BlobWriteMode implements BlobOption
 
     /**
      * Create a new blob and fail if the target already exists.
+     * <p>
+     * The existence check and the write are not guaranteed to be atomic: they are only where the store supports it.
+     * Some stores check that the target is absent and then write it, so two concurrent writers of the same target can
+     * both succeed and the last one wins, for example the filesystem store when it moves a blob, or the S3 store when
+     * the conditional requests are disabled in its configuration. Callers that need mutual exclusion must get it from
+     * elsewhere, for example from a lock.
      */
     CREATE_NEW("Create new blob only if absent");
 

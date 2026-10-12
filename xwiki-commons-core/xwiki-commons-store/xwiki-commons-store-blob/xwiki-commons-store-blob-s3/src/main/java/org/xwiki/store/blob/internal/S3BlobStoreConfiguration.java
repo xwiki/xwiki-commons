@@ -140,6 +140,42 @@ public class S3BlobStoreConfiguration
     }
 
     /**
+     * Indicates whether the S3 service supports the condition sent with uploads ({@code If-None-Match} on
+     * {@code PutObject} and {@code CompleteMultipartUpload}, which also completes multipart copies). AWS S3 and SILO
+     * support it. Set it to {@code false} for S3-compatible services that do not implement conditional writes (and
+     * set {@link #isS3ConditionalCopies()} to {@code false} too if they support no conditional request at all): blobs
+     * that must only be created if absent are then checked for existence before being written, which is not atomic.
+     * Whatever the value, the existence check needs the permissions to read objects and to list the bucket (on AWS S3,
+     * a missing object answers 403 instead of 404 without {@code s3:ListBucket}).
+     *
+     * @return {@code true} to send the conditions (the default), {@code false} otherwise
+     * @since 18.10.0RC1
+     */
+    public boolean isS3ConditionalWrites()
+    {
+        return this.configurationSourceProvider.get()
+            .getProperty(S3ConditionalWriteSupport.CONDITIONAL_WRITES_PROPERTY, true);
+    }
+
+    /**
+     * Indicates whether the S3 service supports the conditions sent with copies ({@code If-None-Match} on
+     * {@code CopyObject} and {@code x-amz-copy-source-if-match} on {@code UploadPartCopy}). Some S3-compatible
+     * services support the condition of uploads but not those of copies, for example a service that rejects any
+     * condition on {@code CopyObject} with "501 Not Implemented". Set it to {@code false} for such services: the target
+     * of a copy up to the multipart copy size is then only checked for existence before the copy, which is not atomic
+     * (larger copies keep the condition of uploads when completing), and the source of a multipart copy is checked
+     * again before completing it.
+     *
+     * @return {@code true} to send the conditions (the default), {@code false} otherwise
+     * @since 18.10.0RC1
+     */
+    public boolean isS3ConditionalCopies()
+    {
+        return this.configurationSourceProvider.get()
+            .getProperty(S3ConditionalWriteSupport.CONDITIONAL_COPIES_PROPERTY, true);
+    }
+
+    /**
      * Returns the configured multipart upload part size in bytes. Defaults to 5 MB if not configured. Uploads above
      * this size will use multipart upload with parts of this size.
      *

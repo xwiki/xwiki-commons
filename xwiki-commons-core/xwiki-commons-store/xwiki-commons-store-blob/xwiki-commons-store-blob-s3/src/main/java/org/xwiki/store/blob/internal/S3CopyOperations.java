@@ -19,6 +19,7 @@
  */
 package org.xwiki.store.blob.internal;
 
+import java.util.Objects;
 import java.util.Set;
 
 import jakarta.inject.Inject;
@@ -167,7 +168,7 @@ public class S3CopyOperations
 
         // Choose copy strategy based on object size.
         if (objectSize <= targetStore.getMultipartPartCopySizeBytes()) {
-            performSimpleCopy(sourceStore, sourcePath, targetStore, targetPath, headResponse.eTag(), writeMode);
+            performSimpleCopy(sourceStore, sourcePath, targetStore, targetPath, writeMode);
         } else {
             performMultipartCopy(sourceStore, sourcePath, targetStore, targetPath, headResponse, writeMode);
         }
@@ -182,16 +183,18 @@ public class S3CopyOperations
      * @param sourcePath the source blob path
      * @param targetStore the target S3 blob store
      * @param targetPath the target blob path
-     * @param sourceETag the ETag of the source object to ensure it hasn't changed
      * @param writeMode the write mode to use for the target
      * @throws BlobStoreException if the copy operation fails
      */
     private void performSimpleCopy(S3BlobStore sourceStore, BlobPath sourcePath, S3BlobStore targetStore,
-        BlobPath targetPath, String sourceETag, BlobWriteMode writeMode)
+        BlobPath targetPath, BlobWriteMode writeMode)
         throws BlobStoreException
     {
         String sourceKey = sourceStore.getKeyMapper().buildS3Key(sourcePath);
         String targetKey = targetStore.getKeyMapper().buildS3Key(targetPath);
+        // The existence of the target has already been checked; the If-None-Match condition makes that check atomic
+        // on services that support conditions on CopyObject.
+        boolean conditionSent = writeMode == BlobWriteMode.CREATE_NEW && targetStore.isConditionalCopies();
 
         try {
             CopyObjectRequest.Builder builder = CopyObjectRequest.builder()
@@ -199,19 +202,62 @@ public class S3CopyOperations
                 .sourceKey(sourceKey)
                 .destinationBucket(targetStore.getBucketName())
                 .destinationKey(targetKey)
-                .metadataDirective(MetadataDirective.COPY)
-                .copySourceIfMatch(sourceETag);
+                .metadataDirective(MetadataDirective.COPY);
 
-            if (writeMode == BlobWriteMode.CREATE_NEW) {
-                builder.ifNoneMatch("*");
+            // No source precondition (x-amz-copy-source-if-match) is sent: a single CopyObject reads the source once,
+            // so the target is a consistent copy of one version of the source and the precondition adds little (it
+            // would only detect a change since the HEAD request above). It may be worth sending to services that
+            // support it, like AWS S3, but it is left out so that only the If-None-Match condition below depends on
+            // the support of conditions on CopyObject.
+            if (conditionSent) {
+                builder.ifNoneMatch(S3ConditionalWriteSupport.WILDCARD);
             }
 
             CopyObjectRequest copyRequest = builder.build();
 
             this.clientManager.getS3Client().copyObject(copyRequest);
         } catch (Exception e) {
-            throw new BlobStoreException("Failed to perform simple copy", e);
+            if (conditionSent && S3ConditionalWriteSupport.isPreconditionFailed(e)) {
+                // Another writer created the target after the existence check.
+                throw new BlobAlreadyExistsException(targetPath, e);
+            }
+            throw translateCopyFailure(e, targetPath, "Failed to perform simple copy", conditionSent,
+                S3ConditionalWriteSupport.CONDITIONAL_COPIES_PROPERTY);
         }
+    }
+
+    /**
+     * Translate a failed copy request into a blob store exception. The message names the configuration property to
+     * change only when the service answered "501 Not Implemented" to a request that carried conditions.
+     */
+    private BlobStoreException translateCopyFailure(Exception e, BlobPath targetPath, String genericMessage,
+        boolean conditionSent, String property)
+    {
+        if (conditionSent && S3ConditionalWriteSupport.isNotImplemented(e)) {
+            return new BlobStoreException(S3ConditionalWriteSupport.getNotImplementedMessage(targetPath, property), e);
+        }
+        return new BlobStoreException(genericMessage, e);
+    }
+
+    private BlobStoreException translateMultipartCopyFailure(Exception e, BlobPath sourcePath, BlobPath targetPath,
+        boolean sourcePrecondition)
+    {
+        // The upload helper reports the failures of its own requests (the existence check and CompleteMultipartUpload)
+        // as IOException: keep a BlobAlreadyExistsException and the explanation of a rejected condition.
+        BlobStoreException uploadFailure = S3ConditionalWriteSupport.translateUploadFailure(e);
+        if (uploadFailure != null) {
+            return uploadFailure;
+        }
+
+        // Otherwise, an S3 error comes from UploadPartCopy.
+        if (sourcePrecondition && S3ConditionalWriteSupport.isPreconditionFailed(e)) {
+            return new BlobStoreException(("The S3 service answered that the source blob [%s] changed during the "
+                + "multipart copy (412 Precondition Failed). If it didn't change, the service doesn't evaluate the "
+                + "x-amz-copy-source-if-match condition correctly: set [%s] to false.").formatted(sourcePath,
+                    S3ConditionalWriteSupport.CONDITIONAL_COPIES_PROPERTY), e);
+        }
+        return translateCopyFailure(e, targetPath, "Failed to perform multipart copy", sourcePrecondition,
+            S3ConditionalWriteSupport.CONDITIONAL_COPIES_PROPERTY);
     }
 
     /**
@@ -232,6 +278,10 @@ public class S3CopyOperations
         String sourceKey = sourceStore.getKeyMapper().buildS3Key(sourcePath);
         String targetKey = targetStore.getKeyMapper().buildS3Key(targetPath);
 
+        // The source precondition (x-amz-copy-source-if-match on UploadPartCopy) is a condition of copies, while the
+        // If-None-Match condition on CompleteMultipartUpload is the one of uploads, sent by the upload helper.
+        boolean sourcePrecondition = targetStore.isConditionalCopies();
+
         S3MultipartUploadHelper uploadHelper = null;
         boolean success = false;
         try {
@@ -244,6 +294,7 @@ public class S3CopyOperations
                 s3Client,
                 targetPath,
                 headResponse.metadata(),
+                targetStore.isConditionalWrites(),
                 writeMode
             );
 
@@ -251,9 +302,18 @@ public class S3CopyOperations
 
             // Step 2: Copy parts using configured part size
             long objectSize = headResponse.contentLength();
-            String sourceETag = headResponse.eTag();
             long partSizeBytes = targetStore.getMultipartPartCopySizeBytes();
             long bytePosition = 0;
+
+            UploadPartCopyRequest partTemplate = UploadPartCopyRequest.builder()
+                .sourceBucket(sourceStore.getBucketName())
+                .sourceKey(sourceKey)
+                .destinationBucket(targetStore.getBucketName())
+                .destinationKey(targetKey)
+                .uploadId(uploadHelper.getUploadId())
+                // The precondition makes sure that all parts are copied from the same version of the source.
+                .copySourceIfMatch(sourcePrecondition ? headResponse.eTag() : null)
+                .build();
 
             while (bytePosition < objectSize) {
                 long lastByte = Math.min(bytePosition + partSizeBytes - 1, objectSize - 1);
@@ -261,18 +321,8 @@ public class S3CopyOperations
 
                 int partNumber = uploadHelper.getNextPartNumber();
 
-                UploadPartCopyRequest uploadPartCopyRequest = UploadPartCopyRequest.builder()
-                    .sourceBucket(sourceStore.getBucketName())
-                    .sourceKey(sourceKey)
-                    .destinationBucket(targetStore.getBucketName())
-                    .destinationKey(targetKey)
-                    .uploadId(uploadHelper.getUploadId())
-                    .partNumber(partNumber)
-                    .copySourceRange(copySourceRange)
-                    .copySourceIfMatch(sourceETag)
-                    .build();
-
-                UploadPartCopyResponse uploadPartCopyResponse = s3Client.uploadPartCopy(uploadPartCopyRequest);
+                UploadPartCopyResponse uploadPartCopyResponse = s3Client.uploadPartCopy(
+                    partTemplate.toBuilder().partNumber(partNumber).copySourceRange(copySourceRange).build());
 
                 uploadHelper.addCompletedPart(uploadPartCopyResponse.copyPartResult().eTag());
 
@@ -281,19 +331,51 @@ public class S3CopyOperations
                 bytePosition += partSizeBytes;
             }
 
+            if (!sourcePrecondition) {
+                assertSourceUnchanged(s3Client, sourceStore.getBucketName(), sourceKey, sourcePath, headResponse);
+            }
+
             // Step 3: Complete multipart upload
             uploadHelper.complete();
 
             this.logger.debug("Completed multipart copy for key: [{}]", targetKey);
 
             success = true;
+        } catch (BlobStoreException e) {
+            throw e;
         } catch (Exception e) {
-            throw new BlobStoreException("Failed to perform multipart copy", e);
+            throw translateMultipartCopyFailure(e, sourcePath, targetPath, sourcePrecondition);
         } finally {
             // Abort the multipart upload on any kind of failure
             if (!success && uploadHelper != null) {
                 uploadHelper.abort();
             }
+        }
+    }
+
+    /**
+     * Check that the source of a multipart copy did not change while its parts were copied, for services that don't
+     * support the source precondition on {@code UploadPartCopy}. Otherwise, the target could be assembled from parts
+     * of different versions of the source. This is weaker than the precondition: it misses a source that is replaced
+     * and then restored with the same ETag during the copy, and a service without read-after-write consistency may
+     * return outdated metadata. It catches the common case for one request per multipart copy.
+     */
+    private void assertSourceUnchanged(S3Client s3Client, String sourceBucket, String sourceKey, BlobPath sourcePath,
+        HeadObjectResponse initialHead) throws BlobStoreException
+    {
+        HeadObjectResponse currentHead;
+        try {
+            currentHead = s3Client.headObject(HeadObjectRequest.builder().bucket(sourceBucket).key(sourceKey).build());
+        } catch (NoSuchKeyException e) {
+            throw new BlobNotFoundException(sourcePath, e);
+        }
+
+        boolean unchanged = Objects.equals(initialHead.eTag(), currentHead.eTag())
+            && Objects.equals(initialHead.contentLength(), currentHead.contentLength())
+            && Objects.equals(initialHead.lastModified(), currentHead.lastModified());
+        if (!unchanged) {
+            throw new BlobStoreException(
+                "The source blob [%s] changed during the multipart copy, the copy was aborted".formatted(sourcePath));
         }
     }
 }

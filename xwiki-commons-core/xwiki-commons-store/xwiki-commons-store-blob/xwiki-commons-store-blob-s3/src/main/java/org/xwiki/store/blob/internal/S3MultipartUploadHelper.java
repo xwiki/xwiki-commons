@@ -29,7 +29,6 @@ import java.util.function.Consumer;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xwiki.store.blob.BlobAlreadyExistsException;
 import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobWriteMode;
@@ -69,8 +68,6 @@ public class S3MultipartUploadHelper
 
     private static final Logger LOGGER = LoggerFactory.getLogger(S3MultipartUploadHelper.class);
 
-    private static final String WILDCARD = "*";
-
     private final String bucketName;
 
     private final String s3Key;
@@ -80,6 +77,8 @@ public class S3MultipartUploadHelper
     private final BlobPath blobPath;
 
     private final BlobWriteMode writeMode;
+
+    private final boolean conditionalWrites;
 
     private final String uploadId;
 
@@ -104,7 +103,7 @@ public class S3MultipartUploadHelper
     public S3MultipartUploadHelper(String bucketName, String s3Key, S3Client s3Client, BlobPath blobPath,
         BlobOption... options) throws IOException
     {
-        this(bucketName, s3Key, s3Client, blobPath, null, options);
+        this(bucketName, s3Key, s3Client, blobPath, null, true, options);
     }
 
     /**
@@ -115,11 +114,15 @@ public class S3MultipartUploadHelper
      * @param s3Client the S3 client
      * @param blobPath the blob path (for error reporting)
      * @param metadata optional metadata to apply to the object
+     * @param conditionalWrites {@code true} to send {@code If-None-Match: *} when completing the upload of a
+     *     {@link BlobWriteMode#CREATE_NEW} blob, which makes the existence check atomic, {@code false} for S3 services
+     *     that do not support it
      * @param options optional options to use for the upload
      * @throws IOException if initialization fails
+     * @since 18.10.0RC1
      */
     public S3MultipartUploadHelper(String bucketName, String s3Key, S3Client s3Client, BlobPath blobPath,
-        Map<String, String> metadata, BlobOption... options) throws IOException
+        Map<String, String> metadata, boolean conditionalWrites, BlobOption... options) throws IOException
     {
         this.bucketName = bucketName;
         this.s3Key = s3Key;
@@ -127,6 +130,7 @@ public class S3MultipartUploadHelper
         this.blobPath = blobPath;
         BlobOptionSupport.validateSupportedOptions(Set.of(BlobWriteMode.class), options);
         this.writeMode = BlobWriteMode.resolve(BlobWriteMode.REPLACE_EXISTING, options);
+        this.conditionalWrites = conditionalWrites;
         this.completedParts = new ArrayList<>();
         this.nextPartNumber = 1;
         this.completed = false;
@@ -219,6 +223,12 @@ public class S3MultipartUploadHelper
         ensureNotCompleted();
         ensureNotAborted();
 
+        if (this.writeMode == BlobWriteMode.CREATE_NEW) {
+            // Always check, since a service may ignore a condition it doesn't support. The condition, when enabled,
+            // makes the check atomic on services that enforce it.
+            S3ConditionalWriteSupport.assertAbsent(this.s3Client, this.bucketName, this.s3Key, this.blobPath);
+        }
+
         try {
             CompleteMultipartUploadRequest.Builder builder = CompleteMultipartUploadRequest.builder()
                 .bucket(this.bucketName)
@@ -226,9 +236,8 @@ public class S3MultipartUploadHelper
                 .uploadId(this.uploadId)
                 .multipartUpload(b -> b.parts(this.completedParts));
 
-            // Add conditional headers if needed
-            if (this.writeMode == BlobWriteMode.CREATE_NEW) {
-                builder.ifNoneMatch(WILDCARD);
+            if (this.writeMode == BlobWriteMode.CREATE_NEW && this.conditionalWrites) {
+                builder.ifNoneMatch(S3ConditionalWriteSupport.WILDCARD);
             }
 
             // Allow the caller to customize the request.
@@ -243,7 +252,7 @@ public class S3MultipartUploadHelper
 
             LOGGER.debug("Completed multipart upload for key [{}] with upload ID: [{}]", this.s3Key, this.uploadId);
         } catch (S3Exception e) {
-            handleS3Exception(e);
+            throw handleS3Exception(e);
         } catch (Exception e) {
             throw new IOException("Failed to complete multipart upload for blob at path " + this.blobPath, e);
         }
@@ -287,14 +296,13 @@ public class S3MultipartUploadHelper
         return this.uploadId;
     }
 
-    private void handleS3Exception(S3Exception e) throws IOException
+    private IOException handleS3Exception(S3Exception e)
     {
-        // Check if this is a precondition failed error (412) for conditional requests.
-        if (e.statusCode() == 412 && this.writeMode == BlobWriteMode.CREATE_NEW) {
-            throw new IOException("Blob already exists",
-                new BlobAlreadyExistsException(this.blobPath, e));
+        String genericMessage = "S3 operation failed for blob at path " + this.blobPath;
+        if (this.writeMode == BlobWriteMode.CREATE_NEW && this.conditionalWrites) {
+            return S3ConditionalWriteSupport.translateConditionalWriteFailure(e, this.blobPath, genericMessage);
         }
-        throw new IOException("S3 operation failed for blob at path " + this.blobPath, e);
+        return new IOException(genericMessage, e);
     }
 
     private void ensureNotCompleted() throws IOException

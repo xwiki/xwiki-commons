@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Set;
 
-import org.xwiki.store.blob.BlobAlreadyExistsException;
 import org.xwiki.store.blob.BlobOption;
 import org.xwiki.store.blob.BlobPath;
 import org.xwiki.store.blob.BlobWriteMode;
@@ -47,8 +46,6 @@ import software.amazon.awssdk.services.s3.model.UploadPartResponse;
  */
 public class S3BlobOutputStream extends OutputStream
 {
-    private static final String WILDCARD = "*";
-
     private static final String GENERIC_FAILED_UPLOAD_MESSAGE = "Failed to upload to S3";
 
     /**
@@ -86,6 +83,8 @@ public class S3BlobOutputStream extends OutputStream
 
     private final BlobWriteMode writeMode;
 
+    private final boolean conditionalWrites;
+
     // Multipart upload helper
     private S3MultipartUploadHelper uploadHelper;
 
@@ -97,10 +96,14 @@ public class S3BlobOutputStream extends OutputStream
      * @param s3Client the S3 client
      * @param blobPath the blob path for error reporting
      * @param partSizeBytes the configured multipart upload part size in bytes
+     * @param conditionalWrites {@code true} to send {@code If-None-Match: *} with the upload of a
+     *     {@link BlobWriteMode#CREATE_NEW} blob, which makes the existence check atomic, {@code false} for S3 services
+     *     that do not support it
      * @param options the options for writing to the stream
+     * @since 18.10.0RC1
      */
     public S3BlobOutputStream(String bucketName, String s3Key, S3Client s3Client, BlobPath blobPath, long partSizeBytes,
-        BlobOption... options)
+        boolean conditionalWrites, BlobOption... options)
     {
         this.bucketName = bucketName;
         this.s3Key = s3Key;
@@ -110,6 +113,7 @@ public class S3BlobOutputStream extends OutputStream
         this.failed = false;
         BlobOptionSupport.validateSupportedOptions(Set.of(BlobWriteMode.class), options);
         this.writeMode = BlobWriteMode.resolve(BlobWriteMode.REPLACE_EXISTING, options);
+        this.conditionalWrites = conditionalWrites;
         // Cap part size to Integer.MAX_VALUE since ByteArrayOutputStream uses int for size (and about 2GB is in
         // fact already too much as upload buffer).
         this.partSize = (int) Math.min(partSizeBytes, Integer.MAX_VALUE);
@@ -261,11 +265,18 @@ public class S3BlobOutputStream extends OutputStream
             return;
         }
 
+        if (this.writeMode == BlobWriteMode.CREATE_NEW) {
+            // Fail before uploading any part. The helper checks again when completing the upload.
+            S3ConditionalWriteSupport.assertAbsent(this.s3Client, this.bucketName, this.s3Key, this.blobPath);
+        }
+
         this.uploadHelper = new S3MultipartUploadHelper(
             this.bucketName,
             this.s3Key,
             this.s3Client,
             this.blobPath,
+            null,
+            this.conditionalWrites,
             this.writeMode
         );
     }
@@ -277,28 +288,33 @@ public class S3BlobOutputStream extends OutputStream
                 .bucket(this.bucketName)
                 .key(this.s3Key);
 
-            // Add conditional headers if needed.
             if (this.writeMode == BlobWriteMode.CREATE_NEW) {
-                requestBuilder.ifNoneMatch(WILDCARD);
+                // Always check, since a service may ignore a condition it doesn't support. The condition, when
+                // enabled, makes the check atomic on services that enforce it.
+                S3ConditionalWriteSupport.assertAbsent(this.s3Client, this.bucketName, this.s3Key, this.blobPath);
+                if (this.conditionalWrites) {
+                    requestBuilder.ifNoneMatch(S3ConditionalWriteSupport.WILDCARD);
+                }
             }
 
             this.s3Client.putObject(requestBuilder.build(),
                 RequestBody.fromInputStream(inputStream, this.buffer.size()));
+        } catch (IOException e) {
+            throw e;
         } catch (S3Exception e) {
-            handleS3Exception(e);
+            throw handleS3Exception(e);
         } catch (Exception e) {
             throw new IOException(GENERIC_FAILED_UPLOAD_MESSAGE, e);
         }
     }
 
-    private void handleS3Exception(S3Exception e) throws IOException
+    private IOException handleS3Exception(S3Exception e)
     {
-        // Check if this is a precondition failed error (412) for conditional requests.
-        if (e.statusCode() == 412 && this.writeMode == BlobWriteMode.CREATE_NEW) {
-            throw new IOException("Blob already exists",
-                new BlobAlreadyExistsException(this.blobPath, e));
+        if (this.writeMode == BlobWriteMode.CREATE_NEW && this.conditionalWrites) {
+            return S3ConditionalWriteSupport.translateConditionalWriteFailure(e, this.blobPath,
+                GENERIC_FAILED_UPLOAD_MESSAGE);
         }
-        throw new IOException(GENERIC_FAILED_UPLOAD_MESSAGE, e);
+        return new IOException(GENERIC_FAILED_UPLOAD_MESSAGE, e);
     }
 
     private void checkStreamState() throws IOException
