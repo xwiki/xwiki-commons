@@ -177,11 +177,8 @@ public class NetfluxPingPongManager implements Initializable, Disposable
 
         try {
             trackedUser.missedPongs.incrementAndGet();
-            // Netflux sends its messages while holding the user lock, see Netflux#sendMessage(LocalUser, String). We
-            // take the same lock because the WebSocket API doesn't allow concurrent writes on the same session.
-            synchronized (user) {
-                session.getBasicRemote().sendPing(EMPTY_PING_PAYLOAD.duplicate());
-            }
+            // LocalUser serializes this ping with the messages sent by Netflux#sendMessage(LocalUser, String).
+            user.sendPing(EMPTY_PING_PAYLOAD.duplicate());
         } catch (IOException e) {
             this.logger.warn("Failed to send ping message to session [{}]. Cause: [{}]", session.getId(),
                 getRootCauseMessage(e));

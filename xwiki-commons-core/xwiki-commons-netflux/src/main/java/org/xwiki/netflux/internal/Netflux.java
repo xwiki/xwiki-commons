@@ -389,11 +389,9 @@ public class Netflux
     {
         try {
             this.logger.debug("Sending to [{}] : [{}]", user.getName(), message);
-            // The WebSocket API doesn't allow concurrent writes on the same session, and the ping messages are sent
-            // from a different thread (see NetfluxPingPongManager), so we hold the user lock while sending.
-            synchronized (user) {
-                user.getSession().getBasicRemote().sendText(message);
-            }
+            // The ping messages are sent from a different thread (see NetfluxPingPongManager), and LocalUser serializes
+            // the writes on its session.
+            user.sendText(message);
             return true;
         } catch (IOException e) {
             this.logger.debug("Sending failed.", e);
