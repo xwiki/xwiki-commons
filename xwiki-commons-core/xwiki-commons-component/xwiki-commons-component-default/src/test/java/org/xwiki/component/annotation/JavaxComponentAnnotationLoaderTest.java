@@ -84,13 +84,6 @@ class JavaxComponentAnnotationLoaderTest
     {
     }
 
-    // Verify backward compatibility for deprecated component-overrides.txt file
-    @Component(value = "deprecated")
-    @Singleton
-    public class DeprecatedSimpleRole implements NotGenericRole<String>
-    {
-    }
-
     @Component(staticRegistration = false)
     @Named("customprovider")
     @Singleton

@@ -19,21 +19,89 @@
  */
 package org.xwiki.component.annotation;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import jakarta.inject.Provider;
 
+import org.xwiki.component.manager.ComponentManager;
+
 /**
- * Add a backward compatibility layer to the {@link ComponentAnnotationLoader} class.
+ * Add a backward compatibility layer to the {@link ComponentAnnotationLoader} class, including the support for the
+ * {@code META-INF/component-overrides.txt} file.
  *
  * @version $Id$
  * @since 18.9.0RC1
  */
 public privileged aspect ComponentAnnotationLoaderCompatibilityAspect
 {
+    declare parents : ComponentAnnotationLoader implements CompatibilityComponentAnnotationLoaderConstants;
+
+    // Advise the call made from within ComponentAnnotationLoader#initialize(ComponentManager, ClassLoader) (and not
+    // the execution of getDeclaredComponents) so that only the components loaded at initialization get the overrides,
+    // whoever calls initialize, while the rest of the initialize body stays the one of the main module.
+    after(ComponentAnnotationLoader loader, ClassLoader classLoader, String location)
+        returning(List<ComponentDeclaration> componentDeclarations) throws IOException:
+        call(List<ComponentDeclaration> ComponentAnnotationLoader.getDeclaredComponents(ClassLoader, String))
+            && withincode(void ComponentAnnotationLoader.initialize(ComponentManager, ClassLoader))
+            && target(loader) && args(classLoader, location)
+    {
+        if (ComponentAnnotationLoader.COMPONENT_LIST.equals(location)) {
+            // Add the component overrides at the bottom of the list as component declarations with the highest
+            // priority of 0.
+            List<ComponentDeclaration> componentOverrideDeclarations =
+                loader.getDeclaredComponents(classLoader, ComponentAnnotationLoader.COMPONENT_OVERRIDE_LIST);
+            for (ComponentDeclaration componentOverrideDeclaration : componentOverrideDeclarations) {
+                // An override was declared in both a components.txt and a component-overrides.txt file so we first
+                // need to remove the override component declaration coming from components.txt.
+                componentDeclarations.remove(componentOverrideDeclaration);
+                componentDeclarations
+                    .add(new ComponentDeclaration(componentOverrideDeclaration.getImplementationClassName(), 0));
+            }
+        }
+    }
+
+    // The JAR stream can only be read once, so the whole method is replaced to read both files in a single pass.
+    List<ComponentDeclaration> around(ComponentAnnotationLoader loader, InputStream jarFile) throws IOException:
+        execution(List<ComponentDeclaration> ComponentAnnotationLoader.getDeclaredComponentsFromJAR(InputStream))
+            && this(loader) && args(jarFile)
+    {
+        ZipInputStream zis = new ZipInputStream(jarFile);
+
+        List<ComponentDeclaration> componentDeclarations = null;
+        List<ComponentDeclaration> componentOverrideDeclarations = null;
+
+        for (ZipEntry entry = zis.getNextEntry(); entry != null
+            && (componentDeclarations == null || componentOverrideDeclarations == null); entry = zis.getNextEntry()) {
+            if (entry.getName().equals(ComponentAnnotationLoader.COMPONENT_LIST)) {
+                componentDeclarations = loader.getDeclaredComponents(zis);
+            } else if (entry.getName().equals(ComponentAnnotationLoader.COMPONENT_OVERRIDE_LIST)) {
+                componentOverrideDeclarations = loader.getDeclaredComponents(zis);
+            }
+        }
+
+        // Merge all overrides found with a priority of 0.
+        if (componentOverrideDeclarations != null) {
+            if (componentDeclarations == null) {
+                componentDeclarations = new ArrayList<>();
+            }
+            for (ComponentDeclaration componentOverrideDeclaration : componentOverrideDeclarations) {
+                componentDeclarations
+                    .add(new ComponentDeclaration(componentOverrideDeclaration.getImplementationClassName(), 0));
+            }
+        }
+
+        return componentDeclarations;
+    }
+
     /**
      * Finds the interfaces that implement component roles by looking recursively in all interfaces of the passed
      * component implementation class. If the roles annotation value is specified then use the specified list instead of

@@ -1,0 +1,2 @@
+org.xwiki.component.annotation.ComponentAnnotationLoaderTest$OverrideRoleImpl
+500:org.xwiki.component.annotation.ComponentAnnotationLoaderTest$PrioritizedRoleImpl
