@@ -49,7 +49,7 @@ public class MavenArtifactHandlers
      */
     public MavenArtifactHandlers(MavenArtifactHandlerManager handlers)
     {
-        handlers.getHandlers().forEach(this::add);
+        handlers.getHandlers().forEach(this::addHandler);
     }
 
     /**
@@ -69,8 +69,21 @@ public class MavenArtifactHandlers
      */
     public void add(MavenArtifactHandler handler)
     {
+        addHandler(handler);
+    }
+
+    private void addHandler(MavenArtifactHandler handler)
+    {
         this.handlersByType.put(handler.getType(), handler);
-        this.handlersByPackaging.put(handler.getPackaging(), handler);
+
+        // Several handlers can share a packaging: Maven declares some types for an existing packaging (e.g. test-jar
+        // with the jar packaging) and the Plexus container also exposes a handler under the "default" hint. The
+        // handler whose type is the packaging itself must win, whatever the order in which the handlers are added.
+        String packaging = handler.getPackaging();
+        MavenArtifactHandler currentHandler = this.handlersByPackaging.get(packaging);
+        if (currentHandler == null || handler.getType().equals(packaging)) {
+            this.handlersByPackaging.put(packaging, handler);
+        }
     }
 
     /**
