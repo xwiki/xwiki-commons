@@ -1,5 +1,3 @@
-org.xwiki.component.annotation.JakartaComponentAnnotationLoaderTest$DeprecatedSimpleRole
-org.xwiki.component.annotation.JakartaComponentAnnotationLoaderTest$DeprecatedOverrideRole
 org.xwiki.component.annotation.JakartaComponentAnnotationLoaderTest$SimpleRole
 500:org.xwiki.component.annotation.JakartaComponentAnnotationLoaderTest$OverrideRole
 

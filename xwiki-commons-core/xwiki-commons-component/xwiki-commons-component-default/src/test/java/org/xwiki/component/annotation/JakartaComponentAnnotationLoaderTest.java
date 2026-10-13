@@ -99,19 +99,6 @@ class JakartaComponentAnnotationLoaderTest
     {
     }
 
-    // Verify backward compatibility for deprecated component-overrides.txt file
-    @Component(value = "deprecated")
-    @Singleton
-    public class DeprecatedSimpleRole implements NotGenericRole<String>
-    {
-    }
-
-    @Component(value = "deprecated")
-    @Singleton
-    public class DeprecatedOverrideRole implements NotGenericRole<String>
-    {
-    }
-
     @Component(staticRegistration = false)
     @Named("customprovider")
     @Singleton
@@ -195,9 +182,6 @@ class JakartaComponentAnnotationLoaderTest
     {
         ComponentManager componentManager = mock();
 
-        DefaultComponentDescriptor descriptor1 =
-            (DefaultComponentDescriptor) this.loader.getComponentsDescriptors(DeprecatedOverrideRole.class).getFirst();
-        descriptor1.setRoleHintPriority(0);
         ComponentDescriptor descriptor2 = this.loader.getComponentsDescriptors(RootComponentManager.class).getFirst();
         DefaultComponentDescriptor descriptor3 =
             (DefaultComponentDescriptor) this.loader.getComponentsDescriptors(OverrideRole.class).getFirst();

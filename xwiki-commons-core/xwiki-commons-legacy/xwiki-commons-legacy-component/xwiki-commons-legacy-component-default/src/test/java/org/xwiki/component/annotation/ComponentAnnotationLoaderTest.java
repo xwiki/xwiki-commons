@@ -19,13 +19,20 @@
  */
 package org.xwiki.component.annotation;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
 import org.junit.jupiter.api.Test;
+import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -79,5 +86,37 @@ class ComponentAnnotationLoaderTest
             assertEquals(0,
                 componentManager.getComponentDescriptor(TestRole.class, COMPONENT_HINT).getRoleHintPriority());
         }
+    }
+
+    @Test
+    void getDeclaredComponentsFromJARWithComponentOverrides() throws Exception
+    {
+        ByteArrayOutputStream jar = new ByteArrayOutputStream();
+        try (ZipOutputStream zos = new ZipOutputStream(jar)) {
+            addEntry(zos, ComponentAnnotationLoader.COMPONENT_LIST);
+            addEntry(zos, CompatibilityComponentAnnotationLoaderConstants.COMPONENT_OVERRIDE_LIST);
+        }
+
+        List<ComponentDeclaration> declarations = new ComponentAnnotationLoader()
+            .getDeclaredComponentsFromJAR(new ByteArrayInputStream(jar.toByteArray()));
+
+        assertEquals(List.of(
+            declaration(OverrideRoleImpl.class, ComponentDescriptor.DEFAULT_PRIORITY),
+            declaration(PrioritizedRoleImpl.class, 500),
+            declaration(OverrideRoleImpl.class, 0)), declarations.stream().map(ComponentDeclaration::toString).toList());
+    }
+
+    private void addEntry(ZipOutputStream zos, String path) throws Exception
+    {
+        zos.putNextEntry(new ZipEntry(path));
+        try (InputStream content = getClass().getClassLoader().getResourceAsStream("overrides/" + path)) {
+            content.transferTo(zos);
+        }
+        zos.closeEntry();
+    }
+
+    private String declaration(Class<?> implementation, int priority)
+    {
+        return new ComponentDeclaration(implementation.getName(), priority).toString();
     }
 }

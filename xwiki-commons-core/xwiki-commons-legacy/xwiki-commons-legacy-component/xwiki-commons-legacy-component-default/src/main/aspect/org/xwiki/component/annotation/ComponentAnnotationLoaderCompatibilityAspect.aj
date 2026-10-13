@@ -45,16 +45,16 @@ public privileged aspect ComponentAnnotationLoaderCompatibilityAspect
 {
     declare parents : ComponentAnnotationLoader implements CompatibilityComponentAnnotationLoaderConstants;
 
-    // Intercept the execution (and not the call) so that the advice applies whoever the caller is, including code
-    // located in JARs that are not woven by this module.
-    void around(ComponentAnnotationLoader loader, ComponentManager manager, ClassLoader classLoader):
-        execution(void ComponentAnnotationLoader.initialize(ComponentManager, ClassLoader))
-            && this(loader) && args(manager, classLoader)
+    // Advise the call made from within ComponentAnnotationLoader#initialize(ComponentManager, ClassLoader) (and not
+    // the execution of getDeclaredComponents) so that only the components loaded at initialization get the overrides,
+    // whoever calls initialize, while the rest of the initialize body stays the one of the main module.
+    after(ComponentAnnotationLoader loader, ClassLoader classLoader, String location)
+        returning(List<ComponentDeclaration> componentDeclarations) throws IOException:
+        call(List<ComponentDeclaration> ComponentAnnotationLoader.getDeclaredComponents(ClassLoader, String))
+            && withincode(void ComponentAnnotationLoader.initialize(ComponentManager, ClassLoader))
+            && target(loader) && args(classLoader, location)
     {
-        try {
-            List<ComponentDeclaration> componentDeclarations =
-                loader.getDeclaredComponents(classLoader, ComponentAnnotationLoader.COMPONENT_LIST);
-
+        if (ComponentAnnotationLoader.COMPONENT_LIST.equals(location)) {
             // Add the component overrides at the bottom of the list as component declarations with the highest
             // priority of 0.
             List<ComponentDeclaration> componentOverrideDeclarations =
@@ -66,15 +66,10 @@ public privileged aspect ComponentAnnotationLoaderCompatibilityAspect
                 componentDeclarations
                     .add(new ComponentDeclaration(componentOverrideDeclaration.getImplementationClassName(), 0));
             }
-
-            loader.initialize(manager, classLoader, componentDeclarations);
-        } catch (Exception e) {
-            // Make sure we make the calling code fail in order to fail fast and prevent the application to start
-            // if something is amiss.
-            throw new RuntimeException("Failed to get the list of components to load", e);
         }
     }
 
+    // The JAR stream can only be read once, so the whole method is replaced to read both files in a single pass.
     List<ComponentDeclaration> around(ComponentAnnotationLoader loader, InputStream jarFile) throws IOException:
         execution(List<ComponentDeclaration> ComponentAnnotationLoader.getDeclaredComponentsFromJAR(InputStream))
             && this(loader) && args(jarFile)
