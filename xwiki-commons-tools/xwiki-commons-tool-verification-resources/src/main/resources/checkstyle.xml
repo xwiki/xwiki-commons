@@ -77,6 +77,30 @@
     <property name="message" value="No @author tag allowed"/>
   </module>
 
+  <!-- Java sources are encoded in UTF-8 and can contain non-ASCII characters, except invisible or ambiguous ones
+       (control characters other than tab/LF/CR, non-breaking spaces, soft hyphens, zero-width characters,
+       bidirectional control characters and byte order marks) that must be written as unicode escapes, since they
+       can't be seen during code reviews and can hide bugs or malicious code (see CVE-2021-42574, "Trojan Source").
+       The same rule is applied to test sources in checkstyle-test.xml. -->
+  <module name="RegexpSingleline">
+    <property name="id" value="invisibleCharacter"/>
+    <property name="format"
+      value="[\x{0000}-\x{0008}\x{000B}\x{000C}\x{000E}-\x{001F}\x{007F}\x{00A0}\x{00AD}\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{2064}\x{2066}-\x{2069}\x{FEFF}]"/>
+    <property name="fileExtensions" value="java"/>
+    <property name="message" value="Invisible or ambiguous character: use a unicode escape instead."/>
+  </module>
+
+  <!-- Properties files (including translation files) are loaded as ISO-8859-1, so they must be encoded in ISO-8859-1.
+       Checkstyle reads them as UTF-8 (project.build.sourceEncoding), so any non-ASCII byte of an ISO-8859-1 file is
+       decoded as the U+FFFD replacement character, and the only way to get another non-ASCII character is a UTF-8
+       encoded file, which would be displayed garbled at runtime (e.g. "cafÃ©" instead of "café"). -->
+  <module name="RegexpSingleline">
+    <property name="id" value="propertiesEncoding"/>
+    <property name="format" value="[^\x{0000}-\x{007F}\x{FFFD}]"/>
+    <property name="fileExtensions" value="properties"/>
+    <property name="message" value="Properties files must be encoded in ISO-8859-1, not UTF-8."/>
+  </module>
+
   <module name="SuppressWarningsFilter"/>
 
   <!--  We actually have a lot of incomplete translations, so we can't really afford this rule

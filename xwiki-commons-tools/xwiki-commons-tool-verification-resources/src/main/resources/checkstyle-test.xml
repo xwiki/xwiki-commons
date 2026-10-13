@@ -29,6 +29,15 @@
      test code only, and the rules of checkstyle.xml that we also want to enforce on test code (checkstyle.xml itself
      is applied to main sources only). -->
 <module name="Checker">
+  <!-- Invisible or ambiguous characters must be written as unicode escapes. See checkstyle.xml for the rationale. -->
+  <module name="RegexpSingleline">
+    <property name="id" value="invisibleCharacter"/>
+    <property name="format"
+      value="[\x{0000}-\x{0008}\x{000B}\x{000C}\x{000E}-\x{001F}\x{007F}\x{00A0}\x{00AD}\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{2064}\x{2066}-\x{2069}\x{FEFF}]"/>
+    <property name="fileExtensions" value="java"/>
+    <property name="message" value="Invisible or ambiguous character: use a unicode escape instead."/>
+  </module>
+
   <module name="TreeWalker">
     <!-- Verify that tests don't generate files outside the module's "target" directory. -->
     <module name="org.xwiki.tool.checkstyle.TemporaryFileCheck"/>

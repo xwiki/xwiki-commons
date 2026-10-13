@@ -121,7 +121,7 @@ public class DefaultHTMLCleanerTest
     void specialCharacters()
     {
         // The blank space is not a standard space, but a non-breaking space.
-        assertHTML("<p>\"&amp;**notbold**&lt;notag&gt; </p>",
+        assertHTML("<p>\"&amp;**notbold**&lt;notag&gt;\u00A0</p>",
             "<p>&quot;&amp;**notbold**&lt;notag&gt;&nbsp;</p>");
         assertHTML("<p>\"&amp;</p>", "<p>\"&</p>");
         assertHTML("<p><img src=\"http://host.com/a.gif?a=foo&amp;b=bar\" /></p>",
@@ -556,16 +556,16 @@ public class DefaultHTMLCleanerTest
     void entitiesWithTranslation()
     {
         String content = "<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>";
-        String expectedContent = "1>2&3 4½5öüäăâîș";
+        String expectedContent = "1>2&3\u00A04½5öüäăâîș";
         Document document = clean(content);
         String obtainedContent = document.getElementsByTagName("p").item(0).getTextContent();
         assertEquals(expectedContent, obtainedContent);
-        assertHTML("<p>1&gt;2&amp;3 4½5öüäăâîș</p>", content);
+        assertHTML("<p>1&gt;2&amp;3\u00A04½5öüäăâîș</p>", content);
 
         Map<String, String> parameters = new HashMap<>(this.cleanerConfiguration.getParameters());
         parameters.put(HTMLCleanerConfiguration.TRANSLATE_SPECIAL_ENTITIES, "true");
         this.cleanerConfiguration.setParameters(parameters);
-        assertHTML("<p>1&amp;gt;2&amp;amp;3 4½5öüäăâîș</p>",
+        assertHTML("<p>1&amp;gt;2&amp;amp;3\u00A04½5öüäăâîș</p>",
             "<p>1&gt;2&amp;3&nbsp;4&frac12;5öüäăâîș</p>");
     }
 
