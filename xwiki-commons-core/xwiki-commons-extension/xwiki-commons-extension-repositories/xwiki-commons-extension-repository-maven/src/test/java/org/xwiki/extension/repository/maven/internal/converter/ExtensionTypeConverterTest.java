@@ -78,28 +78,28 @@ class ExtensionTypeConverterTest
 
     private void registerPackaging(String packaging, String extensionType) throws ComponentLookupException
     {
-        ArtifactPackagingToExtensionType converter = mock(ArtifactPackagingToExtensionType.class);
-        when(converter.getExtensionType()).thenReturn(extensionType);
+        ArtifactPackagingToExtensionType mapping = mock(ArtifactPackagingToExtensionType.class);
+        when(mapping.getExtensionType()).thenReturn(extensionType);
         when(this.componentManager.hasComponent(ArtifactPackagingToExtensionType.class, packaging)).thenReturn(true);
         when(this.componentManager.getInstance(ArtifactPackagingToExtensionType.class, packaging))
-            .thenReturn(converter);
+            .thenReturn(mapping);
     }
 
     private void registerType(String type, String extensionType) throws ComponentLookupException
     {
-        ArtifactTypeToExtensionType converter = mock(ArtifactTypeToExtensionType.class);
-        when(converter.getExtensionType()).thenReturn(extensionType);
+        ArtifactTypeToExtensionType mapping = mock(ArtifactTypeToExtensionType.class);
+        when(mapping.getExtensionType()).thenReturn(extensionType);
         when(this.componentManager.hasComponent(ArtifactTypeToExtensionType.class, type)).thenReturn(true);
-        when(this.componentManager.getInstance(ArtifactTypeToExtensionType.class, type)).thenReturn(converter);
+        when(this.componentManager.getInstance(ArtifactTypeToExtensionType.class, type)).thenReturn(mapping);
     }
 
     private void registerExtension(String extension, String extensionType) throws ComponentLookupException
     {
-        ArtifactExtensionToExtensionType converter = mock(ArtifactExtensionToExtensionType.class);
-        when(converter.getExtensionType()).thenReturn(extensionType);
+        ArtifactExtensionToExtensionType mapping = mock(ArtifactExtensionToExtensionType.class);
+        when(mapping.getExtensionType()).thenReturn(extensionType);
         when(this.componentManager.hasComponent(ArtifactExtensionToExtensionType.class, extension)).thenReturn(true);
         when(this.componentManager.getInstance(ArtifactExtensionToExtensionType.class, extension))
-            .thenReturn(converter);
+            .thenReturn(mapping);
     }
 
     @Test
