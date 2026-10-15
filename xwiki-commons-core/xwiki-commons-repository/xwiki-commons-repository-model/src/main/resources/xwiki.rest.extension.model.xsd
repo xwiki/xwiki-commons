@@ -338,6 +338,7 @@
         <element name="id" type="string"></element>
         <element name="uri" type="string" minOccurs="1" maxOccurs="1"></element>
         <element name="type" type="string" minOccurs="1" maxOccurs="1"></element>
+        <element name="properties" type="extension:Property" minOccurs="0" maxOccurs="unbounded"></element>
       </sequence>
     </complexType>
 

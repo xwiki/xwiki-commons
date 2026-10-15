@@ -181,6 +181,13 @@ class XWikiExtensionTest
         repository2.setId("repository2");
         repository2.setType("rtype2");
         repository2.setUri("http://repository2");
+        Property repositoryProperty1 = new Property();
+        repositoryProperty1.setKey("rkey1");
+        repositoryProperty1.setStringValue("rvalue1");
+        Property repositoryProperty2 = new Property();
+        repositoryProperty2.setKey("rkey2");
+        repositoryProperty2.setStringValue("rvalue2");
+        repository2.withProperties(repositoryProperty1, repositoryProperty2);
         restExtension.withRepositories(repository1, repository2);
         ExtensionSupporter supporter1 = new ExtensionSupporter();
         supporter1.setName("supporter1");
@@ -229,7 +236,8 @@ class XWikiExtensionTest
         assertEquals(42, extension.getRating().getTotalVotes());
         assertCollectionEquals(
             List.of(new DefaultExtensionRepositoryDescriptor("repository1", "rtype1", new URI("http://repository1")),
-                new DefaultExtensionRepositoryDescriptor("repository2", "rtype2", new URI("http://repository2"))),
+                new DefaultExtensionRepositoryDescriptor("repository2", "rtype2", new URI("http://repository2"),
+                    Map.of("rkey1", "rvalue1", "rkey2", "rvalue2"))),
             extension.getRepositories());
         assertEquals(new DefaultExtensionScm("http://scm", new DefaultExtensionScmConnection("csystem", "cpath"),
             new DefaultExtensionScmConnection("dsystem", "dpath"), "tag"), extension.getScm());
