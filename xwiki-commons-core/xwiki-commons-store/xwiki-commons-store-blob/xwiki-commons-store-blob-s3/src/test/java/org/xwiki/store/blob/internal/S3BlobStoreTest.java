@@ -89,6 +89,9 @@ class S3BlobStoreTest
     @MockComponent
     private S3DeleteOperations deleteOperations;
 
+    @MockComponent
+    private S3BlobStoreConfiguration configuration;
+
     private S3Client s3Client;
 
     @BeforeEach
@@ -523,5 +526,21 @@ class S3BlobStoreTest
     void getNameReturnsCorrectValue()
     {
         assertEquals(STORE_NAME, this.store.getName());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "true, true",
+        "true, false",
+        "false, true",
+        "false, false"
+    })
+    void conditionalRequestSettingsComeFromConfiguration(boolean conditionalWrites, boolean conditionalCopies)
+    {
+        when(this.configuration.isS3ConditionalWrites()).thenReturn(conditionalWrites);
+        when(this.configuration.isS3ConditionalCopies()).thenReturn(conditionalCopies);
+
+        assertEquals(conditionalWrites, this.store.isConditionalWrites());
+        assertEquals(conditionalCopies, this.store.isConditionalCopies());
     }
 }

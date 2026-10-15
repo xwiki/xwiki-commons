@@ -164,6 +164,7 @@ class S3BlobTest
         S3BlobStoreProperties properties = new S3BlobStoreProperties();
         properties.setMultipartUploadPartSize(5 * 1024 * 1024);
         when(this.store.getProperties()).thenReturn(properties);
+        when(this.store.isConditionalWrites()).thenReturn(true);
 
         try (MockedConstruction<S3BlobOutputStream> mockedOutputStream = mockConstruction(S3BlobOutputStream.class,
             (mock, context) -> {
@@ -172,7 +173,8 @@ class S3BlobTest
                 assertSame(this.s3Client, context.arguments().get(2));
                 assertEquals(BLOB_PATH, context.arguments().get(3));
                 assertEquals(5 * 1024 * 1024L, context.arguments().get(4));
-                BlobOption[] options = (BlobOption[]) context.arguments().get(5);
+                assertEquals(Boolean.TRUE, context.arguments().get(5));
+                BlobOption[] options = (BlobOption[]) context.arguments().get(6);
                 assertEquals(1, options.length);
                 assertInstanceOf(BlobWriteMode.class, options[0]);
             })) {
@@ -180,6 +182,23 @@ class S3BlobTest
             OutputStream outputStream = this.blob.getOutputStream(BlobWriteMode.CREATE_NEW);
 
             assertThat(outputStream, instanceOf(S3BlobOutputStream.class));
+            assertEquals(1, mockedOutputStream.constructed().size());
+        }
+    }
+
+    @Test
+    void getOutputStreamPassesConditionalWritesSetting() throws BlobStoreException
+    {
+        S3BlobStoreProperties properties = new S3BlobStoreProperties();
+        properties.setMultipartUploadPartSize(5 * 1024 * 1024);
+        when(this.store.getProperties()).thenReturn(properties);
+        when(this.store.isConditionalWrites()).thenReturn(false);
+
+        try (MockedConstruction<S3BlobOutputStream> mockedOutputStream = mockConstruction(S3BlobOutputStream.class,
+            (mock, context) -> assertEquals(Boolean.FALSE, context.arguments().get(5)))) {
+
+            this.blob.getOutputStream();
+
             assertEquals(1, mockedOutputStream.constructed().size());
         }
     }

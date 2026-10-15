@@ -87,6 +87,12 @@ public class BlobStoreExtension implements BeforeAllCallback, AfterAllCallback, 
 
     private static final String PROP_PATH_STYLE = "xwiki.test.blobstore.s3.pathStyleAccess";
 
+    private static final String PROP_CONDITIONAL_WRITES = "xwiki.test.blobstore.s3.conditionalWrites";
+
+    private static final String PROP_CONDITIONAL_COPIES = "xwiki.test.blobstore.s3.conditionalCopies";
+
+    private static final String TRUE = "true";
+
     private static final ExtensionContext.Namespace NAMESPACE =
         ExtensionContext.Namespace.create(BlobStoreExtension.class);
 
@@ -169,9 +175,23 @@ public class BlobStoreExtension implements BeforeAllCallback, AfterAllCallback, 
         String accessKey = System.getProperty(PROP_ACCESS_KEY, "minioadmin");
         String secretKey = System.getProperty(PROP_SECRET_KEY, "minioadmin");
         String region = System.getProperty(PROP_REGION, "us-east-1");
-        boolean pathStyleAccess = Boolean.parseBoolean(System.getProperty(PROP_PATH_STYLE, "true"));
+        boolean pathStyleAccess = Boolean.parseBoolean(System.getProperty(PROP_PATH_STYLE, TRUE));
 
-        return new BlobStoreContainer(endpoint, bucket, accessKey, secretKey, region, pathStyleAccess);
+        return new BlobStoreContainer(endpoint, bucket, accessKey, secretKey, region, pathStyleAccess,
+            isConditionalWrites(), isConditionalCopies());
+    }
+
+    /**
+     * Allow running the tests against S3-compatible services that don't support some conditional requests.
+     */
+    private static boolean isConditionalWrites()
+    {
+        return Boolean.parseBoolean(System.getProperty(PROP_CONDITIONAL_WRITES, TRUE));
+    }
+
+    private static boolean isConditionalCopies()
+    {
+        return Boolean.parseBoolean(System.getProperty(PROP_CONDITIONAL_COPIES, TRUE));
     }
 
     private BlobStoreContainer createSiloContainer(ExtensionContext context)
@@ -189,7 +209,9 @@ public class BlobStoreExtension implements BeforeAllCallback, AfterAllCallback, 
             siloContainer.getUserName(),
             siloContainer.getPassword(),
             "us-east-1",
-            true
+            true,
+            isConditionalWrites(),
+            isConditionalCopies()
         );
     }
 
@@ -260,6 +282,8 @@ public class BlobStoreExtension implements BeforeAllCallback, AfterAllCallback, 
                 when(configuration.getS3SecretKey()).thenReturn(container.secretKey());
                 when(configuration.getS3Region()).thenReturn(container.region());
                 when(configuration.isS3PathStyleAccess()).thenReturn(container.pathStyleAccess());
+                when(configuration.isS3ConditionalWrites()).thenReturn(container.conditionalWrites());
+                when(configuration.isS3ConditionalCopies()).thenReturn(container.conditionalCopies());
 
                 // Set multipart sizes to 5MB
                 when(configuration.getS3MultipartPartUploadSizeBytes()).thenReturn(5L * 1024 * 1024);

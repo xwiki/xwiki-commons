@@ -22,6 +22,7 @@ package org.xwiki.store.blob.internal;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,7 @@ import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.AbortMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadResponse;
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
@@ -54,12 +56,17 @@ import software.amazon.awssdk.services.s3.model.CreateMultipartUploadResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.UploadPartCopyRequest;
 import software.amazon.awssdk.services.s3.model.UploadPartCopyResponse;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -129,6 +136,48 @@ class S3CopyOperationsTest
 
         // Default copy size: 512MB (512 * 1024 * 1024 bytes)
         when(this.targetStore.getMultipartPartCopySizeBytes()).thenReturn(512 * 1024L * 1024L);
+        when(this.targetStore.isConditionalWrites()).thenReturn(true);
+        when(this.targetStore.isConditionalCopies()).thenReturn(true);
+    }
+
+    /**
+     * Answer the HEAD requests of the source with the given responses (the last one is repeated) and those of the
+     * target as missing.
+     */
+    private void mockHeadObject(HeadObjectResponse sourceHead, HeadObjectResponse... laterSourceHeads)
+    {
+        AtomicInteger sourceHeadCount = new AtomicInteger();
+        when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenAnswer(invocation -> {
+            HeadObjectRequest request = invocation.getArgument(0);
+            if ("target-key".equals(request.key())) {
+                throw NoSuchKeyException.builder().message("missing").build();
+            }
+            int index = sourceHeadCount.getAndIncrement();
+            if (index == 0 || laterSourceHeads.length == 0) {
+                return sourceHead;
+            }
+            return laterSourceHeads[Math.min(index, laterSourceHeads.length) - 1];
+        });
+    }
+
+    private HeadObjectResponse mockMultipartCopy(String eTag)
+    {
+        HeadObjectResponse headResponse = mock();
+        when(headResponse.eTag()).thenReturn(eTag);
+        when(headResponse.contentLength()).thenReturn(600L * 1024 * 1024);
+        when(headResponse.metadata()).thenReturn(Map.of());
+
+        CreateMultipartUploadResponse createResponse = mock();
+        when(createResponse.uploadId()).thenReturn("upload-id");
+        when(this.s3Client.createMultipartUpload(any(CreateMultipartUploadRequest.class))).thenReturn(createResponse);
+
+        UploadPartCopyResponse partResponse = mock();
+        CopyPartResult partResult = mock();
+        when(partResult.eTag()).thenReturn("part-etag");
+        when(partResponse.copyPartResult()).thenReturn(partResult);
+        when(this.s3Client.uploadPartCopy(any(UploadPartCopyRequest.class))).thenReturn(partResponse);
+
+        return headResponse;
     }
 
     @Test
@@ -238,7 +287,7 @@ class S3CopyOperationsTest
         assertEquals("source-bucket", headRequest.bucket());
         assertEquals("source-key", headRequest.key());
 
-        // Verify CopyObject was called with ETag condition
+        // Verify CopyObject was called without the source precondition and with the target condition
         ArgumentCaptor<CopyObjectRequest> requestCaptor = ArgumentCaptor.captor();
         verify(this.s3Client).copyObject(requestCaptor.capture());
 
@@ -248,7 +297,8 @@ class S3CopyOperationsTest
         assertEquals("target-bucket", request.destinationBucket());
         assertEquals("target-key", request.destinationKey());
         assertEquals("COPY", request.metadataDirective().toString());
-        assertEquals("source-etag-123", request.copySourceIfMatch());
+        assertNull(request.copySourceIfMatch());
+        assertEquals("*", request.ifNoneMatch());
     }
 
     @Test
@@ -301,7 +351,7 @@ class S3CopyOperationsTest
         when(headResponse.metadata()).thenReturn(metadata);
         when(headResponse.eTag()).thenReturn("source-etag-456");
         when(headResponse.contentLength()).thenReturn(largeObjectSize);
-        when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
+        mockHeadObject(headResponse);
 
         CreateMultipartUploadResponse createResponse = mock();
         when(createResponse.uploadId()).thenReturn("test-upload-id");
@@ -330,12 +380,15 @@ class S3CopyOperationsTest
 
         assertNotNull(result);
 
-        // Verify HeadObject was called once to retrieve metadata and ETag
+        // Verify HeadObject was called to retrieve the metadata and ETag of the source, then to check that the
+        // target is still absent before completing the upload (CREATE_NEW is the default for copies).
         ArgumentCaptor<HeadObjectRequest> headRequestCaptor = ArgumentCaptor.captor();
-        verify(this.s3Client).headObject(headRequestCaptor.capture());
-        HeadObjectRequest headRequest = headRequestCaptor.getValue();
+        verify(this.s3Client, times(2)).headObject(headRequestCaptor.capture());
+        HeadObjectRequest headRequest = headRequestCaptor.getAllValues().get(0);
         assertEquals("source-bucket", headRequest.bucket());
         assertEquals("source-key", headRequest.key());
+        assertEquals("target-bucket", headRequestCaptor.getAllValues().get(1).bucket());
+        assertEquals("target-key", headRequestCaptor.getAllValues().get(1).key());
 
         // Verify CreateMultipartUpload was called with metadata
         ArgumentCaptor<CreateMultipartUploadRequest> createRequestCaptor = ArgumentCaptor.captor();
@@ -381,7 +434,7 @@ class S3CopyOperationsTest
     }
 
     @Test
-    void copyBlobS3StoreSimpleCopyFailsOnETagMismatch() throws Exception
+    void copyBlobS3StoreSimpleCopyWrapsFailure() throws Exception
     {
         when(this.targetBlob.exists()).thenReturn(false);
 
@@ -391,30 +444,35 @@ class S3CopyOperationsTest
         when(headResponse.metadata()).thenReturn(Map.of());
         when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
 
-        // Simulate ETag mismatch error from S3
         when(this.s3Client.copyObject(any(CopyObjectRequest.class)))
-            .thenThrow(new RuntimeException(
-                "PreconditionFailed: At least one of the pre-conditions you specified did not hold"));
+            .thenThrow(new RuntimeException("Service error"));
 
         BlobStoreException exception = assertThrows(BlobStoreException.class,
             () -> this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath));
 
         assertEquals("Failed to perform simple copy", exception.getMessage());
 
-        // Verify the copy request included the ETag condition
+        // A single CopyObject reads the source once: no source precondition is sent.
         ArgumentCaptor<CopyObjectRequest> requestCaptor = ArgumentCaptor.captor();
         verify(this.s3Client).copyObject(requestCaptor.capture());
-        assertEquals("original-etag", requestCaptor.getValue().copySourceIfMatch());
+        assertNull(requestCaptor.getValue().copySourceIfMatch());
     }
 
     @ParameterizedTest
     @CsvSource({
-        "CREATE_NEW, *",
-        "REPLACE_EXISTING, "
+        "CREATE_NEW, true, true, *",
+        "CREATE_NEW, true, false, *",
+        "CREATE_NEW, false, true, ",
+        "CREATE_NEW, false, false, ",
+        "REPLACE_EXISTING, true, true, ",
+        "REPLACE_EXISTING, false, false, "
     })
-    void copyBlobS3StoreSimpleCopyHonorsWriteMode(BlobWriteMode writeMode, String expectedIfNoneMatch) throws Exception
+    void copyBlobS3StoreSimpleCopyHonorsWriteMode(BlobWriteMode writeMode, boolean conditionalCopies,
+        boolean conditionalWrites, String expectedIfNoneMatch) throws Exception
     {
         when(this.targetBlob.exists()).thenReturn(false);
+        when(this.targetStore.isConditionalCopies()).thenReturn(conditionalCopies);
+        when(this.targetStore.isConditionalWrites()).thenReturn(conditionalWrites);
 
         HeadObjectResponse headResponse = mock();
         when(headResponse.eTag()).thenReturn("conditional-etag");
@@ -430,8 +488,248 @@ class S3CopyOperationsTest
         ArgumentCaptor<CopyObjectRequest> captor = ArgumentCaptor.captor();
         verify(this.s3Client).copyObject(captor.capture());
         CopyObjectRequest request = captor.getValue();
+        // Only the conditional copies setting applies to CopyObject.
         assertEquals(expectedIfNoneMatch, request.ifNoneMatch());
-        assertEquals("conditional-etag", request.copySourceIfMatch());
+        assertNull(request.copySourceIfMatch());
+        // The existence of the target is checked through the blob, the source is read once.
+        verify(this.s3Client).headObject(any(HeadObjectRequest.class));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "CREATE_NEW, true, true",
+        "CREATE_NEW, false, false",
+        "REPLACE_EXISTING, true, false"
+    })
+    void copyBlobS3StoreSimpleCopyExplainsUnsupportedConditionalRequests(BlobWriteMode writeMode,
+        boolean conditionalCopies, boolean conditionSent) throws Exception
+    {
+        when(this.targetBlob.exists()).thenReturn(false);
+        when(this.targetStore.isConditionalCopies()).thenReturn(conditionalCopies);
+
+        HeadObjectResponse headResponse = mock();
+        when(headResponse.eTag()).thenReturn("etag");
+        when(headResponse.contentLength()).thenReturn(4_096L);
+        when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
+        S3Exception notImplemented = (S3Exception) S3Exception.builder()
+            .statusCode(501)
+            .message("Copy object not implemented with If-None-Match")
+            .build();
+        when(this.s3Client.copyObject(any(CopyObjectRequest.class))).thenThrow(notImplemented);
+
+        BlobStoreException exception = assertThrows(BlobStoreException.class,
+            () -> this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath,
+                writeMode));
+
+        // The property is named only when a condition was sent: otherwise the 501 is about something else.
+        if (conditionSent) {
+            assertThat(exception.getMessage(), containsString("store.s3.conditionalCopies"));
+        } else {
+            assertEquals("Failed to perform simple copy", exception.getMessage());
+        }
+        assertSame(notImplemented, exception.getCause());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "true, true",
+        "true, false",
+        "false, true"
+    })
+    void copyBlobS3StoreMultipartCopyExplainsUnsupportedConditionalRequests(boolean conditionalWrites,
+        boolean conditionalCopies) throws Exception
+    {
+        when(this.targetBlob.exists()).thenReturn(false);
+        when(this.targetStore.isConditionalWrites()).thenReturn(conditionalWrites);
+        when(this.targetStore.isConditionalCopies()).thenReturn(conditionalCopies);
+
+        HeadObjectResponse headResponse = mockMultipartCopy("etag");
+        mockHeadObject(headResponse);
+        S3Exception notImplemented = (S3Exception) S3Exception.builder()
+            .statusCode(501)
+            .message("Not Implemented")
+            .build();
+        when(this.s3Client.uploadPartCopy(any(UploadPartCopyRequest.class))).thenThrow(notImplemented);
+
+        BlobStoreException exception = assertThrows(BlobStoreException.class,
+            () -> this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath));
+
+        // The source precondition is a condition of copies; the property is named only when it was sent.
+        if (conditionalCopies) {
+            assertThat(exception.getMessage(), containsString("store.s3.conditionalCopies"));
+        } else {
+            assertEquals("Failed to perform multipart copy", exception.getMessage());
+        }
+        assertSame(notImplemented, exception.getCause());
+        verify(this.s3Client).abortMultipartUpload(any(AbortMultipartUploadRequest.class));
+
+        this.logCapture.ignoreAllMessages();
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "CREATE_NEW, true",
+        "REPLACE_EXISTING, false"
+    })
+    void copyBlobS3StoreSimpleCopyLosingTheRace(BlobWriteMode writeMode, boolean alreadyExists) throws Exception
+    {
+        // The target is created by another writer between the existence check and the conditional copy.
+        when(this.targetBlob.exists()).thenReturn(false);
+
+        HeadObjectResponse headResponse = mock();
+        when(headResponse.eTag()).thenReturn("etag");
+        when(headResponse.contentLength()).thenReturn(4_096L);
+        when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
+        S3Exception preconditionFailed = (S3Exception) S3Exception.builder()
+            .statusCode(412)
+            .message("At least one of the pre-conditions you specified did not hold")
+            .build();
+        when(this.s3Client.copyObject(any(CopyObjectRequest.class))).thenThrow(preconditionFailed);
+
+        BlobStoreException exception = assertThrows(BlobStoreException.class,
+            () -> this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath,
+                writeMode));
+
+        // Only a 412 to the If-None-Match condition means that the target exists.
+        assertEquals(alreadyExists, exception instanceof BlobAlreadyExistsException);
+        assertSame(preconditionFailed, exception.getCause());
+    }
+
+    @Test
+    void copyBlobS3StoreMultipartCopyFailsWhenTargetCreatedDuringCopy() throws Exception
+    {
+        // The target is created by another writer while the parts are copied: the check before completing finds it.
+        when(this.targetBlob.exists()).thenReturn(false);
+
+        HeadObjectResponse headResponse = mockMultipartCopy("etag");
+        when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
+
+        BlobAlreadyExistsException exception = assertThrows(BlobAlreadyExistsException.class,
+            () -> this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath));
+
+        assertEquals(this.targetPath, exception.getBlobPath());
+        verify(this.s3Client, never()).completeMultipartUpload(any(CompleteMultipartUploadRequest.class));
+        verify(this.s3Client).abortMultipartUpload(any(AbortMultipartUploadRequest.class));
+
+        this.logCapture.ignoreAllMessages();
+    }
+
+    @Test
+    void copyBlobS3StoreMultipartCopyFailsWhenCompletionConditionFails() throws Exception
+    {
+        when(this.targetBlob.exists()).thenReturn(false);
+
+        HeadObjectResponse headResponse = mockMultipartCopy("etag");
+        mockHeadObject(headResponse);
+        when(this.s3Client.completeMultipartUpload(any(CompleteMultipartUploadRequest.class)))
+            .thenThrow(S3Exception.builder().statusCode(412).message("Precondition Failed").build());
+
+        BlobAlreadyExistsException exception = assertThrows(BlobAlreadyExistsException.class,
+            () -> this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath));
+
+        assertEquals(this.targetPath, exception.getBlobPath());
+        verify(this.s3Client).abortMultipartUpload(any(AbortMultipartUploadRequest.class));
+
+        this.logCapture.ignoreAllMessages();
+    }
+
+    @Test
+    void copyBlobS3StoreMultipartCopyExplainsRejectedCompletionCondition() throws Exception
+    {
+        when(this.targetBlob.exists()).thenReturn(false);
+
+        HeadObjectResponse headResponse = mockMultipartCopy("etag");
+        mockHeadObject(headResponse);
+        S3Exception notImplemented = (S3Exception) S3Exception.builder()
+            .statusCode(501)
+            .message("Not Implemented")
+            .build();
+        when(this.s3Client.completeMultipartUpload(any(CompleteMultipartUploadRequest.class)))
+            .thenThrow(notImplemented);
+
+        BlobStoreException exception = assertThrows(BlobStoreException.class,
+            () -> this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath));
+
+        // The completion carries the condition of uploads: the top-level message names its property.
+        assertThat(exception.getMessage(), containsString("store.s3.conditionalWrites"));
+        assertSame(notImplemented, exception.getCause().getCause());
+        verify(this.s3Client).abortMultipartUpload(any(AbortMultipartUploadRequest.class));
+
+        this.logCapture.ignoreAllMessages();
+    }
+
+    @Test
+    void copyBlobS3StoreMultipartCopyExplainsFailedSourcePrecondition() throws Exception
+    {
+        // Some services fail the source precondition even when the source didn't change.
+        when(this.targetBlob.exists()).thenReturn(false);
+
+        HeadObjectResponse headResponse = mockMultipartCopy("etag-2");
+        mockHeadObject(headResponse);
+        S3Exception preconditionFailed = (S3Exception) S3Exception.builder()
+            .statusCode(412)
+            .message("At least one of the pre-conditions you specified did not hold")
+            .build();
+        when(this.s3Client.uploadPartCopy(any(UploadPartCopyRequest.class))).thenThrow(preconditionFailed);
+
+        BlobStoreException exception = assertThrows(BlobStoreException.class,
+            () -> this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath));
+
+        assertThat(exception.getMessage(), containsString("changed during the multipart copy"));
+        assertThat(exception.getMessage(), containsString("store.s3.conditionalCopies"));
+        assertSame(preconditionFailed, exception.getCause());
+        verify(this.s3Client).abortMultipartUpload(any(AbortMultipartUploadRequest.class));
+
+        this.logCapture.ignoreAllMessages();
+    }
+
+    @Test
+    void copyBlobS3StoreMultipartCopyAbortsWhenSourceChangedWithoutConditionalCopies() throws Exception
+    {
+        when(this.targetBlob.exists()).thenReturn(false);
+        when(this.targetStore.isConditionalCopies()).thenReturn(false);
+
+        HeadObjectResponse headResponse = mockMultipartCopy("etag-before");
+        HeadObjectResponse changedHeadResponse = mock();
+        when(changedHeadResponse.eTag()).thenReturn("etag-after");
+        when(changedHeadResponse.contentLength()).thenReturn(600L * 1024 * 1024);
+        mockHeadObject(headResponse, changedHeadResponse);
+
+        BlobStoreException exception = assertThrows(BlobStoreException.class,
+            () -> this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath));
+
+        assertEquals("The source blob [%s] changed during the multipart copy, the copy was aborted"
+            .formatted(this.sourcePath), exception.getMessage());
+        verify(this.s3Client, times(2)).uploadPartCopy(any(UploadPartCopyRequest.class));
+        verify(this.s3Client, never()).completeMultipartUpload(any(CompleteMultipartUploadRequest.class));
+        verify(this.s3Client).abortMultipartUpload(any(AbortMultipartUploadRequest.class));
+
+        this.logCapture.ignoreAllMessages();
+    }
+
+    @Test
+    void copyBlobS3StoreMultipartCopyAbortsWhenSourceDeletedWithoutConditionalCopies() throws Exception
+    {
+        when(this.targetBlob.exists()).thenReturn(false);
+        when(this.targetStore.isConditionalCopies()).thenReturn(false);
+
+        HeadObjectResponse headResponse = mockMultipartCopy("etag");
+        AtomicInteger headCount = new AtomicInteger();
+        when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenAnswer(invocation -> {
+            if (headCount.getAndIncrement() == 0) {
+                return headResponse;
+            }
+            throw NoSuchKeyException.builder().message("deleted").build();
+        });
+
+        BlobNotFoundException exception = assertThrows(BlobNotFoundException.class,
+            () -> this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath));
+
+        assertInstanceOf(NoSuchKeyException.class, exception.getCause());
+        verify(this.s3Client, never()).completeMultipartUpload(any(CompleteMultipartUploadRequest.class));
+        verify(this.s3Client).abortMultipartUpload(any(AbortMultipartUploadRequest.class));
+
+        this.logCapture.ignoreAllMessages();
     }
 
     @Test
@@ -479,31 +777,22 @@ class S3CopyOperationsTest
 
     @ParameterizedTest
     @CsvSource({
-        "CREATE_NEW, *",
-        "REPLACE_EXISTING, "
+        "CREATE_NEW, true, true, *",
+        "CREATE_NEW, true, false, *",
+        "CREATE_NEW, false, true, ",
+        "CREATE_NEW, false, false, ",
+        "REPLACE_EXISTING, true, true, ",
+        "REPLACE_EXISTING, false, false, "
     })
-    void copyBlobS3StoreMultipartCopyHonorsWriteMode(BlobWriteMode writeMode, String expectedIfNoneMatch)
-        throws Exception
+    void copyBlobS3StoreMultipartCopyHonorsWriteMode(BlobWriteMode writeMode, boolean conditionalWrites,
+        boolean conditionalCopies, String expectedIfNoneMatch) throws Exception
     {
-        long largeObjectSize = 600L * 1024 * 1024;
-
         when(this.targetBlob.exists()).thenReturn(false);
+        when(this.targetStore.isConditionalWrites()).thenReturn(conditionalWrites);
+        when(this.targetStore.isConditionalCopies()).thenReturn(conditionalCopies);
 
-        HeadObjectResponse headResponse = mock();
-        when(headResponse.eTag()).thenReturn("multipart-etag");
-        when(headResponse.contentLength()).thenReturn(largeObjectSize);
-        when(headResponse.metadata()).thenReturn(Map.of());
-        when(this.s3Client.headObject(any(HeadObjectRequest.class))).thenReturn(headResponse);
-
-        CreateMultipartUploadResponse createResponse = mock();
-        when(createResponse.uploadId()).thenReturn("upload-id");
-        when(this.s3Client.createMultipartUpload(any(CreateMultipartUploadRequest.class))).thenReturn(createResponse);
-
-        UploadPartCopyResponse partResponse = mock();
-        CopyPartResult partResult = mock();
-        when(partResult.eTag()).thenReturn("part-etag");
-        when(partResponse.copyPartResult()).thenReturn(partResult);
-        when(this.s3Client.uploadPartCopy(any(UploadPartCopyRequest.class))).thenReturn(partResponse);
+        HeadObjectResponse headResponse = mockMultipartCopy("multipart-etag");
+        mockHeadObject(headResponse);
         CompleteMultipartUploadResponse completeMultipartUploadResponseMock = mock();
         when(this.s3Client.completeMultipartUpload(any(CompleteMultipartUploadRequest.class)))
             .thenReturn(completeMultipartUploadResponseMock);
@@ -511,10 +800,22 @@ class S3CopyOperationsTest
         this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath,
             writeMode);
 
+        // The condition of the completion is the one of uploads, the source precondition is a condition of copies.
         ArgumentCaptor<CompleteMultipartUploadRequest> completeCaptor = ArgumentCaptor.captor();
         verify(this.s3Client).completeMultipartUpload(completeCaptor.capture());
         CompleteMultipartUploadRequest request = completeCaptor.getValue();
         assertEquals(expectedIfNoneMatch, request.ifNoneMatch());
+        ArgumentCaptor<UploadPartCopyRequest> partCaptor = ArgumentCaptor.captor();
+        verify(this.s3Client, times(2)).uploadPartCopy(partCaptor.capture());
+        for (UploadPartCopyRequest partRequest : partCaptor.getAllValues()) {
+            assertEquals(conditionalCopies ? "multipart-etag" : null, partRequest.copySourceIfMatch());
+        }
+        // One HEAD for the source, one more for the source before completing when the source precondition is not
+        // sent, and one for the target before completing a CREATE_NEW copy.
+        int expectedSourceChecks = conditionalCopies ? 1 : 2;
+        int expectedTargetChecks = writeMode == BlobWriteMode.CREATE_NEW ? 1 : 0;
+        verify(this.s3Client, times(expectedSourceChecks + expectedTargetChecks))
+            .headObject(any(HeadObjectRequest.class));
 
         this.logCapture.ignoreAllMessages();
     }
@@ -537,10 +838,10 @@ class S3CopyOperationsTest
 
         this.copyOperations.copyBlob(this.sourceStore, this.sourcePath, this.targetStore, this.targetPath);
 
-        // Should use simple copy at threshold with ETag
+        // Should use simple copy at threshold, without the source precondition
         ArgumentCaptor<CopyObjectRequest> requestCaptor = ArgumentCaptor.captor();
         verify(this.s3Client).copyObject(requestCaptor.capture());
-        assertEquals("threshold-etag", requestCaptor.getValue().copySourceIfMatch());
+        assertNull(requestCaptor.getValue().copySourceIfMatch());
 
         verify(this.s3Client, never()).uploadPartCopy(any(UploadPartCopyRequest.class));
     }

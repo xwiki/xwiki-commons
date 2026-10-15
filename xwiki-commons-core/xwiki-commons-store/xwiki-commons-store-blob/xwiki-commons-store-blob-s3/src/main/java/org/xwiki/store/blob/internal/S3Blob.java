@@ -120,8 +120,8 @@ public class S3Blob extends AbstractBlob<S3BlobStore>
         BlobOptionSupport.validateSupportedOptions(SUPPORTED_OUTPUT_OPTIONS, options);
 
         long partSizeBytes = this.getStore().getProperties().getMultipartUploadPartSize();
-        return new S3BlobOutputStream(this.bucketName, this.s3Key, this.s3Client,
-            getPath(), partSizeBytes, options);
+        return new S3BlobOutputStream(this.bucketName, this.s3Key, this.s3Client, getPath(), partSizeBytes,
+            this.getStore().isConditionalWrites(), options);
     }
 
     @Override

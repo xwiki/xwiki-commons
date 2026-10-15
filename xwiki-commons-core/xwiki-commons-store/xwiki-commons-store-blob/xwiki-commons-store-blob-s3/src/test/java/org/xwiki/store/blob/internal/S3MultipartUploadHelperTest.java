@@ -40,6 +40,9 @@ import software.amazon.awssdk.services.s3.model.AbortMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.CreateMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.CreateMultipartUploadResponse;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,10 +50,13 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -237,9 +243,16 @@ class S3MultipartUploadHelperTest
         assertCompletionLog(2);
     }
 
+    private void mockAbsentObject()
+    {
+        when(this.s3Client.headObject(any(HeadObjectRequest.class)))
+            .thenThrow(NoSuchKeyException.builder().message("missing").build());
+    }
+
     @Test
     void completeWithCreateNewModeAddsIfNoneMatch() throws IOException
     {
+        mockAbsentObject();
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
             BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, BlobWriteMode.CREATE_NEW);
 
@@ -252,6 +265,8 @@ class S3MultipartUploadHelperTest
 
         CompleteMultipartUploadRequest request = captor.getValue();
         assertEquals("*", request.ifNoneMatch());
+        // The existence is also checked, since some services ignore the condition.
+        verify(this.s3Client).headObject(any(HeadObjectRequest.class));
 
         assertInitializationLog(0);
         assertCompletedPartLog(1, 1);
@@ -261,6 +276,7 @@ class S3MultipartUploadHelperTest
     @Test
     void completeThrowsIOExceptionOn412WithCreateNew() throws IOException
     {
+        mockAbsentObject();
         S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
             BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, BlobWriteMode.CREATE_NEW);
 
@@ -282,6 +298,121 @@ class S3MultipartUploadHelperTest
 
         assertInitializationLog(0);
         assertCompletedPartLog(1, 1);
+    }
+
+    @Test
+    void completeWithoutConditionalWritesChecksExistenceInstead() throws IOException
+    {
+        when(this.s3Client.headObject(any(HeadObjectRequest.class)))
+            .thenThrow(NoSuchKeyException.builder().message("missing").build());
+
+        S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null, false, BlobWriteMode.CREATE_NEW);
+
+        helper.getNextPartNumber();
+        helper.addCompletedPart("etag1");
+        helper.complete();
+
+        ArgumentCaptor<HeadObjectRequest> headCaptor = ArgumentCaptor.captor();
+        verify(this.s3Client).headObject(headCaptor.capture());
+        assertEquals(BUCKET_NAME, headCaptor.getValue().bucket());
+        assertEquals(S3_KEY, headCaptor.getValue().key());
+
+        ArgumentCaptor<CompleteMultipartUploadRequest> captor = ArgumentCaptor.captor();
+        verify(this.s3Client).completeMultipartUpload(captor.capture());
+        assertNull(captor.getValue().ifNoneMatch());
+
+        this.logCapture.ignoreAllMessages();
+    }
+
+    @Test
+    void completeWithoutConditionalWritesThrowsWhenObjectExists() throws IOException
+    {
+        when(this.s3Client.headObject(any(HeadObjectRequest.class)))
+            .thenReturn(HeadObjectResponse.builder().build());
+
+        S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null, false, BlobWriteMode.CREATE_NEW);
+
+        helper.getNextPartNumber();
+        helper.addCompletedPart("etag1");
+
+        IOException exception = assertThrows(IOException.class, helper::complete);
+        assertThat(exception.getMessage(), containsString("Blob already exists"));
+        assertInstanceOf(BlobAlreadyExistsException.class, exception.getCause());
+        assertEquals(this.blobPath, ((BlobAlreadyExistsException) exception.getCause()).getBlobPath());
+        verify(this.s3Client, never()).completeMultipartUpload(any(CompleteMultipartUploadRequest.class));
+
+        this.logCapture.ignoreAllMessages();
+    }
+
+    @Test
+    void completeExplainsUnsupportedConditionalWrites() throws IOException
+    {
+        mockAbsentObject();
+        S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, BlobWriteMode.CREATE_NEW);
+
+        S3Exception s3Exception = (S3Exception) S3Exception.builder()
+            .message("A header you provided implies functionality that is not implemented")
+            .statusCode(501)
+            .build();
+        when(this.s3Client.completeMultipartUpload(any(CompleteMultipartUploadRequest.class)))
+            .thenThrow(s3Exception);
+
+        helper.getNextPartNumber();
+        helper.addCompletedPart("etag1");
+
+        IOException exception = assertThrows(IOException.class, helper::complete);
+        assertThat(exception.getMessage(), containsString("store.s3.conditionalWrites"));
+        assertSame(s3Exception, exception.getCause());
+
+        this.logCapture.ignoreAllMessages();
+    }
+
+    @Test
+    void completeDoesNotExplainNotImplementedWithoutConditionalWrites() throws IOException
+    {
+        // No condition was sent, so the 501 is not about conditional requests.
+        mockAbsentObject();
+        S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, null, false, BlobWriteMode.CREATE_NEW);
+
+        S3Exception s3Exception = (S3Exception) S3Exception.builder()
+            .message("Not Implemented")
+            .statusCode(501)
+            .build();
+        when(this.s3Client.completeMultipartUpload(any(CompleteMultipartUploadRequest.class)))
+            .thenThrow(s3Exception);
+
+        helper.getNextPartNumber();
+        helper.addCompletedPart("etag1");
+
+        IOException exception = assertThrows(IOException.class, helper::complete);
+        assertThat(exception.getMessage(), containsString("S3 operation failed"));
+        assertSame(s3Exception, exception.getCause());
+
+        this.logCapture.ignoreAllMessages();
+    }
+
+    @Test
+    void completeWithCreateNewModeThrowsWhenObjectExists() throws IOException
+    {
+        // The existence is checked even when the condition is sent, since some services ignore it.
+        when(this.s3Client.headObject(any(HeadObjectRequest.class)))
+            .thenReturn(HeadObjectResponse.builder().build());
+
+        S3MultipartUploadHelper helper = new S3MultipartUploadHelper(
+            BUCKET_NAME, S3_KEY, this.s3Client, this.blobPath, BlobWriteMode.CREATE_NEW);
+
+        helper.getNextPartNumber();
+        helper.addCompletedPart("etag1");
+
+        IOException exception = assertThrows(IOException.class, helper::complete);
+        assertInstanceOf(BlobAlreadyExistsException.class, exception.getCause());
+        verify(this.s3Client, never()).completeMultipartUpload(any(CompleteMultipartUploadRequest.class));
+
+        this.logCapture.ignoreAllMessages();
     }
 
     @Test
