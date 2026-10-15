@@ -27,7 +27,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -262,8 +264,13 @@ public class XWikiExtension extends AbstractRatingExtension
     protected static ExtensionRepositoryDescriptor toExtensionRepositoryDescriptor(ExtensionRepository restRepository,
         ExtensionFactory factory) throws URISyntaxException
     {
+        Map<String, String> properties = new HashMap<>();
+        for (Property restProperty : restRepository.getProperties()) {
+            properties.put(restProperty.getKey(), restProperty.getStringValue());
+        }
+
         return factory.getExtensionRepositoryDescriptor(restRepository.getId(), restRepository.getType(),
-            new URI(restRepository.getUri()), null);
+            new URI(restRepository.getUri()), properties);
     }
 
     @Override
