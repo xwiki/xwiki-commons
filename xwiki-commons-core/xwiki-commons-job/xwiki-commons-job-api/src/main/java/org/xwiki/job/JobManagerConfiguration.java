@@ -71,4 +71,22 @@ public interface JobManagerConfiguration
     {
         return 60000L;
     }
+
+    /**
+     * The time budget of the jobs when the job executor is disposed (generally because XWiki is stopping). The running
+     * jobs are given this duration minus a reserve (the smallest of 2 seconds and half of the duration) to finish; the
+     * jobs still running then are canceled when they are cancelable and interrupted otherwise, and the reserve lets
+     * them stop and store their status. The jobs still running at the end of the duration are interrupted without
+     * waiting for them, so this step never takes longer than the duration. With 0, the running jobs are interrupted
+     * right away, without waiting for them. The time given to XWiki to stop (for example by a container orchestrator)
+     * must cover this duration plus the other shutdown steps, otherwise the process is killed while it waits.
+     *
+     * @return the time budget in milliseconds of the running jobs when the job executor is disposed, 0 to interrupt
+     *         them without waiting
+     * @since 18.10.0RC1
+     */
+    default long getShutdownTimeout()
+    {
+        return 5000L;
+    }
 }
