@@ -136,6 +136,9 @@ public abstract class AbstractCache<T> implements Cache<T>
      * 
      * @param value the value to dispose
      */
+    // Catching Throwable is deliberate here, as the comment in the catch block states: a badly implemented dispose() we
+    // do not control must not break the whole cache.
+    @SuppressWarnings("java:S1181")
     protected void disposeCacheValue(T value)
     {
         if (value instanceof DisposableCacheValue disposableValue) {

@@ -640,6 +640,9 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
      * @param extensionContext the current extension context
      * @param parents the parents extensions (which triggered this extension install)
      */
+    // Catching Throwable is deliberate here: an optional dependency that cannot be planned must not fail the install
+    // plan of the extension that declares it.
+    @SuppressWarnings("java:S1181")
     private boolean installOptionalExtensionDependency(ExtensionDependency extensionDependency, String namespace,
         List<ModifableExtensionPlanNode> parentBranch, ExtensionPlanContext extensionContext, Set<String> parents)
     {
