@@ -30,6 +30,9 @@ import com.thoughtworks.xstream.mapper.Mapper;
  * @since 11.10.3
  * @since 12.1RC1
  */
+// The shadowing is deliberate: this is a drop-in extension of the XStream converter it is registered in place
+// of, so it carries the same name on purpose.
+@SuppressWarnings("java:S2176")
 public class CollectionConverter extends com.thoughtworks.xstream.converters.collections.CollectionConverter
 {
     /**

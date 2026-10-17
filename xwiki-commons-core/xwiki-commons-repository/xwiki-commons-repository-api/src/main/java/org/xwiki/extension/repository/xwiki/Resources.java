@@ -27,6 +27,9 @@ package org.xwiki.extension.repository.xwiki;
  * @deprecated use {@link org.xwiki.repository.Resources} instead
  */
 @Deprecated(since = "4.2M1")
+// The shadowing is deliberate: this deprecated interface exists only to keep the old name compiling against the
+// interface that replaced it, so renaming it would defeat its only purpose.
+@SuppressWarnings("java:S2176")
 public interface Resources extends org.xwiki.repository.Resources
 {
 
