@@ -71,7 +71,7 @@ public class XWikiDOMSerializer extends DomSerializer
      * @return the W3C Document object
      */
     // XWikiDomSerializer copied from DomSerializer
-    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity"})
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity", "java:S3776"})
     private Document createDocument(DocumentBuilder builder, TagNode rootNode)
     {
         DOMImplementation impl = builder.getDOMImplementation();

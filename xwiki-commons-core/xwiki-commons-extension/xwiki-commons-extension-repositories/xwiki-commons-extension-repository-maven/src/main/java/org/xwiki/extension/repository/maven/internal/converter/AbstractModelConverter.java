@@ -110,7 +110,8 @@ public class AbstractModelConverter<T> extends AbstractConverter<T>
     }
 
     @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS", "checkstyle:NPathComplexity",
-        "checkstyle:ExecutableStatementCount", "checkstyle:MethodLength", "checkstyle:BooleanExpressionComplexity"})
+        "checkstyle:ExecutableStatementCount", "checkstyle:MethodLength", "checkstyle:BooleanExpressionComplexity",
+        "java:S3776"})
     protected DefaultMavenExtension convertToExtension(Model model, String groupId, String artifactId,
         String classifier, String type, String versionString)
     {

@@ -184,8 +184,8 @@ public class XARMojo extends AbstractXARMojo
         return fileNames.length != 0;
     }
 
-    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS",
-        "checkstyle:ExecutableStatementCount"})
+    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS", "checkstyle:ExecutableStatementCount",
+        "java:S3776"})
     private void performTransformations() throws Exception
     {
         if (this.transformations == null) {
