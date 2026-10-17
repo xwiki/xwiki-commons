@@ -44,6 +44,10 @@ public class Namespace
     /**
      * Cached String version of this namespace.
      */
+    // 'transient' is deliberate here: this cache is rebuilt on demand and must not be written out when
+    // the instance is serialized with XStream inside a job status or request, XStream honouring
+    // 'transient' independently of java.io.Serializable.
+    @SuppressWarnings("java:S2065")
     private transient String serialized;
 
     /**

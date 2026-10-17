@@ -49,7 +49,10 @@ import org.xwiki.observation.WrappedThreadEventListener;
  * @version $Id$
  * @since 7.4M1
  */
-@SuppressWarnings("checkstyle:ClassFanOutComplexity")
+// 'transient' is deliberate here: the job status store serializes this class with XStream, which
+// honours 'transient' independently of java.io.Serializable. Removing it would write this runtime
+// state into the stored job status.
+@SuppressWarnings({ "checkstyle:ClassFanOutComplexity", "java:S2065" })
 public abstract class AbstractJobStatus<R extends Request> implements JobStatus, CancelableJobStatus
 {
     /**
