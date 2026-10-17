@@ -670,6 +670,8 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         return fieldValue;
     }
 
+    // The provider is created for a role type only known at runtime, so its type parameter cannot be named.
+    @SuppressWarnings("java:S1452")
     protected javax.inject.Provider<?> createGenericProvider(ComponentDescriptor<?> descriptor,
         ComponentDependency<?> dependency)
     {
@@ -677,6 +679,8 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
             ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()), dependency.getRoleHint()));
     }
 
+    // The provider is created for a role type only known at runtime, so its type parameter cannot be named.
+    @SuppressWarnings("java:S1452")
     protected Provider<?> createJakartaGenericProvider(ComponentDescriptor<?> descriptor,
         ComponentDependency<?> dependency)
     {

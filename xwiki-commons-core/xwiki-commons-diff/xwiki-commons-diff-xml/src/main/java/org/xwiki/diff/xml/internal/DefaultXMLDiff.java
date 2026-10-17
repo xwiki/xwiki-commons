@@ -143,6 +143,8 @@ public class DefaultXMLDiff implements XMLDiff
         return map;
     }
 
+    // The patch element type is decided by the passed StringSplitter, so it cannot be named here.
+    @SuppressWarnings("java:S1452")
     protected Patch<?> diff(String left, String right, StringSplitter splitter) throws DiffException
     {
         return new DefaultPatch<>(DiffUtils.diff(splitter.split(left), splitter.split(right)));
