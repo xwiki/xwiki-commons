@@ -277,7 +277,6 @@
             <propertyExpansion>
               currentVersion=${project.version}
             </propertyExpansion>
-            <failOnViolation>true</failOnViolation>
             <!-- Used by the "blocker" execution id and the "default-cli" one
                 (i.e. when executing "mvn checkstyle:check") -->
             <configLocation>checkstyle-blocker.xml</configLocation>
