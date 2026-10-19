@@ -239,7 +239,13 @@
                   <old>class org.xwiki.text.XWikiToStringBuilder</old>
                   <new>class org.xwiki.text.XWikiToStringBuilder</new>
                   <superClass>org.apache.commons.lang3.builder.AbstractReflection</superClass>
-                  <justification>Not a breakage</justification>
+                  <justification>
+                    Commons Lang 3.21.0 made ToStringBuilder, which XWikiToStringBuilder extends, inherit from the new
+                    AbstractReflection class. It only brings static helpers and the protected isForceAccessible()
+                    method, none of which XWikiToStringBuilder declares: code using or extending it keeps compiling
+                    and running, unless a subclass declares a method with one of these signatures.
+                  </justification>
+                  <criticality>allowed</criticality>
                 </item>
                 <item>
                   <ignore>true</ignore>
@@ -250,7 +256,12 @@
                   <attribute>propOrder</attribute>
                   <oldValue>{"id", "uri", "type"}</oldValue>
                   <newValue>{"id", "uri", "type", "properties"}</newValue>
-                  <justification>Not a breakage</justification>
+                  <justification>
+                    The optional "properties" element added at the end of the REST model of a repository changes the
+                    generated XmlType#propOrder. It only orders the elements when marshalling: the existing elements
+                    keep their order and an XML without the new element still unmarshals.
+                  </justification>
+                  <criticality>allowed</criticality>
                 </item>
               </differences>
             </revapi.differences>
