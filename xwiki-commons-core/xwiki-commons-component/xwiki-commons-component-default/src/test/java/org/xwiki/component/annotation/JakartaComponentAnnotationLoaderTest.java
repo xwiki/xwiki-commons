@@ -20,6 +20,7 @@
 package org.xwiki.component.annotation;
 
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.inject.Named;
@@ -37,6 +38,7 @@ import org.xwiki.component.TestProvider2;
 import org.xwiki.component.TestProviderWithExceptionInInitialize;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
+import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.internal.ContextComponentManagerProvider;
 import org.xwiki.component.internal.RootComponentManager;
 import org.xwiki.component.internal.embed.EmbeddableComponentManagerFactory;
@@ -46,6 +48,7 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -206,6 +209,21 @@ class JakartaComponentAnnotationLoaderTest
         verify(componentManager).registerComponent(descriptor2);
         verify(componentManager).registerComponent(descriptor3);
         verify(componentManager).registerComponent(descriptor4);
+    }
+
+    @Test
+    void unregisterComponentDeclaredWithPriority()
+    {
+        ComponentManager componentManager = new EmbeddableComponentManager();
+        List<ComponentDeclaration> componentDeclarations =
+            List.of(new ComponentDeclaration(OverrideRole.class.getName(), 500));
+        Type roleType = this.loader.getComponentsDescriptors(OverrideRole.class).getFirst().getRoleType();
+
+        this.loader.register(componentManager, getClass().getClassLoader(), componentDeclarations);
+        assertTrue(componentManager.hasComponent(roleType, "test"));
+
+        this.loader.unregister(componentManager, getClass().getClassLoader(), componentDeclarations);
+        assertFalse(componentManager.hasComponent(roleType, "test"));
     }
 
     @Test
