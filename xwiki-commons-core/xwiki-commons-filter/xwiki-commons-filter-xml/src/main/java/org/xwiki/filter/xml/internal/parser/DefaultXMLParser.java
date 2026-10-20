@@ -453,102 +453,123 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
     }
 
     @Override
-    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
     {
-        Block currentBlock = this.blockStack.isEmpty() ? null : this.blockStack.peek();
+        // The current block, or null when there's none
+        Block currentBlock = this.blockStack.peek();
 
         if (onBlockElement(qName)) {
-            // send previous event
-            if (currentBlock != null && !currentBlock.beginSent) {
-                currentBlock.fireBeginEvent(this.filter);
-            }
-
-            // push new event
-            Block block = getBlock(qName, attributes);
-
-            this.blockStack.push(block);
-
-            if (!block.isContainer() && block.filterElement != null && block.filterElement.getParameters().length > 0) {
-                this.content = new StringBuilder();
-            }
-
-            // Extract simple parameters from attributes
-            for (int i = 0; i < attributes.getLength(); ++i) {
-                String attributeName = attributes.getQName(i);
-
-                setParameter(block, attributeName, attributes.getValue(i), true);
-            }
+            startBlockElement(currentBlock, qName, attributes);
         } else {
-            // starting a new block parameter
-            if (onParametersElement(qName) && currentBlock.filterElement != null) {
-                try {
-                    currentBlock.parametersDOMBuilder = new Sax2Dom();
-                } catch (ParserConfigurationException e) {
-                    throw new SAXException("Failed to create new Sax2Dom handler", e);
-                }
-                currentBlock.parametersDOMBuilder.startDocument();
-            }
-
-            if (currentBlock.parametersDOMBuilder != null) {
-                currentBlock.parametersDOMBuilder.startElement(uri, localName, qName, attributes);
-            }
+            startParameterElement(currentBlock, uri, localName, qName, attributes);
         }
 
         ++this.elementDepth;
     }
 
+    private void startBlockElement(Block currentBlock, String qName, Attributes attributes) throws SAXException
+    {
+        // send previous event
+        if (currentBlock != null && !currentBlock.beginSent) {
+            currentBlock.fireBeginEvent(this.filter);
+        }
+
+        // push new event
+        Block block = getBlock(qName, attributes);
+
+        this.blockStack.push(block);
+
+        if (!block.isContainer() && block.filterElement != null && block.filterElement.getParameters().length > 0) {
+            this.content = new StringBuilder();
+        }
+
+        // Extract simple parameters from attributes
+        for (int i = 0; i < attributes.getLength(); ++i) {
+            String attributeName = attributes.getQName(i);
+
+            setParameter(block, attributeName, attributes.getValue(i), true);
+        }
+    }
+
+    private void startParameterElement(Block currentBlock, String uri, String localName, String qName,
+        Attributes attributes) throws SAXException
+    {
+        // starting a new block parameter
+        if (onParametersElement(qName) && currentBlock.filterElement != null) {
+            try {
+                currentBlock.parametersDOMBuilder = new Sax2Dom();
+            } catch (ParserConfigurationException e) {
+                throw new SAXException("Failed to create new Sax2Dom handler", e);
+            }
+            currentBlock.parametersDOMBuilder.startDocument();
+        }
+
+        if (currentBlock.parametersDOMBuilder != null) {
+            currentBlock.parametersDOMBuilder.startElement(uri, localName, qName, attributes);
+        }
+    }
+
     @Override
-    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     public void endElement(String uri, String localName, String qName) throws SAXException
     {
         --this.elementDepth;
 
-        Block currentBlock = this.blockStack.isEmpty() ? null : this.blockStack.peek();
-
         if (onBlockElement(qName)) {
-            Block block = this.blockStack.pop();
+            endBlockElement(this.blockStack.pop(), qName);
+        } else {
+            Block currentBlock = this.blockStack.peek();
 
-            // Flush pending begin event and send end event or send on event
-            if (block.isContainer()) {
-                if (!block.beginSent) {
-                    block.fireBeginEvent(this.filter);
-                }
-
-                block.fireEndEvent(this.filter);
-            } else {
-                if (block.getParametersList().isEmpty()
-                    && this.filterDescriptor.getElement(qName).getParameters().length > 0
-                    && this.content != null && !this.content.isEmpty()) {
-                    block.setParameter(0,
-                        this.stringConverter.convert(
-                            this.filterDescriptor.getElement(qName).getParameters()[0].getType(),
-                            this.content.toString()));
-                    this.content = null;
-                }
-
-                block.fireOnEvent(this.filter);
+            if (currentBlock.parametersDOMBuilder != null) {
+                endParameterElement(currentBlock, uri, localName, qName);
             }
-        } else if (currentBlock.parametersDOMBuilder != null) {
-            currentBlock.parametersDOMBuilder.endElement(uri, localName, qName);
+        }
+    }
 
-            if (onParametersElement(qName)) {
-                currentBlock.parametersDOMBuilder.endDocument();
-
-                Element rootElement = currentBlock.parametersDOMBuilder.getRootElement();
-                NodeList parameterNodes = rootElement.getChildNodes();
-                for (int i = 0; i < parameterNodes.getLength(); ++i) {
-                    Node parameterNode = parameterNodes.item(i);
-
-                    if (parameterNode.getNodeType() == Node.ELEMENT_NODE) {
-                        String nodeName = parameterNode.getLocalName();
-
-                        setParameter(currentBlock, nodeName, parameterNode, true);
-                    }
-                }
-
-                currentBlock.parametersDOMBuilder = null;
+    private void endBlockElement(Block block, String qName) throws SAXException
+    {
+        // Flush pending begin event and send end event or send on event
+        if (block.isContainer()) {
+            if (!block.beginSent) {
+                block.fireBeginEvent(this.filter);
             }
+
+            block.fireEndEvent(this.filter);
+        } else {
+            if (block.getParametersList().isEmpty()
+                && this.filterDescriptor.getElement(qName).getParameters().length > 0
+                && this.content != null && !this.content.isEmpty()) {
+                block.setParameter(0,
+                    this.stringConverter.convert(
+                        this.filterDescriptor.getElement(qName).getParameters()[0].getType(),
+                        this.content.toString()));
+                this.content = null;
+            }
+
+            block.fireOnEvent(this.filter);
+        }
+    }
+
+    private void endParameterElement(Block currentBlock, String uri, String localName, String qName)
+        throws SAXException
+    {
+        currentBlock.parametersDOMBuilder.endElement(uri, localName, qName);
+
+        if (onParametersElement(qName)) {
+            currentBlock.parametersDOMBuilder.endDocument();
+
+            Element rootElement = currentBlock.parametersDOMBuilder.getRootElement();
+            NodeList parameterNodes = rootElement.getChildNodes();
+            for (int i = 0; i < parameterNodes.getLength(); ++i) {
+                Node parameterNode = parameterNodes.item(i);
+
+                if (parameterNode.getNodeType() == Node.ELEMENT_NODE) {
+                    String nodeName = parameterNode.getLocalName();
+
+                    setParameter(currentBlock, nodeName, parameterNode, true);
+                }
+            }
+
+            currentBlock.parametersDOMBuilder = null;
         }
     }
 
