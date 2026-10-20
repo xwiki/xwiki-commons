@@ -102,7 +102,9 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
             if (type == null || type.equals(installedExtension.getType())) {
                 try {
                     initializeExtension(installedExtension, namespaceToInitialize, initializedExtensions);
-                } catch (Throwable t) {
+                } catch (Exception | LinkageError t) {
+                    // An extension failing to initialize (often with a LinkageError because of a missing or
+                    // incompatible class) must not prevent the other extensions from being initialized
                     this.logger.error("Failed to initialize local extension [{}]", installedExtension.getId(), t);
                 }
             }
@@ -208,7 +210,7 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
                             "Extension [%s] cannot be initialized because its dependency ([%s]) could not.",
                             installedExtension, dependency));
                     }
-                } catch (Throwable e) {
+                } catch (Exception | LinkageError e) {
                     if (dependency.isOptional()) {
                         this.logger.warn("Failed to initialize dependency [{}]: [{}]", dependency,
                             ExceptionUtils.getRootCauseMessage(e));

@@ -200,10 +200,10 @@ public class JarExtensionHandler extends AbstractExtensionHandler
                 // unregister components
                 try {
                     this.jarLoader.unloadComponents(installedExtension.getFile(), classLoader, namespace);
-                } catch (Throwable e) {
+                } catch (Exception | LinkageError e) {
                     // We failed to unregister some components, we probably failed to register them in the first
                     // place too so let's just ignore it. Better than making impossible to uninstall the extension.
-                    // We catch Throwable because most of the time we end up with a LinkageError
+                    // We catch LinkageError too because most of the time that's what we end up with
                     this.logger.warn("Failed to unregister some components of the JAR extension [{}]: [{}]",
                         installedExtension.getId(), ExceptionUtils.getRootCauseMessage(e));
                 }
