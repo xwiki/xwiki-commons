@@ -64,14 +64,12 @@ public class XWikiDOMSerializer extends DomSerializer
 
     /**
      * This method is an exact copy of {@link DomSerializer#createDocument(TagNode)} except that the {@link DocumentBuilder}
-     * is given in parameter.
+     * is given in parameter and that the root node attributes are copied in a dedicated method.
      * @param builder the {@link DocumentBuilder} instance to use, DocumentBuilder is not guaranteed to
      * be thread safe so at most the safe instance should be used only in the same thread
      * @param rootNode the HTML Cleaner root node to serialize
      * @return the W3C Document object
      */
-    // XWikiDomSerializer copied from DomSerializer
-    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity"})
     private Document createDocument(DocumentBuilder builder, TagNode rootNode)
     {
         DOMImplementation impl = builder.getDOMImplementation();
@@ -119,10 +117,22 @@ public class XWikiDOMSerializer extends DomSerializer
             document.setStrictErrorChecking(false);
         }
 
+        copyRootNodeAttributes(document, rootNode);
 
-        //
-        // Copy across root node attributes - see issue 127. Thanks to rasifiel for the patch
-        //
+        return document;
+    }
+
+    /**
+     * Copy across root node attributes - see issue 127. Thanks to rasifiel for the patch.
+     * <p>
+     * Extracted from {@link #createDocument(DocumentBuilder, TagNode)}, which diverges from the upstream
+     * {@link DomSerializer} code, to keep its complexity manageable.
+     *
+     * @param document the W3C Document whose root element receives the attributes
+     * @param rootNode the HTML Cleaner root node whose attributes are copied
+     */
+    private void copyRootNodeAttributes(Document document, TagNode rootNode)
+    {
         Map<String, String> attributes =  rootNode.getAttributes();
         Iterator<Map.Entry<String, String>> entryIterator = attributes.entrySet().iterator();
         while (entryIterator.hasNext()) {
@@ -154,7 +164,6 @@ public class XWikiDOMSerializer extends DomSerializer
             }
 
         }
-        return document;
     }
 
     /**

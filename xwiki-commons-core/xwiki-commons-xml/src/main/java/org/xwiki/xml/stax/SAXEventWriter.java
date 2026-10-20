@@ -200,13 +200,7 @@ public class SAXEventWriter extends BaseXMLEventWriter
 
         try {
             // fire endElement
-            String prefix = qName.getPrefix();
-            String rawname;
-            if (prefix == null || prefix.isEmpty()) {
-                rawname = qName.getLocalPart();
-            } else {
-                rawname = prefix + ':' + qName.getLocalPart();
-            }
+            String rawname = getQualifiedName(qName.getPrefix(), qName.getLocalPart());
 
             this.filter.endElement(qName.getNamespaceURI(), qName.getLocalPart(), rawname);
 
@@ -239,13 +233,7 @@ public class SAXEventWriter extends BaseXMLEventWriter
 
             // fire startElement
             QName qName = event.getName();
-            String prefix = qName.getPrefix();
-            String rawname;
-            if (prefix == null || prefix.isEmpty()) {
-                rawname = qName.getLocalPart();
-            } else {
-                rawname = prefix + ':' + qName.getLocalPart();
-            }
+            String rawname = getQualifiedName(qName.getPrefix(), qName.getLocalPart());
             Attributes saxAttrs = this.getAttributes(event);
             this.filter.startElement(qName.getNamespaceURI(), qName.getLocalPart(), rawname, saxAttrs);
         } catch (SAXException e) {
@@ -259,8 +247,6 @@ public class SAXEventWriter extends BaseXMLEventWriter
      * @param event the StAX start element event
      * @return the StAX attributes converted to an org.xml.sax.Attributes
      */
-    // SAX requires fairly complex code
-    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     private Attributes getAttributes(StartElement event)
     {
         AttributesImpl attrs = new AttributesImpl();
@@ -271,26 +257,7 @@ public class SAXEventWriter extends BaseXMLEventWriter
 
         // Add namspace declarations if required
         if (this.filter.getNamespacePrefixes()) {
-            for (@SuppressWarnings("unchecked") Iterator<Namespace> i = event.getNamespaces(); i.hasNext();) {
-                Namespace staxNamespace = i.next();
-                String uri = staxNamespace.getNamespaceURI();
-                if (uri == null) {
-                    uri = "";
-                }
-
-                String prefix = staxNamespace.getPrefix();
-                if (prefix == null) {
-                    prefix = "";
-                }
-
-                String qName = "xmlns";
-                if (prefix.isEmpty()) {
-                    prefix = qName;
-                } else {
-                    qName = qName + ':' + prefix;
-                }
-                attrs.addAttribute("http://www.w3.org/2000/xmlns/", prefix, qName, "CDATA", uri);
-            }
+            addNamespaceDeclarations(event, attrs);
         }
 
         // gather non-namespace attrs
@@ -302,13 +269,7 @@ public class SAXEventWriter extends BaseXMLEventWriter
                 uri = "";
             }
             String localName = staxAttr.getName().getLocalPart();
-            String prefix = staxAttr.getName().getPrefix();
-            String qName;
-            if (prefix == null || prefix.isEmpty()) {
-                qName = localName;
-            } else {
-                qName = prefix + ':' + localName;
-            }
+            String qName = getQualifiedName(staxAttr.getName().getPrefix(), localName);
             String type = staxAttr.getDTDType();
             String value = staxAttr.getValue();
 
@@ -316,6 +277,50 @@ public class SAXEventWriter extends BaseXMLEventWriter
         }
 
         return attrs;
+    }
+
+    /**
+     * Add the namespace declarations of the given START_ELEMENT StAX event as {@code xmlns} attributes.
+     *
+     * @param event the StAX start element event
+     * @param attrs the SAX attributes to add the namespace declarations to
+     */
+    private void addNamespaceDeclarations(StartElement event, AttributesImpl attrs)
+    {
+        for (@SuppressWarnings("unchecked") Iterator<Namespace> i = event.getNamespaces(); i.hasNext();) {
+            Namespace staxNamespace = i.next();
+            String uri = staxNamespace.getNamespaceURI();
+            if (uri == null) {
+                uri = "";
+            }
+
+            String prefix = staxNamespace.getPrefix();
+            if (prefix == null) {
+                prefix = "";
+            }
+
+            String qName = "xmlns";
+            if (prefix.isEmpty()) {
+                prefix = qName;
+            } else {
+                qName = qName + ':' + prefix;
+            }
+            attrs.addAttribute("http://www.w3.org/2000/xmlns/", prefix, qName, "CDATA", uri);
+        }
+    }
+
+    /**
+     * @param prefix the prefix of the element or attribute name, {@code null} or empty when there's none
+     * @param localName the local part of the element or attribute name
+     * @return the qualified (raw) name, i.e. {@code prefix:localName} or just {@code localName} when there's no prefix
+     */
+    private static String getQualifiedName(String prefix, String localName)
+    {
+        if (prefix == null || prefix.isEmpty()) {
+            return localName;
+        }
+
+        return prefix + ':' + localName;
     }
 
     private void handleComment(Comment comment) throws XMLStreamException
