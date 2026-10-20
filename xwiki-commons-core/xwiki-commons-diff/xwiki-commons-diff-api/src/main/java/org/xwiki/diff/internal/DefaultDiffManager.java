@@ -83,7 +83,6 @@ public class DefaultDiffManager implements DiffManager
     }
 
     @Override
-    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     public <E> MergeResult<E> merge(List<E> commonAncestor, List<E> next, List<E> current,
         MergeConfiguration<E> configuration) throws MergeException
     {
@@ -91,15 +90,7 @@ public class DefaultDiffManager implements DiffManager
 
         // Get diff between common ancestor and next version
 
-        DiffResult<E> diffNextResult;
-        try {
-            diffNextResult = diff(commonAncestor, next, null);
-        } catch (DiffException e) {
-            throw new MergeException("Fail to diff between common ancestor and next version", e);
-        }
-        mergeResult.getLog().addAll(diffNextResult.getLog());
-
-        Patch<E> patchNext = diffNextResult.getPatch();
+        Patch<E> patchNext = diffFromCommonAncestor(commonAncestor, next, "next", mergeResult);
 
         // If there is no modification stop there
 
@@ -114,45 +105,66 @@ public class DefaultDiffManager implements DiffManager
             // Empty current version
             if (commonAncestor.isEmpty()) {
                 mergeResult.setMerged(next);
-            } else if (next.isEmpty()) {
-                // The new modification was already applied
+            } else {
+                // The next version is empty too: the new modification was already applied
                 mergeResult.getLog().warn("The modification was already applied");
             }
+
+            return mergeResult;
+        }
+
+        // Get diff between common ancestor and current version
+
+        Patch<E> patchCurrent = diffFromCommonAncestor(commonAncestor, current, "current", mergeResult);
+
+        mergeResult.setMerged(new ArrayList<>());
+        if (patchCurrent.isEmpty()) {
+            mergeResult.setMerged(next);
+        } else if (!current.equals(next) && (isFullyModified(commonAncestor, patchCurrent)
+            || isFullyModified(commonAncestor, patchNext))) {
+            // If current or next  is completely modified compared to the common ancestor we assume
+            // any change in next or current is a conflict
+            // ... except if the current content is identical to the next one!
+            mergeAsSingleConflict(mergeResult, commonAncestor, next, current, patchNext, patchCurrent,
+                configuration);
         } else {
-            // Get diff between common ancestor and current version
-            DiffResult<E> diffCurrentResult;
-            try {
-                diffCurrentResult = diff(commonAncestor, current, null);
-            } catch (DiffException e) {
-                throw new MergeException("Fail to diff between common ancestor and current version", e);
-            }
-            mergeResult.getLog().addAll(diffCurrentResult.getLog());
-
-            Patch<E> patchCurrent = diffCurrentResult.getPatch();
-
-            mergeResult.setMerged(new ArrayList<>());
-            if (patchCurrent.isEmpty()) {
-                mergeResult.setMerged(next);
-            } else if (!current.equals(next) && (isFullyModified(commonAncestor, patchCurrent)
-                || isFullyModified(commonAncestor, patchNext))) {
-                // If current or next  is completely modified compared to the common ancestor we assume
-                // any change in next or current is a conflict
-                // ... except if the current content is identical to the next one!
-                Delta<E> deltaNext = nextElement(patchNext);
-                Delta<E> deltaCurrent = nextElement(patchCurrent);
-                List<ConflictDecision<E>> conflictDecisionList =
-                    (configuration != null) ? configuration.getConflictDecisionList() : Collections.emptyList();
-                int newIndex = applyDecision(conflictDecisionList, mergeResult.getMerged(), 0);
-                if (newIndex == Integer.MIN_VALUE) {
-                    logConflict(mergeResult, deltaCurrent, deltaNext, commonAncestor, next, current, 0);
-                    mergeResult.setMerged(fallback(commonAncestor, next, current, configuration));
-                }
-            } else {
-                merge(mergeResult, commonAncestor, next, current, patchNext, patchCurrent, configuration);
-            }
+            merge(mergeResult, commonAncestor, next, current, patchNext, patchCurrent, configuration);
         }
 
         return mergeResult;
+    }
+
+    private <E> Patch<E> diffFromCommonAncestor(List<E> commonAncestor, List<E> version, String versionName,
+        DefaultMergeResult<E> mergeResult) throws MergeException
+    {
+        DiffResult<E> diffResult;
+        try {
+            diffResult = diff(commonAncestor, version, null);
+        } catch (DiffException e) {
+            throw new MergeException(
+                String.format("Fail to diff between common ancestor and %s version", versionName), e);
+        }
+        mergeResult.getLog().addAll(diffResult.getLog());
+
+        return diffResult.getPatch();
+    }
+
+    /**
+     * Merge the versions as a single conflict covering the whole content: apply the decision taken for this conflict
+     * if any, otherwise log the conflict and use the fallback version.
+     */
+    private <E> void mergeAsSingleConflict(DefaultMergeResult<E> mergeResult, List<E> commonAncestor, List<E> next,
+        List<E> current, Patch<E> patchNext, Patch<E> patchCurrent, MergeConfiguration<E> configuration)
+    {
+        Delta<E> deltaNext = nextElement(patchNext);
+        Delta<E> deltaCurrent = nextElement(patchCurrent);
+        List<ConflictDecision<E>> conflictDecisionList =
+            (configuration != null) ? configuration.getConflictDecisionList() : Collections.emptyList();
+        int newIndex = applyDecision(conflictDecisionList, mergeResult.getMerged(), 0);
+        if (newIndex == Integer.MIN_VALUE) {
+            logConflict(mergeResult, deltaCurrent, deltaNext, commonAncestor, next, current, 0);
+            mergeResult.setMerged(fallback(commonAncestor, next, current, configuration));
+        }
     }
 
     private <E> ConflictDecision<E> findDecision(List<ConflictDecision<E>> decisions, int currentIndex)

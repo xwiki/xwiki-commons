@@ -1271,6 +1271,27 @@ class DefaultDiffManagerTest
     }
 
     @Test
+    void mergeWithEmptyCurrent() throws Exception
+    {
+        // Content added to an empty common ancestor: the next version is kept
+        MergeResult<Character> result =
+            this.diffManager.merge(toCharacters(""), toCharacters("a"), toCharacters(""), null);
+
+        assertTrue(result.getLog().isEmpty());
+        assertTrue(result.getConflicts().isEmpty());
+        assertEquals(toCharacters("a"), result.getMerged());
+
+        // Content removed in both next and current versions: nothing left to merge
+        result = this.diffManager.merge(toCharacters("a"), toCharacters(""), toCharacters(""), null);
+
+        assertEquals(1, result.getLog().getLogs(LogLevel.WARN).size());
+        assertEquals("The modification was already applied",
+            result.getLog().getLogs(LogLevel.WARN).get(0).getFormattedMessage());
+        assertTrue(result.getConflicts().isEmpty());
+        assertEquals(toCharacters(""), result.getMerged());
+    }
+
+    @Test
     void mergeWhenUserHasChangedAllContent() throws Exception
     {
         MergeResult<String> result;
