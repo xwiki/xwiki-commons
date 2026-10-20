@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -468,30 +467,49 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return new CollectionIterableResult<>(versions.size(), offset, result);
     }
 
-    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity"})
     private org.eclipse.aether.version.Version resolveVersionConstraint(String id, VersionConstraint versionConstraint,
         RepositorySystemSession session) throws ResolveException
     {
         // Single version
         if (versionConstraint.getVersion() != null) {
-            try {
-                return AETHERVERSIONSCHEME.parseVersion(versionConstraint.getVersion().getValue());
-            } catch (InvalidVersionSpecificationException e) {
-                throw new ResolveException(ERROR_INVALID_VERSION.formatted(versionConstraint.getVersion()), e);
-            }
+            return parseVersion(versionConstraint.getVersion().getValue(), versionConstraint);
         }
 
         // Strict version
         Version strictVersion = VersionUtils.getStrictVersion(versionConstraint.getRanges());
         if (strictVersion != null) {
-            try {
-                return AETHERVERSIONSCHEME.parseVersion(strictVersion.getValue());
-            } catch (InvalidVersionSpecificationException e) {
-                throw new ResolveException(ERROR_INVALID_VERSION.formatted(versionConstraint.getVersion()), e);
-            }
+            return parseVersion(strictVersion.getValue(), versionConstraint);
         }
 
         // Ranges
+        List<org.eclipse.aether.version.Version> commonVersions =
+            resolveCommonVersions(id, versionConstraint, session);
+
+        if (commonVersions == null || commonVersions.isEmpty()) {
+            throw new ExtensionNotFoundException(
+                "No versions available for id [%s] and version constraint [%s]".formatted(id, versionConstraint));
+        }
+
+        return commonVersions.get(commonVersions.size() - 1);
+    }
+
+    private org.eclipse.aether.version.Version parseVersion(String version, VersionConstraint versionConstraint)
+        throws ResolveException
+    {
+        try {
+            return AETHERVERSIONSCHEME.parseVersion(version);
+        } catch (InvalidVersionSpecificationException e) {
+            throw new ResolveException(ERROR_INVALID_VERSION.formatted(versionConstraint.getVersion()), e);
+        }
+    }
+
+    /**
+     * @return the versions matching all the ranges of the version constraint, or {@code null} if the constraint does
+     *         not contain any range
+     */
+    private List<org.eclipse.aether.version.Version> resolveCommonVersions(String id,
+        VersionConstraint versionConstraint, RepositorySystemSession session) throws ResolveException
+    {
         List<org.eclipse.aether.version.Version> commonVersions = null;
 
         for (VersionRange range : versionConstraint.getRanges()) {
@@ -501,21 +519,11 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
                 commonVersions = versionConstraint.getRanges().size() > 1 ? new ArrayList<>(versions) : versions;
             } else {
                 // Find commons versions between all the ranges of the constraint
-                for (Iterator<org.eclipse.aether.version.Version> it = commonVersions.iterator(); it.hasNext();) {
-                    org.eclipse.aether.version.Version version = it.next();
-                    if (!versions.contains(version)) {
-                        it.remove();
-                    }
-                }
+                commonVersions.retainAll(versions);
             }
         }
 
-        if (commonVersions == null || commonVersions.isEmpty()) {
-            throw new ExtensionNotFoundException(
-                "No versions available for id [%s] and version constraint [%s]".formatted(id, versionConstraint));
-        }
-
-        return commonVersions.get(commonVersions.size() - 1);
+        return commonVersions;
     }
 
     private List<org.eclipse.aether.version.Version> resolveVersionRange(String id, VersionRange versionRange,
@@ -639,26 +647,11 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         }
     }
 
-    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity",
-        "checkstyle:ExecutableStatementCount"})
     private AetherExtension resolveMaven(Artifact artifact, String targetMavenType, RepositorySystemSession session)
         throws ResolveException
     {
         // Get Maven descriptor
-
-        Artifact pomArtifact;
-        try {
-            pomArtifact = downloadPom(artifact, session);
-        } catch (ArtifactResolutionException e1) {
-            if (e1.getResult() != null && !e1.getResult().getExceptions().isEmpty()
-                && e1.getResult().getExceptions().get(0) instanceof ArtifactNotFoundException) {
-                throw new ExtensionNotFoundException("Could not find artifact [%s] descriptor".formatted(artifact), e1);
-            } else {
-                throw new ResolveException(ERROR_RESOLVE_ARTIFACT.formatted(artifact), e1);
-            }
-        } catch (Exception e2) {
-            throw new ResolveException(ERROR_RESOLVE_ARTIFACT.formatted(artifact), e2);
-        }
+        Artifact pomArtifact = resolvePom(artifact, session);
 
         Model model;
         try {
@@ -672,18 +665,9 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         }
 
         // Relocation
-        DistributionManagement distributionManagement = model.getDistributionManagement();
-        if (distributionManagement != null) {
-            Relocation relocation = distributionManagement.getRelocation();
-            if (relocation != null) {
-                return resolveMaven(
-                    new DefaultArtifact(
-                        relocation.getGroupId() != null ? relocation.getGroupId() : artifact.getGroupId(),
-                        relocation.getArtifactId() != null ? relocation.getArtifactId() : artifact.getArtifactId(),
-                        artifact.getClassifier(), artifact.getExtension(),
-                        relocation.getVersion() != null ? relocation.getVersion() : artifact.getVersion()),
-                    targetMavenType, session);
-            }
+        Relocation relocation = getRelocation(model);
+        if (relocation != null) {
+            return resolveMaven(relocate(artifact, relocation), targetMavenType, session);
         }
 
         // Get the Maven artifact handler
@@ -704,20 +688,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             artifact.getClassifier(), artifactExtension, pomArtifact.getVersion());
 
         // Resolve the extension type
-        String extensionType;
-        try {
-            // Is the requested type equals to the artifact type or extension
-            if (isTargetType(targetMavenType, artifactHandler)) {
-                // When the requested type is the default one, try to find a ArtifactTypeHandler associated with the
-                // packaging
-                extensionType = this.extensionTypeConverter.toExtensionType(artifactHandler);
-            } else {
-                // Otherwise relies on the target type extension
-                extensionType = this.extensionTypeConverter.mavenExtensionToExtensionType(artifactExtension);
-            }
-        } catch (Exception e) {
-            throw new ResolveException("Failed to resolve the extension type", e);
-        }
+        String extensionType = resolveExtensionType(targetMavenType, artifactHandler, artifactExtension);
 
         // Convert the pom Model into an Extension
         Extension mavenExtension = this.extensionConverter.convert(Extension.class, model);
@@ -743,6 +714,60 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         extension.setManagedDependencies(toAetherDependencies(mavenExtension.getManagedDependencies(), session));
 
         return extension;
+    }
+
+    private Artifact resolvePom(Artifact artifact, RepositorySystemSession session) throws ResolveException
+    {
+        try {
+            return downloadPom(artifact, session);
+        } catch (ArtifactResolutionException e1) {
+            if (isArtifactNotFound(e1)) {
+                throw new ExtensionNotFoundException("Could not find artifact [%s] descriptor".formatted(artifact), e1);
+            } else {
+                throw new ResolveException(ERROR_RESOLVE_ARTIFACT.formatted(artifact), e1);
+            }
+        } catch (Exception e2) {
+            throw new ResolveException(ERROR_RESOLVE_ARTIFACT.formatted(artifact), e2);
+        }
+    }
+
+    private boolean isArtifactNotFound(ArtifactResolutionException exception)
+    {
+        return exception.getResult() != null && !exception.getResult().getExceptions().isEmpty()
+            && exception.getResult().getExceptions().get(0) instanceof ArtifactNotFoundException;
+    }
+
+    private Relocation getRelocation(Model model)
+    {
+        DistributionManagement distributionManagement = model.getDistributionManagement();
+
+        return distributionManagement != null ? distributionManagement.getRelocation() : null;
+    }
+
+    private Artifact relocate(Artifact artifact, Relocation relocation)
+    {
+        return new DefaultArtifact(relocation.getGroupId() != null ? relocation.getGroupId() : artifact.getGroupId(),
+            relocation.getArtifactId() != null ? relocation.getArtifactId() : artifact.getArtifactId(),
+            artifact.getClassifier(), artifact.getExtension(),
+            relocation.getVersion() != null ? relocation.getVersion() : artifact.getVersion());
+    }
+
+    private String resolveExtensionType(String targetMavenType, MavenArtifactHandler artifactHandler,
+        String artifactExtension) throws ResolveException
+    {
+        try {
+            // Is the requested type equals to the artifact type or extension
+            if (isTargetType(targetMavenType, artifactHandler)) {
+                // When the requested type is the default one, try to find a ArtifactTypeHandler associated with the
+                // packaging
+                return this.extensionTypeConverter.toExtensionType(artifactHandler);
+            } else {
+                // Otherwise relies on the target type extension
+                return this.extensionTypeConverter.mavenExtensionToExtensionType(artifactExtension);
+            }
+        } catch (Exception e) {
+            throw new ResolveException("Failed to resolve the extension type", e);
+        }
     }
 
     private boolean isTargetType(String targetMavenType, MavenArtifactHandler artifactHandler)

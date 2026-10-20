@@ -48,11 +48,13 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.test.MockitoRepositoryUtilsExtension;
 import org.xwiki.extension.version.Version;
+import org.xwiki.extension.version.internal.DefaultVersion;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -625,7 +627,75 @@ class AetherDefaultRepositoryManagerTest
         assertEquals("ospropertyvalue", extension.getProperty("xwiki.extension.osproperty"));
     }
 
+    @Test
+    void resolveFullRelocation() throws ResolveException
+    {
+        Extension extension = this.repositoryManager.resolve(new ExtensionId("groupid:fullrelocation", "version"));
+
+        assertEquals(this.extensionId.getId(), extension.getId().getId());
+        assertEquals("1.0", extension.getId().getVersion().getValue());
+    }
+
+    @Test
+    void resolveStrictVersionDependency() throws ResolveException
+    {
+        Extension extension = this.repositoryManager
+            .resolve(new DefaultExtensionDependency(this.extensionId.getId(), new DefaultVersionConstraint("[1.0]")));
+
+        assertEquals(this.extensionId.getId(), extension.getId().getId());
+        assertEquals("1.0", extension.getId().getVersion().getValue());
+    }
+
+    @Test
+    void resolveDependencyWithRecommendedVersionAndRange() throws ResolveException
+    {
+        DefaultVersionConstraint constraint = new DefaultVersionConstraint(
+            new DefaultVersionConstraint("[1.0,)").getRanges(), new DefaultVersion("2.0"));
+
+        Extension extension =
+            this.repositoryManager.resolve(new DefaultExtensionDependency(this.extensionId.getId(), constraint));
+
+        assertEquals(this.extensionId.getId(), extension.getId().getId());
+        assertEquals("2.0", extension.getId().getVersion().getValue());
+    }
+
+    @Test
+    void resolveDependencyWithSeveralRanges() throws ResolveException
+    {
+        DefaultVersionConstraint constraint = new DefaultVersionConstraint("{[1.0,)},{(,2.0)}");
+
+        Extension extension =
+            this.repositoryManager.resolve(new DefaultExtensionDependency(this.extensionId.getId(), constraint));
+
+        assertEquals(this.extensionId.getId(), extension.getId().getId());
+        assertEquals("1.0", extension.getId().getVersion().getValue());
+    }
+
     // Failures
+
+    @Test
+    void resolveDependencyWithIncompatibleRanges()
+    {
+        ExtensionRepository repository = this.repositoryManager.getRepository("test-maven");
+        DefaultVersionConstraint constraint = new DefaultVersionConstraint("{[1.0,1.5)},{[2.0,)}");
+
+        ExtensionNotFoundException exception = assertThrows(ExtensionNotFoundException.class,
+            () -> repository.resolve(new DefaultExtensionDependency(this.extensionId.getId(), constraint)));
+
+        assertEquals("No versions available for id [groupid:artifactid] and version constraint [{[1.0,1.5)},{[2.0,)}]",
+            exception.getMessage());
+    }
+
+    @Test
+    void resolveWithInvalidDescriptor()
+    {
+        ExtensionRepository repository = this.repositoryManager.getRepository("test-maven");
+
+        ResolveException exception = assertThrows(ResolveException.class,
+            () -> repository.resolve(new ExtensionId("groupid:invalidpom", "version")));
+
+        assertEquals("Failed to create Maven model", exception.getMessage());
+    }
 
     @Test
     void resolveWithNotExistingVersion()
