@@ -253,7 +253,10 @@ public class ComponentAnnotationLoader
             }
 
             if (componentClass != null) {
-                for (ComponentDescriptor<?> componentDescriptor : getComponentsDescriptors(componentClass)) {
+                // Use the priority the component was registered with: the component manager only unregisters a
+                // component whose registered descriptor is equal to the passed one, priority included.
+                for (ComponentDescriptor<?> componentDescriptor : getComponentsDescriptors(componentClass,
+                    componentDeclaration.getPriority())) {
                     manager.unregisterComponent(componentDescriptor);
 
                     if (componentDescriptor.getRoleType() instanceof ParameterizedType) {
