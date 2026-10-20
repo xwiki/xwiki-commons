@@ -30,6 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.xwiki.classloader.ClassLoaderManager;
+import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.internal.QueueComponentEventManager;
 import org.xwiki.component.internal.multi.ComponentManagerManager;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -416,6 +417,27 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         Type extensionRole2 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
         assertTypeNotEquals(extensionRole1, extensionRole2);
+    }
+
+    @Test
+    void testInstallAndUninstallExtensionOverridingComponent() throws Throwable
+    {
+        // Simulate a standard component, registered with the default priority
+        this.componentManager.registerComponent(
+            new ComponentAnnotationLoader().getComponentsDescriptors(DefaultOverriddenComponent.class).getFirst());
+
+        // Install an extension overriding it with a better priority
+        ExtensionId extensionId = new ExtensionId("jaroverride", "test");
+        install(extensionId);
+
+        assertEquals("packagefile.jaroverride.OverridingComponent",
+            this.componentManager.getInstance(OverriddenComponent.class).getClass().getName());
+
+        uninstall(extensionId);
+
+        // The standard component is back
+        assertEquals(DefaultOverriddenComponent.class,
+            this.componentManager.getInstance(OverriddenComponent.class).getClass());
     }
 
     @Test
