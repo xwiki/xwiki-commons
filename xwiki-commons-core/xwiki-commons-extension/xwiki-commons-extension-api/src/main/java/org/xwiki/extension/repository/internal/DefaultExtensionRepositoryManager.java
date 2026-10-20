@@ -308,7 +308,6 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
     }
 
     @Override
-    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:NPathComplexity"})
     public Extension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
         Set<ExtensionRepositoryDescriptor> checkedRepositories = new HashSet<>();
@@ -317,12 +316,10 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
 
         // Try repositories declared in the extension dependency
         for (ExtensionRepositoryDescriptor repositoryDescriptor : extensionDependency.getRepositories()) {
-            if (checkedRepositories.contains(repositoryDescriptor)) {
+            // Skip the repository if we already tried it, and remember we tried it otherwise
+            if (!checkedRepositories.add(repositoryDescriptor)) {
                 continue;
             }
-
-            // Remember we tried that repository
-            checkedRepositories.add(repositoryDescriptor);
 
             ExtensionRepository repository;
             try {
@@ -349,13 +346,29 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
         }
 
         // Try configured repositories
+        return resolveFromConfiguredRepositories(extensionDependency, checkedRepositories, lastException);
+    }
+
+    /**
+     * Try to resolve the extension dependency in the configured repositories which were not already checked, and
+     * fail if none of them provides it.
+     *
+     * @param extensionDependency the extension dependency to resolve
+     * @param checkedRepositories the repositories which were already checked (and should be skipped)
+     * @param previousException the last unexpected error raised by an already checked repository, if any
+     * @return the resolved extension
+     * @throws ResolveException when no configured repository provides the extension dependency
+     */
+    private Extension resolveFromConfiguredRepositories(ExtensionDependency extensionDependency,
+        Set<ExtensionRepositoryDescriptor> checkedRepositories, Exception previousException) throws ResolveException
+    {
+        Exception lastException = previousException;
+
         for (ExtensionRepository repository : this.repositories) {
-            if (checkedRepositories.contains(repository.getDescriptor())) {
+            // Skip the repository if we already tried it, and remember we tried it otherwise
+            if (!checkedRepositories.add(repository.getDescriptor())) {
                 continue;
             }
-
-            // Remember we tried that repository
-            checkedRepositories.add(repository.getDescriptor());
 
             try {
                 return repository.resolve(extensionDependency);

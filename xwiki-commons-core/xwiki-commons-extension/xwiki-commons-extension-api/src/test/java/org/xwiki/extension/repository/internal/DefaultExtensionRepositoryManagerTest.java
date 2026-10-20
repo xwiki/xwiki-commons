@@ -28,10 +28,14 @@ import java.util.List;
 import org.apache.commons.collections4.IterableUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionDependency;
+import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.SearchException;
@@ -39,12 +43,19 @@ import org.xwiki.extension.repository.search.Searchable;
 import org.xwiki.extension.test.ExtensionUtils;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersion;
+import org.xwiki.test.LogLevel;
+import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
@@ -56,6 +67,9 @@ import static org.mockito.Mockito.withSettings;
 @ComponentTest
 class DefaultExtensionRepositoryManagerTest
 {
+    @RegisterExtension
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
+
     @InjectMockComponents
     private DefaultExtensionRepositoryManager manager;
 
@@ -121,6 +135,14 @@ class DefaultExtensionRepositoryManagerTest
         return new CollectionIterableResult<>(extensions.length, 0, Arrays.asList(extensions));
     }
 
+    private ExtensionDependency mockDependency(ExtensionRepositoryDescriptor... repositories)
+    {
+        ExtensionDependency dependency = mock(ExtensionDependency.class, withSettings().name("dependency"));
+        when(dependency.getRepositories()).thenReturn(Arrays.asList(repositories));
+
+        return dependency;
+    }
+
     private void assertSameElements(Iterable<?> it1, Iterable<?> it2)
     {
         Iterator<?> i1 = it1.iterator();
@@ -184,5 +206,91 @@ class DefaultExtensionRepositoryManagerTest
         assertSearch(0, -1, this.extension1, this.extension2, this.extension3, this.extension4);
         assertSearch(0, 1, this.extension1);
         assertSearch(1, -1, this.extension2, this.extension3, this.extension4);
+    }
+
+    @Test
+    void resolveDependencyFromDeclaredRepository() throws Exception
+    {
+        ExtensionDependency dependency = mockDependency(this.mockRepository2.getDescriptor());
+        when(this.mockRepository2.resolve(dependency)).thenReturn(this.extension1);
+
+        assertSame(this.extension1, this.manager.resolve(dependency));
+
+        verify(this.mockRepository1, never()).resolve(dependency);
+    }
+
+    @Test
+    void resolveDependencyFromConfiguredRepositoryWhenNotInDeclaredRepositories() throws Exception
+    {
+        ExtensionDependency dependency = mockDependency(this.mockRepository2.getDescriptor());
+        when(this.mockRepository2.resolve(dependency)).thenThrow(new ExtensionNotFoundException("not found"));
+        when(this.mockRepository1.resolve(dependency)).thenReturn(this.extension1);
+
+        assertSame(this.extension1, this.manager.resolve(dependency));
+
+        // The declared repository is not tried a second time as a configured repository
+        verify(this.mockRepository2, times(1)).resolve(dependency);
+    }
+
+    @Test
+    void resolveDependencyNotFound() throws Exception
+    {
+        ExtensionDependency dependency = mockDependency();
+        when(this.mockRepository1.resolve(dependency)).thenThrow(new ExtensionNotFoundException("not found"));
+        when(this.mockRepository2.resolve(dependency)).thenThrow(new ExtensionNotFoundException("not found"));
+
+        ExtensionNotFoundException exception =
+            assertThrows(ExtensionNotFoundException.class, () -> this.manager.resolve(dependency));
+
+        assertEquals("Could not find extension dependency [dependency]", exception.getMessage());
+    }
+
+    @Test
+    void resolveDependencyWithFailingRepositories() throws Exception
+    {
+        ExtensionRepositoryDescriptor invalidDescriptor =
+            new DefaultExtensionRepositoryDescriptor("invalid", "unknowntype", new URI("uri:invalid"));
+        ExtensionDependency dependency = mockDependency(invalidDescriptor, this.mockRepository1.getDescriptor(),
+            this.mockRepository1.getDescriptor());
+        ResolveException declaredError = new ResolveException("declared error");
+        when(this.mockRepository1.resolve(dependency)).thenThrow(declaredError);
+        ResolveException configuredError = new ResolveException("configured error");
+        when(this.mockRepository2.resolve(dependency)).thenThrow(configuredError);
+
+        ResolveException exception = assertThrows(ResolveException.class, () -> this.manager.resolve(dependency));
+
+        assertEquals("Failed to resolve extension dependency [dependency]", exception.getMessage());
+        assertSame(configuredError, exception.getCause());
+
+        // Repositories are tried only once, even when declared several times
+        verify(this.mockRepository1, times(1)).resolve(dependency);
+
+        assertEquals(3, this.logCapture.size());
+        assertEquals("Invalid repository [invalid:unknowntype:uri:invalid {}] in extension dependency [dependency]: "
+            + "[ComponentLookupException: Can't find descriptor for the component with type "
+            + "[interface org.xwiki.extension.repository.ExtensionRepositoryFactory] and hint [unknowntype]]",
+            this.logCapture.getMessage(0));
+        assertEquals("Unexpected error when trying to find extension dependency [dependency] in repository "
+            + "[repository1:type:uri:uri {}]: [ResolveException: declared error]", this.logCapture.getMessage(1));
+        assertEquals("Unexpected error when trying to find extension dependency [dependency] in repository "
+            + "[repository2:type:uri:uri {}]", this.logCapture.getMessage(2));
+    }
+
+    @Test
+    void resolveDependencyWithFailingDeclaredRepository() throws Exception
+    {
+        ExtensionDependency dependency = mockDependency(this.mockRepository1.getDescriptor());
+        ResolveException declaredError = new ResolveException("declared error");
+        when(this.mockRepository1.resolve(dependency)).thenThrow(declaredError);
+        when(this.mockRepository2.resolve(dependency)).thenThrow(new ExtensionNotFoundException("not found"));
+
+        ResolveException exception = assertThrows(ResolveException.class, () -> this.manager.resolve(dependency));
+
+        assertEquals("Failed to resolve extension dependency [dependency]", exception.getMessage());
+        assertSame(declaredError, exception.getCause());
+
+        assertEquals(1, this.logCapture.size());
+        assertEquals("Unexpected error when trying to find extension dependency [dependency] in repository "
+            + "[repository1:type:uri:uri {}]: [ResolveException: declared error]", this.logCapture.getMessage(0));
     }
 }
