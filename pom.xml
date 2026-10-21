@@ -180,7 +180,7 @@
 
     <!-- Infinispan and Protostream -->
     <protostream.version>6.0.12</protostream.version>
-    <infinispan.version>16.2.3</infinispan.version>
+    <infinispan.version>16.3.1</infinispan.version>
 
     <!-- AWS SDK -->
     <aws.java.sdk.version>2.56.0</aws.java.sdk.version>
