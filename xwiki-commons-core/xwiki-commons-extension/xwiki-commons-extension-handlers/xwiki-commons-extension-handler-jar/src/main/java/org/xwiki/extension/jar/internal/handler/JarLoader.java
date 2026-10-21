@@ -36,6 +36,7 @@ import org.xwiki.component.annotation.ComponentDeclaration;
 import org.xwiki.component.internal.QueueComponentEventManager;
 import org.xwiki.component.internal.multi.ComponentManagerManager;
 import org.xwiki.component.manager.ComponentEventManager;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -96,7 +97,8 @@ public class JarLoader implements Initializable
         }
     }
 
-    private void withQueuedEvents(ComponentManager componentManager, ComponentAction action) throws Exception
+    private void withQueuedEvents(ComponentManager componentManager, Runnable action)
+        throws ComponentLookupException
     {
         ComponentEventManager componentEventManager = componentManager.getComponentEventManager();
 
@@ -163,17 +165,10 @@ public class JarLoader implements Initializable
             try {
                 withQueuedEvents(componentManager,
                     () -> this.loader.unregister(componentManager, classLoader, componentDeclarations));
-            } catch (Exception e) {
-                // Only the lookup of the ObservationManager can fail, unregister() doesn't throw any checked exception
+            } catch (ComponentLookupException e) {
                 this.logger.warn("Failed to send the events about the components unregistered from [{}]: [{}]",
                     jarFile.getName(), ExceptionUtils.getRootCauseMessage(e));
             }
         }
-    }
-
-    @FunctionalInterface
-    private interface ComponentAction
-    {
-        void run() throws Exception;
     }
 }
