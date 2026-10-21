@@ -656,7 +656,7 @@ public class DefaultDiffManager implements DiffManager
      * @param patchCurrent patch to the current version
      * @return either or not the user has changed everything
      */
-    private <E> boolean isFullyModified(List commonAncestor, Patch<E> patchCurrent)
+    private <E> boolean isFullyModified(List<E> commonAncestor, Patch<E> patchCurrent)
     {
         return patchCurrent.size() == 1 && commonAncestor.size() == patchCurrent.get(0).getPrevious().size();
     }
