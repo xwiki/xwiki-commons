@@ -28,7 +28,10 @@ import org.junit.runners.model.Statement;
  *
  * @version $Id$
  * @since 4.3.1
+ * @deprecated use JUnit 5 with {@link org.xwiki.test.junit5.mockito.ComponentTest} (which registers
+ *             {@link org.xwiki.test.junit5.mockito.MockitoComponentManagerExtension}) instead
  */
+@Deprecated(since = "18.10.0RC1")
 public class MockitoComponentManagerRule extends MockitoComponentManager implements MethodRule
 {
     @Override
