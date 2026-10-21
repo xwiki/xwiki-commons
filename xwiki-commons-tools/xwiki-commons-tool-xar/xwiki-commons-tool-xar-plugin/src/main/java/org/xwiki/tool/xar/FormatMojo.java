@@ -109,79 +109,129 @@ public class FormatMojo extends AbstractVerifyMojo
         getLog().info(String.format("  Formatting [%s/%s]... ok", parentName, file.getName()));
     }
 
-    @SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:JavaNCSS", "checkstyle:NPathComplexity",
-        "checkstyle:ExecutableStatementCount"})
-    private void format(String filePath, Document domdoc, Locale defaultLocale) throws DocumentException
+    void format(String filePath, Document domdoc, Locale defaultLocale) throws DocumentException
     {
-        Node node = domdoc.selectSingleNode("xwikidoc/author");
-        if (node != null) {
-            node.setText(AUTHOR);
-        }
-        node = domdoc.selectSingleNode(XPATH_ORIGINAL_METADATA_AUTHOR);
-        if (node != null) {
-            node.setText(AUTHOR);
-        }
-        node = domdoc.selectSingleNode("xwikidoc/contentAuthor");
-        if (node != null) {
-            node.setText(AUTHOR);
-        }
-        node = domdoc.selectSingleNode("xwikidoc/creator");
-        if (node != null) {
-            node.setText(AUTHOR);
-        }
-        node = domdoc.selectSingleNode("xwikidoc/version");
-        if (node != null) {
-            node.setText(VERSION);
-        }
-        node = domdoc.selectSingleNode("xwikidoc/minorEdit");
-        if (node != null) {
-            node.setText("false");
-        }
+        resetEditMetadata(domdoc);
+        formatLocales(domdoc, defaultLocale);
+        clearContent("xwikidoc/comment", domdoc);
+        hideTechnicalPage(filePath, domdoc);
+        removeVolatileMetadata(domdoc);
+    }
+
+    /**
+     * Reset the authors, version and minor edit flag set by the wiki, so that the XML files don't depend on who last
+     * edited or exported the page.
+     *
+     * @param domdoc the DOM document
+     */
+    private void resetEditMetadata(Document domdoc)
+    {
+        setText("xwikidoc/author", AUTHOR, domdoc);
+        setText(XPATH_ORIGINAL_METADATA_AUTHOR, AUTHOR, domdoc);
+        setText("xwikidoc/contentAuthor", AUTHOR, domdoc);
+        setText("xwikidoc/creator", AUTHOR, domdoc);
+        setText("xwikidoc/version", VERSION, domdoc);
+        setText("xwikidoc/minorEdit", "false", domdoc);
 
         // Also update the attachment authors
         for (Node attachmentAuthorNode : domdoc.selectNodes("xwikidoc/attachment/author")) {
             attachmentAuthorNode.setText(AUTHOR);
         }
+    }
 
+    /**
+     * Set the text of the node found with the xpath expression, if it exists.
+     *
+     * @param xpathExpression the xpath expression of the node
+     * @param text the text to set
+     * @param domdoc the DOM document
+     */
+    private void setText(String xpathExpression, String text, Document domdoc)
+    {
+        Node node = domdoc.selectSingleNode(xpathExpression);
+        if (node != null) {
+            node.setText(text);
+        }
+    }
+
+    /**
+     * Remove the content of the element found with the xpath expression, if it exists.
+     *
+     * @param xpathExpression the xpath expression of the element
+     * @param domdoc the DOM document
+     */
+    private void clearContent(String xpathExpression, Document domdoc)
+    {
+        Element element = (Element) domdoc.selectSingleNode(xpathExpression);
+        if (element != null) {
+            removeContent(element);
+        }
+    }
+
+    private void formatLocales(Document domdoc, Locale defaultLocale) throws DocumentException
+    {
         // Re-format the locale from the root element
         Attribute localeAttribute = domdoc.getRootElement().attribute("locale");
         if (localeAttribute != null) {
-            localeAttribute.setValue(XWikiDocument.toLocale(localeAttribute.getValue(), false).toString());
+            Locale locale = XWikiDocument.toLocale(localeAttribute.getValue(), false);
+            if (locale != null) {
+                localeAttribute.setValue(locale.toString());
+            }
         }
         // Re-format the locale from <locale>
         Element element = (Element) domdoc.selectSingleNode("xwikidoc/language");
         if (element != null) {
-            Locale locale = XWikiDocument.toLocale(element.getText(), false);
-            if (Locale.ROOT.equals(locale)) {
-                removeContent(element);
-            } else {
-                element.setText(locale.toString());
-            }
+            setLocale(element, XWikiDocument.toLocale(element.getText(), false));
         }
 
         // Set the default locale
         element = (Element) domdoc.selectSingleNode("xwikidoc/defaultLanguage");
         if (element != null) {
-            if (Locale.ROOT.equals(defaultLocale)) {
-                removeContent(element);
-            } else {
-                element.setText(defaultLocale.toString());
-            }
+            setLocale(element, defaultLocale);
+        }
+    }
+
+    private void setLocale(Element element, Locale locale) throws DocumentException
+    {
+        // Writing an empty element would silently turn the page into a root locale page
+        if (locale == null) {
+            throw new DocumentException(String.format("No locale to set in the <%s> element", element.getName()));
         }
 
-        // Remove any content of the <comment> element
-        element = (Element) domdoc.selectSingleNode("xwikidoc/comment");
-        if (element != null) {
+        if (Locale.ROOT.equals(locale)) {
             removeContent(element);
+        } else {
+            element.setText(locale.toString());
         }
+    }
 
-        // If the page is technical and not a visible technical page, make sure it's hidden
-        element = (Element) domdoc.selectSingleNode("xwikidoc/hidden");
+    /**
+     * Make sure the page is hidden if it's a technical page that is not a visible technical page.
+     *
+     * @param filePath the path of the XML file, used to know whether the page is a technical page
+     * @param domdoc the DOM document
+     * @throws DocumentException if the technical page has no {@code <hidden>} element to set
+     */
+    private void hideTechnicalPage(String filePath, Document domdoc) throws DocumentException
+    {
         if (!isContentPage(filePath) && !isVisibleTechnicalPage(filePath)) {
-            element.setText("true");
+            Node hiddenNode = domdoc.selectSingleNode("xwikidoc/hidden");
+            if (hiddenNode == null) {
+                throw new DocumentException(
+                    String.format("The technical page [%s] has no <hidden> element to set", filePath));
+            }
+            hiddenNode.setText("true");
         }
+    }
 
-        // Remove date fields
+    /**
+     * Remove the dates and the original metadata author, which change on every save in the wiki, unless they're
+     * configured to be kept.
+     *
+     * @param domdoc the DOM document
+     */
+    private void removeVolatileMetadata(Document domdoc)
+    {
         String documentName = "";
         try {
             documentName = XWikiDocument.readDocumentReference(domdoc);

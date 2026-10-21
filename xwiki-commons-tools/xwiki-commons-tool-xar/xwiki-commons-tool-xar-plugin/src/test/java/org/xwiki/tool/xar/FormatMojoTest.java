@@ -28,12 +28,20 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.maven.plugin.logging.Log;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.xwiki.tool.xar.internal.XMLUtils.getSAXReader;
 
 /**
@@ -123,6 +131,151 @@ class FormatMojoTest
             new File("Space2/Document.fr.xml"));
 
         assertEquals(Locale.ROOT, mojo.guessDefaultLocale(file, files));
+    }
+
+    @Test
+    void formatTechnicalPage() throws Exception
+    {
+        FormatMojo mojo = new FormatMojo();
+        mojo.skipDatesDocumentList = Collections.emptySet();
+        mojo.skipAuthorsDocumentList = Collections.emptySet();
+
+        Document domdoc = DocumentHelper.parseText("<xwikidoc locale=\"fr_FR\">"
+            + "<web>Space</web><name>Page</name><language>fr</language><defaultLanguage></defaultLanguage>"
+            + "<creator>XWiki.User</creator><author>XWiki.User</author>"
+            + "<originalMetadataAuthor>XWiki.User</originalMetadataAuthor><contentAuthor>XWiki.User</contentAuthor>"
+            + "<creationDate>1</creationDate><date>2</date><contentUpdateDate>3</contentUpdateDate>"
+            + "<version>4.2</version><comment>some comment</comment><minorEdit>true</minorEdit>"
+            + "<hidden>false</hidden>"
+            + "<attachment><filename>file.txt</filename><author>XWiki.User</author><date>4</date></attachment>"
+            + "</xwikidoc>");
+
+        mojo.format("Space/Page.fr.xml", domdoc, Locale.ENGLISH);
+
+        assertEquals("<xwikidoc locale=\"fr_FR\">"
+            + "<web>Space</web><name>Page</name><language>fr</language><defaultLanguage>en</defaultLanguage>"
+            + "<creator>xwiki:XWiki.Admin</creator><author>xwiki:XWiki.Admin</author>"
+            + "<contentAuthor>xwiki:XWiki.Admin</contentAuthor>"
+            + "<version>1.1</version><comment/><minorEdit>false</minorEdit>"
+            + "<hidden>true</hidden>"
+            + "<attachment><filename>file.txt</filename><author>xwiki:XWiki.Admin</author></attachment>"
+            + "</xwikidoc>", domdoc.getRootElement().asXML());
+    }
+
+    @Test
+    void formatContentPageWithRootLocales() throws Exception
+    {
+        FormatMojo mojo = new FormatMojo();
+        mojo.contentPages = Arrays.asList(".*/Page\\.xml");
+        mojo.initializePatterns();
+        mojo.skipDatesDocumentList = Collections.emptySet();
+        mojo.skipAuthorsDocumentList = Collections.emptySet();
+
+        Document domdoc = DocumentHelper.parseText("<xwikidoc locale=\"\">"
+            + "<web>Space</web><name>Page</name><language></language><defaultLanguage>en</defaultLanguage>"
+            + "<hidden>false</hidden>"
+            + "</xwikidoc>");
+
+        mojo.format("Space/Page.xml", domdoc, Locale.ROOT);
+
+        assertEquals("<xwikidoc locale=\"\">"
+            + "<web>Space</web><name>Page</name><language/><defaultLanguage/>"
+            + "<hidden>false</hidden>"
+            + "</xwikidoc>", domdoc.getRootElement().asXML());
+    }
+
+    @Test
+    void formatWhenNoDefaultLocale() throws Exception
+    {
+        FormatMojo mojo = new FormatMojo();
+        mojo.contentPages = Arrays.asList(".*/Page\\.xml");
+        mojo.initializePatterns();
+        mojo.skipDatesDocumentList = Collections.emptySet();
+        mojo.skipAuthorsDocumentList = Collections.emptySet();
+
+        Document domdoc = DocumentHelper.parseText("<xwikidoc>"
+            + "<web>Space</web><name>Page</name><defaultLanguage>en</defaultLanguage>"
+            + "</xwikidoc>");
+
+        DocumentException exception =
+            assertThrows(DocumentException.class, () -> mojo.format("Space/Page.xml", domdoc, null));
+
+        assertEquals("No locale to set in the <defaultLanguage> element", exception.getMessage());
+    }
+
+    @Test
+    void formatTechnicalPageWithoutHiddenElement() throws Exception
+    {
+        FormatMojo mojo = new FormatMojo();
+        mojo.skipDatesDocumentList = Collections.emptySet();
+        mojo.skipAuthorsDocumentList = Collections.emptySet();
+
+        Document domdoc = DocumentHelper.parseText("<xwikidoc><web>Space</web><name>Page</name></xwikidoc>");
+
+        DocumentException exception =
+            assertThrows(DocumentException.class, () -> mojo.format("Space/Page.xml", domdoc, Locale.ROOT));
+
+        assertEquals("The technical page [Space/Page.xml] has no <hidden> element to set", exception.getMessage());
+    }
+
+    @Test
+    void formatContentPageWithoutHiddenElement() throws Exception
+    {
+        FormatMojo mojo = new FormatMojo();
+        mojo.contentPages = Arrays.asList(".*/Page\\.xml");
+        mojo.initializePatterns();
+        mojo.skipDatesDocumentList = Collections.emptySet();
+        mojo.skipAuthorsDocumentList = Collections.emptySet();
+
+        Document domdoc = DocumentHelper.parseText("<xwikidoc><web>Space</web><name>Page</name></xwikidoc>");
+
+        mojo.format("Space/Page.xml", domdoc, Locale.ROOT);
+
+        assertEquals("<xwikidoc><web>Space</web><name>Page</name></xwikidoc>", domdoc.getRootElement().asXML());
+    }
+
+    @Test
+    void formatWhenDatesAndAuthorsSkippedForDocument() throws Exception
+    {
+        FormatMojo mojo = new FormatMojo();
+        mojo.skipDatesDocumentList = Collections.singleton("Space.Page");
+        mojo.skipAuthorsDocumentList = Collections.singleton("Space.Page");
+
+        Document domdoc = DocumentHelper.parseText("<xwikidoc reference=\"Space.Page\">"
+            + "<originalMetadataAuthor>XWiki.User</originalMetadataAuthor><creationDate>1</creationDate>"
+            + "<hidden>true</hidden>"
+            + "</xwikidoc>");
+
+        mojo.format("Space/Page.xml", domdoc, Locale.ROOT);
+
+        assertEquals("<xwikidoc reference=\"Space.Page\">"
+            + "<originalMetadataAuthor>xwiki:XWiki.Admin</originalMetadataAuthor><creationDate>1</creationDate>"
+            + "<hidden>true</hidden>"
+            + "</xwikidoc>", domdoc.getRootElement().asXML());
+    }
+
+    @Test
+    void formatWhenDatesAndAuthorsSkipped() throws Exception
+    {
+        FormatMojo mojo = new FormatMojo();
+        mojo.skipDates = true;
+        mojo.skipAuthors = true;
+        Log log = mock(Log.class);
+        mojo.setLog(log);
+
+        // Not a wiki page XML: the document reference cannot be read, which is logged
+        Document domdoc = DocumentHelper.parseText("<xwikidoc>"
+            + "<originalMetadataAuthor>XWiki.User</originalMetadataAuthor><creationDate>1</creationDate>"
+            + "<hidden>true</hidden>"
+            + "</xwikidoc>");
+
+        mojo.format("Space/Page.xml", domdoc, Locale.ROOT);
+
+        verify(log).error(eq("Failed to get the document reference"), any(DocumentException.class));
+        assertEquals("<xwikidoc>"
+            + "<originalMetadataAuthor>xwiki:XWiki.Admin</originalMetadataAuthor><creationDate>1</creationDate>"
+            + "<hidden>true</hidden>"
+            + "</xwikidoc>", domdoc.getRootElement().asXML());
     }
 
     /**
