@@ -315,18 +315,19 @@ public class DefaultDiffManager implements DiffManager
         Delta<E> deltaCurrent = nextElement(patchCurrent);
 
         // Before common ancestor
-        if (deltaCurrent.getType() == Type.INSERT && deltaCurrent.getPrevious().getIndex() == 0
-            && deltaNext.getType() == Type.INSERT && deltaNext.getPrevious().getIndex() == 0) {
+        boolean currentInsertsAtStart = isInsertAtStart(deltaCurrent);
+        boolean nextInsertsAtStart = isInsertAtStart(deltaNext);
+        if (currentInsertsAtStart && nextInsertsAtStart) {
             merged.addAll(or(deltaCurrent.getNext().getElements(), deltaNext.getNext().getElements()));
             deltaCurrent = nextElement(patchCurrent);
             deltaNext = nextElement(patchNext);
         } else {
-            if (deltaCurrent.getType() == Type.INSERT && deltaCurrent.getPrevious().getIndex() == 0) {
+            if (currentInsertsAtStart) {
                 merged.addAll(deltaCurrent.getNext().getElements());
                 deltaCurrent = nextElement(patchCurrent);
             }
 
-            if (deltaNext.getType() == Type.INSERT && deltaNext.getPrevious().getIndex() == 0) {
+            if (nextInsertsAtStart) {
                 merged.addAll(deltaNext.getNext().getElements());
                 deltaNext = nextElement(patchNext);
             }
@@ -640,6 +641,11 @@ public class DefaultDiffManager implements DiffManager
     private <E> boolean isPreviousIndex(Delta<E> delta, int index)
     {
         return delta != null && delta.getPrevious().getIndex() == index;
+    }
+
+    private <E> boolean isInsertAtStart(Delta<E> delta)
+    {
+        return delta != null && delta.getType() == Type.INSERT && delta.getPrevious().getIndex() == 0;
     }
 
     /**
