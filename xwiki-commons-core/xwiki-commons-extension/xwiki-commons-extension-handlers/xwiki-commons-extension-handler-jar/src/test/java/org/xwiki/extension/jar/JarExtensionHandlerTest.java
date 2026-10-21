@@ -22,6 +22,8 @@ package org.xwiki.extension.jar;
 import java.io.File;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Named;
 
@@ -31,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.xwiki.classloader.ClassLoaderManager;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
+import org.xwiki.component.event.ComponentDescriptorAddedEvent;
 import org.xwiki.component.internal.QueueComponentEventManager;
 import org.xwiki.component.internal.multi.ComponentManagerManager;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -46,7 +49,9 @@ import org.xwiki.extension.test.AbstractExtensionHandlerTest;
 import org.xwiki.extension.test.MockitoRepositoryUtilsExtension;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LoggerManager;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.ObservationManager;
+import org.xwiki.observation.event.Event;
 import org.xwiki.test.annotation.AfterComponent;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 
@@ -433,11 +438,26 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         assertEquals("packagefile.jaroverride.OverridingComponent",
             this.componentManager.getInstance(OverriddenComponent.class).getClass().getName());
 
+        // Listeners are notified about the standard component being back only once all the components of the
+        // extension are unregistered
+        List<Boolean> extensionComponentsLeft = new ArrayList<>();
+        this.componentManager.<ObservationManager>getInstance(ObservationManager.class)
+            .addListener(new AbstractEventListener("test", new ComponentDescriptorAddedEvent(OverriddenComponent.class))
+            {
+                @Override
+                public void onEvent(Event event, Object source, Object data)
+                {
+                    extensionComponentsLeft.add(
+                        JarExtensionHandlerTest.this.componentManager.hasComponent(OverriddenComponent.class, "other"));
+                }
+            });
+
         uninstall(extensionId);
 
         // The standard component is back
         assertEquals(DefaultOverriddenComponent.class,
             this.componentManager.getInstance(OverriddenComponent.class).getClass());
+        assertEquals(List.of(false), extensionComponentsLeft);
     }
 
     @Test

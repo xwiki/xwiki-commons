@@ -32,6 +32,7 @@ import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 
 import jakarta.inject.Provider;
 
@@ -136,7 +137,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
      * The result of adding an entry to a {@link ComponentEntries}.
      *
      * @param deactivatedEntry the entry which was active before and is not anymore, {@code null} if none
-     * @param replacedEntry the entry with the same implementation which was removed, {@code null} if none
+     * @param replacedEntry the entry of the same component which was removed, {@code null} if none
      * @param active {@code true} if the added entry is the active one
      */
     private record StackChange<R>(ComponentEntry<R> deactivatedEntry, ComponentEntry<R> replacedEntry, boolean active)
@@ -267,6 +268,9 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
                 this.hidden.remove(hint);
             } else {
                 if (this.map.get(hint) != stack.get(0)) {
+                    // Remove first so that the new active entry goes after the other hints in the iteration order of
+                    // the map, as for a newly registered component
+                    remove(hint);
                     put(hint, stack.get(0));
                 }
                 if (stack.size() > 1) {
@@ -278,13 +282,13 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         }
 
         /**
-         * Add a new entry for the passed hint. It replaces the entry with the same implementation, if any, and it hides
-         * (or is hidden by) the entries with a different implementation, depending on their priority.
+         * Add a new entry for the passed hint. It replaces the entry of the same component, if any, and it hides (or is
+         * hidden by) the entries of other components, depending on their priority.
          *
          * @param hint the role hint
          * @param newEntry the entry to add
-         * @return what changed, or {@code null} if the entry was not added because the same implementation is already
-         *     registered with a better priority
+         * @return what changed, or {@code null} if the entry was not added because the same registration already exists
+         *     or because the same component is already registered with a better priority
          */
         StackChange<R> push(String hint, ComponentEntry<R> newEntry)
         {
@@ -294,8 +298,13 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
                 List<ComponentEntry<R>> stack = getStack(hint);
                 ComponentEntry<R> previousActiveEntry = stack.isEmpty() ? null : stack.get(0);
 
+                if (stack.stream().anyMatch(e -> isSameRegistration(e, newEntry))) {
+                    // Releasing the existing entry would dispose an instance which is still registered
+                    return null;
+                }
+
                 ComponentEntry<R> replacedEntry =
-                    stack.stream().filter(e -> isSameImplementation(e, newEntry)).findFirst().orElse(null);
+                    stack.stream().filter(e -> isSameComponent(e, newEntry)).findFirst().orElse(null);
                 if (replacedEntry != null) {
                     if (replacedEntry.getRoleHintPriority() < newEntry.getRoleHintPriority()) {
                         // The same component is already registered with a better priority
@@ -321,19 +330,37 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         }
 
         /**
+         * @return {@code true} if both entries have equal descriptors and the same instance provided at registration
+         *     time (or no provided instance at all), i.e. if the same component is registered again
+         */
+        private static boolean isSameRegistration(ComponentEntry<?> entry1, ComponentEntry<?> entry2)
+        {
+            return entry1.providedInstance == entry2.providedInstance
+                && (!entry1.providedInstance || entry1.instance.get() == entry2.instance.get())
+                && entry1.descriptor.equals(entry2.descriptor);
+        }
+
+        /**
          * Compare the implementation class names and not the classes, since the same class loaded again by another
          * class loader (e.g. a new version of an extension, or a script defining the class executed again) is still
-         * the same component, which has to be replaced and not hidden.
+         * the same component, which has to be replaced and not hidden. Different instances provided for the same class
+         * (or without any class) are different components though, e.g. the components defined in wiki pages, which
+         * all share a generic implementation class.
          */
         // Comparing class names is the point of this method, see the javadoc
         @SuppressWarnings("java:S1872")
-        private static boolean isSameImplementation(ComponentEntry<?> entry1, ComponentEntry<?> entry2)
+        private static boolean isSameComponent(ComponentEntry<?> entry1, ComponentEntry<?> entry2)
         {
             Class<?> implementation1 = entry1.descriptor.getImplementation();
             Class<?> implementation2 = entry2.descriptor.getImplementation();
 
-            return implementation1 == implementation2 || (implementation1 != null && implementation2 != null
-                && implementation1.getName().equals(implementation2.getName()));
+            if (implementation1 == implementation2) {
+                return !entry1.providedInstance || !entry2.providedInstance
+                    || entry1.instance.get() == entry2.instance.get();
+            }
+
+            return implementation1 != null && implementation2 != null
+                && implementation1.getName().equals(implementation2.getName());
         }
 
         /**
@@ -897,15 +924,6 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         registerComponent(componentDescriptor, null);
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * When a component with a different implementation is already registered with the same role type and role hint,
-     * the one with the best role hint priority is the active one (the new one in case of same priority) and the other
-     * one is kept hidden: it becomes active again when the active one is unregistered with
-     * {@link #unregisterComponent(ComponentDescriptor)}. A component registered with the same implementation class
-     * name as an already registered one replaces it.
-     */
     @Override
     public <T> void registerComponent(ComponentDescriptor<T> componentDescriptor, T componentInstance)
     {
@@ -914,19 +932,15 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         Type roleType = newEntry.descriptor.getRoleType();
         String roleHint = toHint(newEntry.descriptor.getRoleHint());
 
-        // A Provider bridged from the other side (javax/jakarta) with a better priority wins over the new one
-        if (getComponentEntry(roleType, roleHint) == null) {
-            ComponentEntry<?> bridgedEntry = tryOtherProvider(roleType, roleHint);
-            if (bridgedEntry != null && bridgedEntry.getRoleHintPriority() < newEntry.getRoleHintPriority()) {
-                return;
-            }
-        }
-
+        // A Provider bridged from the other side (javax/jakarta) is not taken into account: it's only a fallback for
+        // lookups, and ignoring the new Provider would lose it for good when the bridged one is unregistered.
         ComponentEntries<T> entries = this.componentEntries.computeIfAbsent(roleType, k -> new ComponentEntries());
         StackChange<T> change = entries.push(roleHint, newEntry);
 
         if (change != null) {
-            if (change.replacedEntry() != null) {
+            // The same instance can be registered again with another descriptor (e.g. another priority)
+            if (change.replacedEntry() != null
+                && change.replacedEntry().instance.get() != newEntry.instance.get()) {
                 releaseEntry(change.replacedEntry());
             }
 
@@ -967,14 +981,6 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
 
     // Remove
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * The components hidden by the active one (registered with the same role type and role hint) are unregistered too,
-     * since the caller only knows the role type and role hint and so expects nothing to be left. Use
-     * {@link #unregisterComponent(ComponentDescriptor)} to make the hidden component with the best role hint priority
-     * active again.
-     */
     @Override
     @SuppressWarnings("unchecked")
     public void unregisterComponent(Type role, String hint)
@@ -1007,15 +1013,28 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * The passed component is unregistered even if it's hidden by another component registered with the same role type
-     * and role hint. If it's the active one, the hidden component with the best role hint priority becomes active.
-     */
     @Override
-    @SuppressWarnings("unchecked")
     public void unregisterComponent(ComponentDescriptor<?> componentDescriptor)
+    {
+        unregisterEntry(componentDescriptor, e -> true);
+    }
+
+    @Override
+    public <T> void unregisterComponent(ComponentDescriptor<T> componentDescriptor, T componentInstance)
+    {
+        if (componentInstance == null) {
+            unregisterComponent(componentDescriptor);
+        } else {
+            unregisterEntry(componentDescriptor, e -> e.providedInstance && e.instance.get() == componentInstance);
+        }
+    }
+
+    /**
+     * @param componentDescriptor the descriptor of the component to unregister
+     * @param filter the condition the entry with an equal descriptor must also match to be unregistered
+     */
+    @SuppressWarnings("unchecked")
+    private void unregisterEntry(ComponentDescriptor<?> componentDescriptor, Predicate<ComponentEntry<?>> filter)
     {
         ComponentEntries<Object> entries = this.componentEntries.get(componentDescriptor.getRoleType());
 
@@ -1032,8 +1051,8 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
 
             try {
                 List<ComponentEntry<Object>> stack = entries.getStack(roleHint);
-                removedEntry =
-                    stack.stream().filter(e -> e.descriptor.equals(componentDescriptor)).findFirst().orElse(null);
+                removedEntry = stack.stream().filter(e -> e.descriptor.equals(componentDescriptor) && filter.test(e))
+                    .findFirst().orElse(null);
                 if (removedEntry == null) {
                     return;
                 }
@@ -1067,7 +1086,8 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
     @Override
     public void release(Object component) throws ComponentLifecycleException
     {
-        // First find the descriptor matching the passed component
+        // First find the descriptor matching the passed component. The hidden components are not taken into account
+        // since they're not used.
         ComponentEntry<?> componentEntry = null;
         for (ComponentEntries entries : this.componentEntries.values()) {
             componentEntry = entries.get(component);
@@ -1235,7 +1255,9 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
             }
         }
 
-        // Dispose the instances provided for components hidden by other ones
+        // Dispose the instances provided for components hidden by other ones (the other hidden components have no
+        // instance). They're disposed last and without taking into account their DisposePriority since they're not
+        // used: no other component can depend on them.
         for (ComponentEntries<?> entries : this.componentEntries.values()) {
             entries.clearHidden().forEach(this::releaseEntry);
         }

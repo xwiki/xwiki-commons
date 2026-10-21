@@ -27,6 +27,7 @@ import javax.inject.Inject;
 
 import jakarta.inject.Singleton;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.classloader.NamespaceURLClassLoader;
 import org.xwiki.component.annotation.Component;
@@ -87,40 +88,45 @@ public class JarLoader implements Initializable
 
             ComponentManager componentManager = this.componentManagerManager.getComponentManager(namespace, true);
 
-            ComponentEventManager componentEventManager = componentManager.getComponentEventManager();
-
             // Make sure to send events only when the extension is fully ready
-            QueueComponentEventManager queueComponentEventManager;
-            if (componentEventManager instanceof QueueComponentEventManager queuedComponentEventManager) {
-                queueComponentEventManager = queuedComponentEventManager;
-                if (queueComponentEventManager.isQueued()) {
-                    // If already stacked don't do anything (and more importantly don't disabled queueing)
-                    queueComponentEventManager = null;
-                } else {
-                    queueComponentEventManager.shouldQueue(true);
-                }
-            } else {
-                queueComponentEventManager = new QueueComponentEventManager();
-                componentManager.setComponentEventManager(queueComponentEventManager);
-            }
-
-            // Initialize the JAR
-            try {
-                this.loader.initialize(componentManager, classLoader, componentDeclarations);
-            } finally {
-                if (queueComponentEventManager != null) {
-                    if (componentEventManager != queueComponentEventManager) {
-                        componentManager.setComponentEventManager(componentEventManager);
-                    }
-
-                    queueComponentEventManager.setObservationManager(
-                        componentManager.<ObservationManager>getInstance(ObservationManager.class));
-                    queueComponentEventManager.shouldQueue(false);
-                    queueComponentEventManager.flushEvents();
-                }
-            }
+            withQueuedEvents(componentManager,
+                () -> this.loader.initialize(componentManager, classLoader, componentDeclarations));
         } catch (Exception | LinkageError e) {
             throw new InstallException("Failed to load components for file [" + jarFile.getAbsolutePath() + "]", e);
+        }
+    }
+
+    private void withQueuedEvents(ComponentManager componentManager, ComponentAction action) throws Exception
+    {
+        ComponentEventManager componentEventManager = componentManager.getComponentEventManager();
+
+        QueueComponentEventManager queueComponentEventManager;
+        if (componentEventManager instanceof QueueComponentEventManager queuedComponentEventManager) {
+            queueComponentEventManager = queuedComponentEventManager;
+            if (queueComponentEventManager.isQueued()) {
+                // If already stacked don't do anything (and more importantly don't disabled queueing)
+                queueComponentEventManager = null;
+            } else {
+                queueComponentEventManager.shouldQueue(true);
+            }
+        } else {
+            queueComponentEventManager = new QueueComponentEventManager();
+            componentManager.setComponentEventManager(queueComponentEventManager);
+        }
+
+        try {
+            action.run();
+        } finally {
+            if (queueComponentEventManager != null) {
+                if (componentEventManager != queueComponentEventManager) {
+                    componentManager.setComponentEventManager(componentEventManager);
+                }
+
+                queueComponentEventManager.setObservationManager(
+                    componentManager.<ObservationManager>getInstance(ObservationManager.class));
+                queueComponentEventManager.shouldQueue(false);
+                queueComponentEventManager.flushEvents();
+            }
         }
     }
 
@@ -147,7 +153,27 @@ public class JarLoader implements Initializable
             return;
         }
 
-        this.loader.unregister(this.componentManagerManager.getComponentManager(namespace, false), classLoader,
-            componentDeclarations);
+        ComponentManager componentManager = this.componentManagerManager.getComponentManager(namespace, false);
+
+        // No component can be registered in a component manager which does not exist
+        if (componentManager != null) {
+            // Unregistering a component overriding another one makes the overridden one active again: make sure to
+            // send events only when all the components of the extension are unregistered, so that listeners don't
+            // look up a component which is about to be unregistered too.
+            try {
+                withQueuedEvents(componentManager,
+                    () -> this.loader.unregister(componentManager, classLoader, componentDeclarations));
+            } catch (Exception e) {
+                // Only the lookup of the ObservationManager can fail, unregister() doesn't throw any checked exception
+                this.logger.warn("Failed to send the events about the components unregistered from [{}]: [{}]",
+                    jarFile.getName(), ExceptionUtils.getRootCauseMessage(e));
+            }
+        }
+    }
+
+    @FunctionalInterface
+    private interface ComponentAction
+    {
+        void run() throws Exception;
     }
 }
