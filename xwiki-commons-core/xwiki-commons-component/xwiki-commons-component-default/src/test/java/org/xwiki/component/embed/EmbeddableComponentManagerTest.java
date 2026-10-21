@@ -27,7 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
@@ -993,13 +998,15 @@ class EmbeddableComponentManagerTest
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         // Like components defined in wiki pages, which share a generic implementation class
-        DefaultComponentDescriptor<TestRole> cd = createDescriptor(DisposableRoleImpl.class, 1000);
+        DefaultComponentDescriptor<TestRole> cd1 = createDescriptor(DisposableRoleImpl.class, 1000);
         DisposableRoleImpl instance1 = new DisposableRoleImpl();
-        ecm.registerComponent(cd, instance1);
+        ecm.registerComponent(cd1, instance1);
+        DefaultComponentDescriptor<TestRole> cd2 = createDescriptor(DisposableRoleImpl.class, 900);
         DisposableRoleImpl instance2 = new DisposableRoleImpl();
-        ecm.registerComponent(cd, instance2);
+        ecm.registerComponent(cd2, instance2);
 
-        // Different instances are different components, so the first one is hidden and not replaced
+        // Different instances with different descriptors are different components, so the first one is hidden and
+        // not replaced
         assertSame(instance2, ecm.getInstance(TestRole.class));
         assertFalse(instance1.isFinalized());
 
@@ -1007,25 +1014,55 @@ class EmbeddableComponentManagerTest
         ecm.setComponentEventManager(cem);
 
         // Unregistering an instance which is not registered does nothing
-        ecm.unregisterComponent(cd, new DisposableRoleImpl());
+        ecm.unregisterComponent(cd2, new DisposableRoleImpl());
         verifyNoInteractions(cem);
 
-        ecm.unregisterComponent(cd, instance2);
+        ecm.unregisterComponent(cd2, instance2);
 
         assertSame(instance1, ecm.getInstance(TestRole.class));
         assertTrue(instance2.isFinalized());
         assertFalse(instance1.isFinalized());
         InOrder inOrder = inOrder(cem);
-        inOrder.verify(cem).notifyComponentUnregistered(cd, ecm);
-        inOrder.verify(cem).notifyComponentRegistered(cd, ecm);
+        inOrder.verify(cem).notifyComponentUnregistered(cd2, ecm);
+        inOrder.verify(cem).notifyComponentRegistered(cd1, ecm);
 
         // Unregister a hidden instance
         DisposableRoleImpl instance3 = new DisposableRoleImpl();
-        ecm.registerComponent(cd, instance3);
-        ecm.unregisterComponent(cd, instance1);
+        ecm.registerComponent(cd2, instance3);
+        ecm.unregisterComponent(cd1, instance1);
 
         assertSame(instance3, ecm.getInstance(TestRole.class));
         assertTrue(instance1.isFinalized());
+    }
+
+    @Test
+    void registerNewInstanceWithEqualDescriptor() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        // Like a component defined in a wiki page registered again when the page is imported again
+        DefaultComponentDescriptor<TestRole> cd = createDescriptor(DisposableRoleImpl.class, 1000);
+        DisposableRoleImpl instance1 = new DisposableRoleImpl();
+        ecm.registerComponent(cd, instance1);
+        DisposableRoleImpl instance2 = new DisposableRoleImpl();
+        ecm.registerComponent(cd, instance2);
+
+        // The new instance replaces the previous one instead of hiding it
+        assertSame(instance2, ecm.getInstance(TestRole.class));
+        assertTrue(instance1.isFinalized());
+
+        ComponentEventManager cem = mock(ComponentEventManager.class);
+        ecm.setComponentEventManager(cem);
+
+        // The replaced instance is not registered anymore
+        ecm.unregisterComponent(cd, instance1);
+        verifyNoInteractions(cem);
+        assertSame(instance2, ecm.getInstance(TestRole.class));
+
+        ecm.unregisterComponent(cd, instance2);
+
+        assertFalse(ecm.hasComponent(TestRole.class));
+        assertTrue(instance2.isFinalized());
     }
 
     @Test
@@ -1034,18 +1071,27 @@ class EmbeddableComponentManagerTest
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         // Like wiki macros, which are registered without any implementation class
-        DefaultComponentDescriptor<TestRole> cd = new DefaultComponentDescriptor<>();
-        cd.setRoleType(TestRole.class);
+        DefaultComponentDescriptor<TestRole> cd1 = new DefaultComponentDescriptor<>();
+        cd1.setRoleType(TestRole.class);
         TestRole instance1 = new RoleImpl();
-        ecm.registerComponent(cd, instance1);
+        ecm.registerComponent(cd1, instance1);
+        DefaultComponentDescriptor<TestRole> cd2 = new DefaultComponentDescriptor<>(cd1);
+        cd2.setRoleHintPriority(cd1.getRoleHintPriority() - 1);
         TestRole instance2 = new OtherRoleImpl();
-        ecm.registerComponent(cd, instance2);
+        ecm.registerComponent(cd2, instance2);
 
         assertSame(instance2, ecm.getInstance(TestRole.class));
 
-        ecm.unregisterComponent(cd, instance2);
+        ecm.unregisterComponent(cd2, instance2);
 
         assertSame(instance1, ecm.getInstance(TestRole.class));
+
+        // With an equal descriptor, the new instance replaces the previous one
+        TestRole instance3 = new OtherRoleImpl();
+        ecm.registerComponent(cd1, instance3);
+        ecm.unregisterComponent(cd1, instance3);
+
+        assertFalse(ecm.hasComponent(TestRole.class));
     }
 
     @Test
@@ -1444,5 +1490,71 @@ class EmbeddableComponentManagerTest
             ecm.<ComponentWithJavaXProvider>getInstance(ComponentWithJavaXProvider.class, "jakarta").get());
         assertEquals("javax",
             ecm.<ComponentWithJavaXProvider>getInstance(ComponentWithJavaXProvider.class, "javax").get());
+    }
+
+    public static class CountingDisposableRoleImpl implements TestRole, Disposable
+    {
+        private final AtomicInteger disposeCount = new AtomicInteger();
+
+        @Override
+        public void dispose()
+        {
+            this.disposeCount.incrementAndGet();
+        }
+    }
+
+    @Test
+    void registerAndUnregisterStackedComponentsConcurrently() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        int threadCount = 8;
+        int iterations = 500;
+        List<CountingDisposableRoleImpl> instances = new CopyOnWriteArrayList<>();
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        try {
+            List<Future<?>> futures = new ArrayList<>();
+            for (int thread = 0; thread < threadCount; thread++) {
+                // A different descriptor for each thread, so that the instances registered by the various threads hide
+                // each other instead of replacing each other
+                int priority = thread;
+                futures.add(executor.submit(() -> {
+                    for (int i = 0; i < iterations; i++) {
+                        DefaultComponentDescriptor<TestRole> descriptor = new DefaultComponentDescriptor<>();
+                        descriptor.setRoleType(TestRole.class);
+                        descriptor.setRoleHint("stacked");
+                        descriptor.setRoleHintPriority(priority);
+                        descriptor.setImplementation(CountingDisposableRoleImpl.class);
+                        CountingDisposableRoleImpl instance = new CountingDisposableRoleImpl();
+                        instances.add(instance);
+
+                        ecm.registerComponent(descriptor, instance);
+                        // The instance registered by this thread is still there, active or hidden
+                        assertTrue(ecm.hasComponent(TestRole.class, "stacked"));
+                        assertNotNull(ecm.getInstance(TestRole.class, "stacked"));
+                        ecm.unregisterComponent(descriptor, instance);
+                    }
+
+                    return null;
+                }));
+            }
+            for (Future<?> future : futures) {
+                future.get(1, TimeUnit.MINUTES);
+            }
+        } finally {
+            executor.shutdownNow();
+        }
+
+        assertFalse(ecm.hasComponent(TestRole.class, "stacked"));
+        assertEquals(threadCount * iterations, instances.size());
+        // Each instance was unregistered, and none of them was left hidden nor disposed twice
+        for (CountingDisposableRoleImpl instance : instances) {
+            assertEquals(1, instance.disposeCount.get());
+        }
+
+        ecm.dispose();
+        for (CountingDisposableRoleImpl instance : instances) {
+            assertEquals(1, instance.disposeCount.get());
+        }
     }
 }

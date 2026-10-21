@@ -146,9 +146,11 @@ public interface ComponentManager
      * <li>if one of them is the same component, it's replaced by the new one, unless it has a better role hint
      * priority, in which case the new one is ignored. The same component means the same implementation class name, so
      * that a class loaded again by another class loader (e.g. a new version of an extension) replaces the previous one,
-     * except for different instances provided for the same class (or for no implementation class), which are different
-     * components (e.g. several components defined in wiki pages). Registering again a descriptor without instance thus
-     * replaces it, which drops its cached instance: the next lookup creates a new one</li>
+     * except for different instances provided for the same class (or for no implementation class) with different
+     * descriptors (e.g. another role hint priority), which are different components (e.g. several components defined
+     * in wiki pages). A new instance provided with an equal descriptor thus replaces the existing one, and registering
+     * again a descriptor without instance replaces it too, which drops its cached instance: the next lookup creates a
+     * new one</li>
      * <li>otherwise all the components are kept: the one with the best role hint priority is the one returned by
      * lookups (the last registered one in case of same priority) and the other ones are hidden until it's
      * unregistered</li>
@@ -180,8 +182,9 @@ public interface ComponentManager
      * <p>
      * Only the component registered with a descriptor equal to the passed one is removed, even if it's hidden by
      * another component registered with the same role and role hint. If it was the one returned by lookups, the hidden
-     * component with the best role hint priority takes its place. When several registered components have an equal
-     * descriptor, use {@link #unregisterComponent(ComponentDescriptor, Object)} to choose the one to remove.
+     * component with the best role hint priority takes its place. Use
+     * {@link #unregisterComponent(ComponentDescriptor, Object)} to make sure to not remove another instance registered
+     * with an equal descriptor.
      *
      * @param componentDescriptor the component descriptor
      * @since 4.0M1
@@ -190,8 +193,10 @@ public interface ComponentManager
 
     /**
      * Remove the component registered with a descriptor equal to the passed one and the passed instance, in the same
-     * way as {@link #unregisterComponent(ComponentDescriptor)}. It's needed for components which share the same
-     * descriptor and only differ by their instance (e.g. several components defined in wiki pages).
+     * way as {@link #unregisterComponent(ComponentDescriptor)}. Nothing is removed if the passed instance is not
+     * registered anymore, e.g. because another instance registered with an equal descriptor replaced it. It's needed
+     * for components which share the same descriptor and only differ by their instance (e.g. several components
+     * defined in wiki pages).
      *
      * @param <T> the component role type
      * @param componentDescriptor the component descriptor

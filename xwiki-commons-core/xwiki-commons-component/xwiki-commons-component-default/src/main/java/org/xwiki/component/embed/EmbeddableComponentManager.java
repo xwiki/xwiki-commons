@@ -346,8 +346,12 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
          * Compare the implementation class names and not the classes, since the same class loaded again by another
          * class loader (e.g. a new version of an extension, or a script defining the class executed again) is still
          * the same component, which has to be replaced and not hidden. Different instances provided for the same class
-         * (or without any class) are different components though, e.g. the components defined in wiki pages, which
-         * all share a generic implementation class.
+         * (or without any class) with different descriptors (e.g. another priority) are different components though,
+         * e.g. the components defined in wiki pages, which all share a generic implementation class. With equal
+         * descriptors, nothing tells a new instance of the same component (e.g. a wiki macro registered again when
+         * its page is imported again) from another component, so the new instance replaces the existing one, as
+         * otherwise registering again the same component without unregistering it first would accumulate hidden
+         * instances.
          */
         // Comparing class names is the point of this method, see the javadoc
         @SuppressWarnings("java:S1872")
@@ -358,7 +362,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
 
             if (implementation1 == implementation2) {
                 return !entry1.providedInstance || !entry2.providedInstance
-                    || entry1.instance.get() == entry2.instance.get();
+                    || entry1.instance.get() == entry2.instance.get() || entry1.descriptor.equals(entry2.descriptor);
             }
 
             return implementation1 != null && implementation2 != null
