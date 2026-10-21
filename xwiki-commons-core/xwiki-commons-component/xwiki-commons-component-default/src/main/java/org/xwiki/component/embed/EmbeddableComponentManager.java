@@ -330,14 +330,16 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         }
 
         /**
+         * Registering again a descriptor without instance is not taken into account: it replaces the existing entry,
+         * which drops its cached singleton, and some callers rely on that to get a new instance.
+         *
          * @return {@code true} if both entries have equal descriptors and the same instance provided at registration
-         *     time (or no provided instance at all), i.e. if the same component is registered again
+         *     time, i.e. if the same component is registered again
          */
         private static boolean isSameRegistration(ComponentEntry<?> entry1, ComponentEntry<?> entry2)
         {
-            return entry1.providedInstance == entry2.providedInstance
-                && (!entry1.providedInstance || entry1.instance.get() == entry2.instance.get())
-                && entry1.descriptor.equals(entry2.descriptor);
+            return entry1.providedInstance && entry2.providedInstance
+                && entry1.instance.get() == entry2.instance.get() && entry1.descriptor.equals(entry2.descriptor);
         }
 
         /**

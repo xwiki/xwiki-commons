@@ -142,12 +142,13 @@ public interface ComponentManager
      * <p>
      * When components are already registered with the same role and role hint:
      * <ul>
-     * <li>if one of them has an equal descriptor and the same instance (or no instance for both), nothing changes</li>
+     * <li>if one of them has an equal descriptor and the same provided instance, nothing changes</li>
      * <li>if one of them is the same component, it's replaced by the new one, unless it has a better role hint
      * priority, in which case the new one is ignored. The same component means the same implementation class name, so
      * that a class loaded again by another class loader (e.g. a new version of an extension) replaces the previous one,
      * except for different instances provided for the same class (or for no implementation class), which are different
-     * components (e.g. several components defined in wiki pages)</li>
+     * components (e.g. several components defined in wiki pages). Registering again a descriptor without instance thus
+     * replaces it, which drops its cached instance: the next lookup creates a new one</li>
      * <li>otherwise all the components are kept: the one with the best role hint priority is the one returned by
      * lookups (the last registered one in case of same priority) and the other ones are hidden until it's
      * unregistered</li>

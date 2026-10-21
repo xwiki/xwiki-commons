@@ -1092,12 +1092,19 @@ class EmbeddableComponentManagerTest
         ComponentEventManager cem = mock(ComponentEventManager.class);
         ecm.setComponentEventManager(cem);
 
-        ecm.registerComponent(new DefaultComponentDescriptor<>(cd));
+        DefaultComponentDescriptor<TestRole> cd2 = new DefaultComponentDescriptor<>(cd);
+        ecm.registerComponent(cd2);
 
-        // The singleton is not disposed and created again
-        assertSame(instance, ecm.getInstance(TestRole.class));
-        assertFalse(instance.isFinalized());
-        verifyNoInteractions(cem);
+        // Some callers rely on registering again a descriptor to drop the cached singleton
+        assertTrue(instance.isFinalized());
+        assertNotSame(instance, ecm.getInstance(TestRole.class));
+        InOrder inOrder = inOrder(cem);
+        inOrder.verify(cem).notifyComponentUnregistered(cd, ecm);
+        inOrder.verify(cem).notifyComponentRegistered(cd2, ecm);
+
+        // Nothing is hidden
+        ecm.unregisterComponent(cd2);
+        assertFalse(ecm.hasComponent(TestRole.class));
     }
 
     @Test
