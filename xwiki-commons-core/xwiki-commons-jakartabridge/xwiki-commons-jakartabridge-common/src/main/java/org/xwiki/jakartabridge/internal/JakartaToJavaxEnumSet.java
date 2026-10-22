@@ -32,6 +32,9 @@ import org.xwiki.jakartabridge.JakartaBridge;
  * @version $Id$
  * @since 17.0.0RC1
  */
+// Implementing Enumeration is the whole point of this class: it adapts a javax Enumeration to a jakarta one, so it
+// must expose the very interface the rule asks us to replace with Iterator.
+@SuppressWarnings("java:S1150")
 public class JakartaToJavaxEnumSet<I extends Enumeration<X>, X, K> extends AbstractJakartaToJavaxWrapper<I>
     implements Enumeration<K>
 {
