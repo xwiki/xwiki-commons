@@ -64,8 +64,8 @@ public class ParameterXStream extends NoWarningXStream
         this.registerConverter(new InputSourceConverter());
 
         // XStream does not register converter for their associated interface
-        this.registerConverter(new MapConverter(this.getMapper()));
-        this.registerConverter(new CollectionConverter(this.getMapper()));
+        this.registerConverter(new MapInterfaceConverter(this.getMapper()));
+        this.registerConverter(new CollectionInterfaceConverter(this.getMapper()));
         this.registerConverter(new ListConverter(this.getMapper()));
 
         this.alias("parameters", FilterEventParameters.class);
