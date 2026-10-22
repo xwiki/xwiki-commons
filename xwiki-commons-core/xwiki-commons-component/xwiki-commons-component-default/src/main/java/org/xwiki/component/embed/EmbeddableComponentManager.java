@@ -400,12 +400,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
                     mergedEntries.putAll(localEntries);
 
                     // Add parent entries
-                    for (ComponentDescriptor<T> parentDescriptor : parentDescriptors) {
-                        T parentInstance = getParentMapInstance(roleType, parentDescriptor);
-                        if (parentInstance != null) {
-                            mergedEntries.put(parentDescriptor, parentInstance);
-                        }
-                    }
+                    putParentEntries(mergedEntries, roleType, parentDescriptors);
 
                     entries = toInstanceMap(mergedEntries);
                 } else {
@@ -445,6 +440,17 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         return null;
     }
 
+    private <T> void putParentEntries(ComponentEntries<T> entries, Type roleType,
+        List<ComponentDescriptor<T>> parentDescriptors) throws ComponentLookupException
+    {
+        for (ComponentDescriptor<T> parentDescriptor : parentDescriptors) {
+            T parentInstance = getParentMapInstance(roleType, parentDescriptor);
+            if (parentInstance != null) {
+                entries.put(parentDescriptor, parentInstance);
+            }
+        }
+    }
+
     private <T> T getParentMapInstance(Type roleType, ComponentDescriptor<T> parentDescriptor)
         throws ComponentLookupException
     {
@@ -452,7 +458,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
 
         try {
             return getParent().getInstance(roleType, roleHint);
-        } catch (Exception | Error e) {
+        } catch (ComponentLookupException e) {
             if (!getParent().hasComponent(roleType, roleHint)) {
                 // The component was unregistered from the parent Component Manager after its descriptor was listed
                 // (e.g. by another thread uninstalling an extension), so it's not part of the components anymore.
