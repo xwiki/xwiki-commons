@@ -39,6 +39,15 @@ public interface Logger extends org.slf4j.Logger
     Marker ROOT_MARKER = MarkerFactory.getMarker("root");
 
     /**
+     * Marker used to indicate that the stack trace of the exception passed to the log is the point of the log and must
+     * be printed in full, whatever the level of the log and whatever the console is configured to shorten. Use it for
+     * the rare warnings whose exception carries no information of its own and only exists to record the call site.
+     *
+     * @since 18.7.0RC1
+     */
+    Marker STACKTRACE_MARKER = MarkerFactory.getMarker("xwiki.stacktrace");
+
+    /**
      * @param logEvent the log event
      */
     void log(LogEvent logEvent);
