@@ -108,6 +108,13 @@ public class InfinispanCacheFactory implements CacheFactory, Initializable, Disp
         // Micrometer dependencies.
         holder.getGlobalConfigurationBuilder().metrics().gauges(false).histograms(false);
 
+        // The Infinispan memory monitor logs a warning (ISPN000977) as soon as the old generation goes above a
+        // threshold (85% by default), including garbage not yet collected, which is a normal state for a healthy JVM.
+        // Infinispan only acts on it to shrink dynamically resized memory containers, which XWiki does not use, so all
+        // it produces is a misleading warning. Disabling it before parsing the configuration file (which can enable it
+        // back with <memory-monitor enabled="true"/>) keeps it quiet by default.
+        holder.getGlobalConfigurationBuilder().memoryMonitor().enabled(false);
+
         InputStream configurationStream = getConfigurationFileAsStream();
 
         if (configurationStream != null) {
