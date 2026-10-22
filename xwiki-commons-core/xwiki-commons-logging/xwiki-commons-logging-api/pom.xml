@@ -45,5 +45,12 @@
       <artifactId>xwiki-commons-configuration-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- Needed only by the applications which redirect java.util.logging to SLF4J (see JavaUtilLoggingBridge), and which
+         then need to depend on it themselves -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 </project>
