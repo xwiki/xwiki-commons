@@ -25,7 +25,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.infinispan.Cache;
+import org.infinispan.commons.util.MemoryMonitor;
 import org.infinispan.configuration.cache.StoreConfiguration;
+import org.infinispan.factories.GlobalComponentRegistry;
+import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.persistence.sifs.configuration.SoftIndexFileStoreConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +44,10 @@ import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
@@ -92,6 +99,32 @@ class InfinispanConfigTest extends AbstractTestCache
         org.xwiki.cache.Cache<String> cache = getCacheFactory().newCache(configuration);
 
         return (Cache<String, String>) FieldUtils.readField(cache, "cache", true);
+    }
+
+    private EmbeddedCacheManager getInfinispanCacheManager() throws Exception
+    {
+        return ((InfinispanCacheFactory) getCacheFactory()).getCacheManager();
+    }
+
+    @Test
+    void memoryMonitorDisabledByDefault() throws Exception
+    {
+        EmbeddedCacheManager cacheManager = getInfinispanCacheManager();
+
+        assertFalse(cacheManager.getCacheManagerConfiguration().memoryMonitor().enabled());
+        assertNull(GlobalComponentRegistry.componentOf(cacheManager, MemoryMonitor.class));
+    }
+
+    @Test
+    void memoryMonitorEnabledInConfigurationFile() throws Exception
+    {
+        when(this.environment.getResourceAsStream("/WEB-INF/cache/infinispan/config.xml"))
+            .thenReturn(getClass().getResourceAsStream("/infinispan/memory-monitor-config.xml"));
+
+        EmbeddedCacheManager cacheManager = getInfinispanCacheManager();
+
+        assertTrue(cacheManager.getCacheManagerConfiguration().memoryMonitor().enabled());
+        assertNotNull(GlobalComponentRegistry.componentOf(cacheManager, MemoryMonitor.class));
     }
 
     @Test
