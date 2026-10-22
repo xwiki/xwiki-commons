@@ -60,6 +60,9 @@ public class SafeArrayConverter extends ArrayConverter
     }
 
     @Override
+    // Catching Throwable is deliberate here: this converter exists precisely to make XStream deserialization total, so
+    // an item that cannot be read is skipped instead of failing the whole deserialization.
+    @SuppressWarnings("java:S1181")
     protected Object readBareItem(HierarchicalStreamReader reader, UnmarshallingContext context, Object current)
     {
         Object value;
@@ -75,6 +78,9 @@ public class SafeArrayConverter extends ArrayConverter
     }
 
     @Override
+    // Catching Throwable is deliberate here: this converter exists precisely to make XStream serialization total, so an
+    // item that cannot be converted is written as null instead of failing the whole serialization.
+    @SuppressWarnings("java:S1181")
     protected void writeCompleteItem(Object item, MarshallingContext context, HierarchicalStreamWriter writer)
     {
         if (this.utils.isSerializable(item)) {
