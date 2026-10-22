@@ -401,8 +401,10 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
 
                     // Add parent entries
                     for (ComponentDescriptor<T> parentDescriptor : parentDescriptors) {
-                        mergedEntries.put(parentDescriptor,
-                            getParent().getInstance(roleType, parentDescriptor.getRoleHint()));
+                        T parentInstance = getParentMapInstance(roleType, parentDescriptor);
+                        if (parentInstance != null) {
+                            mergedEntries.put(parentDescriptor, parentInstance);
+                        }
                     }
 
                     entries = toInstanceMap(mergedEntries);
@@ -437,16 +439,43 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         try {
             return getComponentInstance(roleEntry);
         } catch (Exception | Error e) {
-            if (roleEntry.descriptor.isMandatory()) {
-                throw new ComponentLookupException("Failed to lookup component with type [%s] and hint [%s]"
-                    .formatted(roleEntry.descriptor.getRoleType(), roleEntry.descriptor.getRoleHint()), e);
+            handleMapInstanceFailure(roleEntry.descriptor, e);
+        }
+
+        return null;
+    }
+
+    private <T> T getParentMapInstance(Type roleType, ComponentDescriptor<T> parentDescriptor)
+        throws ComponentLookupException
+    {
+        String roleHint = parentDescriptor.getRoleHint();
+
+        try {
+            return getParent().getInstance(roleType, roleHint);
+        } catch (Exception | Error e) {
+            if (!getParent().hasComponent(roleType, roleHint)) {
+                // The component was unregistered from the parent Component Manager after its descriptor was listed
+                // (e.g. by another thread uninstalling an extension), so it's not part of the components anymore.
+                LOGGER.info("Skipped the component with type [{}] and hint [{}] since it was unregistered from the"
+                    + " parent Component Manager while looking up the components of this type", roleType, roleHint);
             } else {
-                LOGGER.error("Failed to lookup component with type [{}] and hint [{}]",
-                    roleEntry.descriptor.getRoleType(), roleEntry.descriptor.getRoleHint(), e);
+                handleMapInstanceFailure(parentDescriptor, e);
             }
         }
 
         return null;
+    }
+
+    private void handleMapInstanceFailure(ComponentDescriptor<?> descriptor, Throwable failure)
+        throws ComponentLookupException
+    {
+        if (descriptor.isMandatory()) {
+            throw new ComponentLookupException("Failed to lookup component with type [%s] and hint [%s]"
+                .formatted(descriptor.getRoleType(), descriptor.getRoleHint()), failure);
+        } else {
+            LOGGER.error("Failed to lookup component with type [{}] and hint [{}]", descriptor.getRoleType(),
+                descriptor.getRoleHint(), failure);
+        }
     }
 
     private ComponentEntry<?> tryOtherProvider(Type roleType, String roleHint)
