@@ -21,21 +21,21 @@ package org.xwiki.tool.xar;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.apache.maven.shared.verifier.VerificationException;
-import org.apache.maven.shared.verifier.Verifier;
+import org.apache.maven.executor.ExecutorException;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
 import org.junit.jupiter.api.Test;
 import org.xwiki.tool.xar.internal.XWikiDocument;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -53,27 +53,27 @@ class XARMojoTest extends AbstractMojoTest
     @Test
     void invalidPackageXmlThrowsException() throws Exception
     {
-        Verifier verifier = createVerifier("/invalidPackageFile");
+        MavenBuild build = createBuild("/invalidPackageFile");
 
         assertThrows(Exception.class, () -> {
-            verifier.executeGoals(Arrays.asList("clean", "package"));
+            build.execute("clean", "package");
         });
 
-        verifier.verifyTextInLog("[ERROR] The existing [package.xml] is invalid.");
+        assertThat(build.getLog(), containsString("[ERROR] The existing [package.xml] is invalid."));
     }
 
     @Test
     void validPackageXml() throws Exception
     {
-        Verifier verifier = createVerifier("/validXml");
-        verifier.executeGoals(Arrays.asList("clean", "package"));
-        verifier.verifyErrorFreeLog();
+        MavenBuild build = createBuild("/validXml");
+        build.execute("clean", "package");
+        build.verifyErrorFreeLog();
 
-        File tempDir = new File(verifier.getBasedir(), "target/temp");
+        File tempDir = new File(build.getBasedir(), "target/temp");
         tempDir.mkdirs();
 
         // Extract the generated XAR so that we verify its content easily
-        File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
+        File xarFile = new File(build.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
         ZipUnArchiver unarchiver = new ZipUnArchiver(xarFile);
         unarchiver.setDestDirectory(tempDir);
         unarchiver.extract();
@@ -111,16 +111,16 @@ class XARMojoTest extends AbstractMojoTest
     @Test
     void noPackageXml() throws Exception
     {
-        Verifier verifier = createVerifier("/noPackageXml");
-        verifier.executeGoals(Arrays.asList("clean", "package"));
-        verifier.verifyErrorFreeLog();
+        MavenBuild build = createBuild("/noPackageXml");
+        build.execute("clean", "package");
+        build.verifyErrorFreeLog();
 
-        File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
+        File xarFile = new File(build.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
 
         try (ZipFile zip = new ZipFile(xarFile)) {
             assertNotNull(zip.getEntry(XARMojo.PACKAGE_XML), "Package.xml file not found in zip!");
 
-            File tempDir = new File(verifier.getBasedir(), "target/temp");
+            File tempDir = new File(build.getBasedir(), "target/temp");
             tempDir.mkdirs();
 
             // Extract package.xml and extract all the entries one by one and read them as a XWiki Document to verify
@@ -129,7 +129,7 @@ class XARMojoTest extends AbstractMojoTest
             unarchiver.setDestDirectory(tempDir);
             unarchiver.extract();
 
-            File classesDir = new File(verifier.getBasedir(), "target/classes");
+            File classesDir = new File(build.getBasedir(), "target/classes");
             Collection<String> documentNames = XARMojo.getDocumentNamesFromXML(new File(classesDir, "package.xml"));
             int countEntries = 0;
             Enumeration<ZipArchiveEntry> entries = zip.getEntries();
@@ -154,20 +154,20 @@ class XARMojoTest extends AbstractMojoTest
     @Test
     void nestedSpacesXml() throws Exception
     {
-        Verifier verifier = createVerifier("/nestedSpaces");
-        verifier.executeGoals(Arrays.asList("clean", "package"));
-        verifier.verifyErrorFreeLog();
+        MavenBuild build = createBuild("/nestedSpaces");
+        build.execute("clean", "package");
+        build.verifyErrorFreeLog();
 
-        File tempDir = new File(verifier.getBasedir(), "target/temp");
+        File tempDir = new File(build.getBasedir(), "target/temp");
         tempDir.mkdirs();
 
         // Extract the generated XAR so that we verify its content easily
-        File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
+        File xarFile = new File(build.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
         ZipUnArchiver unarchiver = new ZipUnArchiver(xarFile);
         unarchiver.setDestDirectory(tempDir);
         unarchiver.extract();
 
-        File classesDir = new File(verifier.getBasedir(), "target/classes");
+        File classesDir = new File(build.getBasedir(), "target/classes");
         Collection<String> documentNames = XARMojo.getDocumentNamesFromXML(new File(classesDir, "package.xml"));
 
         assertEquals(1, documentNames.size(), "The newly created xar archive doesn't contain the required documents");
@@ -179,15 +179,15 @@ class XARMojoTest extends AbstractMojoTest
     @Test
     void transformXML() throws Exception
     {
-        Verifier verifier = createVerifier("/transformedXml");
-        verifier.executeGoals(Arrays.asList("clean", "package"));
-        verifier.verifyErrorFreeLog();
+        MavenBuild build = createBuild("/transformedXml");
+        build.execute("clean", "package");
+        build.verifyErrorFreeLog();
 
-        File tempDir = new File(verifier.getBasedir(), "target/temp");
+        File tempDir = new File(build.getBasedir(), "target/temp");
         tempDir.mkdirs();
 
         // Extract the generated XAR so that we verify its content easily
-        File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
+        File xarFile = new File(build.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
         ZipUnArchiver unarchiver = new ZipUnArchiver(xarFile);
         unarchiver.setDestDirectory(tempDir);
         unarchiver.extract();
@@ -212,20 +212,20 @@ class XARMojoTest extends AbstractMojoTest
     @Test
     void entities() throws Exception
     {
-        Verifier verifier = createVerifier("/entries");
-        verifier.executeGoals(Arrays.asList("clean", "package"));
-        verifier.verifyErrorFreeLog();
+        MavenBuild build = createBuild("/entries");
+        build.execute("clean", "package");
+        build.verifyErrorFreeLog();
 
-        File tempDir = new File(verifier.getBasedir(), "target/temp");
+        File tempDir = new File(build.getBasedir(), "target/temp");
         tempDir.mkdirs();
 
         // Extract the generated XAR so that we verify its content easily
-        File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
+        File xarFile = new File(build.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
         ZipUnArchiver unarchiver = new ZipUnArchiver(xarFile);
         unarchiver.setDestDirectory(tempDir);
         unarchiver.extract();
 
-        File classesDir = new File(verifier.getBasedir(), "target/classes");
+        File classesDir = new File(build.getBasedir(), "target/classes");
         Map<String, XAREntry> entries = XARMojo.getXarEntriesMapFromXML(new File(classesDir, "package.xml"));
 
         assertEquals(3, entries.size(), "The newly created xar archive doesn't contain the required documents");
@@ -238,14 +238,14 @@ class XARMojoTest extends AbstractMojoTest
     @Test
     void invalidXml() throws Exception
     {
-        Verifier verifier = createVerifier("/invalidXml");
+        MavenBuild build = createBuild("/invalidXml");
 
-        assertThrows(VerificationException.class, () -> {
-            verifier.executeGoals(Arrays.asList("clean", "package"));
+        assertThrows(ExecutorException.class, () -> {
+            build.execute("clean", "package");
         });
 
-        verifier.verifyTextInLog("Error while creating XAR file");
-        verifier.verifyTextInLog("Content doesn't point to valid wiki page XML");
-        verifier.verifyTextInLog("Failed to parse");
+        assertThat(build.getLog(), containsString("Error while creating XAR file"));
+        assertThat(build.getLog(), containsString("Content doesn't point to valid wiki page XML"));
+        assertThat(build.getLog(), containsString("Failed to parse"));
     }
 }

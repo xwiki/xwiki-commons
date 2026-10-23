@@ -19,14 +19,11 @@
  */
 package org.xwiki.tool.xar;
 
-import java.util.Arrays;
-
-import org.apache.maven.shared.verifier.VerificationException;
-import org.apache.maven.shared.verifier.Verifier;
-import org.hamcrest.CoreMatchers;
+import org.apache.maven.executor.ExecutorException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -100,9 +97,9 @@ class VerifyMojoTest extends AbstractMojoTest
     @Test
     void executeWithVisibleTechnicalPages() throws Exception
     {
-        Verifier verifier = createVerifier("/visibleTechnicalPages");
-        verifier.executeGoal("install");
-        verifier.verifyErrorFreeLog();
+        MavenBuild build = createBuild("/visibleTechnicalPages");
+        build.execute("install");
+        build.verifyErrorFreeLog();
     }
 
     @Test
@@ -131,26 +128,26 @@ class VerifyMojoTest extends AbstractMojoTest
     @Test
     void executeWithMissingLicenseHeader() throws Exception
     {
-        Verifier verifier = createVerifier("/missingLicense");
-        verifier.addCliOption("-Dxar.formatLicense=true");
-        verifier.addCliOption("-Dxar.commons.version=" + System.getProperty("commons.version"));
-        verifyExecution(verifier, "Missing header in");
+        MavenBuild build = createBuild("/missingLicense");
+        build.addArgument("-Dxar.formatLicense=true");
+        build.addArgument("-Dxar.commons.version=" + System.getProperty("commons.version"));
+        verifyExecution(build, "Missing header in");
     }
 
     @Test
     void executeWithTranslationPages() throws Exception
     {
-        Verifier verifier = createVerifier("/translations");
-        verifier.executeGoal("install");
-        verifier.verifyErrorFreeLog();
+        MavenBuild build = createBuild("/translations");
+        build.execute("install");
+        build.verifyErrorFreeLog();
     }
 
     @Test
     void executeWithTranslationOverrides() throws Exception
     {
-        Verifier verifier = createVerifier("/translationOverrides");
-        verifier.executeGoal("install");
-        verifier.verifyErrorFreeLog();
+        MavenBuild build = createBuild("/translationOverrides");
+        build.execute("install");
+        build.verifyErrorFreeLog();
     }
 
     @Test
@@ -184,17 +181,17 @@ class VerifyMojoTest extends AbstractMojoTest
     @Test
     void executeWhenContentPages() throws Exception
     {
-        Verifier verifier = createVerifier("/contentPages");
-        verifier.executeGoal("install");
-        verifier.verifyErrorFreeLog();
+        MavenBuild build = createBuild("/contentPages");
+        build.execute("install");
+        build.verifyErrorFreeLog();
     }
 
     @Test
     void executeNestedSpaces() throws Exception
     {
-        Verifier verifier = createVerifier("/nestedSpaces");
-        verifier.executeGoal("install");
-        verifier.verifyErrorFreeLog();
+        MavenBuild build = createBuild("/nestedSpaces");
+        build.execute("install");
+        build.verifyErrorFreeLog();
     }
 
     @Test
@@ -217,20 +214,17 @@ class VerifyMojoTest extends AbstractMojoTest
             "There are errors in the XAR XML files!");
     }
 
-    private void verifyExecution(Verifier verifier, String... messages)
+    private void verifyExecution(MavenBuild build, String... messages)
     {
-        Throwable exception = assertThrows(VerificationException.class, () -> {
-            verifier.executeGoal("install");
-            verifier.verifyErrorFreeLog();
-        });
+        assertThrows(ExecutorException.class, () -> build.execute("install"));
         for (String message : messages) {
-            assertThat(exception.getMessage(), CoreMatchers.containsString(message));
+            assertThat(build.getLog(), containsString(message));
         }
     }
 
     private void verifyExecution(String testDirectory, String... messages) throws Exception
     {
-        verifyExecution(createVerifier(testDirectory), messages);
+        verifyExecution(createBuild(testDirectory), messages);
     }
 
     @Test
@@ -264,28 +258,28 @@ class VerifyMojoTest extends AbstractMojoTest
     @Test
     void executeWithSkippedDatesCheck() throws Exception
     {
-        Verifier verifier = createVerifier("/datesPresent");
-        verifier.addCliOption("-Dxar.dates.skip=true");
-        verifier.executeGoal("install");
-        verifier.verifyErrorFreeLog();
+        MavenBuild build = createBuild("/datesPresent");
+        build.addArgument("-Dxar.dates.skip=true");
+        build.execute("install");
+        build.verifyErrorFreeLog();
     }
 
     @Test
     void executeWithSkippedDatesCheckDocument() throws Exception
     {
-        Verifier verifier = createVerifier("/datesPresent");
-        verifier.addCliOption("-Dxar.dates.skip.documentList=Space.WebHome,Space.Test");
-        verifier.executeGoal("install");
-        verifier.verifyErrorFreeLog();
+        MavenBuild build = createBuild("/datesPresent");
+        build.addArgument("-Dxar.dates.skip.documentList=Space.WebHome,Space.Test");
+        build.execute("install");
+        build.verifyErrorFreeLog();
     }
 
     @Test
     void invalidXml() throws Exception
     {
-        Verifier verifier = createVerifier("/invalidContent");
-        assertThrows(VerificationException.class, () -> {
-            verifier.executeGoals(Arrays.asList("clean", "package"));
+        MavenBuild build = createBuild("/invalidContent");
+        assertThrows(ExecutorException.class, () -> {
+            build.execute("clean", "package");
         });
-        verifier.verifyTextInLog("Unexpected non-text content found in element [content]");
+        assertThat(build.getLog(), containsString("Unexpected non-text content found in element [content]"));
     }
 }

@@ -22,10 +22,7 @@ package org.xwiki.tool.xar;
 import java.io.File;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.shared.utils.io.FileUtils;
-import org.apache.maven.shared.verifier.Verifier;
-
-import static org.apache.maven.shared.verifier.util.ResourceExtractor.extractResourcePath;
+import org.codehaus.plexus.util.FileUtils;
 
 /**
  * Commons Test class for Integration tests.
@@ -35,31 +32,41 @@ import static org.apache.maven.shared.verifier.util.ResourceExtractor.extractRes
  */
 public abstract class AbstractMojoTest
 {
-    protected Verifier createVerifier(String projectName) throws Exception
+    protected MavenBuild createBuild(String projectName) throws Exception
     {
-        File tempDir = new File("target/verifier");
-        FileUtils.deleteDirectory(tempDir);
-        File testDir = extractResourcePath(getClass(), projectName, tempDir, true);
-        Verifier verifier = new Verifier(testDir.getAbsolutePath());
-        verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
+        // Work on a copy of the test project (filtered in target/test-classes) since the build modifies it
+        File projectsDir = new File("target/projects");
+        FileUtils.deleteDirectory(projectsDir);
+        File testDir = new File(projectsDir, projectName);
+        FileUtils.copyDirectoryStructure(new File(getClass().getResource(projectName).toURI()), testDir);
+
+        MavenBuild build = new MavenBuild(testDir);
+
+        // Use the same local repository as the current build, which contains the XAR plugin being tested
+        File localRepository = new File(System.getProperty("maven.repo.local"));
+        build.addArgument("-Dmaven.repo.local=" + localRepository.getAbsolutePath());
+
+        // Make sure the result of a previous test project installation is not reused
+        FileUtils.deleteDirectory(
+            new File(localRepository, "org/xwiki/commons/xwiki-commons-tool-xar-plugin-test/1.0"));
 
         // Add support for Jacoco
         String jacocoDestFile = System.getProperty("xwiki.jacoco.itDestFile");
         if (!StringUtils.isEmpty(jacocoDestFile)) {
             String jacocoVersion = System.getProperty("jacoco.version");
-            String jacocoAgentJarPath =
-                verifier.getArtifactPath("org.jacoco", "org.jacoco.agent", jacocoVersion, "jar", "runtime");
-            verifier.setEnvironmentVariable("MAVEN_OPTS",
-                String.format("-javaagent:%s=destfile=%s", jacocoAgentJarPath, jacocoDestFile));
+            File jacocoAgentJar = new File(localRepository, String.format(
+                "org/jacoco/org.jacoco.agent/%1$s/org.jacoco.agent-%1$s-runtime.jar", jacocoVersion));
+            build.setEnvironmentVariable("MAVEN_OPTS",
+                String.format("-javaagent:%s=destfile=%s", jacocoAgentJar.getAbsolutePath(), jacocoDestFile));
         }
 
-        verifier.addCliOption("-Dxar.force=true");
+        build.addArgument("-Dxar.force=true");
 
         // Prevents Gradle Enterprise build scan from scanning this maven execution since it's not real pom.xml
         // it's used for testing and we don't want to see it in the GE web site. In addition it's reported as a failure
         // for our tests testing failure conditions...
-        verifier.addCliOption("-Dscan=false");
+        build.addArgument("-Dscan=false");
 
-        return verifier;
+        return build;
     }
 }

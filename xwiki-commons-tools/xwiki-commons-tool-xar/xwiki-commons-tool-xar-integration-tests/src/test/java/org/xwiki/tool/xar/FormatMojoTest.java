@@ -21,13 +21,13 @@ package org.xwiki.tool.xar;
 
 import java.io.File;
 
-import org.apache.maven.shared.verifier.VerificationException;
-import org.apache.maven.shared.verifier.Verifier;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration tests for the Format Mojo.
@@ -40,72 +40,70 @@ public class FormatMojoTest extends AbstractMojoTest
     @Test
     void formatWhenNoStyle() throws Exception
     {
-        Verifier verifier = createVerifier("/format");
-        verifier.addCliOption("-Dincludes=**/NoStyle/*.xml");
-        verifier.addCliOption("-Dxar.pretty=false");
-        verifier.addCliOption("-Dxar.formatLicense=true");
-        verifier.addCliOption("-Dxar.commons.version=" + System.getProperty("commons.version"));
-        verifier.executeGoal("xar:format");
-        verifier.verifyErrorFreeLog();
+        MavenBuild build = createBuild("/format");
+        build.addArgument("-Dincludes=**/NoStyle/*.xml");
+        build.addArgument("-Dxar.pretty=false");
+        build.addArgument("-Dxar.formatLicense=true");
+        build.addArgument("-Dxar.commons.version=" + System.getProperty("commons.version"));
+        build.execute("xar:format");
+        build.verifyErrorFreeLog();
 
         // Also verifies that if the XML version is set to 1.O, it's modified to be 1.1
-        String content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/NoStyle/Page1.xml"));
-        String expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedNoStylePage1.xml"));
+        String content = FileUtils.fileRead(new File(build.getBasedir(), "src/main/resources/NoStyle/Page1.xml"));
+        String expected = FileUtils.fileRead(new File(build.getBasedir(), "ExpectedNoStylePage1.xml"));
         assertEquals(expected, content);
 
         // Test with a XML file having a license header
-        content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/NoStyle/Page2.xml"));
-        expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedNoStylePage2.xml"));
+        content = FileUtils.fileRead(new File(build.getBasedir(), "src/main/resources/NoStyle/Page2.xml"));
+        expected = FileUtils.fileRead(new File(build.getBasedir(), "ExpectedNoStylePage2.xml"));
         assertEquals(expected, content);
 
         // Test the default language
-        content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/NoStyle/Page3.xml"));
-        expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedNoStylePage3.xml"));
+        content = FileUtils.fileRead(new File(build.getBasedir(), "src/main/resources/NoStyle/Page3.xml"));
+        expected = FileUtils.fileRead(new File(build.getBasedir(), "ExpectedNoStylePage3.xml"));
         assertEquals(expected, content);
-        content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/NoStyle/Page3.fr.xml"));
-        expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedNoStylePage3.fr.xml"));
+        content = FileUtils.fileRead(new File(build.getBasedir(), "src/main/resources/NoStyle/Page3.fr.xml"));
+        expected = FileUtils.fileRead(new File(build.getBasedir(), "ExpectedNoStylePage3.fr.xml"));
         assertEquals(expected, content);
 
         // Test with document dates present
         // Also verifies that if the XML version is 1.1, it's not modified
-        content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/NoStyle/Page4.xml"));
-        expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedNoStylePage4.xml"));
+        content = FileUtils.fileRead(new File(build.getBasedir(), "src/main/resources/NoStyle/Page4.xml"));
+        expected = FileUtils.fileRead(new File(build.getBasedir(), "ExpectedNoStylePage4.xml"));
         assertEquals(expected, content);
 
         // Test that technical pages are set as hidden
-        content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/NoStyle/Translations.xml"));
-        expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedNoStyleTranslations.xml"));
+        content = FileUtils.fileRead(new File(build.getBasedir(), "src/main/resources/NoStyle/Translations.xml"));
+        expected = FileUtils.fileRead(new File(build.getBasedir(), "ExpectedNoStyleTranslations.xml"));
         assertEquals(expected, content);
 
         // Verify that not included pages are not formatted
-        assertThrows(VerificationException.class, () -> {
-            verifier.verifyTextInLog("Formatting [Pretty");
-        });
+        assertThat(build.getLog(), not(containsString("Formatting [Pretty")));
     }
 
     @Test
     void formatWhenPrettyPrinting() throws Exception
     {
-        Verifier verifier = createVerifier("/format");
-        verifier.addCliOption("-Dincludes=**/Pretty/*.xml");
-        verifier.addCliOption("-Dxar.formatLicense=true");
-        verifier.executeGoal("xar:format");
-        verifier.verifyErrorFreeLog();
+        MavenBuild build = createBuild("/format");
+        build.addArgument("-Dincludes=**/Pretty/*.xml");
+        build.addArgument("-Dxar.formatLicense=true");
+        build.execute("xar:format");
+        build.verifyErrorFreeLog();
 
         // Also verifies that if the XML version is set to 1.O, it's modified to be 1.1
-        String content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/Pretty/Page1.xml"));
-        String expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedPrettyPage1.xml"));
+        String content = FileUtils.fileRead(new File(build.getBasedir(), "src/main/resources/Pretty/Page1.xml"));
+        String expected = FileUtils.fileRead(new File(build.getBasedir(), "ExpectedPrettyPage1.xml"));
         assertEquals(expected, content);
 
         // Test with a XML file having a license header
-        content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/Pretty/Page2.xml"));
-        expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedPrettyPage2.xml"));
+        content = FileUtils.fileRead(new File(build.getBasedir(), "src/main/resources/Pretty/Page2.xml"));
+        expected = FileUtils.fileRead(new File(build.getBasedir(), "ExpectedPrettyPage2.xml"));
         assertEquals(expected, content);
 
         // Test with document dates present
         // Also verifies that if the XML version is 1.1, it's not modified
-        content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/Pretty/Page3.xml"));
-        expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedPrettyPage3.xml"));
+        content = FileUtils.fileRead(new File(build.getBasedir(), "src/main/resources/Pretty/Page3.xml"));
+        expected = FileUtils.fileRead(new File(build.getBasedir(), "ExpectedPrettyPage3.xml"));
         assertEquals(expected, content);
     }
 }
