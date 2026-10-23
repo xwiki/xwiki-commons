@@ -21,8 +21,8 @@ package org.xwiki.tool.xar;
 
 import java.util.Arrays;
 
-import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
+import org.apache.maven.shared.verifier.VerificationException;
+import org.apache.maven.shared.verifier.Verifier;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 

@@ -21,8 +21,8 @@ package org.xwiki.tool.xar;
 
 import java.io.File;
 
-import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
+import org.apache.maven.shared.verifier.VerificationException;
+import org.apache.maven.shared.verifier.Verifier;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Test;
 

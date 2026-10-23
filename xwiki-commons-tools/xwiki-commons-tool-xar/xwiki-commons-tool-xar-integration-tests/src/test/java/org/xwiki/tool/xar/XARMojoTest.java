@@ -28,8 +28,8 @@ import java.util.Map;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.apache.maven.it.VerificationException;
-import org.apache.maven.it.Verifier;
+import org.apache.maven.shared.verifier.VerificationException;
+import org.apache.maven.shared.verifier.Verifier;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
