@@ -231,7 +231,26 @@
               </differences>
             </revapi.differences>
             -->
-            
+            <revapi.differences>
+              <differences>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.annotation.attributeValueChanged</code>
+                  <old>class org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionRepository</old>
+                  <new>class org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionRepository</new>
+                  <annotationType>javax.xml.bind.annotation.XmlType</annotationType>
+                  <attribute>propOrder</attribute>
+                  <oldValue>{"id", "uri", "type"}</oldValue>
+                  <newValue>{"id", "uri", "type", "properties"}</newValue>
+                  <justification>
+                    The optional "properties" element added at the end of the REST model of a repository changes the
+                    generated XmlType#propOrder. It only orders the elements when marshalling: the existing elements
+                    keep their order and an XML without the new element still unmarshals.
+                  </justification>
+                  <criticality>allowed</criticality>
+                </item>
+              </differences>
+            </revapi.differences>
           </analysisConfiguration>
         </configuration>
       </plugin>
