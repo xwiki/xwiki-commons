@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -35,6 +36,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.xwiki.tool.spoon.ExtensionComponentsParser;
+import org.xwiki.tool.spoon.MacroDeclarationVerifier;
 import org.xwiki.tool.xar.internal.XWikiDocument;
 
 /**
@@ -58,6 +61,8 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  *   <li>ensure that attachments have a mimetype set. If the mimetype is missing then the attachment won't be
  *       filterable in the attachment view in Page Index.</li>
  *   <li>ensure the locale of a page matches its name</li>
+ *   <li>ensure that the wiki macros of the module are declared in the {@code xwiki.extension.components} Maven
+ *       property, and that every macro declared there is provided by the module</li>
  * </ul>
  *
  * @version $Id$
@@ -105,6 +110,14 @@ public class VerifyMojo extends AbstractVerifyMojo
     @Parameter(property = "xar.verify.titles")
     private Properties titles;
 
+    /**
+     * Disables the verification of the macros declared in the {@code xwiki.extension.components} Maven property.
+     *
+     * @since 18.10.0RC1
+     */
+    @Parameter(property = "xwiki.extension.components.check.skip", defaultValue = "false")
+    private boolean macroDeclarationSkip;
+
     private Map<Pattern, Pattern> titlePatterns;
 
     @Override
@@ -127,11 +140,13 @@ public class VerifyMojo extends AbstractVerifyMojo
         initializePatterns();
 
         boolean hasErrors = false;
+        Map<String, String> wikiMacros = new LinkedHashMap<>();
         Collection<File> xmlFiles = getXARXMLFiles();
         for (File file : xmlFiles) {
             String parentName = file.getParentFile().getName();
             XWikiDocument xdoc = getDocFromXML(file);
             List<String> errors = new ArrayList<>();
+            xdoc.getWikiMacroIds().forEach(wikiMacroId -> wikiMacros.put(wikiMacroId, xdoc.getReference()));
 
             // Verification 1: Verify Encoding is UTF8
             if (!xdoc.getEncoding().equals("UTF-8")) {
@@ -238,16 +253,13 @@ public class VerifyMojo extends AbstractVerifyMojo
                     file.getName(), xdoc.getReference(), xdoc.getLocale(), locale));
             }
 
-            // Display errors
-            if (errors.isEmpty()) {
-                getLog().info(String.format("  Verifying [%s/%s]... ok", parentName, file.getName()));
-            } else {
-                getLog().info(String.format("  Verifying [%s/%s]... errors", parentName, file.getName()));
-                for (String error : errors) {
-                    getLog().error(String.format("  - %s", error));
-                }
-                hasErrors = true;
-            }
+            hasErrors |= displayErrors(String.format("[%s/%s]", parentName, file.getName()), errors);
+        }
+
+        // Verification 18: Verify that the wiki macros are declared in the xwiki.extension.components Maven property
+        if (!this.macroDeclarationSkip) {
+            hasErrors |= displayErrors("wiki macro declarations", MacroDeclarationVerifier.verify(
+                getProject().getProperties().getProperty(ExtensionComponentsParser.PROPERTY), wikiMacros));
         }
 
         if (hasErrors) {
@@ -282,6 +294,19 @@ public class VerifyMojo extends AbstractVerifyMojo
             }
         }
         return null;
+    }
+
+    private boolean displayErrors(String verified, List<String> errors)
+    {
+        if (errors.isEmpty()) {
+            getLog().info(String.format("  Verifying %s... ok", verified));
+        } else {
+            getLog().info(String.format("  Verifying %s... errors", verified));
+            for (String error : errors) {
+                getLog().error(String.format("  - %s", error));
+            }
+        }
+        return !errors.isEmpty();
     }
 
     private void verifyDateFields(List<String> errors, XWikiDocument xdoc)

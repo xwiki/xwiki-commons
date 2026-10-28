@@ -143,6 +143,11 @@ public class XWikiDocument
     private List<String> translationVisibilities = new ArrayList<>();
 
     /**
+     * @see #getWikiMacroIds()
+     */
+    private List<String> wikiMacroIds = new ArrayList<>();
+
+    /**
      * @see #isDatePresent()
      */
     private boolean datePresent;
@@ -241,6 +246,11 @@ public class XWikiDocument
         this.objectPresent = isElementPresent(rootElement, "object");
         this.attachmentDatePresent = rootElement.selectSingleNode("//attachment/date") != null;
 
+        readObjects(rootElement);
+    }
+
+    private void readObjects(Element rootElement)
+    {
         // Does this document contain a XWiki.TranslationDocumentClass xobject?
         if (!rootElement.selectNodes("//object/className[text() = 'XWiki.TranslationDocumentClass']").isEmpty()) {
             this.containsTranslations = true;
@@ -249,6 +259,12 @@ public class XWikiDocument
                 .selectNodes("//object/className[text() = 'XWiki.TranslationDocumentClass']/../property/scope")) {
                 this.translationVisibilities.add(node.getStringValue());
             }
+        }
+
+        // Record the ids of the wiki macros defined by XWiki.WikiMacroClass xobjects
+        for (Node node : rootElement
+            .selectNodes("//object[className = 'XWiki.WikiMacroClass']/property/id")) {
+            this.wikiMacroIds.add(node.getStringValue().trim());
         }
     }
 
@@ -561,6 +577,15 @@ public class XWikiDocument
     public List<String> getTranslationVisibilities()
     {
         return this.translationVisibilities;
+    }
+
+    /**
+     * @return the ids of the wiki macros defined in this document, and an empty list if there are none
+     * @since 18.10.0RC1
+     */
+    public List<String> getWikiMacroIds()
+    {
+        return this.wikiMacroIds;
     }
 
     /**
