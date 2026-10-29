@@ -145,7 +145,7 @@ public class XWikiDocument
     /**
      * @see #getWikiMacroIds()
      */
-    private List<String> wikiMacroIds = new ArrayList<>();
+    private final List<String> wikiMacroIds = new ArrayList<>();
 
     /**
      * @see #isDatePresent()

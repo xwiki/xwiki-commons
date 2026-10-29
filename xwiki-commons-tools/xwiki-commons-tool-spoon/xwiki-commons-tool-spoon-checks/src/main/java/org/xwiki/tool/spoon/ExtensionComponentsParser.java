@@ -52,7 +52,7 @@ public final class ExtensionComponentsParser
 
     private static final String DEFAULT_HINT = "default";
 
-    private static final int[] DELIMITERS = new int[] {'|', '\t', '\n', '\r'};
+    private static final int[] DELIMITERS = {'|', '\t', '\n', '\r'};
 
     private static final Pattern WHITE_SPACES = Pattern.compile("\\s");
 
