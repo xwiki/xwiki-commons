@@ -37,6 +37,11 @@
     <xwiki.enforcer.valid-poms.skip>${xwiki.enforcer.skip}</xwiki.enforcer.valid-poms.skip>
     <!-- By default don't skip Spoon checks -->
     <xwiki.spoon.skip>false</xwiki.spoon.skip>
+    <!-- The components provided by the extension, indexed by the Extension Manager. Empty by default so that the checks
+         verifying it never receive an unresolved expression. -->
+    <xwiki.extension.components/>
+    <!-- By default verify that the macros provided by a module are declared in xwiki.extension.components -->
+    <xwiki.extension.components.check.skip>false</xwiki.extension.components.check.skip>
   </properties>
   <build>
     <defaultGoal>install</defaultGoal>
@@ -177,6 +182,7 @@
                 <processor>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</processor>
                 <processor>org.xwiki.tool.spoon.ComponentAnnotationProcessor</processor>
                 <processor>org.xwiki.tool.spoon.InjectAnnotationProcessor</processor>
+                <processor>org.xwiki.tool.spoon.MacroDeclarationProcessor</processor>
               </processors>
               <processorProperties>
                 <processorProperty>
@@ -222,6 +228,23 @@
                       <value><![CDATA[
                         []
                       ]]></value>
+                    </property>
+                  </properties>
+                </processorProperty>
+                <processorProperty>
+                  <name>org.xwiki.tool.spoon.MacroDeclarationProcessor</name>
+                  <properties>
+                    <property>
+                      <name>declaredComponents</name>
+                      <value>${xwiki.extension.components}</value>
+                    </property>
+                    <property>
+                      <name>packaging</name>
+                      <value>${project.packaging}</value>
+                    </property>
+                    <property>
+                      <name>skip</name>
+                      <value>${xwiki.extension.components.check.skip}</value>
                     </property>
                   </properties>
                 </processorProperty>

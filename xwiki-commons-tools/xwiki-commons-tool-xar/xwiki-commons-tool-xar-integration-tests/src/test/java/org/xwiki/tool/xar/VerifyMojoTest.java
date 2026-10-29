@@ -95,6 +95,35 @@ class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
+    void executeWithWikiMacroDeclared() throws Exception
+    {
+        MavenBuild build = createBuild("/wikiMacroDeclared");
+        build.execute("install");
+        build.verifyErrorFreeLog();
+        assertThat(build.getLog(), containsString("Verifying wiki macro declarations... ok"));
+    }
+
+    @Test
+    void executeWithWikiMacroNotDeclared() throws Exception
+    {
+        verifyExecution("/wikiMacroNotDeclared", "Verifying wiki macro declarations... errors",
+            "- Macro [mymacro] provided by [Space.WebHome] is not declared in the [xwiki.extension.components] Maven "
+                + "property. Add [org.xwiki.rendering.macro.Macro/mymacro] to it.",
+            "- Macro [org.xwiki.rendering.macro.Macro/removed] is declared in the [xwiki.extension.components] Maven "
+                + "property but no macro with this hint was found in the current Maven module. Remove it.",
+            "There are errors in the XAR XML files!");
+    }
+
+    @Test
+    void executeWithWikiMacroNotDeclaredAndSkipped() throws Exception
+    {
+        MavenBuild build = createBuild("/wikiMacroNotDeclared");
+        build.addArgument("-Dxwiki.extension.components.check.skip=true");
+        build.execute("install");
+        build.verifyErrorFreeLog();
+    }
+
+    @Test
     void executeWithVisibleTechnicalPages() throws Exception
     {
         MavenBuild build = createBuild("/visibleTechnicalPages");
