@@ -470,12 +470,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             throw new SearchException("Failed to search extensions based on pattern [" + pattern + "]", e);
         }
 
-        List<Extension> extensions = new ArrayList<>(restExtensions.getExtensions().size());
-        for (ExtensionVersion restExtension : restExtensions.getExtensions()) {
-            extensions.add(new XWikiExtension(this, restExtension, this.licenseManager, this.factory));
-        }
-
-        return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(), extensions);
+        return toSearchResult(restExtensions);
     }
 
     @Override
@@ -514,9 +509,22 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             throw new SearchException("Failed to search extensions based on pattern [" + query.getQuery() + "]", e);
         }
 
+        return toSearchResult(restExtensions);
+    }
+
+    private IterableResult<Extension> toSearchResult(ExtensionsSearchResult restExtensions)
+    {
         List<Extension> extensions = new ArrayList<>(restExtensions.getExtensions().size());
         for (ExtensionVersion restExtension : restExtensions.getExtensions()) {
-            extensions.add(new XWikiExtension(this, restExtension, this.licenseManager, this.factory));
+            // The search index of the remote repository can be out of sync with the actual extensions and return an
+            // incomplete extension: skip it instead of failing the whole search
+            if (StringUtils.isBlank(restExtension.getId()) || StringUtils.isBlank(restExtension.getVersion())) {
+                LOGGER.warn("Skipping the extension with id [{}] and version [{}] returned by the search in repository"
+                    + " [{}]: an extension must have an id and a version", restExtension.getId(),
+                    restExtension.getVersion(), getDescriptor());
+            } else {
+                extensions.add(new XWikiExtension(this, restExtension, this.licenseManager, this.factory));
+            }
         }
 
         return new CollectionIterableResult<>(restExtensions.getTotalHits(), restExtensions.getOffset(), extensions);
