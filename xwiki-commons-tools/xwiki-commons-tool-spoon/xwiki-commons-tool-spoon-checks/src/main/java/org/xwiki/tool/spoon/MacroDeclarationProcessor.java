@@ -29,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import spoon.processing.Property;
 import spoon.reflect.declaration.CtAnnotation;
@@ -167,21 +168,18 @@ public class MacroDeclarationProcessor extends AbstractXWikiProcessor<CtClass<?>
 
     private boolean hasMacroRole(CtAnnotation<? extends Annotation> componentAnnotation)
     {
-        List<String> roles = new ArrayList<>();
-        for (Object role : toList(componentAnnotation.getValueAsObject("roles"))) {
-            // Class values are evaluated into type references, or into classes when they come from the classpath.
-            roles.add(role instanceof Class<?> roleClass ? roleClass.getName() : role.toString());
-        }
+        List<String> roles = toList(componentAnnotation.getValueAsObject("roles")).stream()
+            .map(role -> role instanceof Class<?> roleClass ? roleClass.getName() : role.toString())
+            .toList();
+        // Class values are evaluated into type references, or into classes when they come from the classpath.
         return roles.isEmpty() || roles.stream().anyMatch(ExtensionComponentsParser.MACRO_ROLE::equals);
     }
 
     private List<String> getHints(CtAnnotation<? extends Annotation> componentAnnotation,
         CtAnnotation<? extends Annotation> namedAnnotation)
     {
-        List<String> hints = new ArrayList<>();
-        for (Object hint : toList(componentAnnotation.getValueAsObject("hints"))) {
-            hints.add(hint.toString());
-        }
+        List<String> hints = toList(componentAnnotation.getValueAsObject("hints")).stream().map(Object::toString)
+            .collect(Collectors.toList());
         if (hints.isEmpty() && namedAnnotation != null) {
             hints.add(String.valueOf(namedAnnotation.getValueAsObject("value")));
         }
