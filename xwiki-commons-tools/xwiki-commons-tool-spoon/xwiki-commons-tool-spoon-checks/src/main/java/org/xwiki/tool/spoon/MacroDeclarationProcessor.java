@@ -22,6 +22,7 @@ package org.xwiki.tool.spoon;
 import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -194,7 +195,7 @@ public class MacroDeclarationProcessor extends AbstractXWikiProcessor<CtClass<?>
     {
         List<Object> list = new ArrayList<>();
         if (value instanceof Object[] array) {
-            list.addAll(List.of(array));
+            Collections.addAll(list, array);
         } else if (value instanceof Iterable<?> iterable) {
             iterable.forEach(list::add);
         } else if (value != null) {
