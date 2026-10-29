@@ -196,8 +196,6 @@ public class MacroDeclarationProcessor extends AbstractXWikiProcessor<CtClass<?>
         List<Object> list = new ArrayList<>();
         if (value instanceof Object[] array) {
             Collections.addAll(list, array);
-        } else if (value instanceof Iterable<?> iterable) {
-            iterable.forEach(list::add);
         } else if (value != null) {
             list.add(value);
         }
