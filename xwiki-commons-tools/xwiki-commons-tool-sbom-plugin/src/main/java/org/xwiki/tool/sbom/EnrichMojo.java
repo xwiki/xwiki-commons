@@ -22,6 +22,8 @@ package org.xwiki.tool.sbom;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -53,7 +55,9 @@ import com.github.packageurl.PackageURL;
  * <li>the npm package repackaged by each third-party webjar;</li>
  * <li>the organization supplying and manufacturing the artifact, taken from the POM {@code <organization>}.</li>
  * </ul>
- * It does nothing when no SBOM is attached to the artifact.
+ * It fails when the artifact, or one of its dependencies, is a webjar built from npm packages without an embedded
+ * SBOM of these packages (see {@code failOnMissingEmbeddedSBOM}). It does nothing when no SBOM is attached to the
+ * artifact.
  *
  * @version $Id$
  * @since 18.10.0RC1
@@ -63,6 +67,8 @@ import com.github.packageurl.PackageURL;
 public class EnrichMojo extends AbstractMojo
 {
     private static final String SBOM_CLASSIFIER = "cyclonedx";
+
+    private static final String WEBJAR_NODE_TYPE = "webjar-node";
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -81,6 +87,14 @@ public class EnrichMojo extends AbstractMojo
     @Parameter(defaultValue = "${project.organization.url}")
     private String supplierURL;
 
+    /**
+     * Whether to fail when the artifact, or one of its dependencies, is a webjar built from npm packages (i.e. of type
+     * {@code webjar-node}) without an SBOM of these packages embedded in its {@code META-INF/sbom/} directory: they
+     * would be missing from the SBOM. Only a warning is logged when {@code false}.
+     */
+    @Parameter(property = "xwiki.sbom.failOnMissingEmbeddedSBOM", defaultValue = "true")
+    private boolean failOnMissingEmbeddedSBOM;
+
     @Override
     public void execute() throws MojoExecutionException
     {
@@ -90,6 +104,12 @@ public class EnrichMojo extends AbstractMojo
         if (sbomFile.isEmpty()) {
             getLog().debug("No CycloneDX SBOM in JSON format is attached to the artifact, nothing to enrich.");
             return;
+        }
+
+        try {
+            checkEmbeddedSBOMs();
+        } catch (IOException e) {
+            throw new MojoExecutionException("Failed to look for the embedded SBOMs", e);
         }
 
         try {
@@ -105,13 +125,39 @@ public class EnrichMojo extends AbstractMojo
         }
     }
 
+    private void checkEmbeddedSBOMs() throws IOException, MojoExecutionException
+    {
+        List<String> missing = new ArrayList<>();
+        for (Artifact artifact : getArtifacts()) {
+            File file = artifact.getFile();
+            if (WEBJAR_NODE_TYPE.equals(artifact.getType()) && file != null && file.isFile()
+                && !SBOMEnricher.hasEmbeddedSBOM(file.toPath())) {
+                missing.add(artifact.getId());
+            }
+        }
+        if (!missing.isEmpty()) {
+            String message = String.format("The webjars %s don't embed the SBOM of the npm packages they bundle, so "
+                + "these packages are missing from the SBOM. Build them with pnpm sbom generating it in "
+                + "META-INF/sbom/.", missing);
+            if (this.failOnMissingEmbeddedSBOM) {
+                throw new MojoExecutionException(message);
+            }
+            getLog().warn(message);
+        }
+    }
+
+    private List<Artifact> getArtifacts()
+    {
+        return Stream.concat(Stream.of(this.project.getArtifact()), this.project.getArtifacts().stream()).toList();
+    }
+
     private Path getJAR(PackageURL purl)
     {
         // The type isn't compared: the webjars have their own types (e.g. "webjar-node") but are JAR files.
         Map<String, String> qualifiers = purl.getQualifiers();
         String classifier = qualifiers != null ? qualifiers.get("classifier") : null;
 
-        return Stream.concat(Stream.of(this.project.getArtifact()), this.project.getArtifacts().stream())
+        return getArtifacts().stream()
             .filter(artifact -> Objects.equals(purl.getNamespace(), artifact.getGroupId())
                 && Objects.equals(purl.getName(), artifact.getArtifactId()) && hasVersion(artifact, purl.getVersion())
                 && Objects.equals(classifier, StringUtils.defaultIfEmpty(artifact.getClassifier(), null)))
