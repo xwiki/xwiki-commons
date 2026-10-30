@@ -212,7 +212,19 @@ public class SBOMEnricher
         }
     }
 
-    private boolean isEmbeddedSBOM(String entryName)
+    /**
+     * @param jar a JAR file
+     * @return {@code true} if the JAR embeds at least one SBOM in its {@code META-INF/sbom/} directory
+     * @throws IOException when failing to read the JAR
+     */
+    public static boolean hasEmbeddedSBOM(Path jar) throws IOException
+    {
+        try (ZipFile zip = new ZipFile(jar.toFile())) {
+            return zip.stream().anyMatch(entry -> isEmbeddedSBOM(entry.getName()));
+        }
+    }
+
+    private static boolean isEmbeddedSBOM(String entryName)
     {
         return entryName.startsWith(SBOM_DIRECTORY) && entryName.endsWith(".json")
             && entryName.indexOf('/', SBOM_DIRECTORY.length()) < 0;

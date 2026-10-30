@@ -83,6 +83,7 @@ class EnrichMojoTest
         set("project", this.project);
         set("supplierName", "XWiki");
         set("supplierURL", "https://xwiki.org/");
+        set("failOnMissingEmbeddedSBOM", true);
 
         Artifact war = mockArtifact("war", null, "1.0", this.tmpDir.resolve("war.war"));
         Files.createFile(war.getFile().toPath());
@@ -102,6 +103,7 @@ class EnrichMojoTest
         }
         Artifact webjar = mockArtifact("livedata-webjar", "", "1.0-20261030.120000-1", jar);
         when(webjar.getBaseVersion()).thenReturn("1.0-SNAPSHOT");
+        when(webjar.getType()).thenReturn("webjar-node");
         Artifact tests = mockArtifact("livedata-webjar", "tests", "1.0-SNAPSHOT", this.tmpDir.resolve("missing.jar"));
         this.project.setArtifacts(Set.of(webjar, tests));
         File sbomFile = attachSBOM(SBOM);
@@ -138,6 +140,52 @@ class EnrichMojoTest
 
         assertEquals("Failed to enrich the SBOM [%s]".formatted(this.tmpDir.resolve("bom.json")),
             exception.getMessage());
+    }
+
+    @Test
+    void executeWithWebjarWithoutEmbeddedSBOM() throws Exception
+    {
+        Path jar = this.tmpDir.resolve("other-webjar.jar");
+        try (OutputStream stream = Files.newOutputStream(jar); ZipOutputStream zip = new ZipOutputStream(stream)) {
+            zip.putNextEntry(new ZipEntry("META-INF/resources/webjars/other/index.js"));
+            zip.closeEntry();
+        }
+        Artifact webjar = mockArtifact("other-webjar", null, "1.0", jar);
+        when(webjar.getType()).thenReturn("webjar-node");
+        when(webjar.getId()).thenReturn("org.xwiki.platform:other-webjar:webjar-node:1.0");
+        this.project.setArtifacts(Set.of(webjar));
+        File sbomFile = attachSBOM(SBOM);
+        String message = "The webjars [org.xwiki.platform:other-webjar:webjar-node:1.0] don't embed the SBOM of the "
+            + "npm packages they bundle, so these packages are missing from the SBOM. Build them with pnpm sbom "
+            + "generating it in META-INF/sbom/.";
+
+        MojoExecutionException exception = assertThrows(MojoExecutionException.class, this.mojo::execute);
+
+        assertEquals(message, exception.getMessage());
+
+        set("failOnMissingEmbeddedSBOM", false);
+        Log log = mock(Log.class);
+        this.mojo.setLog(log);
+
+        this.mojo.execute();
+
+        verify(log).warn(message);
+        assertEquals("XWiki", MAPPER.readTree(sbomFile).at("/metadata/supplier/name").asText());
+    }
+
+    @Test
+    void executeWithInvalidWebjar() throws Exception
+    {
+        Path jar = this.tmpDir.resolve("invalid.jar");
+        Files.writeString(jar, "not a JAR");
+        Artifact webjar = mockArtifact("invalid", null, "1.0", jar);
+        when(webjar.getType()).thenReturn("webjar-node");
+        this.project.setArtifacts(Set.of(webjar));
+        attachSBOM(SBOM);
+
+        MojoExecutionException exception = assertThrows(MojoExecutionException.class, this.mojo::execute);
+
+        assertEquals("Failed to look for the embedded SBOMs", exception.getMessage());
     }
 
     private File attachSBOM(String content) throws Exception
