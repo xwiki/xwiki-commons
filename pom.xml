@@ -231,6 +231,13 @@
     <xwiki.release.jira.settingsKey>jira.xwiki.org</xwiki.release.jira.settingsKey>
     <xwiki.release.jira.scope>session</xwiki.release.jira.scope>
 
+    <!-- The CycloneDX component type of the artifact described by the SBOM generated at release time. Distributions
+         (i.e. artifacts meant to be run as-is, such as the WAR) should set it to "application". -->
+    <xwiki.cyclonedx.projectType>library</xwiki.cyclonedx.projectType>
+    <!-- Set to true to not generate the SBOM at release time. Test modules don't get one in any case, see the
+         release profile. -->
+    <xwiki.cyclonedx.skip>false</xwiki.cyclonedx.skip>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- When this property is set to true then functional tests will check if an XWiki instance is already running
@@ -370,7 +377,10 @@
   </properties>
   <licenses>
     <license>
-      <name>LGPL 2.1</name>
+      <!-- Use the SPDX identifier so that tools reading it (e.g. the CycloneDX plugin generating the SBOM) identify the
+           exact license: our sources can be used under version 2.1 "or (at your option) any later version". The
+           Extension Manager knows this name as an alias of "GNU Lesser General Public License 2.1". -->
+      <name>LGPL-2.1-or-later</name>
       <url>https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
       <distribution>repo</distribution>
     </license>
@@ -3085,6 +3095,22 @@
           </dependencies>
         </plugin>
         <plugin>
+          <groupId>org.cyclonedx</groupId>
+          <artifactId>cyclonedx-maven-plugin</artifactId>
+          <version>2.9.3</version>
+          <configuration>
+            <outputFormat>json</outputFormat>
+            <!-- Computed in the release profile from xwiki.cyclonedx.skip and the artifact id. It's not defined in any
+                 POM on purpose: Maven replaces the references to POM properties when loading the POM, which would be
+                 before the release profile computes it. -->
+            <skip>${xwiki.cyclonedx.internal.skip}</skip>
+            <projectType>${xwiki.cyclonedx.projectType}</projectType>
+            <!-- Provided dependencies are supplied by the environment running the artifact (e.g. the Servlet API by
+                 the Servlet container), they're not part of what we distribute. -->
+            <includeProvidedScope>false</includeProvidedScope>
+          </configuration>
+        </plugin>
+        <plugin>
           <groupId>com.ragedunicorn.tools.maven</groupId>
           <artifactId>github-release-maven-plugin</artifactId>
           <version>1.0.10</version>
@@ -3197,6 +3223,47 @@
                 </configuration>
                 <goals>
                   <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Test modules (test frameworks, page objects, functional tests, test content, etc.) are not part of what
+               users run, so they don't need an SBOM, and their test dependencies would only lead to vulnerability
+               reports that don't apply to XWiki. They're recognized by their artifact id, which has "test", "tests",
+               "pageobject" or "pageobjects" as one of its dash-separated parts (e.g. "xwiki-platform-icon-test-docker",
+               "xwiki-platform-icon-test-pageobjects"). The value includes the "xwiki.cyclonedx.skip" value so that a
+               module setting it to true still skips the SBOM. When the regex doesn't match, the property is set to the
+               value as is, which doesn't read as true. -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>skip-test-modules-sbom</id>
+                <goals>
+                  <goal>regex-property</goal>
+                </goals>
+                <configuration>
+                  <name>xwiki.cyclonedx.internal.skip</name>
+                  <value>${xwiki.cyclonedx.skip}:${project.artifactId}</value>
+                  <regex>^(?:true:.*|.*[:-](?:tests?|pageobjects?)(?:-.*)?)$</regex>
+                  <replacement>true</replacement>
+                  <failIfNoMatch>false</failIfNoMatch>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Generate a CycloneDX SBOM (Software Bill of Materials) listing the third-party components of the
+               artifact, and attach it to the artifact so that it's deployed with it (with the "cyclonedx" classifier).
+          -->
+          <plugin>
+            <groupId>org.cyclonedx</groupId>
+            <artifactId>cyclonedx-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>generate-sbom</id>
+                <goals>
+                  <goal>makeBom</goal>
                 </goals>
               </execution>
             </executions>
