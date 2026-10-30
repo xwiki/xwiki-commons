@@ -32,7 +32,7 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Extension - Handler - JAR</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.81</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.85</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>

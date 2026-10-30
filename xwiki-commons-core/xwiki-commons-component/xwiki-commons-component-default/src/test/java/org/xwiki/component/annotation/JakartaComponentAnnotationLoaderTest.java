@@ -227,6 +227,27 @@ class JakartaComponentAnnotationLoaderTest
     }
 
     @Test
+    void unregisterOverridingComponent()
+    {
+        ComponentManager componentManager = new EmbeddableComponentManager();
+        Type roleType = this.loader.getComponentsDescriptors(SimpleRole.class).getFirst().getRoleType();
+
+        // Simulate a standard component overridden by a component of an extension declared with a better priority
+        List<ComponentDeclaration> standardDeclarations = List.of(new ComponentDeclaration(SimpleRole.class.getName()));
+        this.loader.register(componentManager, getClass().getClassLoader(), standardDeclarations);
+        List<ComponentDeclaration> extensionDeclarations =
+            List.of(new ComponentDeclaration(OverrideRole.class.getName(), 500));
+        this.loader.register(componentManager, getClass().getClassLoader(), extensionDeclarations);
+        assertEquals(OverrideRole.class,
+            componentManager.getComponentDescriptor(roleType, "test").getImplementation());
+
+        // Uninstalling the extension restores the standard component
+        this.loader.unregister(componentManager, getClass().getClassLoader(), extensionDeclarations);
+        assertEquals(SimpleRole.class,
+            componentManager.getComponentDescriptor(roleType, "test").getImplementation());
+    }
+
+    @Test
     void findComponentRoleTypes()
     {
         assertComponentRoleTypes(RoleImpl.class);

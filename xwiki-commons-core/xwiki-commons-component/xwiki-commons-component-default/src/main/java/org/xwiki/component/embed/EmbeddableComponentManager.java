@@ -24,14 +24,15 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 
 import jakarta.inject.Provider;
 
@@ -95,6 +96,12 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         private final AtomicReference<R> instance = new AtomicReference<>();
 
         /**
+         * {@code true} when the instance was provided at registration time, in which case the component manager can't
+         * create it again after releasing it.
+         */
+        private final boolean providedInstance;
+
+        /**
          * Flag used when computing the disposal order.
          */
         private boolean disposing;
@@ -105,6 +112,12 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         {
             this.descriptor = descriptor;
             this.instance.set(instance);
+            this.providedInstance = instance != null;
+        }
+
+        int getRoleHintPriority()
+        {
+            return this.descriptor.getRoleHintPriority();
         }
 
         @Override
@@ -120,8 +133,26 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         }
     }
 
+    /**
+     * The result of adding an entry to a {@link ComponentEntries}.
+     *
+     * @param deactivatedEntry the entry which was active before and is not anymore, {@code null} if none
+     * @param replacedEntry the entry of the same component which was removed, {@code null} if none
+     * @param active {@code true} if the added entry is the active one
+     */
+    private record StackChange<R>(ComponentEntry<R> deactivatedEntry, ComponentEntry<R> replacedEntry, boolean active)
+    {
+    }
+
     private static class ComponentEntries<R> extends PriorityEntries<ComponentEntry<R>>
     {
+        /**
+         * The registered components hidden by the active one with the same hint, from the best priority to the worst.
+         * They are kept so that unregistering the active component makes the next one active again, instead of
+         * leaving the hint without any component (e.g. uninstalling an extension overriding a standard component).
+         */
+        private final Map<String, List<ComponentEntry<R>>> hidden = new HashMap<>();
+
         ComponentEntries()
         {
         }
@@ -200,6 +231,159 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
                         put(newEntry.descriptor.getRoleHint(), newEntry);
                     }
                 }
+            } finally {
+                this.lock.writeLock().unlock();
+            }
+        }
+
+        /**
+         * The caller must hold the write lock.
+         *
+         * @param hint the role hint
+         * @return a modifiable copy of all the entries registered with the passed hint, the active one first
+         */
+        List<ComponentEntry<R>> getStack(String hint)
+        {
+            List<ComponentEntry<R>> stack = new ArrayList<>();
+
+            ComponentEntry<R> activeEntry = this.map.get(hint);
+            if (activeEntry != null) {
+                stack.add(activeEntry);
+                stack.addAll(this.hidden.getOrDefault(hint, List.of()));
+            }
+
+            return stack;
+        }
+
+        /**
+         * The caller must hold the write lock.
+         *
+         * @param hint the role hint
+         * @param stack all the entries to register with the passed hint, the active one first
+         */
+        void setStack(String hint, List<ComponentEntry<R>> stack)
+        {
+            if (stack.isEmpty()) {
+                remove(hint);
+                this.hidden.remove(hint);
+            } else {
+                if (this.map.get(hint) != stack.get(0)) {
+                    // Remove first so that the new active entry goes after the other hints in the iteration order of
+                    // the map, as for a newly registered component
+                    remove(hint);
+                    put(hint, stack.get(0));
+                }
+                if (stack.size() > 1) {
+                    this.hidden.put(hint, new ArrayList<>(stack.subList(1, stack.size())));
+                } else {
+                    this.hidden.remove(hint);
+                }
+            }
+        }
+
+        /**
+         * Add a new entry for the passed hint. It replaces the entry of the same component, if any, and it hides (or is
+         * hidden by) the entries of other components, depending on their priority.
+         *
+         * @param hint the role hint
+         * @param newEntry the entry to add
+         * @return what changed, or {@code null} if the entry was not added because the same registration already exists
+         *     or because the same component is already registered with a better priority
+         */
+        StackChange<R> push(String hint, ComponentEntry<R> newEntry)
+        {
+            this.lock.writeLock().lock();
+
+            try {
+                List<ComponentEntry<R>> stack = getStack(hint);
+                ComponentEntry<R> previousActiveEntry = stack.isEmpty() ? null : stack.get(0);
+
+                if (stack.stream().anyMatch(e -> isSameRegistration(e, newEntry))) {
+                    // Releasing the existing entry would dispose an instance which is still registered
+                    return null;
+                }
+
+                ComponentEntry<R> replacedEntry =
+                    stack.stream().filter(e -> isSameComponent(e, newEntry)).findFirst().orElse(null);
+                if (replacedEntry != null) {
+                    if (replacedEntry.getRoleHintPriority() < newEntry.getRoleHintPriority()) {
+                        // The same component is already registered with a better priority
+                        return null;
+                    }
+                    stack.remove(replacedEntry);
+                }
+
+                // In case of same priority, the last registered component wins
+                int index = 0;
+                while (index < stack.size()
+                    && stack.get(index).getRoleHintPriority() < newEntry.getRoleHintPriority()) {
+                    index++;
+                }
+                stack.add(index, newEntry);
+
+                setStack(hint, stack);
+
+                return new StackChange<>(index == 0 ? previousActiveEntry : null, replacedEntry, index == 0);
+            } finally {
+                this.lock.writeLock().unlock();
+            }
+        }
+
+        /**
+         * Registering again a descriptor without instance is not taken into account: it replaces the existing entry,
+         * which drops its cached singleton, and some callers rely on that to get a new instance.
+         *
+         * @return {@code true} if both entries have equal descriptors and the same instance provided at registration
+         *     time, i.e. if the same component is registered again
+         */
+        private static boolean isSameRegistration(ComponentEntry<?> entry1, ComponentEntry<?> entry2)
+        {
+            return entry1.providedInstance && entry2.providedInstance
+                && entry1.instance.get() == entry2.instance.get() && entry1.descriptor.equals(entry2.descriptor);
+        }
+
+        /**
+         * Compare the implementation class names and not the classes, since the same class loaded again by another
+         * class loader (e.g. a new version of an extension, or a script defining the class executed again) is still
+         * the same component, which has to be replaced and not hidden. Different instances provided for the same class
+         * (or without any class) with different descriptors (e.g. another priority) are different components though,
+         * e.g. the components defined in wiki pages, which all share a generic implementation class. With equal
+         * descriptors, nothing tells a new instance of the same component (e.g. a wiki macro registered again when
+         * its page is imported again) from another component, so the new instance replaces the existing one, as
+         * otherwise registering again the same component without unregistering it first would accumulate hidden
+         * instances.
+         */
+        // Comparing class names is the point of this method, see the javadoc
+        @SuppressWarnings("java:S1872")
+        private static boolean isSameComponent(ComponentEntry<?> entry1, ComponentEntry<?> entry2)
+        {
+            Class<?> implementation1 = entry1.descriptor.getImplementation();
+            Class<?> implementation2 = entry2.descriptor.getImplementation();
+
+            if (implementation1 == implementation2) {
+                return !entry1.providedInstance || !entry2.providedInstance
+                    || entry1.instance.get() == entry2.instance.get() || entry1.descriptor.equals(entry2.descriptor);
+            }
+
+            return implementation1 != null && implementation2 != null
+                && implementation1.getName().equals(implementation2.getName());
+        }
+
+        /**
+         * Forget all the hidden entries.
+         *
+         * @return the entries which were hidden
+         */
+        List<ComponentEntry<R>> clearHidden()
+        {
+            this.lock.writeLock().lock();
+
+            try {
+                List<ComponentEntry<R>> entries = new ArrayList<>();
+                this.hidden.values().forEach(entries::addAll);
+                this.hidden.clear();
+
+                return entries;
             } finally {
                 this.lock.writeLock().unlock();
             }
@@ -749,53 +933,167 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
     @Override
     public <T> void registerComponent(ComponentDescriptor<T> componentDescriptor, T componentInstance)
     {
-        ComponentEntry<?> componentEntry =
-            getComponentEntry(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint(), true);
+        ComponentEntry<T> newEntry =
+            new ComponentEntry<>(new DefaultComponentDescriptor<>(componentDescriptor), componentInstance);
+        Type roleType = newEntry.descriptor.getRoleType();
+        String roleHint = toHint(newEntry.descriptor.getRoleHint());
 
-        if (componentEntry == null
-            || componentEntry.descriptor.getRoleHintPriority() >= componentDescriptor.getRoleHintPriority()) {
-            // Remove any existing component associated to the provided roleHint
-            removeComponentWithoutException(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint());
+        // A Provider bridged from the other side (javax/jakarta) is not taken into account: it's only a fallback for
+        // lookups, and ignoring the new Provider would lose it for good when the bridged one is unregistered.
+        ComponentEntries<T> entries = this.componentEntries.computeIfAbsent(roleType, k -> new ComponentEntries());
+        StackChange<T> change = entries.push(roleHint, newEntry);
 
-            // Register new component
-            addComponent(new DefaultComponentDescriptor<>(componentDescriptor), componentInstance);
+        if (change != null) {
+            // The same instance can be registered again with another descriptor (e.g. another priority)
+            if (change.replacedEntry() != null
+                && change.replacedEntry().instance.get() != newEntry.instance.get()) {
+                releaseEntry(change.replacedEntry());
+            }
+
+            if (change.deactivatedEntry() != null) {
+                if (change.deactivatedEntry() != change.replacedEntry()) {
+                    hideEntry(change.deactivatedEntry());
+                }
+
+                // Send event about the unregistration of the component which is not active anymore
+                notifyComponentUnregistered(change.deactivatedEntry());
+            }
+
+            if (change.active()) {
+                // Send event about component registration
+                notifyComponentRegistered(newEntry);
+            }
         }
     }
 
-    private <T> void addComponent(ComponentDescriptor<T> descriptor, T instance)
+    private static String toHint(String hint)
     {
-        // Register new component
-        ComponentEntries<T> entries =
-            this.componentEntries.computeIfAbsent(descriptor.getRoleType(), k -> new ComponentEntries());
-        entries.put(descriptor, instance);
+        return hint != null ? hint : RoleHint.DEFAULT_HINT;
+    }
 
-        // Send event about component registration
+    private void notifyComponentRegistered(ComponentEntry<?> entry)
+    {
         if (this.eventManager != null) {
-            this.eventManager.notifyComponentRegistered(descriptor, this);
+            this.eventManager.notifyComponentRegistered(entry.descriptor, this);
+        }
+    }
+
+    private void notifyComponentUnregistered(ComponentEntry<?> entry)
+    {
+        if (this.eventManager != null) {
+            this.eventManager.notifyComponentUnregistered(entry.descriptor, this);
         }
     }
 
     // Remove
 
     @Override
+    @SuppressWarnings("unchecked")
     public void unregisterComponent(Type role, String hint)
     {
-        removeComponentWithoutException(role, hint);
+        ComponentEntries<Object> entries = this.componentEntries.get(role);
+
+        if (entries != null) {
+            String roleHint = toHint(hint);
+
+            List<ComponentEntry<Object>> stack;
+
+            // Make sure to remove the entries from the map before destroying them to reduce at the minimum the risk of
+            // lookupping something invalid
+            entries.getLock().writeLock().lock();
+
+            try {
+                stack = entries.getStack(roleHint);
+                entries.setStack(roleHint, List.of());
+            } finally {
+                entries.getLock().writeLock().unlock();
+            }
+
+            // Clean any resource associated to the component instances and descriptors
+            stack.forEach(this::releaseEntry);
+
+            if (!stack.isEmpty()) {
+                // Send event about component unregistration (the other ones were not visible)
+                notifyComponentUnregistered(stack.get(0));
+            }
+        }
     }
 
     @Override
     public void unregisterComponent(ComponentDescriptor<?> componentDescriptor)
     {
-        if (Objects.equals(getComponentDescriptor(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint()),
-            componentDescriptor)) {
-            unregisterComponent(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint());
+        unregisterEntry(componentDescriptor, e -> true);
+    }
+
+    @Override
+    public <T> void unregisterComponent(ComponentDescriptor<T> componentDescriptor, T componentInstance)
+    {
+        if (componentInstance == null) {
+            unregisterComponent(componentDescriptor);
+        } else {
+            unregisterEntry(componentDescriptor, e -> e.providedInstance && e.instance.get() == componentInstance);
+        }
+    }
+
+    /**
+     * @param componentDescriptor the descriptor of the component to unregister
+     * @param filter the condition the entry with an equal descriptor must also match to be unregistered
+     */
+    @SuppressWarnings("unchecked")
+    private void unregisterEntry(ComponentDescriptor<?> componentDescriptor, Predicate<ComponentEntry<?>> filter)
+    {
+        ComponentEntries<Object> entries = this.componentEntries.get(componentDescriptor.getRoleType());
+
+        if (entries != null) {
+            String roleHint = toHint(componentDescriptor.getRoleHint());
+
+            ComponentEntry<Object> removedEntry;
+            ComponentEntry<Object> newActiveEntry = null;
+            boolean active;
+
+            // Make sure to remove the entry from the map before destroying it to reduce at the minimum the risk of
+            // lookupping something invalid
+            entries.getLock().writeLock().lock();
+
+            try {
+                List<ComponentEntry<Object>> stack = entries.getStack(roleHint);
+                removedEntry = stack.stream().filter(e -> e.descriptor.equals(componentDescriptor) && filter.test(e))
+                    .findFirst().orElse(null);
+                if (removedEntry == null) {
+                    return;
+                }
+
+                active = stack.get(0) == removedEntry;
+                stack.remove(removedEntry);
+                entries.setStack(roleHint, stack);
+
+                if (active && !stack.isEmpty()) {
+                    newActiveEntry = stack.get(0);
+                }
+            } finally {
+                entries.getLock().writeLock().unlock();
+            }
+
+            // Clean any resource associated to the component instance and descriptor
+            releaseEntry(removedEntry);
+
+            if (active) {
+                // Send event about component unregistration
+                notifyComponentUnregistered(removedEntry);
+
+                if (newActiveEntry != null) {
+                    // Send event about the registration of the component which is active again
+                    notifyComponentRegistered(newActiveEntry);
+                }
+            }
         }
     }
 
     @Override
     public void release(Object component) throws ComponentLifecycleException
     {
-        // First find the descriptor matching the passed component
+        // First find the descriptor matching the passed component. The hidden components are not taken into account
+        // since they're not used.
         ComponentEntry<?> componentEntry = null;
         for (ComponentEntries entries : this.componentEntries.values()) {
             componentEntry = entries.get(component);
@@ -841,50 +1139,34 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         }
     }
 
-    private void releaseComponentEntry(ComponentEntry<?> componentEntry) throws ComponentLifecycleException
+    /**
+     * Release the instance of a component which is not registered anymore.
+     * <p>
+     * Note: register/unregister methods should throw a {@link ComponentLifecycleException} instead of logging it but
+     * that would break backward compatibility to add it.
+     */
+    private void releaseEntry(ComponentEntry<?> componentEntry)
     {
-        // clean existing instance
-        releaseInstance(componentEntry);
-    }
-
-    private void removeComponent(Type role, String hint) throws ComponentLifecycleException
-    {
-        // Make sure to remove the entry from the map before destroying it to reduce at the minimum the risk of
-        // lookupping something invalid
-        ComponentEntries<?> entries = this.componentEntries.get(role);
-
-        if (entries != null) {
-            ComponentEntry<?> componentEntry = entries.remove(hint != null ? hint : RoleHint.DEFAULT_HINT);
-
-            if (componentEntry != null) {
-                ComponentDescriptor<?> oldDescriptor = componentEntry.descriptor;
-
-                // We don't want the component manager to dispose itself just because it's not registered as component*
-                // anymore
-                if (componentEntry.instance.get() != this) {
-                    // clean any resource associated to the component instance and descriptor
-                    releaseComponentEntry(componentEntry);
-                }
-
-                // Send event about component unregistration
-                if (this.eventManager != null && oldDescriptor != null) {
-                    this.eventManager.notifyComponentUnregistered(oldDescriptor, this);
-                }
+        // We don't want the component manager to dispose itself just because it's not registered as component anymore
+        if (componentEntry.instance.get() != this) {
+            try {
+                releaseInstance(componentEntry);
+            } catch (Exception e) {
+                LOGGER.warn("Instance released but disposal failed. Some resources may not have been released: [{}]",
+                    ExceptionUtils.getRootCauseMessage(e));
             }
         }
     }
 
     /**
-     * Note: This method shouldn't exist but register/unregister methods should throw a
-     * {@link ComponentLifecycleException} but that would break backward compatibility to add it.
+     * Release the instance of a component hidden by another component registered with the same role type and role
+     * hint, so that it does not keep running while not being active. An instance provided at registration time is kept
+     * since it could not be created again when the component becomes active again.
      */
-    private void removeComponentWithoutException(Type role, String hint)
+    private void hideEntry(ComponentEntry<?> componentEntry)
     {
-        try {
-            removeComponent(role, hint);
-        } catch (Exception e) {
-            LOGGER.warn("Instance released but disposal failed. Some resources may not have been released: [{}]",
-                ExceptionUtils.getRootCauseMessage(e));
+        if (!componentEntry.providedInstance) {
+            releaseEntry(componentEntry);
         }
     }
 
@@ -977,6 +1259,13 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
                     }
                 }
             }
+        }
+
+        // Dispose the instances provided for components hidden by other ones (the other hidden components have no
+        // instance). They're disposed last and without taking into account their DisposePriority since they're not
+        // used: no other component can depend on them.
+        for (ComponentEntries<?> entries : this.componentEntries.values()) {
+            entries.clearHidden().forEach(this::releaseEntry);
         }
 
         // Remove disposed components from the map. Doing it in two steps to give as many chances as possible to the
