@@ -247,6 +247,8 @@ public class MathMLDefinitions
 
     private final Set<String> textIntegrationPoints;
 
+    private final Set<String> textIntegrationPointElements;
+
     /**
      * Default constructor.
      */
@@ -271,8 +273,9 @@ public class MathMLDefinitions
             SCRIPTSIZEMULTIPLIER, SELECTION, SEPARATOR, SEPARATORS, STRETCHY, SUBSCRIPTSHIFT, SUPSCRIPTSHIFT, SYMMETRIC,
             VOFFSET, WIDTH, XMLNS));
 
-        this.textIntegrationPoints = new HashSet<>(Arrays.asList(
-            MI, MO, MN, MS, MTEXT, ANNOTATION_XML));
+        this.textIntegrationPoints = new HashSet<>(Arrays.asList(MI, MO, MN, MS, MTEXT));
+
+        this.textIntegrationPointElements = new HashSet<>(Arrays.asList(MGLYPH, MALIGNMARK));
     }
 
     /**
@@ -304,10 +307,26 @@ public class MathMLDefinitions
 
     /**
      * @param tagName the name of the tag to check
-     * @return if the tag is a text integration point, i.e., its children can be HTML elements
+     * @return if the tag is a text integration point, i.e., its children are HTML elements except for the elements
+     *     for which {@link #isMathMLInTextIntegrationPoint(String)} returns {@code true}
+     * @since 18.10.0RC1
+     * @since 18.4.8
+     * @since 17.10.15
      */
-    public boolean isTextOrHTMLIntegrationPoint(String tagName)
+    public boolean isTextIntegrationPoint(String tagName)
     {
         return this.textIntegrationPoints.contains(tagName);
+    }
+
+    /**
+     * @param tagName the name of the tag to check
+     * @return if the tag is parsed as MathML element when it is a child of a text integration point
+     * @since 18.10.0RC1
+     * @since 18.4.8
+     * @since 17.10.15
+     */
+    public boolean isMathMLInTextIntegrationPoint(String tagName)
+    {
+        return this.textIntegrationPointElements.contains(tagName);
     }
 }

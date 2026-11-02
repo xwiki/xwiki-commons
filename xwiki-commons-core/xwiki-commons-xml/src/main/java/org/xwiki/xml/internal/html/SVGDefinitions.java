@@ -115,7 +115,9 @@ public class SVGDefinitions
 
         this.commonHTMLElements = new HashSet<>(Arrays.asList("title", "style", "font", "a", "script"));
 
-        this.htmlIntegrationPoints = new HashSet<>(Arrays.asList("foreignobject", "desc", "title", "annotation-xml"));
+        // The HTML integration points as defined in the HTML standard, which is how browsers parse them. Unlike
+        // DOMPurify, this list is only used to compute the namespace of their children, see SanitizerFilter.
+        this.htmlIntegrationPoints = new HashSet<>(Arrays.asList("foreignobject", "desc", "title"));
     }
 
     /**
@@ -165,7 +167,8 @@ public class SVGDefinitions
 
     /**
      * @param tagName the name of the tag to check
-     * @return if the tag can contain HTML children
+     * @return if the tag is an HTML integration point, i.e., browsers parse its children as HTML elements unless they
+     *     are {@code svg} or {@code math} elements
      */
     public boolean isHTMLIntegrationPoint(String tagName)
     {

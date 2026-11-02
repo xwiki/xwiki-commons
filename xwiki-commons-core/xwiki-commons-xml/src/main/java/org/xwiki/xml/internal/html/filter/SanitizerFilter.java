@@ -64,6 +64,12 @@ public class SanitizerFilter extends AbstractHTMLFilter
 
     private static final String HTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
 
+    private static final String MATH = "math";
+
+    private static final String SVG = "svg";
+
+    private static final String ANNOTATION_XML = "annotation-xml";
+
     @Inject
     protected HTMLElementSanitizer htmlElementSanitizer;
 
@@ -176,8 +182,9 @@ public class SanitizerFilter extends AbstractHTMLFilter
     /**
      * Computes the namespace of the current element if it is allowed.
      * <p>
-     * Tries to follow the logic in DOMPurify by Cure53 and other contributors | Released under the Apache license
-     * 2.0 and Mozilla Public License 2.0 - <a href="https://github.com/cure53/DOMPurify/blob/main/LICENSE">LICENSE</a>.
+     * The namespace is computed like browsers compute it when parsing the serialized HTML, and then checked
+     * following the logic in DOMPurify by Cure53 and other contributors | Released under the Apache license 2.0 and
+     * Mozilla Public License 2.0 - <a href="https://github.com/cure53/DOMPurify/blob/main/LICENSE">LICENSE</a>.
      *
      * @param element the element to check
      * @param parentTag the information of the parent tag
@@ -188,57 +195,149 @@ public class SanitizerFilter extends AbstractHTMLFilter
     {
         TagInformation result = TagInformation.INVALID;
 
-        // Stay in parent SVG/MathML namespace if the current element clearly belongs to the parent namespace.
-        if (SVG_NAMESPACE.equals(parentTag.namespace) && isPureSVGTag(element.getTagName(), parentTag)) {
-            result = new TagInformation(element.getTagName(), SVG_NAMESPACE);
-        } else if (MATHML_NAMESPACE.equals(parentTag.namespace)
-            && this.mathMLDefinitions.isMathMLTag(element.getTagName()))
-        {
-            result = new TagInformation(element.getTagName(), MATHML_NAMESPACE);
-        } else if (areHTMLChildrenAllowed(parentTag)) {
-            // If HTML children are allowed, only allow the element if is actually an HTML element or the root
-            // element of MathML/SVG.
-            if ("math".equals(element.getTagName())) {
-                result = new TagInformation(element.getTagName(), MATHML_NAMESPACE);
-            } else if ("svg".equals(element.getTagName())) {
-                result = new TagInformation(element.getTagName(), SVG_NAMESPACE);
-            } else if (isPossiblyHtmlTag(element.getTagName())) {
-                result = new TagInformation(element.getTagName(), HTML_NAMESPACE);
-            }
+        String tagName = element.getTagName();
+        String namespace = getParsedNamespace(tagName, parentTag);
+        if (isValidNamespace(tagName, namespace, parentTag)) {
+            result = new TagInformation(tagName, namespace);
         }
+
         return result;
     }
 
     /**
-     * @param tagName the tag name to check
-     * @param parentTag the parent information
-     * @return if the tag is an SVG tag and not also an HTML tag that is nested in an HTML integration point in SVG
+     * Computes the namespace that browsers assign to the element when parsing it as HTML, following the tree
+     * construction rules of the <a href="https://html.spec.whatwg.org/multipage/parsing.html#tree-construction">HTML
+     * standard</a>.
+     *
+     * @param tagName the name of the element
+     * @param parentTag the information of the parent tag
+     * @return the namespace of the element
      */
-    private boolean isPureSVGTag(String tagName, TagInformation parentTag)
+    private String getParsedNamespace(String tagName, TagInformation parentTag)
     {
-        return this.svgDefinitions.isSVGTag(tagName) && (
-            !this.svgDefinitions.isHTMLIntegrationPoint(parentTag.tagName)
-                || !this.svgDefinitions.isCommonHTMLElement(tagName));
-    }
+        String result;
 
-    private boolean areHTMLChildrenAllowed(TagInformation parent)
-    {
-        boolean result = HTML_NAMESPACE.equals(parent.namespace);
-        result = result || (SVG_NAMESPACE.equals(parent.namespace)
-            && this.svgDefinitions.isHTMLIntegrationPoint(parent.tagName));
-        result = result || (MATHML_NAMESPACE.equals(parent.namespace)
-            && this.mathMLDefinitions.isTextOrHTMLIntegrationPoint(parent.tagName));
+        if (isParsedAsHTML(tagName, parentTag)) {
+            // The only ways to start foreign content are the math and svg elements.
+            if (MATH.equals(tagName)) {
+                result = MATHML_NAMESPACE;
+            } else if (SVG.equals(tagName)) {
+                result = SVG_NAMESPACE;
+            } else {
+                result = HTML_NAMESPACE;
+            }
+        } else {
+            // Inside foreign content, elements stay in the namespace of their parent. Elements that would make the
+            // parser leave the foreign content aren't SVG or MathML elements and are thus rejected later.
+            result = parentTag.namespace;
+        }
+
         return result;
     }
 
     /**
-     * @param tagName the tag name to check
-     * @return if the given tag is neither a MathML tag nor an SVG tag that is also an HTML tag
+     * @param tagName the name of the element
+     * @param parentTag the information of the parent tag
+     * @return {@code true} if browsers parse the element using the rules for HTML content, i.e., if the parent is an
+     *     HTML element or an integration point that allows the element
      */
-    private boolean isPossiblyHtmlTag(String tagName)
+    private boolean isParsedAsHTML(String tagName, TagInformation parentTag)
     {
-        return !this.mathMLDefinitions.isMathMLTag(tagName)
-            && (!this.svgDefinitions.isSVGTag(tagName) || this.svgDefinitions.isCommonHTMLElement(tagName));
+        boolean result;
+
+        if (SVG_NAMESPACE.equals(parentTag.namespace)) {
+            result = this.svgDefinitions.isHTMLIntegrationPoint(parentTag.tagName);
+        } else if (MATHML_NAMESPACE.equals(parentTag.namespace)) {
+            result = (this.mathMLDefinitions.isTextIntegrationPoint(parentTag.tagName)
+                && !this.mathMLDefinitions.isMathMLInTextIntegrationPoint(tagName))
+                || (ANNOTATION_XML.equals(parentTag.tagName) && SVG.equals(tagName));
+        } else {
+            result = true;
+        }
+
+        return result;
+    }
+
+    /**
+     * Checks if the element is allowed in the given namespace, following {@code _checkValidNamespace} in DOMPurify.
+     * Like DOMPurify, this doesn't allow HTML content in SVG, not even in SVG elements that are HTML integration
+     * points.
+     *
+     * @param tagName the name of the element
+     * @param namespace the namespace of the element
+     * @param parentTag the information of the parent tag
+     * @return {@code true} if the element is allowed in the namespace
+     */
+    private boolean isValidNamespace(String tagName, String namespace, TagInformation parentTag)
+    {
+        boolean result;
+
+        if (SVG_NAMESPACE.equals(namespace)) {
+            result = isValidSVGElement(tagName, parentTag);
+        } else if (MATHML_NAMESPACE.equals(namespace)) {
+            result = isValidMathMLElement(tagName, parentTag);
+        } else {
+            result = isValidHTMLElement(tagName, parentTag);
+        }
+
+        return result;
+    }
+
+    private boolean isValidSVGElement(String tagName, TagInformation parentTag)
+    {
+        boolean result;
+
+        if (HTML_NAMESPACE.equals(parentTag.namespace)) {
+            // The only way to switch from HTML to SVG is the svg element.
+            result = SVG.equals(tagName);
+        } else if (MATHML_NAMESPACE.equals(parentTag.namespace)) {
+            // The only way to switch from MathML to SVG is the svg element inside annotation-xml or a text
+            // integration point.
+            result = SVG.equals(tagName) && (ANNOTATION_XML.equals(parentTag.tagName)
+                || this.mathMLDefinitions.isTextIntegrationPoint(parentTag.tagName));
+        } else {
+            result = this.svgDefinitions.isSVGTag(tagName);
+        }
+
+        return result;
+    }
+
+    private boolean isValidMathMLElement(String tagName, TagInformation parentTag)
+    {
+        boolean result;
+
+        if (HTML_NAMESPACE.equals(parentTag.namespace)) {
+            // The only way to switch from HTML to MathML is the math element.
+            result = MATH.equals(tagName);
+        } else if (SVG_NAMESPACE.equals(parentTag.namespace)) {
+            // Switching from SVG to MathML would require an HTML integration point, which aren't allowed in SVG.
+            result = false;
+        } else {
+            result = this.mathMLDefinitions.isMathMLTag(tagName);
+        }
+
+        return result;
+    }
+
+    private boolean isValidHTMLElement(String tagName, TagInformation parentTag)
+    {
+        boolean result;
+
+        if (SVG_NAMESPACE.equals(parentTag.namespace)) {
+            // HTML integration points aren't allowed in SVG.
+            result = false;
+        } else if (MATHML_NAMESPACE.equals(parentTag.namespace)
+            && !this.mathMLDefinitions.isTextIntegrationPoint(parentTag.tagName))
+        {
+            // The only way to switch from MathML to HTML is a text integration point.
+            result = false;
+        } else {
+            // Disallow elements that only exist in MathML or SVG and should never appear in HTML.
+            result = !this.mathMLDefinitions.isMathMLTag(tagName)
+                && (!this.svgDefinitions.isSVGTag(tagName) || this.svgDefinitions.isCommonHTMLElement(tagName));
+        }
+
+        return result;
     }
 
     protected List<Attr> getAttributes(Element element)
