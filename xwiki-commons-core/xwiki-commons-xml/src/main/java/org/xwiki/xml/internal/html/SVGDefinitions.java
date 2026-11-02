@@ -30,6 +30,7 @@ import java.util.Set;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.xml.html.HTMLConstants;
 
 /**
  * Provides SVG tag and attribute definitions with a focus on safe tags/attributes.
@@ -115,7 +116,8 @@ public class SVGDefinitions
         this.allTags.addAll(this.filterTags);
         this.allTags.addAll(this.safeTags);
 
-        this.commonHTMLElements = new HashSet<>(Arrays.asList("title", "style", "font", "a", "script"));
+        this.commonHTMLElements = new HashSet<>(Arrays.asList("title", HTMLConstants.TAG_STYLE, HTMLConstants.TAG_FONT,
+            HTMLConstants.TAG_A, HTMLConstants.TAG_SCRIPT));
 
         this.htmlIntegrationPoints = new HashSet<>(Arrays.asList("foreignobject", "desc", "title", "annotation-xml"));
     }
