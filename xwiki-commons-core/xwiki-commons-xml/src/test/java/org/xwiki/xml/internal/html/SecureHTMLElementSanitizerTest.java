@@ -208,6 +208,19 @@ class SecureHTMLElementSanitizerTest
 
     @ParameterizedTest
     @CsvSource({
+        "href, false",
+        "xlink:href, false",
+        "HREF, false",
+        "transform, true"
+    })
+    void animatedAttributes(String animatedAttribute, boolean accepted)
+    {
+        assertEquals(accepted, this.secureHTMLElementSanitizer.isAttributeAllowed("animate", "attributeName",
+            animatedAttribute));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
         "data-, false",
         "data-a, true",
         "data-x-wiki.test_\u0192, true",

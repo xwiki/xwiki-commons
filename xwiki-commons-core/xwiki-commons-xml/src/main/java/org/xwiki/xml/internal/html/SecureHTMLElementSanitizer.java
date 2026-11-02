@@ -38,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.xml.html.HTMLConstants;
 import org.xwiki.xml.html.HTMLElementSanitizer;
 
 /**
@@ -87,6 +88,8 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
         Pattern.CASE_INSENSITIVE);
 
     private static final String XLINK_HREF = "xlink:href";
+
+    private static final String SVG_ATTRIBUTE_NAME = "attributename";
 
     @Inject
     private HTMLElementSanitizerConfiguration htmlElementSanitizerConfiguration;
@@ -213,7 +216,9 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
         String lowerElement = elementName.toLowerCase();
         String lowerAttribute = attributeName.toLowerCase();
 
-        if (isAttributePermittedOnElement(lowerElement, lowerAttribute)) {
+        if (isAttributePermittedOnElement(lowerElement, lowerAttribute)
+            && !isAnimatedHref(lowerAttribute, attributeValue))
+        {
             if (DATA_ATTR.matcher(lowerAttribute).matches() || ARIA_ATTR.matcher(lowerAttribute).matches()) {
                 result = true;
             } else if (isAttributeAllowed(lowerAttribute)) {
@@ -236,6 +241,16 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
 
         Set<String> allowedElements = this.elementRestrictedAttributes.get(lowercaseAttributeName);
         return allowedElements == null || allowedElements.contains(lowercaseElementName);
+    }
+
+    /**
+     * @return {@code true} if the attribute makes an SVG animation element animate a link target, which would set the
+     *     link to the animation values that aren't checked as URLs (following DOMPurify)
+     */
+    private boolean isAnimatedHref(String lowercaseAttributeName, String attributeValue)
+    {
+        return SVG_ATTRIBUTE_NAME.equals(lowercaseAttributeName)
+            && StringUtils.containsIgnoreCase(attributeValue, HTMLConstants.ATTRIBUTE_HREF);
     }
 
     private boolean isAllowedValue(String lowercaseElementName, String lowercaseAttributeName, String attributeValue)
