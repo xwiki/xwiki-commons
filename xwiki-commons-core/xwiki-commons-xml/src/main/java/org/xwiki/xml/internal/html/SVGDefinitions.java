@@ -103,10 +103,10 @@ public class SVGDefinitions
 
         // The filter tags are listed in camel case like in DOMPurify but stored in lowercase like all other tags as
         // tag names are checked in lowercase.
-        this.filterTags = Stream.of("feBlend", "feColorMatrix", "feComponentTransfer", "feComposite", "feConvolveMatrix",
-                "feDiffuseLighting", "feDisplacementMap", "feDistantLight", "feFlood", "feFuncA", "feFuncB", "feFuncG",
-                "feFuncR", "feGaussianBlur", "feImage", "feMerge", "feMergeNode", "feMorphology", "feOffset",
-                "fePointLight", "feSpecularLighting", "feSpotLight", "feTile", "feTurbulence")
+        this.filterTags = Stream.of("feBlend", "feColorMatrix", "feComponentTransfer", "feComposite",
+                "feConvolveMatrix", "feDiffuseLighting", "feDisplacementMap", "feDistantLight", "feFlood", "feFuncA",
+                "feFuncB", "feFuncG", "feFuncR", "feGaussianBlur", "feImage", "feMerge", "feMergeNode", "feMorphology",
+                "feOffset", "fePointLight", "feSpecularLighting", "feSpotLight", "feTile", "feTurbulence")
             .map(tag -> tag.toLowerCase(Locale.ROOT))
             .collect(Collectors.toCollection(HashSet::new));
 
