@@ -21,6 +21,7 @@ package org.xwiki.tool.sbom;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +29,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -38,6 +42,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.xwiki.tool.sbom.internal.SBOMEnricher;
 import org.xwiki.tool.sbom.internal.WebjarNpmResolver;
 
@@ -55,8 +60,8 @@ import com.github.packageurl.PackageURL;
  * <li>the npm package repackaged by each third-party webjar;</li>
  * <li>the organization supplying and manufacturing the artifact, taken from the POM {@code <organization>}.</li>
  * </ul>
- * It fails when the artifact, or one of its dependencies, is a webjar built from npm packages without an embedded
- * SBOM of these packages (see {@code failOnMissingEmbeddedSBOM}). It does nothing when no SBOM is attached to the
+ * It warns (or fails, see {@code failOnMissingEmbeddedSBOM}) when the artifact, or one of its dependencies, is a webjar
+ * built from npm packages without an embedded SBOM of these packages. It does nothing when no SBOM is attached to the
  * artifact.
  *
  * @version $Id$
@@ -68,7 +73,7 @@ public class EnrichMojo extends AbstractMojo
 {
     private static final String SBOM_CLASSIFIER = "cyclonedx";
 
-    private static final String WEBJAR_NODE_TYPE = "webjar-node";
+    private static final String WEBJAR_NODE_PACKAGING = "webjar-node";
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -88,11 +93,13 @@ public class EnrichMojo extends AbstractMojo
     private String supplierURL;
 
     /**
-     * Whether to fail when the artifact, or one of its dependencies, is a webjar built from npm packages (i.e. of type
-     * {@code webjar-node}) without an SBOM of these packages embedded in its {@code META-INF/sbom/} directory: they
-     * would be missing from the SBOM. Only a warning is logged when {@code false}.
+     * Whether to fail when the artifact, or one of its dependencies, is a webjar built from npm packages (i.e. with the
+     * {@code webjar-node} packaging) without an SBOM of these packages embedded in its {@code META-INF/sbom/}
+     * directory: they would be missing from the SBOM. Only a warning is logged when {@code false}, which is the default
+     * since the projects building webjars without generating this SBOM (e.g. extensions inheriting from an older
+     * parent POM) would otherwise fail to release.
      */
-    @Parameter(property = "xwiki.sbom.failOnMissingEmbeddedSBOM", defaultValue = "true")
+    @Parameter(property = "xwiki.sbom.failOnMissingEmbeddedSBOM", defaultValue = "false")
     private boolean failOnMissingEmbeddedSBOM;
 
     @Override
@@ -130,8 +137,7 @@ public class EnrichMojo extends AbstractMojo
         List<String> missing = new ArrayList<>();
         for (Artifact artifact : getArtifacts()) {
             File file = artifact.getFile();
-            if (WEBJAR_NODE_TYPE.equals(artifact.getType()) && file != null && file.isFile()
-                && !SBOMEnricher.hasEmbeddedSBOM(file.toPath())) {
+            if (isJAR(file) && isWebjarNode(artifact, file) && !SBOMEnricher.hasEmbeddedSBOM(file.toPath())) {
                 missing.add(artifact.getId());
             }
         }
@@ -143,6 +149,33 @@ public class EnrichMojo extends AbstractMojo
                 throw new MojoExecutionException(message);
             }
             getLog().warn(message);
+        }
+    }
+
+    private boolean isJAR(File file)
+    {
+        return file != null && file.isFile() && file.getName().endsWith(".jar");
+    }
+
+    private boolean isWebjarNode(Artifact artifact, File jar) throws IOException
+    {
+        if (artifact == this.project.getArtifact()) {
+            return WEBJAR_NODE_PACKAGING.equals(this.project.getPackaging());
+        }
+
+        // The type of a dependency is the one it's declared with (usually "jar"), not its packaging, which is only
+        // known from its POM: read the one that Maven packages in the JAR.
+        try (ZipFile zip = new ZipFile(jar)) {
+            ZipEntry entry = zip.getEntry(
+                String.format("META-INF/maven/%s/%s/pom.xml", artifact.getGroupId(), artifact.getArtifactId()));
+            if (entry == null) {
+                return false;
+            }
+            try (InputStream stream = zip.getInputStream(entry)) {
+                return WEBJAR_NODE_PACKAGING.equals(new MavenXpp3Reader().read(stream, false).getPackaging());
+            } catch (XmlPullParserException e) {
+                throw new IOException(String.format("Failed to read the POM of [%s]", jar), e);
+            }
         }
     }
 
@@ -161,7 +194,7 @@ public class EnrichMojo extends AbstractMojo
             .filter(artifact -> Objects.equals(purl.getNamespace(), artifact.getGroupId())
                 && Objects.equals(purl.getName(), artifact.getArtifactId()) && hasVersion(artifact, purl.getVersion())
                 && Objects.equals(classifier, StringUtils.defaultIfEmpty(artifact.getClassifier(), null)))
-            .map(Artifact::getFile).filter(file -> file != null && file.isFile() && file.getName().endsWith(".jar"))
+            .map(Artifact::getFile).filter(this::isJAR)
             .map(File::toPath).findFirst().orElse(null);
     }
 

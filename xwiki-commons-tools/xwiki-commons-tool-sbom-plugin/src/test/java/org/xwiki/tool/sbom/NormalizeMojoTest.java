@@ -80,17 +80,28 @@ class NormalizeMojoTest
         JsonNode bom = MAPPER.readTree(this.targetFile.toFile());
         assertFalse(bom.get("metadata").has("timestamp"));
         assertEquals("pkg:npm/lodash@4.17.15", bom.at("/components/0/bom-ref").asText());
+        // A later build not generating the source SBOM mustn't find this one.
+        assertFalse(Files.exists(this.sourceFile));
     }
 
     @Test
     void executeWithoutSBOM() throws Exception
     {
+        // Left by a previous build.
+        Files.createDirectories(this.targetFile.getParent());
+        Files.writeString(this.targetFile, "{}");
         Log log = mock(Log.class);
         this.mojo.setLog(log);
 
         this.mojo.execute();
 
-        verify(log).info("No SBOM found at [%s], nothing to normalize.".formatted(this.sourceFile));
+        verify(log).warn("No SBOM found at [%s], so the artifact won't embed [%s].".formatted(this.sourceFile,
+            this.targetFile));
+        assertFalse(Files.exists(this.targetFile));
+
+        // Without any previous build.
+        this.mojo.execute();
+
         assertFalse(Files.exists(this.targetFile));
     }
 
