@@ -80,7 +80,7 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
 
     static final Pattern ARIA_ATTR = Pattern.compile("^aria-[\\-\\w]+$");
 
-    static final Pattern IS_ALLOWED_URI = Pattern.compile("^(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):",
+    static final Pattern IS_ALLOWED_URI = Pattern.compile("^(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp|matrix):",
         Pattern.CASE_INSENSITIVE);
 
     static final Pattern IS_NO_URI = Pattern.compile("^(?:[^a-z]|[a-z+.\\-]+(?:[^a-z+.\\-:]|$))",
