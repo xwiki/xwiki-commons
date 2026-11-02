@@ -46,8 +46,8 @@ import org.xwiki.xml.html.HTMLConstants;
 @Component(roles = HTMLDefinitions.class)
 @Singleton
 // This file has lists of strings copied from a source, making them constants would complicate updating from
-// upstream.
-@SuppressWarnings("checkstyle:MultipleStringLiterals")
+// upstream. This applies to both Checkstyle and SonarQube (java:S1192).
+@SuppressWarnings({ "checkstyle:MultipleStringLiterals", "java:S1192" })
 public class HTMLDefinitions
 {
     /**
