@@ -80,6 +80,8 @@ public class SBOMEnricher
 
     private static final String PURL = "purl";
 
+    private static final String TYPE = "type";
+
     private static final String NAME = "name";
 
     private static final String VERSION = "version";
@@ -175,12 +177,19 @@ public class SBOMEnricher
         Path jar = jarResolver.apply(mavenPURL);
         if (jar != null) {
             addEmbeddedSBOMs(ref, jar);
+        } else if (isJAR(mavenPURL)) {
+            // The SBOM lists only resolved dependencies, so a JAR not found means that the package URL doesn't match
+            // its artifact.
+            this.log.warn(String.format("No JAR file found for [%s], so the npm packages it may bundle are missing from"
+                + " the SBOM.", purl));
+        } else {
+            this.log.debug(String.format("[%s] is not a JAR, so it can't embed an SBOM.", purl));
         }
 
         PackageURL npmPURL = this.webjarResolver.resolve(mavenPURL, jar);
         if (npmPURL != null) {
             ObjectNode npmPackage = MAPPER.createObjectNode();
-            npmPackage.put("type", "library");
+            npmPackage.put(TYPE, "library");
             if (npmPURL.getNamespace() != null) {
                 npmPackage.put("group", npmPURL.getNamespace());
             }
@@ -190,6 +199,15 @@ public class SBOMEnricher
             npmPackage.put(BOM_REF, ref + CONTAINED_SEPARATOR + npmPURL.canonicalize());
             addContainedComponent(ref, npmPackage);
         }
+    }
+
+    private boolean isJAR(PackageURL mavenPURL)
+    {
+        // The type of a Maven package URL is "jar" when it's not specified.
+        Map<String, String> qualifiers = mavenPURL.getQualifiers();
+        String type = qualifiers != null ? qualifiers.get(TYPE) : null;
+
+        return type == null || "jar".equals(type);
     }
 
     private void addEmbeddedSBOMs(String containerRef, Path jar) throws IOException

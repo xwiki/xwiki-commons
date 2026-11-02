@@ -202,6 +202,21 @@ class SBOMEnricherTest
     }
 
     @Test
+    void enrichWithoutJAR() throws Exception
+    {
+        ObjectNode bom = createBOM(WAR_REF, WEBJAR_REF, "pkg:maven/org.xwiki.platform/untyped@1.0");
+
+        enrich(bom, Map.of());
+
+        assertEquals(List.of(WEBJAR_REF, "pkg:maven/org.xwiki.platform/untyped@1.0"), getRefs(bom));
+        verify(this.log).debug(String.format("[%s] is not a JAR, so it can't embed an SBOM.", WAR_REF));
+        verify(this.log).warn(String.format("No JAR file found for [%s], so the npm packages it may bundle are "
+            + "missing from the SBOM.", WEBJAR_REF));
+        verify(this.log).warn("No JAR file found for [pkg:maven/org.xwiki.platform/untyped@1.0], so the npm packages "
+            + "it may bundle are missing from the SBOM.");
+    }
+
+    @Test
     void enrichWithoutMavenComponents() throws Exception
     {
         ObjectNode bom = (ObjectNode) MAPPER.readTree("""
