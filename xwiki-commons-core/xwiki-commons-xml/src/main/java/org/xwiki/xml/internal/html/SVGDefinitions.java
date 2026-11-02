@@ -25,7 +25,10 @@ package org.xwiki.xml.internal.html;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Singleton;
 
@@ -98,11 +101,14 @@ public class SVGDefinitions
                 "pattern", "polygon", "polyline", "radialgradient", "rect", "stop", "style", "switch", "symbol", "text",
                 "textpath", "title", "tref", "tspan", "view", "vkern"));
 
-        this.filterTags = new HashSet<>(
-            Arrays.asList("feBlend", "feColorMatrix", "feComponentTransfer", "feComposite", "feConvolveMatrix",
+        // The filter tags are listed in camel case like in DOMPurify but stored in lowercase like all other tags as
+        // tag names are checked in lowercase.
+        this.filterTags = Stream.of("feBlend", "feColorMatrix", "feComponentTransfer", "feComposite", "feConvolveMatrix",
                 "feDiffuseLighting", "feDisplacementMap", "feDistantLight", "feFlood", "feFuncA", "feFuncB", "feFuncG",
                 "feFuncR", "feGaussianBlur", "feImage", "feMerge", "feMergeNode", "feMorphology", "feOffset",
-                "fePointLight", "feSpecularLighting", "feSpotLight", "feTile", "feTurbulence"));
+                "fePointLight", "feSpecularLighting", "feSpotLight", "feTile", "feTurbulence")
+            .map(tag -> tag.toLowerCase(Locale.ROOT))
+            .collect(Collectors.toCollection(HashSet::new));
 
         this.allTags = new HashSet<>(
             Arrays.asList("animate", "color-profile", "cursor", "discard", "fedropshadow", "font-face",

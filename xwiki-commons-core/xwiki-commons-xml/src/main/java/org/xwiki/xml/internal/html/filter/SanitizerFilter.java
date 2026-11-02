@@ -27,6 +27,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -188,22 +189,25 @@ public class SanitizerFilter extends AbstractHTMLFilter
     {
         TagInformation result = TagInformation.INVALID;
 
+        // Browsers parse element names case-insensitively, the definitions use lowercase names.
+        String tagName = element.getTagName().toLowerCase(Locale.ROOT);
+
         // Stay in parent SVG/MathML namespace if the current element clearly belongs to the parent namespace.
-        if (SVG_NAMESPACE.equals(parentTag.namespace) && isPureSVGTag(element.getTagName(), parentTag)) {
-            result = new TagInformation(element.getTagName(), SVG_NAMESPACE);
+        if (SVG_NAMESPACE.equals(parentTag.namespace) && isPureSVGTag(tagName, parentTag)) {
+            result = new TagInformation(tagName, SVG_NAMESPACE);
         } else if (MATHML_NAMESPACE.equals(parentTag.namespace)
-            && this.mathMLDefinitions.isMathMLTag(element.getTagName()))
+            && this.mathMLDefinitions.isMathMLTag(tagName))
         {
-            result = new TagInformation(element.getTagName(), MATHML_NAMESPACE);
+            result = new TagInformation(tagName, MATHML_NAMESPACE);
         } else if (areHTMLChildrenAllowed(parentTag)) {
             // If HTML children are allowed, only allow the element if is actually an HTML element or the root
             // element of MathML/SVG.
-            if ("math".equals(element.getTagName())) {
-                result = new TagInformation(element.getTagName(), MATHML_NAMESPACE);
-            } else if ("svg".equals(element.getTagName())) {
-                result = new TagInformation(element.getTagName(), SVG_NAMESPACE);
-            } else if (isPossiblyHtmlTag(element.getTagName())) {
-                result = new TagInformation(element.getTagName(), HTML_NAMESPACE);
+            if ("math".equals(tagName)) {
+                result = new TagInformation(tagName, MATHML_NAMESPACE);
+            } else if ("svg".equals(tagName)) {
+                result = new TagInformation(tagName, SVG_NAMESPACE);
+            } else if (isPossiblyHtmlTag(tagName)) {
+                result = new TagInformation(tagName, HTML_NAMESPACE);
             }
         }
         return result;
