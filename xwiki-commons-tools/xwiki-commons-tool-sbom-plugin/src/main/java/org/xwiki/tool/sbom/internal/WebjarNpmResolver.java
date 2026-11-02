@@ -128,8 +128,11 @@ public class WebjarNpmResolver
         }
 
         // A classic webjar has the version of the library it repackages, followed by "-<n>" when it had to be
-        // published again (e.g. 0.2.3-2 for jquery-ui-touch-punch 0.2.3).
-        String version = mavenPURL.getVersion().replaceFirst("^(\\d+\\.\\d+\\.\\d+)-\\d+$", "$1");
+        // published again (e.g. 0.2.3-2 for jquery-ui-touch-punch 0.2.3). The library version may also lack its patch
+        // number (e.g. 3.1 for daterangepicker 3.1.0), which npm versions always have, and which the scanners need to
+        // match the version against the advisory ranges.
+        String version = mavenPURL.getVersion().replaceFirst("^(\\d+\\.\\d+\\.\\d+)-\\d+$", "$1")
+            .replaceFirst("^(\\d+\\.\\d+)(-\\d+)?$", "$1.0");
 
         return createNpmPURL(name, version);
     }

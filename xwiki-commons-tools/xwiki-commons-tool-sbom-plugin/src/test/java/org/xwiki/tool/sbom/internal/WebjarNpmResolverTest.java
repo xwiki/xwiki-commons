@@ -91,7 +91,11 @@ class WebjarNpmResolverTest
             resolve("pkg:maven/org.webjars/jquery-ui-touch-punch@0.2.3-2?type=jar", null));
         assertEquals("pkg:npm/%40fortawesome/fontawesome-free@7.3.0",
             resolve("pkg:maven/org.webjars/font-awesome@7.3.0?type=jar", null));
+        assertEquals("pkg:npm/daterangepicker@3.1.0",
+            resolve("pkg:maven/org.webjars/bootstrap-daterangepicker@3.1?type=jar", null));
+        assertEquals("pkg:npm/keypress.js@2.1.5", resolve("pkg:maven/org.webjars/Keypress@2.1.5-1?type=jar", null));
         assertNull(resolve("pkg:maven/org.webjars/webjars-locator-core@0.59?type=jar", null));
+        assertNull(resolve("pkg:maven/org.webjars/prototype@1.7.3.0?type=jar", null));
         verify(this.log, never()).warn(anyString());
     }
 
