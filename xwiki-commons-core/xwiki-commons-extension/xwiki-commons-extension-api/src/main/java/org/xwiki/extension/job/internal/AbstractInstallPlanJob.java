@@ -653,7 +653,7 @@ public abstract class AbstractInstallPlanJob<R extends InstallRequest> extends A
             parentBranch.addAll(dependencyBranch);
 
             return true;
-        } catch (Throwable e) {
+        } catch (Exception | LinkageError e) {
             if (getRequest().isVerbose()) {
                 this.logger.warn("Failed to install optional dependency [{}] with error: [{}]",
                     extensionDependency.toString(), ExceptionUtils.getRootCauseMessage(e));

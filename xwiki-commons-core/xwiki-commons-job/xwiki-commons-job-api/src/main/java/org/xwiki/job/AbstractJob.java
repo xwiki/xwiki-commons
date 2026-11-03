@@ -241,6 +241,9 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
         }
     }
 
+    // Catching Throwable is deliberate here: a job runs in its own thread, so any failure has to be recorded in the job
+    // status and reported to the job's listeners rather than kill that thread.
+    @SuppressWarnings("java:S1181")
     protected void runInContext()
     {
         Throwable error = null;
@@ -287,6 +290,9 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
      *
      * @param error the exception throw during execution of the job
      */
+    // Catching Throwable is deliberate here: failing to store the job status must not prevent the job from finishing
+    // and from notifying its listeners.
+    @SuppressWarnings("java:S1181")
     protected void jobFinished(Throwable error)
     {
         this.lock.lock();
