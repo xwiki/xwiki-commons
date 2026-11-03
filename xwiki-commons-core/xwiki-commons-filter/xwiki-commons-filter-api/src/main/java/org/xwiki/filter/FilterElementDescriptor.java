@@ -104,6 +104,8 @@ public class FilterElementDescriptor
     /**
      * @return the parameters of the element
      */
+    // Each descriptor in the array has its own parameter type, so the array element type cannot be named.
+    @SuppressWarnings("java:S1452")
     public FilterElementParameterDescriptor<?>[] getParameters()
     {
         return this.parameters;
