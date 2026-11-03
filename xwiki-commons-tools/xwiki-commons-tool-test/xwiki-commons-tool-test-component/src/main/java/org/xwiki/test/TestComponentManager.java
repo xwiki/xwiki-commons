@@ -226,6 +226,10 @@ public class TestComponentManager extends EmbeddableComponentManager
         initializeTest(testClassInstance, null, parameterInstances);
     }
 
+    // The accessibility change is deliberate and scoped: it lets the test framework call @BeforeComponent /
+    // @AfterComponent methods declared in package-private test classes, and the previous value is restored in the
+    // finally block below.
+    @SuppressWarnings("java:S3011")
     private void invokeMethod(Method declaredMethod, Object testClassInstance, Object... parameterInstances)
         throws Exception
     {
