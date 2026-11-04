@@ -237,6 +237,10 @@
     <!-- Set to true to not generate the SBOM at release time. Test modules don't get one in any case, see the
          release profile. -->
     <xwiki.cyclonedx.skip>false</xwiki.cyclonedx.skip>
+    <!-- Set to true to not embed the SBOM of the bundled npm packages in a webjar-node module (e.g. when its pnpm
+         version doesn't support "pnpm sbom"). Its packages are then missing from the SBOM generated at release time,
+         which fails if xwiki.sbom.failOnMissingEmbeddedSBOM is true. -->
+    <xwiki.sbom.npm.skip>false</xwiki.sbom.npm.skip>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
