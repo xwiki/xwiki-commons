@@ -34,7 +34,8 @@
   <description>
     Completes the CycloneDX SBOM generated for an artifact with what Maven doesn't know about: the npm packages
     bundled in the webjars and the npm identity of the third-party webjars. Also makes reproducible the SBOM of the
-    npm packages bundled in a webjar, before it's embedded in it
+    npm packages bundled in a webjar, before it's embedded in it, and checks that an SBOM contains the expected
+    components
   </description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.98</xwiki.jacoco.instructionRatio>
