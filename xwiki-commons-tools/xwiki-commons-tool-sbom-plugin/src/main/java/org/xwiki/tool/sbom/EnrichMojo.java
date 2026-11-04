@@ -35,13 +35,11 @@ import java.util.zip.ZipFile;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.xwiki.tool.sbom.internal.SBOMEnricher;
 import org.xwiki.tool.sbom.internal.WebjarNpmResolver;
@@ -69,16 +67,11 @@ import com.github.packageurl.PackageURL;
  */
 @Mojo(name = "enrich", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.RUNTIME,
     threadSafe = true)
-public class EnrichMojo extends AbstractMojo
+public class EnrichMojo extends AbstractSBOMMojo
 {
-    private static final String SBOM_CLASSIFIER = "cyclonedx";
-
     private static final String WEBJAR_NODE_PACKAGING = "webjar-node";
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-
-    @Parameter(defaultValue = "${project}", readonly = true, required = true)
-    private MavenProject project;
 
     /**
      * The name of the organization supplying and manufacturing the artifact.
@@ -105,9 +98,7 @@ public class EnrichMojo extends AbstractMojo
     @Override
     public void execute() throws MojoExecutionException
     {
-        Optional<File> sbomFile = this.project.getAttachedArtifacts().stream()
-            .filter(artifact -> SBOM_CLASSIFIER.equals(artifact.getClassifier()) && "json".equals(artifact.getType()))
-            .map(Artifact::getFile).filter(Objects::nonNull).findFirst();
+        Optional<File> sbomFile = getAttachedSBOM();
         if (sbomFile.isEmpty()) {
             getLog().debug("No CycloneDX SBOM in JSON format is attached to the artifact, nothing to enrich.");
             return;

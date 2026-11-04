@@ -21,7 +21,6 @@ package org.xwiki.tool.sbom;
 
 import java.io.File;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -31,6 +30,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -262,8 +262,6 @@ class EnrichMojoTest
 
     private void set(String fieldName, Object value) throws Exception
     {
-        Field field = EnrichMojo.class.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(this.mojo, value);
+        FieldUtils.writeField(this.mojo, fieldName, value, true);
     }
 }
