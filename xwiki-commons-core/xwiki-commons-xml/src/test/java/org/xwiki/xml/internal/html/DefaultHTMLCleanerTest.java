@@ -321,6 +321,8 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p><span>Hello!</span></p>", "<span name=\"blocked\">Hello!</span>");
         assertHTML("<p><img src=\"img.png\" /></p>", "<img onerror=\"alert(1)\" src=img.png />");
         assertHTML("<p><img src=\"img.png\" /></p>", "<img name=\"blocked\" src=img.png />");
+        assertHTML("<p><label for=\"target\">Hello!</label></p>", "<label for=\"target\">Hello!</label>");
+        assertHTML("<div>Hello!</div>", "<div for=\"target\">Hello!</div>");
         assertHTML("<p><a>Hello!</a></p>", "<a href=\"javascript:alert(1)\">Hello!</a>");
         assertHTML("<p></p>", "<iframe src=\"whatever\"/>");
         assertFalse(HTMLUtils.toString(clean("<image name=\"blocked\">Hello!</image>")).contains("name=\"blocked\""));
