@@ -216,9 +216,7 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
         String lowerElement = elementName.toLowerCase();
         String lowerAttribute = attributeName.toLowerCase();
 
-        if (isAttributePermittedOnElement(lowerElement, lowerAttribute)
-            && !isAnimatedHref(lowerAttribute, attributeValue))
-        {
+        if (isAttributePermittedOnElement(lowerElement, lowerAttribute)) {
             if (DATA_ATTR.matcher(lowerAttribute).matches() || ARIA_ATTR.matcher(lowerAttribute).matches()) {
                 result = true;
             } else if (isAttributeAllowed(lowerAttribute)) {
@@ -257,7 +255,8 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
     {
         // Break into several statements to avoid too long boolean expression.
         boolean result = StringUtils.isBlank(attributeValue);
-        if (!result) {
+        // The animated href check must come first as none of the other checks can make such a value safe.
+        if (!result && !isAnimatedHref(lowercaseAttributeName, attributeValue)) {
             String valueNoWhitespace = ATTR_WHITESPACE.matcher(attributeValue).replaceAll("");
             result = this.uriSafeAttributes.contains(lowercaseAttributeName);
             result = result || IS_NO_URI.matcher(valueNoWhitespace).find();
