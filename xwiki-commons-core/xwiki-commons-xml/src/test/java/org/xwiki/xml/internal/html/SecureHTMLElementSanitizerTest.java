@@ -189,6 +189,18 @@ class SecureHTMLElementSanitizerTest
             HTMLConstants.ATTRIBUTE_ID, GET_ELEMENT_BY_ID));
     }
 
+    @ParameterizedTest
+    @CsvSource({
+        "label, true",
+        "output, true",
+        "template, false",
+        "div, false"
+    })
+    void forAttribute(String element, boolean accepted)
+    {
+        assertEquals(accepted, this.secureHTMLElementSanitizer.isAttributeAllowed(element, "for", XWIKI));
+    }
+
     @Test
     void configuredElementRestrictedAttributes()
     {
