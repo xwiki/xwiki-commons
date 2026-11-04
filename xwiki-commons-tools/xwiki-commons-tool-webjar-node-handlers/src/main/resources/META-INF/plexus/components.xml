@@ -123,10 +123,11 @@
                 <!-- Make the SBOM reproducible (pnpm sets the current date and a random serial number, and its
                      component order and dependency graph vary from one run to the next) and embed it where the release
                      build looks for it. When pnpm didn't generate it (e.g. skipped), any SBOM embedded by a previous
-                     build is removed. -->
+                     build is removed. The source path is the one pnpm writes to, which doesn't depend on the build
+                     directory. -->
                 <goal>org.xwiki.commons:xwiki-commons-tool-sbom-plugin:normalize</goal>
                 <configuration>
-                  <sourceFile>${project.build.directory}/npm-sbom/bom.json</sourceFile>
+                  <sourceFile>${basedir}/target/npm-sbom/bom.json</sourceFile>
                   <targetFile>${project.build.outputDirectory}/META-INF/sbom/npm.cdx.json</targetFile>
                 </configuration>
               </mojo>

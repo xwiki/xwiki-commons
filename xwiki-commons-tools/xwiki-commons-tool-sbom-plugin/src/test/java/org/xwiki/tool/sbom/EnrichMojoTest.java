@@ -157,9 +157,9 @@ class EnrichMojoTest
         File sbomFile = attachSBOM(SBOM);
         Log log = mock(Log.class);
         this.mojo.setLog(log);
-        String message = "The webjars [org.xwiki.platform:other-webjar:jar:1.0] don't embed the SBOM of the npm packages"
-            + " they bundle, so these packages are missing from the SBOM. Build them with pnpm sbom generating it in "
-            + "META-INF/sbom/.";
+        String message = "The webjars [org.xwiki.platform:other-webjar:jar:1.0] don't embed the SBOM of the npm"
+            + " packages they bundle, so these packages are missing from the SBOM. Build them with pnpm sbom generating"
+            + " it in META-INF/sbom/.";
 
         this.mojo.execute();
 

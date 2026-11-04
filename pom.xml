@@ -239,8 +239,10 @@
     <xwiki.cyclonedx.skip>false</xwiki.cyclonedx.skip>
     <!-- Set to true to not embed the SBOM of the bundled npm packages in a webjar-node module (e.g. when its pnpm
          version doesn't support "pnpm sbom"). Its packages are then missing from the SBOM generated at release time,
-         which fails if xwiki.sbom.failOnMissingEmbeddedSBOM is true. -->
-    <xwiki.sbom.npm.skip>false</xwiki.sbom.npm.skip>
+         which fails if xwiki.sbom.failOnMissingEmbeddedSBOM is true. It's skipped along with the other pnpm calls of
+         the webjar-node lifecycle when skip.pnpm is true. -->
+    <skip.pnpm>false</skip.pnpm>
+    <xwiki.sbom.npm.skip>${skip.pnpm}</xwiki.sbom.npm.skip>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 

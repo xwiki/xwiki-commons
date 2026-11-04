@@ -60,14 +60,23 @@ public class NormalizeMojo extends AbstractMojo
     @Parameter(required = true)
     private File targetFile;
 
+    /**
+     * Whether the generation of the source SBOM is skipped on purpose, in which case its absence is not reported. The
+     * target SBOM is still deleted.
+     */
+    @Parameter(property = "xwiki.sbom.npm.skip", defaultValue = "false")
+    private boolean skip;
+
     @Override
     public void execute() throws MojoExecutionException
     {
         String errorMessage = String.format("Failed to normalize the SBOM [%s]", this.sourceFile);
         try {
-            if (!this.sourceFile.isFile()) {
-                getLog().warn(String.format("No SBOM found at [%s], so the artifact won't embed [%s].",
-                    this.sourceFile, this.targetFile));
+            if (this.skip || !this.sourceFile.isFile()) {
+                if (!this.skip) {
+                    getLog().warn(String.format("No SBOM found at [%s], so the artifact won't embed [%s].",
+                        this.sourceFile, this.targetFile));
+                }
                 Files.deleteIfExists(this.targetFile.toPath());
                 return;
             }

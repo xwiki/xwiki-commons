@@ -37,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Unit tests for {@link NormalizeMojo}.
@@ -102,6 +103,23 @@ class NormalizeMojoTest
         // Without any previous build.
         this.mojo.execute();
 
+        assertFalse(Files.exists(this.targetFile));
+    }
+
+    @Test
+    void executeWhenSkipped() throws Exception
+    {
+        Files.createDirectories(this.sourceFile.getParent());
+        Files.writeString(this.sourceFile, "{}");
+        Files.createDirectories(this.targetFile.getParent());
+        Files.writeString(this.targetFile, "{}");
+        set("skip", true);
+        Log log = mock(Log.class);
+        this.mojo.setLog(log);
+
+        this.mojo.execute();
+
+        verifyNoInteractions(log);
         assertFalse(Files.exists(this.targetFile));
     }
 
