@@ -38,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.xml.html.HTMLConstants;
 import org.xwiki.xml.html.HTMLElementSanitizer;
 
 /**
@@ -87,6 +88,8 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
         Pattern.CASE_INSENSITIVE);
 
     private static final String XLINK_HREF = "xlink:href";
+
+    private static final String SVG_ATTRIBUTE_NAME = "attributename";
 
     @Inject
     private HTMLElementSanitizerConfiguration htmlElementSanitizerConfiguration;
@@ -238,11 +241,22 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
         return allowedElements == null || allowedElements.contains(lowercaseElementName);
     }
 
+    /**
+     * @return {@code true} if the attribute makes an SVG animation element animate a link target, which would set the
+     *     link to the animation values that aren't checked as URLs (following DOMPurify)
+     */
+    private boolean isAnimatedHref(String lowercaseAttributeName, String attributeValue)
+    {
+        return SVG_ATTRIBUTE_NAME.equals(lowercaseAttributeName)
+            && StringUtils.containsIgnoreCase(attributeValue, HTMLConstants.ATTRIBUTE_HREF);
+    }
+
     private boolean isAllowedValue(String lowercaseElementName, String lowercaseAttributeName, String attributeValue)
     {
         // Break into several statements to avoid too long boolean expression.
         boolean result = StringUtils.isBlank(attributeValue);
-        if (!result) {
+        // The animated href check must come first as none of the other checks can make such a value safe.
+        if (!result && !isAnimatedHref(lowercaseAttributeName, attributeValue)) {
             String valueNoWhitespace = ATTR_WHITESPACE.matcher(attributeValue).replaceAll("");
             result = this.uriSafeAttributes.contains(lowercaseAttributeName);
             result = result || IS_NO_URI.matcher(valueNoWhitespace).find();
