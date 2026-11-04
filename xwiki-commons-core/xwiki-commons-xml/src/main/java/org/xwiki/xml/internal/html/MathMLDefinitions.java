@@ -143,7 +143,7 @@ public class MathMLDefinitions
 
     private static final String CLOSE = "close";
 
-    private static final String COLUMNSALIGN = "columnsalign";
+    private static final String COLUMNALIGN = "columnalign";
 
     private static final String COLUMNLINES = "columnlines";
 
@@ -264,7 +264,7 @@ public class MathMLDefinitions
         this.allTags.addAll(this.safeTags);
 
         this.allowedAttributes = new HashSet<>(Arrays.asList(
-            ACCENT, ACCENTUNDER, ALIGN, BEVELLED, CLOSE, COLUMNSALIGN, COLUMNLINES, COLUMNSPAN, DENOMALIGN, DEPTH, DIR,
+            ACCENT, ACCENTUNDER, ALIGN, BEVELLED, CLOSE, COLUMNALIGN, COLUMNLINES, COLUMNSPAN, DENOMALIGN, DEPTH, DIR,
             DISPLAY, DISPLAYSTYLE, ENCODING, FENCE, FRAME, HEIGHT, HREF, ID, LARGEOP, LENGTH, LINETHICKNESS, LSPACE,
             LQUOTE, MATHBACKGROUND, MATHCOLOR, MATHSIZE, MATHVARIANT, MAXSIZE, MINSIZE, MOVABLELIMITS, NOTATION,
             NUMALIGN, OPEN, ROWALIGN, ROWLINES, ROWSPACING, ROWSPAN, RSPACE, RQUOTE, SCRIPTLEVEL, SCRIPTMINSIZE,
