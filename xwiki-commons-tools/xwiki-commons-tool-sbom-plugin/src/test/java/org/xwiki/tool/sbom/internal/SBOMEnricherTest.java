@@ -123,9 +123,13 @@ class SBOMEnricherTest
     @Test
     void enrichWithEmbeddedSBOMs() throws Exception
     {
-        Path webjar = createJAR("livedata.jar", Map.of("META-INF/sbom/livedata.cdx.json", EMBEDDED_SBOM,
-            "META-INF/sbom/notes.json", "{\"some\": \"json\"}",
-            "META-INF/sbom/sub/other.cdx.json", EMBEDDED_SBOM));
+        // Only the SBOM of the bundled npm packages is read, not the ones a third-party library could embed.
+        String otherSBOM = """
+            {"bomFormat": "CycloneDX", "components": [{"type": "library", "name": "spring-core", "version": "6.0.0",
+              "purl": "pkg:maven/org.springframework/spring-core@6.0.0"}]}
+            """;
+        Path webjar = createJAR("livedata.jar", Map.of("META-INF/sbom/npm.cdx.json", EMBEDDED_SBOM,
+            "META-INF/sbom/application.cdx.json", otherSBOM, "META-INF/sbom/sub/npm.cdx.json", otherSBOM));
         ObjectNode bom = createBOM(WAR_REF, WEBJAR_REF);
 
         enrich(bom, Map.of(WEBJAR_REF, webjar));
@@ -143,14 +147,25 @@ class SBOMEnricherTest
             ]
             """, WAR_REF, WEBJAR_REF, WEBJAR_REF, vueRef, innerRef, lodashRef, vueRef, lodashRef)),
             bom.get("dependencies"));
+    }
+
+    @Test
+    void enrichWithInvalidEmbeddedSBOM() throws Exception
+    {
+        Path webjar = createJAR("livedata.jar", Map.of("META-INF/sbom/npm.cdx.json", "{\"some\": \"json\"}"));
+        ObjectNode bom = createBOM(WAR_REF, WEBJAR_REF);
+
+        enrich(bom, Map.of(WEBJAR_REF, webjar));
+
+        assertEquals(List.of(WEBJAR_REF), getRefs(bom));
         verify(this.log).warn(String.format(
-            "Ignoring [META-INF/sbom/notes.json] in [%s] since it's not a CycloneDX SBOM.", webjar));
+            "Ignoring [META-INF/sbom/npm.cdx.json] in [%s] since it's not a CycloneDX SBOM.", webjar));
     }
 
     @Test
     void enrichWithEmbeddedSBOMOfTheDescribedComponent() throws Exception
     {
-        Path webjar = createJAR("livedata.jar", Map.of("META-INF/sbom/livedata.cdx.json", EMBEDDED_SBOM));
+        Path webjar = createJAR("livedata.jar", Map.of("META-INF/sbom/npm.cdx.json", EMBEDDED_SBOM));
         ObjectNode bom = createBOM(WEBJAR_REF);
 
         enrich(bom, Map.of(WEBJAR_REF, webjar));
@@ -162,7 +177,7 @@ class SBOMEnricherTest
     @Test
     void enrichWithSamePackageBundledInSeveralJARs() throws Exception
     {
-        Map<String, String> entries = Map.of("META-INF/sbom/livedata.cdx.json", EMBEDDED_SBOM);
+        Map<String, String> entries = Map.of("META-INF/sbom/npm.cdx.json", EMBEDDED_SBOM);
         ObjectNode bom = createBOM(WAR_REF, WEBJAR_REF, OTHER_WEBJAR_REF);
 
         enrich(bom, Map.of(WEBJAR_REF, createJAR("livedata.jar", entries), OTHER_WEBJAR_REF,
@@ -191,7 +206,7 @@ class SBOMEnricherTest
     @Test
     void enrichTwice() throws Exception
     {
-        Path webjar = createJAR("livedata.jar", Map.of("META-INF/sbom/livedata.cdx.json", EMBEDDED_SBOM));
+        Path webjar = createJAR("livedata.jar", Map.of("META-INF/sbom/npm.cdx.json", EMBEDDED_SBOM));
         ObjectNode bom = createBOM(WAR_REF, WEBJAR_REF, JQUERY_REF);
         enrich(bom, Map.of(WEBJAR_REF, webjar));
         JsonNode enriched = bom.deepCopy();
