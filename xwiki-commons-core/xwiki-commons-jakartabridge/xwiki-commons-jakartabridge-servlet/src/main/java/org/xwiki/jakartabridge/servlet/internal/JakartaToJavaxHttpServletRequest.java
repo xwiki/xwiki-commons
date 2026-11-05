@@ -201,12 +201,6 @@ public class JakartaToJavaxHttpServletRequest<R extends javax.servlet.http.HttpS
     }
 
     @Override
-    public boolean isRequestedSessionIdFromUrl()
-    {
-        return this.javax.isRequestedSessionIdFromUrl();
-    }
-
-    @Override
     public boolean authenticate(HttpServletResponse response) throws IOException, ServletException
     {
         try {

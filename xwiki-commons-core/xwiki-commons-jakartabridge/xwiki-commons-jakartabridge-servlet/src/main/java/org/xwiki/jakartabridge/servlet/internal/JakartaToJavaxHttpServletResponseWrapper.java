@@ -193,18 +193,6 @@ public class JakartaToJavaxHttpServletResponseWrapper<R extends javax.servlet.ht
     }
 
     @Override
-    public String encodeUrl(String url)
-    {
-        return this.javax.encodeUrl(url);
-    }
-
-    @Override
-    public String encodeRedirectUrl(String url)
-    {
-        return this.javax.encodeRedirectUrl(url);
-    }
-
-    @Override
     public void sendError(int sc, String msg) throws IOException
     {
         this.javax.sendError(sc, msg);
@@ -262,12 +250,6 @@ public class JakartaToJavaxHttpServletResponseWrapper<R extends javax.servlet.ht
     public void setStatus(int sc)
     {
         this.javax.setStatus(sc);
-    }
-
-    @Override
-    public void setStatus(int sc, String sm)
-    {
-        this.javax.setStatus(sc, sm);
     }
 
     @Override

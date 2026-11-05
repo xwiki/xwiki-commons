@@ -23,7 +23,6 @@ import java.util.Enumeration;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.HttpSessionContext;
 
 import org.xwiki.jakartabridge.internal.AbstractJakartaToJavaxWrapper;
 import org.xwiki.jakartabridge.servlet.JakartaServletBridge;
@@ -80,21 +79,9 @@ public class JakartaToJavaxHttpSession extends AbstractJakartaToJavaxWrapper<jav
     }
 
     @Override
-    public HttpSessionContext getSessionContext()
-    {
-        return JakartaServletBridge.toJakarta(this.javax.getSessionContext());
-    }
-
-    @Override
     public Object getAttribute(String name)
     {
         return this.javax.getAttribute(name);
-    }
-
-    @Override
-    public Object getValue(String name)
-    {
-        return this.javax.getValue(name);
     }
 
     @Override
@@ -104,33 +91,15 @@ public class JakartaToJavaxHttpSession extends AbstractJakartaToJavaxWrapper<jav
     }
 
     @Override
-    public String[] getValueNames()
-    {
-        return this.javax.getValueNames();
-    }
-
-    @Override
     public void setAttribute(String name, Object value)
     {
         this.javax.setAttribute(name, value);
     }
 
     @Override
-    public void putValue(String name, Object value)
-    {
-        this.javax.putValue(name, value);
-    }
-
-    @Override
     public void removeAttribute(String name)
     {
         this.javax.removeAttribute(name);
-    }
-
-    @Override
-    public void removeValue(String name)
-    {
-        this.javax.removeValue(name);
     }
 
     @Override

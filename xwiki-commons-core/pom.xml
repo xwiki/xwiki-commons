@@ -249,6 +249,24 @@
                   </justification>
                   <criticality>allowed</criticality>
                 </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.removed</code>
+                  <old>method jakarta.servlet.http.HttpSessionContext org.xwiki.jakartabridge.servlet.JakartaServletBridge::toJakarta(javax.servlet.http.HttpSessionContext)</old>
+                  <justification>
+                    The jakarta.servlet.http.HttpSessionContext interface (deprecated since Servlet 2.1) does not exist
+                    anymore in Servlet 6.0.
+                  </justification>
+                </item>
+                <item>
+                  <ignore>true</ignore>
+                  <code>java.method.removed</code>
+                  <old>method javax.servlet.http.HttpSessionContext org.xwiki.jakartabridge.servlet.JakartaServletBridge::toJavax(jakarta.servlet.http.HttpSessionContext)</old>
+                  <justification>
+                    The jakarta.servlet.http.HttpSessionContext interface (deprecated since Servlet 2.1) does not exist
+                    anymore in Servlet 6.0.
+                  </justification>
+                </item>
               </differences>
             </revapi.differences>
           </analysisConfiguration>
