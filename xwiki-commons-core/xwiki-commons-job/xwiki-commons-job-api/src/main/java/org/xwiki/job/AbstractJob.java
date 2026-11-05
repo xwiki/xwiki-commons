@@ -22,6 +22,7 @@ package org.xwiki.job;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
+import java.nio.channels.ClosedByInterruptException;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +48,7 @@ import org.xwiki.context.concurrent.ContextStoreManager;
 import org.xwiki.job.event.JobFinishedEvent;
 import org.xwiki.job.event.JobFinishingEvent;
 import org.xwiki.job.event.JobStartedEvent;
+import org.xwiki.job.event.status.CancelableJobStatus;
 import org.xwiki.job.event.status.JobProgressManager;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.event.status.JobStatus.State;
@@ -56,6 +58,7 @@ import org.xwiki.logging.marker.BeginTranslationMarker;
 import org.xwiki.logging.marker.EndTranslationMarker;
 import org.xwiki.logging.marker.TranslationMarker;
 import org.xwiki.observation.ObservationManager;
+import org.xwiki.stability.Unstable;
 
 /**
  * Base class for {@link Job} implementations.
@@ -297,6 +300,8 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
                 abstractJobStatus.setError(error);
             }
 
+            cancelIfInterrupted(error);
+
             // Give a chance to any listener to do custom action associated to the job
             this.observationManager.notify(new JobFinishingEvent(getRequest().getId(), getType(), this.request), this,
                 error);
@@ -328,20 +333,102 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
             this.jobContext.popCurrentJob();
 
             // Store the job status
-            try {
-                if (this.request.getId() != null) {
-                    this.store.storeAsync(this.status);
-                }
-            } catch (Throwable t) {
-                this.logger.warn(LOG_STATUS_STORE_FAILED, "Failed to store job status [{}]: [{}]", this.status,
-                    ExceptionUtils.getRootCauseMessage(t));
-            }
+            storeStatus(true);
         } finally {
             this.lock.unlock();
 
             // Notify listener that job is fully finished
             this.observationManager.notify(new JobFinishedEvent(getRequest().getId(), getType(), this.request), this,
                 error);
+        }
+    }
+
+    /**
+     * A job which failed because its thread was interrupted (generally because XWiki is stopping) did not finish its
+     * work: when the job is cancelable, also mark it as canceled (an already canceled job is left as is). For other
+     * jobs, the error is the only indication.
+     *
+     * @param error the error which ended the job
+     */
+    private void cancelIfInterrupted(Throwable error)
+    {
+        if (this.status instanceof CancelableJobStatus cancelableJobStatus && cancelableJobStatus.isCancelable()
+            && !cancelableJobStatus.isCanceled() && isInterrupted(error)) {
+            cancelableJobStatus.cancel();
+        }
+    }
+
+    /**
+     * @param error the error which ended the job
+     * @return true if the error is caused by the interruption of the job thread
+     */
+    private boolean isInterrupted(Throwable error)
+    {
+        return ExceptionUtils.indexOfType(error, InterruptedException.class) != -1
+            || ExceptionUtils.indexOfType(error, ClosedByInterruptException.class) != -1;
+    }
+
+    /**
+     * Store the status of the job if it has an identifier.
+     *
+     * @param async true to store the status asynchronously
+     */
+    private void storeStatus(boolean async)
+    {
+        try {
+            if (this.request.getId() != null) {
+                if (async) {
+                    this.store.storeAsync(this.status);
+                } else {
+                    this.store.store(this.status);
+                }
+            }
+        } catch (Throwable t) {
+            this.logger.warn(LOG_STATUS_STORE_FAILED, "Failed to store job status [{}]: [{}]", this.status,
+                ExceptionUtils.getRootCauseMessage(t));
+        }
+    }
+
+    /**
+     * Indicate that the job is never going to be executed (generally because XWiki is stopping before the job
+     * executor had a thread for it): the status is marked as finished with the passed error (and canceled when the
+     * job is cancelable), it's stored, and the threads waiting in {@link #join()} are released. Nothing is done if
+     * the job has already been started.
+     *
+     * @param error the reason why the job is not executed
+     * @since 18.10.0RC1
+     */
+    @Unstable
+    public void abort(Throwable error)
+    {
+        this.lock.lock();
+
+        try {
+            // Only a job which did not start yet can be aborted
+            if (this.status == null || (this.status.getState() != null && this.status.getState() != State.NONE)) {
+                return;
+            }
+
+            if (this.status instanceof AbstractJobStatus abstractJobStatus) {
+                abstractJobStatus.setError(error);
+                if (abstractJobStatus.isCancelable()) {
+                    abstractJobStatus.cancel();
+                }
+
+                // The job never ran: it starts and ends now
+                Date date = new Date();
+                abstractJobStatus.setStartDate(date);
+                abstractJobStatus.setEndDate(date);
+                abstractJobStatus.setState(State.FINISHED);
+            }
+
+            // Release threads waiting for job being done
+            this.finishedCondition.signalAll();
+
+            // Store the job status (synchronously since the application is generally stopping)
+            storeStatus(false);
+        } finally {
+            this.lock.unlock();
         }
     }
 

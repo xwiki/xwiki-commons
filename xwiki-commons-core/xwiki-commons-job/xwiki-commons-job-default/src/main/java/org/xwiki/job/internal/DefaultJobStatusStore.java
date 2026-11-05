@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -50,6 +51,9 @@ import org.xwiki.cache.CacheException;
 import org.xwiki.cache.CacheManager;
 import org.xwiki.cache.config.LRUCacheConfiguration;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.annotation.DisposePriority;
+import org.xwiki.component.manager.ComponentLifecycleException;
+import org.xwiki.component.phase.Disposable;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.job.AbstractJobStatus;
@@ -72,7 +76,10 @@ import org.xwiki.logging.tail.LoggerTail;
 @SuppressWarnings("checkstyle:ClassFanOutComplexity")
 @Component
 @Singleton
-public class DefaultJobStatusStore implements JobStatusStore, Initializable
+// Disposed after the job executor (priority 100, the first component disposed), which waits for the running jobs and
+// lets them store their final status, but before the stores (10000) the status cache may rely on
+@DisposePriority(5000)
+public class DefaultJobStatusStore implements JobStatusStore, Initializable, Disposable
 {
     /**
      * The current version of the store. Should be upgraded if any change is made.
@@ -100,6 +107,11 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     private static final String INDEX_FILE_VERSION = "version";
 
     private static final String STATUS_LOG_PREFIX = "log";
+
+    /**
+     * The maximum time in milliseconds to wait for the pending asynchronous serializations when disposing.
+     */
+    private static final long DISPOSE_TIMEOUT = 10000L;
 
     private static final JobStatus NOSTATUS = new DefaultJobStatus<>(null, null, null, null, null);
 
@@ -192,6 +204,24 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             this.cache = this.cacheManager.createNewCache(cacheConfiguration);
         } catch (CacheException e) {
             throw new InitializationException("Failed to initialize job status cache", e);
+        }
+    }
+
+    @Override
+    public void dispose() throws ComponentLifecycleException
+    {
+        // Stop accepting new asynchronous serializations (#store falls back to synchronous serialization) and wait
+        // for the pending ones to finish
+        this.executorService.shutdown();
+
+        try {
+            if (!this.executorService.awaitTermination(DISPOSE_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                this.logger.warn("Some job statuses were still being serialized after [{}]ms", DISPOSE_TIMEOUT);
+            }
+        } catch (InterruptedException e) {
+            this.logger.warn("Interrupted while waiting for the job statuses to be serialized");
+
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -489,10 +519,29 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             // Only store Serializable job status on file system
             if (JobUtils.isSerializable(status)) {
                 if (async) {
-                    this.executorService.execute(new JobStatusSerializerRunnable(status));
+                    storeAsync(new JobStatusSerializerRunnable(status));
                 } else {
                     saveJobStatus(status);
                 }
+            }
+        }
+    }
+
+    private void storeAsync(JobStatusSerializerRunnable runnable)
+    {
+        try {
+            this.executorService.execute(runnable);
+        } catch (RejectedExecutionException e) {
+            if (this.executorService.isShutdown()) {
+                // The store is disposed (the status of a job interrupted by the shutdown must still reach the disk):
+                // serialize the status in the current thread instead of losing it
+                this.logger.debug("The store is disposed, serializing the status of job [{}] synchronously",
+                    runnable.status.getRequest().getId());
+
+                runnable.run();
+            } else {
+                // Saturated executor: let the caller handle it like before
+                throw e;
             }
         }
     }
