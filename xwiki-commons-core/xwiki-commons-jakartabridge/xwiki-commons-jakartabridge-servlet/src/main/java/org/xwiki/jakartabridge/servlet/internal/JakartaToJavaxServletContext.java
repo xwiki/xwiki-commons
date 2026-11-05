@@ -130,37 +130,9 @@ public class JakartaToJavaxServletContext extends AbstractJakartaToJavaxWrapper<
     }
 
     @Override
-    public Servlet getServlet(String name) throws ServletException
-    {
-        try {
-            return JakartaServletBridge.toJakarta(this.javax.getServlet(name));
-        } catch (javax.servlet.ServletException e) {
-            throw new ServletException(e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public Enumeration<Servlet> getServlets()
-    {
-        return JakartaServletBridge.toJakarta(this.javax.getServlets());
-    }
-
-    @Override
-    public Enumeration<String> getServletNames()
-    {
-        return this.javax.getServletNames();
-    }
-
-    @Override
     public void log(String msg)
     {
         this.javax.log(msg);
-    }
-
-    @Override
-    public void log(Exception exception, String msg)
-    {
-        this.javax.log(exception, msg);
     }
 
     @Override

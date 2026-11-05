@@ -25,10 +25,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConnection;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.ServletRequest;
@@ -45,6 +47,10 @@ import org.xwiki.jakartabridge.servlet.JakartaServletBridge;
 public class JakartaToJavaxServletRequest<R extends javax.servlet.ServletRequest>
     extends AbstractJakartaToJavaxWrapper<R> implements ServletRequest
 {
+    private static final String REQUEST_ID_ATTRIBUTE = JakartaToJavaxServletRequest.class.getName() + ".requestId";
+
+    private static final AtomicLong REQUEST_ID_COUNTER = new AtomicLong();
+
     /**
      * @param javax the wrapped version
      */
@@ -204,12 +210,6 @@ public class JakartaToJavaxServletRequest<R extends javax.servlet.ServletRequest
     }
 
     @Override
-    public String getRealPath(String path)
-    {
-        return this.javax.getRealPath(path);
-    }
-
-    @Override
     public int getRemotePort()
     {
         return this.javax.getRemotePort();
@@ -275,5 +275,32 @@ public class JakartaToJavaxServletRequest<R extends javax.servlet.ServletRequest
     public DispatcherType getDispatcherType()
     {
         return JakartaServletBridge.toJakarta(this.javax.getDispatcherType());
+    }
+
+    @Override
+    public String getRequestId()
+    {
+        // Servlet 3.1 does not have any notion of request identifier so we generate one and store it in the request
+        // to make sure it's the same for all the wrappers of the same javax request
+        Object requestId = this.javax.getAttribute(REQUEST_ID_ATTRIBUTE);
+        if (requestId == null) {
+            requestId = "javax-" + REQUEST_ID_COUNTER.incrementAndGet();
+            this.javax.setAttribute(REQUEST_ID_ATTRIBUTE, requestId);
+        }
+
+        return requestId.toString();
+    }
+
+    @Override
+    public String getProtocolRequestId()
+    {
+        // No protocol request identifier is available in Servlet 3.1
+        return "";
+    }
+
+    @Override
+    public ServletConnection getServletConnection()
+    {
+        return new JakartaToJavaxServletConnection(this.javax, getRequestId());
     }
 }

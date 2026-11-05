@@ -19,6 +19,10 @@
  */
 package org.xwiki.jakartabridge.servlet.internal;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
+
 import jakarta.servlet.SessionCookieConfig;
 
 import org.xwiki.jakartabridge.internal.AbstractJakartaToJavaxWrapper;
@@ -30,6 +34,22 @@ import org.xwiki.jakartabridge.internal.AbstractJakartaToJavaxWrapper;
 public class JakartaToJavaxSessionCookieConfig extends AbstractJakartaToJavaxWrapper<javax.servlet.SessionCookieConfig>
     implements SessionCookieConfig
 {
+    private static final String ATTRIBUTE_DOMAIN = "Domain";
+
+    private static final String ATTRIBUTE_PATH = "Path";
+
+    private static final String ATTRIBUTE_COMMENT = "Comment";
+
+    private static final String ATTRIBUTE_HTTP_ONLY = "HttpOnly";
+
+    private static final String ATTRIBUTE_SECURE = "Secure";
+
+    private static final String ATTRIBUTE_MAX_AGE = "Max-Age";
+
+    /**
+     * The attributes which don't have any equivalent in Servlet 3.1.
+     */
+    private final Map<String, String> customAttributes = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     /**
      * @param javax the wrapped version
      */
@@ -120,5 +140,80 @@ public class JakartaToJavaxSessionCookieConfig extends AbstractJakartaToJavaxWra
     public int getMaxAge()
     {
         return this.javax.getMaxAge();
+    }
+
+    @Override
+    public void setAttribute(String name, String value)
+    {
+        // Servlet 3.1 only supports a fixed set of attributes
+        if (!setStandardAttribute(name, value)) {
+            if (value != null) {
+                this.customAttributes.put(name, value);
+            } else {
+                this.customAttributes.remove(name);
+            }
+        }
+    }
+
+    private boolean setStandardAttribute(String name, String value)
+    {
+        if (ATTRIBUTE_DOMAIN.equalsIgnoreCase(name)) {
+            setDomain(value);
+        } else if (ATTRIBUTE_PATH.equalsIgnoreCase(name)) {
+            setPath(value);
+        } else if (ATTRIBUTE_COMMENT.equalsIgnoreCase(name)) {
+            setComment(value);
+        } else if (ATTRIBUTE_HTTP_ONLY.equalsIgnoreCase(name)) {
+            setHttpOnly(toBoolean(value));
+        } else if (ATTRIBUTE_SECURE.equalsIgnoreCase(name)) {
+            setSecure(toBoolean(value));
+        } else if (ATTRIBUTE_MAX_AGE.equalsIgnoreCase(name)) {
+            setMaxAge(value != null ? Integer.parseInt(value) : -1);
+        } else {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static boolean toBoolean(String value)
+    {
+        // A boolean cookie attribute is enabled when it's present without value
+        return value != null && (value.isEmpty() || Boolean.parseBoolean(value));
+    }
+
+    @Override
+    public String getAttribute(String name)
+    {
+        return getAttributes().get(name);
+    }
+
+    @Override
+    public Map<String, String> getAttributes()
+    {
+        Map<String, String> attributes = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
+        putAttribute(attributes, ATTRIBUTE_DOMAIN, getDomain());
+        putAttribute(attributes, ATTRIBUTE_PATH, getPath());
+        putAttribute(attributes, ATTRIBUTE_COMMENT, getComment());
+        if (isHttpOnly()) {
+            attributes.put(ATTRIBUTE_HTTP_ONLY, "");
+        }
+        if (isSecure()) {
+            attributes.put(ATTRIBUTE_SECURE, "");
+        }
+        if (getMaxAge() != -1) {
+            attributes.put(ATTRIBUTE_MAX_AGE, String.valueOf(getMaxAge()));
+        }
+        attributes.putAll(this.customAttributes);
+
+        return Collections.unmodifiableMap(attributes);
+    }
+
+    private void putAttribute(Map<String, String> attributes, String name, String value)
+    {
+        if (value != null) {
+            attributes.put(name, value);
+        }
     }
 }
