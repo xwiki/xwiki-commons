@@ -229,12 +229,6 @@ public class JakartaToJavaxServletRequestWrapper<R extends javax.servlet.Servlet
     }
 
     @Override
-    public String getRealPath(String path)
-    {
-        return this.javax.getRealPath(path);
-    }
-
-    @Override
     public int getRemotePort()
     {
         return this.javax.getRemotePort();
