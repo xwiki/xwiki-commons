@@ -97,7 +97,7 @@ class EnrichMojoTest
     {
         Path jar = this.tmpDir.resolve("livedata-webjar-1.0-20261030.120000-1.jar");
         try (OutputStream stream = Files.newOutputStream(jar); ZipOutputStream zip = new ZipOutputStream(stream)) {
-            zip.putNextEntry(new ZipEntry("META-INF/sbom/livedata.cdx.json"));
+            zip.putNextEntry(new ZipEntry("META-INF/sbom/npm.cdx.json"));
             zip.write("""
                 {"bomFormat": "CycloneDX", "components": [{"bom-ref": "pkg:npm/vue@3.5.0"}]}
                 """.getBytes(StandardCharsets.UTF_8));
@@ -159,7 +159,7 @@ class EnrichMojoTest
         this.mojo.setLog(log);
         String message = "The webjars [org.xwiki.platform:other-webjar:jar:1.0] don't embed the SBOM of the npm"
             + " packages they bundle, so these packages are missing from the SBOM. Build them with pnpm sbom generating"
-            + " it in META-INF/sbom/.";
+            + " it in META-INF/sbom/npm.cdx.json.";
 
         this.mojo.execute();
 

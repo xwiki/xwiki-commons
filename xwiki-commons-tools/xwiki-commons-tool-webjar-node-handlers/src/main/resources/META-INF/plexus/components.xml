@@ -97,10 +97,11 @@
           <prepare-package>
             <mojos>
               <!-- Embed in the JAR a CycloneDX SBOM of the bundled npm packages, which are not Maven dependencies:
-                   the SBOM generated at release time adds the components of the SBOMs found in META-INF/sbom/, so that
-                   vulnerability scanners can report the advisories affecting these packages. The list comes from the
-                   pnpm lockfile, limited to the production dependencies of the package, so every bundled package must
-                   be a (direct or transitive) dependency of the package, not a devDependency.
+                   the SBOM generated at release time adds the components of the SBOM found in
+                   META-INF/sbom/npm.cdx.json, so that vulnerability scanners can report the advisories affecting these
+                   packages. The list comes from the pnpm lockfile, limited to the production dependencies of the
+                   package, so every bundled package must be a (direct or transitive) dependency of the package, not a
+                   devDependency.
                    It runs in every build (it takes less than a second) so that it's verified by the CI and not only at
                    release time. -->
               <mojo>

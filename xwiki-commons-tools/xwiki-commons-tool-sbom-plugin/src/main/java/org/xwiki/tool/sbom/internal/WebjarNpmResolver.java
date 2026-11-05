@@ -38,6 +38,7 @@ import com.github.packageurl.PackageURL;
  * npm advisories: they don't know that {@code org.webjars:jquery} is the {@code jquery} npm package.
  *
  * @version $Id$
+ * @since 18.10.0RC1
  */
 public class WebjarNpmResolver
 {

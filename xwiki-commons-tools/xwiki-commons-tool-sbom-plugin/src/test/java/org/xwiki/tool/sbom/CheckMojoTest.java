@@ -26,7 +26,6 @@ import java.util.List;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +34,6 @@ import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -136,14 +134,11 @@ class CheckMojoTest
     }
 
     @Test
-    void executeWithoutSBOM() throws Exception
+    void executeWithoutSBOM()
     {
-        Log log = mock(Log.class);
-        this.mojo.setLog(log);
+        MojoExecutionException exception = assertThrows(MojoExecutionException.class, this.mojo::execute);
 
-        this.mojo.execute();
-
-        verify(log).debug("No CycloneDX SBOM in JSON format is attached to the artifact, nothing to check.");
+        assertEquals("No CycloneDX SBOM in JSON format is attached to the artifact.", exception.getMessage());
     }
 
     private void attachSBOM(String content) throws Exception

@@ -39,8 +39,8 @@ import com.github.packageurl.PackageURL;
 /**
  * Verifies that the CycloneDX SBOM attached to the artifact contains some components and doesn't contain others, so
  * that a regression in its generation is caught (e.g. the npm packages bundled in a webjar missing from the SBOM of a
- * distribution). It must run after the goals generating the SBOM ({@code makeBom} and {@code enrich}). It does nothing
- * when no SBOM is attached to the artifact.
+ * distribution). It must run after the goals generating the SBOM ({@code makeBom} and {@code enrich}). It fails when
+ * no SBOM is attached to the artifact, since that's a regression too (e.g. the SBOM generation skipped by mistake).
  *
  * @version $Id$
  * @since 18.10.0RC1
@@ -71,8 +71,7 @@ public class CheckMojo extends AbstractSBOMMojo
     {
         Optional<File> sbomFile = getAttachedSBOM();
         if (sbomFile.isEmpty()) {
-            getLog().debug("No CycloneDX SBOM in JSON format is attached to the artifact, nothing to check.");
-            return;
+            throw new MojoExecutionException("No CycloneDX SBOM in JSON format is attached to the artifact.");
         }
 
         List<PackageURL> components;

@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -46,8 +45,10 @@ import com.github.packageurl.PackageURL;
 /**
  * Completes a CycloneDX SBOM generated from the Maven dependencies with the npm packages they contain:
  * <ul>
- * <li>the packages bundled in a JAR (e.g. by Vite in a webjar), listed by the CycloneDX SBOMs found in its
- * {@code META-INF/sbom/} directory;</li>
+ * <li>the packages bundled in a JAR (e.g. by Vite in a webjar), listed by the CycloneDX SBOM embedded in its
+ * {@code META-INF/sbom/npm.cdx.json} file. Other embedded SBOMs are ignored: those of third-party libraries (e.g.
+ * Spring Boot applications) list their Maven dependencies at the versions they were built with, not the ones
+ * resolved here, which would produce false vulnerability reports;</li>
  * <li>the package repackaged by a third-party webjar.</li>
  * </ul>
  * Each npm package is added as a top-level component, which the JAR containing it depends on, rather than as a
@@ -57,10 +58,11 @@ import com.github.packageurl.PackageURL;
  * stable from one release to the next.
  *
  * @version $Id$
+ * @since 18.10.0RC1
  */
 public class SBOMEnricher
 {
-    private static final String SBOM_DIRECTORY = "META-INF/sbom/";
+    private static final String EMBEDDED_SBOM = "META-INF/sbom/npm.cdx.json";
 
     private static final String CONTAINED_SEPARATOR = "!/";
 
@@ -213,9 +215,8 @@ public class SBOMEnricher
     private void addEmbeddedSBOMs(String containerRef, Path jar) throws IOException
     {
         try (ZipFile zip = new ZipFile(jar.toFile())) {
-            List<? extends ZipEntry> entries = zip.stream().filter(entry -> isEmbeddedSBOM(entry.getName()))
-                .sorted(Comparator.comparing(ZipEntry::getName)).toList();
-            for (ZipEntry entry : entries) {
+            ZipEntry entry = zip.getEntry(EMBEDDED_SBOM);
+            if (entry != null) {
                 JsonNode embeddedSBOM;
                 try (InputStream stream = zip.getInputStream(entry)) {
                     embeddedSBOM = MAPPER.readTree(stream);
@@ -224,7 +225,7 @@ public class SBOMEnricher
                     addEmbeddedSBOM(containerRef, embeddedSBOM);
                 } else {
                     this.log.warn(String.format("Ignoring [%s] in [%s] since it's not a CycloneDX SBOM.",
-                        entry.getName(), jar));
+                        EMBEDDED_SBOM, jar));
                 }
             }
         }
@@ -232,20 +233,14 @@ public class SBOMEnricher
 
     /**
      * @param jar a JAR file
-     * @return {@code true} if the JAR embeds at least one SBOM in its {@code META-INF/sbom/} directory
+     * @return {@code true} if the JAR embeds the SBOM of the npm packages it bundles
      * @throws IOException when failing to read the JAR
      */
     public static boolean hasEmbeddedSBOM(Path jar) throws IOException
     {
         try (ZipFile zip = new ZipFile(jar.toFile())) {
-            return zip.stream().anyMatch(entry -> isEmbeddedSBOM(entry.getName()));
+            return zip.getEntry(EMBEDDED_SBOM) != null;
         }
-    }
-
-    private static boolean isEmbeddedSBOM(String entryName)
-    {
-        return entryName.startsWith(SBOM_DIRECTORY) && entryName.endsWith(".json")
-            && entryName.indexOf('/', SBOM_DIRECTORY.length()) < 0;
     }
 
     private void addEmbeddedSBOM(String containerRef, JsonNode embeddedSBOM)

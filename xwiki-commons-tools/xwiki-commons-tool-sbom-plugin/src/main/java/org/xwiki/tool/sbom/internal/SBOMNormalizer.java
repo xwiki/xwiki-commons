@@ -45,6 +45,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * </ul>
  *
  * @version $Id$
+ * @since 18.10.0RC1
  */
 public class SBOMNormalizer
 {

@@ -53,8 +53,8 @@ import com.github.packageurl.PackageURL;
  * Completes the CycloneDX SBOM attached to the artifact (by the {@code makeBom} goal of the
  * {@code cyclonedx-maven-plugin}, which must run before) with what Maven doesn't know about:
  * <ul>
- * <li>the npm packages bundled in the artifact and in its dependencies, listed by the CycloneDX SBOMs found in the
- * {@code META-INF/sbom/} directory of their JAR;</li>
+ * <li>the npm packages bundled in the artifact and in its dependencies, listed by the CycloneDX SBOM embedded in their
+ * JAR as {@code META-INF/sbom/npm.cdx.json};</li>
  * <li>the npm package repackaged by each third-party webjar;</li>
  * <li>the organization supplying and manufacturing the artifact, taken from the POM {@code <organization>}.</li>
  * </ul>
@@ -87,10 +87,10 @@ public class EnrichMojo extends AbstractSBOMMojo
 
     /**
      * Whether to fail when the artifact, or one of its dependencies, is a webjar built from npm packages (i.e. with the
-     * {@code webjar-node} packaging) without an SBOM of these packages embedded in its {@code META-INF/sbom/}
-     * directory: they would be missing from the SBOM. Only a warning is logged when {@code false}, which is the default
-     * since the projects building webjars without generating this SBOM (e.g. extensions inheriting from an older
-     * parent POM) would otherwise fail to release.
+     * {@code webjar-node} packaging) without an SBOM of these packages embedded as its
+     * {@code META-INF/sbom/npm.cdx.json} file: they would be missing from the SBOM. Only a warning is logged when
+     * {@code false}, which is the default since the projects building webjars without generating this SBOM (e.g.
+     * extensions inheriting from an older parent POM) would otherwise fail to release.
      */
     @Parameter(property = "xwiki.sbom.failOnMissingEmbeddedSBOM", defaultValue = "false")
     private boolean failOnMissingEmbeddedSBOM;
@@ -135,7 +135,7 @@ public class EnrichMojo extends AbstractSBOMMojo
         if (!missing.isEmpty()) {
             String message = String.format("The webjars %s don't embed the SBOM of the npm packages they bundle, so "
                 + "these packages are missing from the SBOM. Build them with pnpm sbom generating it in "
-                + "META-INF/sbom/.", missing);
+                + "META-INF/sbom/npm.cdx.json.", missing);
             if (this.failOnMissingEmbeddedSBOM) {
                 throw new MojoExecutionException(message);
             }
