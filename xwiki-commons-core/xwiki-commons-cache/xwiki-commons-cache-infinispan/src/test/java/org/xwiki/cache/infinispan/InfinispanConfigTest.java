@@ -148,7 +148,7 @@ class InfinispanConfigTest extends AbstractTestCache
         assertEquals(1, stores.size());
 
         String location = ((SoftIndexFileStoreConfiguration) stores.get(0)).dataLocation();
-        assertEquals(this.environment.getTemporaryDirectory().toString() + "/cache", location);
+        assertEquals(this.environment.getTemporaryDirectory().toString() + "/cache/file-cache-nopath", location);
     }
 
     @Test
