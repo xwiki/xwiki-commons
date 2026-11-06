@@ -32,7 +32,7 @@
   <packaging>maven-plugin</packaging>
   <description>XWiki Commons - Tools - XAR Tools - XAR Plugin</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.22</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.23</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
@@ -120,6 +120,13 @@
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
+    </dependency>
+    <!-- Shares the parsing and verification of the macros declared in xwiki.extension.components with the Spoon
+         checks -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-tool-spoon-checks</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <!-- Test dependencies -->
     <dependency>

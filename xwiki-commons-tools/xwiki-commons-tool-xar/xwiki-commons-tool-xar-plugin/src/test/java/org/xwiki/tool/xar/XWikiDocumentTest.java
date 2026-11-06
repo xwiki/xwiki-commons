@@ -19,6 +19,8 @@
  */
 package org.xwiki.tool.xar;
 
+import java.util.List;
+
 import org.dom4j.DocumentException;
 import org.junit.jupiter.api.Test;
 import org.xwiki.tool.xar.internal.XWikiDocument;
@@ -52,6 +54,24 @@ class XWikiDocumentTest
 
         xdocument.fromXML("<xwikidoc><web>space</web><name>name</name></xwikidoc>");
         assertFalse(xdocument.isObjectPresent());
+    }
+
+    @Test
+    void wikiMacroIds() throws DocumentException
+    {
+        XWikiDocument xdocument = new XWikiDocument();
+
+        xdocument.fromXML("<xwikidoc><web>space</web><name>name</name>"
+            + "<object><className>XWiki.WikiMacroClass</className><property><id> macro1 </id></property></object>"
+            + "<object><className>XWiki.StyleSheetExtension</className><property><id>notAMacro</id></property>"
+            + "</object>"
+            + "<object><className>XWiki.WikiMacroClass</className><property><id>macro2</id></property></object>"
+            + "</xwikidoc>");
+        assertEquals(List.of("macro1", "macro2"), xdocument.getWikiMacroIds());
+
+        xdocument = new XWikiDocument();
+        xdocument.fromXML("<xwikidoc><web>space</web><name>name</name></xwikidoc>");
+        assertEquals(List.of(), xdocument.getWikiMacroIds());
     }
 
     @Test
