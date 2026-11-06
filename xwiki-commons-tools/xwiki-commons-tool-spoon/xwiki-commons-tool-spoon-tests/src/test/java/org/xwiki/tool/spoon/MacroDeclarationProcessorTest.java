@@ -136,6 +136,21 @@ class MacroDeclarationProcessorTest
     }
 
     @Test
+    void processWithRolesNotInClasspath()
+    {
+        Throwable exception = assertThrows(SpoonException.class,
+            () -> run("", "", "jar", "false", "./src/test/resources/macro/sourcerole/", MACRO_ROLE));
+
+        assertEquals("""
+            The following errors were found:
+            - Macro [sourceRoleMacro] provided by [org.xwiki.tool.spoon.macro.sourcerole.SourceRoleMacro] is not \
+            declared in the [xwiki.extension.components] Maven property. Add \
+            [org.xwiki.rendering.macro.Macro/sourceRoleMacro] to it, or add [sourceRoleMacro] to the \
+            [xwiki.extension.components.macros.check.excluded] Maven property if it is an internal macro.
+            """, exception.getMessage());
+    }
+
+    @Test
     void processWhenSkipped()
     {
         assertDoesNotThrow(() -> run("", "", "jar", "true", MACROS, MACRO_ROLE));

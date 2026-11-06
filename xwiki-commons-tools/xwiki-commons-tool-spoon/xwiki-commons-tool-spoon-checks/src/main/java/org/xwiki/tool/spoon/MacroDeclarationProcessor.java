@@ -32,10 +32,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import spoon.processing.Property;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 /**
  * Verify that the Java macros of a Maven module are declared in its {@code xwiki.extension.components} Maven
@@ -172,11 +175,13 @@ public class MacroDeclarationProcessor extends AbstractXWikiProcessor<CtClass<?>
 
     private boolean hasMacroRole(CtAnnotation<? extends Annotation> componentAnnotation)
     {
-        List<String> roles = toList(componentAnnotation.getValueAsObject("roles")).stream()
-            .map(role -> role instanceof Class<?> roleClass ? roleClass.getName() : role.toString())
-            .toList();
-        // Class values are evaluated into type references, or into classes when they come from the classpath.
-        return roles.isEmpty() || roles.stream().anyMatch(ExtensionComponentsParser.MACRO_ROLE::equals);
+        // Read the class literals from the source tree. Evaluating them loads the classes, which fails for the classes
+        // of the analyzed module since they are not in the classpath.
+        CtExpression<?> rolesValue = componentAnnotation.getValue("roles");
+        List<String> roles = rolesValue == null ? List.of()
+            : rolesValue.getElements(new TypeFilter<>(CtTypeAccess.class)).stream()
+                .map(typeAccess -> typeAccess.getAccessedType().getQualifiedName()).toList();
+        return roles.isEmpty() || roles.contains(ExtensionComponentsParser.MACRO_ROLE);
     }
 
     private List<String> getHints(CtAnnotation<? extends Annotation> componentAnnotation,
