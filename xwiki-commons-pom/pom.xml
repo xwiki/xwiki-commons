@@ -41,10 +41,10 @@
          verifying it never receive an unresolved expression. -->
     <xwiki.extension.components/>
     <!-- By default verify that the macros provided by a module are declared in xwiki.extension.components -->
-    <xwiki.extension.components.check.skip>false</xwiki.extension.components.check.skip>
+    <xwiki.extension.components.macros.check.skip>false</xwiki.extension.components.macros.check.skip>
     <!-- The hints of the internal macros provided by a module, which must not be declared in xwiki.extension.components
          since the editor would suggest them when the extension is not installed. -->
-    <xwiki.extension.components.check.excludedMacros/>
+    <xwiki.extension.components.macros.check.excluded/>
   </properties>
   <build>
     <defaultGoal>install</defaultGoal>
@@ -243,7 +243,7 @@
                     </property>
                     <property>
                       <name>excludedMacros</name>
-                      <value>${xwiki.extension.components.check.excludedMacros}</value>
+                      <value>${xwiki.extension.components.macros.check.excluded}</value>
                     </property>
                     <property>
                       <name>packaging</name>
@@ -251,7 +251,7 @@
                     </property>
                     <property>
                       <name>skip</name>
-                      <value>${xwiki.extension.components.check.skip}</value>
+                      <value>${xwiki.extension.components.macros.check.skip}</value>
                     </property>
                   </properties>
                 </processorProperty>

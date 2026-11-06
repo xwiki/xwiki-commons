@@ -80,12 +80,12 @@ class MacroDeclarationProcessorTest
                 + "not find. Declare it as [org.xwiki.rendering.macro.Macro/explicitRole] instead.",
             "- Macro [hint2] provided by [org.xwiki.tool.spoon.macro.SeveralHintsMacro] is not declared in the "
                 + "[xwiki.extension.components] Maven property. Add [org.xwiki.rendering.macro.Macro/hint2] to it, or "
-                + "add [hint2] to the [xwiki.extension.components.check.excludedMacros] Maven property if it is an "
+                + "add [hint2] to the [xwiki.extension.components.macros.check.excluded] Maven property if it is an "
                 + "internal macro.",
             "- Macro [explicitRole] provided by [org.xwiki.tool.spoon.macro.ExplicitRoleMacro] is not declared in "
                 + "the [xwiki.extension.components] Maven property. Add "
                 + "[org.xwiki.rendering.macro.Macro/explicitRole] to it, or add [explicitRole] to the "
-                + "[xwiki.extension.components.check.excludedMacros] Maven property if it is an internal macro.",
+                + "[xwiki.extension.components.macros.check.excluded] Maven property if it is an internal macro.",
             "- Macro [org.xwiki.rendering.macro.Macro/removed] is declared in the [xwiki.extension.components] Maven "
                 + "property but no macro with this hint was found in the current Maven module. Remove it."),
             Set.copyOf(List.of(exception.getMessage().split("\n"))));
@@ -115,8 +115,8 @@ class MacroDeclarationProcessorTest
         assertEquals("""
             The following errors were found:
             - Macro [named] is both declared in the [xwiki.extension.components] Maven property and excluded in the \
-            [xwiki.extension.components.check.excludedMacros] Maven property. Remove it from one of them.
-            - Macro [missing] is excluded in the [xwiki.extension.components.check.excludedMacros] Maven property but \
+            [xwiki.extension.components.macros.check.excluded] Maven property. Remove it from one of them.
+            - Macro [missing] is excluded in the [xwiki.extension.components.macros.check.excluded] Maven property but \
             no macro with this hint was found in the current Maven module. Remove it.
             """, exception.getMessage());
     }

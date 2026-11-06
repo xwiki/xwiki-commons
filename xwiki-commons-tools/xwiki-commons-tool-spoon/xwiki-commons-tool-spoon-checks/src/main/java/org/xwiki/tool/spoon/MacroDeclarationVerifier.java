@@ -38,7 +38,7 @@ import org.xwiki.tool.spoon.ExtensionComponentsParser.Component;
  *   <li>D - Verify that no excluded macro is declared</li>
  *   <li>E - Verify that every excluded macro is provided by the module</li>
  * </ul>
- * The excluded macros are listed in the {@code xwiki.extension.components.check.excludedMacros} Maven property. They
+ * The excluded macros are listed in the {@code xwiki.extension.components.macros.check.excluded} Maven property. They
  * are the internal macros that must not be indexed: the macro selector of the editor lists the macros of the indexed
  * extensions which are not installed without filtering them by category, so it would suggest them to the users.
  * <p>
@@ -54,7 +54,7 @@ public final class MacroDeclarationVerifier
      * The name of the Maven property listing the hints of the macros which must not be declared, separated by commas or
      * white spaces.
      */
-    public static final String EXCLUDED_MACROS_PROPERTY = "xwiki.extension.components.check.excludedMacros";
+    public static final String EXCLUDED_MACROS_PROPERTY = "xwiki.extension.components.macros.check.excluded";
 
     private static final String NOT_PROVIDED =
         "no macro with this hint was found in the current Maven module. Remove it.";
@@ -69,7 +69,7 @@ public final class MacroDeclarationVerifier
     /**
      * @param declaredComponents the value of the {@code xwiki.extension.components} Maven property, can be
      *     {@code null}
-     * @param excludedMacros the value of the {@code xwiki.extension.components.check.excludedMacros} Maven property,
+     * @param excludedMacros the value of the {@code xwiki.extension.components.macros.check.excluded} Maven property,
      *     can be {@code null}
      * @param providedMacros the macros provided by the module, as a map from the macro hint to a description of what
      *     provides it (e.g. a class name or a page reference)

@@ -115,7 +115,7 @@ public class VerifyMojo extends AbstractVerifyMojo
      *
      * @since 18.10.0RC1
      */
-    @Parameter(property = "xwiki.extension.components.check.skip", defaultValue = "false")
+    @Parameter(property = "xwiki.extension.components.macros.check.skip", defaultValue = "false")
     private boolean macroDeclarationSkip;
 
     /**
