@@ -56,7 +56,7 @@ class MacroDeclarationProcessorTest
     @Test
     void processWithAllMacrosDeclared()
     {
-        assertDoesNotThrow(() -> run(ALL_DECLARED, "jar", "false", MACROS, MACRO_ROLE));
+        assertDoesNotThrow(() -> run(ALL_DECLARED, "", "jar", "false", MACROS, MACRO_ROLE));
     }
 
     @Test
@@ -71,7 +71,7 @@ class MacroDeclarationProcessorTest
             """;
 
         Throwable exception =
-            assertThrows(SpoonException.class, () -> run(declared, "jar", "false", MACROS, MACRO_ROLE));
+            assertThrows(SpoonException.class, () -> run(declared, null, "jar", "false", MACROS, MACRO_ROLE));
 
         assertEquals(Set.of(
             "The following errors were found:",
@@ -79,20 +79,53 @@ class MacroDeclarationProcessorTest
                 + "[xwiki.extension.components] Maven property with a generic role, which the extension index does "
                 + "not find. Declare it as [org.xwiki.rendering.macro.Macro/explicitRole] instead.",
             "- Macro [hint2] provided by [org.xwiki.tool.spoon.macro.SeveralHintsMacro] is not declared in the "
-                + "[xwiki.extension.components] Maven property. Add [org.xwiki.rendering.macro.Macro/hint2] to it.",
+                + "[xwiki.extension.components] Maven property. Add [org.xwiki.rendering.macro.Macro/hint2] to it, or "
+                + "add [hint2] to the [xwiki.extension.components.check.excludedMacros] Maven property if it is an "
+                + "internal macro.",
             "- Macro [explicitRole] provided by [org.xwiki.tool.spoon.macro.ExplicitRoleMacro] is not declared in "
                 + "the [xwiki.extension.components] Maven property. Add "
-                + "[org.xwiki.rendering.macro.Macro/explicitRole] to it.",
+                + "[org.xwiki.rendering.macro.Macro/explicitRole] to it, or add [explicitRole] to the "
+                + "[xwiki.extension.components.check.excludedMacros] Maven property if it is an internal macro.",
             "- Macro [org.xwiki.rendering.macro.Macro/removed] is declared in the [xwiki.extension.components] Maven "
                 + "property but no macro with this hint was found in the current Maven module. Remove it."),
             Set.copyOf(List.of(exception.getMessage().split("\n"))));
     }
 
     @Test
+    void processWithExcludedMacros()
+    {
+        String declared = """
+            org.xwiki.rendering.macro.Macro/named
+            org.xwiki.rendering.macro.Macro/constant|org.xwiki.rendering.macro.Macro/hint1
+            org.xwiki.rendering.macro.Macro
+            """;
+
+        assertDoesNotThrow(() -> run(declared, """
+            hint2,
+            explicitRole
+            """, "jar", "false", MACROS, MACRO_ROLE));
+    }
+
+    @Test
+    void processWithExcludedMacrosDeclaredOrNotProvided()
+    {
+        Throwable exception = assertThrows(SpoonException.class,
+            () -> run(ALL_DECLARED, "named, missing", "jar", "false", MACROS, MACRO_ROLE));
+
+        assertEquals("""
+            The following errors were found:
+            - Macro [named] is both declared in the [xwiki.extension.components] Maven property and excluded in the \
+            [xwiki.extension.components.check.excludedMacros] Maven property. Remove it from one of them.
+            - Macro [missing] is excluded in the [xwiki.extension.components.check.excludedMacros] Maven property but \
+            no macro with this hint was found in the current Maven module. Remove it.
+            """, exception.getMessage());
+    }
+
+    @Test
     void processWithUnresolvedHierarchy()
     {
         Throwable exception = assertThrows(SpoonException.class,
-            () -> run("", "jar", "false", "./src/test/resources/macro/unresolved/"));
+            () -> run("", "", "jar", "false", "./src/test/resources/macro/unresolved/"));
 
         assertEquals("""
             The following errors were found:
@@ -105,16 +138,17 @@ class MacroDeclarationProcessorTest
     @Test
     void processWhenSkipped()
     {
-        assertDoesNotThrow(() -> run("", "jar", "true", MACROS, MACRO_ROLE));
+        assertDoesNotThrow(() -> run("", "", "jar", "true", MACROS, MACRO_ROLE));
     }
 
     @Test
     void processWhenNotAJar()
     {
-        assertDoesNotThrow(() -> run("", "xar", "false", MACROS, MACRO_ROLE));
+        assertDoesNotThrow(() -> run("", "", "xar", "false", MACROS, MACRO_ROLE));
     }
 
-    private void run(String declaredComponents, String packaging, String skip, String... inputs)
+    private void run(String declaredComponents, String excludedMacros, String packaging, String skip,
+        String... inputs)
     {
         Launcher launcher = new Launcher();
         launcher.getEnvironment().setNoClasspath(true);
@@ -125,6 +159,7 @@ class MacroDeclarationProcessorTest
         MacroDeclarationProcessor processor = new MacroDeclarationProcessor();
         ProcessorProperties properties = new ProcessorPropertiesImpl();
         properties.set("declaredComponents", declaredComponents);
+        properties.set("excludedMacros", excludedMacros);
         properties.set("packaging", packaging);
         properties.set("skip", skip);
         processor.initProperties(properties);

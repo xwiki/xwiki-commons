@@ -118,6 +118,15 @@ public class VerifyMojo extends AbstractVerifyMojo
     @Parameter(property = "xwiki.extension.components.check.skip", defaultValue = "false")
     private boolean macroDeclarationSkip;
 
+    /**
+     * The hints of the internal wiki macros which must not be declared in the {@code xwiki.extension.components} Maven
+     * property, separated by commas or white spaces.
+     *
+     * @since 18.10.0RC1
+     */
+    @Parameter(property = MacroDeclarationVerifier.EXCLUDED_MACROS_PROPERTY)
+    private String excludedMacros;
+
     private Map<Pattern, Pattern> titlePatterns;
 
     @Override
@@ -259,7 +268,8 @@ public class VerifyMojo extends AbstractVerifyMojo
         // Verification 18: Verify that the wiki macros are declared in the xwiki.extension.components Maven property
         if (!this.macroDeclarationSkip) {
             hasErrors |= displayErrors("wiki macro declarations", MacroDeclarationVerifier.verify(
-                getProject().getProperties().getProperty(ExtensionComponentsParser.PROPERTY), wikiMacros));
+                getProject().getProperties().getProperty(ExtensionComponentsParser.PROPERTY), this.excludedMacros,
+                wikiMacros));
         }
 
         if (hasErrors) {

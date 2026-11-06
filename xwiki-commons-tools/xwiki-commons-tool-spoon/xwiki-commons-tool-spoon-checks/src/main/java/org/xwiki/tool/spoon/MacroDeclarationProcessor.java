@@ -72,6 +72,9 @@ public class MacroDeclarationProcessor extends AbstractXWikiProcessor<CtClass<?>
     private String declaredComponents;
 
     @Property
+    private String excludedMacros;
+
+    @Property
     private String packaging;
 
     @Property
@@ -116,7 +119,8 @@ public class MacroDeclarationProcessor extends AbstractXWikiProcessor<CtClass<?>
     public void processingDone()
     {
         if (isEnabled()) {
-            MacroDeclarationVerifier.verify(this.declaredComponents, this.foundMacros).forEach(this::registerError);
+            MacroDeclarationVerifier.verify(this.declaredComponents, this.excludedMacros, this.foundMacros)
+                .forEach(this::registerError);
         }
 
         super.processingDone();

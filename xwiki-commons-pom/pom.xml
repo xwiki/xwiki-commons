@@ -42,6 +42,9 @@
     <xwiki.extension.components/>
     <!-- By default verify that the macros provided by a module are declared in xwiki.extension.components -->
     <xwiki.extension.components.check.skip>false</xwiki.extension.components.check.skip>
+    <!-- The hints of the internal macros provided by a module, which must not be declared in xwiki.extension.components
+         since the editor would suggest them when the extension is not installed. -->
+    <xwiki.extension.components.check.excludedMacros/>
   </properties>
   <build>
     <defaultGoal>install</defaultGoal>
@@ -237,6 +240,10 @@
                     <property>
                       <name>declaredComponents</name>
                       <value>${xwiki.extension.components}</value>
+                    </property>
+                    <property>
+                      <name>excludedMacros</name>
+                      <value>${xwiki.extension.components.check.excludedMacros}</value>
                     </property>
                     <property>
                       <name>packaging</name>
