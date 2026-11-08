@@ -105,7 +105,7 @@
     <!-- Jackson -->
     <jackson.version>2.22.4</jackson.version>
     <jackson.databind.version>${jackson.version}</jackson.databind.version>
-    <jackson.annotations.version>2.22</jackson.annotations.version>
+    <jackson.annotations.version>2.23</jackson.annotations.version>
 
     <!-- Bouncy Castle -->
     <bouncycastle.version>1.86.2</bouncycastle.version>
