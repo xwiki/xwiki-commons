@@ -82,10 +82,10 @@ class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    void executeWithTooLowFormatVersion() throws Exception
+    void executeWithWrongFormatVersion() throws Exception
     {
         // @formatter:off
-        verifyExecution("/tooLowFormatVersion",
+        verifyExecution("/formatVersion",
             "Verifying [Space/WebHome.xml]... errors",
             "- Format version must be at least [1.6] since the page uses the <enforceRequiredRights> element, but was "
                 + "[1.2]. Run [mvn xar:format] to fix it.",
@@ -94,6 +94,10 @@ class VerifyMojoTest extends AbstractMojoTest
                 + "but was [1.6]. Run [mvn xar:format] to fix it.",
             "Verifying [Space/InvalidVersion.xml]... errors",
             "- Format version must be of the form [<major>.<minor>] but was [1.x]",
+            "Verifying [Space/UnknownVersion.xml]... errors",
+            "- Format version must be at most [1.7], the highest one known by the targeted XWiki version (the version"
+                + " of this plugin), but was [1.8]. The elements of a higher format would be ignored when the page is"
+                + " installed.",
             "Verifying [Space/Supported.xml]... ok",
             "There are errors in the XAR XML files!");
         // @formatter:on

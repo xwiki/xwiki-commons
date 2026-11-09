@@ -55,6 +55,17 @@ public class XWikiDocument
      */
     public static final String ORIGINAL_METADATA_AUTHOR_ELEMENT = "the <originalMetadataAuthor> element";
 
+    /**
+     * The highest XAR format version known by the XWiki version this plugin is released with, which is the XWiki
+     * version an extension targets since it gets this plugin's version from its parent. XWiki imports a document
+     * declaring a higher format, but ignores the elements it doesn't know, so such a document would lose content when
+     * installed. Must be raised, and backported along, whenever XWiki Platform's {@code XarDocumentModel} gets a new
+     * format version.
+     *
+     * @since 18.10.0RC1
+     */
+    public static final String HIGHEST_KNOWN_FORMAT_VERSION = XWikiDocument.FORMAT_VERSION_17;
+
     private static final String AUTHOR_TAG = "author";
 
     private static final String MIMETYPE_TAG = "mimetype";
@@ -69,6 +80,8 @@ public class XWikiDocument
      * The format version of a document whose root element has no {@code version} attribute.
      */
     private static final String DEFAULT_FORMAT_VERSION = "1.0";
+
+    private static final String FORMAT_VERSION_17 = "1.7";
 
     private static final Pattern FORMAT_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)");
 
@@ -87,7 +100,7 @@ public class XWikiDocument
         new VersionedNode("attachment/revisions", "the <revisions> element of an attachment", "1.4"),
         new VersionedNode(ORIGINAL_METADATA_AUTHOR_TAG, ORIGINAL_METADATA_AUTHOR_ELEMENT, "1.5"),
         new VersionedNode("enforceRequiredRights", "the <enforceRequiredRights> element", "1.6"),
-        new VersionedNode("object/property/@type", "the type attribute of an object property", "1.7"));
+        new VersionedNode("object/property/@type", "the type attribute of an object property", FORMAT_VERSION_17));
 
     /**
      * @see #getFormatVersion()

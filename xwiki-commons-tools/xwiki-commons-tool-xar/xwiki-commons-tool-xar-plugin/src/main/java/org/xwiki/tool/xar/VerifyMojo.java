@@ -60,7 +60,9 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  *       filterable in the attachment view in Page Index.</li>
  *   <li>ensure the locale of a page matches its name</li>
  *   <li>ensure that the XAR format version declared by the root element (its {@code version} attribute) is valid and
- *       includes every element the page uses, as listed by {@link XWikiDocument#readRequiredFormatVersions}</li>
+ *       includes every element the page uses, as listed by {@link XWikiDocument#readRequiredFormatVersions}, without
+ *       exceeding the highest format known by the targeted XWiki version
+ *       ({@link XWikiDocument#HIGHEST_KNOWN_FORMAT_VERSION})</li>
  * </ul>
  *
  * @version $Id$
@@ -325,7 +327,8 @@ public class VerifyMojo extends AbstractVerifyMojo
     }
 
     /**
-     * Verification 18: verify that the declared format version supports every element the page uses.
+     * Verification 18: verify that the declared format version supports every element the page uses, and is known by
+     * the targeted XWiki version.
      */
     private void verifyFormatVersion(List<String> errors, XWikiDocument xdoc)
     {
@@ -334,6 +337,12 @@ public class VerifyMojo extends AbstractVerifyMojo
             errors.add(String.format("Format version must be of the form [<major>.<minor>] but was [%s]",
                 formatVersion));
             return;
+        }
+
+        if (XWikiDocument.compareFormatVersions(formatVersion, XWikiDocument.HIGHEST_KNOWN_FORMAT_VERSION) > 0) {
+            errors.add(String.format("Format version must be at most [%s], the highest one known by the targeted XWiki"
+                + " version (the version of this plugin), but was [%s]. The elements of a higher format would be"
+                + " ignored when the page is installed.", XWikiDocument.HIGHEST_KNOWN_FORMAT_VERSION, formatVersion));
         }
 
         Map<String, String> requiredFormatVersions = new LinkedHashMap<>(xdoc.getRequiredFormatVersions());
