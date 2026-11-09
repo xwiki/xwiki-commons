@@ -248,7 +248,7 @@ class FormatMojoTest
 
         mojo.format("Space/Page.xml", domdoc, Locale.ROOT);
 
-        assertEquals("<xwikidoc reference=\"Space.Page\">"
+        assertEquals("<xwikidoc version=\"1.5\" reference=\"Space.Page\">"
             + "<originalMetadataAuthor>xwiki:XWiki.Admin</originalMetadataAuthor><creationDate>1</creationDate>"
             + "<hidden>true</hidden>"
             + "</xwikidoc>", domdoc.getRootElement().asXML());
@@ -272,9 +272,69 @@ class FormatMojoTest
         mojo.format("Space/Page.xml", domdoc, Locale.ROOT);
 
         verify(log).error(eq("Failed to get the document reference"), any(DocumentException.class));
-        assertEquals("<xwikidoc>"
+        assertEquals("<xwikidoc version=\"1.5\">"
             + "<originalMetadataAuthor>xwiki:XWiki.Admin</originalMetadataAuthor><creationDate>1</creationDate>"
             + "<hidden>true</hidden>"
+            + "</xwikidoc>", domdoc.getRootElement().asXML());
+    }
+
+    @Test
+    void formatRaisesFormatVersionToTheOneRequired() throws Exception
+    {
+        FormatMojo mojo = new FormatMojo();
+        mojo.skipDatesDocumentList = Collections.emptySet();
+        mojo.skipAuthorsDocumentList = Collections.emptySet();
+
+        // The originalMetadataAuthor element (1.5) is removed before the version is computed, so the most recent
+        // element left is enforceRequiredRights (1.6).
+        Document domdoc = DocumentHelper.parseText("<xwikidoc version=\"1.2\" reference=\"Space.Page\">"
+            + "<originalMetadataAuthor>XWiki.User</originalMetadataAuthor><hidden>true</hidden>"
+            + "<enforceRequiredRights>true</enforceRequiredRights>"
+            + "</xwikidoc>");
+
+        mojo.format("Space/Page.xml", domdoc, Locale.ROOT);
+
+        assertEquals("<xwikidoc version=\"1.6\" reference=\"Space.Page\">"
+            + "<hidden>true</hidden><enforceRequiredRights>true</enforceRequiredRights>"
+            + "</xwikidoc>", domdoc.getRootElement().asXML());
+    }
+
+    @Test
+    void formatKeepsAHigherFormatVersion() throws Exception
+    {
+        FormatMojo mojo = new FormatMojo();
+        mojo.skipDatesDocumentList = Collections.emptySet();
+        mojo.skipAuthorsDocumentList = Collections.emptySet();
+
+        Document domdoc = DocumentHelper.parseText("<xwikidoc version=\"1.7\" reference=\"Space.Page\">"
+            + "<hidden>true</hidden><enforceRequiredRights>true</enforceRequiredRights>"
+            + "</xwikidoc>");
+
+        mojo.format("Space/Page.xml", domdoc, Locale.ROOT);
+
+        assertEquals("<xwikidoc version=\"1.7\" reference=\"Space.Page\">"
+            + "<hidden>true</hidden><enforceRequiredRights>true</enforceRequiredRights>"
+            + "</xwikidoc>", domdoc.getRootElement().asXML());
+    }
+
+    @Test
+    void formatLeavesAnInvalidFormatVersion() throws Exception
+    {
+        FormatMojo mojo = new FormatMojo();
+        mojo.skipDatesDocumentList = Collections.emptySet();
+        mojo.skipAuthorsDocumentList = Collections.emptySet();
+        Log log = mock(Log.class);
+        mojo.setLog(log);
+
+        Document domdoc = DocumentHelper.parseText("<xwikidoc version=\"1.x\" reference=\"Space.Page\">"
+            + "<hidden>true</hidden><enforceRequiredRights>true</enforceRequiredRights>"
+            + "</xwikidoc>");
+
+        mojo.format("Space/Page.xml", domdoc, Locale.ROOT);
+
+        verify(log).warn("Not raising the invalid format version [1.x] of [Space/Page.xml]");
+        assertEquals("<xwikidoc version=\"1.x\" reference=\"Space.Page\">"
+            + "<hidden>true</hidden><enforceRequiredRights>true</enforceRequiredRights>"
             + "</xwikidoc>", domdoc.getRootElement().asXML());
     }
 
