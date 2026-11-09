@@ -22,10 +22,15 @@ package org.xwiki.tool.xar.internal;
 import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.LocaleUtils;
 import org.dom4j.Document;
@@ -43,11 +48,69 @@ import static org.xwiki.tool.xar.internal.XMLUtils.getSAXReader;
  */
 public class XWikiDocument
 {
+    /**
+     * The description of the {@code originalMetadataAuthor} element, as a key of {@link #getRequiredFormatVersions()}.
+     *
+     * @since 18.10.0RC1
+     */
+    public static final String ORIGINAL_METADATA_AUTHOR_ELEMENT = "the <originalMetadataAuthor> element";
+
+    /**
+     * The highest XAR format version known by the XWiki version this plugin is released with, which is the XWiki
+     * version an extension targets since it gets this plugin's version from its parent. XWiki imports a document
+     * declaring a higher format, but ignores the elements it doesn't know, so such a document would lose content when
+     * installed. Must be raised, and backported along, whenever XWiki Platform's {@code XarDocumentModel} gets a new
+     * format version.
+     *
+     * @since 18.10.0RC1
+     */
+    public static final String HIGHEST_KNOWN_FORMAT_VERSION = XWikiDocument.FORMAT_VERSION_17;
+
     private static final String AUTHOR_TAG = "author";
 
     private static final String MIMETYPE_TAG = "mimetype";
 
     private static final String FILENAME_TAG = "filename";
+
+    private static final String VERSION_TAG = "version";
+
+    private static final String ORIGINAL_METADATA_AUTHOR_TAG = "originalMetadataAuthor";
+
+    /**
+     * The format version of a document whose root element has no {@code version} attribute.
+     */
+    private static final String DEFAULT_FORMAT_VERSION = "1.0";
+
+    private static final String FORMAT_VERSION_17 = "1.7";
+
+    private static final Pattern FORMAT_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)");
+
+    /**
+     * The elements and attributes that a version of the XAR format introduced, with that version. The format version
+     * a document declares names the set of elements it can contain: XWiki doesn't read it when importing the
+     * document, but a document must not use an element its declared format doesn't have, so that the declared
+     * version keeps describing its content. The {@code reference} and {@code locale} attributes of the root element
+     * (format 1.2) and the XML 1.1 declaration (format 1.3) are not listed: the format goal writes the XML 1.1
+     * declaration on every document, and too many existing documents declaring an older format carry these
+     * attributes.
+     *
+     * @see <a href="https://www.xwiki.org/xwiki/bin/view/documentation/xs/admin/exports/export-content-xar-format/format-specifications/document-xml/">the format versions</a>
+     */
+    private static final List<VersionedNode> VERSIONED_NODES = List.of(
+        new VersionedNode("attachment/revisions", "the <revisions> element of an attachment", "1.4"),
+        new VersionedNode(ORIGINAL_METADATA_AUTHOR_TAG, ORIGINAL_METADATA_AUTHOR_ELEMENT, "1.5"),
+        new VersionedNode("enforceRequiredRights", "the <enforceRequiredRights> element", "1.6"),
+        new VersionedNode("object/property/@type", "the type attribute of an object property", FORMAT_VERSION_17));
+
+    /**
+     * @see #getFormatVersion()
+     */
+    private String formatVersion;
+
+    /**
+     * @see #getRequiredFormatVersions()
+     */
+    private Map<String, String> requiredFormatVersions;
 
     /**
      * @see #getReference()
@@ -210,6 +273,8 @@ public class XWikiDocument
 
         this.reference = readDocumentReference(domdoc);
 
+        readFormatVersions(rootElement);
+
         this.locale = toLocale(rootElement.attributeValue("locale"), true);
         if (this.locale == null) {
             // Fallback on old <language> element
@@ -224,7 +289,7 @@ public class XWikiDocument
         this.creator = readElement(rootElement, "creator");
         this.effectiveMetadataAuthor = readElement(rootElement, AUTHOR_TAG);
         this.contentAuthor = readElement(rootElement, "contentAuthor");
-        this.version = readElement(rootElement, "version");
+        this.version = readElement(rootElement, VERSION_TAG);
         this.parent = readElement(rootElement, "parent");
         this.comment = readElement(rootElement, "comment");
         this.minorEdit = readElement(rootElement, "minorEdit");
@@ -237,10 +302,15 @@ public class XWikiDocument
         this.datePresent = isElementPresent(rootElement, "date");
         this.contentUpdateDatePresent = isElementPresent(rootElement, "contentUpdateDate");
         this.creationDatePresent = isElementPresent(rootElement, "creationDate");
-        this.originalMetadataAuthorPresent = isElementPresent(rootElement, "originalMetadataAuthor");
+        this.originalMetadataAuthorPresent = isElementPresent(rootElement, ORIGINAL_METADATA_AUTHOR_TAG);
         this.objectPresent = isElementPresent(rootElement, "object");
         this.attachmentDatePresent = rootElement.selectSingleNode("//attachment/date") != null;
 
+        readTranslations(rootElement);
+    }
+
+    private void readTranslations(Element rootElement)
+    {
         // Does this document contain a XWiki.TranslationDocumentClass xobject?
         if (!rootElement.selectNodes("//object/className[text() = 'XWiki.TranslationDocumentClass']").isEmpty()) {
             this.containsTranslations = true;
@@ -250,6 +320,72 @@ public class XWikiDocument
                 this.translationVisibilities.add(node.getStringValue());
             }
         }
+    }
+
+    private void readFormatVersions(Element rootElement)
+    {
+        this.formatVersion = readFormatVersion(rootElement);
+        this.requiredFormatVersions = readRequiredFormatVersions(rootElement);
+    }
+
+    /**
+     * @param rootElement the root element of the XML document
+     * @return the version of the XAR format declared by the {@code version} attribute of the root element, or
+     *         {@code 1.0} when that attribute is missing
+     * @since 18.10.0RC1
+     */
+    public static String readFormatVersion(Element rootElement)
+    {
+        return rootElement.attributeValue(VERSION_TAG, DEFAULT_FORMAT_VERSION);
+    }
+
+    /**
+     * Only the elements and attributes introduced by a format version that the declared version must include are
+     * considered (see {@link #VERSIONED_NODES}), and only when they are direct children of the root element or, for
+     * attachments and objects, of its direct children: an XClass property named after one of them doesn't count.
+     *
+     * @param rootElement the root element of the XML document
+     * @return the elements and attributes of the document that were introduced by a version of the XAR format, each
+     *         one (described for a user) mapped to that version
+     * @since 18.10.0RC1
+     */
+    public static Map<String, String> readRequiredFormatVersions(Element rootElement)
+    {
+        Map<String, String> result = new LinkedHashMap<>();
+        for (VersionedNode node : VERSIONED_NODES) {
+            if (rootElement.selectSingleNode(node.xpath()) != null) {
+                result.put(node.description(), node.version());
+            }
+        }
+        return Collections.unmodifiableMap(result);
+    }
+
+    /**
+     * @param version the format version to check
+     * @return {@code true} if the version is of the form {@code <major>.<minor>}, {@code false} otherwise
+     * @since 18.10.0RC1
+     */
+    public static boolean isValidFormatVersion(String version)
+    {
+        return FORMAT_VERSION_PATTERN.matcher(version).matches();
+    }
+
+    /**
+     * @param version a valid format version
+     * @param otherVersions other valid format versions
+     * @return the highest of all these format versions
+     * @throws IllegalArgumentException if one of the versions is not valid
+     * @since 18.10.0RC1
+     */
+    public static String getHighestFormatVersion(String version, Collection<String> otherVersions)
+    {
+        String result = version;
+        for (String otherVersion : otherVersions) {
+            if (compareFormatVersions(result, otherVersion) < 0) {
+                result = otherVersion;
+            }
+        }
+        return result;
     }
 
     /**
@@ -390,6 +526,55 @@ public class XWikiDocument
             data.add(map);
         }
         return data;
+    }
+
+    /**
+     * Compare two versions of the XAR format.
+     *
+     * @param version1 the first format version (e.g. {@code 1.6})
+     * @param version2 the second format version
+     * @return a negative integer, zero, or a positive integer as the first version is lower than, equal to, or
+     *         greater than the second
+     * @throws IllegalArgumentException if one of the versions is not valid (see {@link #isValidFormatVersion(String)})
+     * @since 18.10.0RC1
+     */
+    public static int compareFormatVersions(String version1, String version2)
+    {
+        int[] parsed1 = parseFormatVersion(version1);
+        int[] parsed2 = parseFormatVersion(version2);
+        int result = Integer.compare(parsed1[0], parsed2[0]);
+        return result == 0 ? Integer.compare(parsed1[1], parsed2[1]) : result;
+    }
+
+    private static int[] parseFormatVersion(String version)
+    {
+        Matcher matcher = FORMAT_VERSION_PATTERN.matcher(version);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException(
+                String.format("Invalid XAR format version [%s], expected [<major>.<minor>]", version));
+        }
+        return new int[] { Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)) };
+    }
+
+    /**
+     * @return the version of the XAR format declared by the {@code version} attribute of the root element, or
+     *         {@code 1.0} when that attribute is missing
+     * @since 18.10.0RC1
+     */
+    public String getFormatVersion()
+    {
+        return this.formatVersion;
+    }
+
+    /**
+     * @return the elements and attributes of the document that were introduced by a version of the XAR format, each
+     *         one (described for a user) mapped to that version
+     * @see #readRequiredFormatVersions(Element)
+     * @since 18.10.0RC1
+     */
+    public Map<String, String> getRequiredFormatVersions()
+    {
+        return this.requiredFormatVersions;
     }
 
     /**
@@ -670,5 +855,16 @@ public class XWikiDocument
     public boolean isAttachmentDatePresent()
     {
         return attachmentDatePresent;
+    }
+
+    /**
+     * An element or attribute introduced by a version of the XAR format.
+     *
+     * @param xpath the XPath of the node, relative to the root element
+     * @param description the description of the node, for a user
+     * @param version the format version that introduced the node
+     */
+    private record VersionedNode(String xpath, String description, String version)
+    {
     }
 }
