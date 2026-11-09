@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -78,6 +79,24 @@ class VerifyMojoTest extends AbstractMojoTest
     {
         verifyExecution("/wrongVersion", "Verifying [Space/WebHome.xml]... errors",
             "- Version must be [1.1] but was [1.2]", "There are errors in the XAR XML files!");
+    }
+
+    @Test
+    void executeWithTooLowFormatVersion() throws Exception
+    {
+        // @formatter:off
+        verifyExecution("/tooLowFormatVersion",
+            "Verifying [Space/WebHome.xml]... errors",
+            "- Format version must be at least [1.6] since the page uses the <enforceRequiredRights> element, but was "
+                + "[1.2]. Run [mvn xar:format] to fix it.",
+            "Verifying [Space/TypedProperty.xml]... errors",
+            "- Format version must be at least [1.7] since the page uses the type attribute of an object property, "
+                + "but was [1.6]. Run [mvn xar:format] to fix it.",
+            "Verifying [Space/InvalidVersion.xml]... errors",
+            "- Format version must be of the form [<major>.<minor>] but was [1.x]",
+            "Verifying [Space/Supported.xml]... ok",
+            "There are errors in the XAR XML files!");
+        // @formatter:on
     }
 
     @Test
@@ -248,11 +267,14 @@ class VerifyMojoTest extends AbstractMojoTest
     void executeWithOriginalAuthorPresent() throws Exception
     {
         // @formatter:off
-        verifyExecution("/originalAuthorPresent",
+        MavenBuild build = createBuild("/originalAuthorPresent");
+        verifyExecution(build,
             "Verifying [Space/WebHome.xml]... errors",
             "- 'originalMetadataAuthor' field is present",
             "There are errors in the XAR XML files!");
         // @formatter:on
+        // The element is reported once, not also as requiring format 1.5.
+        assertThat(build.getLog(), not(containsString("Format version")));
     }
 
     @Test
