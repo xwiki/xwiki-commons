@@ -839,6 +839,18 @@ public class DefaultHTMLCleanerTest
     }
 
     /**
+     * Same as {@link #doNotDecodeAmpersandInTextNodes()} but for attribute values: an escaped ampersand followed by
+     * something that looks like a character reference is meant literally and must stay escaped.
+     */
+    @Test
+    void doNotDecodeAmpersandInAttributes()
+    {
+        assertHTML("<p title=\"&amp;#169; &amp;#xA9;\">text</p>", "<p title=\"&amp;#169; &amp;#xA9;\">text</p>");
+        // A character reference is still decoded once.
+        assertHTML("<p title=\"© ©\">text</p>", "<p title=\"&#169; &#xA9;\">text</p>");
+    }
+
+    /**
      * Ensures that &lt; in text nodes is not decoded even if it is encoded as character entity.
      * With the setRecognizeUnicodeChars(true) for the HTML cleaner the cleaner usually replaces
      * all entity notations by their actual unicode characters, except those who need escaping.
