@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.jdom2.Attribute;
 import org.jdom2.Comment;
@@ -65,38 +63,16 @@ public final class HTMLUtils
         "track", "wbr");
 
     /**
-     * JDOM's XMLOutputter class converts reserved XML character ({@code &}) into its entity
-     * format {@code &amp;}. However since we're using HTML Cleaner
-     * (http://htmlcleaner.sourceforge.net/) and since it's buggy for unicode character escapes we have turned off
-     * character escaping for it and thus we need to perform selective escaping here.
-     * <p>
-     * Moreover, since we support HTML5, we need to
-     * expand empty elements on some elements and not on the others. For example: {@code <span></span>} is valid
-     * meanwhile:
+     * Adapts JDOM's XML output to HTML: since we support HTML5, we need to expand empty elements on some elements and
+     * not on the others. For example: {@code <span></span>} is valid meanwhile:
      * <pre>{@code
      * <br>
      * </br>}</pre>
-     * is not. See {@code OMIT_ELEMENT_EXPANDING_SET} for the list of elements to not expand.
+     * is not. See {@code OMIT_ELEMENT_EXPANDING_SET} for the list of elements to not expand. It also keeps the
+     * {@code \r} characters of text nodes as they are and makes sure that comments conform to the HTML specification.
      */
-    // TODO: Remove the complex escaping code when SF HTML Cleaner will do proper escaping
     private static final class XWikiXMLOutputProcessor extends AbstractXMLOutputProcessor
     {
-        /**
-         * Regex for a character reference as defined in:
-         * https://www.w3.org/TR/WD-xml-lang-970630#dt-charref.
-         */
-        private static final String CHARACTER_REFERENCE = "&amp;#[0-9]+;|&amp;#x[0-9a-fA-F]+;";
-
-        /**
-         * Regex to recognize a character reference Entity.
-         */
-        private static final Pattern CHARACTER_REFERENCE_PATTERN = Pattern.compile(CHARACTER_REFERENCE);
-
-        /**
-         * Escaped ampersand character.
-         */
-        private static final String AMPERSAND = "&amp;";
-
         /**
          * Whether to omit the document type when printing the W3C Document or not.
          */
@@ -126,49 +102,6 @@ public final class HTMLUtils
                 return;
             }
             textRaw(out, text.getText());
-        }
-
-        @Override
-        protected void attributeEscapedEntitiesFilter(final Writer out,
-            final FormatStack fstack, final String value) throws IOException
-        {
-            if (!fstack.getEscapeOutput()) {
-                // no escaping...
-                write(out, value);
-                return;
-            }
-
-            String result = Format.escapeAttribute(fstack.getEscapeStrategy(), value);
-            write(out, cleanAmpersandEscape(result));
-        }
-
-        /**
-         * Remove ampersand escapes when it's not needed (i.e. on character entities).
-         *
-         * @param text the text escaped.
-         * @return the text cleaned
-         */
-        private String cleanAmpersandEscape(String text)
-        {
-            StringBuilder buffer = new StringBuilder(text);
-            // find all occurrences of &
-            int pos = buffer.indexOf(AMPERSAND);
-            while (pos > -1 && pos < buffer.length()) {
-                // Check if the & is a character entity
-                Matcher matcher = CHARACTER_REFERENCE_PATTERN.matcher(buffer.substring(pos));
-                if (matcher.lookingAt()) {
-                    // We've found an entity, replace the "&amp;" by a single "&"
-                    buffer.replace(pos, pos + 5, "&");
-
-                    // We have replaced 4 characters in the buffer so let's move the position back
-                    pos = pos + matcher.end() - matcher.start() - 4;
-                } else {
-                    // don't do anything, just move on.
-                    pos += 5;
-                }
-                pos = buffer.indexOf(AMPERSAND, pos);
-            }
-            return buffer.toString();
         }
 
         @Override
