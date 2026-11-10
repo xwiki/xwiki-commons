@@ -118,6 +118,52 @@ class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
+    void executeWithWikiMacroDeclared() throws Exception
+    {
+        MavenBuild build = createBuild("/wikiMacroDeclared");
+        build.execute("install");
+        build.verifyErrorFreeLog();
+        assertThat(build.getLog(), containsString("Verifying wiki macro declarations... ok"));
+    }
+
+    @Test
+    void executeWithWikiMacroNotDeclared() throws Exception
+    {
+        verifyExecution("/wikiMacroNotDeclared", "Verifying wiki macro declarations... errors",
+            "- Macro [mymacro] provided by [Space.WebHome] is not declared in the [xwiki.extension.components] Maven "
+                + "property. Add [org.xwiki.rendering.macro.Macro/mymacro] to it, or add [mymacro] to the "
+                + "[xwiki.extension.components.macros.check.excluded] Maven property if it is an internal macro.",
+            "- Macro [org.xwiki.rendering.macro.Macro/removed] is declared in the [xwiki.extension.components] Maven "
+                + "property but no macro with this hint was found in the current Maven module. Remove it.",
+            "There are errors in the XAR XML files!");
+    }
+
+    @Test
+    void executeWithWikiMacroExcluded() throws Exception
+    {
+        MavenBuild build = createBuild("/wikiMacroNotDeclared");
+        build.addArgument("-Dxwiki.extension.components.macros.check.excluded=mymacro,removed");
+        verifyExecution(build, "Verifying wiki macro declarations... errors",
+            "- Macro [org.xwiki.rendering.macro.Macro/removed] is declared in the [xwiki.extension.components] Maven "
+                + "property but no macro with this hint was found in the current Maven module. Remove it.",
+            "- Macro [removed] is both declared in the [xwiki.extension.components] Maven property and excluded in "
+                + "the [xwiki.extension.components.macros.check.excluded] Maven property. Remove it from one of them.",
+            "- Macro [removed] is excluded in the [xwiki.extension.components.macros.check.excluded] Maven property "
+                + "but no macro with this hint was found in the current Maven module. Remove it.",
+            "There are errors in the XAR XML files!");
+        assertThat(build.getLog(), not(containsString("Macro [mymacro]")));
+    }
+
+    @Test
+    void executeWithWikiMacroNotDeclaredAndSkipped() throws Exception
+    {
+        MavenBuild build = createBuild("/wikiMacroNotDeclared");
+        build.addArgument("-Dxwiki.extension.components.macros.check.skip=true");
+        build.execute("install");
+        build.verifyErrorFreeLog();
+    }
+
+    @Test
     void executeWithVisibleTechnicalPages() throws Exception
     {
         MavenBuild build = createBuild("/visibleTechnicalPages");

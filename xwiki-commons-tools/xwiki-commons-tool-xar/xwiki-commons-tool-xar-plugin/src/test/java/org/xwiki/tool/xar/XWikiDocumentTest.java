@@ -59,6 +59,24 @@ class XWikiDocumentTest
     }
 
     @Test
+    void wikiMacroIds() throws DocumentException
+    {
+        XWikiDocument xdocument = new XWikiDocument();
+
+        xdocument.fromXML("<xwikidoc><web>space</web><name>name</name>"
+            + "<object><className>XWiki.WikiMacroClass</className><property><id> macro1 </id></property></object>"
+            + "<object><className>XWiki.StyleSheetExtension</className><property><id>notAMacro</id></property>"
+            + "</object>"
+            + "<object><className>XWiki.WikiMacroClass</className><property><id>macro2</id></property></object>"
+            + "</xwikidoc>");
+        assertEquals(List.of("macro1", "macro2"), xdocument.getWikiMacroIds());
+
+        xdocument = new XWikiDocument();
+        xdocument.fromXML("<xwikidoc><web>space</web><name>name</name></xwikidoc>");
+        assertEquals(List.of(), xdocument.getWikiMacroIds());
+    }
+
+    @Test
     void createReference() throws DocumentException
     {
         assertReferenceFromNameSpace("Space.Page", "Space", "Page");
