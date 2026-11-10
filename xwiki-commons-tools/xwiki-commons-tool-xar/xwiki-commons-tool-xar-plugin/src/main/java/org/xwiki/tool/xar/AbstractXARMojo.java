@@ -23,25 +23,12 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
-import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
-import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
-import org.apache.maven.artifact.resolver.filter.TypeArtifactFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectBuilder;
-import org.apache.maven.project.ProjectBuildingException;
-import org.apache.maven.project.artifact.InvalidDependencyVersionException;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.components.io.fileselectors.FileSelector;
 import org.codehaus.plexus.components.io.fileselectors.IncludeExcludeFileSelector;
@@ -116,40 +103,10 @@ abstract class AbstractXARMojo extends AbstractMojo
     protected String encoding = DEFAULT_ENCODING;
 
     /**
-     * List of Remote Repositories used by the resolver.
-     */
-    @Parameter(property = "project.remoteArtifactRepositories", readonly = true, required = true)
-    protected List<ArtifactRepository> remoteRepos;
-
-    /**
-     * Project builder -- builds a model from a pom.xml.
-     */
-    @Component
-    protected MavenProjectBuilder mavenProjectBuilder;
-
-    /**
-     * Used to look up Artifacts in the remote repository.
-     */
-    @Component
-    protected ArtifactFactory factory;
-
-    /**
-     * Used to look up Artifacts in the remote repository.
-     */
-    @Component
-    protected ArtifactResolver resolver;
-
-    /**
      * The target directory where to extract XAR pages.
      */
     @Parameter(property = "project.build.outputDirectory", readonly = true, required = true)
     private File outputBuildDirectory;
-
-    /**
-     * Location of the local repository.
-     */
-    @Parameter(property = "localRepository", readonly = true, required = true)
-    private ArtifactRepository local;
 
     /**
      * @since 10.3
@@ -269,54 +226,6 @@ abstract class AbstractXARMojo extends AbstractMojo
     public MavenProject getProject()
     {
         return this.project;
-    }
-
-    /**
-     * This method resolves all transitive dependencies of an artifact.
-     * 
-     * @param artifact the artifact used to retrieve dependencies
-     * @return resolved set of dependencies
-     * @throws ArtifactResolutionException error
-     * @throws ArtifactNotFoundException error
-     * @throws ProjectBuildingException error
-     * @throws InvalidDependencyVersionException error
-     */
-    protected Set<Artifact> resolveArtifactDependencies(Artifact artifact) throws ArtifactResolutionException,
-        ArtifactNotFoundException, ProjectBuildingException
-    {
-        Artifact pomArtifact =
-            this.factory.createArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), "",
-                "pom");
-
-        MavenProject pomProject =
-            this.mavenProjectBuilder.buildFromRepository(pomArtifact, this.remoteRepos, this.local);
-
-        return resolveDependencyArtifacts(pomProject);
-    }
-
-    /**
-     * @param pomProject the project
-     * @return set of dependencies
-     * @throws ArtifactResolutionException error
-     * @throws ArtifactNotFoundException error
-     * @throws InvalidDependencyVersionException error
-     */
-    protected Set<Artifact> resolveDependencyArtifacts(MavenProject pomProject) throws ArtifactResolutionException,
-        ArtifactNotFoundException, InvalidDependencyVersionException
-    {
-        AndArtifactFilter filters = new AndArtifactFilter();
-
-        filters.add(new TypeArtifactFilter("xar"));
-        filters.add(new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME));
-
-        Set<Artifact> artifacts = pomProject.createArtifacts(this.factory, Artifact.SCOPE_TEST, filters);
-
-        for (Artifact artifact : artifacts) {
-            // resolve the new artifact
-            this.resolver.resolve(artifact, this.remoteRepos, this.local);
-        }
-
-        return artifacts;
     }
 
     /**
