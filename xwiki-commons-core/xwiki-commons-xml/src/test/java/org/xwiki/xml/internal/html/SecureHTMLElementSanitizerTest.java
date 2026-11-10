@@ -189,6 +189,18 @@ class SecureHTMLElementSanitizerTest
             HTMLConstants.ATTRIBUTE_ID, GET_ELEMENT_BY_ID));
     }
 
+    @ParameterizedTest
+    @CsvSource({
+        "label, true",
+        "output, true",
+        "template, false",
+        "div, false"
+    })
+    void forAttribute(String element, boolean accepted)
+    {
+        assertEquals(accepted, this.secureHTMLElementSanitizer.isAttributeAllowed(element, "for", XWIKI));
+    }
+
     @Test
     void configuredElementRestrictedAttributes()
     {
@@ -204,6 +216,19 @@ class SecureHTMLElementSanitizerTest
         // default.
         assertTrue(this.secureHTMLElementSanitizer.isAttributeAllowed(SECTION, HEADERS, XWIKI));
         assertFalse(this.secureHTMLElementSanitizer.isAttributeAllowed(DIV, HEADERS, XWIKI));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "href, false",
+        "xlink:href, false",
+        "HREF, false",
+        "transform, true"
+    })
+    void animatedAttributes(String animatedAttribute, boolean accepted)
+    {
+        assertEquals(accepted, this.secureHTMLElementSanitizer.isAttributeAllowed("animate", "attributeName",
+            animatedAttribute));
     }
 
     @ParameterizedTest

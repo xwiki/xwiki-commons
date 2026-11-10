@@ -85,4 +85,14 @@ class DefaultExtensionLicenseManagerTest
         assertEquals("Apache License 2.0", license.getName());
         assertEquals(content, license.getContent());
     }
+
+    @Test
+    void getLicenseWithSPDXIdentifier()
+    {
+        ExtensionLicense license = this.licenseManager.getLicense("LGPL-2.1-or-later");
+
+        assertNotNull(license);
+        assertEquals("GNU Lesser General Public License 2.1", license.getName());
+        assertEquals("                  GNU LESSER GENERAL PUBLIC LICENSE", license.getContent().get(0));
+    }
 }

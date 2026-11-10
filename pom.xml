@@ -103,9 +103,9 @@
     <expressly.version>5.0.0</expressly.version>
 
     <!-- Jackson -->
-    <jackson.version>2.22.4</jackson.version>
+    <jackson.version>2.23.0</jackson.version>
     <jackson.databind.version>${jackson.version}</jackson.databind.version>
-    <jackson.annotations.version>2.22</jackson.annotations.version>
+    <jackson.annotations.version>2.23</jackson.annotations.version>
 
     <!-- Bouncy Castle -->
     <bouncycastle.version>1.86.2</bouncycastle.version>
@@ -114,12 +114,12 @@
     <asm.version>9.11.1</asm.version>
 
     <!-- Guava -->
-    <guava.version>33.7.2-jre</guava.version>
+    <guava.version>33.8.0-jre</guava.version>
     <guava.failureaccess.version>1.0.3</guava.failureaccess.version>
 
     <!-- SLF4J API and implementation -->
     <slf4j.version>2.0.20</slf4j.version>
-    <logback.version>1.6.5</logback.version>
+    <logback.version>1.6.6</logback.version>
     <!-- Log4J API -->
     <log4j.version>2.26.1</log4j.version>
 
@@ -130,7 +130,7 @@
     <junit.version>4.13.2</junit.version>
     <junit6.version>6.1.3</junit6.version>
 
-    <surefire.version>3.6.0</surefire.version>
+    <surefire.version>3.6.1</surefire.version>
     <failsafe.version>${surefire.version}</failsafe.version>
     <skipTests>false</skipTests>
     <skipITs>${skipTests}</skipITs>
@@ -144,20 +144,20 @@
     <dockerJava.version>3.7.1</dockerJava.version>
 
     <!-- OpenTelemetry -->
-    <opentelemetry.version>1.67.0</opentelemetry.version>
+    <opentelemetry.version>1.68.0</opentelemetry.version>
 
     <!-- Byte Buddy -->
-    <bytebuddy.version>1.18.15</bytebuddy.version>
+    <bytebuddy.version>1.18.17</bytebuddy.version>
 
     <!-- AspectJ -->
-    <aspectj.version>1.9.26</aspectj.version>
+    <aspectj.version>1.9.27</aspectj.version>
 
     <!-- Clover & Jacoco -->
     <clover.version>5.1.1</clover.version>
-    <jacoco.version>0.8.15</jacoco.version>
+    <jacoco.version>0.8.16</jacoco.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>14.3.0</checkstyle.version>
+    <checkstyle.version>14.4.0</checkstyle.version>
 
     <!-- Spoon -->
     <spoon.version>11.5.0</spoon.version>
@@ -180,10 +180,10 @@
 
     <!-- Infinispan and Protostream -->
     <protostream.version>6.0.12</protostream.version>
-    <infinispan.version>16.2.3</infinispan.version>
+    <infinispan.version>16.3.1</infinispan.version>
 
     <!-- AWS SDK -->
-    <aws.java.sdk.version>2.57.2</aws.java.sdk.version>
+    <aws.java.sdk.version>2.57.11</aws.java.sdk.version>
 
     <!-- By default, Checkstyle, Backward compatibility check, Enforcer, License plugins, etc., are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
@@ -230,6 +230,13 @@
     <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
     <xwiki.release.jira.settingsKey>jira.xwiki.org</xwiki.release.jira.settingsKey>
     <xwiki.release.jira.scope>session</xwiki.release.jira.scope>
+
+    <!-- The CycloneDX component type of the artifact described by the SBOM generated at release time. Distributions
+         (i.e. artifacts meant to be run as-is, such as the WAR) should set it to "application". -->
+    <xwiki.cyclonedx.projectType>library</xwiki.cyclonedx.projectType>
+    <!-- Set to true to not generate the SBOM at release time. Test modules don't get one in any case, see the
+         release profile. -->
+    <xwiki.cyclonedx.skip>false</xwiki.cyclonedx.skip>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -305,7 +312,7 @@
     <plexus-containers.version>2.2.0</plexus-containers.version>
 
     <!-- The version of Maven Enforcer plugin -->
-    <maven-enforcer.version>3.6.3</maven-enforcer.version>
+    <maven-enforcer.version>3.7.0</maven-enforcer.version>
 
     <!-- The version of the Maven Plugin Tools (maven-plugin-*) -->
     <maven.plugin.tools.version>3.12.0</maven.plugin.tools.version>
@@ -324,11 +331,11 @@
     <antlr4.version>4.13.2</antlr4.version>
 
     <!-- Versions of Node related tools -->
-    <node.version>v24.21.0</node.version>
-    <npm.version>12.2.0</npm.version>
+    <node.version>v26.13.0</node.version>
+    <npm.version>12.2.2</npm.version>
     <!-- Don't upgrade to pnpm 12 until frontend-maven-plugin supports its package layout: the plugin links the
          pnpm command to bin/pnpm.mjs, which is not executable anymore, making nested pnpm calls fail. -->
-    <pnpm.version>11.28.4</pnpm.version>
+    <pnpm.version>11.28.9</pnpm.version>
 
     <webdrivermanager.version>6.4.0</webdrivermanager.version>
 
@@ -370,7 +377,10 @@
   </properties>
   <licenses>
     <license>
-      <name>LGPL 2.1</name>
+      <!-- Use the SPDX identifier so that tools reading it (e.g. the CycloneDX plugin generating the SBOM) identify the
+           exact license: our sources can be used under version 2.1 "or (at your option) any later version". The
+           Extension Manager knows this name as an alias of "GNU Lesser General Public License 2.1". -->
+      <name>LGPL-2.1-or-later</name>
       <url>https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
       <distribution>repo</distribution>
     </license>
@@ -931,7 +941,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.14.0</version>
+        <version>2.15.0</version>
       </dependency>
 
       <!-- Jackson -->
@@ -1599,12 +1609,12 @@
       <dependency>
         <groupId>org.checkerframework</groupId>
         <artifactId>checker-qual</artifactId>
-        <version>4.3.1</version>
+        <version>4.4.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.errorprone</groupId>
         <artifactId>error_prone_annotations</artifactId>
-        <version>2.51.0</version>
+        <version>2.52.0</version>
       </dependency>
       <!-- Used by Infinispan and S3. -->
       <dependency>
@@ -1672,11 +1682,6 @@
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
         <version>4.36.2</version>
-      </dependency>
-      <dependency>
-        <groupId>jakarta.enterprise</groupId>
-        <artifactId>jakarta.enterprise.cdi-api</artifactId>
-        <version>2.0.2</version>
       </dependency>
       <dependency>
         <groupId>software.amazon.awssdk</groupId>
@@ -2696,7 +2701,7 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.6.2</version>
+          <version>3.7.0</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -3085,6 +3090,22 @@
           </dependencies>
         </plugin>
         <plugin>
+          <groupId>org.cyclonedx</groupId>
+          <artifactId>cyclonedx-maven-plugin</artifactId>
+          <version>2.9.3</version>
+          <configuration>
+            <outputFormat>json</outputFormat>
+            <!-- Computed in the release profile from xwiki.cyclonedx.skip and the artifact id. It's not defined in any
+                 POM on purpose: Maven replaces the references to POM properties when loading the POM, which would be
+                 before the release profile computes it. -->
+            <skip>${xwiki.cyclonedx.internal.skip}</skip>
+            <projectType>${xwiki.cyclonedx.projectType}</projectType>
+            <!-- Provided dependencies are supplied by the environment running the artifact (e.g. the Servlet API by
+                 the Servlet container), they're not part of what we distribute. -->
+            <includeProvidedScope>false</includeProvidedScope>
+          </configuration>
+        </plugin>
+        <plugin>
           <groupId>com.ragedunicorn.tools.maven</groupId>
           <artifactId>github-release-maven-plugin</artifactId>
           <version>1.0.10</version>
@@ -3197,6 +3218,47 @@
                 </configuration>
                 <goals>
                   <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Test modules (test frameworks, page objects, functional tests, test content, etc.) are not part of what
+               users run, so they don't need an SBOM, and their test dependencies would only lead to vulnerability
+               reports that don't apply to XWiki. They're recognized by their artifact id, which has "test", "tests",
+               "pageobject" or "pageobjects" as one of its dash-separated parts (e.g. "xwiki-platform-icon-test-docker",
+               "xwiki-platform-icon-test-pageobjects"). The value includes the "xwiki.cyclonedx.skip" value so that a
+               module setting it to true still skips the SBOM. When the regex doesn't match, the property is set to the
+               value as is, which doesn't read as true. -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>skip-test-modules-sbom</id>
+                <goals>
+                  <goal>regex-property</goal>
+                </goals>
+                <configuration>
+                  <name>xwiki.cyclonedx.internal.skip</name>
+                  <value>${xwiki.cyclonedx.skip}:${project.artifactId}</value>
+                  <regex>^(?:true:.*|.*[:-](?:tests?|pageobjects?)(?:-.*)?)$</regex>
+                  <replacement>true</replacement>
+                  <failIfNoMatch>false</failIfNoMatch>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Generate a CycloneDX SBOM (Software Bill of Materials) listing the third-party components of the
+               artifact, and attach it to the artifact so that it's deployed with it (with the "cyclonedx" classifier).
+          -->
+          <plugin>
+            <groupId>org.cyclonedx</groupId>
+            <artifactId>cyclonedx-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>generate-sbom</id>
+                <goals>
+                  <goal>makeBom</goal>
                 </goals>
               </execution>
             </executions>

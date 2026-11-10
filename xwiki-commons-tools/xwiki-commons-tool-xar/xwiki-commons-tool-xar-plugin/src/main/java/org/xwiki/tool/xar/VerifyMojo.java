@@ -61,6 +61,10 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  *   <li>ensure that attachments have a mimetype set. If the mimetype is missing then the attachment won't be
  *       filterable in the attachment view in Page Index.</li>
  *   <li>ensure the locale of a page matches its name</li>
+ *   <li>ensure that the XAR format version declared by the root element (its {@code version} attribute) is valid and
+ *       includes every element the page uses, as listed by {@link XWikiDocument#readRequiredFormatVersions}, without
+ *       exceeding the highest format known by the targeted XWiki version
+ *       ({@link XWikiDocument#HIGHEST_KNOWN_FORMAT_VERSION})</li>
  *   <li>ensure that the wiki macros of the module are declared in the {@code xwiki.extension.components} Maven
  *       property, and that every macro declared there is provided by the module</li>
  * </ul>
@@ -250,9 +254,7 @@ public class VerifyMojo extends AbstractVerifyMojo
             }
 
             // Verification 16: Verify that author fields are not set.
-            if (!this.skipAuthors) {
-                verifyAuthorFields(errors, xdoc);
-            }
+            verifyAuthorFields(errors, xdoc);
 
             // Verification 17: Verify that translated page name matches the locale
             Locale locale = guessLocaleFromName(file);
@@ -262,10 +264,13 @@ public class VerifyMojo extends AbstractVerifyMojo
                     file.getName(), xdoc.getReference(), xdoc.getLocale(), locale));
             }
 
+            // Verification 18: Verify the XAR format version
+            verifyFormatVersion(errors, xdoc);
+
             hasErrors |= displayErrors(String.format("[%s/%s]", parentName, file.getName()), errors);
         }
 
-        // Verification 18: Verify that the wiki macros are declared in the xwiki.extension.components Maven property
+        // Verification 19: Verify that the wiki macros are declared in the xwiki.extension.components Maven property
         if (!this.macroDeclarationSkip) {
             hasErrors |= displayErrors("wiki macro declarations", MacroDeclarationVerifier.verify(
                 getProject().getProperties().getProperty(ExtensionComponentsParser.PROPERTY), this.excludedMacros,
@@ -340,10 +345,47 @@ public class VerifyMojo extends AbstractVerifyMojo
         }
     }
 
+    private boolean isAuthorFieldsChecked(XWikiDocument xdoc)
+    {
+        return !this.skipAuthors && !this.skipAuthorsDocumentList.contains(xdoc.getReference());
+    }
+
     private void verifyAuthorFields(List<String> errors, XWikiDocument xdoc)
     {
-        if (!this.skipAuthorsDocumentList.contains(xdoc.getReference()) && xdoc.isOriginalMetadataAuthorPresent()) {
+        if (isAuthorFieldsChecked(xdoc) && xdoc.isOriginalMetadataAuthorPresent()) {
             errors.add("'originalMetadataAuthor' field is present");
+        }
+    }
+
+    /**
+     * Verification 18: verify that the declared format version supports every element the page uses, and is known by
+     * the targeted XWiki version.
+     */
+    private void verifyFormatVersion(List<String> errors, XWikiDocument xdoc)
+    {
+        String formatVersion = xdoc.getFormatVersion();
+        if (!XWikiDocument.isValidFormatVersion(formatVersion)) {
+            errors.add(String.format("Format version must be of the form [<major>.<minor>] but was [%s]",
+                formatVersion));
+            return;
+        }
+
+        if (XWikiDocument.compareFormatVersions(formatVersion, XWikiDocument.HIGHEST_KNOWN_FORMAT_VERSION) > 0) {
+            errors.add(String.format("Format version must be at most [%s], the highest one known by the targeted XWiki"
+                + " version (the version of this plugin), but was [%s]. The elements of a higher format would be"
+                + " ignored when the page is installed.", XWikiDocument.HIGHEST_KNOWN_FORMAT_VERSION, formatVersion));
+        }
+
+        Map<String, String> requiredFormatVersions = new LinkedHashMap<>(xdoc.getRequiredFormatVersions());
+        if (isAuthorFieldsChecked(xdoc)) {
+            // Already reported as a field that must not be present, which is the real problem.
+            requiredFormatVersions.remove(XWikiDocument.ORIGINAL_METADATA_AUTHOR_ELEMENT);
+        }
+        for (Map.Entry<String, String> entry : requiredFormatVersions.entrySet()) {
+            if (XWikiDocument.compareFormatVersions(formatVersion, entry.getValue()) < 0) {
+                errors.add(String.format("Format version must be at least [%s] since the page uses %s, but was [%s]."
+                    + " Run [mvn xar:format] to fix it.", entry.getValue(), entry.getKey(), formatVersion));
+            }
         }
     }
 

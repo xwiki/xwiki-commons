@@ -36,15 +36,22 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.http.internal.HttpClientFactory;
 import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersionSummary;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersions;
+import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionsSearchResult;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersion;
+import org.xwiki.test.LogLevel;
+import org.xwiki.test.junit5.LogCaptureExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -65,11 +72,15 @@ class XWikiExtensionRepositoryTest
 
     private Unmarshaller unmarshaller = mock(Unmarshaller.class);
 
+    @RegisterExtension
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
+
     @BeforeEach
     void setUp() throws Exception
     {
         ExtensionRepositoryDescriptor repositoryDescriptor = mock(ExtensionRepositoryDescriptor.class);
         when(repositoryDescriptor.getURI()).thenReturn(new URI("http://extensions.xwiki.org/xwiki/rest"));
+        when(repositoryDescriptor.toString()).thenReturn("descriptor");
 
         XWikiExtensionRepositoryFactory repositoryFactory = mock(XWikiExtensionRepositoryFactory.class);
         when(repositoryFactory.createUnmarshaller()).thenReturn(this.unmarshaller);
@@ -115,5 +126,42 @@ class XWikiExtensionRepositoryTest
         List<Version> versions = new ArrayList<>();
         result.forEach(versions::add);
         assertEquals(Arrays.asList(new DefaultVersion("1.3"), new DefaultVersion("2.4.1")), versions);
+    }
+
+    @Test
+    void searchSkipsExtensionsWithoutIdOrVersion() throws Exception
+    {
+        ExtensionsSearchResult restResult = new ExtensionsSearchResult();
+        restResult.setOffset(0);
+        restResult.setTotalHits(4);
+        restResult.getExtensions().add(createRestExtension("valid1", "1.0"));
+        restResult.getExtensions().add(createRestExtension("noversion", null));
+        restResult.getExtensions().add(createRestExtension(null, "2.0"));
+        restResult.getExtensions().add(createRestExtension("valid2", "3.0"));
+        when(this.unmarshaller.unmarshal(any(XMLStreamReader.class))).thenReturn(restResult);
+
+        IterableResult<Extension> result = this.repository.search("", 0, 4);
+
+        assertEquals(0, result.getOffset());
+        assertEquals(4, result.getTotalHits());
+        List<ExtensionId> ids = new ArrayList<>();
+        result.forEach(extension -> ids.add(extension.getId()));
+        assertEquals(List.of(new ExtensionId("valid1", "1.0"), new ExtensionId("valid2", "3.0")), ids);
+
+        assertEquals(2, this.logCapture.size());
+        assertEquals("Skipping the extension with id [noversion] and version [null] returned by the search in"
+            + " repository [descriptor]: an extension must have an id and a version", this.logCapture.getMessage(0));
+        assertEquals("Skipping the extension with id [null] and version [2.0] returned by the search in"
+            + " repository [descriptor]: an extension must have an id and a version", this.logCapture.getMessage(1));
+    }
+
+    private ExtensionVersion createRestExtension(String id, String version)
+    {
+        ExtensionVersion restExtension = new ExtensionVersion();
+        restExtension.setId(id);
+        restExtension.setVersion(version);
+        restExtension.setType("jar");
+
+        return restExtension;
     }
 }
