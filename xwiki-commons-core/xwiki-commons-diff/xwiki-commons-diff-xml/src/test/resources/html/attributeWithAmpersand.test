@@ -1,0 +1,13 @@
+##--------------------
+## left
+##--------------------
+<p>one <em title="&amp;#169; &amp;amp; &#169;">two</em> old</p>
+##--------------------
+## right
+##--------------------
+<p>one <em title="&amp;#169; &amp;amp; &#169;">two</em> new</p>
+##--------------------
+## expected-marker
+##--------------------
+<p data-xwiki-html-diff-block="deleted">one <em title="&amp;#169; &amp;amp; ©">two</em> <span data-xwiki-html-diff="deleted">old</span></p>
+<p data-xwiki-html-diff-block="inserted">one <em title="&amp;#169; &amp;amp; ©">two</em> <span data-xwiki-html-diff="inserted">new</span></p>
