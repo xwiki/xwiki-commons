@@ -239,12 +239,6 @@ public class JakartaToJavaxHttpServletRequestWrapper<R extends javax.servlet.htt
     }
 
     @Override
-    public String getRealPath(String path)
-    {
-        return this.javax.getRealPath(path);
-    }
-
-    @Override
     public int getRemotePort()
     {
         return this.javax.getRemotePort();
@@ -460,12 +454,6 @@ public class JakartaToJavaxHttpServletRequestWrapper<R extends javax.servlet.htt
     public boolean isRequestedSessionIdFromURL()
     {
         return this.javax.isRequestedSessionIdFromURL();
-    }
-
-    @Override
-    public boolean isRequestedSessionIdFromUrl()
-    {
-        return this.javax.isRequestedSessionIdFromUrl();
     }
 
     @Override

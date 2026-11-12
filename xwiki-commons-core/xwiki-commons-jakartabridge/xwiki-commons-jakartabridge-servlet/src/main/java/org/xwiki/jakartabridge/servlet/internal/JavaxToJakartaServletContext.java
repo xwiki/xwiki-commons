@@ -22,6 +22,7 @@ package org.xwiki.jakartabridge.servlet.internal;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.EventListener;
 import java.util.Map;
@@ -134,23 +135,22 @@ public class JavaxToJakartaServletContext extends AbstractJavaxToJakartaWrapper<
     @Override
     public Servlet getServlet(String name) throws ServletException
     {
-        try {
-            return JakartaServletBridge.toJavax(this.jakarta.getServlet(name));
-        } catch (jakarta.servlet.ServletException e) {
-            throw new ServletException(e.getMessage(), e);
-        }
+        // Deprecated in Servlet 2.1 (always returning null since then) and removed in Servlet 6.0
+        return null;
     }
 
     @Override
     public Enumeration<Servlet> getServlets()
     {
-        return JakartaServletBridge.toJavax(this.jakarta.getServlets());
+        // Deprecated in Servlet 2.1 (always returning an empty enumeration since then) and removed in Servlet 6.0
+        return Collections.emptyEnumeration();
     }
 
     @Override
     public Enumeration<String> getServletNames()
     {
-        return this.jakarta.getServletNames();
+        // Deprecated in Servlet 2.1 (always returning an empty enumeration since then) and removed in Servlet 6.0
+        return Collections.emptyEnumeration();
     }
 
     @Override

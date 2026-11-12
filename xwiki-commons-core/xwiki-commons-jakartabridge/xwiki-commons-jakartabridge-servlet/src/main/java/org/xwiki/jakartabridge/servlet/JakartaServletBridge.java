@@ -57,7 +57,6 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.HttpSessionContext;
 import jakarta.servlet.http.Part;
 
 import org.xwiki.jakartabridge.JakartaBridge;
@@ -75,7 +74,6 @@ import org.xwiki.jakartabridge.servlet.internal.JakartaToJavaxHttpServletRequest
 import org.xwiki.jakartabridge.servlet.internal.JakartaToJavaxHttpServletResponse;
 import org.xwiki.jakartabridge.servlet.internal.JakartaToJavaxHttpServletResponseWrapper;
 import org.xwiki.jakartabridge.servlet.internal.JakartaToJavaxHttpSession;
-import org.xwiki.jakartabridge.servlet.internal.JakartaToJavaxHttpSessionContext;
 import org.xwiki.jakartabridge.servlet.internal.JakartaToJavaxPart;
 import org.xwiki.jakartabridge.servlet.internal.JakartaToJavaxReadListener;
 import org.xwiki.jakartabridge.servlet.internal.JakartaToJavaxRequestDispatcher;
@@ -103,7 +101,6 @@ import org.xwiki.jakartabridge.servlet.internal.JavaxToJakartaHttpServletRequest
 import org.xwiki.jakartabridge.servlet.internal.JavaxToJakartaHttpServletResponse;
 import org.xwiki.jakartabridge.servlet.internal.JavaxToJakartaHttpServletResponseWrapper;
 import org.xwiki.jakartabridge.servlet.internal.JavaxToJakartaHttpSession;
-import org.xwiki.jakartabridge.servlet.internal.JavaxToJakartaHttpSessionContext;
 import org.xwiki.jakartabridge.servlet.internal.JavaxToJakartaPart;
 import org.xwiki.jakartabridge.servlet.internal.JavaxToJakartaReadListener;
 import org.xwiki.jakartabridge.servlet.internal.JavaxToJakartaRequestDispatcher;
@@ -492,24 +489,6 @@ public final class JakartaServletBridge
     {
         return JakartaBridge.toJakarta(javax, JakartaToJavaxServletOutputStream::new);
 
-    }
-
-    /**
-     * @param jakarta the jakarta version
-     * @return the javax version
-     */
-    public static javax.servlet.http.HttpSessionContext toJavax(HttpSessionContext jakarta)
-    {
-        return JakartaBridge.toJavax(jakarta, JavaxToJakartaHttpSessionContext::new);
-    }
-
-    /**
-     * @param javax the javax version
-     * @return the javax version
-     */
-    public static HttpSessionContext toJakarta(javax.servlet.http.HttpSessionContext javax)
-    {
-        return JakartaBridge.toJakarta(javax, JakartaToJavaxHttpSessionContext::new);
     }
 
     /**
