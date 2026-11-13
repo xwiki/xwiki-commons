@@ -307,6 +307,23 @@ public class DefaultHTMLCleanerTest
     }
 
     /**
+     * Verify that SVG elements are kept in restricted mode independently of the case of their name.
+     */
+    @Test
+    void restrictedSVGElementNameCase()
+    {
+        Map<String, String> parameters = new HashMap<>(this.cleanerConfiguration.getParameters());
+        parameters.put("restricted", "true");
+        this.cleanerConfiguration.setParameters(parameters);
+
+        String input = "<p><svg xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient id=\"gradient\">"
+            + "<stop offset=\"0\"></stop></linearGradient></defs><defs><filter id=\"filter\">"
+            + "<fegaussianblur stdDeviation=\"5\"></fegaussianblur></filter></defs>"
+            + "<RECT fill=\"url(#gradient)\" height=\"10\" width=\"10\"></RECT></svg></p>";
+        assertHTML(input, input);
+    }
+
+    /**
      * Verify that the restricted parameter forbids dangerous attributes and tags.
      */
     @Test
