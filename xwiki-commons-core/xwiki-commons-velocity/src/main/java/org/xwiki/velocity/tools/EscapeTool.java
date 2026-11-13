@@ -52,6 +52,9 @@ import org.xwiki.xml.XMLUtils;
  * @version $Id$
  * @since 2.7RC1
  */
+// The shadowing is deliberate: this is a drop-in extension of the Velocity tool it is bound in place of (see the
+// class Javadoc for what it changes), so it carries the same name on purpose.
+@SuppressWarnings("java:S2176")
 public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
 {
     /**

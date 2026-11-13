@@ -28,6 +28,9 @@ package org.xwiki.extension.wrap;
  * @deprecated use directly {@link org.xwiki.script.wrap.AbstractWrappingObject} instead
  */
 @Deprecated(since = "7.2M1")
+// The shadowing is deliberate: this deprecated class exists only to keep the old name compiling against the
+// class that replaced it, so renaming it would defeat its only purpose.
+@SuppressWarnings("java:S2176")
 public abstract class AbstractWrappingObject<T> extends org.xwiki.script.wrap.AbstractWrappingObject<T>
 {
     /**

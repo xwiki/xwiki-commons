@@ -19,23 +19,24 @@
  */
 package org.xwiki.filter.xml.internal.parameter;
 
-import java.util.Map;
+import java.util.Collection;
 
+import com.thoughtworks.xstream.converters.collections.CollectionConverter;
 import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
- * Add support for {@link Map} to {@link com.thoughtworks.xstream.converters.collections.MapConverter}.
+ * Add support for {@link Collection} to {@link CollectionConverter}.
  * 
  * @version $Id$
  * @since 11.10.3
  * @since 12.1RC1
  */
-public class MapConverter extends com.thoughtworks.xstream.converters.collections.MapConverter
+public class CollectionInterfaceConverter extends CollectionConverter
 {
     /**
      * @param mapper the mapper
      */
-    public MapConverter(Mapper mapper)
+    public CollectionInterfaceConverter(Mapper mapper)
     {
         super(mapper);
     }
@@ -43,6 +44,6 @@ public class MapConverter extends com.thoughtworks.xstream.converters.collection
     @Override
     public boolean canConvert(Class type)
     {
-        return super.canConvert(type) || type == Map.class;
+        return super.canConvert(type) || type == Collection.class;
     }
 }

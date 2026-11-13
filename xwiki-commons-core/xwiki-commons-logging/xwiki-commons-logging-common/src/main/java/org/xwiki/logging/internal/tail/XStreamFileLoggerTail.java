@@ -38,6 +38,9 @@ import org.xwiki.xstream.internal.SafeXStream;
  * @since 11.9RC1
  */
 @Component(roles = XStreamFileLoggerTail.class)
+// The hiding is deliberate: this static binds the check to this tail's own file extension, and callers pick it
+// explicitly through XStreamFileLoggerTail.
+@SuppressWarnings("java:S9149")
 public class XStreamFileLoggerTail extends AbstractTextFileLoggerTail
 {
     protected static final String FILE_EXTENSION = ".xml";
