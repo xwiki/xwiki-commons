@@ -201,8 +201,6 @@ public final class XMLUtils
             LOGGER.warn("Cannot initialize the XML Script Service: [{}]", ExceptionUtils.getRootCauseMessage(ex));
         }
         LS_IMPL = implementation;
-
-        XML_READER_FACTORY.initialize();
     }
 
     /**

@@ -19,91 +19,46 @@
  */
 package org.xwiki.xml.internal;
 
-import java.lang.reflect.Method;
-
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
-import org.xwiki.component.phase.Initializable;
 import org.xwiki.xml.XMLReaderFactory;
 
 /**
- * Verifies if Xerces is on the classpath and if so configures it to cache DTD grammars instead of reparsing it for
- * every documents, thus greatly improving performances since most XML content handled in XWiki is XHTML using the XHTML
- * DTD.
+ * Create secure XML readers: protected against entity expansion attacks and resolving external entities locally.
  *
  * @version $Id$
  * @since 1.7.1
  */
-public class DefaultXMLReaderFactory implements XMLReaderFactory, Initializable
+public class DefaultXMLReaderFactory implements XMLReaderFactory
 {
-    /**
-     * We cache the Xerces Grammar Pool (when Xerces has been discovered in the classpath) so that we can reuse it
-     * across creation of XML Readers. Note that don't cache the XML Reader itself since it can contain chained XML
-     * Filters which are usually not stateless.
-     */
-    private Object xercesGrammarPool;
-
-    @Override
-    public void initialize()
-    {
-        try {
-            this.xercesGrammarPool = Class.forName("org.apache.xerces.util.XMLGrammarPoolImpl").newInstance();
-        } catch (Exception e) {
-            // There's no Xerces JAR in the classpath, don't do grammar caching for Xerces.
-        }
-    }
-
     @Override
     public XMLReader createXMLReader() throws SAXException, ParserConfigurationException
     {
-        XMLReader xmlReader;
+        SAXParserFactory parserFactory = SAXParserFactory.newInstance();
 
-        // Try to optimize speed by caching the DTD parsing for Xerces
-        // (i.e. if Xerces is available on the classpath).
+        // Use the standard SAX2 defaults (namespace support enabled, namespace prefixes not reported as attributes),
+        // which is not what the JAXP factory does by default.
+        parserFactory.setNamespaceAware(true);
+
+        // Protect against entity expansion attacks (CWE-776).
         try {
-            // See http://xerces.apache.org/xerces2-j/faq-grammars.html#faq-1
-            Object xercesConfiguration =
-                Class.forName("org.apache.xerces.parsers.XML11NonValidatingConfiguration").newInstance();
-            Method setPropertyMethod = xercesConfiguration.getClass().getMethod(
-                "setProperty", String.class, Object.class);
-            setPropertyMethod.invoke(xercesConfiguration, "http://apache.org/xml/properties/internal/grammar-pool",
-                this.xercesGrammarPool);
-            xmlReader = (XMLReader) Class.forName("org.apache.xerces.parsers.SAXParser").getConstructor(
-                Class.forName("org.apache.xerces.xni.parser.XMLParserConfiguration")).newInstance(xercesConfiguration);
-
-            // Set a Xerces "SecurityManager" to prevent DoS entity recursion attacks. We know that the SecurityManager
-            // class will be found since it was added in Jan 8, 2003, while XML11NonValidatingConfiguration was itself
-            // added later, in Jul 23, 2004. So if XML11NonValidatingConfiguration then so should SecurityManager.
-            Object secManager = Class.forName("org.apache.xerces.util.SecurityManager").newInstance();
-            // Default EntityExpansionLimit is 100000 per document.
-            xmlReader.setProperty("http://apache.org/xml/properties/security-manager", secManager);
-        } catch (Exception e) {
-            // There's no Xerces JAR in the classpath, don't do grammar caching for Xerces.
-            // Default to standard SAX parsing which will be slower.
-            SAXParserFactory parserFactory = SAXParserFactory.newInstance();
-
-            // Set security defaults
-            try {
-                parserFactory.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            } catch (SAXNotRecognizedException | SAXNotSupportedException e1) {
-                // All implementations are required to support the above feature, but for example
-                // the Piccolo parser (piccolo.sourceforge.net) JAXPSAXParserFactory does not.
-                // We let it go through, the security feature will just not be active.
-            }
-
-            SAXParser parser = parserFactory.newSAXParser();
-            xmlReader = parser.getXMLReader();
+            parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        } catch (SAXNotRecognizedException | SAXNotSupportedException e) {
+            // All implementations are required to support the above feature, but for example
+            // the Piccolo parser (piccolo.sourceforge.net) JAXPSAXParserFactory does not.
+            // We let it go through, the security feature will just not be active.
         }
 
+        XMLReader xmlReader = parserFactory.newSAXParser().getXMLReader();
+
         // Protect against XXE attacks except entity expansion (CWE-776). Allows resolving well-known entities
-        // locally. See https://css4j.github.io/resolver.html for details. For entity expansion protection, see above
-        // where we're protected by either the security manager or the FEATURE_SECURE_PROCESSING feature.
+        // locally. See https://css4j.github.io/resolver.html for details.
         xmlReader.setEntityResolver(new LocalEntityResolver());
 
         return xmlReader;

@@ -24,9 +24,7 @@ import javax.inject.Singleton;
 import org.xwiki.component.annotation.Component;
 
 /**
- * Verifies if Xerces is on the classpath and if so configures it to cache DTD grammars instead of reparsing it for
- * every documents, thus greatly improving performances since most XML content handled in XWiki is XHTML using the XHTML
- * DTD.
+ * Component version of {@link DefaultXMLReaderFactory}.
  *
  * @version $Id$
  * @since 1.7.1

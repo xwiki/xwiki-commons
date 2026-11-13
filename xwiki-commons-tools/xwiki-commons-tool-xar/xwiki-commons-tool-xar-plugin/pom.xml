@@ -105,11 +105,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- Ensure that the Xerces version from the JDK is not used (since it's older and buggy). -->
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-    </dependency>
     <!-- Shares the parsing and verification of the macros declared in xwiki.extension.components with the Spoon
          checks -->
     <dependency>

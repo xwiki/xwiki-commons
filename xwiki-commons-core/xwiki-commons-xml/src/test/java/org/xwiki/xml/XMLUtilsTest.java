@@ -534,10 +534,9 @@ class XMLUtilsTest
 
         // We use a regex match, because the thousands delimiter depends on locale (e.g. can be "." or ",")
         assertThat(logCapture.getMessage(0), matchesPattern(
-            "\\QFailed to apply XSLT transformation: [WrappedRuntimeException: "
-            + "The parser has encountered more than "
-            + "\"100\\E.\\Q000\" entity expansions in this document; this is the limit imposed by the application.]"
-            + "\\E"));
+            "\\QFailed to apply XSLT transformation: [WrappedRuntimeException: JAXP00010001: "
+            + "The parser has encountered more than \"64000\" entity expansions in this document; this is the limit "
+            + "imposed by the JDK.]\\E"));
     }
 
     @Test
@@ -614,7 +613,7 @@ class XMLUtilsTest
         assertEquals("""
             <?xml version="1.0" encoding="UTF-8"?>
             <!DOCTYPE foo [
-            <!ENTITY xxe SYSTEM 'file:///etc/passwd'>
+            <!ENTITY xxe SYSTEM "file:///etc/passwd">
             ]>
             <p />
             """, XMLUtils.formatXMLContent(xml));

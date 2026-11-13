@@ -94,7 +94,8 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
 
     private static final Set<String> DEFAULT_IGNORED_DEPENDENCIES =
         new HashSet<>(Arrays.asList("stax:stax", "javax.xml.stream:stax-api", "stax:stax-api", "xalan:xalan",
-            "xalan:serializer", "xml-apis:xml-apis", "xerces:xmlParserAPIs"));
+            "xalan:serializer", "xml-apis:xml-apis", "xerces:xmlParserAPIs", "xerces:xercesImpl",
+            "xerces:xerces-impl"));
 
     /**
      * The logger to log.
