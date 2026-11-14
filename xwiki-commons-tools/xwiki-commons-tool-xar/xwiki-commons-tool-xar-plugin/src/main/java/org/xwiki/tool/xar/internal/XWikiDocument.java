@@ -51,6 +51,8 @@ public class XWikiDocument
     /**
      * The description of the {@code originalMetadataAuthor} element, as a key of {@link #getRequiredFormatVersions()}.
      *
+     * @since 17.10.16
+     * @since 18.4.9
      * @since 18.10.0RC1
      */
     public static final String ORIGINAL_METADATA_AUTHOR_ELEMENT = "the <originalMetadataAuthor> element";
@@ -62,6 +64,8 @@ public class XWikiDocument
      * installed. Must be raised, and backported along, whenever XWiki Platform's {@code XarDocumentModel} gets a new
      * format version.
      *
+     * @since 17.10.16
+     * @since 18.4.9
      * @since 18.10.0RC1
      */
     public static final String HIGHEST_KNOWN_FORMAT_VERSION = XWikiDocument.FORMAT_VERSION_17;
@@ -343,6 +347,8 @@ public class XWikiDocument
      * @param rootElement the root element of the XML document
      * @return the version of the XAR format declared by the {@code version} attribute of the root element, or
      *         {@code 1.0} when that attribute is missing
+     * @since 17.10.16
+     * @since 18.4.9
      * @since 18.10.0RC1
      */
     public static String readFormatVersion(Element rootElement)
@@ -358,6 +364,8 @@ public class XWikiDocument
      * @param rootElement the root element of the XML document
      * @return the elements and attributes of the document that were introduced by a version of the XAR format, each
      *         one (described for a user) mapped to that version
+     * @since 17.10.16
+     * @since 18.4.9
      * @since 18.10.0RC1
      */
     public static Map<String, String> readRequiredFormatVersions(Element rootElement)
@@ -374,6 +382,8 @@ public class XWikiDocument
     /**
      * @param version the format version to check
      * @return {@code true} if the version is of the form {@code <major>.<minor>}, {@code false} otherwise
+     * @since 17.10.16
+     * @since 18.4.9
      * @since 18.10.0RC1
      */
     public static boolean isValidFormatVersion(String version)
@@ -386,6 +396,8 @@ public class XWikiDocument
      * @param otherVersions other valid format versions
      * @return the highest of all these format versions
      * @throws IllegalArgumentException if one of the versions is not valid
+     * @since 17.10.16
+     * @since 18.4.9
      * @since 18.10.0RC1
      */
     public static String getHighestFormatVersion(String version, Collection<String> otherVersions)
@@ -547,6 +559,8 @@ public class XWikiDocument
      * @return a negative integer, zero, or a positive integer as the first version is lower than, equal to, or
      *         greater than the second
      * @throws IllegalArgumentException if one of the versions is not valid (see {@link #isValidFormatVersion(String)})
+     * @since 17.10.16
+     * @since 18.4.9
      * @since 18.10.0RC1
      */
     public static int compareFormatVersions(String version1, String version2)
@@ -570,6 +584,8 @@ public class XWikiDocument
     /**
      * @return the version of the XAR format declared by the {@code version} attribute of the root element, or
      *         {@code 1.0} when that attribute is missing
+     * @since 17.10.16
+     * @since 18.4.9
      * @since 18.10.0RC1
      */
     public String getFormatVersion()
@@ -581,6 +597,8 @@ public class XWikiDocument
      * @return the elements and attributes of the document that were introduced by a version of the XAR format, each
      *         one (described for a user) mapped to that version
      * @see #readRequiredFormatVersions(Element)
+     * @since 17.10.16
+     * @since 18.4.9
      * @since 18.10.0RC1
      */
     public Map<String, String> getRequiredFormatVersions()
