@@ -94,6 +94,46 @@
               </mojo>
             </mojos>
           </verify>
+          <prepare-package>
+            <mojos>
+              <!-- Embed in the JAR a CycloneDX SBOM of the bundled npm packages, which are not Maven dependencies:
+                   the SBOM generated at release time adds the components of the SBOM found in
+                   META-INF/sbom/npm.cdx.json, so that vulnerability scanners can report the advisories affecting these
+                   packages. The list comes from the pnpm lockfile, limited to the production dependencies of the
+                   package, so every bundled package must be a (direct or transitive) dependency of the package, not a
+                   devDependency.
+                   It runs in every build (it takes less than a second) so that it's verified by the CI and not only at
+                   release time. -->
+              <mojo>
+                <goal>com.github.eirslett:frontend-maven-plugin:pnpm</goal>
+                <configuration>
+                  <!-- "filter ." selects the package of the module in a pnpm workspace. Use the same CycloneDX
+                       specification version as the Maven SBOM. The output path is relative to the working directory
+                       since an absolute path could contain spaces, and the plugin passes the quotes around an
+                       argument to pnpm. -->
+                  <arguments>
+                    sbom --sbom-format cyclonedx --sbom-spec-version 1.6 --prod --filter .
+                    --out ../../../target/npm-sbom/bom.json
+                  </arguments>
+                  <workingDirectory>${basedir}/src/main/node</workingDirectory>
+                  <installDirectory>${basedir}/target</installDirectory>
+                  <skip>${xwiki.sbom.npm.skip}</skip>
+                </configuration>
+              </mojo>
+              <mojo>
+                <!-- Make the SBOM reproducible (pnpm sets the current date and a random serial number, and its
+                     component order and dependency graph vary from one run to the next) and embed it where the release
+                     build looks for it. When pnpm didn't generate it (e.g. skipped), any SBOM embedded by a previous
+                     build is removed. The source path is the one pnpm writes to, which doesn't depend on the build
+                     directory. -->
+                <goal>org.xwiki.commons:xwiki-commons-tool-sbom-plugin:normalize</goal>
+                <configuration>
+                  <sourceFile>${basedir}/target/npm-sbom/bom.json</sourceFile>
+                  <targetFile>${project.build.outputDirectory}/META-INF/sbom/npm.cdx.json</targetFile>
+                </configuration>
+              </mojo>
+            </mojos>
+          </prepare-package>
           <package>
             <mojos>
               <mojo>
