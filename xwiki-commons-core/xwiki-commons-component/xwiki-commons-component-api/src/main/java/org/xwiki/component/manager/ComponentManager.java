@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.component.descriptor.ComponentDescriptor;
+import org.xwiki.stability.Unstable;
 
 /**
  * Provide way to access and modify components repository.
@@ -125,8 +126,8 @@ public interface ComponentManager
     /**
      * Add a component in the component repository dynamically.
      * <p>
-     * If a component with the same role and role hint already exists it will be replaced by this provided one when
-     * lookup.
+     * See {@link #registerComponent(ComponentDescriptor, Object)} for what happens when a component with the same role
+     * and role hint is already registered.
      *
      * @param <T> the component role type
      * @param componentDescriptor the descriptor of the component to register.
@@ -139,8 +140,21 @@ public interface ComponentManager
      * Add a component in the component repository dynamically. This method also makes possible to set the instance
      * returned by the {@link ComponentManager} instead of letting it created it from descriptor.
      * <p>
-     * If a component with the same role and role hint already exists it will be replaced by this provided one when
-     * lookup.
+     * When components are already registered with the same role and role hint:
+     * <ul>
+     * <li>if one of them has an equal descriptor and the same provided instance, nothing changes</li>
+     * <li>if one of them is the same component, it's replaced by the new one, unless it has a better role hint
+     * priority, in which case the new one is ignored. The same component means the same implementation class name, so
+     * that a class loaded again by another class loader (e.g. a new version of an extension) replaces the previous one,
+     * except for different instances provided for the same class (or for no implementation class) with different
+     * descriptors (e.g. another role hint priority), which are different components (e.g. several components defined
+     * in wiki pages). A new instance provided with an equal descriptor thus replaces the existing one, and registering
+     * again a descriptor without instance replaces it too, which drops its cached instance: the next lookup creates a
+     * new one</li>
+     * <li>otherwise all the components are kept: the one with the best role hint priority is the one returned by
+     * lookups (the last registered one in case of same priority) and the other ones are hidden until it's
+     * unregistered</li>
+     * </ul>
      *
      * @param <T> the component role type
      * @param componentDescriptor the descriptor of the component to register.
@@ -153,6 +167,9 @@ public interface ComponentManager
 
     /**
      * Remove a component from the component repository dynamically.
+     * <p>
+     * All the components registered with the passed role and role hint are removed, including the ones hidden by the
+     * one returned by lookups.
      *
      * @param role the role identifying the component
      * @param hint the hint identifying the component
@@ -162,11 +179,35 @@ public interface ComponentManager
 
     /**
      * Remove a component from the component repository dynamically.
+     * <p>
+     * Only the component registered with a descriptor equal to the passed one is removed, even if it's hidden by
+     * another component registered with the same role and role hint. If it was the one returned by lookups, the hidden
+     * component with the best role hint priority takes its place. Use
+     * {@link #unregisterComponent(ComponentDescriptor, Object)} to make sure to not remove another instance registered
+     * with an equal descriptor.
      *
      * @param componentDescriptor the component descriptor
      * @since 4.0M1
      */
     void unregisterComponent(ComponentDescriptor<?> componentDescriptor);
+
+    /**
+     * Remove the component registered with a descriptor equal to the passed one and the passed instance, in the same
+     * way as {@link #unregisterComponent(ComponentDescriptor)}. Nothing is removed if the passed instance is not
+     * registered anymore, e.g. because another instance registered with an equal descriptor replaced it. It's needed
+     * for components which share the same descriptor and only differ by their instance (e.g. several components
+     * defined in wiki pages).
+     *
+     * @param <T> the component role type
+     * @param componentDescriptor the component descriptor
+     * @param componentInstance the instance provided when registering the component
+     * @since 18.10.0RC1
+     */
+    @Unstable
+    default <T> void unregisterComponent(ComponentDescriptor<T> componentDescriptor, T componentInstance)
+    {
+        unregisterComponent(componentDescriptor);
+    }
 
     /**
      * @param <T> the component role type
