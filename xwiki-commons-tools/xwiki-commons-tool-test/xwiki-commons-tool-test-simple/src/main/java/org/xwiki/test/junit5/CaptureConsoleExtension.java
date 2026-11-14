@@ -79,9 +79,13 @@ public class CaptureConsoleExtension implements BeforeAllCallback, BeforeEachCal
     @Override
     public void afterAll(ExtensionContext extensionContext)
     {
-        validateOutput(ALL);
-        System.setOut(this.savedOriginalOut);
-        System.setOut(this.savedOriginalErr);
+        try {
+            validateOutput(ALL);
+        } finally {
+            // Restore the console even when the validation fails, so that it's not left captured for the next tests.
+            System.setOut(this.savedOriginalOut);
+            System.setErr(this.savedOriginalErr);
+        }
     }
 
     private void captureOutput(String key)
