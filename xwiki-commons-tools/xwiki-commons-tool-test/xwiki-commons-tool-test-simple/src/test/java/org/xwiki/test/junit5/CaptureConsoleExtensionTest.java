@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 import static org.xwiki.test.junit5.FailingTestDebuggingTestExecutionListener.START_MESSAGE;
@@ -101,10 +102,14 @@ class CaptureConsoleExtensionTest
     void verifyTestExecutionListener()
     {
         PrintStream savedOut = System.out;
-        try (PrintStream newOut = new PrintStream(new ByteArrayOutputStream())) {
+        PrintStream savedErr = System.err;
+        try (PrintStream newOut = new PrintStream(new ByteArrayOutputStream());
+            PrintStream newErr = new PrintStream(new ByteArrayOutputStream()))
+        {
             // Capture output since the CaptureConsoleExtension is automatically enabled and would fail
             // this test since it outputs things to stdout!
             System.setOut(newOut);
+            System.setErr(newErr);
 
             // Programmatically launch Jupiter Engine with our CaptureConsoleExtension registered in it.
             // Also register a SummaryGeneratingListener to capture the test output so that we can assert it.
@@ -117,10 +122,17 @@ class CaptureConsoleExtensionTest
             SummaryGeneratingListener summaryListener = new SummaryGeneratingListener();
             launcher.execute(request, summaryListener);
 
+            // The console streams are restored once the tests of the sample test case have been executed.
+            PrintStream restoredOut = System.out;
+            PrintStream restoredErr = System.err;
+            assertSame(newOut, restoredOut);
+            assertSame(newErr, restoredErr);
+
             TestExecutionSummary summary = summaryListener.getSummary();
             assertResult(summary);
         } finally {
             System.setOut(savedOut);
+            System.setErr(savedErr);
         }
     }
 
