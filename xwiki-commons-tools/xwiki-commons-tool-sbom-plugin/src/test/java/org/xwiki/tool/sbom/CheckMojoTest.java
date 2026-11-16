@@ -31,6 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -82,7 +83,7 @@ class CheckMojoTest
         set("forbiddenComponents", List.of("pkg:maven/jakarta.servlet/jakarta.servlet-api", "pkg:npm/vue-i18n@11.4.11",
             "pkg:npm/core-base"));
 
-        this.mojo.execute();
+        assertDoesNotThrow(this.mojo::execute);
     }
 
     @Test
