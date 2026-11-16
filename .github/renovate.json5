@@ -49,26 +49,13 @@
       "allowedVersions": "!/-jdk5$/"
     },
 
-    // The Maven and Maven Resolver dependencies are managed with the maven.build.version and
-    // maven.resolver.build.version properties, which are the versions used to build XWiki and its Maven plugins and
-    // must not be upgraded just because a more recent version exists. The versions to keep up to date are the ones
-    // embedded in the XWiki runtime (maven.runtime.version and maven.resolver.runtime.version), tracked by the custom
-    // managers below.
+    // maven.build.version and maven.resolver.build.version are the versions of Maven and Maven Resolver used to build
+    // XWiki and its Maven plugins, they must not be upgraded just because a more recent version exists. The versions to
+    // keep up to date are the ones embedded in the XWiki runtime (maven.runtime.version and
+    // maven.resolver.runtime.version), tracked by the custom managers below.
     {
       "matchManagers": ["maven"],
-      "matchPackageNames": [
-        "org.apache.maven:maven-artifact",
-        "org.apache.maven:maven-compat",
-        "org.apache.maven:maven-core",
-        "org.apache.maven:maven-model",
-        "org.apache.maven:maven-model-builder",
-        "org.apache.maven:maven-plugin-api",
-        "org.apache.maven:maven-repository-metadata",
-        "org.apache.maven:maven-resolver-provider",
-        "org.apache.maven:maven-settings",
-        "org.apache.maven:maven-settings-builder",
-        "org.apache.maven.resolver:*"
-      ],
+      "matchJsonata": ["sharedVariableName in ['maven.build.version', 'maven.resolver.build.version']"],
       "enabled": false
     }
   ],
