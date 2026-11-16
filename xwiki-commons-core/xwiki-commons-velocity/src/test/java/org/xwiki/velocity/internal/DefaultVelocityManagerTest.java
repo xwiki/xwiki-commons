@@ -104,6 +104,9 @@ class DefaultVelocityManagerTest
         }
     }
 
+    // The hiding is what these fixtures are for: the tests below check how the uberspector resolves a static that
+    // hides another one.
+    @SuppressWarnings("java:S9149")
     public class SubTestClass extends TestClass
     {
         public static String overwrittenStaticMethod()
