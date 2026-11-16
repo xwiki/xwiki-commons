@@ -47,6 +47,50 @@
     {
       "matchPackageNames": ["net.bytebuddy:*"],
       "allowedVersions": "!/-jdk5$/"
+    },
+
+    // The Maven and Maven Resolver dependencies are managed with the maven.build.version and
+    // maven.resolver.build.version properties, which are the versions used to build XWiki and its Maven plugins and
+    // must not be upgraded just because a more recent version exists. The versions to keep up to date are the ones
+    // embedded in the XWiki runtime (maven.runtime.version and maven.resolver.runtime.version), tracked by the custom
+    // managers below.
+    {
+      "matchManagers": ["maven"],
+      "matchPackageNames": [
+        "org.apache.maven:maven-artifact",
+        "org.apache.maven:maven-compat",
+        "org.apache.maven:maven-core",
+        "org.apache.maven:maven-model",
+        "org.apache.maven:maven-model-builder",
+        "org.apache.maven:maven-plugin-api",
+        "org.apache.maven:maven-repository-metadata",
+        "org.apache.maven:maven-resolver-provider",
+        "org.apache.maven:maven-settings",
+        "org.apache.maven:maven-settings-builder",
+        "org.apache.maven.resolver:*"
+      ],
+      "enabled": false
+    }
+  ],
+
+  // Track the versions of Maven and Maven Resolver embedded in the XWiki runtime (they are used in xwiki-platform,
+  // where the distribution sets maven.version and maven.resolver.version to them).
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^pom\\.xml$/"],
+      "matchStrings": ["<maven\\.runtime\\.version>(?<currentValue>[^<]+)</maven\\.runtime\\.version>"],
+      "depNameTemplate": "org.apache.maven:maven-core",
+      "datasourceTemplate": "maven"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^pom\\.xml$/"],
+      "matchStrings": [
+        "<maven\\.resolver\\.runtime\\.version>(?<currentValue>[^<]+)</maven\\.resolver\\.runtime\\.version>"
+      ],
+      "depNameTemplate": "org.apache.maven.resolver:maven-resolver-api",
+      "datasourceTemplate": "maven"
     }
   ]
 }
