@@ -92,6 +92,9 @@ public final class XMLUtils
          * @param exception the exception to be logged
          */
         @Override
+        // Only the root cause message is logged as a warning on purpose, to keep it to one line (the stack trace is
+        // logged at trace level below), and computing it eagerly costs nothing on this rare fatal error path.
+        @SuppressWarnings("java:S2629")
         public void fatalError(TransformerException exception) throws TransformerException
         {
             LOGGER.warn("Fatal error from xml transformer: [{}]", ExceptionUtils.getRootCauseMessage(exception));
