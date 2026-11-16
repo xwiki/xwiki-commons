@@ -206,7 +206,7 @@
                           "java.io.File#deleteOnExit",
                           "java.io.File#createTempFile(java.lang.String,java.lang.String)",
                           "java.nio.file.Files#createTempDirectory(java.lang.String,java.nio.file.attribute.FileAttribute[])",
-                          "java.nio.file.Files#createTempDirectory(java.lang.String,java.lang.String,java.nio.file.attribute.FileAttribute[])",
+                          "java.nio.file.Files#createTempFile(java.lang.String,java.lang.String,java.nio.file.attribute.FileAttribute[])",
                           "com.google.common.io.Files#createTempDir()",
                           "java.net.URL#equals"
                         ]
