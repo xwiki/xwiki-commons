@@ -22,12 +22,13 @@ package org.xwiki.tool.sbom;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -58,14 +59,17 @@ import com.github.packageurl.PackageURL;
  * <li>the npm package repackaged by each third-party webjar;</li>
  * <li>the organization supplying and manufacturing the artifact, taken from the POM {@code <organization>}.</li>
  * </ul>
- * It warns (or fails, see {@code failOnMissingEmbeddedSBOM}) when the artifact, or one of its dependencies, is a webjar
- * built from npm packages without an embedded SBOM of these packages. It does nothing when no SBOM is attached to the
- * artifact.
+ * It warns (or fails, see {@code failOnMissingEmbeddedSBOM}) when the artifact, or one of the dependencies listed by
+ * the SBOM, is a webjar built from npm packages without an embedded SBOM of these packages. It does nothing when no
+ * SBOM is attached to the artifact.
+ * <p>
+ * The test dependencies are resolved too: a dependency declared with the {@code test} scope but also reached at runtime
+ * through another dependency is resolved with the {@code test} scope by Maven, while the SBOM lists it.
  *
  * @version $Id$
  * @since 18.10.0RC1
  */
-@Mojo(name = "enrich", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.RUNTIME,
+@Mojo(name = "enrich", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.TEST,
     threadSafe = true)
 public class EnrichMojo extends AbstractSBOMMojo
 {
@@ -86,8 +90,8 @@ public class EnrichMojo extends AbstractSBOMMojo
     private String supplierURL;
 
     /**
-     * Whether to fail when the artifact, or one of its dependencies, is a webjar built from npm packages (i.e. with the
-     * {@code webjar-node} packaging) without an SBOM of these packages embedded as its
+     * Whether to fail when the artifact, or one of the dependencies listed by the SBOM, is a webjar built from npm
+     * packages (i.e. with the {@code webjar-node} packaging) without an SBOM of these packages embedded as its
      * {@code META-INF/sbom/npm.cdx.json} file: they would be missing from the SBOM. Only a warning is logged when
      * {@code false}, which is the default since the projects building webjars without generating this SBOM (e.g.
      * extensions inheriting from an older parent POM) would otherwise fail to release.
@@ -104,33 +108,42 @@ public class EnrichMojo extends AbstractSBOMMojo
             return;
         }
 
-        try {
-            checkEmbeddedSBOMs();
-        } catch (IOException e) {
-            throw new MojoExecutionException("Failed to look for the embedded SBOMs", e);
-        }
-
+        // The artifact and the dependencies listed by the SBOM, i.e. the ones it ships, unlike the test dependencies.
+        Set<Artifact> components = new LinkedHashSet<>();
+        components.add(this.project.getArtifact());
         try {
             ObjectNode bom = (ObjectNode) MAPPER.readTree(sbomFile.get());
             SBOMEnricher enricher = new SBOMEnricher(bom, new WebjarNpmResolver(getLog()), getLog());
             if (this.supplierName != null) {
                 enricher.setSupplier(this.supplierName, this.supplierURL);
             }
-            enricher.enrich(this::getJAR);
+            enricher.enrich(purl -> {
+                Artifact artifact = getArtifact(purl);
+                if (artifact == null) {
+                    return null;
+                }
+                components.add(artifact);
+                return artifact.getFile().toPath();
+            });
+            checkEmbeddedSBOMs(components);
             MAPPER.writerWithDefaultPrettyPrinter().writeValue(sbomFile.get(), bom);
         } catch (IOException | MalformedPackageURLException e) {
             throw new MojoExecutionException(String.format("Failed to enrich the SBOM [%s]", sbomFile.get()), e);
         }
     }
 
-    private void checkEmbeddedSBOMs() throws IOException, MojoExecutionException
+    private void checkEmbeddedSBOMs(Set<Artifact> components) throws MojoExecutionException
     {
         List<String> missing = new ArrayList<>();
-        for (Artifact artifact : getArtifacts()) {
-            File file = artifact.getFile();
-            if (isJAR(file) && isWebjarNode(artifact, file) && !SBOMEnricher.hasEmbeddedSBOM(file.toPath())) {
-                missing.add(artifact.getId());
+        try {
+            for (Artifact artifact : components) {
+                File file = artifact.getFile();
+                if (isJAR(file) && isWebjarNode(artifact, file) && !SBOMEnricher.hasEmbeddedSBOM(file.toPath())) {
+                    missing.add(artifact.getId());
+                }
             }
+        } catch (IOException e) {
+            throw new MojoExecutionException("Failed to look for the embedded SBOMs", e);
         }
         if (!missing.isEmpty()) {
             String message = String.format("The webjars %s don't embed the SBOM of the npm packages they bundle, so "
@@ -175,7 +188,7 @@ public class EnrichMojo extends AbstractSBOMMojo
         return Stream.concat(Stream.of(this.project.getArtifact()), this.project.getArtifacts().stream()).toList();
     }
 
-    private Path getJAR(PackageURL purl)
+    private Artifact getArtifact(PackageURL purl)
     {
         // The type isn't compared: the webjars have their own types (e.g. "webjar-node") but are JAR files.
         Map<String, String> qualifiers = purl.getQualifiers();
@@ -185,8 +198,7 @@ public class EnrichMojo extends AbstractSBOMMojo
             .filter(artifact -> Objects.equals(purl.getNamespace(), artifact.getGroupId())
                 && Objects.equals(purl.getName(), artifact.getArtifactId()) && hasVersion(artifact, purl.getVersion())
                 && Objects.equals(classifier, StringUtils.defaultIfEmpty(artifact.getClassifier(), null)))
-            .map(Artifact::getFile).filter(this::isJAR)
-            .map(File::toPath).findFirst().orElse(null);
+            .filter(artifact -> isJAR(artifact.getFile())).findFirst().orElse(null);
     }
 
     private boolean hasVersion(Artifact artifact, String version)

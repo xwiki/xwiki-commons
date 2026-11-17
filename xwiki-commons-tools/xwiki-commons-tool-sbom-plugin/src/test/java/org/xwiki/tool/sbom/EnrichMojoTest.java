@@ -20,15 +20,22 @@
 package org.xwiki.tool.sbom;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.maven.artifact.Artifact;
@@ -38,11 +45,13 @@ import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.w3c.dom.Document;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -133,6 +142,20 @@ class EnrichMojoTest
     }
 
     @Test
+    void resolvesTestDependencies() throws Exception
+    {
+        // A dependency declared with the test scope but also reached at runtime through another dependency is resolved
+        // with the test scope by Maven, while the SBOM lists it: its JAR has to be found too.
+        Document descriptor;
+        try (InputStream stream = getClass().getResourceAsStream("/META-INF/maven/plugin.xml")) {
+            descriptor = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(stream);
+        }
+
+        assertEquals("test", XPathFactory.newInstance().newXPath()
+            .evaluate("/plugin/mojos/mojo[goal='enrich']/requiresDependencyResolution", descriptor));
+    }
+
+    @Test
     void executeWithInvalidSBOM() throws Exception
     {
         attachSBOM("{\"components\": [{\"bom-ref\": \"invalid\", \"purl\": \"invalid\"}]}");
@@ -153,8 +176,11 @@ class EnrichMojoTest
         when(webjar.getId()).thenReturn("org.xwiki.platform:other-webjar:jar:1.0");
         Artifact library = mockArtifact("library", null, "1.0", createJAR("library.jar", "library", "jar"));
         Artifact withoutPOM = mockArtifact("without-pom", null, "1.0", createJAR("without-pom.jar", null, null));
-        this.project.setArtifacts(Set.of(webjar, library, withoutPOM));
-        File sbomFile = attachSBOM(SBOM);
+        // A test dependency isn't shipped, so it isn't listed by the SBOM and its npm packages aren't missing from it.
+        Artifact testWebjar = mockArtifact("test-webjar", null, "1.0",
+            createJAR("test-webjar.jar", "test-webjar", "webjar-node"));
+        this.project.setArtifacts(Set.of(webjar, library, withoutPOM, testWebjar));
+        File sbomFile = attachSBOM(sbom("other-webjar", "library", "without-pom"));
         Log log = mock(Log.class);
         this.mojo.setLog(log);
         String message = "The webjars [org.xwiki.platform:other-webjar:jar:1.0] don't embed the SBOM of the npm"
@@ -180,12 +206,14 @@ class EnrichMojoTest
         when(webjar.getId()).thenReturn("org.xwiki.platform:own-webjar:webjar-node:1.0");
         this.project.setArtifact(webjar);
         this.project.setPackaging("webjar-node");
-        attachSBOM(SBOM);
+        File sbomFile = attachSBOM(SBOM);
         set("failOnMissingEmbeddedSBOM", true);
 
         MojoExecutionException exception = assertThrows(MojoExecutionException.class, this.mojo::execute);
 
         assertTrue(exception.getMessage().startsWith("The webjars [org.xwiki.platform:own-webjar:webjar-node:1.0]"));
+        // The SBOM isn't enriched when the build fails.
+        assertEquals(SBOM, Files.readString(sbomFile.toPath()));
     }
 
     @Test
@@ -194,11 +222,12 @@ class EnrichMojoTest
         Path jar = this.tmpDir.resolve("invalid.jar");
         Files.writeString(jar, "not a JAR");
         this.project.setArtifacts(Set.of(mockArtifact("invalid", null, "1.0", jar)));
-        attachSBOM(SBOM);
+        Path sbomFile = attachSBOM(sbom("invalid", "invalid-pom")).toPath();
 
         MojoExecutionException exception = assertThrows(MojoExecutionException.class, this.mojo::execute);
 
-        assertEquals("Failed to look for the embedded SBOMs", exception.getMessage());
+        assertEquals("Failed to enrich the SBOM [%s]".formatted(sbomFile), exception.getMessage());
+        assertInstanceOf(ZipException.class, exception.getCause());
 
         Path invalidPOM = createJAR("invalid-pom.jar", null, null);
         try (FileSystem zip = FileSystems.newFileSystem(invalidPOM)) {
@@ -210,6 +239,7 @@ class EnrichMojoTest
 
         exception = assertThrows(MojoExecutionException.class, this.mojo::execute);
 
+        assertEquals("Failed to look for the embedded SBOMs", exception.getMessage());
         assertEquals("Failed to read the POM of [%s]".formatted(invalidPOM), exception.getCause().getMessage());
     }
 
@@ -234,6 +264,13 @@ class EnrichMojoTest
         }
 
         return jar;
+    }
+
+    private String sbom(String... artifactIds)
+    {
+        String component = "{\"bom-ref\": \"%1$s\", \"purl\": \"pkg:maven/org.xwiki.platform/%1$s@1.0?type=jar\"}";
+        return "{\"bomFormat\": \"CycloneDX\", \"components\": [%s]}".formatted(Arrays.stream(artifactIds)
+            .map(component::formatted).collect(Collectors.joining(", ")));
     }
 
     private File attachSBOM(String content) throws Exception
