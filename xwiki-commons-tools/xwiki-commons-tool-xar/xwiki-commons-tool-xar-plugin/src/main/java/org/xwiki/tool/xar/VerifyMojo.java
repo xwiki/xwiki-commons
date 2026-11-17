@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -35,6 +36,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.xwiki.tool.spoon.ExtensionComponentsParser;
+import org.xwiki.tool.spoon.MacroDeclarationVerifier;
 import org.xwiki.tool.xar.internal.XWikiDocument;
 
 /**
@@ -58,6 +61,12 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  *   <li>ensure that attachments have a mimetype set. If the mimetype is missing then the attachment won't be
  *       filterable in the attachment view in Page Index.</li>
  *   <li>ensure the locale of a page matches its name</li>
+ *   <li>ensure that the XAR format version declared by the root element (its {@code version} attribute) is valid and
+ *       includes every element the page uses, as listed by {@link XWikiDocument#readRequiredFormatVersions}, without
+ *       exceeding the highest format known by the targeted XWiki version
+ *       ({@link XWikiDocument#HIGHEST_KNOWN_FORMAT_VERSION})</li>
+ *   <li>ensure that the wiki macros of the module are declared in the {@code xwiki.extension.components} Maven
+ *       property, and that every macro declared there is provided by the module</li>
  * </ul>
  *
  * @version $Id$
@@ -105,6 +114,23 @@ public class VerifyMojo extends AbstractVerifyMojo
     @Parameter(property = "xar.verify.titles")
     private Properties titles;
 
+    /**
+     * Disables the verification of the macros declared in the {@code xwiki.extension.components} Maven property.
+     *
+     * @since 18.10.0RC1
+     */
+    @Parameter(property = "xwiki.extension.components.macros.check.skip", defaultValue = "false")
+    private boolean macroDeclarationSkip;
+
+    /**
+     * The hints of the internal wiki macros which must not be declared in the {@code xwiki.extension.components} Maven
+     * property, separated by commas or white spaces.
+     *
+     * @since 18.10.0RC1
+     */
+    @Parameter(property = MacroDeclarationVerifier.EXCLUDED_MACROS_PROPERTY)
+    private String excludedMacros;
+
     private Map<Pattern, Pattern> titlePatterns;
 
     @Override
@@ -127,11 +153,13 @@ public class VerifyMojo extends AbstractVerifyMojo
         initializePatterns();
 
         boolean hasErrors = false;
+        Map<String, String> wikiMacros = new LinkedHashMap<>();
         Collection<File> xmlFiles = getXARXMLFiles();
         for (File file : xmlFiles) {
             String parentName = file.getParentFile().getName();
             XWikiDocument xdoc = getDocFromXML(file);
             List<String> errors = new ArrayList<>();
+            xdoc.getWikiMacroIds().forEach(wikiMacroId -> wikiMacros.put(wikiMacroId, xdoc.getReference()));
 
             // Verification 1: Verify Encoding is UTF8
             if (!xdoc.getEncoding().equals("UTF-8")) {
@@ -226,9 +254,7 @@ public class VerifyMojo extends AbstractVerifyMojo
             }
 
             // Verification 16: Verify that author fields are not set.
-            if (!this.skipAuthors) {
-                verifyAuthorFields(errors, xdoc);
-            }
+            verifyAuthorFields(errors, xdoc);
 
             // Verification 17: Verify that translated page name matches the locale
             Locale locale = guessLocaleFromName(file);
@@ -238,16 +264,17 @@ public class VerifyMojo extends AbstractVerifyMojo
                     file.getName(), xdoc.getReference(), xdoc.getLocale(), locale));
             }
 
-            // Display errors
-            if (errors.isEmpty()) {
-                getLog().info(String.format("  Verifying [%s/%s]... ok", parentName, file.getName()));
-            } else {
-                getLog().info(String.format("  Verifying [%s/%s]... errors", parentName, file.getName()));
-                for (String error : errors) {
-                    getLog().error(String.format("  - %s", error));
-                }
-                hasErrors = true;
-            }
+            // Verification 18: Verify the XAR format version
+            verifyFormatVersion(errors, xdoc);
+
+            hasErrors |= displayErrors(String.format("[%s/%s]", parentName, file.getName()), errors);
+        }
+
+        // Verification 19: Verify that the wiki macros are declared in the xwiki.extension.components Maven property
+        if (!this.macroDeclarationSkip) {
+            hasErrors |= displayErrors("wiki macro declarations", MacroDeclarationVerifier.verify(
+                getProject().getProperties().getProperty(ExtensionComponentsParser.PROPERTY), this.excludedMacros,
+                wikiMacros));
         }
 
         if (hasErrors) {
@@ -284,6 +311,19 @@ public class VerifyMojo extends AbstractVerifyMojo
         return null;
     }
 
+    private boolean displayErrors(String verified, List<String> errors)
+    {
+        if (errors.isEmpty()) {
+            getLog().info(String.format("  Verifying %s... ok", verified));
+        } else {
+            getLog().info(String.format("  Verifying %s... errors", verified));
+            for (String error : errors) {
+                getLog().error(String.format("  - %s", error));
+            }
+        }
+        return !errors.isEmpty();
+    }
+
     private void verifyDateFields(List<String> errors, XWikiDocument xdoc)
     {
         if (!this.skipDatesDocumentList.contains(xdoc.getReference())) {
@@ -305,10 +345,47 @@ public class VerifyMojo extends AbstractVerifyMojo
         }
     }
 
+    private boolean isAuthorFieldsChecked(XWikiDocument xdoc)
+    {
+        return !this.skipAuthors && !this.skipAuthorsDocumentList.contains(xdoc.getReference());
+    }
+
     private void verifyAuthorFields(List<String> errors, XWikiDocument xdoc)
     {
-        if (!this.skipAuthorsDocumentList.contains(xdoc.getReference()) && xdoc.isOriginalMetadataAuthorPresent()) {
+        if (isAuthorFieldsChecked(xdoc) && xdoc.isOriginalMetadataAuthorPresent()) {
             errors.add("'originalMetadataAuthor' field is present");
+        }
+    }
+
+    /**
+     * Verification 18: verify that the declared format version supports every element the page uses, and is known by
+     * the targeted XWiki version.
+     */
+    private void verifyFormatVersion(List<String> errors, XWikiDocument xdoc)
+    {
+        String formatVersion = xdoc.getFormatVersion();
+        if (!XWikiDocument.isValidFormatVersion(formatVersion)) {
+            errors.add(String.format("Format version must be of the form [<major>.<minor>] but was [%s]",
+                formatVersion));
+            return;
+        }
+
+        if (XWikiDocument.compareFormatVersions(formatVersion, XWikiDocument.HIGHEST_KNOWN_FORMAT_VERSION) > 0) {
+            errors.add(String.format("Format version must be at most [%s], the highest one known by the targeted XWiki"
+                + " version (the version of this plugin), but was [%s]. The elements of a higher format would be"
+                + " ignored when the page is installed.", XWikiDocument.HIGHEST_KNOWN_FORMAT_VERSION, formatVersion));
+        }
+
+        Map<String, String> requiredFormatVersions = new LinkedHashMap<>(xdoc.getRequiredFormatVersions());
+        if (isAuthorFieldsChecked(xdoc)) {
+            // Already reported as a field that must not be present, which is the real problem.
+            requiredFormatVersions.remove(XWikiDocument.ORIGINAL_METADATA_AUTHOR_ELEMENT);
+        }
+        for (Map.Entry<String, String> entry : requiredFormatVersions.entrySet()) {
+            if (XWikiDocument.compareFormatVersions(formatVersion, entry.getValue()) < 0) {
+                errors.add(String.format("Format version must be at least [%s] since the page uses %s, but was [%s]."
+                    + " Run [mvn xar:format] to fix it.", entry.getValue(), entry.getKey(), formatVersion));
+            }
         }
     }
 

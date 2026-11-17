@@ -46,8 +46,8 @@ import org.xwiki.xml.html.HTMLConstants;
 @Component(roles = HTMLDefinitions.class)
 @Singleton
 // This file has lists of strings copied from a source, making them constants would complicate updating from
-// upstream.
-@SuppressWarnings("checkstyle:MultipleStringLiterals")
+// upstream. This applies to both Checkstyle and SonarQube (java:S1192).
+@SuppressWarnings({ "checkstyle:MultipleStringLiterals", "java:S1192" })
 public class HTMLDefinitions
 {
     /**
@@ -104,7 +104,13 @@ public class HTMLDefinitions
 
         // The "name" attribute is restricted to "a" (legacy anchors) and "map" (image maps) to mitigate DOM
         // clobbering. This in particular excludes "img".
-        this.elementRestrictedAttributes = Map.of(HTMLConstants.ATTRIBUTE_NAME, Set.of(HTMLConstants.TAG_A, "map"));
+        // The "for" attribute is restricted to "label" and "output", the only elements where it has its standard
+        // meaning. On "template", declarative partial updates (https://github.com/WICG/declarative-partial-updates)
+        // use it to patch content into other parts of the page, which sanitized content must not be able to do. This
+        // follows DOMPurify.
+        this.elementRestrictedAttributes = Map.of(
+            HTMLConstants.ATTRIBUTE_NAME, Set.of(HTMLConstants.TAG_A, "map"),
+            "for", Set.of("label", "output"));
     }
 
     /**

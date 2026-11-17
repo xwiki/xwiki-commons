@@ -97,6 +97,13 @@ class HTMLElementSanitizerTest
     }
 
     @Test
+    void mathMLColumnAlignIsAllowedInSecureSanitizer()
+    {
+        assertTrue(this.secureHTMLElementSanitizer.isAttributeAllowed("mtable", "columnalign", "left"));
+        assertFalse(this.secureHTMLElementSanitizer.isAttributeAllowed("mtable", "columnsalign", "left"));
+    }
+
+    @Test
     void arbitraryAttributesAreDisallowedInSecureSanitizer()
     {
         assertFalse(this.secureHTMLElementSanitizer.isElementAllowed("foo"));

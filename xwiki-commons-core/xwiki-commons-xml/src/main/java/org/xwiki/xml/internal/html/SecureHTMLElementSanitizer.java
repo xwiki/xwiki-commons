@@ -26,6 +26,8 @@ package org.xwiki.xml.internal.html;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -38,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.xml.html.HTMLConstants;
 import org.xwiki.xml.html.HTMLElementSanitizer;
 
 /**
@@ -87,6 +90,8 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
         Pattern.CASE_INSENSITIVE);
 
     private static final String XLINK_HREF = "xlink:href";
+
+    private static final String SVG_ATTRIBUTE_NAME = "attributename";
 
     @Inject
     private HTMLElementSanitizerConfiguration htmlElementSanitizerConfiguration;
@@ -169,18 +174,24 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
     @Override
     public void initialize() throws InitializationException
     {
-        this.extraAllowedTags.addAll(this.htmlElementSanitizerConfiguration.getExtraAllowedTags());
-        this.extraAllowedAttributes.addAll(this.htmlElementSanitizerConfiguration.getExtraAllowedAttributes());
-        this.uriSafeAttributes.addAll(this.htmlElementSanitizerConfiguration.getExtraUriSafeAttributes());
-        this.dataUriTags.addAll(this.htmlElementSanitizerConfiguration.getExtraDataUriTags());
+        // Element and attribute names are checked in lowercase as browsers parse them case-insensitively.
+        addLowerCase(this.extraAllowedTags, this.htmlElementSanitizerConfiguration.getExtraAllowedTags());
+        addLowerCase(this.extraAllowedAttributes, this.htmlElementSanitizerConfiguration.getExtraAllowedAttributes());
+        addLowerCase(this.uriSafeAttributes, this.htmlElementSanitizerConfiguration.getExtraUriSafeAttributes());
+        addLowerCase(this.dataUriTags, this.htmlElementSanitizerConfiguration.getExtraDataUriTags());
         this.allowUnknownProtocols = this.htmlElementSanitizerConfiguration.isAllowUnknownProtocols();
-        this.forbidTags.addAll(this.htmlElementSanitizerConfiguration.getForbidTags());
-        this.forbidAttributes.addAll(this.htmlElementSanitizerConfiguration.getForbidAttributes());
+        addLowerCase(this.forbidTags, this.htmlElementSanitizerConfiguration.getForbidTags());
+        addLowerCase(this.forbidAttributes, this.htmlElementSanitizerConfiguration.getForbidAttributes());
         initializeElementRestrictedAttributes();
         String configuredRegexp = this.htmlElementSanitizerConfiguration.getAllowedUriRegexp();
         if (StringUtils.isNotBlank(configuredRegexp)) {
             this.allowedUriPattern = Pattern.compile(configuredRegexp, Pattern.CASE_INSENSITIVE);
         }
+    }
+
+    private static void addLowerCase(Set<String> target, List<String> names)
+    {
+        names.stream().map(name -> name.toLowerCase(Locale.ROOT)).forEach(target::add);
     }
 
     private void initializeElementRestrictedAttributes()
@@ -195,8 +206,10 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
     @Override
     public boolean isElementAllowed(String elementName)
     {
-        return !this.forbidTags.contains(elementName)
-            && (this.extraAllowedTags.contains(elementName) || isElementSafe(elementName));
+        String lowerElement = elementName.toLowerCase(Locale.ROOT);
+
+        return !this.forbidTags.contains(lowerElement)
+            && (this.extraAllowedTags.contains(lowerElement) || isElementSafe(lowerElement));
     }
 
     private boolean isElementSafe(String elementName)
@@ -210,8 +223,8 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
     {
         boolean result = false;
 
-        String lowerElement = elementName.toLowerCase();
-        String lowerAttribute = attributeName.toLowerCase();
+        String lowerElement = elementName.toLowerCase(Locale.ROOT);
+        String lowerAttribute = attributeName.toLowerCase(Locale.ROOT);
 
         if (isAttributePermittedOnElement(lowerElement, lowerAttribute)) {
             if (DATA_ATTR.matcher(lowerAttribute).matches() || ARIA_ATTR.matcher(lowerAttribute).matches()) {
@@ -238,11 +251,22 @@ public class SecureHTMLElementSanitizer implements HTMLElementSanitizer, Initial
         return allowedElements == null || allowedElements.contains(lowercaseElementName);
     }
 
+    /**
+     * @return {@code true} if the attribute makes an SVG animation element animate a link target, which would set the
+     *     link to the animation values that aren't checked as URLs (following DOMPurify)
+     */
+    private boolean isAnimatedHref(String lowercaseAttributeName, String attributeValue)
+    {
+        return SVG_ATTRIBUTE_NAME.equals(lowercaseAttributeName)
+            && StringUtils.containsIgnoreCase(attributeValue, HTMLConstants.ATTRIBUTE_HREF);
+    }
+
     private boolean isAllowedValue(String lowercaseElementName, String lowercaseAttributeName, String attributeValue)
     {
         // Break into several statements to avoid too long boolean expression.
         boolean result = StringUtils.isBlank(attributeValue);
-        if (!result) {
+        // The animated href check must come first as none of the other checks can make such a value safe.
+        if (!result && !isAnimatedHref(lowercaseAttributeName, attributeValue)) {
             String valueNoWhitespace = ATTR_WHITESPACE.matcher(attributeValue).replaceAll("");
             result = this.uriSafeAttributes.contains(lowercaseAttributeName);
             result = result || IS_NO_URI.matcher(valueNoWhitespace).find();

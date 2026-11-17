@@ -317,6 +317,23 @@ public class DefaultHTMLCleanerTest
     }
 
     /**
+     * Verify that SVG elements are kept in restricted mode independently of the case of their name.
+     */
+    @Test
+    void restrictedSVGElementNameCase()
+    {
+        Map<String, String> parameters = new HashMap<>(this.cleanerConfiguration.getParameters());
+        parameters.put("restricted", "true");
+        this.cleanerConfiguration.setParameters(parameters);
+
+        String input = "<p><svg xmlns=\"http://www.w3.org/2000/svg\"><defs><linearGradient id=\"gradient\">"
+            + "<stop offset=\"0\"></stop></linearGradient></defs><defs><filter id=\"filter\">"
+            + "<fegaussianblur stdDeviation=\"5\"></fegaussianblur></filter></defs>"
+            + "<RECT fill=\"url(#gradient)\" height=\"10\" width=\"10\"></RECT></svg></p>";
+        assertHTML(input, input);
+    }
+
+    /**
      * Verify that the restricted parameter forbids dangerous attributes and tags.
      */
     @Test
@@ -331,6 +348,8 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p><span>Hello!</span></p>", "<span name=\"blocked\">Hello!</span>");
         assertHTML("<p><img src=\"img.png\" /></p>", "<img onerror=\"alert(1)\" src=img.png />");
         assertHTML("<p><img src=\"img.png\" /></p>", "<img name=\"blocked\" src=img.png />");
+        assertHTML("<p><label for=\"target\">Hello!</label></p>", "<label for=\"target\">Hello!</label>");
+        assertHTML("<div>Hello!</div>", "<div for=\"target\">Hello!</div>");
         assertHTML("<p><a>Hello!</a></p>", "<a href=\"javascript:alert(1)\">Hello!</a>");
         assertHTML("<p></p>", "<iframe src=\"whatever\"/>");
         assertFalse(HTMLUtils.toString(clean("<image name=\"blocked\">Hello!</image>")).contains("name=\"blocked\""));
@@ -834,6 +853,18 @@ public class DefaultHTMLCleanerTest
     {
         assertHTML("<p>&amp;#xA;</p>", "<p>&amp;#xA;</p>");
         assertHTML("<p>&amp;#10;</p>", "<p>&amp;#10;</p>");
+    }
+
+    /**
+     * Same as {@link #doNotDecodeAmpersandInTextNodes()} but for attribute values: an escaped ampersand followed by
+     * something that looks like a character reference is meant literally and must stay escaped.
+     */
+    @Test
+    void doNotDecodeAmpersandInAttributes()
+    {
+        assertHTML("<p title=\"&amp;#169; &amp;#xA9;\">text</p>", "<p title=\"&amp;#169; &amp;#xA9;\">text</p>");
+        // A character reference is still decoded once.
+        assertHTML("<p title=\"© ©\">text</p>", "<p title=\"&#169; &#xA9;\">text</p>");
     }
 
     /**

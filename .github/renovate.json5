@@ -33,7 +33,7 @@
     "tmortagne"
   ],
 
-  // Added to the rules of the preset, which already disables the commons dependencies.
+  // Added to the rules of the preset, which already disables the commons, rendering and platform dependencies.
   "packageRules": [
     // Add the URL to the XWiki Nexus public proxy. In theory, it's useless for xwiki-commons which only depends on Maven Central, but in practice Maven Central regularly block Renovate, so we use nexus.xwiki.org as fallback.
     {
@@ -43,16 +43,41 @@
       "registryUrls": ["https://nexus.xwiki.org/nexus/content/repositories/central/"]
     },
 
-    // There is no point trying to find update for commons dependencies
-    {
-      "matchPackagePrefixes": ["org.xwiki.commons:"],
-      "enabled": false
-    },
-
     // Ignore Byte Buddy versions ending with -jdk5 (they only make sense for project which need to support Java < 8)
     {
       "matchPackageNames": ["net.bytebuddy:*"],
       "allowedVersions": "!/-jdk5$/"
+    },
+
+    // maven.build.version and maven.resolver.build.version are the versions of Maven and Maven Resolver used to build
+    // XWiki and its Maven plugins, they must not be upgraded just because a more recent version exists. The versions to
+    // keep up to date are the ones embedded in the XWiki runtime (maven.runtime.version and
+    // maven.resolver.runtime.version), tracked by the custom managers below.
+    {
+      "matchManagers": ["maven"],
+      "matchJsonata": ["sharedVariableName in ['maven.build.version', 'maven.resolver.build.version']"],
+      "enabled": false
+    }
+  ],
+
+  // Track the versions of Maven and Maven Resolver embedded in the XWiki runtime (they are used in xwiki-platform,
+  // where the distribution sets maven.version and maven.resolver.version to them).
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^pom\\.xml$/"],
+      "matchStrings": ["<maven\\.runtime\\.version>(?<currentValue>[^<]+)</maven\\.runtime\\.version>"],
+      "depNameTemplate": "org.apache.maven:maven-core",
+      "datasourceTemplate": "maven"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^pom\\.xml$/"],
+      "matchStrings": [
+        "<maven\\.resolver\\.runtime\\.version>(?<currentValue>[^<]+)</maven\\.resolver\\.runtime\\.version>"
+      ],
+      "depNameTemplate": "org.apache.maven.resolver:maven-resolver-api",
+      "datasourceTemplate": "maven"
     }
   ]
 }

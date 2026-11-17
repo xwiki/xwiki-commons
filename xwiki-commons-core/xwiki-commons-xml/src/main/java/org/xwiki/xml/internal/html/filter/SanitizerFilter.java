@@ -27,6 +27,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -195,7 +196,8 @@ public class SanitizerFilter extends AbstractHTMLFilter
     {
         TagInformation result = TagInformation.INVALID;
 
-        String tagName = element.getTagName();
+        // Browsers parse element names case-insensitively, the definitions use lowercase names.
+        String tagName = element.getTagName().toLowerCase(Locale.ROOT);
         String namespace = getParsedNamespace(tagName, parentTag);
         if (isValidNamespace(tagName, namespace, parentTag)) {
             result = new TagInformation(tagName, namespace);
