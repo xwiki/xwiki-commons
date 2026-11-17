@@ -718,6 +718,31 @@ class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
+    void testInstallDependencyInstallExtensionOnANamespaceAndUninstallAnotherExtension() throws Throwable
+    {
+        ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
+        ExtensionId dependencyId = new ExtensionId("org.xwiki.test:test-extension", "test");
+        ExtensionId otherExtensionId = new ExtensionId("simplejar", "test");
+
+        install(dependencyId);
+        install(extensionId, NAMESPACE);
+        install(otherExtensionId, NAMESPACE);
+
+        Type dependencyRole = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
+        Object dependencyComponent = this.componentManager.getInstance(dependencyRole);
+
+        // Uninstalling a JAR extension from the namespace reloads all the JAR extensions of that namespace
+        LocalExtension localExtension = uninstall(otherExtensionId, NAMESPACE);
+
+        ckeckUninstallStatus(localExtension, NAMESPACE);
+        checkInstallStatus(this.installedExtensionRepository.resolve(dependencyId));
+        checkJarExtensionAvailability(TestComponentWithDeps.class, DefaultTestComponentWithDeps.class, NAMESPACE);
+
+        // The dependency installed on the root namespace was not reloaded, so it must not have been registered again
+        assertSame(dependencyComponent, this.componentManager.getInstance(dependencyRole));
+    }
+
+    @Test
     void testInstallDependencyInstallExtensionOnANamespaceAndUninstallDependency() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
