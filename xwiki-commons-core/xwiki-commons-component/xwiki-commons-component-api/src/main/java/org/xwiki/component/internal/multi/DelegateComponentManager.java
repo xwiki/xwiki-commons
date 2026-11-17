@@ -133,6 +133,12 @@ public class DelegateComponentManager implements ComponentManager
     }
 
     @Override
+    public <T> void unregisterComponent(ComponentDescriptor<T> componentDescriptor, T componentInstance)
+    {
+        getComponentManager().unregisterComponent(componentDescriptor, componentInstance);
+    }
+
+    @Override
     public void release(Object component) throws ComponentLifecycleException
     {
         getComponentManager().release(component);
