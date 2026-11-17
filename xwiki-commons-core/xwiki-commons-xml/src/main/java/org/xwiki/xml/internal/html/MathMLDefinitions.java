@@ -310,8 +310,8 @@ public class MathMLDefinitions
      * @return if the tag is a text integration point, i.e., its children are HTML elements except for the elements
      *     for which {@link #isMathMLInTextIntegrationPoint(String)} returns {@code true}
      * @since 18.10.0RC1
-     * @since 18.4.8
-     * @since 17.10.15
+     * @since 18.4.9
+     * @since 17.10.16
      */
     public boolean isTextIntegrationPoint(String tagName)
     {
@@ -322,8 +322,8 @@ public class MathMLDefinitions
      * @param tagName the name of the tag to check
      * @return if the tag is parsed as MathML element when it is a child of a text integration point
      * @since 18.10.0RC1
-     * @since 18.4.8
-     * @since 17.10.15
+     * @since 18.4.9
+     * @since 17.10.16
      */
     public boolean isMathMLInTextIntegrationPoint(String tagName)
     {
