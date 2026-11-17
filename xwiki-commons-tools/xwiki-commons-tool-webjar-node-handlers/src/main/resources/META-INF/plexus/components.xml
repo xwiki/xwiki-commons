@@ -92,6 +92,28 @@
                   <installDirectory>${basedir}/target</installDirectory>
                 </configuration>
               </mojo>
+              <!-- Check that the npm packages can be published, so that a package npm would reject fails the build
+                   and not the release. "-r" skips the private packages. -->
+              <mojo>
+                <goal>com.github.eirslett:frontend-maven-plugin:pnpm</goal>
+                <configuration>
+                  <arguments>${xwiki.npm.publishCheck.arguments}</arguments>
+                  <workingDirectory>${basedir}/src/main/node</workingDirectory>
+                  <installDirectory>${basedir}/target</installDirectory>
+                  <skip>${xwiki.npm.publishCheck.skip}</skip>
+                </configuration>
+              </mojo>
+              <!-- Also check the entry points, exports and files of the public packages with publint, see
+                   xwiki.npm.publintCheck.arguments. -->
+              <mojo>
+                <goal>com.github.eirslett:frontend-maven-plugin:pnpm</goal>
+                <configuration>
+                  <arguments>${xwiki.npm.publintCheck.arguments}</arguments>
+                  <workingDirectory>${basedir}/src/main/node</workingDirectory>
+                  <installDirectory>${basedir}/target</installDirectory>
+                  <skip>${xwiki.npm.publishCheck.skip}</skip>
+                </configuration>
+              </mojo>
             </mojos>
           </verify>
           <prepare-package>

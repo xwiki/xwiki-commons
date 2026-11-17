@@ -243,6 +243,19 @@
          the webjar-node lifecycle when skip.pnpm is true. -->
     <skip.pnpm>false</skip.pnpm>
     <xwiki.sbom.npm.skip>${skip.pnpm}</xwiki.sbom.npm.skip>
+    <!-- Set to true to not check, at the verify phase, that the npm packages of a module can be published (a
+         dry run of "pnpm publish", and publint, which both skip the private packages). -->
+    <xwiki.npm.publishCheck.skip>false</xwiki.npm.publishCheck.skip>
+    <!-- The pnpm arguments of the npm publish check: a dry run of "pnpm publish" on the public packages ("-r" skips the
+         private ones). Defined once for the webjar-node lifecycle and the pnpm-publish-check execution. -->
+    <xwiki.npm.publishCheck.arguments>-r --filter ./** publish --dry-run --no-git-checks</xwiki.npm.publishCheck.arguments>
+    <!-- The pnpm arguments of the publint check, which verifies that the entry points, exports and files of the public
+         packages exist and are valid, which the dry run doesn't check. publint must be a dependency of the pnpm
+         workspace root. pnpm runs the command in a shell (-c) to skip the private packages: node reads the
+         package.json from the standard input and exits successfully when the package is private. The frontend plugin
+         doesn't run a shell and passes the quotes to pnpm, so the command has none, and the parentheses are escaped for
+         the shell of pnpm. Defined once for the webjar-node lifecycle and the pnpm-publint-check execution. -->
+    <xwiki.npm.publintCheck.arguments>-r -c --filter ./** exec cat package.json | node -e process.exit\(JSON.parse\(fs.readFileSync\(0\)\).private?0:1\) || publint --pack pnpm --strict</xwiki.npm.publintCheck.arguments>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -3123,6 +3136,42 @@
             <name>${project.version}</name>
             <body>See ${xwiki.releasenote}</body>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>com.github.eirslett</groupId>
+          <artifactId>frontend-maven-plugin</artifactId>
+          <executions>
+            <!-- Check that the npm packages can be published, so that a package npm would reject fails the build and
+                 not the release. "-r" skips the private packages, so this is harmless in a module holding only
+                 private packages. The webjar-node lifecycle already runs it. A module that configures
+                 frontend-maven-plugin itself declares this execution by id, with the verify phase, its
+                 workingDirectory and installDirectory. The execution is not bound to a phase here since Maven applies
+                 the managed executions to every module using the plugin, including the webjar-node ones, where it
+                 would run a second time in the wrong directory. -->
+            <execution>
+              <id>pnpm-publish-check</id>
+              <phase>none</phase>
+              <goals>
+                <goal>pnpm</goal>
+              </goals>
+              <configuration>
+                <arguments>${xwiki.npm.publishCheck.arguments}</arguments>
+                <skip>${xwiki.npm.publishCheck.skip}</skip>
+              </configuration>
+            </execution>
+            <!-- Same for publint, see xwiki.npm.publintCheck.arguments. -->
+            <execution>
+              <id>pnpm-publint-check</id>
+              <phase>none</phase>
+              <goals>
+                <goal>pnpm</goal>
+              </goals>
+              <configuration>
+                <arguments>${xwiki.npm.publintCheck.arguments}</arguments>
+                <skip>${xwiki.npm.publishCheck.skip}</skip>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     </pluginManagement>
