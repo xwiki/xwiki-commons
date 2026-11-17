@@ -27,7 +27,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
@@ -94,6 +96,47 @@ class HTMLElementSanitizerTest
             "https://www.xwiki.org"));
         assertTrue(htmlElementSanitizer.get().isAttributeAllowed(HTMLConstants.TAG_A, HTMLConstants.ATTRIBUTE_HREF,
             "tel:+1234567890"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "search", "slot", "feDropShadow", "mprescripts" })
+    void elementsAreAllowedInSecureSanitizer(String tagName)
+    {
+        assertTrue(this.secureHTMLElementSanitizer.isElementAllowed(tagName));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "div, inert",
+        "div, popover",
+        "div, part",
+        "div, exportparts",
+        "textarea, wrap",
+        "text, dominant-baseline",
+        "path, pointer-events",
+        "path, vector-effect",
+        "mask, mask-type",
+        "fefunca, tablevalues",
+        "mtable, columnspacing"
+    })
+    void attributesAreAllowedInSecureSanitizer(String tagName, String attributeName)
+    {
+        assertTrue(this.secureHTMLElementSanitizer.isAttributeAllowed(tagName, attributeName, "x"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "command", "commandfor", "popovertarget", "popovertargetaction" })
+    void buttonAttributesAreDisallowedInSecureSanitizer(String attributeName)
+    {
+        assertFalse(this.secureHTMLElementSanitizer.isAttributeAllowed(HTMLConstants.TAG_DIV, attributeName, "x"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "sms:+1234567890", "matrix:r/xwiki:matrix.org" })
+    void messagingProtocolsAreAllowedInSecureSanitizer(String uri)
+    {
+        assertTrue(this.secureHTMLElementSanitizer.isAttributeAllowed(HTMLConstants.TAG_A,
+            HTMLConstants.ATTRIBUTE_HREF, uri));
     }
 
     @Test
