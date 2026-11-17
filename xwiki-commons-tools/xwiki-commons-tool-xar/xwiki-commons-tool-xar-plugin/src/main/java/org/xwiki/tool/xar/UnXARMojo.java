@@ -20,7 +20,6 @@
 package org.xwiki.tool.xar;
 
 import java.io.File;
-import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -105,7 +104,7 @@ public class UnXARMojo extends AbstractXARMojo
     }
 
     /**
-     * Unzip xar artifact and its dependencies.
+     * Unzip the XAR artifact.
      * 
      * @throws ArchiverException error when unzip package.O
      * @throws MojoExecutionException error when unzip package.
@@ -116,23 +115,5 @@ public class UnXARMojo extends AbstractXARMojo
 
         getLog().debug(String.format("Source XAR = [%s]", artifact.getFile()));
         unpack(artifact.getFile(), this.outputDirectory, LOG_OWNER, true, getIncludes(), getExcludes());
-        unpackDependentXars(artifact);
-    }
-
-    /**
-     * Unpack xar dependencies of the provided artifact.
-     * 
-     * @throws MojoExecutionException error when unpack dependencies.
-     */
-    protected void unpackDependentXars(Artifact artifact) throws MojoExecutionException
-    {
-        try {
-            Set<Artifact> dependencies = resolveArtifactDependencies(artifact);
-            for (Artifact dependency : dependencies) {
-                unpack(dependency.getFile(), this.outputDirectory, LOG_OWNER, false, getIncludes(), getExcludes());
-            }
-        } catch (Exception e) {
-            throw new MojoExecutionException(String.format("Failed to unpack artifact [%s] dependencies", artifact), e);
-        }
     }
 }

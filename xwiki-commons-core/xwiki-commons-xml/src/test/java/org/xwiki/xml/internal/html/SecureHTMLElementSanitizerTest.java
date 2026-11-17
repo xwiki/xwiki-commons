@@ -21,6 +21,7 @@ package org.xwiki.xml.internal.html;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -58,6 +59,8 @@ class SecureHTMLElementSanitizerTest
 
     private static final String BLINK = "blink";
 
+    private static final String FE_IMAGE = "feImage";
+
     private static final String GET_ELEMENT_BY_ID = "getElementById";
 
     private static final String DIV = "div";
@@ -85,8 +88,9 @@ class SecureHTMLElementSanitizerTest
     @BeforeComponent
     void setupMocks()
     {
+        // Configured names are matched case-insensitively.
         when(this.htmlElementSanitizerConfiguration.getForbidTags())
-            .thenReturn(Collections.singletonList(BLINK));
+            .thenReturn(List.of("BLINK", FE_IMAGE));
         when(this.htmlElementSanitizerConfiguration.getForbidAttributes())
             .thenReturn(Collections.singletonList(HTMLConstants.ATTRIBUTE_ALT));
         // "name" is loosened to additionally allow "div" and "span", while "headers" (allowed everywhere by default)
@@ -109,10 +113,19 @@ class SecureHTMLElementSanitizerTest
             .thenReturn("^(xwiki|https):");
     }
 
-    @Test
-    void forbiddenTags()
+    @ParameterizedTest
+    @ValueSource(strings = { BLINK, "Blink", FE_IMAGE, "feimage" })
+    void forbiddenTags(String tagName)
     {
-        assertFalse(this.secureHTMLElementSanitizer.isElementAllowed(BLINK));
+        assertFalse(this.secureHTMLElementSanitizer.isElementAllowed(tagName));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "linearGradient", "lineargradient", "LINEARGRADIENT", "feGaussianBlur", "fegaussianblur",
+        "DIV", "Script" })
+    void elementNamesAreCaseInsensitive(String tagName)
+    {
+        assertTrue(this.secureHTMLElementSanitizer.isElementAllowed(tagName));
     }
 
     @ParameterizedTest
@@ -189,6 +202,18 @@ class SecureHTMLElementSanitizerTest
             HTMLConstants.ATTRIBUTE_ID, GET_ELEMENT_BY_ID));
     }
 
+    @ParameterizedTest
+    @CsvSource({
+        "label, true",
+        "output, true",
+        "template, false",
+        "div, false"
+    })
+    void forAttribute(String element, boolean accepted)
+    {
+        assertEquals(accepted, this.secureHTMLElementSanitizer.isAttributeAllowed(element, "for", XWIKI));
+    }
+
     @Test
     void configuredElementRestrictedAttributes()
     {
@@ -204,6 +229,19 @@ class SecureHTMLElementSanitizerTest
         // default.
         assertTrue(this.secureHTMLElementSanitizer.isAttributeAllowed(SECTION, HEADERS, XWIKI));
         assertFalse(this.secureHTMLElementSanitizer.isAttributeAllowed(DIV, HEADERS, XWIKI));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "href, false",
+        "xlink:href, false",
+        "HREF, false",
+        "transform, true"
+    })
+    void animatedAttributes(String animatedAttribute, boolean accepted)
+    {
+        assertEquals(accepted, this.secureHTMLElementSanitizer.isAttributeAllowed("animate", "attributeName",
+            animatedAttribute));
     }
 
     @ParameterizedTest

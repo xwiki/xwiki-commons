@@ -1,0 +1,28 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
+<xwikidoc version="1.6" reference="Space.TypedProperty" locale="">
+  <web>Space</web>
+  <name>TypedProperty</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content/>
+  <object>
+    <name>Space.TypedProperty</name>
+    <number>0</number>
+    <className>Space.SomeClass</className>
+    <guid>d0b6a1c2-0000-0000-0000-000000000000</guid>
+    <property type="String">
+      <value>text</value>
+    </property>
+  </object>
+</xwikidoc>

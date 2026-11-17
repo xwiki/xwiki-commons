@@ -24,6 +24,7 @@ import java.io.StringReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.xml.internal.html.DefaultHTMLCleanerTest;
@@ -75,6 +76,17 @@ class HTMLUtilsTest
         // ensures that the empty element does not lead to error
         Document document = this.cleaner.clean(new StringReader("<html><head /><body foo=\"\"></body></html>"));
         assertEquals(DefaultHTMLCleanerTest.HEADER + "<html><head></head><body foo=\"\"></body></html>\n",
+            HTMLUtils.toString(document));
+    }
+
+    @Test
+    void toStringEscapesAmpersandInAttributeValues()
+    {
+        Document document = this.cleaner.clean(new StringReader("<html><head /><body><p>test</p></body></html>"));
+        Element paragraph = (Element) document.getElementsByTagName("p").item(0);
+        paragraph.setAttribute("title", "&#169; &#xA9; &amp; &copy;");
+        assertEquals(DefaultHTMLCleanerTest.HEADER + "<html><head></head><body>"
+            + "<p title=\"&amp;#169; &amp;#xA9; &amp;amp; &amp;copy;\">test</p></body></html>\n",
             HTMLUtils.toString(document));
     }
 

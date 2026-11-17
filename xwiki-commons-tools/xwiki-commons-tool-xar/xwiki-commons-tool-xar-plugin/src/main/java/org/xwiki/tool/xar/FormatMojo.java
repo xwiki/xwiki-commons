@@ -22,6 +22,7 @@ package org.xwiki.tool.xar;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -50,6 +51,8 @@ import static org.xwiki.tool.xar.internal.XMLUtils.getSAXReader;
 public class FormatMojo extends AbstractVerifyMojo
 {
     private static final String XPATH_ORIGINAL_METADATA_AUTHOR = "xwikidoc/originalMetadataAuthor";
+
+    private static final String VERSION_ATTRIBUTE = "version";
 
     /**
      * If false then don't pretty print the XML.
@@ -116,6 +119,43 @@ public class FormatMojo extends AbstractVerifyMojo
         clearContent("xwikidoc/comment", domdoc);
         hideTechnicalPage(filePath, domdoc);
         removeVolatileMetadata(domdoc);
+        raiseFormatVersion(filePath, domdoc);
+    }
+
+    /**
+     * Raise the XAR format version declared by the root element to the one including every element the page uses
+     * (see {@link XWikiDocument#readRequiredFormatVersions}). Only those elements are considered: a page without
+     * a {@code reference} attribute (format 1.0) using {@code enforceRequiredRights} is raised to 1.6 without gaining
+     * that attribute, which {@code xar:verify} doesn't require either. An invalid declared version is left for
+     * {@code xar:verify} to report.
+     *
+     * @param filePath the path of the page file, for logging
+     * @param domdoc the DOM document
+     */
+    private void raiseFormatVersion(String filePath, Document domdoc)
+    {
+        Element rootElement = domdoc.getRootElement();
+        String declaredVersion = XWikiDocument.readFormatVersion(rootElement);
+        if (!XWikiDocument.isValidFormatVersion(declaredVersion)) {
+            getLog().warn(String.format("Not raising the invalid format version [%s] of [%s]", declaredVersion,
+                filePath));
+            return;
+        }
+
+        String requiredVersion = XWikiDocument.getHighestFormatVersion(declaredVersion,
+            XWikiDocument.readRequiredFormatVersions(rootElement).values());
+        if (!requiredVersion.equals(declaredVersion)) {
+            Attribute versionAttribute = rootElement.attribute(VERSION_ATTRIBUTE);
+            if (versionAttribute != null) {
+                versionAttribute.setValue(requiredVersion);
+            } else {
+                // Keep the version as the first attribute, where the wiki writes it.
+                List<Attribute> otherAttributes = new ArrayList<>(rootElement.attributes());
+                otherAttributes.forEach(rootElement::remove);
+                rootElement.addAttribute(VERSION_ATTRIBUTE, requiredVersion);
+                otherAttributes.forEach(rootElement::add);
+            }
+        }
     }
 
     /**

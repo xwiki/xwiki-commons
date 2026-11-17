@@ -96,7 +96,7 @@ public abstract class AbstractCacheConfigurationLoader
                 file = new File(System.getProperty("java.io.tmpdir"), "xwiki");
             }
 
-            if (this.configuration.getConfigurationId() == null) {
+            if (this.configuration.getConfigurationId() != null) {
                 file = new File(file, this.configuration.getConfigurationId());
             }
 

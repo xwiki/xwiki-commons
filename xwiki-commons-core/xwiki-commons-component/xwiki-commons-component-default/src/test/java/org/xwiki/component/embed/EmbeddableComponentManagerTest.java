@@ -28,6 +28,7 @@ import javax.inject.Inject;
 
 import jakarta.inject.Provider;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.Logger;
@@ -50,6 +51,8 @@ import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.junit5.LogCaptureExtension;
 
+import ch.qos.logback.classic.Level;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -71,7 +74,7 @@ import static org.mockito.Mockito.verify;
 class EmbeddableComponentManagerTest
 {
     @RegisterExtension
-    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.ERROR);
+    private LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO);
 
     public static class CycleRoleImpl implements TestRole
     {
@@ -586,6 +589,90 @@ class EmbeddableComponentManagerTest
 
         LoggingRoleImpl impl = ecm.getInstance(TestRole.class);
         assertNotNull(impl.getLogger());
+    }
+
+    @Test
+    void getInstanceListAndMapWhenParentComponentUnregisteredDuringLookup() throws Exception
+    {
+        EmbeddableComponentManager parent = new EmbeddableComponentManager()
+        {
+            @Override
+            public <T> T getInstance(Type roleType, String roleHint) throws ComponentLookupException
+            {
+                // Simulate another thread unregistering the component after its descriptor was listed.
+                unregisterComponent(roleType, roleHint);
+
+                return super.getInstance(roleType, roleHint);
+            }
+        };
+        DefaultComponentDescriptor<TestRole> parentDescriptor = new DefaultComponentDescriptor<>();
+        parentDescriptor.setRoleType(TestRole.class);
+        parentDescriptor.setRoleHint("parent");
+        parentDescriptor.setImplementation(RoleImpl.class);
+
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+        ecm.setParent(parent);
+        DefaultComponentDescriptor<TestRole> localDescriptor = new DefaultComponentDescriptor<>();
+        localDescriptor.setRoleType(TestRole.class);
+        localDescriptor.setRoleHint("local");
+        localDescriptor.setImplementation(RoleImpl.class);
+        TestRole localInstance = new RoleImpl();
+        ecm.registerComponent(localDescriptor, localInstance);
+
+        parent.registerComponent(parentDescriptor);
+        assertEquals(List.of(localInstance), ecm.getInstanceList(TestRole.class));
+        assertEquals(Level.INFO, this.logCapture.getLogEvent(0).getLevel());
+        assertEquals("Skipped the component with type [interface org.xwiki.component.TestRole] and hint [parent] since"
+            + " it was unregistered from the parent Component Manager while looking up the components of this type",
+            this.logCapture.getMessage(0));
+
+        parent.registerComponent(parentDescriptor);
+        assertEquals(Map.of("local", localInstance), ecm.getInstanceMap(TestRole.class));
+        assertEquals("Skipped the component with type [interface org.xwiki.component.TestRole] and hint [parent] since"
+            + " it was unregistered from the parent Component Manager while looking up the components of this type",
+            this.logCapture.getMessage(1));
+    }
+
+    @Test
+    void getInstanceListAndMapWhenParentComponentFails() throws Exception
+    {
+        EmbeddableComponentManager parent = new EmbeddableComponentManager();
+        DefaultComponentDescriptor<TestRole> failingDescriptor = new DefaultComponentDescriptor<>();
+        failingDescriptor.setRoleType(TestRole.class);
+        failingDescriptor.setRoleHint("failing");
+        failingDescriptor.setImplementation(FailingRoleImpl.class);
+        parent.registerComponent(failingDescriptor);
+
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+        ecm.setParent(parent);
+        DefaultComponentDescriptor<TestRole> localDescriptor = new DefaultComponentDescriptor<>();
+        localDescriptor.setRoleType(TestRole.class);
+        localDescriptor.setRoleHint("local");
+        localDescriptor.setImplementation(RoleImpl.class);
+        TestRole localInstance = new RoleImpl();
+        ecm.registerComponent(localDescriptor, localInstance);
+
+        // A parent component failing to initialize is skipped when it's not mandatory...
+        assertEquals(List.of(localInstance), ecm.getInstanceList(TestRole.class));
+        assertEquals(Level.ERROR, this.logCapture.getLogEvent(0).getLevel());
+        assertEquals("Failed to lookup component with type [interface org.xwiki.component.TestRole] and hint [failing]",
+            this.logCapture.getMessage(0));
+
+        // ... and fails the lookup when it's mandatory.
+        DefaultComponentDescriptor<TestRole> mandatoryDescriptor = new DefaultComponentDescriptor<>();
+        mandatoryDescriptor.setRoleType(TestRole.class);
+        mandatoryDescriptor.setRoleHint("mandatory");
+        mandatoryDescriptor.setImplementation(FailingRoleImpl.class);
+        mandatoryDescriptor.setMandatory(true);
+        parent.registerComponent(mandatoryDescriptor);
+        ComponentLookupException exception =
+            assertThrows(ComponentLookupException.class, () -> ecm.getInstanceMap(TestRole.class));
+        assertEquals(
+            "Failed to lookup component with type [interface org.xwiki.component.TestRole] and hint [mandatory]",
+            exception.getMessage());
+        assertEquals("fail", ExceptionUtils.getRootCause(exception).getMessage());
+        assertEquals("Failed to lookup component with type [interface org.xwiki.component.TestRole] and hint [failing]",
+            this.logCapture.getMessage(1));
     }
 
     private ComponentManager createParentComponentManager() throws Exception
