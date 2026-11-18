@@ -39,12 +39,12 @@
     <xwiki.spoon.skip>false</xwiki.spoon.skip>
     <!-- The components provided by the extension, indexed by the Extension Manager. Empty by default so that the checks
          verifying it never receive an unresolved expression. -->
-    <xwiki.extension.components/>
+    <xwiki.extension.components />
     <!-- By default verify that the macros provided by a module are declared in xwiki.extension.components -->
     <xwiki.extension.components.macros.check.skip>false</xwiki.extension.components.macros.check.skip>
     <!-- The hints of the internal macros provided by a module, which must not be declared in xwiki.extension.components
          since the editor would suggest them when the extension is not installed. -->
-    <xwiki.extension.components.macros.check.excluded/>
+    <xwiki.extension.components.macros.check.excluded />
   </properties>
   <build>
     <defaultGoal>install</defaultGoal>
