@@ -20,7 +20,6 @@
 package org.xwiki.store.blob;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Customizes a {@link BlobStorePropertiesBuilder} prior to store creation.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @since 17.10.0RC1
  */
 @Role
-@Unstable
 public interface BlobStorePropertiesCustomizer
 {
     /**

@@ -21,15 +21,12 @@ package org.xwiki.store.blob;
 
 import java.io.Serial;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Exception thrown when a blob cannot be found at the specified path.
  *
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Unstable
 public class BlobNotFoundException extends BlobStoreException
 {
     /**

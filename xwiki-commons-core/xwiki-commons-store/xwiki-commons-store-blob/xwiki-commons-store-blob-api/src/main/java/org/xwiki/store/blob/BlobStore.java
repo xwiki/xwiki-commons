@@ -21,15 +21,12 @@ package org.xwiki.store.blob;
 
 import java.util.stream.Stream;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * A storage that allows storing blob data.
  *
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Unstable
 public interface BlobStore
 {
     /**

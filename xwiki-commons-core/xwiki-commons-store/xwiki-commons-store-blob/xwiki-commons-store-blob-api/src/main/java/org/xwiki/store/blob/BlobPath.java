@@ -27,7 +27,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
-import org.xwiki.stability.Unstable;
 
 /**
  * A hierarchical identifier for blobs stored inside a {@link BlobStore}. The API mirrors {@link java.nio.file.Path}
@@ -37,7 +36,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Unstable
 public final class BlobPath implements Comparable<BlobPath>, Iterable<BlobPath>
 {
     private static final BlobPath ROOT_INSTANCE = new BlobPath(true, List.of());

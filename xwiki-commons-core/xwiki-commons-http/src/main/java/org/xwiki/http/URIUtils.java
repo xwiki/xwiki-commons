@@ -26,7 +26,6 @@ import java.util.BitSet;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.codec.net.URLCodec;
-import org.xwiki.stability.Unstable;
 
 /**
  * Provide various helpers around URIs.
@@ -36,7 +35,6 @@ import org.xwiki.stability.Unstable;
  * @since 17.4.8
  * @since 16.10.15
  */
-@Unstable
 public final class URIUtils
 {
     static final BitSet SAFE_PATH_SEGMENT = new BitSet(256);

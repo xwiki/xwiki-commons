@@ -21,7 +21,6 @@ package org.xwiki.store.blob;
 
 import java.io.Serial;
 
-import org.xwiki.stability.Unstable;
 import org.xwiki.store.StoreException;
 
 /**
@@ -30,7 +29,6 @@ import org.xwiki.store.StoreException;
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Unstable
 public class BlobStoreException extends StoreException
 {
     /**

@@ -19,7 +19,6 @@
  */
 package org.xwiki.store.blob;
 
-import org.xwiki.stability.Unstable;
 import org.xwiki.store.blob.internal.BlobOptionSupport;
 
 /**
@@ -28,7 +27,6 @@ import org.xwiki.store.blob.internal.BlobOptionSupport;
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Unstable
 public enum BlobWriteMode implements BlobOption
 {
     /**

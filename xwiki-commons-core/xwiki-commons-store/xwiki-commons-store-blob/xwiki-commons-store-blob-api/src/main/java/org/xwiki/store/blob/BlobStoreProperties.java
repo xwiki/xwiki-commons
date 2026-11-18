@@ -19,8 +19,6 @@
  */
 package org.xwiki.store.blob;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Marker interface for typed blob store properties beans, used by factories and stores.
  * Implementations are regular Java beans annotated with XWiki {@code @Property*} annotations
@@ -29,7 +27,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Unstable
 public interface BlobStoreProperties
 {
 }

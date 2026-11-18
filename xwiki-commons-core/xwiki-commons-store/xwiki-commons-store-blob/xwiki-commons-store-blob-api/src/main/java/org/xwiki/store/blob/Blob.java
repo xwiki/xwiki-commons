@@ -22,7 +22,6 @@ package org.xwiki.store.blob;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.xwiki.stability.Unstable;
 import org.xwiki.store.StreamProvider;
 
 /**
@@ -31,7 +30,6 @@ import org.xwiki.store.StreamProvider;
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Unstable
 public interface Blob extends StreamProvider
 {
     /**

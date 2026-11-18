@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.xwiki.stability.Unstable;
 import org.xwiki.text.XWikiToStringBuilder;
 
 /**
@@ -83,7 +82,6 @@ public class PropertyGroupDescriptor
      * @param mandatory indicate if the feature of this property is mandatory
      * @since 17.2.0RC1
      */
-    @Unstable
     public void setFeatureMandatory(boolean mandatory)
     {
         this.featureMandatory = mandatory;
@@ -93,7 +91,6 @@ public class PropertyGroupDescriptor
      * @return whether the feature upheld by this property is mandatory
      * @since 17.2.0RC1
      */
-    @Unstable
     public boolean isFeatureMandatory()
     {
         return this.featureMandatory;

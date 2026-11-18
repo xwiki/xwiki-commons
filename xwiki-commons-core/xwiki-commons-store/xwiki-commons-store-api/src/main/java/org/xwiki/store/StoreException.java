@@ -21,15 +21,12 @@ package org.xwiki.store;
 
 import java.io.Serial;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Base exception for store related APIs.
  *
  * @version $Id$
  * @since 17.1.0RC1
  */
-@Unstable
 public class StoreException extends Exception
 {
     /**

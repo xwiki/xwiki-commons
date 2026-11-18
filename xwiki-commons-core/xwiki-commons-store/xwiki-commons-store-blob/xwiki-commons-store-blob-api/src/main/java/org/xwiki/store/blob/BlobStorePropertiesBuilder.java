@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Mutable properties map used to build a typed properties bean for creating a BlobStore.
  * Holds the store name, type, and implementation-specific options keyed by property id.
@@ -33,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Unstable
 public final class BlobStorePropertiesBuilder
 {
     private final String name;

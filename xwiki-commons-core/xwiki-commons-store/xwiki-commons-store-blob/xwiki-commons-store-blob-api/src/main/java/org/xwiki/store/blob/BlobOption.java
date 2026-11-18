@@ -19,15 +19,12 @@
  */
 package org.xwiki.store.blob;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Base interface for options that can be passed to operations on a {@link Blob} or {@link BlobStore}.
  *
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Unstable
 public interface BlobOption
 {
     /**

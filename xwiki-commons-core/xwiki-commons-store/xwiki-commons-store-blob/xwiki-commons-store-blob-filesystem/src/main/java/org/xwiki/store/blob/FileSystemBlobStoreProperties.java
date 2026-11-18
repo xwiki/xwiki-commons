@@ -23,7 +23,6 @@ import java.nio.file.Path;
 
 import org.xwiki.properties.annotation.PropertyId;
 import org.xwiki.properties.annotation.PropertyMandatory;
-import org.xwiki.stability.Unstable;
 
 /**
  * Properties bean for the filesystem blob store.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Unstable
 public class FileSystemBlobStoreProperties implements BlobStoreProperties
 {
     /**

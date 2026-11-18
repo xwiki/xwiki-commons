@@ -20,7 +20,6 @@
 package org.xwiki.store.blob;
 
 import org.xwiki.component.annotation.ComponentRole;
-import org.xwiki.stability.Unstable;
 
 /**
  * Factory for creating BlobStore instances.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
 // We need to use the deprecated @ComponentRole annotation here as otherwise the component cannot be easily looked up.
 @SuppressWarnings("deprecation")
 @ComponentRole
-@Unstable
 public interface BlobStoreFactory<T extends BlobStoreProperties>
 {
     /**

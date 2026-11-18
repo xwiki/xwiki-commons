@@ -20,7 +20,6 @@
 package org.xwiki.velocity.tools;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.xwiki.stability.Unstable;
 
 /**
  * Miscellaneous methods around objects, including checks for null.
@@ -76,7 +75,6 @@ public class ObjectTool extends ObjectUtils
      * @since 16.10.4
      * @since 16.4.7
      */
-    @Unstable
     public boolean instanceOf(Object obj, Class<?> otherClass)
     {
         return obj != null && otherClass != null && otherClass.isAssignableFrom(obj.getClass());

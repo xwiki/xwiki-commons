@@ -25,8 +25,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Use this annotation to specify how properties should be ordered in the UI.
  * By convention, a lower value means a higher priority.
@@ -37,7 +35,6 @@ import org.xwiki.stability.Unstable;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.FIELD })
 @Inherited
-@Unstable
 public @interface PropertyOrder
 {
     /**

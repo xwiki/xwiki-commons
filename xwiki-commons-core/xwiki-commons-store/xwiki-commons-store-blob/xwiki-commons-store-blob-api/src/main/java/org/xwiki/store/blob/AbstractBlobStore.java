@@ -19,7 +19,6 @@
  */
 package org.xwiki.store.blob;
 
-import org.xwiki.stability.Unstable;
 import org.xwiki.text.XWikiToStringBuilder;
 
 /**
@@ -29,7 +28,6 @@ import org.xwiki.text.XWikiToStringBuilder;
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Unstable
 public abstract class AbstractBlobStore<T extends BlobStoreProperties> implements BlobStore
 {
     protected String name;

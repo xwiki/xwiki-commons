@@ -22,7 +22,6 @@ package org.xwiki.filter.output;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.xwiki.stability.Unstable;
 import org.xwiki.store.blob.Blob;
 
 /**
@@ -31,7 +30,6 @@ import org.xwiki.store.blob.Blob;
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Unstable
 public class DefaultBlobOutputTarget extends AbstractOutputStreamOutputTarget
 {
     private final Blob blob;

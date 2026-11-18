@@ -22,7 +22,6 @@ package org.xwiki.filter.input;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.xwiki.stability.Unstable;
 import org.xwiki.store.StreamProvider;
 
 /**
@@ -31,7 +30,6 @@ import org.xwiki.store.StreamProvider;
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Unstable
 public class DefaultStreamProviderInputSource extends AbstractInputStreamInputSource
 {
     private final StreamProvider streamProvider;

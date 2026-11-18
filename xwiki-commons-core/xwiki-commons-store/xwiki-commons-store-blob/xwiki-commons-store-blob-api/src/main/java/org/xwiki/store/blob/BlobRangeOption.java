@@ -22,15 +22,12 @@ package org.xwiki.store.blob;
 import java.util.Objects;
 import java.util.OptionalLong;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * An option that requests reading only a specific byte range from a blob.
  *
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Unstable
 public final class BlobRangeOption implements BlobOption
 {
     private final long startOffset;

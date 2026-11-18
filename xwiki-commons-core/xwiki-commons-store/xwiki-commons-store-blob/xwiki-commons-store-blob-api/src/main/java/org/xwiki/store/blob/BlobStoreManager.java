@@ -20,7 +20,6 @@
 package org.xwiki.store.blob;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Blob store manager for getting or creating blob stores.
@@ -29,7 +28,6 @@ import org.xwiki.stability.Unstable;
  * @since 17.10.0RC1
  */
 @Role
-@Unstable
 public interface BlobStoreManager
 {
     /**

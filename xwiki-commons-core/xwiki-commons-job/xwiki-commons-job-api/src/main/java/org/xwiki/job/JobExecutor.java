@@ -22,7 +22,6 @@ package org.xwiki.job;
 import java.util.List;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * By default Jobs are either executed asynchronously whenever there is a free thread in the pool. Jobs can implement
@@ -53,7 +52,6 @@ public interface JobExecutor
      * @return a collection containing the currently running jobs in the provided group
      * @since 17.5.0
      */
-    @Unstable
     default List<Job> getCurrentJobs(JobGroupPath groupPath)
     {
         // Not really accurate, but better than nothing.

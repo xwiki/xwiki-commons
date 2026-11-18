@@ -25,7 +25,6 @@ import jakarta.validation.constraints.NotBlank;
 
 import org.xwiki.properties.annotation.PropertyId;
 import org.xwiki.properties.annotation.PropertyMandatory;
-import org.xwiki.stability.Unstable;
 
 /**
  * Properties bean for S3 blob store.
@@ -34,7 +33,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Unstable
 public class S3BlobStoreProperties implements BlobStoreProperties
 {
     /**

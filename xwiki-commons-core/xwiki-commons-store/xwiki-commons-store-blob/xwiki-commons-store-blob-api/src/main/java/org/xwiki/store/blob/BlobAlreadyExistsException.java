@@ -21,15 +21,12 @@ package org.xwiki.store.blob;
 
 import java.io.Serial;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Exception thrown when trying to write to a location that already contains a blob.
  *
  * @version $Id$
  * @since 17.10.0RC1
  */
-@Unstable
 public class BlobAlreadyExistsException extends BlobStoreException
 {
     /**
