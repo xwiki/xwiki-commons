@@ -19,6 +19,10 @@
  */
 package org.xwiki.properties.internal.converter;
 
+import java.net.URL;
+import java.net.URLClassLoader;
+
+import org.apache.commons.beanutils.BeanUtilsBean;
 import org.junit.jupiter.api.Test;
 import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.properties.internal.DefaultConverterManager;
@@ -28,6 +32,7 @@ import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -74,5 +79,30 @@ class ConvertUtilsConverterTest
     void convertNull()
     {
         assertNull(this.converter.convert(String.class, null));
+    }
+
+    @Test
+    void convertInvalidValues()
+    {
+        assertFalse(this.converter.<Boolean>convert(Boolean.class, "maybe"));
+        assertEquals(0, this.converter.<Integer>convert(int.class, "abc"));
+    }
+
+    @Test
+    void convertIgnoresBeanUtilsSharedInstance() throws Exception
+    {
+        Thread currentThread = Thread.currentThread();
+        ClassLoader originalClassLoader = currentThread.getContextClassLoader();
+        // BeanUtils keeps one shared instance per context class loader: use a class loader of the test's own so that
+        // reconfiguring that instance doesn't affect other tests.
+        try (URLClassLoader testClassLoader = new URLClassLoader(new URL[0], originalClassLoader)) {
+            currentThread.setContextClassLoader(testClassLoader);
+            BeanUtilsBean.getInstance().getConvertUtils().register(true, false, 0);
+
+            assertFalse(this.converter.<Boolean>convert(Boolean.class, "maybe"));
+            assertEquals(42, this.converter.<Integer>convert(Integer.class, "42"));
+        } finally {
+            currentThread.setContextClassLoader(originalClassLoader);
+        }
     }
 }

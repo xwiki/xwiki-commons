@@ -24,39 +24,35 @@ import java.lang.reflect.Type;
 
 import javax.inject.Singleton;
 
-import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConversionException;
-import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.phase.Initializable;
 import org.xwiki.properties.converter.Converter;
 
 /**
- * {@link ConvertUtils}-based converter.
+ * {@link ConvertUtilsBean}-based converter.
  * <p>
  * It's the default {@link Converter}, the one used when no other Converter could be found by
  * {@link org.xwiki.properties.ConverterManager}.
+ * <p>
+ * It uses the default BeanUtils converters, which convert an invalid value for a primitive type or its wrapper to a
+ * default value ({@code false}, {@code 0}) instead of failing.
  *
  * @version $Id$
  * @since 2.0M2
  */
 @Component
 @Singleton
-public class ConvertUtilsConverter implements Converter, Initializable
+public class ConvertUtilsConverter implements Converter
 {
     /**
-     * By default {@link ConvertUtils#convert(Object, Class)} does not throw any exceptions for failed conversions.
-     * Instead it will return some default value corresponding to the target type. We must override this behavior in
-     * order to get the desired functionality.
+     * The converters owned by this component. The static {@code ConvertUtils} API is not used because it resolves its
+     * instance through {@code BeanUtilsBean#getInstance()}, which keeps one instance per context class loader behind a
+     * lock shared by the whole JVM, so concurrent conversions block each other. This instance is never modified after
+     * its construction, which makes it safe to use from concurrent threads.
      */
-    @Override
-    public void initialize()
-    {
-        ConvertUtilsBean conerter = BeanUtilsBean.getInstance().getConvertUtils();
-        conerter.register(true, false, 0);
-    }
+    private final ConvertUtilsBean convertUtils = new ConvertUtilsBean();
 
     /**
      * @param <T> the type in which the provided value has to be converted
@@ -68,11 +64,11 @@ public class ConvertUtilsConverter implements Converter, Initializable
     {
         T result;
 
-        // We can't use Class#cast(Object) because ConvertUtils#convert always return Object form of the targetType even
-        // if targetType is a primitive. When using casting syntax Object form is implicitly converter to proper
+        // We can't use Class#cast(Object) because ConvertUtilsBean#convert always return Object form of the targetType
+        // even if targetType is a primitive. When using casting syntax Object form is implicitly converter to proper
         // primitive type.
         try {
-            result = (T) ConvertUtils.convert(sourceValue, targetType);
+            result = (T) this.convertUtils.convert(sourceValue, targetType);
         } catch (ConversionException ex) {
             throw new org.xwiki.properties.converter.ConversionException("Error while performing type conversion", ex);
         }
