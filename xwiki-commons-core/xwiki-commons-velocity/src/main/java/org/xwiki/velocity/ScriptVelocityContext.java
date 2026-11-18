@@ -91,8 +91,8 @@ public class ScriptVelocityContext extends XWikiVelocityContext
             for (Map.Entry<String, Object> entry : bindings.entrySet()) {
                 if (!this.reservedBindings.contains(entry.getKey())) {
                     Object currentValue = get(entry.getKey());
-                    // Don't replace internal Velocity bindings
-                    if (!(currentValue instanceof Scope)) {
+                    // Don't replace internal Velocity bindings, and skip values that are already in sync
+                    if (currentValue != entry.getValue() && !(currentValue instanceof Scope)) {
                         put(entry.getKey(), entry.getValue());
                     }
                 }
