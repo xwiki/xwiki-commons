@@ -88,16 +88,28 @@ public class ScriptVelocityContext extends XWikiVelocityContext
     {
         Bindings bindings = this.scriptContext.getBindings(scope);
         if (bindings != null) {
+            Bindings engineBindings = this.scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);
             for (Map.Entry<String, Object> entry : bindings.entrySet()) {
-                if (!this.reservedBindings.contains(entry.getKey())) {
-                    Object currentValue = get(entry.getKey());
-                    // Don't replace internal Velocity bindings, and skip values that are already in sync
-                    if (currentValue != entry.getValue() && !(currentValue instanceof Scope)) {
-                        put(entry.getKey(), entry.getValue());
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                if (!this.reservedBindings.contains(key)) {
+                    Object currentValue = get(key);
+                    // Don't replace internal Velocity bindings, and skip values that are already in sync.
+                    if (!(currentValue instanceof Scope)
+                        && (currentValue != value || !isInEngineScope(key, value, scope, engineBindings))) {
+                        put(key, value);
                     }
                 }
             }
         }
+    }
+
+    private boolean isInEngineScope(String key, Object value, int scope, Bindings engineBindings)
+    {
+        // Putting a binding also writes it to the engine scope, so that a global binding overrides an engine binding
+        // with the same name. A global binding is thus only in sync when the engine scope holds it too.
+        return scope == ScriptContext.ENGINE_SCOPE
+            || (engineBindings != null && engineBindings.containsKey(key) && engineBindings.get(key) == value);
     }
 
     // VelocityContext

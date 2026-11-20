@@ -104,6 +104,37 @@ class ScriptVelocityContextTest
     }
 
     @Test
+    void setScriptContextKeepsGlobalBindingOverridingEngineBinding()
+    {
+        this.scriptContext.setAttribute("shared", "globalValue", ScriptContext.GLOBAL_SCOPE);
+        this.scriptContext.setAttribute("shared", "engineValue", ScriptContext.ENGINE_SCOPE);
+        this.velocityContext.setScriptContext(this.scriptContext);
+
+        assertEquals("globalValue", this.velocityContext.get("shared"));
+        assertEquals("globalValue", this.scriptContext.getAttribute("shared", ScriptContext.ENGINE_SCOPE));
+
+        // Script context initializers set the engine binding again before each script execution.
+        this.scriptContext.setAttribute("shared", "newEngineValue", ScriptContext.ENGINE_SCOPE);
+        this.velocityContext.setScriptContext(this.scriptContext);
+
+        assertEquals("globalValue", this.velocityContext.get("shared"));
+        assertEquals("globalValue", this.scriptContext.getAttribute("shared", ScriptContext.ENGINE_SCOPE));
+    }
+
+    @Test
+    void setScriptContextSkipsGlobalBindingsInSync()
+    {
+        this.scriptContext.setAttribute("global", "globalValue", ScriptContext.GLOBAL_SCOPE);
+        this.velocityContext.setScriptContext(this.scriptContext);
+        this.scriptContext.writtenAttributes.clear();
+
+        this.velocityContext.setScriptContext(this.scriptContext);
+
+        assertEquals("globalValue", this.velocityContext.get("global"));
+        assertEquals(Set.of(), this.scriptContext.writtenAttributes);
+    }
+
+    @Test
     void velocityVariablesAreWrittenToTheScriptContext()
     {
         this.velocityContext.setScriptContext(this.scriptContext);
