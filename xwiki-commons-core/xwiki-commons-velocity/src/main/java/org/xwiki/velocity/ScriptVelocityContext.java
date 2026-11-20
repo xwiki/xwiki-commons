@@ -72,6 +72,9 @@ public class ScriptVelocityContext extends XWikiVelocityContext
     }
 
     /**
+     * Set the current script context and copy its bindings into this Velocity context. As in the JSR-223 attribute
+     * lookup, an engine scope binding hides a global scope binding with the same name.
+     *
      * @param scriptContext the current script context
      */
     public void setScriptContext(ScriptContext scriptContext)
@@ -79,37 +82,33 @@ public class ScriptVelocityContext extends XWikiVelocityContext
         this.scriptContext = scriptContext;
 
         if (this.scriptContext != null) {
-            copyScriptContext(ScriptContext.GLOBAL_SCOPE);
-            copyScriptContext(ScriptContext.ENGINE_SCOPE);
+            Bindings engineBindings = this.scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);
+            copyBindings(engineBindings, null);
+            copyBindings(this.scriptContext.getBindings(ScriptContext.GLOBAL_SCOPE), engineBindings);
         }
     }
 
-    private void copyScriptContext(int scope)
+    private void copyBindings(Bindings bindings, Bindings hidingBindings)
     {
-        Bindings bindings = this.scriptContext.getBindings(scope);
         if (bindings != null) {
-            Bindings engineBindings = this.scriptContext.getBindings(ScriptContext.ENGINE_SCOPE);
             for (Map.Entry<String, Object> entry : bindings.entrySet()) {
                 String key = entry.getKey();
-                Object value = entry.getValue();
-                if (!this.reservedBindings.contains(key)) {
+                if (!this.reservedBindings.contains(key) && !isHidden(key, hidingBindings)) {
+                    Object value = entry.getValue();
                     Object currentValue = get(key);
                     // Don't replace internal Velocity bindings, and skip values that are already in sync.
-                    if (!(currentValue instanceof Scope)
-                        && (currentValue != value || !isInEngineScope(key, value, scope, engineBindings))) {
-                        put(key, value);
+                    if (currentValue != value && !(currentValue instanceof Scope)) {
+                        // The value comes from the script context, so only the Velocity context needs to be updated.
+                        super.internalPut(key, value);
                     }
                 }
             }
         }
     }
 
-    private boolean isInEngineScope(String key, Object value, int scope, Bindings engineBindings)
+    private boolean isHidden(String key, Bindings hidingBindings)
     {
-        // Putting a binding also writes it to the engine scope, so that a global binding overrides an engine binding
-        // with the same name. A global binding is thus only in sync when the engine scope holds it too.
-        return scope == ScriptContext.ENGINE_SCOPE
-            || (engineBindings != null && engineBindings.containsKey(key) && engineBindings.get(key) == value);
+        return hidingBindings != null && hidingBindings.containsKey(key);
     }
 
     // VelocityContext
