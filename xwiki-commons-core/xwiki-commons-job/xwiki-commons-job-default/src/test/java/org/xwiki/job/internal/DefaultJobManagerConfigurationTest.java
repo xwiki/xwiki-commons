@@ -73,4 +73,16 @@ class DefaultJobManagerConfigurationTest
         assertEquals(new File(this.permDir, "jobs/status/").getAbsoluteFile(),
             this.configuration.getStorage().getAbsoluteFile());
     }
+
+    @Test
+    void getShutdownTimeout()
+    {
+        when(this.configurationSource.getProperty("job.shutdownTimeout", 5000L)).thenReturn(5000L);
+
+        assertEquals(5000L, this.configuration.getShutdownTimeout());
+
+        when(this.configurationSource.getProperty("job.shutdownTimeout", 5000L)).thenReturn(42L);
+
+        assertEquals(42L, this.configuration.getShutdownTimeout());
+    }
 }

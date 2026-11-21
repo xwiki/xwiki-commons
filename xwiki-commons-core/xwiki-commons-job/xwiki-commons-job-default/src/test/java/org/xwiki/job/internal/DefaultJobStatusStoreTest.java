@@ -466,6 +466,25 @@ class DefaultJobStatusStoreTest
     }
 
     @Test
+    void storeAsyncAfterDispose() throws Exception
+    {
+        DefaultJobStatus<Request> status = createStatus(false);
+        status.setState(JobStatus.State.FINISHED);
+
+        this.store.dispose();
+
+        // The asynchronous executor is shut down: the status is stored synchronously instead of being lost
+        this.store.storeAsync(status);
+
+        this.store.flushCache();
+
+        JobStatus storedStatus = getStatus();
+        assertNotNull(storedStatus);
+        assertEquals(ID, storedStatus.getRequest().getId());
+        assertEquals(JobStatus.State.FINISHED, storedStatus.getState());
+    }
+
+    @Test
     void storeNullJobStatus()
     {
         assertDoesNotThrow(() ->this.store.store(null));
