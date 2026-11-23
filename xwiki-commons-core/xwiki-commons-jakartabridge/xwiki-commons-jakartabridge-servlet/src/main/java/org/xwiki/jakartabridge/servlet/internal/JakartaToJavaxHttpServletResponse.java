@@ -68,18 +68,6 @@ public class JakartaToJavaxHttpServletResponse<R extends javax.servlet.http.Http
     }
 
     @Override
-    public String encodeUrl(String url)
-    {
-        return this.javax.encodeUrl(url);
-    }
-
-    @Override
-    public String encodeRedirectUrl(String url)
-    {
-        return this.javax.encodeRedirectUrl(url);
-    }
-
-    @Override
     public void sendError(int sc, String msg) throws IOException
     {
         this.javax.sendError(sc, msg);
@@ -137,12 +125,6 @@ public class JakartaToJavaxHttpServletResponse<R extends javax.servlet.http.Http
     public void setStatus(int sc)
     {
         this.javax.setStatus(sc);
-    }
-
-    @Override
-    public void setStatus(int sc, String sm)
-    {
-        this.javax.setStatus(sc, sm);
     }
 
     @Override
