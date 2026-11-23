@@ -244,8 +244,9 @@
     <skip.pnpm>false</skip.pnpm>
     <xwiki.sbom.npm.skip>${skip.pnpm}</xwiki.sbom.npm.skip>
     <!-- Set to true to not check, at the verify phase, that the npm packages of a module can be published (a
-         dry run of "pnpm publish", and publint, which both skip the private packages). -->
-    <xwiki.npm.publishCheck.skip>false</xwiki.npm.publishCheck.skip>
+         dry run of "pnpm publish", and publint, which both skip the private packages). It's skipped along with the
+         other pnpm calls of the webjar-node lifecycle when skip.pnpm is true. -->
+    <xwiki.npm.publishCheck.skip>${skip.pnpm}</xwiki.npm.publishCheck.skip>
     <!-- The pnpm arguments of the npm publish check: a dry run of "pnpm publish" on the public packages ("-r" skips the
          private ones). Defined once for the webjar-node lifecycle and the pnpm-publish-check execution. -->
     <xwiki.npm.publishCheck.arguments>-r --filter ./** publish --dry-run --no-git-checks</xwiki.npm.publishCheck.arguments>
