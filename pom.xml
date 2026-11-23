@@ -304,7 +304,7 @@
 
     <!-- Versions of Maven and Maven Resolver embedded in XWiki runtime
          (more recent than the one used during the build to benefit from bugfixes and improvements) -->
-    <maven.runtime.version>3.10.1</maven.runtime.version>
+    <maven.runtime.version>3.10.2</maven.runtime.version>
     <maven.resolver.runtime.version>2.0.25</maven.resolver.runtime.version>
 
     <!-- Minimum version of the actual Maven binary required to build -->
