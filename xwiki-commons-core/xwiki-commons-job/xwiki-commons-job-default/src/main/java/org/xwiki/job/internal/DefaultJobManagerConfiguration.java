@@ -106,4 +106,10 @@ public class DefaultJobManagerConfiguration implements JobManagerConfiguration
     {
         return this.configuration.get().getProperty("job.groupedJobThreadKeepAliveTime", 60000L);
     }
+
+    @Override
+    public long getShutdownTimeout()
+    {
+        return this.configuration.get().getProperty("job.shutdownTimeout", 5000L);
+    }
 }
