@@ -962,6 +962,9 @@ public final class JakartaServletBridge
      * @param jakarta the jakarta version
      * @return the javax version
      */
+    // Both the javax and the jakarta Servlet APIs declare their dispatcher type sets as EnumSet, so this bridge
+    // cannot use the Set interface here.
+    @SuppressWarnings("java:S1319")
     public static EnumSet<javax.servlet.DispatcherType> toJavax(EnumSet<DispatcherType> jakarta)
     {
         if (jakarta == null) {
@@ -976,6 +979,9 @@ public final class JakartaServletBridge
      * @param javax the javax version
      * @return the javax version
      */
+    // Both the javax and the jakarta Servlet APIs declare their dispatcher type sets as EnumSet, so this bridge
+    // cannot use the Set interface here.
+    @SuppressWarnings("java:S1319")
     public static EnumSet<DispatcherType> toJakarta(EnumSet<javax.servlet.DispatcherType> javax)
     {
         if (javax == null) {
