@@ -30,6 +30,9 @@ import java.util.Locale;
  * @since 6.4.2
  * @since 7.0M2
  */
+// The shadowing is deliberate: this is a drop-in extension of the Velocity tool it is bound in place of, so it
+// carries the same name on purpose.
+@SuppressWarnings("java:S2176")
 public class ComparisonDateTool extends org.apache.velocity.tools.generic.ComparisonDateTool
 {
     /**

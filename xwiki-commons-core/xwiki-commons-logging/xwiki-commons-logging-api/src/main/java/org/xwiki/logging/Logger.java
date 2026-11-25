@@ -29,6 +29,9 @@ import org.xwiki.logging.event.LogEvent;
  * @version $Id$
  * @since 5.4M1
  */
+// The shadowing is deliberate: this is an SLF4J logger with LogEvent support, and it keeps the name so that it
+// can be used wherever an org.slf4j.Logger is expected.
+@SuppressWarnings("java:S2176")
 public interface Logger extends org.slf4j.Logger
 {
     /**
