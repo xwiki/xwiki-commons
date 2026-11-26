@@ -66,16 +66,24 @@ public class DefaultVersion implements Version
     private String rawVersion;
 
     /**
-     * The version cut in peaces for easier comparison.
+     * The result of parsing {@link #rawVersion}, computed on first use. It's only assigned once fully computed so that
+     * it can be shared between threads (versions are cached and reused by the extension factory). The parsed version
+     * is immutable and only ever replaced as a whole, so volatile is exactly what is needed to publish it safely.
      */
-    private List<Element> elements;
-
-    /**
-     * @see #getType()
-     */
-    private Type type = Type.STABLE;
+    @SuppressWarnings("java:S3077")
+    private transient volatile ParsedVersion parsedVersion;
 
     private transient int hashCode;
+
+    /**
+     * The version cut in pieces for easier comparison, and its type.
+     *
+     * @param elements the version cut in pieces
+     * @param type the type of the version
+     */
+    private record ParsedVersion(List<Element> elements, Type type)
+    {
+    }
 
     /**
      * Used to parse the string representation of the version.
@@ -408,13 +416,19 @@ public class DefaultVersion implements Version
     }
 
     /**
-     * Make sure the version has been parsed.
+     * @return the parsed version, parsing it if it hasn't been done yet
      */
-    private void initElements()
+    private ParsedVersion getParsedVersion()
     {
-        if (this.elements == null) {
-            parse();
+        ParsedVersion result = this.parsedVersion;
+
+        if (result == null) {
+            // Several threads might parse the version at the same time, but they all produce the same result.
+            result = parse(this.rawVersion);
+            this.parsedVersion = result;
         }
+
+        return result;
     }
 
     /**
@@ -427,26 +441,32 @@ public class DefaultVersion implements Version
 
     /**
      * Parse the string representation of the version into separated elements.
+     *
+     * @param rawVersion the string representation to parse
+     * @return the parsed version
      */
-    private void parse()
+    private static ParsedVersion parse(String rawVersion)
     {
-        this.elements = new ArrayList<>();
+        List<Element> elements = new ArrayList<>();
+        Type type = Type.STABLE;
 
         try {
-            for (Tokenizer tokenizer = new Tokenizer(this.rawVersion); tokenizer.next();) {
+            for (Tokenizer tokenizer = new Tokenizer(rawVersion); tokenizer.next();) {
                 Element element = new Element(tokenizer);
-                this.elements.add(element);
+                elements.add(element);
                 if (element.getVersionType() != Type.STABLE) {
-                    this.type = element.getVersionType();
+                    type = element.getVersionType();
                 }
             }
 
-            trimPadding(this.elements);
+            trimPadding(elements);
         } catch (Exception e) {
             // Make sure to never fail no matter what
-            LOGGER.error("Failed to parse version [" + this.rawVersion + "]", e);
-            this.elements.add(new Element(this.rawVersion));
+            LOGGER.error("Failed to parse version [{}]", rawVersion, e);
+            elements.add(new Element(rawVersion));
         }
+
+        return new ParsedVersion(List.copyOf(elements), type);
     }
 
     /**
@@ -470,9 +490,7 @@ public class DefaultVersion implements Version
     @Override
     public Type getType()
     {
-        initElements();
-
-        return this.type;
+        return getParsedVersion().type();
     }
 
     // Version
@@ -495,9 +513,7 @@ public class DefaultVersion implements Version
     public int hashCode()
     {
         if (this.hashCode == 0) {
-            initElements();
-
-            this.hashCode = this.elements.hashCode();
+            this.hashCode = getParsedVersion().elements().hashCode();
         }
 
         return this.hashCode;
@@ -573,30 +589,28 @@ public class DefaultVersion implements Version
      */
     public int compareTo(DefaultVersion version)
     {
-        initElements();
-        version.initElements();
-
-        final List<Element> otherElements = version.elements;
+        List<Element> thisElements = getParsedVersion().elements();
+        List<Element> otherElements = version.getParsedVersion().elements();
 
         boolean number = true;
 
         int rel;
 
         for (int index = 0;; index++) {
-            if (index >= this.elements.size() && index >= otherElements.size()) {
+            if (index >= thisElements.size() && index >= otherElements.size()) {
                 return 0;
-            } else if (index >= this.elements.size()) {
+            } else if (index >= thisElements.size()) {
                 return -comparePadding(otherElements, index, null);
             } else if (index >= otherElements.size()) {
-                return comparePadding(this.elements, index, null);
+                return comparePadding(thisElements, index, null);
             }
 
-            Element thisElement = this.elements.get(index);
+            Element thisElement = thisElements.get(index);
             Element thatElement = otherElements.get(index);
 
             if (thisElement.isNumber() != thatElement.isNumber()) {
                 if (number == thisElement.isNumber()) {
-                    rel = comparePadding(this.elements, index, Boolean.valueOf(number));
+                    rel = comparePadding(thisElements, index, Boolean.valueOf(number));
                 } else {
                     rel = -comparePadding(otherElements, index, Boolean.valueOf(number));
                 }
