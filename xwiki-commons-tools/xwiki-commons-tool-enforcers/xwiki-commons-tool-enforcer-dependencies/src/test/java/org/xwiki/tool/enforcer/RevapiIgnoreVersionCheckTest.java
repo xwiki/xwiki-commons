@@ -28,6 +28,8 @@ import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -109,34 +111,21 @@ class RevapiIgnoreVersionCheckTest
         assertTrue(exception.getMessage().contains("<versions>18.10.0</versions>"));
     }
 
-    @Test
-    void withReleasedVersionsOnly() throws Exception
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = {
+        // Only versions already released: the ignore is stale.
+        "18.9.0,18.4.7   | none of the versions [18.9.0,18.4.7] is still to be released",
+        // A version after the one of the current branch.
+        "18.11.0         | none of the versions [18.11.0] is still to be released",
+        "18.10.0-SNAPSHOT | [18.10.0-SNAPSHOT] is not a release version"
+    })
+    void withRejectedVersions(String versions, String expectedError) throws Exception
     {
-        setRevapiPom(group("<attachments><versions>18.9.0,18.4.7</versions></attachments>", REMOVED_METHOD));
+        setRevapiPom(group("<attachments><versions>" + versions + "</versions></attachments>", REMOVED_METHOD));
 
         EnforcerRuleException exception = assertThrows(EnforcerRuleException.class, this.rule::execute);
 
-        assertTrue(exception.getMessage().contains("none of the versions [18.9.0,18.4.7] is still to be released"));
-    }
-
-    @Test
-    void withVersionAfterTheCurrentOne() throws Exception
-    {
-        setRevapiPom(group("<attachments><versions>18.11.0</versions></attachments>", REMOVED_METHOD));
-
-        EnforcerRuleException exception = assertThrows(EnforcerRuleException.class, this.rule::execute);
-
-        assertTrue(exception.getMessage().contains("none of the versions [18.11.0] is still to be released"));
-    }
-
-    @Test
-    void withInvalidVersion() throws Exception
-    {
-        setRevapiPom(group("<attachments><versions>18.10.0-SNAPSHOT</versions></attachments>", REMOVED_METHOD));
-
-        EnforcerRuleException exception = assertThrows(EnforcerRuleException.class, this.rule::execute);
-
-        assertTrue(exception.getMessage().contains("[18.10.0-SNAPSHOT] is not a release version"));
+        assertTrue(exception.getMessage().contains(expectedError), exception.getMessage());
     }
 
     @Test

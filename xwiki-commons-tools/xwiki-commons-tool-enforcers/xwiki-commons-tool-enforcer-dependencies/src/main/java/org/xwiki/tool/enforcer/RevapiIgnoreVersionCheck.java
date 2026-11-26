@@ -99,7 +99,7 @@ public class RevapiIgnoreVersionCheck extends AbstractPomCheck
      * The format of an XWiki release version, for example {@code 18.10.0}, {@code 18.10.0-rc-1} or
      * {@code 7.4.1-milestone-1}.
      */
-    private static final Pattern VERSION_PATTERN = Pattern.compile("\\d+(\\.\\d+)+(-[a-z]+-\\d+)?");
+    private static final Pattern VERSION_PATTERN = Pattern.compile("\\d++(?:\\.\\d++)++(?:-[a-z]++-\\d++)?+");
 
     private String attachmentKey = "versions";
 
@@ -137,18 +137,7 @@ public class RevapiIgnoreVersionCheck extends AbstractPomCheck
 
         List<String> errors = new ArrayList<>();
         for (Xpp3Dom group : groups) {
-            String groupVersions = getAttachment(group);
-            Xpp3Dom differences = group.getChild(DIFFERENCES);
-            if (differences != null) {
-                for (Xpp3Dom item : differences.getChildren()) {
-                    String itemVersions = getAttachment(item);
-                    String error = validate(itemVersions != null ? itemVersions : groupVersions, lowerBound,
-                        upperBound);
-                    if (error != null) {
-                        errors.add(String.format("- %s: %s", describe(item), error));
-                    }
-                }
-            }
+            validateGroup(group, lowerBound, upperBound, errors);
         }
 
         if (!errors.isEmpty()) {
@@ -159,6 +148,23 @@ public class RevapiIgnoreVersionCheck extends AbstractPomCheck
                 + "  <%s>%n    <%s>%s</%s>%n  </%s>", this.project.getFile(), this.previousVersion, currentVersion,
                 String.join(System.lineSeparator(), errors), ATTACHMENTS, this.attachmentKey, currentVersion,
                 this.attachmentKey, ATTACHMENTS));
+        }
+    }
+
+    private void validateGroup(Xpp3Dom group, ComparableVersion lowerBound, ComparableVersion upperBound,
+        List<String> errors)
+    {
+        String groupVersions = getAttachment(group);
+        Xpp3Dom differences = group.getChild(DIFFERENCES);
+        if (differences != null) {
+            for (Xpp3Dom item : differences.getChildren()) {
+                String itemVersions = getAttachment(item);
+                String error =
+                    validate(itemVersions != null ? itemVersions : groupVersions, lowerBound, upperBound);
+                if (error != null) {
+                    errors.add(String.format("- %s: %s", describe(item), error));
+                }
+            }
         }
     }
 
