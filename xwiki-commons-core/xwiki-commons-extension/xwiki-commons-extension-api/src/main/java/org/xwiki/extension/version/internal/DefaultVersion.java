@@ -436,8 +436,6 @@ public class DefaultVersion implements Version
     private void setVersion(String rawVersion)
     {
         this.rawVersion = rawVersion;
-        this.parsedVersion = null;
-        this.hashCode = 0;
     }
 
     /**
