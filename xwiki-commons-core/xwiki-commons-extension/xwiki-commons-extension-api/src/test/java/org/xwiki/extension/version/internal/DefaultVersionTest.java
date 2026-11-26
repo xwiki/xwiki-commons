@@ -24,15 +24,26 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 import org.xwiki.extension.version.Version;
+import org.xwiki.extension.version.internal.DefaultVersion.Tokenizer;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.AdditionalAnswers.delegatesTo;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.withSettings;
 
 /**
  * Validate {@link DefaultVersion}.
@@ -122,5 +133,52 @@ class DefaultVersionTest
         assertEquals(new DefaultVersion("1.1").hashCode(), new DefaultVersion("1.1.0").hashCode());
 
         assertNotEquals(new DefaultVersion("1.1").hashCode(), new DefaultVersion("2.0").hashCode());
+    }
+
+    @Test
+    void useWhileParsedByAnotherThread() throws Exception
+    {
+        DefaultVersion version = new DefaultVersion("1.8.0-SNAPSHOT");
+        DefaultVersion expected = new DefaultVersion("1.8.0-SNAPSHOT");
+
+        CountDownLatch parsing = new CountDownLatch(1);
+        CountDownLatch used = new CountDownLatch(1);
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            // Block another thread right after it started parsing the version.
+            Future<Integer> parsingThreadHashCode = executor.submit(() -> hashCodeWhileParsing(version, () -> {
+                parsing.countDown();
+                return used.await(10, SECONDS);
+            }));
+            assertTrue(parsing.await(10, SECONDS));
+
+            int hashCode = version.hashCode();
+            Version.Type type = version.getType();
+            used.countDown();
+
+            assertEquals(expected.hashCode(), hashCode);
+            assertEquals(Version.Type.SNAPSHOT, type);
+            assertEquals(expected.hashCode(), parsingThreadHashCode.get(10, SECONDS));
+        } finally {
+            executor.shutdownNow();
+        }
+
+        assertEquals(expected, version);
+        assertEquals(Version.Type.SNAPSHOT, version.getType());
+    }
+
+    /**
+     * Compute the hash code of the version, calling the given hook when this thread starts parsing it.
+     */
+    private int hashCodeWhileParsing(DefaultVersion version, Callable<?> hook)
+    {
+        // Construction mocks only apply to the thread that creates them. A mocked tokenizer isn't initialized by its
+        // constructor, so it delegates to a real one, created before the construction mock is enabled.
+        Tokenizer realTokenizer = new Tokenizer(version.getValue());
+        try (MockedConstruction<Tokenizer> tokenizers = mockConstruction(Tokenizer.class,
+            withSettings().defaultAnswer(delegatesTo(realTokenizer)), (tokenizer, context) -> hook.call())) {
+            return version.hashCode();
+        }
     }
 }
