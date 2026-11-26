@@ -248,6 +248,9 @@
                     keep their order and an XML without the new element still unmarshals.
                   </justification>
                   <criticality>allowed</criticality>
+                  <attachments>
+                    <versions>18.10.0-rc-1</versions>
+                  </attachments>
                 </item>
               </differences>
             </revapi.differences>

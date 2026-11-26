@@ -35,6 +35,7 @@
     <xwiki.enforcer.no-legacy-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.no-legacy-dependencies.skip>
     <!-- By default we perform checks on the POM content -->
     <xwiki.enforcer.valid-poms.skip>${xwiki.enforcer.skip}</xwiki.enforcer.valid-poms.skip>
+    <xwiki.enforcer.revapi-ignore-version.skip>${xwiki.enforcer.skip}</xwiki.enforcer.revapi-ignore-version.skip>
     <!-- By default don't skip Spoon checks -->
     <xwiki.spoon.skip>false</xwiki.spoon.skip>
     <!-- The components provided by the extension, indexed by the Extension Manager. Empty by default so that the checks
@@ -144,6 +145,22 @@
               <skip>${xwiki.enforcer.valid-poms.skip}</skip>
               <rules>
                 <externalExtensionCheck />
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Verify that every Revapi difference tells which release it targets, so that the release only removes
+               the differences of the version it releases. -->
+          <execution>
+            <id>enforce-revapi-ignore-version</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.revapi-ignore-version.skip}</skip>
+              <rules>
+                <revapiIgnoreVersionCheck>
+                  <previousVersion>${xwiki.compatibility.previous.version}</previousVersion>
+                </revapiIgnoreVersionCheck>
               </rules>
             </configuration>
           </execution>
