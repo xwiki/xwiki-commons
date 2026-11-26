@@ -25,6 +25,7 @@ import java.util.Arrays;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.htmlcleaner.CleanerProperties;
@@ -34,8 +35,11 @@ import org.htmlcleaner.TagNode;
 import org.htmlcleaner.TagTransformation;
 import org.htmlcleaner.TrimAttributeTagTransformation;
 import org.htmlcleaner.XWikiDOMSerializer;
+import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
 import org.xwiki.xml.html.HTMLCleaner;
 import org.xwiki.xml.html.HTMLCleanerConfiguration;
 import org.xwiki.xml.html.HTMLConstants;
@@ -50,7 +54,7 @@ import org.xwiki.xml.html.filter.HTMLFilter;
  */
 @Component
 @Singleton
-public class DefaultHTMLCleaner implements HTMLCleaner
+public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
 {
     /**
      * {@link HTMLFilter} for filtering html lists.
@@ -100,10 +104,28 @@ public class DefaultHTMLCleaner implements HTMLCleaner
     private HTMLFilter sanitizerFilter;
 
     @Inject
-    private CachedDocumentBuilderProvider documentBuilderProvider;
-
-    @Inject
     private XWikiHTML5TagProvider html5TagInfoProvider;
+
+    /**
+     * Creates the documents of the cleaned HTML. It's the DOM implementation of the JDK, obtained through
+     * {@link DocumentBuilderFactory#newDefaultInstance()} because {@link DocumentBuilderFactory#newInstance()} looks up
+     * the factory to use in the context class loader, and so do the builders of some implementations, like Xerces, for
+     * their parser configuration: these lookups search all the JARs, which blocks concurrent threads. This instance is
+     * shared by all cleanings because the JDK implementation is a singleton, returned by all its document builders,
+     * that creates documents and document types without keeping any state about them.
+     */
+    private DOMImplementation domImplementation;
+
+    @Override
+    public void initialize() throws InitializationException
+    {
+        try {
+            this.domImplementation =
+                DocumentBuilderFactory.newDefaultInstance().newDocumentBuilder().getDOMImplementation();
+        } catch (ParserConfigurationException e) {
+            throw new InitializationException("Failed to get the DOM implementation of the JDK", e);
+        }
+    }
 
     @Override
     public Document clean(Reader originalHtmlContent)
@@ -137,25 +159,19 @@ public class DefaultHTMLCleaner implements HTMLCleaner
             throw new RuntimeException("Unhandled error when cleaning HTML", e);
         }
 
-        try {
-            // Ideally we would use SF's HTMLCleaner DomSerializer but there are outstanding issues with it, so we're
-            // using a custom XWikiDOMSerializer (see its javadoc for more details).
-            // Replace by the following when fixed:
-            //   result = new DomSerializer(cleanerProperties, false).createDOM(cleanedNode);
+        // Ideally we would use SF's HTMLCleaner DomSerializer but there are outstanding issues with it, so we're
+        // using a custom XWikiDOMSerializer (see its javadoc for more details).
+        // Replace by the following when fixed:
+        //   result = new DomSerializer(cleanerProperties, false).createDOM(cleanedNode);
 
-            if (isHTML5(configuration)) {
-                cleanedNode.setDocType(new DoctypeToken(HTMLConstants.TAG_HTML, null, null, null));
-            } else {
-                cleanedNode.setDocType(
-                    new DoctypeToken(HTMLConstants.TAG_HTML, "PUBLIC", "-//W3C//DTD XHTML 1.0 Strict//EN",
-                        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"));
-            }
-            result =
-                new XWikiDOMSerializer(cleanerProperties).createDOM(
-                    this.documentBuilderProvider.getAvailableDocumentBuilder(), cleanedNode);
-        } catch (ParserConfigurationException ex) {
-            throw new RuntimeException("Error while serializing TagNode into w3c dom.", ex);
+        if (isHTML5(configuration)) {
+            cleanedNode.setDocType(new DoctypeToken(HTMLConstants.TAG_HTML, null, null, null));
+        } else {
+            cleanedNode.setDocType(
+                new DoctypeToken(HTMLConstants.TAG_HTML, "PUBLIC", "-//W3C//DTD XHTML 1.0 Strict//EN",
+                    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"));
         }
+        result = new XWikiDOMSerializer(cleanerProperties).createDOM(this.domImplementation, cleanedNode);
 
         // Finally apply filters.
         for (HTMLFilter filter : configuration.getFilters()) {

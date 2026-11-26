@@ -35,13 +35,12 @@ import org.w3c.dom.Element;
  *
  * Some code has been copy-pasted from SF's HTML Cleaner code (which is under a BDS license, see
  * http://htmlcleaner.sourceforge.net/license.php). Our goal is to remove this class completely if we can get SF's HTML
- * Cleaner to support the usage of a dedicated builder.
+ * Cleaner to support the usage of a dedicated DOM implementation.
  *
- * Here's the reason why we want to be able to give a dedicated builder:
- * Note that creating the DocumentBuilder is not super fast but it's specifically more about the DocumentBuilderFactory
- * creation mainly because it's blocking all the threads which are doing stuff implying loading a class from the
- * classloader making it an important lock contention. I modified its behavior (and other similar tasks) after noticing
- * that there was often a bunch of threads waiting for this kind of lock.
+ * Here's the reason why we want to be able to give a dedicated DOM implementation: SF's HTML Cleaner creates a new
+ * {@code DocumentBuilderFactory} and {@code DocumentBuilder} for each document, and both look up their implementation
+ * in the context class loader. These lookups search all the JARs and block the concurrent threads that load classes or
+ * resources, which makes them an important lock contention.
  *
  * Note: Even though in a public package this code is not meant to be a public API. We've had to put in under the {@code
  * org.htmlcleaner} package because we use the following package protected API: TagNode#getNamespaceURIOnPath(String).
@@ -63,17 +62,14 @@ public class XWikiDOMSerializer extends DomSerializer
     }
 
     /**
-     * This method is an exact copy of {@link DomSerializer#createDocument(TagNode)} except that the {@link DocumentBuilder}
-     * is given in parameter and that the root node attributes are copied in a dedicated method.
-     * @param builder the {@link DocumentBuilder} instance to use, DocumentBuilder is not guaranteed to
-     * be thread safe so at most the safe instance should be used only in the same thread
+     * This method is a copy of {@link DomSerializer#createDocument(TagNode)} except that the {@link DOMImplementation} is
+     * given in parameter and that the root node attributes are copied in a dedicated method.
+     * @param impl the DOM implementation used to create the document
      * @param rootNode the HTML Cleaner root node to serialize
      * @return the W3C Document object
      */
-    private Document createDocument(DocumentBuilder builder, TagNode rootNode)
+    private Document createDocument(DOMImplementation impl, TagNode rootNode)
     {
-        DOMImplementation impl = builder.getDOMImplementation();
-
         Document document;
 
         //
@@ -105,7 +101,8 @@ public class XWikiDOMSerializer extends DomSerializer
             }
             document = impl.createDocument(rootNode.getNamespaceURIOnPath(""), qualifiedName, documentType);
         } else {
-            document = builder.newDocument();
+            // An empty document, without document element, like DocumentBuilder#newDocument() creates.
+            document = impl.createDocument(null, null, null);
             Element rootElement = document.createElement(rootNode.getName());
             document.appendChild(rootElement);
         }
@@ -125,7 +122,7 @@ public class XWikiDOMSerializer extends DomSerializer
     /**
      * Copy across root node attributes - see issue 127. Thanks to rasifiel for the patch.
      * <p>
-     * Extracted from {@link #createDocument(DocumentBuilder, TagNode)}, which diverges from the upstream
+     * Extracted from {@link #createDocument(DOMImplementation, TagNode)}, which diverges from the upstream
      * {@link DomSerializer} code, to keep its complexity manageable.
      *
      * @param document the W3C Document whose root element receives the attributes
@@ -167,21 +164,36 @@ public class XWikiDOMSerializer extends DomSerializer
     }
 
     /**
+     * Create the DOM given a rootNode and a DOM implementation.
+     * This method is a replica of {@link DomSerializer#createDOM(TagNode)} except that it requires to give a
+     * DOM implementation.
+     * @param domImplementation the DOM implementation used to create the document
+     * @param rootNode the HTML Cleaner root node to serialize
+     * @return the W3C Document object
+     * @since 19.0.0RC1
+     */
+    public Document createDOM(DOMImplementation domImplementation, TagNode rootNode)
+    {
+        Document document = createDocument(domImplementation, rootNode);
+
+        createSubnodes(document, document.getDocumentElement(), rootNode.getAllChildren());
+
+        return document;
+    }
+
+    /**
      * Create the DOM given a rootNode and a document builder.
-     * This method is a replica of {@link DomSerializer#createDOM(TagNode)} excepts that it requires to give a
-     * DocumentBuilder.
      * @param documentBuilder the {@link DocumentBuilder} instance to use, DocumentBuilder is not guaranteed to
      * be thread safe so at most the safe instance should be used only in the same thread
      * @param rootNode the HTML Cleaner root node to serialize
      * @return the W3C Document object
      * @throws ParserConfigurationException if there's an error during serialization
+     * @deprecated use {@link #createDOM(DOMImplementation, TagNode)} instead, which doesn't need a
+     *     {@link DocumentBuilder}
      */
+    @Deprecated(since = "19.0.0RC1")
     public Document createDOM(DocumentBuilder documentBuilder, TagNode rootNode) throws ParserConfigurationException
     {
-        Document document = createDocument(documentBuilder, rootNode);
-
-        createSubnodes(document, document.getDocumentElement(), rootNode.getAllChildren());
-
-        return document;
+        return createDOM(documentBuilder.getDOMImplementation(), rootNode);
     }
 }
