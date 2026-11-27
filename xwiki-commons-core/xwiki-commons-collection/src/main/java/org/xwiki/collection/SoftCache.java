@@ -19,14 +19,19 @@
  */
 package org.xwiki.collection;
 
-import java.util.Map;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
-import org.apache.commons.collections4.map.ReferenceMap;
+import java.lang.ref.Reference;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * A concurrent version of {@link ReferenceMap} with soft reference for both keys and values.
+ * A concurrent map with soft references for both keys and values, mostly used to share equal instances (the key being
+ * the value) without preventing them from being garbage collected.
+ * <p>
+ * Keys are compared with {@link Object#equals(Object)}. Reads don't take any lock, so that many threads can look up
+ * entries at the same time. Entries whose key or value has been garbage collected are removed on the next write.
  * 
  * @param <K> the type of keys maintained by this map
  * @param <V> the type of mapped values
@@ -36,9 +41,94 @@ import org.apache.commons.collections4.map.ReferenceMap;
  */
 public class SoftCache<K, V>
 {
-    private Map<K, V> map = new ReferenceMap<>(ReferenceStrength.SOFT, ReferenceStrength.SOFT);
+    private final ConcurrentHashMap<Object, ValueReference<K, V>> map = new ConcurrentHashMap<>();
 
-    private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private final ReferenceQueue<Object> queue = new ReferenceQueue<>();
+
+    /**
+     * Soft reference to a key, equal to any other key reference whose key is equal.
+     * 
+     * @param <K> the type of the key
+     */
+    static final class KeyReference<K> extends SoftReference<K>
+    {
+        private final int hash;
+
+        KeyReference(K key, ReferenceQueue<Object> queue)
+        {
+            super(key, queue);
+
+            this.hash = key.hashCode();
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return this.hash;
+        }
+
+        @Override
+        public boolean equals(Object object)
+        {
+            // Once cleared, a key reference isn't equal to anything, not even to itself: ConcurrentHashMap checks the
+            // identity of keys before calling equals, so the purge can still remove it.
+            Object key = super.get();
+
+            return key != null && object instanceof KeyReference<?> reference && key.equals(reference.get());
+        }
+    }
+
+    /**
+     * Strong reference to a key used to look up an entry without allocating a soft reference.
+     */
+    private static final class LookupKey
+    {
+        private final Object key;
+
+        private final int hash;
+
+        LookupKey(Object key)
+        {
+            this.key = key;
+            this.hash = key.hashCode();
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return this.hash;
+        }
+
+        @Override
+        public boolean equals(Object object)
+        {
+            return object instanceof KeyReference<?> reference && this.key.equals(reference.get());
+        }
+    }
+
+    /**
+     * Soft reference to a value, which remembers the reference to its key so that the entry can be removed when the
+     * value is garbage collected.
+     * 
+     * @param <K> the type of the key
+     * @param <V> the type of the value
+     */
+    static final class ValueReference<K, V> extends SoftReference<V>
+    {
+        private final KeyReference<K> keyReference;
+
+        ValueReference(V value, KeyReference<K> keyReference, ReferenceQueue<Object> queue)
+        {
+            super(value, queue);
+
+            this.keyReference = keyReference;
+        }
+
+        KeyReference<K> getKeyReference()
+        {
+            return this.keyReference;
+        }
+    }
 
     /**
      * @param key the entry key
@@ -46,17 +136,18 @@ public class SoftCache<K, V>
      */
     public V get(K key)
     {
-        this.lock.readLock().lock();
-
-        try {
-            return this.map.get(key);
-        } finally {
-            this.lock.readLock().unlock();
+        if (key == null) {
+            return null;
         }
+
+        ValueReference<K, V> valueReference = this.map.get(new LookupKey(key));
+
+        return valueReference != null ? valueReference.get() : null;
     }
 
     /**
      * Get the value associated to the passed key. If no value can be found store and return the passed default value.
+     * When several threads call this method at the same time with equal keys, they all get the same value.
      * 
      * @param key the entry key
      * @param defaultValue the default value
@@ -64,19 +155,33 @@ public class SoftCache<K, V>
      */
     public V get(K key, V defaultValue)
     {
-        // Check if we only know an equal entry
-        V sharedValue = get(key);
+        V value = get(key);
 
-        if (sharedValue == null) {
-            // If no entry can be found, store and return the passed one
-            sharedValue = defaultValue;
-
-            // Make sure to remember the entry
-            put(key, defaultValue);
+        if (value != null) {
+            return value;
         }
 
-        // Return the shared entry
-        return sharedValue;
+        ValueReference<K, V> newValueReference = newValueReference(key, defaultValue);
+
+        purge();
+
+        // Keep a strong reference to the returned value so that it cannot be garbage collected before it's returned.
+        AtomicReference<V> sharedValue = new AtomicReference<>();
+        this.map.compute(newValueReference.getKeyReference(), (keyReference, existingValueReference) -> {
+            V existingValue = existingValueReference != null ? existingValueReference.get() : null;
+
+            if (existingValue != null) {
+                sharedValue.set(existingValue);
+
+                return existingValueReference;
+            }
+
+            sharedValue.set(defaultValue);
+
+            return newValueReference;
+        });
+
+        return sharedValue.get();
     }
 
     /**
@@ -87,12 +192,48 @@ public class SoftCache<K, V>
      */
     public void put(K key, V value)
     {
-        this.lock.writeLock().lock();
+        ValueReference<K, V> valueReference = newValueReference(key, value);
 
-        try {
-            this.map.put(key, value);
-        } finally {
-            this.lock.writeLock().unlock();
+        purge();
+
+        this.map.put(valueReference.getKeyReference(), valueReference);
+    }
+
+    private ValueReference<K, V> newValueReference(K key, V value)
+    {
+        Objects.requireNonNull(key, "key");
+        Objects.requireNonNull(value, "value");
+
+        return new ValueReference<>(value, new KeyReference<>(key, this.queue), this.queue);
+    }
+
+    private void purge()
+    {
+        for (Reference<?> reference = this.queue.poll(); reference != null; reference = this.queue.poll()) {
+            if (reference instanceof ValueReference<?, ?> valueReference) {
+                // Only remove the entry if it's still associated to the collected value.
+                this.map.remove(valueReference.getKeyReference(), valueReference);
+            } else {
+                this.map.remove(reference);
+            }
         }
+    }
+
+    /**
+     * @param key the entry key
+     * @return the reference to the value associated to the passed key, {@code null} if there isn't any
+     */
+    ValueReference<K, V> getValueReference(K key)
+    {
+        return this.map.get(new LookupKey(key));
+    }
+
+    /**
+     * @return the number of entries, including the ones whose key or value was garbage collected but which weren't
+     *         removed yet
+     */
+    int size()
+    {
+        return this.map.size();
     }
 }
