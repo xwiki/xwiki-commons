@@ -24,6 +24,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -44,21 +45,21 @@ class XWikiDOMSerializerTest
 
     private final CleanerProperties properties = new CleanerProperties();
 
-    private DocumentBuilder documentBuilder;
+    private DOMImplementation domImplementation;
 
     @BeforeEach
     void setUp() throws Exception
     {
-        this.documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        this.domImplementation = DocumentBuilderFactory.newDefaultInstance().newDocumentBuilder().getDOMImplementation();
     }
 
     @Test
-    void createDOMWithoutDocType() throws Exception
+    void createDOMWithoutDocType()
     {
         TagNode rootNode = new TagNode(HTML);
         rootNode.addChild(new TagNode("body"));
 
-        Document document = new XWikiDOMSerializer(this.properties).createDOM(this.documentBuilder, rootNode);
+        Document document = new XWikiDOMSerializer(this.properties).createDOM(this.domImplementation, rootNode);
 
         assertNull(document.getDoctype());
         assertTrue(document.getStrictErrorChecking());
@@ -68,25 +69,25 @@ class XWikiDOMSerializerTest
     }
 
     @Test
-    void createDOMWithDocTypeWithoutQualifiedName() throws Exception
+    void createDOMWithDocTypeWithoutQualifiedName()
     {
         TagNode rootNode = new TagNode(HTML);
         rootNode.setDocType(new DoctypeToken(null, null, null, null));
 
-        Document document = new XWikiDOMSerializer(this.properties).createDOM(this.documentBuilder, rootNode);
+        Document document = new XWikiDOMSerializer(this.properties).createDOM(this.domImplementation, rootNode);
 
         assertEquals(HTML, document.getDoctype().getName());
         assertEquals(HTML, document.getDocumentElement().getTagName());
     }
 
     @Test
-    void createDOMWithUpperCaseDocType() throws Exception
+    void createDOMWithUpperCaseDocType()
     {
         TagNode rootNode = new TagNode(HTML);
         rootNode.setDocType(new DoctypeToken("HTML", "PUBLIC", "-//W3C//DTD HTML 4.01//EN",
             "http://www.w3.org/TR/html4/strict.dtd"));
 
-        Document document = new XWikiDOMSerializer(this.properties).createDOM(this.documentBuilder, rootNode);
+        Document document = new XWikiDOMSerializer(this.properties).createDOM(this.domImplementation, rootNode);
 
         assertEquals("HTML", document.getDoctype().getName());
         assertEquals("-//W3C//DTD HTML 4.01//EN", document.getDoctype().getPublicId());
@@ -96,7 +97,7 @@ class XWikiDOMSerializerTest
     }
 
     @Test
-    void createDOMCopiesAndSanitizesRootAttributes() throws Exception
+    void createDOMCopiesAndSanitizesRootAttributes()
     {
         this.properties.setInvalidXmlAttributeNamePrefix("generated-");
         TagNode rootNode = new TagNode(HTML);
@@ -105,7 +106,7 @@ class XWikiDOMSerializerTest
         rootNode.addAttribute("1a", "fixed");
         rootNode.addAttribute("@#", "dropped");
 
-        Document document = new XWikiDOMSerializer(this.properties).createDOM(this.documentBuilder, rootNode);
+        Document document = new XWikiDOMSerializer(this.properties).createDOM(this.domImplementation, rootNode);
 
         Element root = document.getDocumentElement();
         assertEquals(3, root.getAttributes().getLength());
@@ -118,15 +119,31 @@ class XWikiDOMSerializerTest
     }
 
     @Test
-    void createDOMKeepsInvalidRootAttributesWhenAllowed() throws Exception
+    void createDOMKeepsInvalidRootAttributesWhenAllowed()
     {
         this.properties.setAllowInvalidAttributeNames(true);
         TagNode rootNode = new TagNode(HTML);
         rootNode.addAttribute("1a", "kept");
 
-        Document document = new XWikiDOMSerializer(this.properties).createDOM(this.documentBuilder, rootNode);
+        Document document = new XWikiDOMSerializer(this.properties).createDOM(this.domImplementation, rootNode);
 
         assertFalse(document.getStrictErrorChecking());
         assertEquals("kept", document.getDocumentElement().getAttribute("1a"));
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    void createDOMWithDocumentBuilder() throws Exception
+    {
+        DocumentBuilder documentBuilder = DocumentBuilderFactory.newDefaultInstance().newDocumentBuilder();
+        TagNode rootNode = new TagNode(HTML);
+        rootNode.addChild(new TagNode("body"));
+
+        Document document = new XWikiDOMSerializer(this.properties).createDOM(documentBuilder, rootNode);
+
+        assertNull(document.getDoctype());
+        assertSame(documentBuilder.getDOMImplementation(), document.getImplementation());
+        assertEquals(HTML, document.getDocumentElement().getTagName());
+        assertEquals("body", document.getDocumentElement().getFirstChild().getNodeName());
     }
 }

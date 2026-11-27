@@ -19,9 +19,13 @@
  */
 package org.xwiki.xml.internal.html;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -922,5 +926,47 @@ public class DefaultHTMLCleanerTest
         assertEquals("{{velocity}}machin{{/velocity}}", textareaContent);
 
         assertHTML("<p><textarea>{{velocity}}machin{{/velocity}}</textarea></p>", content);
+    }
+
+    @Test
+    void cleanDoesNotLookUpResourcesInTheContextClassLoader()
+    {
+        List<String> lookups = new ArrayList<>();
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        // Looking up resources in the context class loader is expensive in XWiki: it searches the JARs of all the
+        // extensions and blocks the concurrent threads.
+        ClassLoader recordingClassLoader = new ClassLoader(contextClassLoader)
+        {
+            @Override
+            public URL getResource(String name)
+            {
+                lookups.add(name);
+                return super.getResource(name);
+            }
+
+            @Override
+            public Enumeration<URL> getResources(String name) throws IOException
+            {
+                lookups.add(name);
+                return super.getResources(name);
+            }
+
+            @Override
+            public InputStream getResourceAsStream(String name)
+            {
+                lookups.add(name);
+                return super.getResourceAsStream(name);
+            }
+        };
+
+        Thread.currentThread().setContextClassLoader(recordingClassLoader);
+        try {
+            assertHTML("<p>first</p>", "<p>first</p>");
+            assertHTML("<p>second</p>", "<p>second</p>");
+        } finally {
+            Thread.currentThread().setContextClassLoader(contextClassLoader);
+        }
+
+        assertEquals(List.of(), lookups);
     }
 }
