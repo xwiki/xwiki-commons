@@ -19,14 +19,26 @@
  */
 package org.xwiki.properties.internal;
 
+import java.beans.Introspector;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.internal.ContextComponentManagerProvider;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.properties.BeanDescriptor;
 import org.xwiki.properties.BeanManager;
 import org.xwiki.properties.PropertyException;
 import org.xwiki.properties.PropertyMandatoryException;
@@ -42,7 +54,9 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectComponentManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -70,6 +84,39 @@ class DefaultBeanManagerTest
         public void set(String propertyName, Object value)
         {
             put(propertyName, value);
+        }
+    }
+
+    /**
+     * Loads its own copy of {@link TestBean}, so that each instance provides a class that no descriptor was computed
+     * for yet and that can be garbage collected together with the class loader.
+     */
+    private static final class IsolatingClassLoader extends ClassLoader
+    {
+        IsolatingClassLoader()
+        {
+            super(DefaultBeanManagerTest.class.getClassLoader());
+        }
+
+        @Override
+        protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException
+        {
+            if (!TestBean.class.getName().equals(name)) {
+                return super.loadClass(name, resolve);
+            }
+
+            synchronized (getClassLoadingLock(name)) {
+                Class<?> loadedClass = findLoadedClass(name);
+                if (loadedClass == null) {
+                    try (InputStream stream = TestBean.class.getResourceAsStream("TestBean.class")) {
+                        byte[] bytes = stream.readAllBytes();
+                        loadedClass = defineClass(name, bytes, 0, bytes.length);
+                    } catch (IOException e) {
+                        throw new ClassNotFoundException(name, e);
+                    }
+                }
+                return loadedClass;
+            }
         }
     }
 
@@ -183,5 +230,70 @@ class DefaultBeanManagerTest
             () -> this.defaultBeanManager.populate(new TestBeanFeatures(), new HashMap<>()));
         assertEquals("Property [propertyFeatureMandatory2:mandatoryFeature] mandatory", 
             exception.getMessage());
+    }
+
+    @Test
+    void getBeanDescriptorIsComputedOncePerClass()
+    {
+        BeanDescriptor descriptor = this.defaultBeanManager.getBeanDescriptor(TestBean.class);
+
+        assertSame(descriptor, this.defaultBeanManager.getBeanDescriptor(TestBean.class));
+        assertNull(this.defaultBeanManager.getBeanDescriptor(null));
+    }
+
+    @Test
+    void getBeanDescriptorConcurrently() throws Exception
+    {
+        int threadCount = 8;
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        try {
+            // Repeat with fresh classes since the threads only race on the first lookup of a class.
+            for (int i = 0; i < 20; i++) {
+                Class<?> beanClass = new IsolatingClassLoader().loadClass(TestBean.class.getName());
+                CyclicBarrier barrier = new CyclicBarrier(threadCount);
+                List<Future<BeanDescriptor>> futures = new ArrayList<>();
+                for (int j = 0; j < threadCount; j++) {
+                    futures.add(executor.submit(() -> {
+                        barrier.await();
+                        return this.defaultBeanManager.getBeanDescriptor(beanClass);
+                    }));
+                }
+
+                BeanDescriptor descriptor = this.defaultBeanManager.getBeanDescriptor(beanClass);
+                for (Future<BeanDescriptor> future : futures) {
+                    assertSame(descriptor, future.get(30, TimeUnit.SECONDS));
+                }
+            }
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
+    @Test
+    void getBeanDescriptorDoesNotPreventClassUnloading() throws Exception
+    {
+        WeakReference<Class<?>> beanClassReference = getBeanDescriptorOfIsolatedClass();
+
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
+        while (beanClassReference.get() != null && System.nanoTime() < deadline) {
+            System.gc();
+        }
+
+        assertNull(beanClassReference.get());
+    }
+
+    private WeakReference<Class<?>> getBeanDescriptorOfIsolatedClass() throws ClassNotFoundException
+    {
+        Class<?> beanClass = new IsolatingClassLoader().loadClass(TestBean.class.getName());
+        assertNotSame(TestBean.class, beanClass);
+
+        BeanDescriptor descriptor = this.defaultBeanManager.getBeanDescriptor(beanClass);
+        assertSame(beanClass, descriptor.getBeanClass());
+        assertSame(descriptor, this.defaultBeanManager.getBeanDescriptor(beanClass));
+
+        // The JDK's Introspector, used to compute the descriptor, keeps its own soft cache of the class.
+        Introspector.flushFromCaches(beanClass);
+
+        return new WeakReference<>(beanClass);
     }
 }
