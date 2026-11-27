@@ -152,7 +152,7 @@ class SoftCacheTest
     void purgeEntryWithCollectedValue()
     {
         this.cache.put(KEY, VALUE);
-        ValueReference<String> valueReference = this.cache.getValueReference(KEY);
+        ValueReference<String, String> valueReference = this.cache.getValueReference(KEY);
         valueReference.clear();
         valueReference.enqueue();
 
@@ -168,7 +168,7 @@ class SoftCacheTest
     void purgeEntryWithCollectedKey()
     {
         this.cache.put(KEY, VALUE);
-        KeyReference<?> keyReference = this.cache.getValueReference(KEY).getKeyReference();
+        KeyReference<String> keyReference = this.cache.getValueReference(KEY).getKeyReference();
         keyReference.clear();
         keyReference.enqueue();
 
@@ -188,7 +188,7 @@ class SoftCacheTest
         // doesn't remove the entry: it's removed once the stored key is collected.
         this.cache.put(KEY, VALUE);
         this.cache.put(new String(KEY), VALUE + 2);
-        ValueReference<String> valueReference = this.cache.getValueReference(KEY);
+        ValueReference<String, String> valueReference = this.cache.getValueReference(KEY);
         valueReference.getKeyReference().clear();
         valueReference.getKeyReference().enqueue();
         valueReference.clear();

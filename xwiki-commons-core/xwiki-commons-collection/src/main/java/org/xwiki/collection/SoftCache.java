@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class SoftCache<K, V>
 {
-    private final ConcurrentHashMap<Object, ValueReference<V>> map = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Object, ValueReference<K, V>> map = new ConcurrentHashMap<>();
 
     private final ReferenceQueue<Object> queue = new ReferenceQueue<>();
 
@@ -72,7 +72,7 @@ public class SoftCache<K, V>
         {
             // Once cleared, a key reference isn't equal to anything, not even to itself: ConcurrentHashMap checks the
             // identity of keys before calling equals, so the purge can still remove it.
-            Object key = get();
+            Object key = super.get();
 
             return key != null && object instanceof KeyReference<?> reference && key.equals(reference.get());
         }
@@ -110,20 +110,21 @@ public class SoftCache<K, V>
      * Soft reference to a value, which remembers the reference to its key so that the entry can be removed when the
      * value is garbage collected.
      * 
+     * @param <K> the type of the key
      * @param <V> the type of the value
      */
-    static final class ValueReference<V> extends SoftReference<V>
+    static final class ValueReference<K, V> extends SoftReference<V>
     {
-        private final KeyReference<?> keyReference;
+        private final KeyReference<K> keyReference;
 
-        ValueReference(V value, KeyReference<?> keyReference, ReferenceQueue<Object> queue)
+        ValueReference(V value, KeyReference<K> keyReference, ReferenceQueue<Object> queue)
         {
             super(value, queue);
 
             this.keyReference = keyReference;
         }
 
-        KeyReference<?> getKeyReference()
+        KeyReference<K> getKeyReference()
         {
             return this.keyReference;
         }
@@ -139,7 +140,7 @@ public class SoftCache<K, V>
             return null;
         }
 
-        ValueReference<V> valueReference = this.map.get(new LookupKey(key));
+        ValueReference<K, V> valueReference = this.map.get(new LookupKey(key));
 
         return valueReference != null ? valueReference.get() : null;
     }
@@ -160,7 +161,7 @@ public class SoftCache<K, V>
             return value;
         }
 
-        ValueReference<V> newValueReference = newValueReference(key, defaultValue);
+        ValueReference<K, V> newValueReference = newValueReference(key, defaultValue);
 
         purge();
 
@@ -191,14 +192,14 @@ public class SoftCache<K, V>
      */
     public void put(K key, V value)
     {
-        ValueReference<V> valueReference = newValueReference(key, value);
+        ValueReference<K, V> valueReference = newValueReference(key, value);
 
         purge();
 
         this.map.put(valueReference.getKeyReference(), valueReference);
     }
 
-    private ValueReference<V> newValueReference(K key, V value)
+    private ValueReference<K, V> newValueReference(K key, V value)
     {
         Objects.requireNonNull(key, "key");
         Objects.requireNonNull(value, "value");
@@ -209,7 +210,7 @@ public class SoftCache<K, V>
     private void purge()
     {
         for (Reference<?> reference = this.queue.poll(); reference != null; reference = this.queue.poll()) {
-            if (reference instanceof ValueReference<?> valueReference) {
+            if (reference instanceof ValueReference<?, ?> valueReference) {
                 // Only remove the entry if it's still associated to the collected value.
                 this.map.remove(valueReference.getKeyReference(), valueReference);
             } else {
@@ -222,7 +223,7 @@ public class SoftCache<K, V>
      * @param key the entry key
      * @return the reference to the value associated to the passed key, {@code null} if there isn't any
      */
-    ValueReference<V> getValueReference(K key)
+    ValueReference<K, V> getValueReference(K key)
     {
         return this.map.get(new LookupKey(key));
     }
