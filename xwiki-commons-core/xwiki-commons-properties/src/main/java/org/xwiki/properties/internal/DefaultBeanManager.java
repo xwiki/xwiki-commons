@@ -39,7 +39,6 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 
 import org.slf4j.Logger;
-import org.xwiki.collection.SoftCache;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.properties.BeanDescriptor;
 import org.xwiki.properties.BeanManager;
@@ -68,10 +67,25 @@ import org.xwiki.properties.RawProperties;
 public class DefaultBeanManager implements BeanManager
 {
     /**
-     * Cache the already parsed classes. We store weak reference since the classes might come from extensions later
-     * uninstalled/upgraded or from scripts.
+     * Computes the descriptor of a class. Static so that the descriptors stored in the classes don't reference the
+     * bean manager.
      */
-    private SoftCache<Class<?>, BeanDescriptor> beanDescriptorCache = new SoftCache<>();
+    private static final class BeanDescriptorClassValue extends ClassValue<BeanDescriptor>
+    {
+        @Override
+        protected BeanDescriptor computeValue(Class<?> type)
+        {
+            return new DefaultBeanDescriptor(type);
+        }
+    }
+
+    /**
+     * Cache the already parsed classes. A {@link ClassValue} stores the descriptor in the {@link Class} itself, so the
+     * cache doesn't prevent classes coming from extensions later uninstalled/upgraded or from scripts from being
+     * garbage collected, even though the descriptor references its class. Lookups are lock-free and, when several
+     * threads compute the descriptor of a class concurrently, all of them get the same instance.
+     */
+    private final ClassValue<BeanDescriptor> beanDescriptorCache = new BeanDescriptorClassValue();
 
     /**
      * The logger to use for logging.
@@ -258,19 +272,10 @@ public class DefaultBeanManager implements BeanManager
     @Override
     public BeanDescriptor getBeanDescriptor(Class<?> beanClass)
     {
-        BeanDescriptor beanDescriptor = null;
-
-        if (beanClass != null) {
-            // Get the bean descriptor from the cache
-            beanDescriptor = this.beanDescriptorCache.get(beanClass);
-
-            // Create a new one if none could be found
-            if (beanDescriptor == null) {
-                beanDescriptor = new DefaultBeanDescriptor(beanClass);
-                this.beanDescriptorCache.put(beanClass, beanDescriptor);
-            }
+        if (beanClass == null) {
+            return null;
         }
 
-        return beanDescriptor;
+        return this.beanDescriptorCache.get(beanClass);
     }
 }
